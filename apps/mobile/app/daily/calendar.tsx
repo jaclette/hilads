@@ -3,7 +3,7 @@ import { ActivityIndicator, ScrollView, Text, TouchableOpacity, View, StyleSheet
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
-import { Border, FontSizes, Radius, Spacing, type ThemeColors } from '@/constants';
+import { Space, Border, FontSizes, Radius, Spacing, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { useDailyCalendar } from '@/hooks/useDaily';
 import { ymd, themeName } from '@/features/daily/themes';
@@ -115,17 +115,17 @@ function Stat({ value, label }: { value: number; label: string }) {
 }
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  body:       { padding: Spacing.md, paddingTop: Spacing.sm, gap: 14, paddingBottom: 40 },
-  stats:      { flexDirection: 'row', gap: 10 },
-  stat:       { flex: 1, padding: 12, alignItems: 'center', gap: 2 },
-  statRow:    { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  body:       { padding: Spacing.md, paddingTop: Spacing.sm, gap: Space.lg, paddingBottom: 40 },
+  stats:      { flexDirection: 'row', gap: Space.md },
+  stat:       { flex: 1, padding: Space.md, alignItems: 'center', gap: Space.xxs },
+  statRow:    { flexDirection: 'row', alignItems: 'center', gap: Space.sm },
   statValue:  { fontSize: FontSizes.xl, fontWeight: '800', color: c.text },
   statLabel:  { fontSize: FontSizes.xs, fontWeight: '600', color: c.muted },
   monthRow:   { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   month:      { fontSize: FontSizes.md, fontWeight: '800', color: c.text, textTransform: 'capitalize' },
   grid:       { flexDirection: 'row', flexWrap: 'wrap' },
-  weekday:    { width: `${100 / 7}%`, textAlign: 'center', fontSize: FontSizes.xs, fontWeight: '700', color: c.muted, marginBottom: 6 },
-  cell:       { width: `${100 / 7}%`, alignItems: 'center', paddingVertical: 4, gap: 2 },
+  weekday:    { width: `${100 / 7}%`, textAlign: 'center', fontSize: FontSizes.xs, fontWeight: '700', color: c.muted, marginBottom: Space.sm },
+  cell:       { width: `${100 / 7}%`, alignItems: 'center', paddingVertical: Space.xs, gap: Space.xxs },
   dot:        { width: 38, height: 38, borderRadius: Radius.full, alignItems: 'center', justifyContent: 'center', borderWidth: Border,
                 borderColor: c.line, backgroundColor: c.bg2 },
   dotDone:    { backgroundColor: c.primary, borderColor: c.primary },
@@ -136,9 +136,9 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   dayNumDone: { color: c.white },
   cellIcon:   { height: 14, alignItems: 'center', justifyContent: 'center' },
   dimmed:     { opacity: 0.4 },
-  loader:     { marginVertical: 20 },
-  legend:     { flexDirection: 'row', alignItems: 'center', gap: 6, flexWrap: 'wrap' },
-  legendDot:  { width: 14, height: 14, borderRadius: Radius.full, borderWidth: Border, borderColor: c.line, marginLeft: 6 },
+  loader:     { marginVertical: Space.xl },
+  legend:     { flexDirection: 'row', alignItems: 'center', gap: Space.sm, flexWrap: 'wrap' },
+  legendDot:  { width: 14, height: 14, borderRadius: Radius.full, borderWidth: Border, borderColor: c.line, marginLeft: Space.sm },
   legendText: { fontSize: FontSizes.xs, fontWeight: '500', color: c.muted },
   monthDone:  { fontSize: FontSizes.sm, fontWeight: '700', color: c.text },
 });

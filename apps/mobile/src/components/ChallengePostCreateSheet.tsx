@@ -10,9 +10,10 @@ import { useTranslation } from 'react-i18next';
 import { fetchCityMembers } from '@/api/channels';
 import { inviteToChallenge } from '@/api/challenges';
 import type { Challenge, UserDTO } from '@/types';
-import { Border, FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
+import { Space, Border, FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { avatarColor } from '@/lib/avatarColors';
+import { IconButton } from '@/ui/IconButton';
 
 type Props = {
   visible:        boolean;
@@ -105,12 +106,12 @@ function SeedView({
       <Text style={styles.subtitle}>{t('postCreate.subtitle')}</Text>
 
       <TouchableOpacity style={styles.ctaPrimary} onPress={onPickPeople} activeOpacity={0.85}>
-        <Ionicons name="people" size={20} color={colors.white} />
+        <Ionicons name="people" size={20} color={colors.onCta} />
         <View style={{ flex: 1 }}>
           <Text style={styles.ctaPrimaryText}>{t('postCreate.ctaInvite', { city })}</Text>
           <Text style={styles.ctaPrimarySub}>{t('postCreate.ctaInviteSub', { audience: audienceLabel })}</Text>
         </View>
-        <Ionicons name="chevron-forward" size={18} color={colors.onCaramelMuted} />
+        <Ionicons name="chevron-forward" size={18} color={colors.onCta} />
       </TouchableOpacity>
 
       <TouchableOpacity style={styles.ctaSecondary} onPress={onShare} activeOpacity={0.85}>
@@ -246,9 +247,7 @@ function PickerView({
   return (
     <View style={styles.body}>
       <View style={styles.pickerHeader}>
-        <TouchableOpacity onPress={onBack} hitSlop={12} style={styles.headerBack}>
-          <Ionicons name="chevron-back" size={18} color={colors.muted} />
-        </TouchableOpacity>
+        <IconButton icon="chevron-back" onPress={onBack} label={t('back', { ns: 'common' })} />
         <View style={{ flex: 1 }}>
           <Text style={styles.title}>{t('postCreate.pickerTitle', { audience: audienceLabel, city })}</Text>
           <Text style={styles.subtitle}>
@@ -304,7 +303,7 @@ function PickerView({
         activeOpacity={0.85}
       >
         {sending
-          ? <ActivityIndicator color={colors.white} size="small" />
+          ? <ActivityIndicator color={colors.onCta} size="small" />
           : (
             <Text style={styles.sendBtnText}>
               {selected.size === 0
@@ -329,27 +328,27 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   },
   handle: {
     alignSelf: 'center', width: 40, height: 4, borderRadius: 2,
-    backgroundColor: c.line, marginTop: 8, marginBottom: 4,
+    backgroundColor: c.line, marginTop: Space.sm, marginBottom: Space.xs,
   },
   body: { paddingHorizontal: Spacing.md, paddingTop: Spacing.sm, gap: Spacing.sm },
 
-  titleRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  titleRow: { flexDirection: 'row', alignItems: 'center', gap: Space.sm },
   title:    { fontSize: FontSizes.lg, fontWeight: '800', color: c.text, letterSpacing: -0.3 },
   subtitle: { fontSize: FontSizes.sm, color: c.muted, marginBottom: Spacing.sm },
 
   // ── Seed view CTAs ─────────────────────────────────────────────────────────
   ctaPrimary: {
-    flexDirection: 'row', alignItems: 'center', gap: 12,
-    backgroundColor: c.primary,
-    paddingVertical: Spacing.md, paddingHorizontal: Spacing.md,
-    borderRadius: Radius.lg,
+    flexDirection: 'row', alignItems: 'center', gap: Space.md,
+    backgroundColor: c.cta,
+    minHeight: 48, paddingVertical: Spacing.sm, paddingHorizontal: Spacing.md,
+    borderRadius: Radius.button,
     marginTop: Spacing.xs,
   },
-  ctaPrimaryText: { color: c.white, fontSize: FontSizes.md, fontWeight: '800' },
-  ctaPrimarySub:  { color: c.onCaramelMuted, fontSize: FontSizes.xs + 1, marginTop: 2 },
+  ctaPrimaryText: { color: c.onCta, fontSize: FontSizes.md, fontWeight: '800' },
+  ctaPrimarySub:  { color: c.onCta, opacity: 0.75, fontSize: FontSizes.sm, marginTop: Space.xxs },
 
   ctaSecondary: {
-    flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10,
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: Space.md,
     paddingVertical: Spacing.md - 2,
     borderRadius: Radius.lg,
     borderWidth: Border, borderColor: c.primary,
@@ -361,21 +360,15 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   skipText: { color: c.muted, fontSize: FontSizes.sm, fontWeight: '600' },
 
   // ── Picker view ────────────────────────────────────────────────────────────
-  pickerHeader: { flexDirection: 'row', alignItems: 'flex-start', gap: 8, paddingBottom: 4 },
-  headerBack: {
-    width: 32, height: 32, borderRadius: 16,
-    backgroundColor: c.bg3,
-    alignItems: 'center', justifyContent: 'center',
-    marginTop: 2,
-  },
+  pickerHeader: { flexDirection: 'row', alignItems: 'flex-start', gap: Space.sm, paddingBottom: Space.xs },
   list:        { maxHeight: 360 },
-  listContent: { paddingBottom: Spacing.sm, gap: 4 },
+  listContent: { paddingBottom: Spacing.sm, gap: Space.xs },
   empty:       { color: c.muted, textAlign: 'center', marginVertical: Spacing.lg },
   errorText:   { color: c.red, textAlign: 'center', marginVertical: Spacing.md },
 
   memberRow: {
-    flexDirection: 'row', alignItems: 'center', gap: 12,
-    paddingVertical: 10, paddingHorizontal: 10,
+    flexDirection: 'row', alignItems: 'center', gap: Space.md,
+    paddingVertical: Space.md, paddingHorizontal: Space.md,
     borderRadius: Radius.md,
   },
   memberRowSelected: { backgroundColor: c.primaryTint },
@@ -396,11 +389,11 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
 
   sendBtn: {
     marginTop: Spacing.sm,
-    backgroundColor: c.primary,
-    borderRadius: Radius.full,
-    paddingVertical: Spacing.md,
-    alignItems: 'center',
+    backgroundColor: c.cta,
+    borderRadius: Radius.button,
+    minHeight: 48, paddingHorizontal: Space.lg,
+    alignItems: 'center', justifyContent: 'center',
   },
-  sendBtnDisabled: { opacity: 0.4 },
-  sendBtnText: { color: c.white, fontSize: FontSizes.md, fontWeight: '800' },
+  sendBtnDisabled: { opacity: 0.5 },
+  sendBtnText: { color: c.onCta, fontSize: FontSizes.md, fontWeight: '800' },
 });

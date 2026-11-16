@@ -22,7 +22,7 @@ import { CameraView, useCameraPermissions } from 'expo-camera';
 import { ImageManipulator, SaveFormat } from 'expo-image-manipulator';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
-import { Radius, Spacing, type ThemeColors } from '@/constants';
+import { Space, FontSizes, Radius, Spacing, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { useModalStatusBar } from '@/lib/useModalStatusBar';
 import { Button, IconButton } from '@/ui';
@@ -282,9 +282,9 @@ export function AndroidCameraCapture({ visible, onCapture, onClose }: Props) {
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
   // The camera and its preview stay black in both themes; the permission screen follows the theme.
   root:   { flex: 1, backgroundColor: c.photoScrim },
-  center: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 12, padding: Spacing.lg, backgroundColor: c.bg },
-  permIcon: { width: 72, height: 72, borderRadius: Radius.full, backgroundColor: c.primaryTint, alignItems: 'center', justifyContent: 'center', marginBottom: 4 },
-  permText: { color: c.text, fontSize: 16, fontWeight: '600', textAlign: 'center', lineHeight: 22, marginBottom: 8 },
+  center: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: Space.md, padding: Spacing.lg, backgroundColor: c.bg },
+  permIcon: { width: 72, height: 72, borderRadius: Radius.full, backgroundColor: c.primaryTint, alignItems: 'center', justifyContent: 'center', marginBottom: Space.xs },
+  permText: { color: c.text, fontSize: FontSizes.body, fontWeight: '600', textAlign: 'center', lineHeight: 22, marginBottom: Space.sm },
   permBtn:  { alignSelf: 'stretch' },
 
   camera:    { flex: 1 },
@@ -302,9 +302,9 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   previewImage: { flex: 1 },
   previewClose: { position: 'absolute', left: Spacing.md },
   previewBar:   { position: 'absolute', bottom: 0, left: 0, right: 0, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-                  gap: 12, paddingHorizontal: 20, paddingVertical: 20, backgroundColor: c.photoScrim },
-  retakeBtn:     { flexDirection: 'row', alignItems: 'center', gap: 6, minHeight: 48, paddingHorizontal: 20, borderRadius: Radius.button,
+                  gap: Space.md, paddingHorizontal: Space.xl, paddingVertical: Space.xl, backgroundColor: c.photoScrim },
+  retakeBtn:     { flexDirection: 'row', alignItems: 'center', gap: Space.sm, minHeight: 48, paddingHorizontal: Space.xl, borderRadius: Radius.button,
                    backgroundColor: c.photoControl },
-  retakeBtnText: { color: c.white, fontSize: 15, fontWeight: '700' },
+  retakeBtnText: { color: c.white, fontSize: FontSizes.body, fontWeight: '700' },
   useBtn:        { flex: 1 },
 });

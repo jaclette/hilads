@@ -3,7 +3,7 @@ import { ActivityIndicator, ScrollView, Text, View, StyleSheet } from 'react-nat
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import { Border, FontSizes, Radius, Spacing, type ThemeColors } from '@/constants';
+import { Space, Border, FontSizes, Radius, Spacing, type ThemeColors } from '@/constants';
 import { Avatar, EmptyState, ListRow, RowGroup, ScreenHeader, SectionTitle } from '@/ui';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { useApp } from '@/context/AppContext';
@@ -87,19 +87,19 @@ export default function FriendsScreen() {
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
   container: { flex: 1, backgroundColor: c.bg },
-  body:      { padding: Spacing.md, gap: 10, paddingBottom: Spacing.xl },
+  body:      { padding: Spacing.md, gap: Space.md, paddingBottom: Spacing.xl },
   requests:  { borderRadius: Radius.card, borderWidth: Border, borderColor: c.line, backgroundColor: c.bg2 },
-  section:   { marginTop: 8 },
+  section:   { marginTop: Space.sm },
   pad:       { paddingVertical: Spacing.md },
-  person:    { minHeight: 56, paddingVertical: 8 },
-  vibeRow:   { flexDirection: 'row', alignItems: 'center', gap: 12, minHeight: 56, paddingHorizontal: 14, paddingVertical: 8 },
+  person:    { minHeight: 56, paddingVertical: Space.sm },
+  vibeRow:   { flexDirection: 'row', alignItems: 'center', gap: Space.md, minHeight: 56, paddingHorizontal: Space.lg, paddingVertical: Space.sm },
   divider:   { borderTopWidth: 1, borderTopColor: c.line },
-  name:      { flex: 1, fontSize: 15, fontWeight: '700', color: c.text },
-  score:     { alignItems: 'center', gap: 4, padding: 14 },
-  stars:     { fontSize: 22, color: c.gold },
+  name:      { flex: 1, fontSize: FontSizes.body, fontWeight: '700', color: c.text },
+  score:     { alignItems: 'center', gap: Space.xs, padding: Space.lg },
+  stars:     { fontSize: FontSizes.xl, color: c.gold },
   starsOff:  { color: c.line },
   scoreText: { fontSize: FontSizes.xs, color: c.muted },
-  vibeBody:  { flex: 1, gap: 2 },
+  vibeBody:  { flex: 1, gap: Space.xxs },
   vibeStars: { fontSize: FontSizes.xs, color: c.gold },
   vibeMsg:   { fontSize: FontSizes.sm, color: c.text },
 });

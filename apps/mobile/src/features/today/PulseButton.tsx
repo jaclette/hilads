@@ -7,7 +7,7 @@ import Animated, {
 import { useIsFocused } from '@react-navigation/native';
 import * as Haptics from 'expo-haptics';
 import { Ionicons } from '@expo/vector-icons';
-import { FontSizes } from '@/constants';
+import { Space, FontSizes } from '@/constants';
 import { TANGERINE, TANGERINE_TEXT } from '@/ui/joy';
 
 const CYCLE_MS      = 1600;   // one ring's expansion
@@ -138,7 +138,7 @@ const RADIUS = 16;
 const styles = StyleSheet.create({
   wrap:   { height: HEIGHT, justifyContent: 'center' },
   ring:   { ...StyleSheet.absoluteFillObject, borderWidth: 2, borderRadius: RADIUS },
-  button: { height: HEIGHT, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, borderRadius: RADIUS, paddingHorizontal: 16 },
+  button: { height: HEIGHT, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: Space.sm, borderRadius: RADIUS, paddingHorizontal: Space.lg },
   label:  { fontSize: FontSizes.md, fontWeight: '800', color: INK },
   // The disc the camera "opens from": centred on the button, grown by scale.
   reveal: { position: 'absolute', alignSelf: 'center', width: HEIGHT, height: HEIGHT, borderRadius: HEIGHT / 2, zIndex: 2 },

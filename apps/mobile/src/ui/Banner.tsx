@@ -1,6 +1,6 @@
 import { Text, TouchableOpacity, View, StyleSheet, type StyleProp, type ViewStyle } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Border, FontSizes, Radius, type ThemeColors } from '@/constants';
+import { Space, Border, FontSizes, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { Button } from './Button';
 
@@ -31,7 +31,7 @@ export function Banner({ icon, text, action, onClose, closeLabel, style }: {
 }
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  banner: { flexDirection: 'row', alignItems: 'center', gap: 10, minHeight: 56, paddingLeft: 14, paddingRight: 4, paddingVertical: 6,
+  banner: { flexDirection: 'row', alignItems: 'center', gap: Space.md, minHeight: 56, paddingLeft: Space.lg, paddingRight: Space.xs, paddingVertical: Space.sm,
             borderRadius: Radius.card, borderWidth: Border, borderColor: c.line, backgroundColor: c.bg2 },
   text:   { flex: 1, fontSize: FontSizes.sm, fontWeight: '600', color: c.text },
   close:  { width: 44, height: 44, alignItems: 'center', justifyContent: 'center' },

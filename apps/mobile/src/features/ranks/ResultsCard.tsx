@@ -4,7 +4,7 @@ import Animated, { FadeIn, FadeOut, useReducedMotion } from 'react-native-reanim
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
-import { Radius, type ThemeColors } from '@/constants';
+import { Space, FontSizes, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { useApp } from '@/context/AppContext';
 import { shortCityName } from '@/i18n/cityName';
@@ -73,10 +73,10 @@ export function ResultsCard() {
 }
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  results:      { flexDirection: 'row', alignItems: 'center', gap: 6, paddingLeft: 14, paddingRight: 8, paddingVertical: 12,
+  results:      { flexDirection: 'row', alignItems: 'center', gap: Space.sm, paddingLeft: Space.lg, paddingRight: Space.sm, paddingVertical: Space.md,
                   borderRadius: Radius.card, backgroundColor: c.primaryTint, borderWidth: 1.5, borderColor: c.primary },
   resultsBody:  { flex: 1 },
   resultsClose: { width: 32, height: 32, borderRadius: 16, alignItems: 'center', justifyContent: 'center' },
-  resultsTitle: { fontSize: 15, lineHeight: 20, fontWeight: '800', color: c.text },
-  resultsSee:   { fontSize: 15, fontWeight: '800', color: c.primaryOnTint },
+  resultsTitle: { fontSize: FontSizes.body, lineHeight: 20, fontWeight: '800', color: c.text },
+  resultsSee:   { fontSize: FontSizes.body, fontWeight: '800', color: c.primaryOnTint },
 });

@@ -2,7 +2,7 @@ import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import type { EventInspirationExample } from '@/api/events';
 import { thumbUrl } from '@/lib/imageThumb';
-import { FontSizes, Spacing, type ThemeColors } from '@/constants';
+import { Space, FontSizes, Spacing, type ThemeColors } from '@/constants';
 import { useThemedStyles } from '@/context/ThemeContext';
 import { Avatar, Button, Card, Chip } from '@/ui';
 
@@ -64,9 +64,9 @@ export function ExampleEventCard({
 }
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  card:   { padding: Spacing.md, gap: 10, width: '100%' },
+  card:   { padding: Spacing.md, gap: Space.md, width: '100%' },
   kind:   { alignSelf: 'flex-start' },
   title:  { fontSize: FontSizes.md, fontWeight: '800', color: c.text, lineHeight: 22 },
-  byRow:  { flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 8 },
-  byText: { flex: 1, fontSize: 12, fontWeight: '600', color: c.muted },
+  byRow:  { flexDirection: 'row', alignItems: 'center', gap: Space.sm, marginTop: Space.sm },
+  byText: { flex: 1, fontSize: FontSizes.xs, fontWeight: '600', color: c.muted },
 });

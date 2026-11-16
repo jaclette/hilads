@@ -9,7 +9,7 @@ import * as Haptics from 'expo-haptics';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
-import { FontSizes, Spacing, type ThemeColors } from '@/constants';
+import { Space, Radius, FontSizes, Spacing, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { useApp } from '@/context/AppContext';
 import { fetchDailyProofsByIds, fetchDailyTour } from '@/api/daily';
@@ -459,51 +459,51 @@ function SlotCard({ city, first, label, onPress }: { city: string | null; first:
 }
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  wrap:      { gap: 14 },
-  block:     { gap: 8 },
-  grid:      { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', rowGap: 16, paddingTop: 4 },
+  wrap:      { gap: Space.lg },
+  block:     { gap: Space.sm },
+  grid:      { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', rowGap: Space.lg, paddingTop: Space.xs },
   cardWrap:  { width: '48.5%' },
   faded:     { opacity: 0.92 },   // yesterday's cards stay readable (V6: 0.55 read washed out)
   // The polaroid pile: theme-colored sheets peeking out behind the card.
-  layer:     { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, borderRadius: 16, opacity: 0.55 },
+  layer:     { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, borderRadius: Radius.card, opacity: 0.55 },
   layerBack: { transform: [{ rotate: '5deg' }, { translateX: 8 }, { translateY: -2 }] },
   layerBack2: { opacity: 0.3, transform: [{ rotate: '-5deg' }, { translateX: -7 }, { translateY: 3 }] },
   // A back sheet showing its photo: opaque, its edge in the theme color.
   // Every photo of a pile but the first lies over it (the first gives the card its size).
   layerAbs:  { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 },
-  dots:      { position: 'absolute', bottom: 6, alignSelf: 'center', flexDirection: 'row', gap: 4, paddingHorizontal: 6, paddingVertical: 4,
+  dots:      { position: 'absolute', bottom: 6, alignSelf: 'center', flexDirection: 'row', gap: Space.xs, paddingHorizontal: Space.sm, paddingVertical: Space.xs,
                borderRadius: 8, backgroundColor: c.photoPill },
   dot:       { width: 5, height: 5, borderRadius: 3, backgroundColor: c.photoControl },
   dotOn:     { backgroundColor: c.white },
-  card:      { borderRadius: 16, overflow: 'hidden', backgroundColor: c.bg2, borderWidth: 1.5, borderColor: c.line },
+  card:      { borderRadius: Radius.card, overflow: 'hidden', backgroundColor: c.bg2, borderWidth: 1.5, borderColor: c.line },
   cardFill:  { flex: 1 },
   photo:     { width: '100%', aspectRatio: 1, backgroundColor: c.bg3 },
   // Leaves the left 30 % to the selfie inset (24 % + its margin); a long count truncates.
-  corner:    { position: 'absolute', top: 6, right: 6, left: '30%', flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center', gap: 4 },
-  pill:      { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 8, paddingVertical: 4, flexShrink: 1,
+  corner:    { position: 'absolute', top: 6, right: 6, left: '30%', flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center', gap: Space.xs },
+  pill:      { flexDirection: 'row', alignItems: 'center', gap: Space.xs, paddingHorizontal: Space.sm, paddingVertical: Space.xs, flexShrink: 1,
                borderRadius: 12, backgroundColor: c.photoPill },
-  pillText:  { fontSize: 11, fontWeight: '800', color: c.white, flexShrink: 1 },
+  pillText:  { fontSize: FontSizes.xs, fontWeight: '800', color: c.white, flexShrink: 1 },
   badge:     { width: 28, height: 28, borderRadius: 14, backgroundColor: c.photoControl,
                alignItems: 'center', justifyContent: 'center' },
-  badgeText: { fontSize: 16 },
-  tileBody:  { padding: 10, gap: 4 },
-  cityRow:   { flexDirection: 'row', alignItems: 'center', gap: 5 },
-  city:      { flexShrink: 1, fontSize: 13, fontWeight: '700', color: c.text },
-  answer:    { fontSize: FontSizes.lg, lineHeight: 22, fontWeight: '800', color: c.text, minHeight: 44 },
-  foot:      { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 6 },
+  badgeText: { fontSize: FontSizes.body },
+  tileBody:  { padding: Space.md, gap: Space.xs },
+  cityRow:   { flexDirection: 'row', alignItems: 'center', gap: Space.xs },
+  city:      { flexShrink: 1, fontSize: FontSizes.xs, fontWeight: '700', color: c.text },
+  answer:    { fontSize: FontSizes.lg, lineHeight: 24, fontWeight: '800', color: c.text, minHeight: 44 },
+  foot:      { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: Space.sm },
   avatars:   { flexDirection: 'row', alignItems: 'center' },
   avatar:    { borderRadius: 12, borderWidth: 2, borderColor: c.bg2 },
   avatarOverlap: { marginLeft: -7 },
-  more:      { marginLeft: 4, fontSize: 12, fontWeight: '700', color: c.muted },
-  votes:     { flexDirection: 'row', alignItems: 'center', gap: 4 },
-  votesText: { fontSize: 13, fontWeight: '700', color: c.muted },
-  commentsText: { marginRight: 6 },
-  slot:      { flexDirection: 'row', alignItems: 'center', gap: 12, minHeight: 64, paddingVertical: 10, paddingHorizontal: 12, borderRadius: 16,
+  more:      { marginLeft: Space.xs, fontSize: FontSizes.xs, fontWeight: '700', color: c.muted },
+  votes:     { flexDirection: 'row', alignItems: 'center', gap: Space.xs },
+  votesText: { fontSize: FontSizes.xs, fontWeight: '700', color: c.muted },
+  commentsText: { marginRight: Space.sm },
+  slot:      { flexDirection: 'row', alignItems: 'center', gap: Space.md, minHeight: 64, paddingVertical: Space.md, paddingHorizontal: Space.md, borderRadius: Radius.card,
                borderStyle: 'dashed', borderColor: c.primaryText, borderWidth: 1.5, backgroundColor: c.primaryTint },
   camera:    { width: 42, height: 42, borderRadius: 21, backgroundColor: c.bg2, alignItems: 'center', justifyContent: 'center' },
-  slotBody:  { flex: 1, gap: 2 },
+  slotBody:  { flex: 1, gap: Space.xxs },
   slotTitle: { fontSize: FontSizes.md, fontWeight: '800', color: c.primaryOnTint },
-  slotSub:   { fontSize: 13, fontWeight: '600', color: c.primaryOnTint },
-  invite:    { fontSize: 14, lineHeight: 20, fontWeight: '600', color: c.muted },
-  hint:      { fontSize: 13, fontWeight: '600', color: c.muted, textAlign: 'center' },
+  slotSub:   { fontSize: FontSizes.xs, fontWeight: '600', color: c.primaryOnTint },
+  invite:    { fontSize: FontSizes.sm, lineHeight: 20, fontWeight: '600', color: c.muted },
+  hint:      { fontSize: FontSizes.xs, fontWeight: '600', color: c.muted, textAlign: 'center' },
 });

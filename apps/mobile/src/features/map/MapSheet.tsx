@@ -9,7 +9,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useTranslation } from 'react-i18next';
 import { useIsFocused } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
-import { type ThemeColors } from '@/constants';
+import { Space, FontSizes, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { track } from '@/services/analytics';
 import type { Spot } from '@/api/spots';
@@ -296,14 +296,14 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   ground:      { position: 'absolute', left: 0, right: 0, bottom: 0, backgroundColor: c.bg },
   handleBox:   { height: WAVE },
   handle:      { position: 'absolute', top: 11, width: HANDLE_W, height: 5, borderRadius: 3, backgroundColor: c.onPeek },
-  head:        { flexDirection: 'row', alignItems: 'center', gap: 12, paddingLeft: 16, paddingRight: 12, paddingTop: 2, paddingBottom: 14 },
-  headText:    { flex: 1, minWidth: 0, gap: 3 },
-  titleRow:    { flexDirection: 'row', alignItems: 'center', columnGap: 6 },
-  title:       { fontSize: 19, lineHeight: 24, fontWeight: '900', color: c.onPeek },
+  head:        { flexDirection: 'row', alignItems: 'center', gap: Space.md, paddingLeft: Space.lg, paddingRight: Space.md, paddingTop: Space.xxs, paddingBottom: Space.lg },
+  headText:    { flex: 1, minWidth: 0, gap: Space.xs },
+  titleRow:    { flexDirection: 'row', alignItems: 'center', columnGap: Space.sm },
+  title:       { fontSize: FontSizes.lg, lineHeight: 24, fontWeight: '800', color: c.onPeek },
   titlePart:   { flexShrink: 1 },
-  sub:         { fontSize: 13, lineHeight: 18, fontWeight: '700', color: c.onPeekMuted },
-  pill:        { flexShrink: 0, minWidth: 30, height: 26, paddingHorizontal: 9, borderRadius: 13, backgroundColor: c.onPeek, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
-  pillText:    { fontSize: 16, lineHeight: 20, fontWeight: '900', color: c.peekInk, textAlign: 'center' },
+  sub:         { fontSize: FontSizes.xs, lineHeight: 18, fontWeight: '700', color: c.onPeekMuted },
+  pill:        { flexShrink: 0, minWidth: 30, height: 26, paddingHorizontal: Space.sm, borderRadius: 13, backgroundColor: c.onPeek, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
+  pillText:    { fontSize: FontSizes.body, lineHeight: 20, fontWeight: '800', color: c.peekInk, textAlign: 'center' },
   pillSizer:   { opacity: 0 },
   pillNum:     { position: 'absolute', left: 0, right: 0, top: 3 },
   stack:       { height: 56 },

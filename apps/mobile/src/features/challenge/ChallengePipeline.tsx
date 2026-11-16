@@ -1,7 +1,7 @@
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
-import { Border, FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
+import { Space, Border, FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import type { ChallengeThreadSummary } from '@/types';
 
@@ -384,10 +384,10 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   dotEmojiIdle: { opacity: 0.45 },
 
   label: {
-    fontSize:   10,
+    fontSize:   FontSizes.xs,
     fontWeight: '600',
     color:      c.muted,
-    marginTop:  4,
+    marginTop:  Space.xs,
     letterSpacing: 0.2,
   },
   labelActive: { color: c.primaryText, fontWeight: '800' },
@@ -398,13 +398,13 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
     flexDirection: 'row',
     alignItems:    'center',
     justifyContent: 'center',
-    gap: 4,
-    paddingVertical:   6,
+    gap: Space.xs,
+    paddingVertical:   Space.sm,
     paddingHorizontal: Spacing.sm,
     backgroundColor:   c.primaryTint,
     borderRadius:      Radius.full,
     borderWidth:       Border,
     borderColor:       c.primaryTint,
   },
-  subCta: { color: c.primaryOnTint, fontWeight: '700', fontSize: FontSizes.xs + 1 },
+  subCta: { color: c.primaryOnTint, fontWeight: '700', fontSize: FontSizes.sm },
 });

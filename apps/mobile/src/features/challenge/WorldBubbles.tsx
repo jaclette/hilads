@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 import { Pressable, Text, View, StyleSheet } from 'react-native';
 import Animated, { useAnimatedStyle, useReducedMotion, useSharedValue, withDelay, withSpring } from 'react-native-reanimated';
 import { useTranslation } from 'react-i18next';
-import { FontSizes, type ThemeColors } from '@/constants';
+import { Space, FontSizes, type ThemeColors } from '@/constants';
 import { useThemedStyles } from '@/context/ThemeContext';
 import { answerText } from '@/features/compare/format';
 import { ACCENTS, FlagSticker, tint } from '@/ui/joy';
@@ -119,8 +119,8 @@ function Bubble({ index, rotate, tail, style, onPress, label, testID, children }
 }
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  wrap:      { flexDirection: 'row', flexWrap: 'wrap', gap: 10, paddingVertical: 4 },
-  bubble:    { flexDirection: 'row', alignItems: 'center', gap: 7, maxWidth: 260, paddingHorizontal: 12, paddingVertical: 9, borderRadius: 18 },
+  wrap:      { flexDirection: 'row', flexWrap: 'wrap', gap: Space.md, paddingVertical: Space.xs },
+  bubble:    { flexDirection: 'row', alignItems: 'center', gap: Space.sm, maxWidth: 260, paddingHorizontal: Space.md, paddingVertical: Space.sm, borderRadius: 18 },
   tailLeft:  { borderBottomLeftRadius: 4 },
   tailRight: { borderBottomRightRadius: 4 },
   pressed:   { opacity: 0.75 },

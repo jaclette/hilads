@@ -13,7 +13,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { requestFeatureLocation } from '@/lib/geoFeature';
 import { useApp } from '@/context/AppContext';
 import { createEvent, createEventSeries } from '@/api/events';
-import { Border, FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
+import { Space, Border, FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { Button, Chip, Screen, ScreenHeader, SectionTitle, TextField } from '@/ui';
 import { LocationPicker } from '@/features/chat/LocationPicker';
@@ -451,38 +451,38 @@ export default function CreateEventScreen() {
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
   scroll:  { flex: 1 },
-  content: { paddingHorizontal: Spacing.md, paddingTop: Spacing.sm, paddingBottom: Spacing.xl, gap: 24 },
-  footer:  { paddingHorizontal: Spacing.md, paddingTop: 10, paddingBottom: 10, borderTopWidth: 1, borderTopColor: c.line, backgroundColor: c.bg },
-  section: { gap: 10 },
-  chipRow: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: 8 },
+  content: { paddingHorizontal: Spacing.md, paddingTop: Spacing.sm, paddingBottom: Spacing.xl, gap: Space.xl },
+  footer:  { paddingHorizontal: Spacing.md, paddingTop: Space.md, paddingBottom: Space.md, borderTopWidth: 1, borderTopColor: c.line, backgroundColor: c.bg },
+  section: { gap: Space.md },
+  chipRow: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: Space.sm },
   hint:    { fontSize: FontSizes.xs, fontWeight: '500', color: c.muted },
 
   // Preset tiles
-  tile:        { alignItems: 'center', justifyContent: 'center', gap: 6, borderRadius: Radius.card, borderWidth: Border,
+  tile:        { alignItems: 'center', justifyContent: 'center', gap: Space.sm, borderRadius: Radius.card, borderWidth: Border,
                  borderColor: c.line, backgroundColor: c.bg2 },
   tileOn:      { borderColor: c.primary, backgroundColor: c.primaryTint },
-  tileLabel:   { fontSize: 12, fontWeight: '700', color: c.muted },
+  tileLabel:   { fontSize: FontSizes.xs, fontWeight: '700', color: c.muted },
   tileLabelOn: { color: c.primaryOnTint },
-  presetRow:   { flexDirection: 'row', gap: 8 },
-  presetTile:  { flex: 1, paddingVertical: 14, paddingHorizontal: 6 },
-  presetDesc:  { fontSize: 11, fontWeight: '500', color: c.muted, textAlign: 'center' },
+  presetRow:   { flexDirection: 'row', gap: Space.sm },
+  presetTile:  { flex: 1, paddingVertical: Space.lg, paddingHorizontal: Space.sm },
+  presetDesc:  { fontSize: FontSizes.xs, fontWeight: '500', color: c.muted, textAlign: 'center' },
 
   clearDate: { width: 44, height: 44, alignItems: 'center', justifyContent: 'center' },
 
-  timeRow: { flexDirection: 'row', gap: 12 },
+  timeRow: { flexDirection: 'row', gap: Space.md },
 
   repeatHeader:      { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', minHeight: 44 },
-  repeatHeaderRight: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  repeatHeaderRight: { flexDirection: 'row', alignItems: 'center', gap: Space.sm },
   repeatSummary:     { fontSize: FontSizes.sm, fontWeight: '700', color: c.primaryText },
-  intervalRow:       { flexDirection: 'row', alignItems: 'center', gap: 10 },
+  intervalRow:       { flexDirection: 'row', alignItems: 'center', gap: Space.md },
   intervalLabel:     { fontSize: FontSizes.md, fontWeight: '500', color: c.muted },
-  intervalInput:     { minWidth: 64, minHeight: 48, paddingHorizontal: 14, borderRadius: Radius.button, borderWidth: Border, borderColor: c.line,
+  intervalInput:     { minWidth: 64, minHeight: 48, paddingHorizontal: Space.lg, borderRadius: Radius.button, borderWidth: Border, borderColor: c.line,
                        backgroundColor: c.bg2, color: c.text, fontSize: FontSizes.lg, fontWeight: '700', textAlign: 'center' },
 
   // Tappable location field - opens the map picker (looks like a TextField).
   locField:       { flexDirection: 'row', alignItems: 'center', minHeight: 52, borderRadius: Radius.button, borderWidth: Border,
                     borderColor: c.line, backgroundColor: c.bg2 },
-  locMain:        { flex: 1, flexDirection: 'row', alignItems: 'center', gap: 10, minHeight: 52, paddingHorizontal: 14, paddingVertical: 10 },
+  locMain:        { flex: 1, flexDirection: 'row', alignItems: 'center', gap: Space.md, minHeight: 52, paddingHorizontal: Space.lg, paddingVertical: Space.md },
   locText:        { flex: 1, fontSize: FontSizes.md, fontWeight: '500', color: c.text },
   locPlaceholder: { color: c.mutedDim },
   locClear:       { width: 44, height: 44, alignItems: 'center', justifyContent: 'center' },

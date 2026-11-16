@@ -8,7 +8,7 @@ import { Modal, View, Text, ScrollView, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
-import { FontSizes, Radius, Spacing, type ThemeColors } from '@/constants';
+import { Space, FontSizes, Radius, Spacing, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { Button, Card, IconButton } from '@/ui';
 
@@ -76,10 +76,10 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
     paddingHorizontal: Spacing.xl, paddingVertical: Spacing.xl, gap: Spacing.md,
   },
   party: { width: 80, height: 80, borderRadius: Radius.full, backgroundColor: c.primaryTint, alignItems: 'center', justifyContent: 'center', marginBottom: Spacing.sm },
-  title: { fontSize: 26, fontWeight: '800', color: c.text, textAlign: 'center', letterSpacing: -0.5 },
+  title: { fontSize: FontSizes.title, fontWeight: '800', color: c.text, textAlign: 'center', letterSpacing: -0.5 },
   subtitle: { fontSize: FontSizes.md, color: c.muted, textAlign: 'center', marginBottom: Spacing.sm },
   features: { alignSelf: 'stretch', gap: Spacing.md, marginTop: Spacing.sm },
-  feature: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 14, paddingHorizontal: 16 },
+  feature: { flexDirection: 'row', alignItems: 'center', gap: Space.md, paddingVertical: Space.lg, paddingHorizontal: Space.lg },
   featureText: { flex: 1, fontSize: FontSizes.md, fontWeight: '500', color: c.text, lineHeight: 24 },
   footer: { paddingHorizontal: Spacing.xl, paddingTop: Spacing.md },
 });

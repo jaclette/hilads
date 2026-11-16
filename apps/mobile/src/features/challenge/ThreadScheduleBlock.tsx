@@ -5,7 +5,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import { proposeDate, withdrawProposal, approveDate } from '@/api/challenges';
-import { Border, FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
+import { Space, Border, FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import type { ChallengeThreadSummary } from '@/types';
 import { DatePickerModal } from './DatePickerModal';
@@ -334,22 +334,22 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   bandTextWrap: { flex: 1, minWidth: 0 },
   bandTitle:    { fontSize: FontSizes.sm, fontWeight: '800', color: c.text },
   bandTitleScheduled: { fontSize: FontSizes.sm, fontWeight: '800', color: c.localText },
-  bandSubtitle: { fontSize: 12, color: c.muted, marginTop: 2 },
-  bandActions:  { flexDirection: 'row', gap: 6 },
+  bandSubtitle: { fontSize: FontSizes.xs, color: c.muted, marginTop: Space.xxs },
+  bandActions:  { flexDirection: 'row', gap: Space.sm },
 
   proposeCta: {
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 6,
+    gap: Space.sm,
     paddingVertical: Spacing.sm,
     borderRadius: Radius.full,
     backgroundColor: c.primaryTint,
     borderWidth: Border,
     borderColor: c.primary,
   },
-  proposeCtaText: { color: c.primaryText, fontWeight: '800', fontSize: 13, letterSpacing: 0.2 },
+  proposeCtaText: { color: c.primaryText, fontWeight: '800', fontSize: FontSizes.xs, letterSpacing: 0.2 },
 
   actionPrimary: {
     width: 36, height: 36, borderRadius: 18,

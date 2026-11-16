@@ -5,7 +5,7 @@ import { Image } from 'expo-image';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import * as Haptics from 'expo-haptics';
-import { Radius, Spacing, type ThemeColors } from '@/constants';
+import { Space, FontSizes, Radius, Spacing, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { useApp } from '@/context/AppContext';
 import { AppHeader } from '@/features/shell/AppHeader';
@@ -24,7 +24,7 @@ import {
   fetchRanks, type CitiesRanks, type PhotosRanks, type PlayersRanks, type RanksPeriod, type RanksScope, type RanksTab,
 } from '@/api/ranks';
 import type { DailyProof } from '@/types';
-import { MEDAL, Movement, Podium, RaceBar, RankRow, YouBar, type PodiumGhost, type PodiumItem } from '@/features/ranks/parts';
+import { medalColor, Movement, Podium, RaceBar, RankRow, YouBar, type PodiumGhost, type PodiumItem } from '@/features/ranks/parts';
 import { useScope } from '@/context/ScopeContext';
 import { IndexCarousel } from '@/features/index/IndexCarousel';
 import { RivalsBlock } from '@/features/ranks/RivalsBlock';
@@ -244,7 +244,7 @@ function PhotosView({ data, header, failed, refreshing, onRefresh, period, ghost
   const rest = items.filter(i => i.rank > 3);
   const podium: PodiumItem[] = top.map(i => ({
     key: i.proof.id, rank: i.rank, label: i.proof.user.username ? `@${i.proof.user.username}` : i.proof.user.displayName ?? '',
-    lead: <Image source={{ uri: thumbUrl(i.proof.thumbUrl ?? i.proof.photoUrl) ?? undefined }} style={[styles.podiumPhoto, { borderColor: MEDAL[i.rank - 1] }]} contentFit="cover" />,
+    lead: <Image source={{ uri: thumbUrl(i.proof.thumbUrl ?? i.proof.photoUrl) ?? undefined }} style={[styles.podiumPhoto, { borderColor: medalColor(colors, i.rank) }]} contentFit="cover" />,
     value: i.proof.voteCount, format: n => `${n} ❤️`, onPress: () => open(proofs, i.proof),
   }));
 
@@ -281,7 +281,7 @@ function PhotosView({ data, header, failed, refreshing, onRefresh, period, ghost
       {period === 'yesterday' && !!data?.cityBest?.length && (
         <View style={styles.cityBest}>
           <Text style={styles.sectionTitle}>{t('ranks.bestPerCity')}</Text>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 10 }}>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: Space.md }}>
             {data.cityBest.map(({ proof }) => (
               <Pressable key={proof.id} onPress={() => open(data.cityBest!.map(x => x.proof), proof)} style={styles.bestCard} accessibilityRole="button"
                          accessibilityLabel={shortCityName(proof.city?.name ?? '')}>
@@ -308,7 +308,7 @@ function PhotosView({ data, header, failed, refreshing, onRefresh, period, ghost
         contentContainerStyle={[styles.listPad, { paddingBottom: 96 }]}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.primary} colors={[colors.primary]} />}
         ListEmptyComponent={items.length === 0 && (data || failed) ? <Empty text={t('ranks.empty.photos')} failed={failed} /> : null}
-        ListFooterComponent={loading ? <ActivityIndicator style={{ marginVertical: 16 }} color={colors.primary} /> : null}
+        ListFooterComponent={loading ? <ActivityIndicator style={{ marginVertical: Space.lg }} color={colors.primary} /> : null}
         onEndReached={onEnd}
         onEndReachedThreshold={0.6}
         onScrollToIndexFailed={() => {}}
@@ -379,7 +379,7 @@ function PlayersView({ data, header, failed, refreshing, onRefresh, period, list
   const pts = (n: number) => t('ranks.pts', { count: n });
   const podium: PodiumItem[] = entries.slice(0, 3).map(e => ({
     key: e.user.id, rank: e.rank, label: nameOf(e.user), value: e.points, format: pts, onPress: () => onOpen(e.user.id),
-    lead: <View style={[styles.podiumAvatar, { borderColor: MEDAL[e.rank - 1] }]}><Avatar uri={e.user.photoUrl} name={e.user.displayName ?? e.user.username ?? ''} size={56} /></View>,
+    lead: <View style={[styles.podiumAvatar, { borderColor: medalColor(colors, e.rank) }]}><Avatar uri={e.user.photoUrl} name={e.user.displayName ?? e.user.username ?? ''} size={56} /></View>,
   }));
   const me = data?.me ?? null;
   const youText = me
@@ -493,45 +493,45 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   container:    { flex: 1, backgroundColor: c.bg },
   header:       { paddingHorizontal: Spacing.md, backgroundColor: c.bg },
   flex:         { flex: 1 },
-  controls:     { paddingHorizontal: Spacing.md, paddingTop: 6, gap: 10 },
-  periods:      { flexDirection: 'row', gap: 6 },
-  infoRow:      { flexDirection: 'row', alignItems: 'center', gap: 10, minHeight: 34, paddingBottom: 4 },
-  info:         { flex: 1, minWidth: 0, fontSize: 14, lineHeight: 18, fontWeight: '800', color: c.text },
-  chip:         { flex: 1, minWidth: 0, alignItems: 'center', height: 36, paddingHorizontal: 6, borderRadius: Radius.full, borderWidth: 1.5, borderColor: c.line, backgroundColor: c.bg2, justifyContent: 'center' },
+  controls:     { paddingHorizontal: Spacing.md, paddingTop: Space.sm, gap: Space.md },
+  periods:      { flexDirection: 'row', gap: Space.sm },
+  infoRow:      { flexDirection: 'row', alignItems: 'center', gap: Space.md, minHeight: 34, paddingBottom: Space.xs },
+  info:         { flex: 1, minWidth: 0, fontSize: FontSizes.sm, lineHeight: 18, fontWeight: '800', color: c.text },
+  chip:         { flex: 1, minWidth: 0, alignItems: 'center', height: 36, paddingHorizontal: Space.sm, borderRadius: Radius.full, borderWidth: 1.5, borderColor: c.line, backgroundColor: c.bg2, justifyContent: 'center' },
   chipOn:       { backgroundColor: themeColor('sip').fill, borderColor: themeColor('sip').fill },
-  chipText:     { fontSize: 14, lineHeight: 18, fontWeight: '800', color: c.text },
+  chipText:     { fontSize: FontSizes.sm, lineHeight: 18, fontWeight: '800', color: c.text },
   chipTextOn:   { color: themeColor('sip').onFill },
   listPad:      { paddingBottom: 32 },
-  indexFoot:    { marginTop: 24, paddingHorizontal: Spacing.md - 4, gap: 24 },
+  indexFoot:    { marginTop: Space.xl, paddingHorizontal: Spacing.md - 4, gap: Space.xl },
   rowPad:       { paddingHorizontal: Spacing.md - 4 },
   podiumPhoto:  { width: 72, height: 72, borderRadius: 16, borderWidth: 3, backgroundColor: c.bg3 },
   podiumAvatar: { borderRadius: 32, borderWidth: 3, padding: 1 },
-  sub:          { fontSize: 13, lineHeight: 17, color: c.muted, flexShrink: 1 },
-  badge:        { fontSize: 11, fontWeight: '800', paddingHorizontal: 6, paddingVertical: 1, borderRadius: 8, overflow: 'hidden' },
+  sub:          { fontSize: FontSizes.xs, lineHeight: 17, color: c.muted, flexShrink: 1 },
+  badge:        { fontSize: FontSizes.tiny, fontWeight: '800', paddingHorizontal: Space.sm, paddingVertical: 1, borderRadius: 8, overflow: 'hidden' },
   badgeLocal:   { backgroundColor: tint('#1FB5A8', 0.2), color: c.localText },
   badgeTraveler: { backgroundColor: tint('#3D9BF0', 0.2), color: c.text },
-  sectionTitle: { fontSize: 16, fontWeight: '800', color: c.text, marginBottom: 8 },
-  cityBest:     { paddingHorizontal: Spacing.md, paddingTop: 12 },
+  sectionTitle: { fontSize: FontSizes.body, fontWeight: '800', color: c.text, marginBottom: Space.sm },
+  cityBest:     { paddingHorizontal: Spacing.md, paddingTop: Space.md },
   bestCard:     { width: 112, borderRadius: Radius.card, overflow: 'hidden', backgroundColor: c.bg2, borderWidth: 1.5, borderColor: c.line },
   bestPhoto:    { width: 112, height: 112, backgroundColor: c.bg3 },
-  bestFoot:     { flexDirection: 'row', alignItems: 'center', gap: 6, padding: 6 },
-  bestCity:     { flex: 1, fontSize: 12, fontWeight: '800', color: c.text },
-  pRow:         { flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 8, paddingHorizontal: 12, borderRadius: Radius.card },
+  bestFoot:     { flexDirection: 'row', alignItems: 'center', gap: Space.sm, padding: Space.sm },
+  bestCity:     { flex: 1, fontSize: FontSizes.xs, fontWeight: '800', color: c.text },
+  pRow:         { flexDirection: 'row', alignItems: 'center', gap: Space.md, paddingVertical: Space.sm, paddingHorizontal: Space.md, borderRadius: Radius.card },
   pRowMine:     { backgroundColor: c.primaryTint },
   pRankBox:     { width: 40, alignItems: 'center', gap: 1 },
-  pRank:        { width: 40, fontSize: 24, lineHeight: 30, fontWeight: '900', color: c.text, textAlign: 'center' },
+  pRank:        { width: 40, fontSize: FontSizes.xl, lineHeight: 30, fontWeight: '800', color: c.text, textAlign: 'center' },
   pThumb:       { width: 52, height: 52, borderRadius: 12, backgroundColor: c.bg3 },
-  pBody:        { flex: 1, minWidth: 0, gap: 3 },
-  pTitle:       { fontSize: 14, lineHeight: 18, fontWeight: '800', color: c.text },
-  pMeta:        { flexDirection: 'row', alignItems: 'center', gap: 5, minWidth: 0 },
-  pChip:        { flexDirection: 'row', alignItems: 'center', gap: 3, paddingHorizontal: 6, height: 18, borderRadius: 9, maxWidth: '100%' },
-  pChipText:    { fontSize: 11, lineHeight: 14, fontWeight: '800', color: c.text, flexShrink: 1 },
-  pill:         { paddingHorizontal: 8, height: 26, borderRadius: 13, backgroundColor: tint('#FFC93C', 0.25), alignItems: 'center', justifyContent: 'center' },
-  pillText:     { fontSize: 12, fontWeight: '800', color: c.text },
-  funLine:      { flexDirection: 'row', alignItems: 'center', gap: 8, marginHorizontal: Spacing.md, marginTop: 10, padding: 12,
+  pBody:        { flex: 1, minWidth: 0, gap: Space.xs },
+  pTitle:       { fontSize: FontSizes.sm, lineHeight: 18, fontWeight: '800', color: c.text },
+  pMeta:        { flexDirection: 'row', alignItems: 'center', gap: Space.xs, minWidth: 0 },
+  pChip:        { flexDirection: 'row', alignItems: 'center', gap: Space.xs, paddingHorizontal: Space.sm, height: 18, borderRadius: 9, maxWidth: '100%' },
+  pChipText:    { fontSize: FontSizes.xs, lineHeight: 16, fontWeight: '800', color: c.text, flexShrink: 1 },
+  pill:         { paddingHorizontal: Space.sm, height: 26, borderRadius: 13, backgroundColor: tint(c.gold, 0.25), alignItems: 'center', justifyContent: 'center' },
+  pillText:     { fontSize: FontSizes.xs, fontWeight: '800', color: c.text },
+  funLine:      { flexDirection: 'row', alignItems: 'center', gap: Space.sm, marginHorizontal: Spacing.md, marginTop: Space.md, padding: Space.md,
                   borderRadius: Radius.card, backgroundColor: tint(themeColor('sip').fill, 0.2) },
-  funText:      { flex: 1, fontSize: 15, lineHeight: 20, fontWeight: '800', color: c.text },
-  empty:        { alignItems: 'center', paddingVertical: 60, paddingHorizontal: 40, gap: 12 },
+  funText:      { flex: 1, fontSize: FontSizes.body, lineHeight: 20, fontWeight: '800', color: c.text },
+  empty:        { alignItems: 'center', paddingVertical: 60, paddingHorizontal: 40, gap: Space.md },
   emptyEmoji:   { fontSize: 44 },
-  emptyText:    { fontSize: 16, lineHeight: 22, fontWeight: '700', color: c.text, textAlign: 'center' },
+  emptyText:    { fontSize: FontSizes.body, lineHeight: 22, fontWeight: '700', color: c.text, textAlign: 'center' },
 });

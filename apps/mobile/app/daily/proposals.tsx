@@ -3,7 +3,7 @@ import { ActivityIndicator, Alert, FlatList, Text, TouchableOpacity, View, Style
 import { useFocusEffect, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
-import { FontSizes, Spacing, type ThemeColors } from '@/constants';
+import { Space, FontSizes, Spacing, type ThemeColors } from '@/constants';
 import { Button, Card, Chip, EmptyState, Screen, ScreenHeader } from '@/ui';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { useApp } from '@/context/AppContext';
@@ -141,18 +141,18 @@ function ProposalRow({ item, onWithdraw }: { item: DailyProposal; onWithdraw: ()
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
   center:      { flex: 1, justifyContent: 'center', padding: Spacing.md },
-  list:        { padding: Spacing.md, paddingTop: Spacing.sm, gap: 10, paddingBottom: 40 },
-  cta:         { marginBottom: 4 },
-  card:        { padding: 14, gap: 8 },
-  cardHead:    { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 8 },
-  iconRow:     { flexDirection: 'row', alignItems: 'center', gap: 6, flexShrink: 1 },
-  type:        { fontSize: 12, fontWeight: '800', color: c.muted, textTransform: 'uppercase', letterSpacing: 0.4 },
-  status:      { fontSize: 12, fontWeight: '800', borderRadius: 12, paddingHorizontal: 10, paddingVertical: 4, overflow: 'hidden' },
+  list:        { padding: Spacing.md, paddingTop: Spacing.sm, gap: Space.md, paddingBottom: 40 },
+  cta:         { marginBottom: Space.xs },
+  card:        { padding: Space.lg, gap: Space.sm },
+  cardHead:    { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: Space.sm },
+  iconRow:     { flexDirection: 'row', alignItems: 'center', gap: Space.sm, flexShrink: 1 },
+  type:        { fontSize: FontSizes.xs, fontWeight: '800', color: c.muted, textTransform: 'uppercase', letterSpacing: 0.4 },
+  status:      { fontSize: FontSizes.xs, fontWeight: '800', borderRadius: 12, paddingHorizontal: Space.md, paddingVertical: Space.xs, overflow: 'hidden' },
   statusOk:    { color: c.localText, backgroundColor: c.localBg },
   statusWait:  { color: c.primaryOnTint, backgroundColor: c.primaryTint },
   statusOff:   { color: c.muted, backgroundColor: c.bg3 },
   text:        { fontSize: FontSizes.md, fontWeight: '800', color: c.text },
-  meta:        { flexShrink: 1, fontSize: 12, fontWeight: '500', color: c.muted },
+  meta:        { flexShrink: 1, fontSize: FontSizes.xs, fontWeight: '500', color: c.muted },
   twist:       { flex: 1, fontSize: FontSizes.xs, fontWeight: '600', color: c.primaryText },
   reason:      { fontSize: FontSizes.xs, color: c.red, fontWeight: '600' },
   withdraw:    { alignSelf: 'flex-start', minHeight: 44, justifyContent: 'center' },

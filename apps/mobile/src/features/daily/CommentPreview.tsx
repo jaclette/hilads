@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import Animated, { useAnimatedStyle, useReducedMotion, useSharedValue, withSequence, withTiming } from 'react-native-reanimated';
-import { FontSizes, Radius, type ThemeColors } from '@/constants';
+import { Space, FontSizes, Radius, type ThemeColors } from '@/constants';
 import { useApp } from '@/context/AppContext';
 import { useThemedStyles } from '@/context/ThemeContext';
 import { isBlocked } from '@/lib/blockFilter';
@@ -57,11 +57,11 @@ export function CommentPreview({ target }: { target: CommentsTarget }) {
 }
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  wrap:    { gap: 6, paddingVertical: 6, paddingHorizontal: 4, borderRadius: Radius.md, overflow: 'hidden' },
+  wrap:    { gap: Space.sm, paddingVertical: Space.sm, paddingHorizontal: Space.xs, borderRadius: Radius.md, overflow: 'hidden' },
   glow:    { backgroundColor: c.highlightBg },
-  newPill: { alignSelf: 'flex-start', backgroundColor: c.primaryTint, borderRadius: Radius.full, paddingHorizontal: 8, paddingVertical: 2 },
+  newPill: { alignSelf: 'flex-start', backgroundColor: c.primaryTint, borderRadius: Radius.full, paddingHorizontal: Space.sm, paddingVertical: Space.xxs },
   newText: { fontSize: FontSizes.tiny, fontWeight: '700', color: c.primaryOnTint },
-  row:     { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  row:     { flexDirection: 'row', alignItems: 'center', gap: Space.sm },
   line:    { flex: 1, fontSize: FontSizes.sm, fontWeight: '400', color: c.text },
   handle:  { fontWeight: '700' },
   seeAll:  { fontSize: FontSizes.xs, fontWeight: '700', color: c.muted },

@@ -20,7 +20,7 @@ export { Segmented } from './Segmented';
 export { ChipTabs } from './ChipTabs';
 export { CoverPhoto, Photo } from './Photo';
 export { CoverScrim, COVER_SCRIM_RAMP } from './CoverScrim';
-export { Sheet, SheetFlatList, SheetScrollView, useSheetScroll } from './Sheet';
+export { Sheet, SheetFlatList, SheetScrollView, SheetTitle, useSheetScroll } from './Sheet';
 export { TextField } from './TextField';
 export { ThemeIcon, THEME_ICON } from './ThemeIcon';
 export { DualPhoto, type PhotoSource } from './DualPhoto';

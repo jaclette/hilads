@@ -1,6 +1,6 @@
 import { Text, View, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { FontSizes, type ThemeColors } from '@/constants';
+import { Space, FontSizes, type ThemeColors } from '@/constants';
 import { useThemedStyles } from '@/context/ThemeContext';
 import { TextField } from '@/ui';
 import type { DailyCompare } from '@/types';
@@ -66,9 +66,9 @@ export function AnswerInput({ compare, draft, onChange, autoFocus = false, place
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
   flex:        { flex: 1 },
-  numberRow:   { flexDirection: 'row', alignItems: 'center', gap: 12 },
+  numberRow:   { flexDirection: 'row', alignItems: 'center', gap: Space.md },
   unit:        { fontSize: FontSizes.md, fontWeight: '700', color: c.text, maxWidth: '45%' },
-  textWrap:    { gap: 4 },
-  counter:     { alignSelf: 'flex-end', fontSize: 12, color: c.muted },
+  textWrap:    { gap: Space.xs },
+  counter:     { alignSelf: 'flex-end', fontSize: FontSizes.xs, color: c.muted },
   counterNear: { color: c.primaryText, fontWeight: '700' },
 });

@@ -46,8 +46,8 @@ import { DailyPinBar } from '@/features/daily/DailyPinBar';
 import { useDailyToday } from '@/hooks/useDaily';
 import { isDailyCard } from '@/lib/dailyEvents';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
-import { Border, FontSizes, Spacing, Radius, buildCityUrl, type ThemeColors } from '@/constants';
-import { Avatar, Banner, Button, EmptyState, IconButton, ListRow, Screen, ScreenHeader, SectionTitle, Segmented, Sheet, SheetFlatList } from '@/ui';
+import { Space, Border, FontSizes, Spacing, Radius, buildCityUrl, type ThemeColors } from '@/constants';
+import { Avatar, Banner, Button, EmptyState, IconButton, ListRow, Screen, ScreenHeader, Segmented, Sheet, SheetFlatList, SheetTitle } from '@/ui';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { isSameDay, formatDateLabel, toMs } from '@/lib/messageTime';
 import { shareLink } from '@/lib/shareLink';
@@ -1088,7 +1088,7 @@ export default function ChatTab() {
 
       {/* World arrivals sheet - global "who just landed", each with city + flag. */}
       <Sheet visible={showWorldArrivals} onClose={() => setShowWorldArrivals(false)} closeLabel={t('close', { ns: 'common' })} style={styles.waSheet}>
-        <SectionTitle title={t('world.arrivalsTitle')} />
+        <SheetTitle>{t('world.arrivalsTitle')}</SheetTitle>
         {worldArrivals.length === 0 ? (
           <EmptyState body={t('world.arrivalsEmpty')} />
         ) : (
@@ -1163,28 +1163,28 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   topFade:        { position: 'absolute', top: 0, left: 0, right: 0 },
   topFadeStrip:   { height: 3, backgroundColor: c.bg },
   quickRow:       { flexGrow: 0, flexShrink: 0 },
-  quick:          { gap: 8, paddingHorizontal: 12, paddingBottom: 8, alignItems: 'center' },
-  quickChip:      { minHeight: 36, justifyContent: 'center', paddingHorizontal: 14, borderRadius: 18, borderWidth: 1.5, borderColor: c.line, backgroundColor: c.bg2 },
-  quickText:      { fontSize: 14, fontWeight: '700', color: c.text },
-  header:         { gap: 10, paddingBottom: 8, backgroundColor: c.bg },
-  headerButtons:  { flexDirection: 'row', gap: 8 },
+  quick:          { gap: Space.sm, paddingHorizontal: Space.md, paddingBottom: Space.sm, alignItems: 'center' },
+  quickChip:      { minHeight: 36, justifyContent: 'center', paddingHorizontal: Space.lg, borderRadius: 18, borderWidth: 1.5, borderColor: c.line, backgroundColor: c.bg2 },
+  quickText:      { fontSize: FontSizes.sm, fontWeight: '700', color: c.text },
+  header:         { gap: Space.md, paddingBottom: Space.sm, backgroundColor: c.bg },
+  headerButtons:  { flexDirection: 'row', gap: Space.sm },
   inset:          { paddingHorizontal: Spacing.md },
-  peopleChip:     { alignSelf: 'flex-start', minHeight: 44, justifyContent: 'center', paddingHorizontal: 14, borderRadius: Radius.full,
+  peopleChip:     { alignSelf: 'flex-start', minHeight: 44, justifyContent: 'center', paddingHorizontal: Space.lg, borderRadius: Radius.full,
                     borderWidth: Border, borderColor: c.line, backgroundColor: c.bg2 },
   peopleChipText: { fontSize: FontSizes.sm, fontWeight: '600', color: c.text },
-  errorBanner:    { flexDirection: 'row', alignItems: 'center', gap: 8, minHeight: 44, marginHorizontal: Spacing.md, marginBottom: 6,
-                    paddingHorizontal: 12, borderRadius: Radius.button, borderWidth: Border, borderColor: c.red, backgroundColor: c.bg2 },
+  errorBanner:    { flexDirection: 'row', alignItems: 'center', gap: Space.sm, minHeight: 44, marginHorizontal: Spacing.md, marginBottom: Space.sm,
+                    paddingHorizontal: Space.md, borderRadius: Radius.button, borderWidth: Border, borderColor: c.red, backgroundColor: c.bg2 },
   errorBannerText:{ flex: 1, fontSize: FontSizes.xs, fontWeight: '600', color: c.red },
-  quietCard:      { minHeight: 44, justifyContent: 'center', marginHorizontal: Spacing.md, marginTop: 8, paddingVertical: 11, paddingHorizontal: 14,
+  quietCard:      { minHeight: 44, justifyContent: 'center', marginHorizontal: Spacing.md, marginTop: Space.sm, paddingVertical: Space.md, paddingHorizontal: Space.lg,
                     borderRadius: Radius.card, borderWidth: Border, borderColor: c.ticketLine, backgroundColor: c.bg2 },
   quietCardText:  { fontSize: FontSizes.sm, fontWeight: '700', color: c.text, textAlign: 'center' },
   center:         { flex: 1, justifyContent: 'center', alignItems: 'center', padding: Spacing.lg },
   listContent:    { paddingTop: 28, paddingBottom: 18 },
-  loadingOlderWrap: { paddingVertical: 14, alignItems: 'center' },
-  beginningText:  { fontSize: 12, fontWeight: '600', color: c.muted },
+  loadingOlderWrap: { paddingVertical: Space.lg, alignItems: 'center' },
+  beginningText:  { fontSize: FontSizes.xs, fontWeight: '600', color: c.muted },
   emptyWrap:      { flex: 1, justifyContent: 'center', padding: Spacing.lg },
-  notice:         { paddingHorizontal: Spacing.md, paddingBottom: 6 },
-  typingBar:      { paddingHorizontal: Spacing.md, paddingVertical: 6 },
+  notice:         { paddingHorizontal: Spacing.md, paddingBottom: Space.sm },
+  typingBar:      { paddingHorizontal: Spacing.md, paddingVertical: Space.sm },
   typingText:     { fontSize: FontSizes.xs, fontWeight: '400', color: c.muted, fontStyle: 'italic' },
   waSheet:        { maxHeight: '75%' },
   waRow:          { paddingHorizontal: 0 },

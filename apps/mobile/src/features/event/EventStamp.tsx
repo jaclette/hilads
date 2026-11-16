@@ -4,7 +4,7 @@ import Svg, { Circle, Path } from 'react-native-svg';
 import * as Haptics from 'expo-haptics';
 import { useTranslation } from 'react-i18next';
 import Animated, { Easing, useAnimatedStyle, useReducedMotion, useSharedValue, withDelay, withSpring, withTiming } from 'react-native-reanimated';
-import { FontSizes, Radius, type ThemeColors } from '@/constants';
+import { Space, FontSizes, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles } from '@/context/ThemeContext';
 import { BatBurst, PumpkinIcon } from './SeasonalArt';
 
@@ -87,10 +87,10 @@ export function EventStampThunk({ name, onDone }: { name: string; onDone: () => 
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
   scrim:    { backgroundColor: c.scrim, zIndex: 20 },
-  center:   { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 10, padding: 24 },
+  center:   { flex: 1, alignItems: 'center', justifyContent: 'center', gap: Space.md, padding: Space.xl },
   burst:    { position: 'absolute', alignItems: 'center', justifyContent: 'center' },
-  title:    { fontSize: FontSizes.xl, fontWeight: '800', color: c.white, textAlign: 'center', marginTop: 12 },
+  title:    { fontSize: FontSizes.xl, fontWeight: '800', color: c.white, textAlign: 'center', marginTop: Space.md },
   name:     { fontSize: FontSizes.md, fontWeight: '700', color: c.white, textAlign: 'center' },
-  pill:     { backgroundColor: PURPLE, borderRadius: Radius.full, paddingHorizontal: 12, paddingVertical: 4 },
+  pill:     { backgroundColor: PURPLE, borderRadius: Radius.full, paddingHorizontal: Space.md, paddingVertical: Space.xs },
   pillText: { fontSize: FontSizes.xs, fontWeight: '800', color: c.white, letterSpacing: 0.5 },
 });

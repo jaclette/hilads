@@ -5,7 +5,7 @@ import * as Haptics from 'expo-haptics';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useTranslation } from 'react-i18next';
 import Reanimated, { useReducedMotion } from 'react-native-reanimated';
-import type { ThemeColors } from '@/constants';
+import { Space, FontSizes, type ThemeColors } from '@/constants';
 import { useTheme, useThemedStyles } from '@/context/ThemeContext';
 import { mediumUrl, proxyFor, thumbUrl } from '@/lib/imageThumb';
 
@@ -314,8 +314,8 @@ export function DualPhoto({
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
   frame:      { overflow: 'hidden' },
   layer:      { position: 'absolute', overflow: 'hidden', backgroundColor: c.bg3 },
-  tip:        { position: 'absolute', zIndex: 3, maxWidth: 200, backgroundColor: c.photoButton, borderRadius: 12, paddingHorizontal: 10, paddingVertical: 6 },
-  tipText:    { color: c.white, fontSize: 13, fontWeight: '700' },
+  tip:        { position: 'absolute', zIndex: 3, maxWidth: 200, backgroundColor: c.photoButton, borderRadius: 12, paddingHorizontal: Space.md, paddingVertical: Space.sm },
+  tipText:    { color: c.white, fontSize: FontSizes.xs, fontWeight: '700' },
   // The blurred copy, slightly darkened (the photo viewers' fixed token, lighter here: about a third).
   backdropShade: { backgroundColor: c.photoBlurShade, opacity: 0.6 },
   insetFrame: { borderWidth: 2, shadowColor: c.photoScrim, shadowOpacity: 0.35, shadowRadius: 6, shadowOffset: { width: 0, height: 2 }, elevation: 4 },

@@ -6,7 +6,7 @@ import { usePhotoZoom } from '@/ui/usePhotoZoom';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'expo-router';
-import { FontSizes, Spacing, type ThemeColors } from '@/constants';
+import { Space, FontSizes, Spacing, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { CityName, DualPhoto, Photo } from '@/ui';
 import { selfieOf } from '@/features/daily/selfie';
@@ -172,16 +172,16 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   // The photo and its information block stay together, centred when they fit.
   scroll:   { flexGrow: 1, justifyContent: 'center', paddingTop: 56 },
   close:    { position: 'absolute', right: Spacing.md, zIndex: 2 },
-  context:  { gap: 2 },
+  context:  { gap: Space.xxs },
   contextHead: { color: c.white, fontSize: FontSizes.sm, fontWeight: '800' },
   contextText: { color: c.onCaramelMuted, fontSize: FontSizes.xs, fontWeight: '500' },
-  meta:     { padding: 16, gap: 8 },
-  nameRow:  { flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', gap: 6 },
+  meta:     { padding: Space.lg, gap: Space.sm },
+  nameRow:  { flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', gap: Space.sm },
   name:     { color: c.white, fontSize: FontSizes.md, fontWeight: '800' },
-  rankRow:  { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  rankRow:  { flexDirection: 'row', alignItems: 'center', gap: Space.sm },
   rankText: { color: c.white, fontSize: FontSizes.xs, fontWeight: '700' },
   caption:  { color: c.white, fontSize: FontSizes.sm, fontWeight: '400' },
-  extraRow: { flexDirection: 'row', alignItems: 'center', gap: 4 },
+  extraRow: { flexDirection: 'row', alignItems: 'center', gap: Space.xs },
   extra:    { color: c.onCaramelMuted, fontSize: FontSizes.xs, fontWeight: '500' },
-  original: { color: c.onCaramelMuted, fontSize: 11, fontWeight: '400' },
+  original: { color: c.onCaramelMuted, fontSize: FontSizes.xs, fontWeight: '400' },
 });

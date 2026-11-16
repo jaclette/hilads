@@ -7,7 +7,7 @@ import { Ionicons } from '@expo/vector-icons';
 import Svg, { Defs, LinearGradient, Path, Rect, Stop } from 'react-native-svg';
 import { captureRef } from 'react-native-view-shot';
 import { useTranslation } from 'react-i18next';
-import { Radius, type ThemeColors } from '@/constants';
+import { FontSizes, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { track } from '@/services/analytics';
 import { fetchDailyTodayProofs } from '@/api/daily';
@@ -402,17 +402,17 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   waiting:   { opacity: 0.4 },
   icon:      { width: SIZE, height: SIZE, borderRadius: Radius.full, overflow: 'hidden', alignItems: 'center', justifyContent: 'center' },
   plain:     { backgroundColor: c.bg3, borderWidth: 1, borderColor: c.line },
-  label:     { fontSize: 12, lineHeight: 15, fontWeight: '600', color: c.text, textAlign: 'center' },
+  label:     { fontSize: FontSizes.xs, lineHeight: 16, fontWeight: '600', color: c.text, textAlign: 'center' },
   spin:      { ...StyleSheet.absoluteFillObject, borderRadius: Radius.full, alignItems: 'center', justifyContent: 'center', backgroundColor: c.scrim },
   tabs:      { flexDirection: 'row', justifyContent: 'center', gap: 8, marginTop: 12 },
   tab:       { paddingHorizontal: 14, minHeight: 36, justifyContent: 'center', borderRadius: Radius.full, borderWidth: 1, borderColor: c.line, backgroundColor: c.bg2 },
   tabOn:     { backgroundColor: c.text, borderColor: c.text },
-  tabText:   { fontSize: 13, fontWeight: '700', color: c.text },
+  tabText:   { fontSize: FontSizes.xs, fontWeight: '700', color: c.text },
   tabTextOn: { color: c.bg },
   formats:   { flexDirection: 'row', justifyContent: 'center', gap: 6, marginTop: 8 },
   format:    { flexDirection: 'row', alignItems: 'center', gap: 5, paddingHorizontal: 12, minHeight: 32, borderRadius: Radius.full },
   formatOn:  { backgroundColor: c.bg3 },
-  formatText: { fontSize: 12, fontWeight: '700', color: c.muted },
+  formatText: { fontSize: FontSizes.xs, fontWeight: '700', color: c.muted },
   formatTextOn: { color: c.text },
   row:       { flexDirection: 'row', justifyContent: 'space-between' },
   rowTarget: { flex: 1, alignItems: 'center', gap: 6, paddingHorizontal: 1 },
@@ -420,9 +420,9 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   dots:      { flexDirection: 'row', gap: 8 },
   dot:       { width: 7, height: 7, borderRadius: 4, backgroundColor: c.line },
   dotOn:     { width: 20, backgroundColor: c.text },
-  dotsLabel: { fontSize: 12, fontWeight: '700', color: c.muted },
+  dotsLabel: { fontSize: FontSizes.tiny, fontWeight: '700', color: c.muted },
   full:      { flex: 1, backgroundColor: 'rgba(0,0,0,0.88)', alignItems: 'center', justifyContent: 'center' },
   toast:     { alignSelf: 'center', backgroundColor: c.text, borderRadius: Radius.full, paddingHorizontal: 16, paddingVertical: 10, maxWidth: '100%' },
-  zalo:      { fontSize: 15, fontWeight: '900', color: '#FFFFFF', letterSpacing: -0.3 },
-  toastText: { fontSize: 13, fontWeight: '700', color: c.bg, textAlign: 'center' },
+  zalo:      { fontSize: FontSizes.body, fontWeight: '800', color: '#FFFFFF', letterSpacing: -0.3 },
+  toastText: { fontSize: FontSizes.xs, fontWeight: '700', color: c.bg, textAlign: 'center' },
 });

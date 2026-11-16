@@ -23,7 +23,7 @@ import * as Clipboard from 'expo-clipboard';
 import { AttendeeAvatars } from '@/components/AttendeeAvatars';
 import { isSameDay, formatDateLabel } from '@/lib/messageTime';
 import { track } from '@/services/analytics';
-import { FontSizes, Spacing, buildEventUrl, type ThemeColors } from '@/constants';
+import { Space, FontSizes, Spacing, buildEventUrl, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { shareLink } from '@/lib/shareLink';
 import { ShareToCityPill } from '@/components/ShareToCityPill';
@@ -418,7 +418,7 @@ export default function EventDetailScreen() {
           {/* Secondary lines - collapse on scroll. maxHeight + opacity drive the
               transition; native driver is off because we're animating layout. */}
           <Animated.View
-            style={{ maxHeight: secondaryHeight, opacity: secondaryOpacity, overflow: 'hidden', gap: 2 }}
+            style={{ maxHeight: secondaryHeight, opacity: secondaryOpacity, overflow: 'hidden', gap: Space.xxs }}
           >
             {/* Time + here + going on one line */}
             <View style={styles.infoRow}>
@@ -686,29 +686,29 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   // blockPaddingBottom interpolation in the screen component).
   eventBlock: {
     paddingHorizontal: Spacing.md,
-    paddingTop:        4,
+    paddingTop:        Space.xs,
     borderBottomWidth: 1,
     borderBottomColor: c.line,
-    gap:               8,
+    gap:               Space.sm,
   },
   eventBlockLoading: { paddingVertical: Spacing.lg, alignItems: 'center' },
-  titleRow:   { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 12 },
+  titleRow:   { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: Space.md },
   eventTitle: { flex: 1, minWidth: 0, fontSize: FontSizes.lg, fontWeight: '800', color: c.text, letterSpacing: -0.3, lineHeight: 26 },
   // Wide enough for "Joined" so the row doesn't shift when the label flips.
   joinBtn:    { minWidth: 92 },
   shareToCity: { alignSelf: 'flex-start' },
 
-  infoRow:       { flexDirection: 'row', alignItems: 'center', gap: 8, minHeight: 24 },
-  eventMeta:     { flex: 1, fontSize: 13, fontWeight: '500', color: c.muted },
+  infoRow:       { flexDirection: 'row', alignItems: 'center', gap: Space.sm, minHeight: 24 },
+  eventMeta:     { flex: 1, fontSize: FontSizes.xs, fontWeight: '500', color: c.muted },
   goingLink:     { fontWeight: '700', color: c.text, textDecorationLine: 'underline' },
-  eventLocation: { flex: 1, fontSize: 13, fontWeight: '700', color: c.primaryText },
-  eventHost:     { flex: 1, fontSize: 13, fontWeight: '500', color: c.muted },
+  eventLocation: { flex: 1, fontSize: FontSizes.xs, fontWeight: '700', color: c.primaryText },
+  eventHost:     { flex: 1, fontSize: FontSizes.xs, fontWeight: '500', color: c.muted },
 
   errorBanner: { marginHorizontal: Spacing.md, marginTop: Spacing.sm },
 
   listContent:      { paddingVertical: Spacing.sm },
   msgsLoading:      { paddingVertical: Spacing.md, alignItems: 'center' },
-  loadingOlderWrap: { paddingVertical: 14, alignItems: 'center' },
+  loadingOlderWrap: { paddingVertical: Space.lg, alignItems: 'center' },
   beginningText:    { fontSize: FontSizes.xs, fontWeight: '500', color: c.muted },
   emptyWrap:        { paddingHorizontal: Spacing.lg },
 });
@@ -719,10 +719,10 @@ const makeStripStyles = (c: ThemeColors) => StyleSheet.create({
   row: {
     flexDirection:     'row',
     alignItems:        'center',
-    gap:               12,
+    gap:               Space.md,
     minHeight:         56,
     paddingHorizontal: Spacing.md,
-    paddingVertical:   10,
+    paddingVertical:   Space.md,
     borderBottomWidth: 1,
     borderBottomColor: c.line,
   },

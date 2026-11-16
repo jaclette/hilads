@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { ScrollView, Text, View, StyleSheet, type NativeScrollEvent, type NativeSyntheticEvent } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { type ThemeColors } from '@/constants';
+import { Radius, FontSizes, type ThemeColors } from '@/constants';
 import { useThemedStyles } from '@/context/ThemeContext';
 import { formatTime, HALF_HOURS } from './format';
 
@@ -82,9 +82,9 @@ export function TimeWheel({ value, onChange }: { value: number; onChange: (minut
 }
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  wrap:    { height: ROW * VISIBLE, borderRadius: 18, backgroundColor: c.bg2, borderWidth: 1.5, borderColor: c.line, overflow: 'hidden' },
+  wrap:    { height: ROW * VISIBLE, borderRadius: Radius.card, backgroundColor: c.bg2, borderWidth: 1.5, borderColor: c.line, overflow: 'hidden' },
   band:    { position: 'absolute', left: 10, right: 10, top: ROW * Math.floor(VISIBLE / 2), height: ROW, borderRadius: 12, backgroundColor: c.primaryTint },
   row:     { height: ROW, alignItems: 'center', justifyContent: 'center' },
-  time:    { fontSize: 20, fontWeight: '600', color: c.muted, fontVariant: ['tabular-nums'] },
-  timeOn:  { fontSize: 24, fontWeight: '800', color: c.primaryOnTint },
+  time:    { fontSize: FontSizes.lg, fontWeight: '600', color: c.muted, fontVariant: ['tabular-nums'] },
+  timeOn:  { fontSize: FontSizes.xl, fontWeight: '800', color: c.primaryOnTint },
 });

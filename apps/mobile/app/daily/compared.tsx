@@ -3,12 +3,12 @@ import { ActivityIndicator, ScrollView, Text, TouchableOpacity, View, StyleSheet
 import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import { Border, FontSizes, Radius, Spacing, type ThemeColors } from '@/constants';
+import { Space, Border, FontSizes, Radius, Spacing, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { fetchCompared } from '@/api/daily';
 import { track } from '@/services/analytics';
 import { shortCityName } from '@/i18n/cityName';
-import { Button, CityFlag, EmptyState, Screen, ScreenHeader, SectionTitle, Sheet, SheetScrollView, TextField } from '@/ui';
+import { Button, CityFlag, EmptyState, Screen, ScreenHeader, SectionTitle, Sheet, SheetScrollView, TextField, SheetTitle } from '@/ui';
 import { ShareSheet } from '@/features/share/ShareSheet';
 import type { ShareContent } from '@/features/share/content';
 import { ComparisonCard, comparisonShare, comparisonTitle, useComparisonValue } from '@/features/index/ComparisonCard';
@@ -176,7 +176,7 @@ export default function ComparedScreen() {
       )}
 
       <Sheet visible={picking !== null} onClose={() => setPicking(null)} closeLabel={t('close', { ns: 'common' })} style={styles.sheet}>
-        <Text style={styles.sheetTitle}>{t('index.pickCity')}</Text>
+        <SheetTitle style={styles.sheetTitle}>{t('index.pickCity')}</SheetTitle>
         <SheetScrollView style={styles.sheetList}>
           {cities.filter(c => c.id !== (picking === 0 ? b?.id : a?.id)).map(c => (
             <TouchableOpacity key={c.id} style={styles.cityRow} onPress={() => pickCity(c)} accessibilityRole="button">
@@ -193,29 +193,29 @@ export default function ComparedScreen() {
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
   loading:      { marginTop: 40 },
-  body:         { paddingHorizontal: Spacing.md, paddingBottom: 40, gap: 12 },
-  sub:          { fontSize: 15, lineHeight: 20, fontWeight: '500', color: c.muted },
-  muted:        { fontSize: FontSizes.sm, color: c.muted, textAlign: 'center', paddingVertical: 16 },
-  section:      { gap: 10, marginTop: 4 },
+  body:         { paddingHorizontal: Spacing.md, paddingBottom: 40, gap: Space.md },
+  sub:          { fontSize: FontSizes.body, lineHeight: 20, fontWeight: '500', color: c.muted },
+  muted:        { fontSize: FontSizes.sm, color: c.muted, textAlign: 'center', paddingVertical: Space.lg },
+  section:      { gap: Space.md, marginTop: Space.xs },
   focused:      { borderColor: c.primary },
-  pairBox:      { gap: 10, padding: 14, borderRadius: Radius.card, borderWidth: Border, borderColor: c.line, backgroundColor: c.bg2 },
+  pairBox:      { gap: Space.md, padding: 14, borderRadius: Radius.card, borderWidth: Border, borderColor: c.line, backgroundColor: c.bg2 },
   pairHead:     { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   pairTitle:    { fontSize: FontSizes.md, fontWeight: '800', color: c.text },
-  pairPick:     { flexDirection: 'row', gap: 8 },
-  pickBtn:      { flex: 1, flexDirection: 'row', alignItems: 'center', gap: 6, minHeight: 44, paddingHorizontal: 12, borderRadius: 14, backgroundColor: c.stepBg },
+  pairPick:     { flexDirection: 'row', gap: Space.sm },
+  pickBtn:      { flex: 1, flexDirection: 'row', alignItems: 'center', gap: Space.sm, minHeight: 44, paddingHorizontal: Space.md, borderRadius: 14, backgroundColor: c.stepBg },
   pickText:     { flexShrink: 1, fontSize: FontSizes.sm, fontWeight: '700', color: c.text },
   pickEmpty:    { color: c.muted },
-  pairCities:   { fontSize: FontSizes.md, fontWeight: '800', color: c.text, marginTop: 4 },
-  pairCard:     { gap: 6, paddingTop: 10, borderTopWidth: 1, borderTopColor: c.line },
+  pairCities:   { fontSize: FontSizes.md, fontWeight: '800', color: c.text, marginTop: Space.xs },
+  pairCard:     { gap: Space.sm, paddingTop: Space.md, borderTopWidth: 1, borderTopColor: c.line },
   pairQ:        { fontSize: FontSizes.sm, fontWeight: '700', color: c.muted },
-  pairCols:     { flexDirection: 'row', gap: 10 },
-  pairCol:      { flex: 1, gap: 2 },
-  pairCity:     { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  pairCityName: { flexShrink: 1, fontSize: 13, fontWeight: '600', color: c.muted },
+  pairCols:     { flexDirection: 'row', gap: Space.md },
+  pairCol:      { flex: 1, gap: Space.xxs },
+  pairCity:     { flexDirection: 'row', alignItems: 'center', gap: Space.sm },
+  pairCityName: { flexShrink: 1, fontSize: FontSizes.xs, fontWeight: '600', color: c.muted },
   pairValue:    { fontSize: FontSizes.md, fontWeight: '800', color: c.text },
-  sheet:        { gap: 6, maxHeight: '80%' },
-  sheetTitle:   { fontSize: FontSizes.md, fontWeight: '800', color: c.text, marginBottom: 4 },
+  sheet:        { gap: Space.sm, maxHeight: '80%' },
+  sheetTitle:   { marginBottom: Space.xs },
   sheetList:    { flexGrow: 0 },
-  cityRow:      { flexDirection: 'row', alignItems: 'center', gap: 10, minHeight: 48, paddingHorizontal: 4 },
+  cityRow:      { flexDirection: 'row', alignItems: 'center', gap: Space.md, minHeight: 48, paddingHorizontal: Space.xs },
   cityRowText:  { fontSize: FontSizes.md, fontWeight: '700', color: c.text },
 });

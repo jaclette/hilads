@@ -1,6 +1,6 @@
 import { View, Text, ActivityIndicator, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { FontSizes, Spacing, type ThemeColors } from '@/constants';
+import { Space, FontSizes, Spacing, type ThemeColors } from '@/constants';
 import { useTheme, useThemedStyles } from '@/context/ThemeContext';
 import { BrandMark, Button } from '@/ui';
 
@@ -40,7 +40,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
     padding:         Spacing.xl,
   },
   logo: {
-    fontSize:      40,
+    fontSize:      FontSizes.hero,
     fontWeight:    '800',
     color:         c.primaryText,
     letterSpacing: -1,
@@ -52,7 +52,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
     fontWeight:   '600',
     color:        c.muted,
     textAlign:    'center',
-    marginTop:    6,
+    marginTop:    Space.sm,
     marginBottom: Spacing.xl,
   },
   spinner:   { marginTop: Spacing.md },

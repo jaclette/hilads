@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { ScrollView, Text, TouchableOpacity, View, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import { Border, FontSizes, Radius, type ThemeColors } from '@/constants';
+import { Border, FontSizes, Radius, Space, type ThemeColors } from '@/constants';
 import { useThemedStyles } from '@/context/ThemeContext';
 import { useApp } from '@/context/AppContext';
 import { fetchUserDaily } from '@/api/daily';
@@ -56,10 +56,10 @@ export function RivalsBlock() {
 }
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  block: { gap: 8 },
+  block: { gap: Space.sm },
   title: { fontSize: FontSizes.md, fontWeight: '800', color: c.text },
-  row:   { gap: 8 },
-  chip:  { flexDirection: 'row', alignItems: 'center', gap: 6, minHeight: 44, paddingLeft: 6, paddingRight: 12, borderRadius: Radius.full,
+  row:   { gap: Space.sm },
+  chip:  { flexDirection: 'row', alignItems: 'center', gap: Space.sm, minHeight: 44, paddingLeft: Space.sm, paddingRight: Space.md, borderRadius: Radius.full,
            borderWidth: Border, borderColor: c.line, backgroundColor: c.bg2 },
   name:  { fontSize: FontSizes.xs, fontWeight: '700', color: c.text, maxWidth: 120 },
   duels: { fontSize: FontSizes.tiny, fontWeight: '700', color: c.muted },

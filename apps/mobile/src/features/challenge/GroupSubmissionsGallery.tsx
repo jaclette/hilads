@@ -21,7 +21,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { fetchGroupSubmissions, pickWinner, type GroupSubmission } from '@/api/challenges';
 import { avatarColor } from '@/lib/avatarColors';
-import { Border, FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
+import { Space, Border, FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 
 export function GroupSubmissionsGallery({
@@ -204,7 +204,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
     // Gold border + tint so the photos card stands out as the thing to tap.
     flexDirection: 'row', alignItems: 'center', gap: Spacing.sm,
     marginHorizontal: Spacing.md, marginTop: Spacing.sm,
-    paddingHorizontal: Spacing.md, paddingVertical: 8,
+    paddingHorizontal: Spacing.md, paddingVertical: Space.sm,
     borderRadius: Radius.md, backgroundColor: c.goldTint,
     borderWidth: Border, borderColor: c.gold,
   },
@@ -217,13 +217,13 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   modalSheet: {
     position: 'absolute', left: 0, right: 0, bottom: 0,
     backgroundColor: c.bg, borderTopLeftRadius: 20, borderTopRightRadius: 20,
-    paddingHorizontal: Spacing.md, paddingTop: 12, paddingBottom: 28, maxHeight: '85%',
+    paddingHorizontal: Spacing.md, paddingTop: Space.md, paddingBottom: 28, maxHeight: '85%',
   },
   modalHead:  { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  modalTitleRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  modalTitleRow: { flexDirection: 'row', alignItems: 'center', gap: Space.sm },
   modalTitle: { fontSize: FontSizes.lg, fontWeight: '800', color: c.text },
-  modalClose: { paddingHorizontal: 4 },
-  modalHint:  { fontSize: FontSizes.sm, color: c.muted, marginTop: 4, marginBottom: 8 },
+  modalClose: { paddingHorizontal: Space.xs },
+  modalHint:  { fontSize: FontSizes.sm, color: c.muted, marginTop: Space.xs, marginBottom: Space.sm },
 
   grid:    { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.sm, paddingTop: Spacing.sm },
   tile: {
@@ -239,33 +239,33 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   photo: { width: '100%', aspectRatio: 1, backgroundColor: c.photoScrim },
   winBadge: {
     position: 'absolute', top: 6, left: 6,
-    flexDirection: 'row', alignItems: 'center', gap: 3,
+    flexDirection: 'row', alignItems: 'center', gap: Space.xs,
     backgroundColor: c.gold,
-    borderRadius: Radius.full, paddingHorizontal: 8, paddingVertical: 2,
+    borderRadius: Radius.full, paddingHorizontal: Space.sm, paddingVertical: Space.xxs,
   },
-  winBadgeText: { fontSize: 11, fontWeight: '800', color: c.onGold },
+  winBadgeText: { fontSize: FontSizes.tiny, fontWeight: '800', color: c.onGold },
   pickingOverlay: { ...StyleSheet.absoluteFillObject, alignItems: 'center', justifyContent: 'center', backgroundColor: c.scrim },
 
-  tileFooter: { flexDirection: 'row', alignItems: 'center', gap: 6, padding: 8 },
+  tileFooter: { flexDirection: 'row', alignItems: 'center', gap: Space.sm, padding: Space.sm },
   avatar: { width: 22, height: 22, borderRadius: 11, overflow: 'hidden', alignItems: 'center', justifyContent: 'center' },
-  avatarLetter: { color: c.white, fontWeight: '700', fontSize: 11 },
-  name: { flex: 1, fontSize: FontSizes.xs + 1, fontWeight: '700', color: c.text },
+  avatarLetter: { color: c.white, fontWeight: '700', fontSize: FontSizes.xs },
+  name: { flex: 1, fontSize: FontSizes.sm, fontWeight: '700', color: c.text },
 
   pickBtn: {
     // Solid fill (matches the fullscreen previewPick) so the challenger reads
     // it as "tap to crown", not a passive/already-picked label.
-    margin: 8, marginTop: 0, paddingVertical: 9, borderRadius: Radius.full,
-    flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 5,
+    margin: Space.sm, marginTop: 0, paddingVertical: Space.sm, borderRadius: Radius.full,
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: Space.xs,
     backgroundColor: c.gold,
   },
-  pickBtnText: { fontSize: FontSizes.xs + 1, fontWeight: '800', color: c.onGold },
+  pickBtnText: { fontSize: FontSizes.sm, fontWeight: '800', color: c.onGold },
 
   previewBackdrop: { flex: 1, backgroundColor: c.scrim, alignItems: 'center', justifyContent: 'center', gap: Spacing.md },
   previewImg:  { width: '92%', height: '70%' },
   previewName: { fontSize: FontSizes.md, fontWeight: '800', color: c.white },
   previewPick: {
-    paddingHorizontal: 22, paddingVertical: 12, borderRadius: Radius.full,
-    flexDirection: 'row', alignItems: 'center', gap: 6,
+    paddingHorizontal: Space.xl, paddingVertical: Space.md, borderRadius: Radius.full,
+    flexDirection: 'row', alignItems: 'center', gap: Space.sm,
     backgroundColor: c.gold,
   },
   previewPickText: { fontSize: FontSizes.md, fontWeight: '800', color: c.onGold },

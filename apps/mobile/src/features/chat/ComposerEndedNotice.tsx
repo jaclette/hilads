@@ -8,7 +8,7 @@
 
 import { View, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { FontSizes, type ThemeColors } from '@/constants';
+import { Space, FontSizes, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 
 export function ComposerEndedNotice({ text }: { text: string }) {
@@ -28,11 +28,11 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
     flexDirection:     'row',
     alignItems:        'center',
     justifyContent:    'center',
-    gap:               7,
+    gap:               Space.sm,
     paddingHorizontal: 14,
-    paddingVertical:   16,
+    paddingVertical:   Space.lg,
     borderTopWidth:    1,
-    borderTopColor:    c.border,
+    borderTopColor:    c.line,
     backgroundColor:   c.elevated,
     shadowColor:       '#000',
     shadowOffset:      { width: 0, height: -5 },

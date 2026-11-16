@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 import { Text, View, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { FontSizes, Spacing, type ThemeColors } from '@/constants';
+import { Space, FontSizes, Spacing, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { BrandMark } from './BrandMark';
 
@@ -34,10 +34,10 @@ export function EmptyState({ icon, title, body, action }: {
 }
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  wrap:  { alignItems: 'center', gap: 10, paddingVertical: Spacing.xl },
+  wrap:  { alignItems: 'center', gap: Space.md, paddingVertical: Spacing.xl },
   bubble: { width: 64, height: 64, borderRadius: 32, backgroundColor: c.primaryTint, alignItems: 'center', justifyContent: 'center' },
   mascot: { position: 'absolute', right: -6, bottom: -4, transform: [{ rotate: '-10deg' }] },
-  quiet: { padding: 14 },
+  quiet: { padding: Space.lg },
   title: { fontSize: FontSizes.md, fontWeight: '800', color: c.text, textAlign: 'center' },
   body:  { fontSize: FontSizes.sm, color: c.muted, textAlign: 'center' },
 });

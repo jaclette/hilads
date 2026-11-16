@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { KeyboardStickyView } from 'react-native-keyboard-controller';
 import { useReducedMotion } from 'react-native-reanimated';
-import { FontSizes, Radius, type ThemeColors } from '@/constants';
+import { Space, FontSizes, Radius, type ThemeColors } from '@/constants';
 import { useApp } from '@/context/AppContext';
 import { useThemedStyles } from '@/context/ThemeContext';
 import { track } from '@/services/analytics';
@@ -185,15 +185,15 @@ function Float({ emoji }: { emoji: string }) {
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
   wrap:      { position: 'absolute', left: 0, right: 0, bottom: 0 },
-  row:       { flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 12, paddingTop: 8 },
-  pill:      { flex: 1, flexDirection: 'row', alignItems: 'center', minHeight: 44, paddingLeft: 16, paddingRight: 6, borderRadius: Radius.full,
+  row:       { flexDirection: 'row', alignItems: 'center', gap: Space.sm, paddingHorizontal: Space.md, paddingTop: Space.sm },
+  pill:      { flex: 1, flexDirection: 'row', alignItems: 'center', minHeight: 44, paddingLeft: Space.lg, paddingRight: Space.sm, borderRadius: Radius.full,
                borderWidth: 1, borderColor: 'rgba(255,255,255,0.55)', backgroundColor: 'rgba(0,0,0,0.28)' },
-  input:     { flex: 1, paddingVertical: 10, fontSize: FontSizes.sm, color: c.white },
+  input:     { flex: 1, paddingVertical: Space.md, fontSize: FontSizes.sm, color: c.white },
   send:      { width: 32, height: 32, borderRadius: 16, backgroundColor: c.cta, alignItems: 'center', justifyContent: 'center' },
   quick:     { width: 40, height: 44, alignItems: 'center', justifyContent: 'center' },
-  quickText: { fontSize: 26 },
+  quickText: { fontSize: FontSizes.xl },
   float:     { position: 'absolute', top: 0, fontSize: 30 },
-  mentions:  { marginHorizontal: 12, marginBottom: 4, borderRadius: Radius.card, overflow: 'hidden' },
-  toast:     { alignSelf: 'center', marginBottom: 6, paddingHorizontal: 14, paddingVertical: 7, borderRadius: Radius.full, backgroundColor: 'rgba(0,0,0,0.7)' },
+  mentions:  { marginHorizontal: Space.md, marginBottom: Space.xs, borderRadius: Radius.card, overflow: 'hidden' },
+  toast:     { alignSelf: 'center', marginBottom: Space.sm, paddingHorizontal: Space.lg, paddingVertical: Space.sm, borderRadius: Radius.full, backgroundColor: 'rgba(0,0,0,0.7)' },
   toastText: { fontSize: FontSizes.sm, fontWeight: '800', color: c.white },
 });

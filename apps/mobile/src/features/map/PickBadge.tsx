@@ -1,7 +1,7 @@
 import { Text, View, StyleSheet, type StyleProp, type ViewStyle } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
-import { type ThemeColors } from '@/constants';
+import { Space, FontSizes, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 
 /** "Hilads pick" (full label: detail page, sheet, Compare): an editorial spot, never a player's photo. */
@@ -48,13 +48,13 @@ export function GoodToKnow({ note }: { note: string | null | undefined }) {
 }
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  badge:     { alignSelf: 'flex-start', flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 8, paddingVertical: 3,
+  badge:     { alignSelf: 'flex-start', flexDirection: 'row', alignItems: 'center', gap: Space.xs, paddingHorizontal: Space.sm, paddingVertical: Space.xs,
                borderRadius: 999, backgroundColor: c.goldTint },
-  text:      { flexShrink: 1, fontSize: 12, fontWeight: '800', color: c.text },
-  pill:      { position: 'absolute', top: 6, left: 6, flexDirection: 'row', alignItems: 'center', gap: 3, paddingHorizontal: 7, paddingVertical: 3,
+  text:      { flexShrink: 1, fontSize: FontSizes.xs, fontWeight: '800', color: c.text },
+  pill:      { position: 'absolute', top: 6, left: 6, flexDirection: 'row', alignItems: 'center', gap: Space.xs, paddingHorizontal: Space.sm, paddingVertical: Space.xs,
                borderRadius: 999, backgroundColor: 'rgba(0,0,0,0.6)' },
-  pillText:  { fontSize: 11, fontWeight: '800', color: '#FFFFFF' },
-  note:      { gap: 4, padding: 12, borderRadius: 14, backgroundColor: c.goldTint },
-  noteTitle: { fontSize: 13, fontWeight: '800', color: c.text },
-  noteText:  { fontSize: 14, lineHeight: 20, color: c.text },
+  pillText:  { fontSize: FontSizes.xs, fontWeight: '800', color: '#FFFFFF' },
+  note:      { gap: Space.xs, padding: Space.md, borderRadius: 14, backgroundColor: c.goldTint },
+  noteTitle: { fontSize: FontSizes.xs, fontWeight: '800', color: c.text },
+  noteText:  { fontSize: FontSizes.sm, lineHeight: 20, color: c.text },
 });

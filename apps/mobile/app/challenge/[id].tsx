@@ -10,6 +10,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
+import { IconButton } from '@/ui/IconButton';
 import { useApp } from '@/context/AppContext';
 import { socket } from '@/lib/socket';
 import {
@@ -53,7 +54,7 @@ import { ShareToCityPill } from '@/components/ShareToCityPill';
 import { ShareToWorldPill } from '@/components/ShareToWorldPill';
 import { isSameDay, formatDateLabel } from '@/lib/messageTime';
 import { track } from '@/services/analytics';
-import { Border, FontSizes, Spacing, Radius, buildChallengeUrl, type ThemeColors } from '@/constants';
+import { Space, Border, FontSizes, Spacing, Radius, buildChallengeUrl, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import type { Challenge, ChallengeType, ChallengeAudience, ChallengeThreadSummary, Message, UserDTO } from '@/types';
 import { goBack } from '@/lib/nav';
@@ -997,10 +998,7 @@ export default function ChallengeChatScreen() {
     return (
       <SafeAreaView style={styles.container}>
         <View style={styles.nav}>
-          <TouchableOpacity style={styles.backPill} onPress={() => goBack()} activeOpacity={0.75}>
-            <Ionicons name="chevron-back" size={18} color={colors.text} />
-            <Text style={styles.backPillText}>{t('back', { ns: 'common' })}</Text>
-          </TouchableOpacity>
+          <IconButton icon="chevron-back" onPress={() => goBack()} label={t('back', { ns: 'common' })} testID="header-back" />
         </View>
         <View style={styles.center}><Text style={styles.errorText}>{t('notFound')}</Text></View>
       </SafeAreaView>
@@ -1046,10 +1044,7 @@ export default function ChallengeChatScreen() {
           the right. The emoji is sized to roughly match the back pill so the
           title stays visually centered; no need for a manual spacer. */}
       <View style={styles.nav}>
-        <TouchableOpacity style={styles.backPill} onPress={() => goBack()} activeOpacity={0.75}>
-          <Ionicons name="chevron-back" size={18} color={colors.text} />
-          <Text style={styles.backPillText} numberOfLines={1}>{t('back', { ns: 'common' })}</Text>
-        </TouchableOpacity>
+        <IconButton icon="chevron-back" onPress={() => goBack()} label={t('back', { ns: 'common' })} testID="header-back" />
         <View style={styles.navCenter}>
           <CopyTranslateText value={challenge.title} style={styles.navTitle} numberOfLines={2} />
           {challenge.creator_display_name ? (
@@ -1124,7 +1119,7 @@ export default function ChallengeChatScreen() {
           ) : isEnded ? (
             isOwner ? (
               <TouchableOpacity style={[styles.statusPill, styles.statusPillRestart]} onPress={handleRelaunch} activeOpacity={0.8}>
-                <Ionicons name="refresh-outline" size={11} color={colors.white} />
+                <Ionicons name="refresh-outline" size={11} color={colors.onCta} />
                 <Text style={[styles.statusPillText, styles.statusPillTextRestart]}>{t('relaunch.cta', { defaultValue: 'Restart' })}</Text>
               </TouchableOpacity>
             ) : (
@@ -1254,7 +1249,7 @@ export default function ChallengeChatScreen() {
                   {busyAny ? '…' : t(labelKey)}
                 </Text>
                 {tapable && (
-                  <Ionicons name="chevron-down" size={10} color={caretColor} style={{ marginLeft: 2 }} />
+                  <Ionicons name="chevron-down" size={10} color={caretColor} style={{ marginLeft: Space.xxs }} />
                 )}
               </TouchableOpacity>
             );
@@ -1346,7 +1341,7 @@ export default function ChallengeChatScreen() {
                   {challenge.closed_to_new_joins
                     ? t('group.closed', { defaultValue: 'Closed to new joins' })
                     : <>
-                        <Ionicons name="add" size={16} color={colors.white} />{' '}
+                        <Ionicons name="add" size={16} color={colors.onCta} />{' '}
                         {isGroupPhoto
                           ? t('group.joinContestCta', { defaultValue: 'Join the challenge (+2 pts)' })
                           : t('group.joinCta', { defaultValue: 'Join the challenge (+2 pts)' })}
@@ -2157,7 +2152,7 @@ export default function ChallengeChatScreen() {
                 >
                   <View style={{ flex: 1 }}>
                     <Text style={styles.manageRowText}>{t(`visibility.badge.${opt}`)}</Text>
-                    <Text style={{ fontSize: FontSizes.sm - 1, color: colors.muted, marginTop: 2 }}>{hint}</Text>
+                    <Text style={{ fontSize: FontSizes.xs, color: colors.muted, marginTop: Space.xxs }}>{hint}</Text>
                   </View>
                 </TouchableOpacity>
               );
@@ -2264,20 +2259,20 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   guestWelcome: {
     flexDirection:     'row',
     alignItems:        'center',
-    gap:               8,
+    gap:               Space.sm,
     marginHorizontal:  Spacing.md,
     marginTop:         Spacing.xs,
     marginBottom:      Spacing.xs,
-    paddingVertical:   10,
-    paddingHorizontal: 12,
+    paddingVertical:   Space.md,
+    paddingHorizontal: Space.md,
     backgroundColor:   c.bg2,
-    borderRadius:      Radius.md,
+    borderRadius:      Radius.card,
     borderWidth:       Border,
     borderColor:       c.primary,
   },
   guestWelcomeBody: {
     flex: 1,
-    gap:  2,
+    gap:  Space.xxs,
   },
   guestWelcomeText: {
     color:      c.text,
@@ -2291,7 +2286,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   },
   guestWelcomeClose: {
     alignSelf: 'flex-start',
-    paddingTop: 2,
+    paddingTop: Space.xxs,
   },
 
   // Nav
@@ -2304,23 +2299,15 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
     borderBottomColor: c.line,
     gap:               Spacing.sm,
   },
-  backPill: {
-    flexDirection: 'row', alignItems: 'center', gap: 4,
-    paddingHorizontal: 10, paddingVertical: 6,
-    borderRadius: Radius.full,
-    backgroundColor: c.bg3,
-    borderWidth: Border, borderColor: c.line,
-  },
-  backPillText: { color: c.text, fontSize: FontSizes.sm, fontWeight: '700' },
   navCenter: { flex: 1, flexDirection: 'column', alignItems: 'center', justifyContent: 'center' },
   navTitle:  { fontSize: FontSizes.md, fontWeight: '800', color: c.text, flexShrink: 1, textAlign: 'center' },
-  navCreatorRow:    { flexDirection: 'row', alignItems: 'center', gap: 5, marginTop: 2 },
-  navCreatorTap:    { flexDirection: 'row', alignItems: 'center', gap: 5, flexShrink: 1 },
+  navCreatorRow:    { flexDirection: 'row', alignItems: 'center', gap: Space.xs, marginTop: Space.xxs },
+  navCreatorTap:    { flexDirection: 'row', alignItems: 'center', gap: Space.xs, flexShrink: 1 },
   navCreatorAvatar: { width: 14, height: 14, borderRadius: 7 },
-  navCreatorText:   { fontSize: 11, fontWeight: '600', color: c.muted, flexShrink: 1 },
+  navCreatorText:   { fontSize: FontSizes.xs, fontWeight: '600', color: c.muted, flexShrink: 1 },
   // Sized to roughly match the back-pill width so the title stays centered
   // without needing a manual right-side spacer.
-  navEmoji:  { fontSize: 28, lineHeight: 32, minWidth: 64, textAlign: 'center' },
+  navEmoji:  { fontSize: 28, lineHeight: 32, minWidth: 44, textAlign: 'center' },
 
   // Hero (badge + audience + status + actions)
   hero: {
@@ -2330,28 +2317,28 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: c.line,
   },
-  badgeRow: { flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', gap: 6 },
+  badgeRow: { flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', gap: Space.sm },
 
   kindBadge: {
     backgroundColor:   c.primaryTint,
     borderRadius:      Radius.full,
-    paddingHorizontal: 8, paddingVertical: 2,
+    paddingHorizontal: Space.sm, paddingVertical: Space.xxs,
     borderWidth:       Border, borderColor: c.primary,
   },
-  kindBadgeText: { fontSize: 10, fontWeight: '800', color: c.primaryOnTint, letterSpacing: 0.5 },
+  kindBadgeText: { fontSize: FontSizes.tiny, fontWeight: '800', color: c.primaryOnTint, letterSpacing: 0.5 },
 
   // Row so the leading stroke icon (checkmark / refresh / hourglass / live
   // dot) sits next to the label.
-  statusPill:          { flexDirection: 'row', alignItems: 'center', gap: 4, borderRadius: Radius.full, paddingHorizontal: 8, paddingVertical: 2, borderWidth: Border },
+  statusPill:          { flexDirection: 'row', alignItems: 'center', gap: Space.xs, borderRadius: Radius.full, paddingHorizontal: Space.sm, paddingVertical: Space.xxs, borderWidth: Border },
   statusPillDone:      { backgroundColor: c.localBg,  borderColor: c.localText },
   statusPillLive:      { backgroundColor: c.goldTint, borderColor: c.gold },
   statusPillEnded:     { backgroundColor: c.bg3, borderColor: c.line },
-  statusPillRestart:   { backgroundColor: c.primary, borderColor: 'transparent' },
-  statusPillText:      { fontSize: 10, fontWeight: '800', letterSpacing: 0.5 },
+  statusPillRestart:   { backgroundColor: c.cta, borderColor: 'transparent' },
+  statusPillText:      { fontSize: FontSizes.xs, fontWeight: '800', letterSpacing: 0.5 },
   statusPillTextDone:  { color: c.localText },
   statusPillTextLive:  { color: c.gold },
   statusPillTextEnded: { color: c.mutedDim },
-  statusPillTextRestart: { color: c.white },
+  statusPillTextRestart: { color: c.onCta },
   statusLiveDot:       { width: 6, height: 6, borderRadius: 3, backgroundColor: c.green },
 
   // Violet tint - see ChallengeVersusCard for the rationale (distinct from
@@ -2359,34 +2346,34 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   audiencePill: {
     backgroundColor:   c.primaryTint,
     borderRadius:      Radius.full,
-    paddingHorizontal: 8, paddingVertical: 2,
+    paddingHorizontal: Space.sm, paddingVertical: Space.xxs,
     borderWidth:       Border, borderColor: c.primary,
   },
-  audiencePillText: { fontSize: 11, fontWeight: '700', color: c.primaryText, letterSpacing: 0.3 },
+  audiencePillText: { fontSize: FontSizes.xs, fontWeight: '700', color: c.primaryText, letterSpacing: 0.3 },
 
   // International chip - cyan, distinct from audience violet so Local vs
   // Intl reads at a glance (mirrors the NOW-card pattern from step 8).
   intlPill: {
-    flexDirection:     'row', alignItems: 'center', gap: 4,
+    flexDirection:     'row', alignItems: 'center', gap: Space.xs,
     backgroundColor:   c.travelerBg,
     borderRadius:      Radius.full,
-    paddingHorizontal: 8, paddingVertical: 2,
+    paddingHorizontal: Space.sm, paddingVertical: Space.xxs,
     borderWidth:       Border, borderColor: c.travelerText,
     flexShrink:        1,
   },
-  intlPillText: { fontSize: 11, fontWeight: '700', color: c.travelerText, letterSpacing: 0.3, flexShrink: 1 },
+  intlPillText: { fontSize: FontSizes.xs, fontWeight: '700', color: c.travelerText, letterSpacing: 0.3, flexShrink: 1 },
 
   // Share inline pill - same height/padding as the kind + audience pills so
   // the three sit on a single row without alignment drift. Orange brand tint
   // because Share is the most user-facing growth lever on this screen.
   sharePillInline: {
-    flexDirection: 'row', alignItems: 'center', gap: 4,
+    flexDirection: 'row', alignItems: 'center', gap: Space.xs,
     backgroundColor:   c.primaryTint,
     borderRadius:      Radius.full,
-    paddingHorizontal: 8, paddingVertical: 2,
+    paddingHorizontal: Space.sm, paddingVertical: Space.xxs,
     borderWidth:       Border, borderColor: c.primary,
   },
-  sharePillInlineText: { fontSize: 11, fontWeight: '700', color: c.primaryText, letterSpacing: 0.3 },
+  sharePillInlineText: { fontSize: FontSizes.xs, fontWeight: '700', color: c.primaryText, letterSpacing: 0.3 },
 
   // Share - V3 drops the legacy violet: same primary tint as the other
   // inline pills (kept as a separate style so it can diverge again).
@@ -2412,22 +2399,22 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   detailsBlock: { },
 
   // Group challenge block (meet info + join / validate).
-  groupBlock:     { paddingHorizontal: Spacing.md, paddingTop: Spacing.xs, gap: 6 },
+  groupBlock:     { paddingHorizontal: Spacing.md, paddingTop: Spacing.xs, gap: Space.sm },
   groupMeetCard:  {
-    flexDirection: 'row', alignItems: 'center', gap: 8,
-    backgroundColor: c.bg2, borderRadius: 10, borderWidth: Border, borderColor: c.line,
-    paddingHorizontal: Spacing.md, paddingVertical: 6,
+    flexDirection: 'row', alignItems: 'center', gap: Space.sm,
+    backgroundColor: c.bg2, borderRadius: Radius.card, borderWidth: Border, borderColor: c.line,
+    paddingHorizontal: Spacing.md, paddingVertical: Space.sm,
   },
-  groupMeetLine:  { flex: 1, fontSize: FontSizes.xs + 1, fontWeight: '600', color: c.muted },
-  groupStateText: { fontSize: FontSizes.sm, fontWeight: '700', color: c.green, textAlign: 'center', paddingVertical: 4 },
+  groupMeetLine:  { flex: 1, fontSize: FontSizes.sm, fontWeight: '600', color: c.muted },
+  groupStateText: { fontSize: FontSizes.sm, fontWeight: '700', color: c.green, textAlign: 'center', paddingVertical: Space.xs },
   groupPrimaryBtn: {
     // Solid fill = unmistakably tappable. The old translucent/outlined style
     // read as an already-done state ("✓ validated") rather than a CTA.
-    paddingVertical: 14, borderRadius: 14, alignItems: 'center', justifyContent: 'center',
-    // V3: flat primary fill (no glow shadow).
-    backgroundColor: c.primary,
+    minHeight: 48, paddingVertical: Space.md, paddingHorizontal: Space.lg, borderRadius: Radius.button, alignItems: 'center', justifyContent: 'center',
+    // V3: the shared primary look (Button): tangerine with ink text.
+    backgroundColor: c.cta,
   },
-  groupPrimaryBtnText: { color: c.white, fontSize: 15, fontWeight: '800' },
+  groupPrimaryBtnText: { color: c.onCta, fontSize: FontSizes.md, fontWeight: '800', textAlign: 'center' },
 
   // Visibility pill tints - applied to BOTH the TouchableOpacity (for
   // background + borderColor) and the inner Text (for color). Split into
@@ -2461,9 +2448,9 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   ownerIconBtn: {
     flexDirection:  'row',
     alignItems:     'center',
-    gap:            4,
-    paddingVertical:   4,
-    paddingHorizontal: 6,
+    gap:            Space.xs,
+    paddingVertical:   Space.xs,
+    paddingHorizontal: Space.sm,
   },
   ownerIconLabel: { fontSize: FontSizes.xs, fontWeight: '600', color: c.muted },
 
@@ -2477,7 +2464,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
     flexDirection:     'row',
     alignItems:        'center',
     justifyContent:    'center',
-    gap:               8,
+    gap:               Space.sm,
     paddingVertical:   Spacing.sm + 2,
     paddingHorizontal: Spacing.md,
     borderRadius:      Radius.full,
@@ -2511,27 +2498,27 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
     alignItems: 'center', justifyContent: 'center',
     overflow: 'hidden',
   },
-  challengerAvatarLetter: { color: c.white, fontWeight: '700', fontSize: 18 },
-  challengerInfo: { flex: 1, gap: 2, minWidth: 0 },
+  challengerAvatarLetter: { color: c.white, fontWeight: '700', fontSize: FontSizes.md },
+  challengerInfo: { flex: 1, gap: Space.xxs, minWidth: 0 },
   challengerName: { fontSize: FontSizes.md, fontWeight: '700', color: c.text },
-  challengerTag:  { fontSize: 11, fontWeight: '800', color: c.primaryText, letterSpacing: 0.3 },
+  challengerTag:  { fontSize: FontSizes.xs, fontWeight: '800', color: c.primaryText, letterSpacing: 0.3 },
 
   // Inline quick-action group - Share is a labeled pill (verb is the
   // social hook), Accept is the compact icon-only round next to it.
-  quickActions: { flexDirection: 'row', gap: 8, alignItems: 'center' },
+  quickActions: { flexDirection: 'row', gap: Space.sm, alignItems: 'center' },
   sharePill: {
     flexDirection:    'row',
     alignItems:       'center',
-    gap:              6,
+    gap:              Space.sm,
     height:           36,
-    paddingHorizontal: 12,
+    paddingHorizontal: Space.md,
     borderRadius:     18,
     backgroundColor:  c.primaryTint,
     borderWidth:      Border,
     borderColor:      c.primary,
     maxWidth:         200,
   },
-  sharePillText: { color: c.primaryText, fontSize: 12, fontWeight: '800', letterSpacing: 0.1 },
+  sharePillText: { color: c.primaryText, fontSize: FontSizes.xs, fontWeight: '800', letterSpacing: 0.1 },
   quickBtn: {
     width:           36,
     height:          36,
@@ -2566,8 +2553,8 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   // already acceptors (sits to the right of the avatars).
   acceptCtaFull: {
     flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
-    gap: 6,
-    paddingHorizontal: Spacing.md, paddingVertical: 10,
+    gap: Space.sm,
+    paddingHorizontal: Spacing.md, paddingVertical: Space.md,
     borderRadius: 999,
     backgroundColor: c.primaryTint,
     borderWidth: Border, borderColor: c.primary,
@@ -2576,8 +2563,8 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
     color: c.primaryText, fontWeight: '800', fontSize: FontSizes.sm,
   },
   acceptCompact: {
-    flexDirection: 'row', alignItems: 'center', gap: 4,
-    paddingHorizontal: 12, paddingVertical: 7,
+    flexDirection: 'row', alignItems: 'center', gap: Space.xs,
+    paddingHorizontal: Space.md, paddingVertical: Space.sm,
     borderRadius: 999,
     backgroundColor: c.primaryTint,
     borderWidth: Border, borderColor: c.primary,
@@ -2587,9 +2574,9 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   },
 
   // Inline thread chat
-  chatList:         { paddingHorizontal: Spacing.md, paddingTop: Spacing.sm, paddingBottom: Spacing.md, gap: 4 },
+  chatList:         { paddingHorizontal: Spacing.md, paddingTop: Spacing.sm, paddingBottom: Spacing.md, gap: Space.xs },
   loadingOlderWrap: { paddingVertical: Spacing.md, alignItems: 'center' },
-  emptyChat:        { paddingVertical: 60, alignItems: 'center', gap: 8 },
+  emptyChat:        { paddingVertical: 60, alignItems: 'center', gap: Space.sm },
   emptyChatEmoji:   { },
   emptyChatText:    { fontSize: FontSizes.sm, color: c.muted, textAlign: 'center', paddingHorizontal: Spacing.lg },
 
@@ -2598,7 +2585,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   // participants row.
   lockedWrap: {
     flex: 1, alignItems: 'center', justifyContent: 'center',
-    paddingHorizontal: Spacing.xl, gap: 10,
+    paddingHorizontal: Spacing.xl, gap: Space.md,
   },
   lockedEmoji: { opacity: 0.7 },
   lockedTitle: { fontSize: FontSizes.md, fontWeight: '800', color: c.text, textAlign: 'center' },
@@ -2608,12 +2595,13 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   joinCta: {
     marginTop:       Spacing.sm,
     paddingHorizontal: Spacing.xl,
-    paddingVertical:   Spacing.sm + 2,
-    borderRadius:      Radius.full,
-    backgroundColor:   c.primary,
+    minHeight:         48,
+    justifyContent:    'center',
+    borderRadius:      Radius.button,
+    backgroundColor:   c.cta,
   },
   joinCtaText: {
-    color:      c.white,
+    color:      c.onCta,
     fontSize:   FontSizes.md,
     fontWeight: '800',
   },
@@ -2661,8 +2649,8 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
     marginTop:     Spacing.md,
   },
   takeonRejectBtn: {
-    paddingHorizontal: 16,
-    paddingVertical:   10,
+    paddingHorizontal: Space.lg,
+    paddingVertical:   Space.md,
     borderRadius:      999,
     backgroundColor:   c.bg3,
     borderWidth:       Border,
@@ -2670,12 +2658,11 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   },
   takeonRejectText: { color: c.muted, fontSize: FontSizes.sm, fontWeight: '700' },
   takeonAcceptBtn: {
-    paddingHorizontal: 16,
-    paddingVertical:   10,
-    borderRadius:      999,
-    backgroundColor:   c.primary,
-    borderWidth:       Border,
-    borderColor:       c.primary,
+    paddingHorizontal: Space.lg,
+    minHeight:         44,
+    justifyContent:    'center',
+    borderRadius:      14,
+    backgroundColor:   c.cta,
   },
-  takeonAcceptText: { color: c.white, fontSize: FontSizes.sm, fontWeight: '800' },
+  takeonAcceptText: { color: c.onCta, fontSize: FontSizes.sm, fontWeight: '800' },
 });

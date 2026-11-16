@@ -1,7 +1,7 @@
 import type { ComponentProps } from 'react';
 import { Text, TouchableOpacity, View, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Border, FontSizes, Radius, type ThemeColors } from '@/constants';
+import { Space, Border, FontSizes, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { CityFlag } from './CityName';
 
@@ -37,11 +37,11 @@ export function Segmented<K extends string>({ options, value, onChange }: { opti
 }
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  wrap:      { flexDirection: 'row', gap: 4, padding: 3, borderRadius: Radius.full, borderWidth: Border, borderColor: c.line, backgroundColor: c.bg2 },
-  segment:   { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, minHeight: 38, paddingHorizontal: 10, borderRadius: Radius.full },
+  wrap:      { flexDirection: 'row', gap: Space.xs, padding: Space.xs, borderRadius: Radius.full, borderWidth: Border, borderColor: c.line, backgroundColor: c.bg2 },
+  segment:   { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: Space.sm, minHeight: 38, paddingHorizontal: Space.md, borderRadius: Radius.full },
   segmentOn: { backgroundColor: c.primary },
   label:     { fontSize: FontSizes.sm, fontWeight: '600', color: c.text },
   labelOn:   { fontWeight: '700', color: c.white },
-  badge:     { minWidth: 18, paddingHorizontal: 5, borderRadius: 9, overflow: 'hidden', backgroundColor: c.primary,
-               color: c.white, fontSize: 11, fontWeight: '800', textAlign: 'center' },
+  badge:     { minWidth: 18, paddingHorizontal: Space.xs, borderRadius: 9, overflow: 'hidden', backgroundColor: c.primary,
+               color: c.white, fontSize: FontSizes.tiny, fontWeight: '800', textAlign: 'center' },
 });

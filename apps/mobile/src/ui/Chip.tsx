@@ -1,6 +1,6 @@
 import { Text, TouchableOpacity, View, StyleSheet, type StyleProp, type ViewStyle } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Border, FontSizes, Radius, type ThemeColors } from '@/constants';
+import { Space, Border, FontSizes, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { ThemeIcon } from './ThemeIcon';
 import { themeColor } from './joy';
@@ -56,18 +56,18 @@ export function Chip({ label, variant = 'tint', tone = 'primary', icon, theme, s
 }
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  tint:         { flexDirection: 'row', alignItems: 'center', gap: 5, minHeight: 28, paddingHorizontal: 10, borderRadius: Radius.full, backgroundColor: c.primaryTint },
+  tint:         { flexDirection: 'row', alignItems: 'center', gap: Space.xs, minHeight: 28, paddingHorizontal: Space.md, borderRadius: Radius.full, backgroundColor: c.primaryTint },
   tintLocal:    { backgroundColor: c.localBg },
   tintText:     { fontSize: FontSizes.xs, fontWeight: '700' },
-  filter:       { height: 38, flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 14, borderRadius: Radius.full,
+  filter:       { height: 38, flexDirection: 'row', alignItems: 'center', gap: Space.sm, paddingHorizontal: Space.lg, borderRadius: Radius.full,
                   borderWidth: Border, borderColor: c.line, backgroundColor: c.bg2 },
   filterOn:     { backgroundColor: c.primary, borderColor: c.primary },
   filterText:   { fontSize: FontSizes.sm, fontWeight: '600', color: c.text },
   filterTextOn: { fontWeight: '700', color: c.white },
   // iOS draws no Text at all with a radius over half its height and overflow hidden: a fixed radius.
-  badge:        { fontSize: 11, fontWeight: '700', color: c.primaryOnTint, backgroundColor: c.primaryTint, borderRadius: 9,
-                  paddingHorizontal: 7, paddingVertical: 2, overflow: 'hidden' },
+  badge:        { fontSize: FontSizes.tiny, fontWeight: '700', color: c.primaryOnTint, backgroundColor: c.primaryTint, borderRadius: 9,
+                  paddingHorizontal: Space.sm, paddingVertical: Space.xxs, overflow: 'hidden' },
   badgeOn:      { color: c.primary, backgroundColor: c.white },
-  outline:      { borderWidth: Border, borderColor: c.line, borderRadius: Radius.full, paddingHorizontal: 10, paddingVertical: 4 },
+  outline:      { borderWidth: Border, borderColor: c.line, borderRadius: Radius.full, paddingHorizontal: Space.md, paddingVertical: Space.xs },
   outlineText:  { fontSize: FontSizes.xs, fontWeight: '600', color: c.text },
 });

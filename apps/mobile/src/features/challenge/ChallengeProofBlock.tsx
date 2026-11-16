@@ -36,7 +36,7 @@ import {
 } from '@/api/challenges';
 import { uploadFile } from '@/api/uploads';
 import { AndroidCameraCapture } from '@/features/chat/AndroidCameraCapture';
-import { Border, FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
+import { Space, Border, FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 
@@ -321,10 +321,10 @@ export function ChallengeProofBlock({
         activeOpacity={0.85}
       >
         {busy === 'submit'
-          ? <ActivityIndicator color={colors.white} />
+          ? <ActivityIndicator color={colors.onCta} />
           : (
             <View style={styles.iconRow}>
-              <Ionicons name="camera-outline" size={compact ? 16 : 18} color={colors.white} />
+              <Ionicons name="camera-outline" size={compact ? 16 : 18} color={colors.onCta} />
               <Text style={[styles.submitBtnText, compact && styles.submitBtnTextCompact]}>
                 {canRetry ? t('intl.proof.tryAgainCta', { count: attemptsLeft }) : t('intl.proof.submitCta')}
               </Text>
@@ -348,7 +348,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   card: {
     margin:           Spacing.md,
     padding:          Spacing.md,
-    borderRadius:     Radius.lg,
+    borderRadius:     Radius.card,
     backgroundColor:  c.bg2,
     borderWidth:      Border,
     borderColor:      c.line,
@@ -358,7 +358,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
     borderLeftWidth: 3,
     borderLeftColor: c.primary,
     paddingLeft:     Spacing.sm,
-    gap:             2,
+    gap:             Space.xxs,
   },
   reqsLabel: { fontSize: FontSizes.xs, fontWeight: '700', color: c.primaryText, letterSpacing: 0.6, textTransform: 'uppercase' },
   reqsText:  { fontSize: FontSizes.sm, color: c.text, lineHeight: 18 },
@@ -366,28 +366,31 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   media: { width: '100%', aspectRatio: 4/3, borderRadius: Radius.md, backgroundColor: c.photoScrim },
 
 
-  verdictRow: { flexDirection: 'row', gap: Spacing.sm, marginTop: 4 },
+  verdictRow: { flexDirection: 'row', gap: Spacing.sm, marginTop: Space.xs },
   verdictBtn: { flex: 1, paddingVertical: Spacing.sm + 2, borderRadius: Radius.full, alignItems: 'center' },
   verdictApprove: { backgroundColor: c.green },
   verdictReject:  { borderWidth: Border, borderColor: c.red, backgroundColor: 'transparent' },
   verdictApproveText: { color: c.white, fontWeight: '800', fontSize: FontSizes.sm },
   verdictRejectText:  { color: c.red, fontWeight: '800', fontSize: FontSizes.sm },
 
+  // The shared primary look (Button): tangerine with ink text.
   submitBtn: {
-    backgroundColor: c.primary,
-    paddingVertical: Spacing.md,
-    borderRadius:    Radius.full,
+    backgroundColor: c.cta,
+    minHeight:       48,
+    paddingHorizontal: Space.lg,
+    borderRadius:    Radius.button,
     alignItems:      'center',
+    justifyContent:  'center',
     marginTop:       Spacing.xs,
   },
-  submitBtnText: { color: c.white, fontWeight: '800', fontSize: FontSizes.md },
-  // Compact variant - group photo channel, keeps the chat visible below.
+  submitBtnText: { color: c.onCta, fontWeight: '800', fontSize: FontSizes.md },
+  // Compact variant - group photo channel, keeps the chat visible below (Button size sm).
   cardCompact:      { marginVertical: Spacing.xs, paddingVertical: Spacing.sm },
-  submitBtnCompact: { paddingVertical: Spacing.sm, marginTop: 0 },
+  submitBtnCompact: { minHeight: 44, marginTop: 0 },
   submitBtnTextCompact: { fontSize: FontSizes.sm },
 
-  iconRow:      { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6 },
-  terminalLine: { fontSize: FontSizes.sm, fontWeight: '700', color: c.text, textAlign: 'center', paddingVertical: 4 },
+  iconRow:      { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: Space.sm },
+  terminalLine: { fontSize: FontSizes.sm, fontWeight: '700', color: c.text, textAlign: 'center', paddingVertical: Space.xs },
   reasonLine:   { fontSize: FontSizes.sm, color: c.muted, lineHeight: 18 },
   // Inline-rendered proof requirements (no popin, no separate button).
   // The pipeline carries the "Submit your proof →" CTA; this just reminds
@@ -400,7 +403,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   },
   // Inline submitting indicator - replaces the old big-button spinner.
   busyRow: {
-    flexDirection: 'row', alignItems: 'center', gap: 8,
+    flexDirection: 'row', alignItems: 'center', gap: Space.sm,
     marginTop: Spacing.sm,
   },
   busyText: { fontSize: FontSizes.sm, color: c.muted },
@@ -430,7 +433,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
     fontSize:          FontSizes.md,
     color:             c.text,
   },
-  charCount: { fontSize: 11, color: c.mutedDim, textAlign: 'right' },
+  charCount: { fontSize: FontSizes.xs, color: c.mutedDim, textAlign: 'right' },
   modalSubmit: {
     backgroundColor: c.red,
     paddingVertical: Spacing.md,

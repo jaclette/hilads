@@ -12,7 +12,7 @@ import { useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
 import { usePreventRemove } from '@react-navigation/core';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
-import { FontSizes, Radius, Spacing, type ThemeColors } from '@/constants';
+import { Space, FontSizes, Radius, Spacing, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { useApp } from '@/context/AppContext';
 import { track } from '@/services/analytics';
@@ -37,7 +37,7 @@ import { SharePanel, type SharePanelHandle } from '@/features/share/SharePanel';
 import { proofShare, representShare, type ShareContent } from '@/features/share/content';
 import { ShareSheet } from '@/features/share/ShareSheet';
 import { shortCityName } from '@/i18n/cityName';
-import { Button, CityFlag, DualPhoto, IconButton, TextField } from '@/ui';
+import { Button, Card, CityFlag, DualPhoto, IconButton, TextField } from '@/ui';
 import { AnswerInput } from '@/features/compare/AnswerInput';
 import { HomeCityPicker } from '@/features/compare/HomeCityPicker';
 import { answerValue, draftFrom, emptyDraft, hhmm, type AnswerDraft } from '@/features/compare/format';
@@ -536,15 +536,7 @@ function DailyProofScreenContent() {
   return (
     <SafeAreaView style={styles.container} edges={['top', 'bottom']} testID="proof-screen">
       <View style={styles.nav}>
-        <TouchableOpacity
-          style={styles.back}
-          onPress={leave}
-          testID="header-back"
-          accessibilityRole="button"
-          accessibilityLabel={t('back')}
-        >
-          <Ionicons name="chevron-back" size={22} color={colors.text} />
-        </TouchableOpacity>
+        <IconButton icon="chevron-back" onPress={leave} label={t('back')} testID="header-back" />
         <Text style={styles.navTitle}>{original ? t('proof.titleEdit') : t('proof.titleNew')}</Text>
       </View>
       {challenge && !loading && !closed && <Text style={styles.challenge} numberOfLines={3}>{challenge.text}</Text>}
@@ -654,18 +646,13 @@ function DailyProofScreenContent() {
           <View style={styles.icon}><Ionicons name="camera-outline" size={32} color={colors.primaryOnTint} /></View>
           <Text style={styles.stepTitle}>{t('proof.takeTitle')}</Text>
           {placeName && <Text style={styles.muted}>{t('place.at', { name: placeName })}</Text>}
-          <TouchableOpacity style={styles.cta} onPress={takePhoto} accessibilityRole="button">
-            <Ionicons name="camera" size={20} color={colors.white} />
-            <Text style={styles.ctaText}>{t('proof.camera')}</Text>
-          </TouchableOpacity>
+          <Button label={t('proof.camera')} icon="camera" onPress={takePhoto} style={styles.cta} />
         </View>
       ) : (
         <KeyboardForm contentContainerStyle={styles.body} footer={(
             <View style={styles.footer}>
-              <TouchableOpacity style={[styles.submit, (!photo || sending) && styles.submitOff]} onPress={afterDetails} disabled={sending} accessibilityRole="button">
-                {sending ? <ActivityIndicator color={colors.white} />
-                  : <Text style={styles.submitText}>{showHome ? t('compare.next') : original ? t('proof.save') : t('proof.submit')}</Text>}
-              </TouchableOpacity>
+              <Button label={showHome ? t('compare.next') : original ? t('proof.save') : t('proof.submit')}
+                      onPress={afterDetails} loading={sending} style={!photo && styles.submitOff} />
             </View>
           )}>
           {photo && (
@@ -697,19 +684,15 @@ function DailyProofScreenContent() {
           )}
 
           {tooFar && (
-            <View style={styles.tooFar} accessibilityRole="alert">
+            <Card variant="tint" style={styles.tooFar} accessibilityRole="alert">
               <Text style={styles.tooFarText}>
                 {t('place.tooFar', { distance: distance(tooFar.distanceM, i18n.language), name: placeName ?? '', radius: tooFar.radiusM })}
               </Text>
               <View style={styles.tooFarActions}>
-                <TouchableOpacity style={[styles.smallBtn, styles.smallPrimary]} onPress={() => submit(true)} accessibilityRole="button">
-                  <Text style={styles.smallPrimaryText}>{t('place.tryAgain')}</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.smallBtn} onPress={() => { setTooFar(null); setPlace(null); setStep('place'); }} accessibilityRole="button">
-                  <Text style={styles.smallBtnText}>{t('place.pickAnother')}</Text>
-                </TouchableOpacity>
+                <Button size="sm" label={t('place.tryAgain')} onPress={() => submit(true)} style={styles.smallBtn} />
+                <Button size="sm" variant="secondary" label={t('place.pickAnother')} onPress={() => { setTooFar(null); setPlace(null); setStep('place'); }} style={styles.smallBtn} />
               </View>
-            </View>
+            </Card>
           )}
 
           <Text style={styles.label}>{t('proof.caption')}</Text>
@@ -782,60 +765,53 @@ function DailyProofScreenContent() {
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
   container:   { flex: 1, backgroundColor: c.bg },
   flex:        { flex: 1 },
-  center:      { flex: 1, alignItems: 'center', justifyContent: 'center', padding: Spacing.lg, gap: 12 },
-  nav:         { flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: Spacing.md, paddingVertical: 8 },
-  back:        { width: 44, height: 44, borderRadius: Radius.full, backgroundColor: c.bg2, borderWidth: 1.5, borderColor: c.line, alignItems: 'center', justifyContent: 'center' },
+  center:      { flex: 1, alignItems: 'center', justifyContent: 'center', padding: Spacing.lg, gap: Space.md },
+  nav:         { flexDirection: 'row', alignItems: 'center', gap: Space.md, paddingHorizontal: Spacing.md, paddingVertical: Space.sm },
   navTitle:    { flex: 1, fontSize: FontSizes.md, fontWeight: '800', color: c.text },
-  challenge:   { fontSize: FontSizes.sm, fontWeight: '700', color: c.muted, paddingHorizontal: Spacing.md, paddingBottom: 6 },
+  challenge:   { fontSize: FontSizes.sm, fontWeight: '700', color: c.muted, paddingHorizontal: Spacing.md, paddingBottom: Space.sm },
   icon:        { width: 64, height: 64, borderRadius: Radius.full, backgroundColor: c.primaryTint, alignItems: 'center', justifyContent: 'center' },
   stepTitle:   { fontSize: FontSizes.lg, fontWeight: '800', color: c.text, textAlign: 'center' },
-  boardRow:     { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, flexWrap: 'wrap' },
-  boardSub:     { fontSize: 15, fontWeight: '700', color: c.primaryText, textAlign: 'center' },
-  cta:         { alignSelf: 'stretch', flexDirection: 'row', gap: 8, minHeight: 48, borderRadius: 16, backgroundColor: c.primary, alignItems: 'center', justifyContent: 'center' },
-  ctaText:     { color: c.white, fontSize: FontSizes.md, fontWeight: '700' },
-  body:        { padding: Spacing.md, gap: 8, paddingBottom: 30 },
-  photoWrap:   { gap: 8 },
-  photoActions: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: 12 },
+  boardRow:     { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: Space.sm, flexWrap: 'wrap' },
+  boardSub:     { fontSize: FontSizes.body, fontWeight: '700', color: c.primaryText, textAlign: 'center' },
+  cta:         { alignSelf: 'stretch' },
+  body:        { padding: Spacing.md, gap: Space.sm, paddingBottom: 30 },
+  photoWrap:   { gap: Space.sm },
+  photoActions: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: Space.md },
   photo:       { width: '100%', aspectRatio: 1, borderRadius: 18, backgroundColor: c.bg3 },
-  retake:      { alignSelf: 'center', flexDirection: 'row', alignItems: 'center', gap: 6, minHeight: 44, paddingHorizontal: 16, borderRadius: Radius.full, borderWidth: 1.5, borderColor: c.line, backgroundColor: c.bg2 },
+  retake:      { alignSelf: 'center', flexDirection: 'row', alignItems: 'center', gap: Space.sm, minHeight: 44, paddingHorizontal: Space.lg, borderRadius: Radius.full, borderWidth: 1.5, borderColor: c.line, backgroundColor: c.bg2 },
   retakeText:  { fontSize: FontSizes.sm, fontWeight: '700', color: c.text },
-  placeRow:    { flexDirection: 'row', alignItems: 'center', gap: 10, minHeight: 52, paddingHorizontal: 14, borderRadius: 16, backgroundColor: c.bg2, borderWidth: 1.5, borderColor: c.line },
+  placeRow:    { flexDirection: 'row', alignItems: 'center', gap: Space.md, minHeight: 52, paddingHorizontal: Space.lg, borderRadius: Radius.card, backgroundColor: c.bg2, borderWidth: 1.5, borderColor: c.line },
   placeName:   { flex: 1, fontSize: FontSizes.md, fontWeight: '700', color: c.text },
-  tooFar:      { gap: 10, padding: 14, borderRadius: 16, backgroundColor: c.primaryTint },
+  tooFar:      { gap: Space.md, padding: Space.lg },
   tooFarText:  { fontSize: FontSizes.sm, fontWeight: '600', color: c.primaryOnTint },
-  tooFarActions: { flexDirection: 'row', gap: 8 },
-  smallBtn:    { flex: 1, minHeight: 44, borderRadius: 14, alignItems: 'center', justifyContent: 'center', backgroundColor: c.bg2, borderWidth: 1.5, borderColor: c.line, paddingHorizontal: 8 },
-  smallBtnText:{ fontSize: FontSizes.sm, fontWeight: '700', color: c.text },
-  smallPrimary:{ backgroundColor: c.primary, borderColor: c.primary },
-  smallPrimaryText: { fontSize: FontSizes.sm, fontWeight: '700', color: c.white },
-  label:       { fontSize: FontSizes.sm, fontWeight: '700', color: c.text, marginTop: 10 },
-  input:       { backgroundColor: c.bg2, borderWidth: 1.5, borderColor: c.line, borderRadius: 14, paddingHorizontal: 14, paddingVertical: 12, fontSize: FontSizes.sm, color: c.text },
-  counter:     { alignSelf: 'flex-end', fontSize: 12, color: c.muted },
+  tooFarActions: { flexDirection: 'row', gap: Space.sm },
+  smallBtn:    { flex: 1, paddingHorizontal: Space.sm },
+  label:       { fontSize: FontSizes.sm, fontWeight: '700', color: c.text, marginTop: Space.md },
+  input:       { backgroundColor: c.bg2, borderWidth: 1.5, borderColor: c.line, borderRadius: 14, paddingHorizontal: Space.lg, paddingVertical: Space.md, fontSize: FontSizes.sm, color: c.text },
+  counter:     { alignSelf: 'flex-end', fontSize: FontSizes.xs, color: c.muted },
   counterNear: { color: c.primaryText, fontWeight: '700' },
-  priceRow:    { flexDirection: 'row', gap: 8 },
+  priceRow:    { flexDirection: 'row', gap: Space.sm },
   currency:    { width: 84, textAlign: 'center', fontWeight: '700' },
   muted:       { fontSize: FontSizes.sm, color: c.muted, textAlign: 'center' },
-  sentNav:     { flexDirection: 'row', paddingHorizontal: Spacing.md, paddingTop: 4 },
-  sent:        { alignItems: 'center', padding: Spacing.lg, paddingTop: 0, gap: 12 },
+  sentNav:     { flexDirection: 'row', paddingHorizontal: Spacing.md, paddingTop: Space.xs },
+  sent:        { alignItems: 'center', padding: Spacing.lg, paddingTop: 0, gap: Space.md },
   footerBtn:   { flex: 1 },
-  sentShare:   { alignSelf: 'stretch', fontSize: FontSizes.md, fontWeight: '800', color: c.text, marginTop: 12 },
+  sentShare:   { alignSelf: 'stretch', fontSize: FontSizes.md, fontWeight: '800', color: c.text, marginTop: Space.md },
   link:        { fontSize: FontSizes.sm, fontWeight: '700', color: c.primaryText },
   footer:      { padding: Spacing.md, borderTopWidth: 1, borderTopColor: c.line, backgroundColor: c.bg },
-  votesNext:   { fontSize: FontSizes.sm, fontWeight: '700', color: c.text, textAlign: 'center', marginBottom: 10 },
-  footerRow:   { flexDirection: 'row', gap: 10 },
-  kicker:      { fontSize: FontSizes.xs, fontWeight: '800', color: c.primaryText, textTransform: 'uppercase', letterSpacing: 0.6, marginTop: 8 },
+  votesNext:   { fontSize: FontSizes.sm, fontWeight: '700', color: c.text, textAlign: 'center', marginBottom: Space.md },
+  footerRow:   { flexDirection: 'row', gap: Space.md },
+  kicker:      { fontSize: FontSizes.xs, fontWeight: '800', color: c.primaryText, textTransform: 'uppercase', letterSpacing: 0.6, marginTop: Space.sm },
   question:    { fontSize: FontSizes.xl, lineHeight: 30, fontWeight: '800', color: c.text, letterSpacing: -0.3 },
-  questionSub: { fontSize: FontSizes.sm, color: c.muted, marginBottom: 10 },
-  qCard:       { aspectRatio: 4 / 5, maxHeight: 420, borderRadius: 20, overflow: 'hidden', backgroundColor: c.bg3, justifyContent: 'flex-end', marginBottom: 6 },
+  questionSub: { fontSize: FontSizes.sm, color: c.muted, marginBottom: Space.md },
+  qCard:       { aspectRatio: 4 / 5, maxHeight: 420, borderRadius: Radius.ticket, overflow: 'hidden', backgroundColor: c.bg3, justifyContent: 'flex-end', marginBottom: Space.sm },
   qShade:      { position: 'absolute', left: 0, right: 0, bottom: 0, height: '60%' },
-  qText:       { padding: 16, gap: 4 },
+  qText:       { padding: Space.lg, gap: Space.xs },
   qKicker:     { fontSize: FontSizes.xs, fontWeight: '800', color: '#FFFFFF', textTransform: 'uppercase', letterSpacing: 0.6, opacity: 0.9 },
-  qQuestion:   { fontSize: 22, lineHeight: 27, fontWeight: '800', color: '#FFFFFF', letterSpacing: -0.3 },
-  qAnswer:     { alignSelf: 'flex-start', marginTop: 8, paddingHorizontal: 12, paddingVertical: 6, borderRadius: 999, backgroundColor: '#FFFFFF' },
+  qQuestion:   { fontSize: FontSizes.xl, lineHeight: 29, fontWeight: '800', color: '#FFFFFF', letterSpacing: -0.3 },
+  qAnswer:     { alignSelf: 'flex-start', marginTop: Space.sm, paddingHorizontal: Space.md, paddingVertical: Space.sm, borderRadius: 999, backgroundColor: '#FFFFFF' },
   qAnswerText: { color: '#2A1C13', fontSize: FontSizes.md, fontWeight: '800' },
-  submit:      { backgroundColor: c.primary, borderRadius: 16, minHeight: 52, alignItems: 'center', justifyContent: 'center' },
   submitOff:   { opacity: 0.5 },
-  submitText:  { color: c.white, fontSize: FontSizes.md, fontWeight: '700' },
 });
 
 /** The answer as it will read (the photo card's live preview): the text, or the time. */

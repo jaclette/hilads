@@ -6,7 +6,7 @@ import { Image } from 'expo-image';
 import { socket } from '@/lib/socket';
 import { fetchChannelParticipants, type ChannelMember } from '@/api/challenges';
 import { avatarColor } from '@/lib/avatarColors';
-import { FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
+import { Space, FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles } from '@/context/ThemeContext';
 import type { Challenge, UserDTO } from '@/types';
 
@@ -127,7 +127,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   strip: {
     flexDirection:   'row',
     alignItems:      'center',
-    gap:             10,
+    gap:             Space.md,
     paddingHorizontal: Spacing.lg,
     paddingVertical:   Spacing.sm + 2,
     borderTopWidth:    StyleSheet.hairlineWidth,
@@ -141,7 +141,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
     overflow:        'hidden',
     borderWidth:     2, borderColor: c.bg,
   },
-  avatarText: { color: c.white, fontWeight: '700', fontSize: 11 },
+  avatarText: { color: c.white, fontWeight: '700', fontSize: FontSizes.xs },
   countLabel: { flex: 1, fontSize: FontSizes.sm, color: c.text, fontWeight: '600' },
   seeAll:     { fontSize: FontSizes.sm, color: c.primaryText, fontWeight: '700' },
 });

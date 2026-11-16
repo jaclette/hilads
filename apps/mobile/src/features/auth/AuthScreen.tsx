@@ -2,7 +2,7 @@ import type { ReactNode } from 'react';
 import { Text, TouchableOpacity, View, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
-import { FontSizes, Radius, Spacing, type ThemeColors } from '@/constants';
+import { Space, FontSizes, Radius, Spacing, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { BrandMark, Screen, ScreenHeader } from '@/ui';
 import { KeyboardForm } from '@/ui/keyboard';
@@ -51,10 +51,10 @@ export function PasswordEye({ shown, onPress }: { shown: boolean; onPress: () =>
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
   flex:      { flex: 1 },
   body:      { flexGrow: 1, paddingHorizontal: Spacing.lg, paddingTop: Spacing.sm, paddingBottom: Spacing.xxl, gap: Spacing.md },
-  head:      { gap: 8, marginBottom: 4 },
-  title:     { fontSize: FontSizes.xxl, fontWeight: '800', color: c.text, letterSpacing: -0.5, marginTop: 6 },
+  head:      { gap: Space.sm, marginBottom: Space.xs },
+  title:     { fontSize: FontSizes.xxl, fontWeight: '800', color: c.text, letterSpacing: -0.5, marginTop: Space.sm },
   subtitle:  { fontSize: FontSizes.sm, fontWeight: '400', color: c.muted },
-  error:     { flexDirection: 'row', alignItems: 'center', gap: 8, padding: 12, borderRadius: Radius.button, borderWidth: 1.5, borderColor: c.red },
+  error:     { flexDirection: 'row', alignItems: 'center', gap: Space.sm, padding: Space.md, borderRadius: Radius.button, borderWidth: 1.5, borderColor: c.red },
   errorText: { flex: 1, fontSize: FontSizes.sm, fontWeight: '600', color: c.red },
   eye:       { width: 44, height: 44, marginRight: -10, alignItems: 'center', justifyContent: 'center' },
 });

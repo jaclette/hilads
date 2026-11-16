@@ -3,7 +3,7 @@ import { Text, TouchableOpacity, View, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
-import { FontSizes, type ThemeColors } from '@/constants';
+import { Space, FontSizes, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { useApp } from '@/context/AppContext';
 import { track } from '@/services/analytics';
@@ -66,8 +66,8 @@ export function EmptyCity({ today }: { today: DailyToday | null }) {
 }
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  card:     { padding: 16, gap: 10 },
-  head:     { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  card:     { padding: Space.lg, gap: Space.md },
+  head:     { flexDirection: 'row', alignItems: 'center', gap: Space.sm },
   title:    { flex: 1, fontSize: FontSizes.md, fontWeight: '800', color: c.text },
   text:     { fontSize: FontSizes.sm, color: c.muted },
   tomorrow: { fontSize: FontSizes.sm, fontWeight: '700', color: c.primaryText },

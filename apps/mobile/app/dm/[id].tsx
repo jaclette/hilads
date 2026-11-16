@@ -34,7 +34,7 @@ import { track } from '@/services/analytics';
 import { linkifyText, extractFirstUrl } from '@/lib/linkify';
 import { LinkPreviewCard } from '@/features/chat/LinkPreviewCard';
 import * as Clipboard from 'expo-clipboard';
-import { Border, FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
+import { Space, Border, FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
 import { Avatar, Button, EmptyState, IconButton } from '@/ui';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { avatarColor } from '@/lib/avatarColors';
@@ -63,9 +63,9 @@ function DateSeparator({ label }: { label: string }) {
 }
 
 const makeSepStyles = (c: ThemeColors) => StyleSheet.create({
-  row:  { flexDirection: 'row', alignItems: 'center', marginVertical: 16, paddingHorizontal: Spacing.md, gap: 10 },
+  row:  { flexDirection: 'row', alignItems: 'center', marginVertical: Space.lg, paddingHorizontal: Spacing.md, gap: Space.md },
   line: { flex: 1, height: 1, backgroundColor: c.line },
-  text: { fontSize: 12, fontWeight: '700', color: c.muted },
+  text: { fontSize: FontSizes.xs, fontWeight: '700', color: c.muted },
 });
 
 // ── Message row ───────────────────────────────────────────────────────────────
@@ -151,16 +151,16 @@ function DmLocationBubble({ content, isMine }: { content: string; isMine: boolea
 const makeDmLocStyles = (c: ThemeColors) => StyleSheet.create({
   // minWidth required: the bubble row shrinks children to content width, which
   // would collapse the flex body.
-  card:        { flexDirection: 'row', alignItems: 'flex-start', gap: 10, borderRadius: 18, padding: 14, minWidth: 190, maxWidth: 260 },
+  card:        { flexDirection: 'row', alignItems: 'flex-start', gap: Space.md, borderRadius: 18, padding: Space.lg, minWidth: 190, maxWidth: 260 },
   cardOther:   { backgroundColor: c.bg3, borderTopLeftRadius: 6 },
   cardMine:    { backgroundColor: c.caramel, borderTopRightRadius: 6 },
   icon:        { marginTop: 1, flexShrink: 0 },
-  body:        { flex: 1, flexShrink: 1, minWidth: 0, gap: 3 },
-  line1:       { fontSize: 14, fontWeight: '700', color: c.text, lineHeight: 20 },
-  addr:        { fontSize: 12, fontWeight: '400', color: c.muted, lineHeight: 17 },
+  body:        { flex: 1, flexShrink: 1, minWidth: 0, gap: Space.xs },
+  line1:       { fontSize: FontSizes.sm, fontWeight: '700', color: c.text, lineHeight: 20 },
+  addr:        { fontSize: FontSizes.xs, fontWeight: '400', color: c.muted, lineHeight: 17 },
   textMine:    { color: c.white },
   addrMine:    { color: c.onCaramelMuted },
-  tapHint:     { fontSize: FontSizes.xs, fontWeight: '600', color: c.primaryText, marginTop: 2 },
+  tapHint:     { fontSize: FontSizes.xs, fontWeight: '600', color: c.primaryText, marginTop: Space.xxs },
   tapHintMine: { color: c.onCaramelMuted },
 });
 
@@ -997,30 +997,30 @@ export default function DMThreadScreen() {
 // DM bubbles: paddingHorizontal 18, paddingVertical 12 (see styles.bubble)
 const makeDmReplyStyles = (c: ThemeColors) => StyleSheet.create({
   // Quote of the replied message: a left rule inside the bubble.
-  quote:      { marginBottom: 6, paddingLeft: 8, paddingVertical: 2, borderLeftWidth: 3 },
+  quote:      { marginBottom: Space.sm, paddingLeft: Space.sm, paddingVertical: Space.xxs, borderLeftWidth: 3 },
   quoteOther: { borderLeftColor: c.primary },
   quoteMine:  { borderLeftColor: c.onCaramelMuted },
-  name:       { fontSize: 12, fontWeight: '700', color: c.primaryText, lineHeight: 16 },
+  name:       { fontSize: FontSizes.xs, fontWeight: '700', color: c.primaryText, lineHeight: 16 },
   nameMine:   { color: c.white },
-  text:       { fontSize: 12, fontWeight: '400', color: c.muted, lineHeight: 16 },
+  text:       { fontSize: FontSizes.xs, fontWeight: '400', color: c.muted, lineHeight: 16 },
   textMine:   { color: c.onCaramelMuted },
 });
 
 const makeDmComposerReplyStyles = (c: ThemeColors) => StyleSheet.create({
-  strip:   { flexDirection: 'row', alignItems: 'center', gap: 10, paddingLeft: Spacing.md, paddingRight: 6, paddingVertical: 4,
+  strip:   { flexDirection: 'row', alignItems: 'center', gap: Space.md, paddingLeft: Spacing.md, paddingRight: Space.sm, paddingVertical: Space.xs,
              backgroundColor: c.bg2, borderTopWidth: 1, borderTopColor: c.line, borderLeftWidth: 3, borderLeftColor: c.primary },
   body:    { flex: 1, minWidth: 0 },
-  name:    { fontSize: 12, fontWeight: '700', color: c.primaryText, marginBottom: 2 },
-  preview: { fontSize: 12, fontWeight: '400', color: c.muted },
+  name:    { fontSize: FontSizes.xs, fontWeight: '700', color: c.primaryText, marginBottom: Space.xxs },
+  preview: { fontSize: FontSizes.xs, fontWeight: '400', color: c.muted },
   close:   { width: 44, height: 44, alignItems: 'center', justifyContent: 'center' },
 });
 
 const makeDmComposerEditStyles = (c: ThemeColors) => StyleSheet.create({
-  strip:   { flexDirection: 'row', alignItems: 'center', gap: 10, paddingLeft: Spacing.md, paddingRight: 6, paddingVertical: 4,
+  strip:   { flexDirection: 'row', alignItems: 'center', gap: Space.md, paddingLeft: Spacing.md, paddingRight: Space.sm, paddingVertical: Space.xs,
              backgroundColor: c.primaryTint, borderTopWidth: 1, borderTopColor: c.line },
   body:    { flex: 1, minWidth: 0 },
-  name:    { fontSize: 12, fontWeight: '700', color: c.primaryOnTint, marginBottom: 2 },
-  preview: { fontSize: 12, fontWeight: '400', color: c.primaryOnTint },
+  name:    { fontSize: FontSizes.xs, fontWeight: '700', color: c.primaryOnTint, marginBottom: Space.xxs },
+  preview: { fontSize: FontSizes.xs, fontWeight: '400', color: c.primaryOnTint },
 });
 
 // ── Styles ────────────────────────────────────────────────────────────────────
@@ -1031,32 +1031,32 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   container: { flex: 1, backgroundColor: c.bg },
   flex:      { flex: 1 },
 
-  header:     { flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: Spacing.md, paddingVertical: 8,
+  header:     { flexDirection: 'row', alignItems: 'center', gap: Space.md, paddingHorizontal: Spacing.md, paddingVertical: Space.sm,
                 borderBottomWidth: 1, borderBottomColor: c.line },
-  headerTap:  { flex: 1, flexDirection: 'row', alignItems: 'center', gap: 10, minHeight: 44 },
+  headerTap:  { flex: 1, flexDirection: 'row', alignItems: 'center', gap: Space.md, minHeight: 44 },
   headerInfo: { flex: 1, minWidth: 0 },
   headerName: { fontSize: FontSizes.md, fontWeight: '800', color: c.text },
-  headerSub:  { fontSize: 12, fontWeight: '400', color: c.muted },
+  headerSub:  { fontSize: FontSizes.xs, fontWeight: '400', color: c.muted },
 
   center:          { flex: 1, alignItems: 'center', justifyContent: 'center', padding: Spacing.lg },
-  errorBanner:     { flexDirection: 'row', alignItems: 'center', gap: 8, minHeight: 44, marginHorizontal: Spacing.md, marginTop: 6,
-                     paddingHorizontal: 12, borderRadius: Radius.button, borderWidth: Border, borderColor: c.red, backgroundColor: c.bg2 },
+  errorBanner:     { flexDirection: 'row', alignItems: 'center', gap: Space.sm, minHeight: 44, marginHorizontal: Spacing.md, marginTop: Space.sm,
+                     paddingHorizontal: Space.md, borderRadius: Radius.button, borderWidth: Border, borderColor: c.red, backgroundColor: c.bg2 },
   errorBannerText: { flex: 1, fontSize: FontSizes.xs, fontWeight: '600', color: c.red },
-  listContent:      { paddingHorizontal: Spacing.md, paddingVertical: 16 },
-  loadingOlderWrap: { paddingVertical: 14, alignItems: 'center' },
-  beginningText:    { fontSize: 12, fontWeight: '600', color: c.muted },
+  listContent:      { paddingHorizontal: Spacing.md, paddingVertical: Space.lg },
+  loadingOlderWrap: { paddingVertical: Space.lg, alignItems: 'center' },
+  beginningText:    { fontSize: FontSizes.xs, fontWeight: '600', color: c.muted },
   emptyWrap:        { flex: 1, justifyContent: 'center', padding: Spacing.lg },
 
   // ── Rows and bubbles (same look as the city chat) ──
-  rowWrapper:      { flexDirection: 'row', alignItems: 'flex-end', gap: 8 },
+  rowWrapper:      { flexDirection: 'row', alignItems: 'flex-end', gap: Space.sm },
   rowWrapperMine:  { justifyContent: 'flex-end' },
   rowWrapperOther: { justifyContent: 'flex-start' },
-  rowFirst:        { marginTop: 10 },
-  rowGrouped:      { marginTop: 3 },
+  rowFirst:        { marginTop: Space.md },
+  rowGrouped:      { marginTop: Space.xs },
   avatarSlot:      { width: AVATAR_SIZE },
   bubbleCol:       { maxWidth: '78%' },
   bubbleColMine:   { alignItems: 'flex-end' },
-  bubble:          { borderRadius: 18, paddingHorizontal: 14, paddingVertical: 9 },
+  bubble:          { borderRadius: 18, paddingHorizontal: Space.lg, paddingVertical: Space.sm },
   bubbleOther:     { backgroundColor: c.bg3 },
   bubbleMine:      { backgroundColor: c.caramel },
   bubbleOtherFirst:{ borderTopLeftRadius: 6 },
@@ -1066,17 +1066,17 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   bubbleText:      { fontSize: FontSizes.sm, fontWeight: '400', color: c.text, lineHeight: 20 },
   bubbleTextMine:  { color: c.white },
   tombstone:       { fontStyle: 'italic', color: c.muted },
-  edited:          { fontSize: 11, fontWeight: '400', color: c.muted },
+  edited:          { fontSize: FontSizes.xs, fontWeight: '400', color: c.muted },
   editedMine:      { color: c.onCaramelMuted },
   imageBubble:     { borderRadius: 18, overflow: 'hidden' },
   bubbleImage:     { width: 240, height: 200 },
-  metaRow:         { marginTop: 3, paddingHorizontal: 2 },
+  metaRow:         { marginTop: Space.xs, paddingHorizontal: Space.xxs },
   metaRowMine:     { alignItems: 'flex-end' },
-  metaText:        { fontSize: 11, fontWeight: '400', color: c.mutedDim },
-  metaTextFailed:  { fontSize: 11, fontWeight: '600', color: c.red },
+  metaText:        { fontSize: FontSizes.xs, fontWeight: '400', color: c.mutedDim },
+  metaTextFailed:  { fontSize: FontSizes.xs, fontWeight: '600', color: c.red },
 
   // ── Composer (same look as the city chat composer) ──
-  composer:         { flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: Spacing.md, paddingVertical: 10,
+  composer:         { flexDirection: 'row', alignItems: 'center', gap: Space.sm, paddingHorizontal: Spacing.md, paddingVertical: Space.md,
                       borderTopWidth: 1, borderTopColor: c.line, backgroundColor: c.bg },
   composerFocused:  {},
   vibeBtnGlow:      { flexShrink: 0 },
@@ -1085,7 +1085,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   emojiBtn:         { width: 44, height: 44, flexShrink: 0, alignItems: 'center', justifyContent: 'center', borderRadius: Radius.full, marginHorizontal: -4 },
   emojiBtnActive:   { backgroundColor: c.primaryTint },
   input:            { flex: 1, minWidth: 0, minHeight: 44, maxHeight: 130, backgroundColor: c.bg2, borderRadius: 22, borderWidth: Border,
-                      borderColor: c.line, paddingHorizontal: 16, paddingVertical: 11, color: c.text, fontSize: 15, fontWeight: '400', lineHeight: 20 },
+                      borderColor: c.line, paddingHorizontal: Space.lg, paddingVertical: Space.md, color: c.text, fontSize: FontSizes.body, fontWeight: '400', lineHeight: 20 },
   sendBtn:          { width: 44, height: 44, borderRadius: Radius.full, backgroundColor: c.primary, alignItems: 'center', justifyContent: 'center' },
   sendBtnOff:       { opacity: 0.35 },
 });

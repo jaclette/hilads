@@ -18,7 +18,7 @@ import { useTranslation } from 'react-i18next';
 import i18n from '@/i18n';
 import { Ionicons } from '@expo/vector-icons';
 import type { HiladsEvent } from '@/types';
-import { FontSizes, Radius, type ThemeColors } from '@/constants';
+import { Space, FontSizes, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 
 type IconName = React.ComponentProps<typeof Ionicons>['name'];
@@ -97,10 +97,10 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
     borderColor:       c.line,
     padding:           14,
     minHeight:         56,
-    gap:               10,
+    gap:               Space.md,
   },
   eventIcon:  { width: 36, height: 36, borderRadius: Radius.full, backgroundColor: c.primaryTint, alignItems: 'center', justifyContent: 'center' },
-  eventInfo:  { flex: 1, gap: 2 },
+  eventInfo:  { flex: 1, gap: Space.xxs },
   eventTitle: {
     fontSize:   FontSizes.sm,
     fontWeight: '700',
@@ -109,15 +109,15 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   eventMeta: {
     flexDirection: 'row',
     alignItems:    'center',
-    gap:           6,
+    gap:           Space.sm,
   },
   eventTime:     { fontSize: FontSizes.xs, fontWeight: '500', color: c.muted },
   eventLocation: { fontSize: FontSizes.xs, fontWeight: '500', color: c.muted, flexShrink: 1 },
   liveBadge: {
     backgroundColor:   c.localBg,
     borderRadius:      Radius.full,
-    paddingHorizontal: 6,
-    paddingVertical:   2,
+    paddingHorizontal: Space.sm,
+    paddingVertical:   Space.xxs,
   },
   liveBadgeText: {
     fontSize:      FontSizes.xs,
@@ -128,8 +128,8 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   pastBadge: {
     backgroundColor:   c.bg3,
     borderRadius:      Radius.full,
-    paddingHorizontal: 6,
-    paddingVertical:   2,
+    paddingHorizontal: Space.sm,
+    paddingVertical:   Space.xxs,
   },
   pastBadgeText: {
     fontSize:      FontSizes.xs,

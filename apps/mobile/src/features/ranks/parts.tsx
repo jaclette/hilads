@@ -3,12 +3,14 @@ import { Pressable, Text, View, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import Animated, { useAnimatedStyle, useReducedMotion, useSharedValue, withDelay, withSpring, withTiming, Easing } from 'react-native-reanimated';
 import { useTranslation } from 'react-i18next';
-import { Radius, type ThemeColors } from '@/constants';
+import { Space, FontSizes, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { Confetti, FlagSticker, tint } from '@/ui/joy';
 
-/** Podium block colors: gold, silver, bronze. */
-export const MEDAL = ['#FFC93C', '#C9CED6', '#E3A06B'];
+/** A podium place's medal color (1 gold, 2 silver, 3 bronze): the theme's medal tokens, one palette in every theme. */
+export function medalColor(c: ThemeColors, rank: number): string {
+  return [c.gold, c.silver, c.bronze][rank - 1] ?? c.gold;
+}
 export const MEDAL_EMOJI = ['🥇', '🥈', '🥉'];
 
 /** A number counting up from 0 (once), plain with "reduce motion". */
@@ -83,7 +85,8 @@ function PodiumStep({ item, delay }: { item: PodiumItem; delay: number }) {
   useEffect(() => { if (!reduced) grow.value = withDelay(delay, withSpring(1, { damping: 12, stiffness: 120 })); }, []); // eslint-disable-line react-hooks/exhaustive-deps
   const block = useAnimatedStyle(() => ({ height: HEIGHTS[item.rank - 1] * grow.value }));
   const lead = useAnimatedStyle(() => ({ opacity: grow.value, transform: [{ scale: 0.7 + 0.3 * grow.value }] }));
-  const color = MEDAL[item.rank - 1];
+  const { colors } = useTheme();
+  const color = medalColor(colors, item.rank);
   return (
     <Pressable style={styles.step} onPress={item.onPress} disabled={!item.onPress} accessibilityRole="button"
                accessibilityLabel={`#${item.rank} ${item.label}`}>
@@ -104,7 +107,8 @@ function PodiumStep({ item, delay }: { item: PodiumItem; delay: number }) {
 function GhostStep({ rank, ghost: make }: { rank: number; ghost: PodiumGhost }) {
   const styles = useThemedStyles(makeStyles);
   const ghost = make(rank);
-  const color = MEDAL[rank - 1];
+  const { colors } = useTheme();
+  const color = medalColor(colors, rank);
   return (
     <Pressable style={styles.step} onPress={ghost.onPress} disabled={!ghost.onPress} accessibilityRole={ghost.onPress ? 'button' : 'text'}
                accessibilityLabel={`#${rank} ${ghost.label}`} testID={`ranks-ghost-${rank}`}>
@@ -173,40 +177,40 @@ export function RaceBar({ ratio, color, delay = 0 }: { ratio: number; color: str
 }
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  podium:      { flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'center', gap: 8, paddingTop: 8, paddingBottom: 4 },
+  podium:      { flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'center', gap: Space.sm, paddingTop: Space.sm, paddingBottom: Space.xs },
   step:        { flex: 1, alignItems: 'center', maxWidth: 130 },
-  lead:        { alignItems: 'center', marginBottom: 6 },
+  lead:        { alignItems: 'center', marginBottom: Space.sm },
   crown:       { fontSize: 24, lineHeight: 30, marginBottom: -4 },
-  podiumName:  { fontSize: 13, lineHeight: 17, fontWeight: '800', color: c.text, maxWidth: '100%' },
-  podiumValue: { fontSize: 13, lineHeight: 17, fontWeight: '700', color: c.muted, marginBottom: 6 },
-  block:       { width: '100%', borderTopLeftRadius: 14, borderTopRightRadius: 14, alignItems: 'center', paddingTop: 8, overflow: 'hidden' },
-  blockRank:   { fontSize: 26, lineHeight: 32, fontWeight: '900', color: '#2A1C13' },
+  podiumName:  { fontSize: FontSizes.xs, lineHeight: 17, fontWeight: '800', color: c.text, maxWidth: '100%' },
+  podiumValue: { fontSize: FontSizes.xs, lineHeight: 17, fontWeight: '700', color: c.muted, marginBottom: Space.sm },
+  block:       { width: '100%', borderTopLeftRadius: 14, borderTopRightRadius: 14, alignItems: 'center', paddingTop: Space.sm, overflow: 'hidden' },
+  blockRank:   { fontSize: FontSizes.xl, lineHeight: 32, fontWeight: '800', color: c.onGold },
   ghostLead:   { width: 56, height: 56, borderRadius: 28, borderWidth: 2, borderStyle: 'dashed', alignItems: 'center', justifyContent: 'center' },
-  ghostLabel:  { fontSize: 13, lineHeight: 17, fontWeight: '800', color: c.text, textAlign: 'center', marginBottom: 6, minHeight: 34 },
+  ghostLabel:  { fontSize: FontSizes.xs, lineHeight: 17, fontWeight: '800', color: c.text, textAlign: 'center', marginBottom: Space.sm, minHeight: 34 },
   ghostMuted:  { color: c.muted, fontWeight: '700' },
-  ghostBlock:  { width: '100%', borderRadius: 14, borderWidth: 2, borderStyle: 'dashed', alignItems: 'center', paddingTop: 6 },
-  ghostRank:   { fontSize: 24, lineHeight: 30, fontWeight: '900', color: c.muted },
+  ghostBlock:  { width: '100%', borderRadius: 14, borderWidth: 2, borderStyle: 'dashed', alignItems: 'center', paddingTop: Space.sm },
+  ghostRank:   { fontSize: FontSizes.xl, lineHeight: 30, fontWeight: '800', color: c.muted },
   toggle:      { flexDirection: 'row', alignItems: 'center', height: 34, padding: 3, borderRadius: 17, backgroundColor: c.bg2, borderWidth: 1.5, borderColor: c.line, flexShrink: 0 },
-  toggleThumb: { position: 'absolute', left: 3, top: 3, bottom: 3, borderRadius: 14, backgroundColor: MEDAL[0] },
-  toggleSide:  { flexDirection: 'row', alignItems: 'center', gap: 5, height: 28, paddingHorizontal: 10 },
-  toggleText:  { fontSize: 13, lineHeight: 17, fontWeight: '800', color: c.text },
+  toggleThumb: { position: 'absolute', left: 3, top: 3, bottom: 3, borderRadius: 14, backgroundColor: c.gold },
+  toggleSide:  { flexDirection: 'row', alignItems: 'center', gap: Space.xs, height: 28, paddingHorizontal: Space.md },
+  toggleText:  { fontSize: FontSizes.xs, lineHeight: 17, fontWeight: '800', color: c.text },
   toggleTextOn: { color: c.onGold },
   toggleCity:  { maxWidth: 96 },
-  row:         { flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 10, paddingHorizontal: 12, borderRadius: Radius.card },
+  row:         { flexDirection: 'row', alignItems: 'center', gap: Space.md, paddingVertical: Space.md, paddingHorizontal: Space.md, borderRadius: Radius.card },
   rowMine:     { backgroundColor: c.primaryTint },
-  rank:        { width: 28, fontSize: 16, fontWeight: '900', color: c.muted, textAlign: 'center' },
-  rowBody:     { flex: 1, gap: 2 },
-  rowTitle:    { fontSize: 15, lineHeight: 20, fontWeight: '800', color: c.text },
-  rowSub:      { flexDirection: 'row', alignItems: 'center', gap: 6, flexWrap: 'wrap' },
-  pill:        { paddingHorizontal: 10, height: 28, borderRadius: 14, backgroundColor: tint('#FFC93C', 0.25), alignItems: 'center', justifyContent: 'center' },
-  pillText:    { fontSize: 13, fontWeight: '800', color: c.text },
-  move:        { fontSize: 13, fontWeight: '800', minWidth: 28, textAlign: 'right' },
-  newChip:     { paddingHorizontal: 6, height: 20, borderRadius: 10, backgroundColor: c.primaryTint, justifyContent: 'center' },
-  newText:     { fontSize: 11, fontWeight: '800', color: c.primaryOnTint },
+  rank:        { width: 28, fontSize: FontSizes.body, fontWeight: '800', color: c.muted, textAlign: 'center' },
+  rowBody:     { flex: 1, gap: Space.xxs },
+  rowTitle:    { fontSize: FontSizes.body, lineHeight: 20, fontWeight: '800', color: c.text },
+  rowSub:      { flexDirection: 'row', alignItems: 'center', gap: Space.sm, flexWrap: 'wrap' },
+  pill:        { paddingHorizontal: Space.md, height: 28, borderRadius: 14, backgroundColor: tint(c.gold, 0.25), alignItems: 'center', justifyContent: 'center' },
+  pillText:    { fontSize: FontSizes.xs, fontWeight: '800', color: c.text },
+  move:        { fontSize: FontSizes.xs, fontWeight: '800', minWidth: 28, textAlign: 'right' },
+  newChip:     { paddingHorizontal: Space.sm, height: 20, borderRadius: 10, backgroundColor: c.primaryTint, justifyContent: 'center' },
+  newText:     { fontSize: FontSizes.xs, fontWeight: '800', color: c.primaryOnTint },
   youWrap:     { position: 'absolute', left: 12, right: 12, bottom: 10 },
   you:         { minHeight: 52, paddingHorizontal: 16, paddingVertical: 10, borderRadius: Radius.full, backgroundColor: c.text, justifyContent: 'center',
                  shadowColor: '#000', shadowOpacity: 0.18, shadowRadius: 10, shadowOffset: { width: 0, height: 4 }, elevation: 4 },
-  youText:     { fontSize: 15, lineHeight: 20, fontWeight: '800', color: c.bg },
-  track:       { height: 8, borderRadius: 4, backgroundColor: c.bg3, overflow: 'hidden', marginTop: 4 },
+  youText:     { fontSize: FontSizes.body, lineHeight: 20, fontWeight: '800', color: c.bg },
+  track:       { height: 8, borderRadius: 4, backgroundColor: c.bg3, overflow: 'hidden', marginTop: Space.xs },
   fill:        { height: 8, borderRadius: 4 },
 });

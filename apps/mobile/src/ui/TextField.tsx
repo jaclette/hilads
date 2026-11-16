@@ -1,7 +1,7 @@
 import { useRef, useState, type ReactNode } from 'react';
 import { Text, TextInput, TouchableOpacity, View, StyleSheet, type TextInputProps } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Border, FontSizes, Radius, type ThemeColors } from '@/constants';
+import { Space, Border, FontSizes, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { useNextField } from './keyboard';
 
@@ -69,16 +69,16 @@ export function TextField({ variant = 'field', label, error, onClear, clearLabel
 }
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  search:      { flexDirection: 'row', alignItems: 'center', gap: 10, height: 48, paddingHorizontal: 16, borderRadius: Radius.full,
+  search:      { flexDirection: 'row', alignItems: 'center', gap: Space.md, height: 48, paddingHorizontal: Space.lg, borderRadius: Radius.full,
                  borderWidth: Border, borderColor: c.line, backgroundColor: c.bg2 },
-  searchInput: { flex: 1, fontSize: 15, fontWeight: '500', color: c.text, paddingVertical: 0 },
-  fieldWrap:   { gap: 6 },
+  searchInput: { flex: 1, fontSize: FontSizes.body, fontWeight: '500', color: c.text, paddingVertical: 0 },
+  fieldWrap:   { gap: Space.sm },
   label:       { fontSize: FontSizes.xs, fontWeight: '700', color: c.muted },
-  field:       { flexDirection: 'row', alignItems: 'center', gap: 6, minHeight: 48, paddingHorizontal: 14, borderRadius: Radius.button,
+  field:       { flexDirection: 'row', alignItems: 'center', gap: Space.sm, minHeight: 48, paddingHorizontal: Space.lg, borderRadius: Radius.button,
                  borderWidth: Border, borderColor: c.line, backgroundColor: c.bg2 },
   multiline:   { minHeight: 96, alignItems: 'flex-start' },
   prefix:      { fontSize: FontSizes.md, fontWeight: '600', color: c.muted },
-  input:       { flex: 1, minHeight: 46, paddingVertical: 12, fontSize: FontSizes.md, fontWeight: '400', color: c.text },
+  input:       { flex: 1, minHeight: 46, paddingVertical: Space.md, fontSize: FontSizes.md, fontWeight: '400', color: c.text },
   inputMultiline: { textAlignVertical: 'top' },
   focused:     { borderColor: c.primary },
   errorBorder: { borderColor: c.red },

@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Pressable, Text, TouchableOpacity, View, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
-import { Border, FontSizes, Radius, type ThemeColors } from '@/constants';
+import { Space, Border, FontSizes, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { Avatar, CityName, DualPhoto, Photo } from '@/ui';
 import { selfieOf } from '@/features/daily/selfie';
@@ -134,24 +134,24 @@ function CompactTile({ proof, onPress, top }: { proof: DailyProof; onPress: () =
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
   tile:    { flex: 1, backgroundColor: c.bg2, borderRadius: Radius.card, borderWidth: Border, borderColor: c.line, overflow: 'hidden' },
   photo:   { width: '100%', aspectRatio: 1, backgroundColor: c.bg3 },
-  meta:    { padding: 10, gap: 4 },
-  nameRow: { flexDirection: 'row', alignItems: 'center', gap: 4 },
+  meta:    { padding: Space.md, gap: Space.xs },
+  nameRow: { flexDirection: 'row', alignItems: 'center', gap: Space.xs },
   name:    { flexShrink: 1, fontSize: FontSizes.sm, fontWeight: '800', color: c.text },
-  labels:  { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: 4 },
-  sub:     { fontSize: 12, fontWeight: '500', color: c.muted },
+  labels:  { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: Space.xs },
+  sub:     { fontSize: FontSizes.xs, fontWeight: '500', color: c.muted },
   badge:   { alignSelf: 'flex-start' },
-  caption: { fontSize: FontSizes.xs, fontWeight: '400', color: c.text, marginTop: 2 },
+  caption: { fontSize: FontSizes.xs, fontWeight: '400', color: c.text, marginTop: Space.xxs },
   medal:   { position: 'absolute', top: 8, left: 8 },
-  voteRow: { marginTop: 4 },
-  compactRow: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', columnGap: 4, rowGap: 3, marginTop: 2 },
-  cbody:   { flex: 1, padding: 10, gap: 4 },
-  title:   { fontSize: FontSizes.lg, lineHeight: 22, fontWeight: '800', color: c.text, minHeight: 44 },
-  handle:  { flexShrink: 1, fontSize: 13, fontWeight: '700', color: c.text },
-  cfoot:   { marginTop: 'auto', paddingTop: 6, flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', gap: 10 },
-  comments: { flexDirection: 'row', alignItems: 'center', gap: 3 },
-  commentsText: { fontSize: 13, fontWeight: '700', color: c.muted },
-  top:     { position: 'absolute', left: 8, bottom: 8, maxWidth: '90%', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 12, backgroundColor: c.photoPill },
-  topText: { fontSize: 11, fontWeight: '800', color: c.white },
-  hint:    { padding: 8, borderRadius: 10, backgroundColor: c.text },
-  hintText: { fontSize: 12, lineHeight: 16, fontWeight: '600', color: c.bg },
+  voteRow: { marginTop: Space.xs },
+  compactRow: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', columnGap: Space.xs, rowGap: Space.xs, marginTop: Space.xxs },
+  cbody:   { flex: 1, padding: Space.md, gap: Space.xs },
+  title:   { fontSize: FontSizes.lg, lineHeight: 24, fontWeight: '800', color: c.text, minHeight: 44 },
+  handle:  { flexShrink: 1, fontSize: FontSizes.xs, fontWeight: '700', color: c.text },
+  cfoot:   { marginTop: 'auto', paddingTop: Space.sm, flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', gap: Space.md },
+  comments: { flexDirection: 'row', alignItems: 'center', gap: Space.xs },
+  commentsText: { fontSize: FontSizes.xs, fontWeight: '700', color: c.muted },
+  top:     { position: 'absolute', left: 8, bottom: 8, maxWidth: '90%', paddingHorizontal: Space.sm, paddingVertical: Space.xs, borderRadius: 12, backgroundColor: c.photoPill },
+  topText: { fontSize: FontSizes.xs, fontWeight: '800', color: c.white },
+  hint:    { padding: Space.sm, borderRadius: 10, backgroundColor: c.text },
+  hintText: { fontSize: FontSizes.xs, lineHeight: 16, fontWeight: '600', color: c.bg },
 });

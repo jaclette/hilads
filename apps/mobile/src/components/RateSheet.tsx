@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import {
   Modal, View, Text, TextInput, TouchableOpacity, Pressable, StyleSheet,
-  ActivityIndicator, Alert,
+  Alert,
 } from 'react-native';
 import { Image } from 'expo-image';
 import { Ionicons } from '@expo/vector-icons';
@@ -9,9 +9,10 @@ import { useTranslation } from 'react-i18next';
 import { submitRating } from '@/api/challenges';
 import { ApiError } from '@/api/client';
 import { avatarColor } from '@/lib/avatarColors';
-import { Border, FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
+import { Space, Border, FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import type { RatePrompt } from '@/types';
+import { Button } from '@/ui/Button';
 import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 
 const COMMENT_MAX = 500;
@@ -139,16 +140,7 @@ export function RateSheet({ prompt, visible, onClose, onSubmitted }: Props) {
             )}
           </View>
 
-          <TouchableOpacity
-            style={[styles.submit, !canSubmit && styles.submitDisabled]}
-            disabled={!canSubmit}
-            onPress={handleSubmit}
-            activeOpacity={0.85}
-          >
-            {busy
-              ? <ActivityIndicator color={colors.white} size="small" />
-              : <Text style={styles.submitText}>{t('ratePrompts.sheet.submit')}</Text>}
-          </TouchableOpacity>
+          <Button label={t('ratePrompts.sheet.submit')} onPress={handleSubmit} loading={busy} disabled={!canSubmit && !busy} />
 
           <TouchableOpacity style={styles.skip} onPress={busy ? undefined : onClose} activeOpacity={0.7}>
             <Text style={styles.skipText}>{t('ratePrompts.sheet.later')}</Text>
@@ -176,15 +168,15 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
 
   headerRow:     { flexDirection: 'row', alignItems: 'center', gap: Spacing.md, marginBottom: Spacing.md },
   avatar:        { width: 48, height: 48, borderRadius: 24, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
-  avatarLetter:  { color: c.white, fontWeight: '700', fontSize: 18 },
+  avatarLetter:  { color: c.white, fontWeight: '700', fontSize: FontSizes.md },
   avatarStar:    { backgroundColor: c.goldTint },
   headerTextWrap:{ flex: 1, minWidth: 0 },
   title:         { fontSize: FontSizes.lg, fontWeight: '800', color: c.text, letterSpacing: -0.3 },
-  subtitle:      { fontSize: FontSizes.sm, color: c.muted, marginTop: 2 },
+  subtitle:      { fontSize: FontSizes.sm, color: c.muted, marginTop: Space.xxs },
   hint:          { fontSize: FontSizes.xs, color: c.mutedDim, marginBottom: Spacing.sm },
 
   starsRow:      { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: Spacing.md, paddingHorizontal: Spacing.sm },
-  starTap:       { padding: 4 },
+  starTap:       { padding: Space.xs },
 
   commentWrap:   { marginBottom: Spacing.md },
   comment: {
@@ -196,17 +188,9 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
     color: c.text,
     fontSize: FontSizes.md,
   },
-  charCount: { alignSelf: 'flex-end', marginTop: 4, fontSize: FontSizes.xs, color: c.mutedDim },
+  charCount: { alignSelf: 'flex-end', marginTop: Space.xs, fontSize: FontSizes.xs, color: c.mutedDim },
 
-  submit: {
-    backgroundColor: c.primary,
-    borderRadius: Radius.full,
-    paddingVertical: Spacing.md,
-    alignItems: 'center',
-  },
-  submitDisabled: { opacity: 0.4 },
-  submitText: { color: c.white, fontSize: FontSizes.md, fontWeight: '800' },
 
-  skip:     { paddingVertical: Spacing.sm, alignItems: 'center', marginTop: 4 },
+  skip:     { paddingVertical: Spacing.sm, alignItems: 'center', marginTop: Space.xs },
   skipText: { color: c.muted, fontSize: FontSizes.sm, fontWeight: '600' },
 });

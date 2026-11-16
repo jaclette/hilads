@@ -1,6 +1,6 @@
 import { ActivityIndicator, Text, TouchableOpacity, StyleSheet, type StyleProp, type ViewStyle } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Border, FontSizes, Radius, type ThemeColors } from '@/constants';
+import { Space, Border, FontSizes, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 
 type IconName = React.ComponentProps<typeof Ionicons>['name'];
@@ -46,9 +46,9 @@ export function Button({ label, onPress, variant = 'primary', size = 'md', icon,
 }
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  base:      { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, minHeight: 44 },
-  md:        { minHeight: 48, borderRadius: Radius.button, paddingHorizontal: 16 },
-  sm:        { minHeight: 44, borderRadius: 14, paddingHorizontal: 14 },
+  base:      { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: Space.sm, minHeight: 44 },
+  md:        { minHeight: 48, borderRadius: Radius.button, paddingHorizontal: Space.lg },
+  sm:        { minHeight: 44, borderRadius: 14, paddingHorizontal: Space.lg },
   primary:   { backgroundColor: c.cta },
   secondary: { backgroundColor: c.bg2, borderWidth: Border, borderColor: c.line },
   danger:    { borderWidth: Border, borderColor: c.red },

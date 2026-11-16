@@ -7,7 +7,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BottomTabBarHeightContext } from '@react-navigation/bottom-tabs';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
-import { Border, FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
+import { Space, Border, FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 
@@ -282,7 +282,7 @@ export function DatePickerModal({
                     name="calendar-outline"
                     size={13}
                     color={customDate !== null ? colors.primaryOnTint : colors.muted}
-                    style={{ marginRight: 4 }}
+                    style={{ marginRight: Space.xs }}
                   />
                   <Text style={[styles.pillText, customDate !== null && styles.pillTextSelected]}>
                     {customDateLabel}
@@ -316,7 +316,7 @@ export function DatePickerModal({
                     name="time-outline"
                     size={13}
                     color={customTime !== null ? colors.primaryOnTint : colors.muted}
-                    style={{ marginRight: 4 }}
+                    style={{ marginRight: Space.xs }}
                   />
                   <Text style={[styles.pillText, customTime !== null && styles.pillTextSelected]}>
                     {customTimeLabel}
@@ -404,7 +404,7 @@ export function DatePickerModal({
                     name="time-outline"
                     size={13}
                     color={customEndTime !== null ? colors.primaryOnTint : colors.muted}
-                    style={{ marginRight: 4 }}
+                    style={{ marginRight: Space.xs }}
                   />
                   <Text style={[styles.pillText, customEndTime !== null && styles.pillTextSelected]}>
                     {customEndTimeLabel}
@@ -476,16 +476,16 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   sheet: {
     backgroundColor: c.bg,
     borderTopLeftRadius: 20, borderTopRightRadius: 20,
-    paddingTop: 8, maxHeight: '85%',
+    paddingTop: Space.sm, maxHeight: '85%',
   },
   handle: {
     width: 40, height: 4, borderRadius: 2,
     backgroundColor: c.line,
-    alignSelf: 'center', marginBottom: 12,
+    alignSelf: 'center', marginBottom: Space.md,
   },
   header: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-    paddingHorizontal: Spacing.md, paddingBottom: 12,
+    paddingHorizontal: Spacing.md, paddingBottom: Space.md,
     borderBottomWidth: 1, borderBottomColor: c.line,
   },
   title: { fontSize: FontSizes.lg, fontWeight: '800', color: c.text },
@@ -494,11 +494,11 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
     fontSize: FontSizes.xs, fontWeight: '700', color: c.muted,
     letterSpacing: 0.8, textTransform: 'uppercase', marginTop: Spacing.sm,
   },
-  pillsRow:  { gap: 8, paddingVertical: 4, paddingRight: Spacing.md },
-  pillsGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+  pillsRow:  { gap: Space.sm, paddingVertical: Space.xs, paddingRight: Spacing.md },
+  pillsGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: Space.sm },
   pill: {
     flexDirection: 'row', alignItems: 'center',
-    paddingHorizontal: 14, paddingVertical: 8, borderRadius: Radius.full,
+    paddingHorizontal: Space.lg, paddingVertical: Space.sm, borderRadius: Radius.full,
     backgroundColor: c.bg2, borderWidth: Border, borderColor: c.line,
   },
   pillSelected: {
@@ -531,13 +531,13 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   // Inline validation message shown under the END TIME chip grid when both
   // start and end are selected but end is not strictly after start.
   validationHint: {
-    fontSize: FontSizes.xs, color: c.red, marginTop: 4, fontWeight: '600',
+    fontSize: FontSizes.xs, color: c.red, marginTop: Space.xs, fontWeight: '600',
   },
   submit: {
     marginHorizontal: Spacing.md, marginTop: Spacing.sm,
-    backgroundColor: c.primary, borderRadius: Radius.full,
-    paddingVertical: Spacing.md, alignItems: 'center',
+    backgroundColor: c.cta, borderRadius: Radius.button,
+    minHeight: 48, paddingHorizontal: Space.lg, alignItems: 'center', justifyContent: 'center',
   },
-  submitDisabled: { opacity: 0.45 },
-  submitText: { color: c.white, fontWeight: '800', fontSize: FontSizes.md, letterSpacing: 0.2 },
+  submitDisabled: { opacity: 0.5 },
+  submitText: { color: c.onCta, fontWeight: '800', fontSize: FontSizes.md },
 });

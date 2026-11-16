@@ -24,7 +24,7 @@ import { useApp } from '@/context/AppContext';
 import { useConversations } from '@/hooks/useConversations';
 import { fetchMyEvents } from '@/api/events';
 import { UpgradePrompt } from '@/features/auth/UpgradePrompt';
-import { Border, FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
+import { Space, Border, FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { Avatar, Button, EmptyState, Screen, ScreenHeader } from '@/ui';
 import type { Conversation, HiladsEvent, EventChatPreview } from '@/types';
@@ -354,8 +354,8 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   center:      { flex: 1, alignItems: 'center', justifyContent: 'center', padding: Spacing.lg },
   listContent: { paddingBottom: Spacing.xl },
 
-  filterBar:       { flexDirection: 'row', gap: 8, paddingHorizontal: Spacing.md, paddingTop: 4, paddingBottom: 10 },
-  pill:            { flexDirection: 'row', alignItems: 'center', gap: 6, height: 38, paddingHorizontal: 14, borderRadius: Radius.full,
+  filterBar:       { flexDirection: 'row', gap: Space.sm, paddingHorizontal: Spacing.md, paddingTop: Space.xs, paddingBottom: Space.md },
+  pill:            { flexDirection: 'row', alignItems: 'center', gap: Space.sm, height: 38, paddingHorizontal: Space.lg, borderRadius: Radius.full,
                      borderWidth: Border, borderColor: c.line, backgroundColor: c.bg2 },
   pillActive:      { backgroundColor: c.primary, borderColor: c.primary },
   pillLabel:       { fontSize: FontSizes.sm, fontWeight: '600', color: c.text },
@@ -363,21 +363,21 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   pillDot:         { width: 7, height: 7, borderRadius: Radius.full, backgroundColor: c.primary },
   pillDotActive:   { backgroundColor: c.white },
 
-  sectionHeader: { paddingHorizontal: Spacing.md, paddingTop: 14, paddingBottom: 6 },
+  sectionHeader: { paddingHorizontal: Spacing.md, paddingTop: Space.lg, paddingBottom: Space.sm },
   sectionTitle:  { fontSize: FontSizes.md, fontWeight: '800', color: c.text },
   sectionLoader: { paddingVertical: Spacing.md, alignItems: 'center' },
 
-  row:              { flexDirection: 'row', alignItems: 'center', gap: 12, minHeight: 68, paddingHorizontal: Spacing.md, paddingVertical: 10 },
+  row:              { flexDirection: 'row', alignItems: 'center', gap: Space.md, minHeight: 68, paddingHorizontal: Spacing.md, paddingVertical: Space.md },
   eventIcon:        { width: 48, height: 48, borderRadius: 14, backgroundColor: c.primaryTint, alignItems: 'center', justifyContent: 'center' },
-  rowBody:          { flex: 1, minWidth: 0, gap: 2 },
-  rowTop:           { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  rowName:          { flex: 1, fontSize: 15, fontWeight: '600', color: c.text },
+  rowBody:          { flex: 1, minWidth: 0, gap: Space.xxs },
+  rowTop:           { flexDirection: 'row', alignItems: 'center', gap: Space.sm },
+  rowName:          { flex: 1, fontSize: FontSizes.body, fontWeight: '600', color: c.text },
   rowNameUnread:    { fontWeight: '800' },
-  rowTime:          { fontSize: 12, fontWeight: '400', color: c.muted },
+  rowTime:          { fontSize: FontSizes.xs, fontWeight: '400', color: c.muted },
   rowPreview:       { fontSize: FontSizes.sm, fontWeight: '400', color: c.muted },
   rowPreviewUnread: { fontWeight: '600', color: c.text },
   unreadDot:        { width: 10, height: 10, borderRadius: Radius.full, backgroundColor: c.primary },
 
   prefLink:         { paddingHorizontal: Spacing.md, paddingVertical: Spacing.lg, alignItems: 'center' },
-  prefLinkText:     { fontSize: 14, fontWeight: '700', color: c.primaryText },
+  prefLinkText:     { fontSize: FontSizes.sm, fontWeight: '700', color: c.primaryText },
 });

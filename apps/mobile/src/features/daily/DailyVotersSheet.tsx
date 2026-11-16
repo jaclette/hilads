@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, ScrollView, Text, TouchableOpacity, View, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { FontSizes, type ThemeColors } from '@/constants';
+import { Space, FontSizes, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { shortCityName } from '@/i18n/cityName';
-import { Avatar, Sheet, SheetScrollView } from '@/ui';
+import { Avatar, Sheet, SheetScrollView, SheetTitle } from '@/ui';
 import { fetchDailyVoters, type DailyVoter } from '@/api/daily';
 
 /** Who voted for my photo: opened from the heart on my own photo. A row opens that person's profile. */
@@ -26,7 +26,7 @@ export function DailyVotersSheet({ proofId, onOpenUser, onClose }: {
 
   return (
     <Sheet visible={!!proofId} onClose={onClose} closeLabel={t('back')} style={styles.sheet}>
-      <Text style={styles.title}>{t('vote.votersTitle')}</Text>
+      <SheetTitle>{t('vote.votersTitle')}</SheetTitle>
       {failed ? <Text style={styles.empty}>{t('errors.generic')}</Text>
         : voters === null ? <ActivityIndicator color={colors.primary} style={styles.loading} />
         : voters.length === 0 ? <Text style={styles.empty}>{t('vote.votersEmpty')}</Text>
@@ -52,11 +52,10 @@ export function DailyVotersSheet({ proofId, onOpenUser, onClose }: {
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
   sheet:   { maxHeight: '75%' },
-  title:   { fontSize: FontSizes.lg, fontWeight: '800', color: c.text },
   list:    { flexGrow: 0 },
-  loading: { marginVertical: 24 },
-  empty:   { fontSize: FontSizes.sm, color: c.muted, marginVertical: 12 },
-  row:     { flexDirection: 'row', alignItems: 'center', gap: 12, minHeight: 56, borderBottomWidth: 1, borderBottomColor: c.line },
+  loading: { marginVertical: Space.xl },
+  empty:   { fontSize: FontSizes.sm, color: c.muted, marginVertical: Space.md },
+  row:     { flexDirection: 'row', alignItems: 'center', gap: Space.md, minHeight: 56, borderBottomWidth: 1, borderBottomColor: c.line },
   text:    { flex: 1 },
   name:    { fontSize: FontSizes.sm, fontWeight: '700', color: c.text },
   city:    { fontSize: FontSizes.xs, color: c.muted },

@@ -1,10 +1,10 @@
 import { createContext, forwardRef, useContext, useEffect, useId, useMemo, useRef, type ReactNode, type Ref } from 'react';
 import {
-  Animated, FlatList, Modal, Pressable, ScrollView, View, StyleSheet,
-  type FlatListProps, type NativeScrollEvent, type NativeSyntheticEvent, type ScrollViewProps, type StyleProp, type ViewStyle,
+  Animated, FlatList, Modal, Pressable, ScrollView, Text, View, StyleSheet,
+  type FlatListProps, type NativeScrollEvent, type NativeSyntheticEvent, type ScrollViewProps, type StyleProp, type TextStyle, type ViewStyle,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Radius, Spacing, type ThemeColors } from '@/constants';
+import { FontSizes, Space, Radius, Spacing, type ThemeColors } from '@/constants';
 import { useThemedStyles } from '@/context/ThemeContext';
 import { KeyboardAvoidingView, useKeyboardState } from 'react-native-keyboard-controller';
 import { Gesture, GestureDetector, GestureHandlerRootView, type NativeGesture } from 'react-native-gesture-handler';
@@ -155,9 +155,20 @@ export function Sheet({ visible, onClose, closeLabel, style, children }: {
   );
 }
 
+/** A sheet's title: one size and weight for every sheet (20 / 800); `style` for its layout only. */
+export function SheetTitle({ children, style, numberOfLines }: {
+  children: ReactNode;
+  style?: StyleProp<TextStyle>;
+  numberOfLines?: number;
+}) {
+  const styles = useThemedStyles(makeStyles);
+  return <Text style={[styles.title, style]} numberOfLines={numberOfLines} accessibilityRole="header">{children}</Text>;
+}
+
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
   flex:    { flex: 1 },
   scrim:   { flex: 1, backgroundColor: c.scrim },
-  sheet:   { backgroundColor: c.bg2, borderTopLeftRadius: Radius.sheet, borderTopRightRadius: Radius.sheet, paddingHorizontal: Spacing.md, paddingTop: 8, gap: 8 },
-  grabber: { alignSelf: 'center', width: 40, height: 5, borderRadius: Radius.full, backgroundColor: c.line, marginBottom: 6 },
+  sheet:   { backgroundColor: c.bg2, borderTopLeftRadius: Radius.sheet, borderTopRightRadius: Radius.sheet, paddingHorizontal: Spacing.md, paddingTop: Space.sm, gap: Space.sm },
+  title:   { fontSize: FontSizes.lg, fontWeight: '800', color: c.text },
+  grabber: { alignSelf: 'center', width: 40, height: 5, borderRadius: Radius.full, backgroundColor: c.line, marginBottom: Space.sm },
 });

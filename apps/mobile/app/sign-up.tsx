@@ -10,7 +10,7 @@ import { socket } from '@/lib/socket';
 import { saveIdentity } from '@/lib/identity';
 import { safeReturnTo, authQuery } from '@/lib/authReturn';
 import { track, identifyUser, setAnalyticsContext } from '@/services/analytics';
-import { FontSizes, Spacing, type ThemeColors } from '@/constants';
+import { Space, FontSizes, Spacing, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { EulaCheckbox, EulaCopyBlock } from '@/features/auth/EulaPromptModal';
 import { AuthScreen, PasswordEye } from '@/features/auth/AuthScreen';
@@ -213,7 +213,7 @@ export default function SignUpScreen() {
 }
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  field:      { gap: 6 },
+  field:      { gap: Space.sm },
   uOkHint:    { fontSize: FontSizes.xs, fontWeight: '600', color: c.green },
   uBadHint:   { fontSize: FontSizes.xs, fontWeight: '600', color: c.red },
   eula:       { gap: Spacing.sm, marginTop: Spacing.xs },

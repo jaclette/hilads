@@ -3,7 +3,7 @@ import { ScrollView } from 'react-native-gesture-handler';
 import { Image } from 'expo-image';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
-import { FontSizes, Radius, Spacing, type ThemeColors } from '@/constants';
+import { Space, FontSizes, Radius, Spacing, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { themeName } from '@/features/daily/themes';
 import { compactPrice, distance, meters } from '@/features/today/format';
@@ -92,18 +92,18 @@ export function SpotRow({ spot: s, me, onPick }: { spot: Spot; me: [number, numb
 }
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  sorts:      { flexDirection: 'row', gap: 8, paddingHorizontal: Spacing.md, paddingVertical: 8 },
-  row:        { flexDirection: 'row', alignItems: 'center', gap: 12, minHeight: 76, paddingHorizontal: Spacing.md, paddingVertical: 10 },
+  sorts:      { flexDirection: 'row', gap: Space.sm, paddingHorizontal: Spacing.md, paddingVertical: Space.sm },
+  row:        { flexDirection: 'row', alignItems: 'center', gap: Space.md, minHeight: 76, paddingHorizontal: Spacing.md, paddingVertical: Space.md },
   photo:      { width: 64, height: 64, borderRadius: Radius.md, backgroundColor: c.bg3 },
   photoEmpty: { alignItems: 'center', justifyContent: 'center' },
-  body:       { flex: 1, minWidth: 0, gap: 4 },
+  body:       { flex: 1, minWidth: 0, gap: Space.xs },
   name:       { fontSize: FontSizes.sm, fontWeight: '800', color: c.text },
-  chips:      { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
-  theme:      { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 8, paddingVertical: 2, borderRadius: Radius.full, backgroundColor: c.primaryTint },
-  themeText:  { fontSize: 12, fontWeight: '700', color: c.primaryOnTint },
-  local:      { flexDirection: 'row', alignItems: 'center', gap: 3, paddingHorizontal: 8, paddingVertical: 2, borderRadius: Radius.full, backgroundColor: c.localBg },
-  localText:  { fontSize: 12, fontWeight: '700', color: c.localText },
-  metaRow:    { flexDirection: 'row', alignItems: 'center', gap: 10 },
-  meta:       { fontSize: 12, fontWeight: '600', color: c.muted },
-  votes:      { flexDirection: 'row', alignItems: 'center', gap: 3 },
+  chips:      { flexDirection: 'row', flexWrap: 'wrap', gap: Space.sm },
+  theme:      { flexDirection: 'row', alignItems: 'center', gap: Space.xs, paddingHorizontal: Space.sm, paddingVertical: Space.xxs, borderRadius: Radius.full, backgroundColor: c.primaryTint },
+  themeText:  { fontSize: FontSizes.xs, fontWeight: '700', color: c.primaryOnTint },
+  local:      { flexDirection: 'row', alignItems: 'center', gap: Space.xs, paddingHorizontal: Space.sm, paddingVertical: Space.xxs, borderRadius: Radius.full, backgroundColor: c.localBg },
+  localText:  { fontSize: FontSizes.xs, fontWeight: '700', color: c.localText },
+  metaRow:    { flexDirection: 'row', alignItems: 'center', gap: Space.md },
+  meta:       { fontSize: FontSizes.xs, fontWeight: '600', color: c.muted },
+  votes:      { flexDirection: 'row', alignItems: 'center', gap: Space.xs },
 });

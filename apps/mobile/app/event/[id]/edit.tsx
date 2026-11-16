@@ -15,7 +15,7 @@ import i18n from '@/i18n';
 import { useApp } from '@/context/AppContext';
 import { updateEvent, deleteEvent } from '@/api/events';
 import { useEventDetail } from '@/hooks/useEventDetail';
-import { FontSizes, Spacing, type ThemeColors } from '@/constants';
+import { Space, FontSizes, Spacing, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { Button, Chip, Screen, ScreenHeader, SectionTitle, TextField } from '@/ui';
 import { CategoryPicker, DatePicker, TimePicker, type EventType, addDays, isSameDay, startOfDay, withDate } from '@/features/events/EventPickers';
@@ -240,12 +240,12 @@ export default function EditEventScreen() {
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
   scroll:       { flex: 1 },
-  content:      { paddingHorizontal: Spacing.md, paddingTop: Spacing.sm, paddingBottom: Spacing.xl, gap: 24 },
-  footer:       { paddingHorizontal: Spacing.md, paddingTop: 10, paddingBottom: 10, borderTopWidth: 1, borderTopColor: c.line, backgroundColor: c.bg },
+  content:      { paddingHorizontal: Spacing.md, paddingTop: Spacing.sm, paddingBottom: Spacing.xl, gap: Space.xl },
+  footer:       { paddingHorizontal: Spacing.md, paddingTop: Space.md, paddingBottom: Space.md, borderTopWidth: 1, borderTopColor: c.line, backgroundColor: c.bg },
   loadingBlock: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  section:      { gap: 10 },
-  chipRow:      { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: 8 },
-  timeRow:      { flexDirection: 'row', gap: 12 },
-  actions:      { gap: 10 },
+  section:      { gap: Space.md },
+  chipRow:      { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: Space.sm },
+  timeRow:      { flexDirection: 'row', gap: Space.md },
+  actions:      { gap: Space.md },
   errorText:    { fontSize: FontSizes.sm, fontWeight: '600', color: c.red, textAlign: 'center' },
 });

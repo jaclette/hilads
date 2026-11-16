@@ -16,7 +16,7 @@ import { useTranslation } from 'react-i18next';
 import { fetchMyBlocks, unblockById, type BlockRow } from '@/api/blocks';
 import { useApp } from '@/context/AppContext';
 import { canAccessProfile } from '@/lib/profileAccess';
-import { FontSizes, Spacing, type ThemeColors } from '@/constants';
+import { Space, FontSizes, Spacing, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { Avatar, Button, EmptyState, Screen, ScreenHeader } from '@/ui';
 
@@ -138,8 +138,8 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   center:      { flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: Spacing.lg },
   listContent: { paddingHorizontal: Spacing.md, paddingVertical: Spacing.sm },
   divider:     { height: 1, backgroundColor: c.line },
-  row:         { flexDirection: 'row', alignItems: 'center', gap: 12, minHeight: 64, paddingVertical: 10 },
-  info:        { flex: 1, gap: 2 },
-  name:        { fontSize: 15, fontWeight: '700', color: c.text },
+  row:         { flexDirection: 'row', alignItems: 'center', gap: Space.md, minHeight: 64, paddingVertical: Space.md },
+  info:        { flex: 1, gap: Space.xxs },
+  name:        { fontSize: FontSizes.body, fontWeight: '700', color: c.text },
   subtitle:    { fontSize: FontSizes.xs, fontWeight: '400', color: c.muted },
 });
