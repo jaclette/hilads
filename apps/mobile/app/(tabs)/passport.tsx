@@ -1,11 +1,12 @@
 import { useCallback, useState } from 'react';
-import { ScrollView, Text, TouchableOpacity, View, StyleSheet, useWindowDimensions } from 'react-native';
+import { ScrollView, Text, View, StyleSheet, useWindowDimensions } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
-import { Space, FontSizes, Radius, Spacing, type ThemeColors } from '@/constants';
-import { Avatar, Button, Card, CityFlag, IconButton, ListRow, ModeLabel, RowGroup, ScreenHeader } from '@/ui';
+import { Space, Radius, Spacing, Type, IconSize, type ThemeColors, type ThemeName } from '@/constants';
+import { Avatar, AvatarSize, Button, Card, CityFlag, IconButton, ListRow, ModeLabel, RowGroup, ScreenHeader, Tappable } from '@/ui';
+import { themeColor, tint } from '@/ui/joy';
 import { RankMedal } from '@/features/daily/RankMedal';
 import { ShareSheet } from '@/features/share/ShareSheet';
 import type { ShareContent } from '@/features/share/content';
@@ -44,9 +45,15 @@ const passportCache = new Map<string, { at: number; stats: DailyUserStats | null
 const PASSPORT_FRESH_MS = 60_000;
 const EMPTY_COUNTS: Counts = { spots: null, proposals: null, friends: null, week: null, alltime: null };
 
+/** A menu row's color: a theme's pair (its fill for the disc, its text color for the icon). */
+function toneOf(key: string, mode: ThemeName) {
+  const tc = themeColor(key);
+  return { fill: tc.fill, ink: mode === 'dark' ? tc.textDark : tc.textLight };
+}
+
 export default function PassportScreen() {
   const styles = useThemedStyles(makeStyles);
-  const { colors } = useTheme();
+  const { colors, theme: mode } = useTheme();
   const { t } = useTranslation('me');
   const router = useRouter();
   const { width } = useWindowDimensions();
@@ -166,25 +173,26 @@ export default function PassportScreen() {
           stats={stats ? { cities: stats.citiesPlayed ?? null, photos: stats.photos ?? stats.completed, likes: stats.likesReceived ?? null } : null}
         />
 
+        {/* Streak and weekly rank: two cards of one height, an icon disc, the title on two lines at most. */}
         <View style={styles.cards}>
           <Card style={styles.card}>
-            <View style={styles.cardHead}>
-              <Ionicons name="flame-outline" size={18} color={colors.text} />
-              <Text style={styles.cardTitle}>{t('streak', { ns: 'daily', count: streak })}</Text>
+            <View style={[styles.cardDisc, { backgroundColor: tint(colors.cta, 0.24) }]}>
+              <Ionicons name={streak ? 'flame' : 'flame-outline'} size={IconSize.md} color={colors.primaryText} />
             </View>
-            <Text style={styles.cardSub}>{t('passport.best', { count: stats?.bestStreak ?? 0 })}</Text>
+            <Text style={styles.cardTitle} numberOfLines={2}>{t('streak', { ns: 'daily', count: streak })}</Text>
+            <Text style={styles.cardSub} numberOfLines={1}>{t('passport.best', { count: stats?.bestStreak ?? 0 })}</Text>
           </Card>
           {/* V6: opens Ranks › Players › This week. */}
-          <TouchableOpacity style={styles.cardTap} activeOpacity={0.8} accessibilityRole="button" testID="passport-week-rank"
-                            onPress={() => router.navigate(`/ranks?tab=players&period=week&scope=${cityKey ? 'city' : 'world'}` as never)}>
+          <Tappable style={styles.cardTap} accessibilityRole="button" testID="passport-week-rank"
+                    onPress={() => router.navigate(`/ranks?tab=players&period=week&scope=${cityKey ? 'city' : 'world'}` as never)}>
             <Card style={[styles.card, styles.cardFill]}>
-              <View style={styles.cardHead}>
-                <Ionicons name="trophy-outline" size={18} color={colors.text} />
-                <Text style={styles.cardTitle}>{counts.week ? t('passport.weekRank', { rank: counts.week }) : t('passport.weekNone')}</Text>
+              <View style={[styles.cardDisc, { backgroundColor: tint(colors.medalGold, 0.28) }]}>
+                <Ionicons name="trophy" size={IconSize.md} color={colors.gold} />
               </View>
+              <Text style={styles.cardTitle} numberOfLines={2}>{counts.week ? t('passport.weekRank', { rank: counts.week }) : t('passport.weekNone')}</Text>
               <Text style={styles.cardSub} numberOfLines={1}>{cityName ? t('passport.mostLocalIn', { city: cityName }) : t('passport.mostLocalWorld')}</Text>
             </Card>
-          </TouchableOpacity>
+          </Tappable>
         </View>
         {/* Your rivals moved to World › Cities (UX audit: one place to compare cities). */}
         {progress.length > 1 ? (
@@ -213,19 +221,20 @@ export default function PassportScreen() {
         {(stats?.specialStamps?.length ?? 0) > 0 && <SpecialStamps stamps={stats!.specialStamps!} />}
 
         <RowGroup>
-          <ListRow icon="notifications-outline" title={t('notifications', { ns: 'common' })} badge={unreadNotifs} onPress={() => router.push('/notifications' as never)} />
-          <ListRow divider icon="chatbubbles-outline" title={t('messages', { ns: 'common' })} badge={unreadDMs} onPress={() => router.push('/messages' as never)} />
+          <ListRow icon="notifications-outline" tone={toneOf('get_around', mode)} title={t('notifications', { ns: 'common' })} badge={unreadNotifs} onPress={() => router.push('/notifications' as never)} />
+          <ListRow divider icon="chatbubbles-outline" tone={toneOf('hidden_gem', mode)} title={t('messages', { ns: 'common' })} badge={unreadDMs} onPress={() => router.push('/messages' as never)} />
         </RowGroup>
 
         <RowGroup>
-          <ListRow title={t('passport.myPhotos')} value={stats?.photos !== undefined ? String(stats.photos) : ''} onPress={() => router.push('/my-photos' as never)} />
-          <ListRow divider title={t('passport.mySpots')} value={counts.spots !== null ? String(counts.spots) : ''} onPress={() => router.push('/my-spots' as never)} />
-          <ListRow divider title={t('passport.myProposals')} value={counts.proposals ? t('passport.inReview', { count: counts.proposals }) : ''} onPress={() => router.push('/daily/proposals' as never)} />
+          <ListRow icon="images-outline" tone={toneOf('taste', mode)} title={t('passport.myPhotos')} value={stats?.photos !== undefined ? String(stats.photos) : ''} onPress={() => router.push('/my-photos' as never)} />
+          <ListRow divider icon="location-outline" tone={toneOf('local_find', mode)} title={t('passport.mySpots')} value={counts.spots !== null ? String(counts.spots) : ''} onPress={() => router.push('/my-spots' as never)} />
+          <ListRow divider icon="bulb-outline" tone={toneOf('sip', mode)} title={t('passport.myProposals')} value={counts.proposals ? t('passport.inReview', { count: counts.proposals }) : ''} onPress={() => router.push('/daily/proposals' as never)} />
           {/* Propose a challenge lives here now (moved from Today, V3 polish 3.3). */}
-          <ListRow divider icon="add-circle-outline" title={t('propose.cta', { ns: 'daily' })} onPress={() => router.push('/daily/propose?source=passport' as never)} />
-          <ListRow divider title={t('passport.friends')} value={counts.friends !== null ? String(counts.friends) : ''} onPress={() => router.push('/friends' as never)} />
+          <ListRow divider icon="add-circle-outline" tone={{ fill: colors.cta, ink: colors.primaryText }} title={t('propose.cta', { ns: 'daily' })} onPress={() => router.push('/daily/propose?source=passport' as never)} />
+          <ListRow divider icon="people-outline" tone={toneOf('night_out', mode)} title={t('passport.friends')} value={counts.friends !== null ? String(counts.friends) : ''} onPress={() => router.push('/friends' as never)} />
           <ListRow divider title={t('passport.mostLocalAllTime')}
-                   leading={counts.alltime && counts.alltime <= 3 ? <RankMedal rank={counts.alltime} size={26} /> : undefined}
+                   icon={counts.alltime && counts.alltime <= 3 ? undefined : 'trophy-outline'} tone={{ fill: colors.medalGold, ink: colors.gold }}
+                   leading={counts.alltime && counts.alltime <= 3 ? <RankMedal rank={counts.alltime} size={36} /> : undefined}
                    value={counts.alltime ? (cityName ? t('passport.allTimeRank', { rank: counts.alltime, city: cityName }) : `#${counts.alltime}`) : ''}
                    onPress={() => router.navigate(`/ranks?tab=players&period=alltime&scope=${cityKey ? 'city' : 'world'}` as never)} />
         </RowGroup>
@@ -250,29 +259,35 @@ function Identity({ name, photo, mode, cityName, cityCountry, since = null, stat
   const { t } = useTranslation('common');
   const local = mode === 'local';
   return (
-    <View style={styles.identity}>
-      {/* A seasonal event's live day: the passport photo wears the hat. */}
-      <View><Avatar uri={photo ? thumbUrl(photo) : null} name={name} size={64} ring /><LogoHat logoSize={64} /></View>
-      <View style={styles.identityBody}>
-        <Text style={styles.name} numberOfLines={1}>{name}</Text>
-        {!!since && <Text style={styles.since} numberOfLines={1}>{since}</Text>}
-        <View style={styles.chips}>
-          {mode && <ModeLabel mode={local ? 'local' : 'traveler'} label={t(`mode.${local ? 'local' : 'exploring'}.label`)} />}
-          {cityName && (
-            <View style={[styles.chip, styles.chipCity]}>
-              {cityCountry ? <CityFlag country={cityCountry} size={14} /> : <Ionicons name="location-outline" size={13} color={colors.muted} />}
-              <Text style={styles.chipCityText} numberOfLines={1}>{cityName}</Text>
-            </View>
-          )}
-        </View>
-        {stats && (
-          <View style={styles.stats}>
-            {([['cities', stats.cities], ['photos', stats.photos], ['likes', stats.likes]] as const).map(([k, n]) => n !== null && (
-              <Text key={k} style={styles.stat}><Text style={styles.statN}>{n}</Text> {t(`passportStats.${k}`, { ns: 'me', count: n })}</Text>
-            ))}
+    <View style={styles.identityWrap}>
+      <View style={styles.identity}>
+        {/* A seasonal event's live day: the passport photo wears the hat. */}
+        <View><Avatar uri={photo ? thumbUrl(photo) : null} name={name} size={AvatarSize.lg} ring /><LogoHat logoSize={AvatarSize.lg} /></View>
+        <View style={styles.identityBody}>
+          <Text style={styles.name} numberOfLines={1}>{name}</Text>
+          {!!since && <Text style={styles.since} numberOfLines={1}>{since}</Text>}
+          <View style={styles.chips}>
+            {mode && <ModeLabel mode={local ? 'local' : 'traveler'} label={t(`mode.${local ? 'local' : 'exploring'}.label`)} />}
+            {cityName && (
+              <View style={[styles.chip, styles.chipCity]}>
+                {cityCountry ? <CityFlag country={cityCountry} size={14} /> : <Ionicons name="location-outline" size={13} color={colors.muted} />}
+                <Text style={styles.chipCityText} numberOfLines={1}>{cityName}</Text>
+              </View>
+            )}
           </View>
-        )}
+        </View>
       </View>
+      {/* Cities, photos, likes: the passport's numbers, large (design pass), under the identity. */}
+      {stats && (
+        <View style={styles.stats}>
+          {([['cities', stats.cities], ['photos', stats.photos], ['likes', stats.likes]] as const).map(([k, n], i) => (
+            <View key={k} style={[styles.stat, i > 0 && styles.statDivider]}>
+              <Text style={styles.statN}>{n ?? '–'}</Text>
+              <Text style={styles.statLabel} numberOfLines={1}>{t(`passportStats.${k}`, { ns: 'me', count: n ?? 0 })}</Text>
+            </View>
+          ))}
+        </View>
+      )}
     </View>
   );
 }
@@ -280,31 +295,34 @@ function Identity({ name, photo, mode, cityName, cityCountry, since = null, stat
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
   container:      { flex: 1, backgroundColor: c.bg },
   body:           { paddingHorizontal: Spacing.md, paddingBottom: Spacing.xl, gap: Space.lg },
+  identityWrap:   { gap: Space.lg },
   identity:       { flexDirection: 'row', alignItems: 'center', gap: Space.lg },
   identityBody:   { flex: 1, gap: Space.sm },
-  name:           { fontSize: FontSizes.lg, fontWeight: '800', color: c.text },
+  name:           { ...Type.title, color: c.text },
   chips:          { flexDirection: 'row', gap: Space.sm, flexWrap: 'wrap' },
-  chip:           { flexDirection: 'row', alignItems: 'center', gap: Space.xs, height: 26, paddingHorizontal: Space.md, borderRadius: Radius.full },
+  chip:           { flexDirection: 'row', alignItems: 'center', gap: Space.xs, height: 26, paddingHorizontal: Space.md, borderRadius: Radius.control },
   chipCity:       { backgroundColor: c.bg3, maxWidth: 200 },
-  chipCityText:   { fontSize: FontSizes.xs, fontWeight: '600', color: c.muted },
-  cards:          { flexDirection: 'row', gap: Space.md },
-  card:           { flex: 1, paddingHorizontal: Space.lg, paddingVertical: Space.md, gap: Space.xs },
+  chipCityText:   { ...Type.caption, color: c.muted },
+  cards:          { flexDirection: 'row', gap: Space.md, alignItems: 'stretch' },
+  card:           { flex: 1, padding: Space.lg, gap: Space.xs },
+  cardDisc:       { width: 36, height: 36, borderRadius: Radius.full, alignItems: 'center', justifyContent: 'center', marginBottom: Space.xs },
   cardTap:        { flex: 1 },
   cardFill:       { flex: 1 },
-  cardHead:       { flexDirection: 'row', alignItems: 'center', gap: Space.sm },
-  cardTitle:      { flexShrink: 1, fontSize: FontSizes.md, fontWeight: '800', color: c.text },
-  cardSub:        { fontSize: FontSizes.xs, color: c.muted },
+  cardTitle:      { ...Type.label, color: c.text },
+  cardSub:        { ...Type.caption, fontWeight: '500', color: c.muted },
   pagesWrap:      { gap: Space.sm },
   dots:           { flexDirection: 'row', justifyContent: 'center', gap: Space.sm },
   dot:            { width: 7, height: 7, borderRadius: 4, backgroundColor: c.line },
   dotOn:          { backgroundColor: c.primary, width: 18 },
-  since:          { fontSize: FontSizes.xs, fontWeight: '600', color: c.muted },
-  stats:          { flexDirection: 'row', flexWrap: 'wrap', columnGap: Space.md },
-  stat:           { fontSize: FontSizes.xs, fontWeight: '600', color: c.muted },
-  statN:          { fontWeight: '800', color: c.text },
+  since:          { ...Type.caption, fontWeight: '500', color: c.muted },
+  stats:          { flexDirection: 'row', paddingVertical: Space.md, borderRadius: Radius.card, backgroundColor: c.bg2, borderWidth: 1, borderColor: c.line },
+  stat:           { flex: 1, alignItems: 'center', gap: Space.xxs, paddingHorizontal: Space.sm },
+  statDivider:    { borderLeftWidth: 1, borderLeftColor: c.line },
+  statN:          { ...Type.display, color: c.text },
+  statLabel:      { ...Type.caption, color: c.muted },
   pages:          { gap: Space.md },
   center:         { alignSelf: 'center' },
   guest:          { gap: Space.md, padding: Space.lg, borderRadius: Radius.card },
-  guestTitle:     { fontSize: FontSizes.lg, fontWeight: '800', color: c.text },
-  guestBody:      { fontSize: FontSizes.sm, color: c.muted },
+  guestTitle:     { ...Type.title, color: c.text },
+  guestBody:      { ...Type.body, color: c.muted },
 });
