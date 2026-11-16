@@ -25,7 +25,9 @@
   --muted2: #6F5B4D;
   --mine-bg: #9C5F22;   /* the app's caramel: own messages (SPEC 9.11) */
   --other-bg: #F1E9DF;
-  --bg2: #FFFFFF;
+  /* The app's key names (constants.ts) for the same colours: bg2 = surface, bg3 = surface2. */
+  --bg2: var(--surface);
+  --bg3: var(--surface2);
   --text-muted: #6F5B4D;
   --hot-text: #C9501A;  /* readable deep orange as text on cream */
   --warning: #B45309;   /* amber as text on cream (Daily: Early badge) */
@@ -127,7 +129,8 @@
   --muted2: #968880;
   --mine-bg: #C98A45;   /* caramel on dark */
   --other-bg: #1c1610;
-  --bg2: #1a1614;
+  --bg2: var(--surface);   /* was #1a1614; the app's bg2 is the surface */
+  --bg3: var(--surface2);
   --text-muted: #968880;
   --hot-text: #FF7A3C;  /* bright orange text stays vivid on dark */
   --warning: #F5A524;   /* amber on dark */
@@ -16893,7 +16896,8 @@ html[data-event="halloween"],
   --bg: #1A1030;
   --surface: #251842;
   --surface2: #2E2050;
-  --bg2: #251842;
+  --bg2: var(--surface);
+  --bg3: var(--surface2);
   --border: #3D2A64;
   --line: #3D2A64;
   --separator: rgba(255, 255, 255, 0.10);
