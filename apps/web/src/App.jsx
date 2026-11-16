@@ -190,6 +190,10 @@ function parseDeepLink() {
     scope:  params.get('scope')  ?? 'city',
     period: params.get('period') ?? 'month',
   }
+  // The app's own screens (UX audit: a URL per screen, kept as the top screen changes).
+  if (path === '/world')         return { type: 'leaderboard', scope: params.get('scope') ?? 'city', period: params.get('period') ?? 'week' }
+  if (path === '/passport')      return { type: 'passport' }
+  if (path === '/settings')      return { type: 'settings' }
   if (path === '/challenges')    return { type: 'challenges' }
   if (path === '/map')           return { type: 'map' }
   if (path === '/conversations') return { type: 'conversations' }
@@ -223,7 +227,7 @@ function isBareHome(link) {
 function isPublicEntryLink(link) {
   return !!link && [
     'city', 'event', 'topic', 'challenge', 'venue', 'past',
-    'challenges', 'leaderboard', 'map', 'daily',
+    'challenges', 'leaderboard', 'map', 'daily', 'passport',
   ].includes(link.type)
 }
 
@@ -1584,6 +1588,20 @@ export default function App() {
     trackDeferred('$screen', { $screen_name: screenName, from_screen: from })
   }, [screenName])
 
+  // A URL per screen (UX audit): the top screen's own address, shareable and kept on reload
+  // (parseDeepLink reads them back). setUrl replaces the current history entry, so each back
+  // layer's entry keeps its screen's address and back restores it. Today and Hi share the
+  // city's address (hlHome tells them apart on reload); an event keeps its own (set where it opens).
+  const SCREEN_PATH = { ranks: '/world', map: '/map', passport: '/passport', notifications: '/notifications',
+    messages: '/conversations', settings: '/settings', 'notification-settings': '/settings', 'daily/archive': '/challenges' }
+  const topDailyDate = topDaily?.name === 'challenge' && /^\d{4}-\d{2}-\d{2}$/.test(topDaily.params?.date ?? '') ? topDaily.params.date : null
+  useEffect(() => {
+    if (!screenName) return
+    if (SCREEN_PATH[screenName]) { setUrl(SCREEN_PATH[screenName], { hlHome: false }); return }
+    if (screenName === 'daily/[date]' && topDailyDate) { setUrl(`/challenge/${topDailyDate}`, { hlHome: false }); return }
+    if ((screenName === 'today' || screenName === 'chat') && city) setUrl(`/city/${cityToSlug(city)}`, { hlHome: screenName === 'today' })
+  }, [screenName, topDailyDate, city]) // eslint-disable-line react-hooks/exhaustive-deps
+
   const [obChannels, setObChannels] = useState([])
   const [obChannelsLoading, setObChannelsLoading] = useState(false)
   const [citySearchQuery, setCitySearchQuery] = useState('')
@@ -2183,6 +2201,8 @@ export default function App() {
     if (link.type === 'map')             openScreenOnJoinRef.current = 'map'
     if (link.type === 'conversations')   openScreenOnJoinRef.current = 'conversations'
     if (link.type === 'notifications')   openScreenOnJoinRef.current = 'notifications'
+    if (link.type === 'passport')        openScreenOnJoinRef.current = 'passport'
+    if (link.type === 'settings')        openScreenOnJoinRef.current = 'settings'
     if (link.type === 'reset-password')  setResetPasswordToken(link.token)
     if (link.type === 'forgot-password') setShowForgotPassword(true)
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
@@ -3175,6 +3195,8 @@ export default function App() {
       if (openScreenOnJoinRef.current === 'map')           { setShowMap(true); openScreenOnJoinRef.current = null }
       if (openScreenOnJoinRef.current === 'conversations') { setShowConversations(true); openScreenOnJoinRef.current = null }
       if (openScreenOnJoinRef.current === 'notifications') { setShowNotifications(true); openScreenOnJoinRef.current = null }
+      if (openScreenOnJoinRef.current === 'passport')      { goToMeTab(); openScreenOnJoinRef.current = null }
+      if (openScreenOnJoinRef.current === 'settings')      { goToMeTab(); setShowSettings(true); openScreenOnJoinRef.current = null }
       if (openScreenOnJoinRef.current === 'leaderboard')   { openRanks(ranksFromLeaderboard(leaderboardScope, leaderboardPeriod));  openScreenOnJoinRef.current = null }
 
       activeRef.current = true
