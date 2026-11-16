@@ -4,19 +4,11 @@
   "nextIn": "Daily Challenge berikutnya dalam {{time}}",
   "nothingLive": "Daily Challenge berikutnya segera hadir",
   "cta": "Terima tantangan",
-  "ctaIn": "Aku ikut",
-  "ctaTaken": "Tantangan selesai · Lihat fotoku",
-  "seeProofs": "Lihat foto hari ini",
-  "localTwist": "Local Twist",
   "twistIn": "Local Twist {{city}}",
   "twistBy": "oleh {{name}}",
   "count_other": "{{count}} orang sudah main hari ini",
-  "countCity": "{{count}} di {{city}}",
-  "countZero": "Belum ada, jadilah yang pertama",
   "beFirst": "Jadilah yang pertama hari ini",
   "beFirstSub": "Belum ada foto. Jadilah yang pertama, dunia lagi nunggu.",
-  "firstYours": "Fotomu sudah masuk",
-  "firstYoursSub": "Fotomu muncul di sini setelah disetujui, bareng foto yang lain.",
   "yourProof": "Fotomu",
   "status": {
     "pending": "Menunggu",
@@ -40,14 +32,12 @@
   "priceFrom_other": "dari {{count}} foto",
   "places_other": "{{count}} tempat ditandai",
   "unnamedPlace": "Tempat yang ditandai",
-  "tabWorld": "Dunia",
   "local": "Lokal",
   "traveler": "Pelancong",
   "validatedByLocal": "Divalidasi oleh warga lokal",
   "loadFailed": "Gagal memuat Daily Challenge.",
   "retry": "Coba lagi",
   "notFound": "Daily Challenge ini nggak ada.",
-  "cityRowEmpty": "Jadilah yang pertama bikin tantangan di {{city}}",
   "proof": {
     "titleNew": "Fotomu",
     "titleEdit": "Edit fotomu",
@@ -116,8 +106,6 @@
     "invalid_back_home": "\"Kalau di kotamu?\" butuh kota dan satu jawaban, harga, atau kalimat."
   },
   "push": {
-    "bannerTitle": "Dapat Daily Challenge tiap pagi",
-    "bannerCta": "Aktifkan",
     "askTitle": "Daily Challenge",
     "askBody": "Dapat Daily Challenge tiap pagi, di jam yang pas buat kamu.",
     "askBodyBlocked": "Notifikasi Hilads lagi mati. Nyalakan di pengaturan biar dapat Daily Challenge tiap pagi.",
@@ -324,23 +312,15 @@
     "prev": "Bulan sebelumnya",
     "next": "Bulan berikutnya"
   },
-  "guide": {
-    "title": "Panduan kota",
-    "all": "Semua",
-    "emptyCity": "Belum ada tantangan {{theme}} di {{city}}. Berikutnya: {{day}}.",
-    "emptyWorld": "Belum ada tantangan {{theme}}. Berikutnya: {{day}}."
-  },
   "localPass": {
     "name": "Local Pass",
     "progress": "{{done}}/{{total}} tema",
     "earned": "Didapat",
-    "hint": "Selesaikan ke-7 tema di {{city}} buat dapat Local Pass-nya.",
     "profileTitle": "Local Pass",
     "badgeA11y": "Pemilik Local Pass"
   },
   "propose": {
     "cta": "Usulkan tantangan",
-    "short": "Usulkan",
     "title": "Usulkan tantangan",
     "textLabel": "Tantanganmu (dalam bahasa Inggris)",
     "textPlaceholder": "Find a…",
@@ -388,12 +368,7 @@
       "invalid_twist": "Local Twist maksimal 280 karakter.",
       "twist_not_allowed": "Cuma warga lokal kota live yang bisa menambah Local Twist.",
       "moderation_blocked": "Usulanmu ditandai moderasi. Coba tulis ulang ya."
-    },
-    "linkAsk": "Punya ide tantangan?",
-    "linkCta": "Usulkan",
-    "cardBody": "Idemu bisa jadi tantangan besok untuk seluruh dunia 🌍",
-    "cardHide": "Sembunyikan seminggu",
-    "cardPlayed_other": "Idemu “{{text}}” dimainkan di {{count}} kota 🎉"
+    }
   },
   "early": {
     "badge": "Gercep",
@@ -496,7 +471,6 @@
   },
   "takeIt": "Ikut",
   "proofHint": {
-    "title": "Ambil fotomu",
     "place": "Foto dengan vote terbanyak jadi foto tempat ini.",
     "noPlace": "Foto dengan vote terbanyak naik podium."
   },
@@ -637,23 +611,6 @@
     "clear": "Hapus kota asalku",
     "hereIn": "Di sini, {{city}}"
   },
-  "tour": {
-    "title": "Keliling dunia *kemarin*",
-    "watch": "Tonton",
-    "openCity": "Buka {{city}}",
-    "next": "Lanjut",
-    "kicker": "Daily Challenge · {{theme}}",
-    "moment": {
-      "morning": "Pagi hari",
-      "afternoon": "Siang hari",
-      "evening": "Sore hari",
-      "night": "Malam hari"
-    },
-    "yourTurn": "Giliranmu.",
-    "todayIs": "Pertanyaan hari ini: {{question}}",
-    "close": "Tutup",
-    "sub_other": "{{count}} kota, tantangan yang sama"
-  },
   "worlds": {
     "tagline": "Tantangan sama. Dunia berbeda."
   },
@@ -696,16 +653,11 @@
     "endTitle": "Sudah semua, untuk sekarang!",
     "endBody": "Foto baru masuk sepanjang hari. Balik lagi nanti ya.",
     "endPlay": "Giliranmu: tunjukkan kotamu ke dunia.",
-    "backToday": "Kembali ke Hari ini",
-    "seeAll": "Lihat semua foto"
+    "backToday": "Kembali ke Hari ini"
   },
   "countries": {
-    "played_other": "{{count}} negara main hari ini",
-    "yourCity": "Kotamu",
     "represent": "Wakili kotamu",
     "emptyBody": "Belum ada yang main hari ini. Taruh kotamu di peta duluan!",
-    "openCountry": "{{city}}: lihat fotonya",
-    "byCity": "Per kota",
     "topPhoto": "Foto teratas"
   },
   "recap": {
@@ -751,8 +703,6 @@
     "ctaNoCity": "Jepret",
     "played": "Kamu sudah main · Lihat dunia",
     "firstCity": "Jadilah kota pertama di dunia hari ini",
-    "citiesIn_other": "{{count}} kota sudah main",
-    "citiesMissing_other": "{{count}} kota sudah main. {{city}} belum!",
     "steps": {
       "snap": "Jepret",
       "name": "Sebut namanya",
@@ -774,7 +724,6 @@
     "players_other": "{{count}} pemain",
     "missing": "{{city}} belum ada!",
     "yesterday": "Kemarin dunia bilang…",
-    "beFirst": "Wakili {{city}}",
     "beFirstSub": "Jadilah kota pertama hari ini",
     "swipeHint": "Geser untuk menjelajah 🌍",
     "slotCta": "📸 {{city}}? Jadi yang pertama hari ini"

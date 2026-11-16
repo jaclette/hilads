@@ -1,8 +1,5 @@
 {
   "emptyTitle": "Belum ada apa-apa",
-  "emptyBeFirst": "Jadilah yang pertama di {{city}}",
-  "emptyStartNow": "Mulai sesuatu sekarang",
-  "emptyCreateLine": "Bikin acara atau mulai nongkrong.",
   "hostSpotTitle": "Jadi host di tempatmu",
   "hostSpotCity": "Bikin {{city}} makin hidup.",
   "hostSpotNoCity": "Bikin kotamu makin hidup.",
@@ -11,8 +8,6 @@
   "noHangouts": "Belum ada nongkrong",
   "beFirstEventCity": "Jadi yang pertama bikin acara di {{city}}",
   "beFirstEvent": "Jadi yang pertama bikin acara",
-  "hangoutTalk": "Mulai nongkrong dan bikin kota ramai ngobrol",
-  "startHangout": "Mulai nongkrong 🗣️",
   "inspiration": {
     "heading": "Ide nongkrong",
     "sub": "Yang dibikin warga lokal di kota lain, buat inspirasi",
@@ -31,26 +26,7 @@
   "browseCities": "Jelajahi kota",
   "filterAll": "Semua",
   "filterChallenges": "Tantangan",
-  "challengesSection": "Tantangan",
-  "seeAllChallenges": "Lihat semua →",
   "noChallenges": "Belum ada tantangan",
-  "noChallengesCity": "Jadi yang pertama bikin tantangan di {{city}}",
-  "noChallengesGeneric": "Jadi yang pertama bikin tantangan.",
-  "seeComing": "Lihat yang akan datang",
-  "createNew": "Bikin baru",
-  "seeHappened": "lihat yang udah lewat →",
   "going": "ikut",
-  "inThisHangout": "di nongkrong ini",
-  "create": {
-    "title": "Mau ngapain?",
-    "challengeLabel": "Bikin tantangan",
-    "challengeSub": "Warga lokal & pelancong, kenalan lewat tantangan",
-    "hangoutLabel": "Mulai nongkrong",
-    "hangoutSub": "Langsung, biar orang gabung sekarang juga",
-    "eventLabel": "Bikin acara",
-    "eventSub": "Rencanakan sesuatu yang bisa diikuti orang lain",
-    "cancel": "Batal"
-  },
-  "hiNowHint": "nongkrong sekarang",
-  "hiLaterHint": "rencanakan acara"
+  "inThisHangout": "di nongkrong ini"
 }

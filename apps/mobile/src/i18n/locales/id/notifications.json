@@ -1,9 +1,7 @@
 {
-  "allTitle": "Semua notifikasi",
   "markAllRead": "Tandai semua dibaca",
   "emptyTitle": "Belum ada notifikasi",
   "emptySub": "Pesan dan kabar acara bakal muncul di sini.",
-  "seeAll": "Lihat semua notifikasi",
   "prefTitle": "Preferensi notifikasi",
   "pref": {
     "mentionLabel": "Mention @",
@@ -88,7 +86,6 @@
     "read": "Dibaca",
     "unread": "Belum dibaca",
     "delete": "Hapus",
-    "allRead": "Sudah kebaca semua ✨",
     "row": {
       "like": "{{names}} suka fotomu",
       "mention": "{{names}} menyebut kamu",

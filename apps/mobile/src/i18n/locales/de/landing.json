@@ -1,26 +1,5 @@
 {
-  "peopleHere_one": "🔥 {{count}} Person jetzt hier",
-  "peopleHere_other": "🔥 {{count}} Leute jetzt hier",
-  "vibesToday_one": "🔥 {{count}} vibe heute am Start",
-  "vibesToday_other": "🔥 {{count}} vibes heute am Start",
-  "geoOff": "📍 Standort aus",
-  "geoUnreachable": "📍 Standort konnte nicht ermittelt werden",
-  "pickCity": "Wähle eine Stadt\nund leg los",
   "locating": "› wird geortet...",
-  "requesting": "› Standort wird angefragt...",
-  "chooseManually": "Stadt manuell wählen →",
   "browseCities": "Städte entdecken",
-  "yourName": "DEIN NAME",
-  "namePlaceholder": "Sag Hallo als...",
-  "tryAgain": "Nochmal versuchen",
-  "useLocation": "Stattdessen meinen Standort nutzen",
-  "joinCity": "{{city}} beitreten →",
-  "joinChat": "🔥 Los geht's",
-  "instantAccess": "anonym · sofort dabei",
-  "keepIdentity": "oder behalte deine Identität",
-  "createAccount": "Konto erstellen",
-  "logIn": "Anmelden",
-  "authHint": "Sicher dir deinen Namen · Profile freischalten · Freunde hinzufügen",
-  "joinError": "Keine Verbindung. Prüf dein Internet und versuch's noch mal.",
-  "conceptSub": "🔥 Locals fordern Reisende heraus, Reisende fordern Locals heraus: Trefft euch und beweist es."
+  "createAccount": "Konto erstellen"
 }

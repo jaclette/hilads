@@ -1,8 +1,5 @@
 {
   "emptyTitle": "Aún no pasa nada",
-  "emptyBeFirst": "Sé el primero en {{city}}",
-  "emptyStartNow": "Lanza algo ahora",
-  "emptyCreateLine": "Crea un evento o lanza una quedada.",
   "hostSpotTitle": "Anima tu sitio",
   "hostSpotCity": "Dale vida a {{city}}.",
   "hostSpotNoCity": "Dale vida a tu ciudad.",
@@ -11,8 +8,6 @@
   "noHangouts": "Aún no hay quedadas",
   "beFirstEventCity": "Crea el primero en {{city}}",
   "beFirstEvent": "Crea el primero",
-  "hangoutTalk": "Lanza una quedada y pon a hablar a la ciudad",
-  "startHangout": "Lanza una quedada 🗣️",
   "inspiration": {
     "heading": "Ideas de quedadas",
     "sub": "Lo que organiza la gente local en otras ciudades, para inspirarte",
@@ -31,26 +26,7 @@
   "browseCities": "Explorar ciudades",
   "filterAll": "Todo",
   "filterChallenges": "Retos",
-  "challengesSection": "Retos",
-  "seeAllChallenges": "Ver todos →",
   "noChallenges": "Aún no hay retos",
-  "noChallengesCity": "Lanza el primero en {{city}}",
-  "noChallengesGeneric": "Lanza el primer reto.",
-  "seeComing": "Mira lo que viene",
-  "createNew": "Crear",
-  "seeHappened": "mira lo que pasó →",
   "going": "van",
-  "inThisHangout": "en esta quedada",
-  "create": {
-    "title": "¿Qué hacemos?",
-    "challengeLabel": "Lanzar un reto",
-    "challengeSub": "Gente local y viajeros, conectados por un reto",
-    "hangoutLabel": "Lanzar una quedada",
-    "hangoutSub": "Al instante: que la gente se te una ya",
-    "eventLabel": "Crear un evento",
-    "eventSub": "Organiza algo al que otros puedan unirse",
-    "cancel": "Cancelar"
-  },
-  "hiNowHint": "quedar ahora",
-  "hiLaterHint": "planear un evento"
+  "inThisHangout": "en esta quedada"
 }

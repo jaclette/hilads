@@ -1,8 +1,5 @@
 {
   "emptyTitle": "ยังไม่มีอะไรเกิดขึ้น",
-  "emptyBeFirst": "มาเป็นคนแรกใน{{city}}",
-  "emptyStartNow": "เริ่มอะไรสักอย่างเลยตอนนี้",
-  "emptyCreateLine": "สร้างกิจกรรมหรือเริ่มนัดเจอเลย",
   "hostSpotTitle": "เป็นเจ้าภาพที่สปอตของคุณ",
   "hostSpotCity": "ทำให้ {{city}} คึกคักขึ้น",
   "hostSpotNoCity": "ทำให้เมืองของคุณคึกคักขึ้น",
@@ -11,8 +8,6 @@
   "noHangouts": "ยังไม่มีนัดเจอ",
   "beFirstEventCity": "มาเป็นคนแรกที่สร้างใน {{city}}",
   "beFirstEvent": "มาเป็นคนแรกที่สร้าง",
-  "hangoutTalk": "เริ่มนัดเจอ แล้วชวนทั้งเมืองมาคุยกัน",
-  "startHangout": "เริ่มนัดเจอ 🗣️",
   "inspiration": {
     "heading": "ไอเดียนัดเจอ",
     "sub": "ดูว่าคนท้องถิ่นเมืองอื่นจัดอะไรกัน แล้วเอาไปเป็นไอเดีย",
@@ -31,26 +26,7 @@
   "browseCities": "ดูเมืองต่างๆ",
   "filterAll": "ทั้งหมด",
   "filterChallenges": "ชาเลนจ์",
-  "challengesSection": "ชาเลนจ์",
-  "seeAllChallenges": "ดูทั้งหมด →",
   "noChallenges": "ยังไม่มีชาเลนจ์",
-  "noChallengesCity": "มาเป็นคนแรกที่เริ่มใน {{city}}",
-  "noChallengesGeneric": "มาเป็นคนแรกที่เริ่มชาเลนจ์",
-  "seeComing": "ดูว่ามีอะไรกำลังจะมา",
-  "createNew": "สร้างใหม่",
-  "seeHappened": "ดูว่าเกิดอะไรขึ้น →",
   "going": "จะไป",
-  "inThisHangout": "ในนัดเจอนี้",
-  "create": {
-    "title": "จะทำอะไรกันดี?",
-    "challengeLabel": "เริ่มชาเลนจ์",
-    "challengeSub": "คนท้องถิ่นและนักเดินทาง มาเจอกันผ่านชาเลนจ์",
-    "hangoutLabel": "เริ่มนัดเจอ",
-    "hangoutSub": "ทันที ชวนคนมาเจอคุณได้เลยตอนนี้",
-    "eventLabel": "สร้างกิจกรรม",
-    "eventSub": "แพลนอะไรสักอย่างให้คนอื่นมาร่วม",
-    "cancel": "ยกเลิก"
-  },
-  "hiNowHint": "เจอกันตอนนี้",
-  "hiLaterHint": "วางแผนกิจกรรม"
+  "inThisHangout": "ในนัดเจอนี้"
 }

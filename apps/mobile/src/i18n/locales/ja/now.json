@@ -1,8 +1,5 @@
 {
   "emptyTitle": "まだ何も起きていません",
-  "emptyBeFirst": "{{city}}で一番乗りしよう",
-  "emptyStartNow": "今すぐ何か始めよう",
-  "emptyCreateLine": "イベントを作るか、集まりを始めよう。",
   "hostSpotTitle": "スポットを盛り上げよう",
   "hostSpotCity": "{{city}}をもっと盛り上げよう。",
   "hostSpotNoCity": "自分の街をもっと盛り上げよう。",
@@ -11,8 +8,6 @@
   "noHangouts": "まだ集まりはありません",
   "beFirstEventCity": "{{city}}で最初に作ってみよう",
   "beFirstEvent": "最初に作ってみよう",
-  "hangoutTalk": "集まりを始めて街を盛り上げよう",
-  "startHangout": "集まりを始める 🗣️",
   "inspiration": {
     "heading": "集まりのアイデア",
     "sub": "ほかの街で地元の人が企画していることからヒントをもらおう",
@@ -31,26 +26,7 @@
   "browseCities": "街を見る",
   "filterAll": "すべて",
   "filterChallenges": "チャレンジ",
-  "challengesSection": "チャレンジ",
-  "seeAllChallenges": "すべて見る →",
   "noChallenges": "まだチャレンジはありません",
-  "noChallengesCity": "{{city}}で最初のチャレンジを出そう",
-  "noChallengesGeneric": "最初にチャレンジを始めよう。",
-  "seeComing": "これからの予定を見る",
-  "createNew": "新規作成",
-  "seeHappened": "何があったか見る →",
   "going": "参加",
-  "inThisHangout": "この集まりに",
-  "create": {
-    "title": "何する？",
-    "challengeLabel": "チャレンジを始める",
-    "challengeSub": "地元の人と旅行者がチャレンジでつながる",
-    "hangoutLabel": "集まりを始める",
-    "hangoutSub": "今すぐ。みんなにすぐ来てもらおう",
-    "eventLabel": "イベントを作成",
-    "eventSub": "みんなが参加できる予定を立てよう",
-    "cancel": "キャンセル"
-  },
-  "hiNowHint": "今すぐ集まる",
-  "hiLaterHint": "予定を立てる"
+  "inThisHangout": "この集まりに"
 }

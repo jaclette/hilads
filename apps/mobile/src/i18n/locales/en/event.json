@@ -69,7 +69,6 @@
   "goingTitle": "Going",
   "hostedBy": "Hosted by {{name}}",
   "bringPeople": "Bring people",
-  "seeAll": "See all",
   "oneGoing": "{{name}} is going",
   "manyGoing": "{{name}} + {{count}} going",
   "goingEmpty": "No one yet - be the first to join!",

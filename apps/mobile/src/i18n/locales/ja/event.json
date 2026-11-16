@@ -69,7 +69,6 @@
   "goingTitle": "参加者",
   "hostedBy": "主催：{{name}}",
   "bringPeople": "みんなを誘う",
-  "seeAll": "すべて見る",
   "oneGoing": "{{name}}が参加します",
   "manyGoing": "{{name}}ほか{{count}}人が参加",
   "goingEmpty": "まだ誰もいません。最初に参加しよう！",

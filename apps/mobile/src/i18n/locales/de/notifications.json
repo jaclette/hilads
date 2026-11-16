@@ -1,9 +1,7 @@
 {
-  "allTitle": "Alle Benachrichtigungen",
   "markAllRead": "Alle als gelesen markieren",
   "emptyTitle": "Noch keine Benachrichtigungen",
   "emptySub": "Hier siehst du Nachrichten und Event-Neuigkeiten.",
-  "seeAll": "Alle Benachrichtigungen ansehen",
   "prefTitle": "Benachrichtigungseinstellungen",
   "pref": {
     "mentionLabel": "Erwähnungen @",
@@ -88,7 +86,6 @@
     "read": "Gelesen",
     "unread": "Ungelesen",
     "delete": "Löschen",
-    "allRead": "Alles gelesen ✨",
     "row": {
       "like": "{{names}} gefällt dein Foto",
       "mention": "{{names}} hat dich erwähnt",

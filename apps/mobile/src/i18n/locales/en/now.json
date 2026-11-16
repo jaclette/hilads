@@ -1,8 +1,5 @@
 {
   "emptyTitle": "Nothing happening yet",
-  "emptyBeFirst": "Be the first in {{city}}",
-  "emptyStartNow": "Start something now",
-  "emptyCreateLine": "Create an event or start a hangout.",
   "hostSpotTitle": "Host your spot",
   "hostSpotCity": "Make {{city}} feel alive.",
   "hostSpotNoCity": "Make your city feel alive.",
@@ -11,8 +8,6 @@
   "noHangouts": "No hangouts yet",
   "beFirstEventCity": "Be the first to create one in {{city}}",
   "beFirstEvent": "Be the first to create one",
-  "hangoutTalk": "Start a hangout and get the city talking",
-  "startHangout": "Start a hangout 🗣️",
   "inspiration": {
     "heading": "Hangout ideas",
     "sub": "What locals organize elsewhere - get inspired",
@@ -31,26 +26,7 @@
   "browseCities": "Browse cities",
   "filterAll": "All",
   "filterChallenges": "Challenges",
-  "challengesSection": "Challenges",
-  "seeAllChallenges": "See all →",
   "noChallenges": "No challenges yet",
-  "noChallengesCity": "Be the first to launch one in {{city}}",
-  "noChallengesGeneric": "Be the first to launch a challenge.",
-  "seeComing": "See what's coming",
-  "createNew": "Create new",
-  "seeHappened": "see what happened →",
   "going": "going",
-  "inThisHangout": "in this hangout",
-  "create": {
-    "title": "What's the move?",
-    "challengeLabel": "Launch a challenge",
-    "challengeSub": "Locals & travelers - connect through a challenge",
-    "hangoutLabel": "Start a hangout",
-    "hangoutSub": "Instant - let people join you right now",
-    "eventLabel": "Create an event",
-    "eventSub": "Plan something others can join",
-    "cancel": "Cancel"
-  },
-  "hiNowHint": "hang out now",
-  "hiLaterHint": "plan an event"
+  "inThisHangout": "in this hangout"
 }

@@ -4,19 +4,11 @@
   "nextIn": "Daily Challenge tiếp theo sau {{time}}",
   "nothingLive": "Daily Challenge tiếp theo sắp tới rồi",
   "cta": "Chơi thử thách",
-  "ctaIn": "Chơi luôn",
-  "ctaTaken": "Đã chơi · Xem ảnh của mình",
-  "seeProofs": "Xem ảnh hôm nay",
-  "localTwist": "Local Twist",
   "twistIn": "Local Twist ở {{city}}",
   "twistBy": "của {{name}}",
   "count_other": "{{count}} người đã chơi hôm nay",
-  "countCity": "{{count}} ở {{city}}",
-  "countZero": "Chưa có ai - chơi đầu tiên đi",
   "beFirst": "Làm người mở màn hôm nay",
   "beFirstSub": "Chưa có ảnh nào. Bạn mở màn đi, cả thế giới đang chờ.",
-  "firstYours": "Ảnh đã gửi xong",
-  "firstYoursSub": "Duyệt xong là ảnh hiện ở đây, cùng ảnh của mọi người.",
   "yourProof": "Ảnh của bạn",
   "status": {
     "pending": "Chờ duyệt",
@@ -40,14 +32,12 @@
   "priceFrom_other": "dựa trên {{count}} ảnh",
   "places_other": "{{count}} địa điểm đã ghim",
   "unnamedPlace": "Địa điểm đã ghim",
-  "tabWorld": "Thế giới",
   "local": "Dân địa phương",
   "traveler": "Du khách",
   "validatedByLocal": "Dân địa phương xác nhận",
   "loadFailed": "Không tải được Daily Challenge.",
   "retry": "Thử lại",
   "notFound": "Không tìm thấy Daily Challenge này.",
-  "cityRowEmpty": "Tạo thử thách đầu tiên ở {{city}} nhé",
   "proof": {
     "titleNew": "Ảnh của bạn",
     "titleEdit": "Sửa ảnh",
@@ -116,8 +106,6 @@
     "invalid_back_home": "Phần \"ở quê bạn\" cần có thành phố, và một câu trả lời, giá hoặc một câu."
   },
   "push": {
-    "bannerTitle": "Nhận Daily Challenge mỗi sáng",
-    "bannerCta": "Bật",
     "askTitle": "Daily Challenge",
     "askBody": "Nhận Daily Challenge mỗi sáng, đúng giờ hợp với bạn.",
     "askBodyBlocked": "Hilads đang tắt thông báo. Bật lại trong cài đặt để nhận Daily Challenge mỗi sáng nhé.",
@@ -324,23 +312,15 @@
     "prev": "Tháng trước",
     "next": "Tháng sau"
   },
-  "guide": {
-    "title": "Cẩm nang thành phố",
-    "all": "Tất cả",
-    "emptyCity": "Chưa có thử thách {{theme}} ở {{city}}. Lần tới: {{day}}.",
-    "emptyWorld": "Chưa có thử thách {{theme}}. Lần tới: {{day}}."
-  },
   "localPass": {
     "name": "Local Pass",
     "progress": "{{done}}/{{total}} chủ đề",
     "earned": "Đã đạt",
-    "hint": "Hoàn thành đủ 7 chủ đề ở {{city}} để nhận Local Pass nhé.",
     "profileTitle": "Local Pass",
     "badgeA11y": "Có Local Pass"
   },
   "propose": {
     "cta": "Đề xuất thử thách",
-    "short": "Đề xuất",
     "title": "Đề xuất thử thách",
     "textLabel": "Thử thách của bạn (bằng tiếng Anh)",
     "textPlaceholder": "Find a…",
@@ -388,12 +368,7 @@
       "invalid_twist": "Local Twist dưới 280 ký tự thôi nhé.",
       "twist_not_allowed": "Chỉ dân địa phương ở thành phố đã mở mới thêm được Local Twist.",
       "moderation_blocked": "Đề xuất bị bộ lọc chặn. Viết lại nhé."
-    },
-    "linkAsk": "Có ý tưởng thử thách?",
-    "linkCta": "Đề xuất ngay",
-    "cardBody": "Ý tưởng của bạn có thể thành thử thách ngày mai cho cả thế giới 🌍",
-    "cardHide": "Ẩn trong một tuần",
-    "cardPlayed_other": "Ý tưởng “{{text}}” của bạn đã được chơi ở {{count}} thành phố 🎉"
+    }
   },
   "early": {
     "badge": "Sớm",
@@ -496,7 +471,6 @@
   },
   "takeIt": "Chơi luôn",
   "proofHint": {
-    "title": "Chụp ảnh nào",
     "place": "Ảnh nhiều bình chọn nhất sẽ thành ảnh của địa điểm.",
     "noPlace": "Ảnh nhiều bình chọn nhất lên bục vinh danh."
   },
@@ -637,23 +611,6 @@
     "clear": "Xóa thành phố quê",
     "hereIn": "Ở đây, {{city}}"
   },
-  "tour": {
-    "title": "Vòng quanh thế giới *hôm qua*",
-    "watch": "Xem",
-    "openCity": "Mở {{city}}",
-    "next": "Tiếp",
-    "kicker": "Daily Challenge · {{theme}}",
-    "moment": {
-      "morning": "Buổi sáng",
-      "afternoon": "Buổi chiều",
-      "evening": "Buổi tối",
-      "night": "Ban đêm"
-    },
-    "yourTurn": "Tới lượt bạn.",
-    "todayIs": "Câu hỏi hôm nay: {{question}}",
-    "close": "Đóng",
-    "sub_other": "{{count}} thành phố, cùng một thử thách"
-  },
   "worlds": {
     "tagline": "Cùng một thử thách. Những thế giới khác nhau."
   },
@@ -696,16 +653,11 @@
     "endTitle": "Bạn xem hết rồi đó!",
     "endBody": "Ảnh mới lên cả ngày. Lát quay lại xem tiếp nhé.",
     "endPlay": "Tới lượt bạn: khoe thành phố bạn với thế giới.",
-    "backToday": "Về Hôm nay",
-    "seeAll": "Xem tất cả ảnh"
+    "backToday": "Về Hôm nay"
   },
   "countries": {
-    "played_other": "{{count}} quốc gia đã chơi hôm nay",
-    "yourCity": "Thành phố của bạn",
     "represent": "Đại diện cho thành phố của bạn",
     "emptyBody": "Hôm nay chưa ai chơi. Đưa thành phố bạn lên bản đồ trước tiên nào!",
-    "openCountry": "{{city}}: xem ảnh",
-    "byCity": "Theo thành phố",
     "topPhoto": "Ảnh hàng đầu"
   },
   "recap": {
@@ -751,8 +703,6 @@
     "ctaNoCity": "Chụp ngay",
     "played": "Bạn đã chơi · Xem thế giới",
     "firstCity": "Làm thành phố đầu tiên trên thế giới hôm nay",
-    "citiesIn_other": "{{count}} thành phố đã chơi",
-    "citiesMissing_other": "{{count}} thành phố đã chơi. {{city}} thì chưa!",
     "steps": {
       "snap": "Chụp ngay",
       "name": "Gọi tên",
@@ -774,7 +724,6 @@
     "players_other": "{{count}} người chơi",
     "missing": "Còn thiếu {{city}}!",
     "yesterday": "Hôm qua thế giới nói…",
-    "beFirst": "Đại diện cho {{city}}",
     "beFirstSub": "Làm thành phố đầu tiên hôm nay",
     "swipeHint": "Vuốt để đi du lịch 🌍",
     "slotCta": "📸 {{city}} đâu rồi? Chơi đầu tiên hôm nay nha"

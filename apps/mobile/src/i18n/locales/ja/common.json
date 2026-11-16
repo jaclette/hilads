@@ -10,10 +10,7 @@
     "special": "スペシャル",
     "onlyIn": "{{city}}ならでは"
   },
-  "nowTitle": "今",
   "filterEvents": "地元のイベント",
-  "hiLocalTitle": "👋 Hi Local",
-  "filterHangouts": "🗣️ 集まり",
   "publicEventsSection": "公開イベント",
   "accountWelcome": {
     "title": "おめでとう、{{username}}さん！",
@@ -46,15 +43,12 @@
     "noResults": "場所が見つかりません",
     "loading": "位置情報を取得中…",
     "confirm": "この場所をシェア",
-    "yourLocation": "現在地",
-    "close": "閉じる",
-    "clearSearch": "検索をクリア"
+    "yourLocation": "現在地"
   },
   "language": "言語",
   "cancel": "キャンセル",
   "loading": "読み込み中…",
   "retry": "もう一度",
-  "save": "保存",
   "done": "完了",
   "close": "閉じる",
   "clear": "クリア",
@@ -176,9 +170,7 @@
   "tabs": {
     "today": "今日",
     "map": "マップ",
-    "chat": "Hi",
-    "passport": "パスポート",
-    "ranks": "ランキング"
+    "passport": "パスポート"
   },
   "scope": {
     "title": "表示",
@@ -200,7 +192,6 @@
     "requiredTitle": "Hiladsをアップデート",
     "requiredBody": "このバージョンはサポートが終了しました。Hiladsを使い続けるにはアプリをアップデートしてください。"
   },
-  "mapSoon": "スポットのマップはもうすぐ公開です。",
   "firstLaunch": "地元で遊ぶ。世界と比べる。",
   "signUp": "登録する",
   "open": "開く",
@@ -225,7 +216,6 @@
     "errorBody": "通報を送信できませんでした。もう一度試してください。"
   },
   "subtitles": {
-    "map": "世界の写真から生まれたスポット。",
     "hi": "街にあいさつ。予定に参加しよう。",
     "passport": "あなたの街、写真、スタンプ。"
   },

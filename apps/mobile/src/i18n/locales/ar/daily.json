@@ -4,10 +4,6 @@
   "nextIn": "Daily Challenge التالي بعد {{time}}",
   "nothingLive": "Daily Challenge التالي في الطريق",
   "cta": "خُض التحدّي",
-  "ctaIn": "أنا مشارك",
-  "ctaTaken": "خضت التحدّي · اعرض صورتي",
-  "seeProofs": "شاهد صور اليوم",
-  "localTwist": "Local Twist",
   "twistIn": "Local Twist في {{city}}",
   "twistBy": "من {{name}}",
   "count_zero": "لم يشارك أحد اليوم",
@@ -16,12 +12,8 @@
   "count_few": "شارك {{count}} أشخاص اليوم",
   "count_many": "شارك {{count}} شخصًا اليوم",
   "count_other": "شارك {{count}} شخص اليوم",
-  "countCity": "{{count}} في {{city}}",
-  "countZero": "لا أحد بعد، كن الأول",
   "beFirst": "كن الأول اليوم",
   "beFirstSub": "لا توجد صورة بعد. كن الأول، العالم ينتظر.",
-  "firstYours": "وصلت صورتك",
-  "firstYoursSub": "ستظهر هنا بعد الموافقة عليها مع صور الآخرين.",
   "yourProof": "صورتك",
   "status": {
     "pending": "قيد الانتظار",
@@ -55,14 +47,12 @@
   "places_many": "{{count}} مكانًا على الخريطة",
   "places_other": "{{count}} مكان على الخريطة",
   "unnamedPlace": "مكان محدّد",
-  "tabWorld": "العالم",
   "local": "محلي",
   "traveler": "مسافر",
   "validatedByLocal": "بتأكيد أحد السكان المحليين",
   "loadFailed": "تعذّر تحميل Daily Challenge.",
   "retry": "أعد المحاولة",
   "notFound": "هذا الـ Daily Challenge غير موجود.",
-  "cityRowEmpty": "كن أول من يُنشئ تحدّيًا في {{city}}",
   "proof": {
     "titleNew": "صورتك",
     "titleEdit": "عدّل صورتك",
@@ -136,8 +126,6 @@
     "invalid_back_home": "لمقارنة مدينتك الأصلية، اختر مدينة وأضف إجابة أو سعرًا أو سطرًا."
   },
   "push": {
-    "bannerTitle": "احصل على Daily Challenge كل صباح",
-    "bannerCta": "فعّل",
     "askTitle": "Daily Challenge",
     "askBody": "احصل على Daily Challenge كل صباح، في وقت يناسبك.",
     "askBodyBlocked": "الإشعارات متوقفة لـ Hilads. فعّلها من الإعدادات لتحصل على Daily Challenge كل صباح.",
@@ -384,23 +372,15 @@
     "prev": "الشهر السابق",
     "next": "الشهر التالي"
   },
-  "guide": {
-    "title": "دليل المدينة",
-    "all": "الكل",
-    "emptyCity": "لا تحدّي من موضوع {{theme}} في {{city}} بعد. التالي: {{day}}.",
-    "emptyWorld": "لا تحدّي من موضوع {{theme}} بعد. التالي: {{day}}."
-  },
   "localPass": {
     "name": "Local Pass",
     "progress": "{{done}}/{{total}} مواضيع",
     "earned": "تم الحصول عليه",
-    "hint": "أكمل المواضيع السبعة في {{city}} لتحصل على Local Pass الخاص بها.",
     "profileTitle": "Local Pass",
     "badgeA11y": "حامل Local Pass"
   },
   "propose": {
     "cta": "اقترح تحدّيًا",
-    "short": "اقترح",
     "title": "اقترح تحدّيًا",
     "textLabel": "تحدّيك (بالإنجليزية)",
     "textPlaceholder": "Find a…",
@@ -448,17 +428,7 @@
       "invalid_twist": "اجعل Local Twist أقل من 280 حرفًا.",
       "twist_not_allowed": "إضافة Local Twist لسكان المدن النشطة فقط.",
       "moderation_blocked": "اقتراحك غير مقبول. أعد صياغته من فضلك."
-    },
-    "linkAsk": "لديك فكرة لتحدٍّ؟",
-    "linkCta": "اقترحها",
-    "cardBody": "قد تصبح فكرتك تحدي الغد للعالم كله 🌍",
-    "cardHide": "إخفاء لمدة أسبوع",
-    "cardPlayed_zero": "لُعبت فكرتك «{{text}}» في {{count}} مدينة 🎉",
-    "cardPlayed_one": "لُعبت فكرتك «{{text}}» في {{count}} مدينة 🎉",
-    "cardPlayed_two": "لُعبت فكرتك «{{text}}» في {{count}} مدينة 🎉",
-    "cardPlayed_few": "لُعبت فكرتك «{{text}}» في {{count}} مدينة 🎉",
-    "cardPlayed_many": "لُعبت فكرتك «{{text}}» في {{count}} مدينة 🎉",
-    "cardPlayed_other": "لُعبت فكرتك «{{text}}» في {{count}} مدينة 🎉"
+    }
   },
   "early": {
     "badge": "مبكر",
@@ -586,7 +556,6 @@
   },
   "takeIt": "خُضه",
   "proofHint": {
-    "title": "التقط صورتك",
     "place": "الصورة الأكثر تصويتًا تصبح صورة المكان.",
     "noPlace": "الصورة الأكثر أصواتًا تصعد إلى منصة التتويج."
   },
@@ -772,28 +741,6 @@
     "clear": "إزالة مدينتي الأصلية",
     "hereIn": "هنا في {{city}}"
   },
-  "tour": {
-    "title": "جولة *الأمس* حول العالم",
-    "watch": "شاهد",
-    "openCity": "افتح {{city}}",
-    "next": "التالي",
-    "kicker": "Daily Challenge · {{theme}}",
-    "moment": {
-      "morning": "في الصباح",
-      "afternoon": "بعد الظهر",
-      "evening": "في المساء",
-      "night": "في الليل"
-    },
-    "yourTurn": "دورك الآن.",
-    "todayIs": "سؤال اليوم: {{question}}",
-    "close": "إغلاق",
-    "sub_zero": "لا مدن بعد",
-    "sub_one": "مدينة واحدة، التحدّي نفسه",
-    "sub_two": "مدينتان، التحدّي نفسه",
-    "sub_few": "{{count}} مدن، التحدّي نفسه",
-    "sub_many": "{{count}} مدينة، التحدّي نفسه",
-    "sub_other": "{{count}} مدينة، التحدّي نفسه"
-  },
   "worlds": {
     "tagline": "التحدّي نفسه. عوالم مختلفة."
   },
@@ -841,21 +788,11 @@
     "endTitle": "هذا كل من لعب حتى الآن!",
     "endBody": "تصل صور جديدة طوال اليوم. عُد لترى المزيد.",
     "endPlay": "دورك الآن: أرِ العالم مدينتك.",
-    "backToday": "العودة إلى «اليوم»",
-    "seeAll": "عرض كل الصور"
+    "backToday": "العودة إلى «اليوم»"
   },
   "countries": {
-    "played_zero": "لم تلعب أي دولة اليوم",
-    "played_one": "لعبت دولة واحدة اليوم",
-    "played_two": "لعبت دولتان اليوم",
-    "played_few": "لعبت {{count}} دول اليوم",
-    "played_many": "لعبت {{count}} دولة اليوم",
-    "played_other": "لعبت {{count}} دولة اليوم",
-    "yourCity": "مدينتك",
     "represent": "مثّل مدينتك",
     "emptyBody": "لم يلعب أحد اليوم بعد. كن أول من يضع مدينته على الخريطة!",
-    "openCountry": "{{city}}: شاهد الصور",
-    "byCity": "حسب المدينة",
     "topPhoto": "الصورة الأولى"
   },
   "recap": {
@@ -931,18 +868,6 @@
     "ctaNoCity": "صوّر",
     "played": "لعبت · شاهد العالم",
     "firstCity": "اجعل مدينتك الأولى في العالم اليوم",
-    "citiesIn_zero": "لم تشارك أي مدينة",
-    "citiesIn_one": "مدينة واحدة شاركت",
-    "citiesIn_two": "مدينتان شاركتا",
-    "citiesIn_few": "{{count}} مدن شاركت",
-    "citiesIn_many": "{{count}} مدينة شاركت",
-    "citiesIn_other": "{{count}} مدينة شاركت",
-    "citiesMissing_zero": "لم تشارك أي مدينة بعد، ولا {{city}}!",
-    "citiesMissing_one": "مدينة واحدة شاركت. {{city}} لم تشارك بعد!",
-    "citiesMissing_two": "مدينتان شاركتا. {{city}} لم تشارك بعد!",
-    "citiesMissing_few": "{{count}} مدن شاركت. {{city}} لم تشارك بعد!",
-    "citiesMissing_many": "{{count}} مدينة شاركت. {{city}} لم تشارك بعد!",
-    "citiesMissing_other": "{{count}} مدينة شاركت. {{city}} لم تشارك بعد!",
     "steps": {
       "snap": "صوّر",
       "name": "سمِّه",
@@ -974,7 +899,6 @@
     "players_other": "{{count}} لاعب",
     "missing": "{{city}} غائبة!",
     "yesterday": "بالأمس قال العالم…",
-    "beFirst": "مثّل {{city}}",
     "beFirstSub": "اجعل مدينتك الأولى اليوم",
     "swipeHint": "اسحب لتسافر 🌍",
     "slotCta": "📸 {{city}}؟ كن الأول اليوم"

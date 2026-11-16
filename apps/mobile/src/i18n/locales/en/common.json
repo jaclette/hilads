@@ -10,10 +10,7 @@
     "special": "Special",
     "onlyIn": "Only in {{city}}"
   },
-  "nowTitle": "Now",
   "filterEvents": "Local Events",
-  "hiLocalTitle": "👋 Hi Local",
-  "filterHangouts": "🗣️ Hangouts",
   "publicEventsSection": "Public Local Events",
   "accountWelcome": {
     "title": "Congrats, {{username}}!",
@@ -46,15 +43,12 @@
     "noResults": "No places found",
     "loading": "Getting location…",
     "confirm": "Share this spot",
-    "yourLocation": "Your location",
-    "close": "Close",
-    "clearSearch": "Clear search"
+    "yourLocation": "Your location"
   },
   "language": "Language",
   "cancel": "Cancel",
   "loading": "Loading…",
   "retry": "Try again",
-  "save": "Save",
   "done": "Done",
   "close": "Close",
   "clear": "Clear",
@@ -177,9 +171,7 @@
   "tabs": {
     "today": "Today",
     "map": "Map",
-    "chat": "Hi",
-    "passport": "Passport",
-    "ranks": "Ranks"
+    "passport": "Passport"
   },
   "scope": {
     "title": "Show",
@@ -202,7 +194,6 @@
     "requiredTitle": "Update Hilads",
     "requiredBody": "This version is no longer supported. Update the app to keep using Hilads."
   },
-  "mapSoon": "The map of spots is coming soon.",
   "firstLaunch": "Play local. Compare global.",
   "signUp": "Sign up",
   "open": "Open",
@@ -227,7 +218,6 @@
     "errorBody": "Could not send the report. Try again."
   },
   "subtitles": {
-    "map": "Spots from the world's photos.",
     "hi": "Say hi to your city. Join a plan.",
     "passport": "Your cities, your photos, your stamps."
   },

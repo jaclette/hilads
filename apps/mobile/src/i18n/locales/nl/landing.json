@@ -1,26 +1,5 @@
 {
-  "peopleHere_one": "🔥 {{count}} persoon is hier nu",
-  "peopleHere_other": "🔥 {{count}} mensen zijn hier nu",
-  "vibesToday_one": "🔥 {{count}} vibe vandaag",
-  "vibesToday_other": "🔥 {{count}} vibes vandaag",
-  "geoOff": "📍 Locatie uit",
-  "geoUnreachable": "📍 Je locatie is niet gevonden",
-  "pickCity": "Kies een stad\nen doe mee",
   "locating": "› locatie zoeken...",
-  "requesting": "› locatie opvragen...",
-  "chooseManually": "Stad handmatig kiezen →",
   "browseCities": "Steden bekijken",
-  "yourName": "JOUW NAAM",
-  "namePlaceholder": "Zeg hoi als...",
-  "tryAgain": "Opnieuw proberen",
-  "useLocation": "Toch mijn locatie gebruiken",
-  "joinCity": "Doe mee in {{city}} →",
-  "joinChat": "🔥 Doe mee",
-  "instantAccess": "anoniem · meteen erin",
-  "keepIdentity": "of bewaar je identiteit",
-  "createAccount": "Account aanmaken",
-  "logIn": "Inloggen",
-  "authHint": "Bewaar je naam · ontgrendel profielen · voeg vrienden toe",
-  "joinError": "Geen verbinding. Check je internet en probeer het opnieuw.",
-  "conceptSub": "🔥 Locals dagen reizigers uit, reizigers dagen locals uit. Spreek af om het te bewijzen."
+  "createAccount": "Account aanmaken"
 }

@@ -1,8 +1,5 @@
 {
   "emptyTitle": "Per ora non succede niente",
-  "emptyBeFirst": "Inizia tu a {{city}}",
-  "emptyStartNow": "Lancia qualcosa ora",
-  "emptyCreateLine": "Crea un evento o lancia un ritrovo.",
   "hostSpotTitle": "Anima il tuo posto",
   "hostSpotCity": "Dai vita a {{city}}.",
   "hostSpotNoCity": "Dai vita alla tua città.",
@@ -11,8 +8,6 @@
   "noHangouts": "Ancora nessun ritrovo",
   "beFirstEventCity": "Crea tu il primo a {{city}}",
   "beFirstEvent": "Crea tu il primo",
-  "hangoutTalk": "Lancia un ritrovo e fai parlare la città",
-  "startHangout": "Lancia un ritrovo 🗣️",
   "inspiration": {
     "heading": "Idee per ritrovi",
     "sub": "Cosa organizza la gente del posto in altre città: prendi spunto",
@@ -31,26 +26,7 @@
   "browseCities": "Esplora le città",
   "filterAll": "Tutto",
   "filterChallenges": "Sfide",
-  "challengesSection": "Sfide",
-  "seeAllChallenges": "Vedi tutte →",
   "noChallenges": "Ancora nessuna sfida",
-  "noChallengesCity": "Lancia tu la prima a {{city}}",
-  "noChallengesGeneric": "Lancia tu la prima sfida.",
-  "seeComing": "Cosa c'è in arrivo",
-  "createNew": "Crea",
-  "seeHappened": "guarda cos'è successo →",
   "going": "partecipano",
-  "inThisHangout": "in questo ritrovo",
-  "create": {
-    "title": "Che si fa?",
-    "challengeLabel": "Lancia una sfida",
-    "challengeSub": "Gente del posto e viaggiatori, uniti da una sfida",
-    "hangoutLabel": "Lancia un ritrovo",
-    "hangoutSub": "Al volo: fatti raggiungere subito",
-    "eventLabel": "Crea un evento",
-    "eventSub": "Organizza qualcosa a cui gli altri possono unirsi",
-    "cancel": "Annulla"
-  },
-  "hiNowHint": "vediamoci adesso",
-  "hiLaterHint": "organizza un evento"
+  "inThisHangout": "in questo ritrovo"
 }

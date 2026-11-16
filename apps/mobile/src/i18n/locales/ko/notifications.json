@@ -1,9 +1,7 @@
 {
-  "allTitle": "모든 알림",
   "markAllRead": "모두 읽음으로 표시",
   "emptyTitle": "아직 알림이 없어요",
   "emptySub": "여기에서 메시지와 이벤트 소식을 볼 수 있어요.",
-  "seeAll": "모든 알림 보기",
   "prefTitle": "알림 설정",
   "pref": {
     "mentionLabel": "멘션 @",
@@ -88,7 +86,6 @@
     "read": "읽음",
     "unread": "안 읽음",
     "delete": "삭제",
-    "allRead": "다 확인했어요 ✨",
     "row": {
       "like": "{{names}} 님이 사진을 좋아해요",
       "mention": "{{names}} 님이 언급했어요",

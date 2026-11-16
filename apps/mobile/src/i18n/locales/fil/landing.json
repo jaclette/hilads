@@ -1,26 +1,5 @@
 {
-  "peopleHere_one": "🔥 {{count}} tao rito ngayon",
-  "peopleHere_other": "🔥 {{count}} tao rito ngayon",
-  "vibesToday_one": "🔥 {{count}} vibe ngayong araw",
-  "vibesToday_other": "🔥 {{count}} vibes ngayong araw",
-  "geoOff": "📍 Naka-off ang location",
-  "geoUnreachable": "📍 Hindi makuha ang location mo",
-  "pickCity": "Pumili ng city\nat sumali na",
   "locating": "› hinahanap ka...",
-  "requesting": "› hinihingi ang location...",
-  "chooseManually": "Pumili ng city →",
   "browseCities": "Mag-browse ng mga city",
-  "yourName": "PANGALAN MO",
-  "namePlaceholder": "Mag-hi bilang...",
-  "tryAgain": "Subukan ulit",
-  "useLocation": "Gamitin na lang ang location ko",
-  "joinCity": "Sumali sa {{city}} →",
-  "joinChat": "🔥 Sali na",
-  "instantAccess": "anonymous · instant access",
-  "keepIdentity": "o i-keep ang identity mo",
-  "createAccount": "Gumawa ng account",
-  "logIn": "Mag-log in",
-  "authHint": "I-save ang pangalan mo · i-unlock ang profiles · mag-add ng friends",
-  "joinError": "Hindi maka-connect. I-check ang connection mo at subukan ulit.",
-  "conceptSub": "🔥 Chinachallenge ng locals ang mga biyahero, at ng mga biyahero ang locals - magkita kayo para patunayan."
+  "createAccount": "Gumawa ng account"
 }

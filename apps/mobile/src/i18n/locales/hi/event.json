@@ -69,7 +69,6 @@
   "goingTitle": "जा रहे हैं",
   "hostedBy": "होस्ट: {{name}}",
   "bringPeople": "लोगों को बुलाएँ",
-  "seeAll": "सब देखें",
   "oneGoing": "{{name}} जा रहे हैं",
   "manyGoing": "{{name}} + {{count}} जा रहे हैं",
   "goingEmpty": "अभी कोई नहीं, सबसे पहले आप जुड़ें!",

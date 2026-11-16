@@ -10,10 +10,7 @@
     "special": "Espesyal",
     "onlyIn": "Sa {{city}} lang"
   },
-  "nowTitle": "Ngayon",
   "filterEvents": "Local Events",
-  "hiLocalTitle": "👋 Hi Local",
-  "filterHangouts": "🗣️ Tambayan",
   "publicEventsSection": "Public Local Events",
   "accountWelcome": {
     "title": "Congrats, {{username}}!",
@@ -46,15 +43,12 @@
     "noResults": "Walang nahanap na lugar",
     "loading": "Kinukuha ang location…",
     "confirm": "I-share ang spot na 'to",
-    "yourLocation": "Location mo",
-    "close": "Isara",
-    "clearSearch": "I-clear ang search"
+    "yourLocation": "Location mo"
   },
   "language": "Wika",
   "cancel": "I-cancel",
   "loading": "Naglo-load…",
   "retry": "Subukan ulit",
-  "save": "I-save",
   "done": "Tapos na",
   "close": "Isara",
   "clear": "I-clear",
@@ -177,9 +171,7 @@
   "tabs": {
     "today": "Ngayon",
     "map": "Mapa",
-    "chat": "Hi",
-    "passport": "Passport",
-    "ranks": "Ranks"
+    "passport": "Passport"
   },
   "scope": {
     "title": "Ipakita",
@@ -202,7 +194,6 @@
     "requiredTitle": "I-update ang Hilads",
     "requiredBody": "Hindi na supported ang version na 'to. I-update ang app para tuloy-tuloy mong magamit ang Hilads."
   },
-  "mapSoon": "Malapit na ang mapa ng mga spot.",
   "firstLaunch": "Laro lokal. Kumpara global.",
   "signUp": "Mag-sign up",
   "open": "Buksan",
@@ -227,7 +218,6 @@
     "errorBody": "Hindi naipadala ang report. Subukan ulit."
   },
   "subtitles": {
-    "map": "Mga spot mula sa photos ng buong mundo.",
     "hi": "Mag-hi sa city mo. Sumali sa isang lakad.",
     "passport": "Ang mga city, photos at stamps mo."
   },

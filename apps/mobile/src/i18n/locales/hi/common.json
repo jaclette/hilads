@@ -10,10 +10,7 @@
     "special": "स्पेशल",
     "onlyIn": "सिर्फ़ {{city}} में"
   },
-  "nowTitle": "अभी",
   "filterEvents": "लोकल इवेंट",
-  "hiLocalTitle": "👋 Hi Local",
-  "filterHangouts": "🗣️ मुलाक़ातें",
   "publicEventsSection": "पब्लिक लोकल इवेंट",
   "accountWelcome": {
     "title": "बधाई हो, {{username}}!",
@@ -46,15 +43,12 @@
     "noResults": "कोई जगह नहीं मिली",
     "loading": "लोकेशन ली जा रही है…",
     "confirm": "यह जगह शेयर करें",
-    "yourLocation": "आपकी लोकेशन",
-    "close": "बंद करें",
-    "clearSearch": "सर्च हटाएं"
+    "yourLocation": "आपकी लोकेशन"
   },
   "language": "भाषा",
   "cancel": "रद्द करें",
   "loading": "लोड हो रहा है…",
   "retry": "फिर से कोशिश करें",
-  "save": "सेव करें",
   "done": "पूरा",
   "close": "बंद करें",
   "clear": "हटाएं",
@@ -177,9 +171,7 @@
   "tabs": {
     "today": "आज",
     "map": "मैप",
-    "chat": "Hi",
-    "passport": "पासपोर्ट",
-    "ranks": "रैंक"
+    "passport": "पासपोर्ट"
   },
   "scope": {
     "title": "दिखाएं",
@@ -202,7 +194,6 @@
     "requiredTitle": "Hilads अपडेट करें",
     "requiredBody": "यह वर्ज़न अब सपोर्टेड नहीं है। Hilads इस्तेमाल करते रहने के लिए ऐप अपडेट करें।"
   },
-  "mapSoon": "जगहों का मैप जल्द आ रहा है।",
   "firstLaunch": "लोकल खेलो। ग्लोबल तुलना करो।",
   "signUp": "साइन अप करें",
   "open": "खोलें",
@@ -227,7 +218,6 @@
     "errorBody": "रिपोर्ट नहीं भेजी जा सकी। फिर से कोशिश करें।"
   },
   "subtitles": {
-    "map": "दुनिया भर की फ़ोटो से बनी जगहें।",
     "hi": "अपने शहर को हाय कहें। किसी प्लान में जुड़ें।",
     "passport": "आपके शहर, आपकी फ़ोटो, आपके स्टैम्प।"
   },

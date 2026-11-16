@@ -1,24 +1,5 @@
 {
-  "peopleHere_other": "🔥 {{count}} orang di sini sekarang",
-  "vibesToday_other": "🔥 {{count}} vibes hari ini",
-  "geoOff": "📍 Lokasi mati",
-  "geoUnreachable": "📍 Gagal mendapatkan lokasimu",
-  "pickCity": "Pilih kota\ndan langsung gabung",
   "locating": "› mencari lokasi...",
-  "requesting": "› meminta lokasi...",
-  "chooseManually": "Pilih kota manual →",
   "browseCities": "Jelajahi kota",
-  "yourName": "NAMAMU",
-  "namePlaceholder": "Sapa sebagai...",
-  "tryAgain": "Coba lagi",
-  "useLocation": "Pakai lokasiku aja",
-  "joinCity": "Gabung {{city}} →",
-  "joinChat": "🔥 Gabung",
-  "instantAccess": "anonim · akses instan",
-  "keepIdentity": "atau simpan identitasmu",
-  "createAccount": "Buat akun",
-  "logIn": "Masuk",
-  "authHint": "Simpan namamu · buka profil · tambah teman",
-  "joinError": "Nggak bisa terhubung. Cek koneksimu dan coba lagi.",
-  "conceptSub": "🔥 Warga lokal menantang pelancong, pelancong menantang warga lokal. Ketemuan buat buktiin!"
+  "createAccount": "Buat akun"
 }

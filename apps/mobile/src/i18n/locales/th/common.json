@@ -10,10 +10,7 @@
     "special": "พิเศษ",
     "onlyIn": "ที่{{city}}ที่เดียว"
   },
-  "nowTitle": "ตอนนี้",
   "filterEvents": "อีเวนต์ในพื้นที่",
-  "hiLocalTitle": "👋 Hi Local",
-  "filterHangouts": "🗣️ นัดเจอ",
   "publicEventsSection": "อีเวนต์สาธารณะในพื้นที่",
   "accountWelcome": {
     "title": "ยินดีด้วย {{username}}!",
@@ -46,15 +43,12 @@
     "noResults": "ไม่พบสถานที่",
     "loading": "กำลังหาตำแหน่ง…",
     "confirm": "แชร์ตำแหน่งนี้",
-    "yourLocation": "ตำแหน่งของคุณ",
-    "close": "ปิด",
-    "clearSearch": "ล้างการค้นหา"
+    "yourLocation": "ตำแหน่งของคุณ"
   },
   "language": "ภาษา",
   "cancel": "ยกเลิก",
   "loading": "กำลังโหลด…",
   "retry": "ลองอีกครั้ง",
-  "save": "บันทึก",
   "done": "เสร็จ",
   "close": "ปิด",
   "clear": "ล้าง",
@@ -176,9 +170,7 @@
   "tabs": {
     "today": "วันนี้",
     "map": "แผนที่",
-    "chat": "Hi",
-    "passport": "พาสปอร์ต",
-    "ranks": "อันดับ"
+    "passport": "พาสปอร์ต"
   },
   "scope": {
     "title": "แสดง",
@@ -200,7 +192,6 @@
     "requiredTitle": "อัปเดต Hilads",
     "requiredBody": "เวอร์ชันนี้ไม่รองรับแล้ว อัปเดตแอปเพื่อใช้ Hilads ต่อ"
   },
-  "mapSoon": "แผนที่สปอตใกล้มาแล้ว",
   "firstLaunch": "เล่นแบบโลคอล เทียบทั่วโลก",
   "signUp": "สมัครสมาชิก",
   "open": "เปิด",
@@ -225,7 +216,6 @@
     "errorBody": "ส่งรายงานไม่สำเร็จ ลองอีกครั้ง"
   },
   "subtitles": {
-    "map": "สปอตจากรูปทั่วโลก",
     "hi": "ทักทายเมืองของคุณ แล้วไปร่วมแพลน",
     "passport": "เมืองของคุณ รูปของคุณ แสตมป์ของคุณ"
   },

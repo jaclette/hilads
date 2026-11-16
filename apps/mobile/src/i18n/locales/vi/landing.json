@@ -1,24 +1,5 @@
 {
-  "peopleHere_other": "🔥 {{count}} người đang ở đây",
-  "vibesToday_other": "🔥 {{count}} vibe đang diễn ra hôm nay",
-  "geoOff": "📍 Đang tắt vị trí",
-  "geoUnreachable": "📍 Không lấy được vị trí của bạn",
-  "pickCity": "Chọn thành phố\nvà vào chơi",
   "locating": "› đang định vị...",
-  "requesting": "› đang xin quyền vị trí...",
-  "chooseManually": "Tự chọn thành phố →",
   "browseCities": "Xem các thành phố",
-  "yourName": "Tên của bạn",
-  "namePlaceholder": "Chào mọi người với tên...",
-  "tryAgain": "Thử lại",
-  "useLocation": "Dùng vị trí của tôi",
-  "joinCity": "Vào {{city}} →",
-  "joinChat": "🔥 Vào ngay",
-  "instantAccess": "ẩn danh · vào liền",
-  "keepIdentity": "hoặc giữ danh tính của bạn",
-  "createAccount": "Tạo tài khoản",
-  "logIn": "Đăng nhập",
-  "authHint": "Giữ tên · xem hồ sơ · kết bạn",
-  "joinError": "Không kết nối được. Kiểm tra mạng rồi thử lại nhé.",
-  "conceptSub": "🔥 Dân địa phương thách du khách, du khách thách lại - gặp nhau là biết liền."
+  "createAccount": "Tạo tài khoản"
 }
