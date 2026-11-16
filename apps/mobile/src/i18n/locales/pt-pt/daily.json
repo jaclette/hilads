@@ -293,10 +293,10 @@
       "countHere_other": "{{count}} sítios aqui",
       "countHere_many": "{{count}} sítios aqui",
       "peekNearest": "O mais perto a {{distance}}",
-      "peekSwipe": "desliza para cima 👆",
+      "peekSwipe": "desliza para cima",
       "peekEmpty": "Ainda não há spots aqui, sê o pioneiro 📍",
-      "peekTitle_one": "📍 {{num}} spot para explorar",
-      "peekTitle_other": "📍 {{num}} spots para explorar"
+      "peekTitle_one": "{{num}} spot para explorar",
+      "peekTitle_other": "{{num}} spots para explorar"
     }
   },
   "leaderboard": {

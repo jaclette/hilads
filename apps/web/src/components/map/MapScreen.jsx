@@ -620,7 +620,7 @@ export default function MapScreen({ channelId, cityName, onOpenPlan, initialSpot
         )}
         {/* Above the sheet: 🎲 Surprise me. */}
         {center && !worldView && shown.length > 0 && (
-          <button type="button" className="wm-surprise" style={{ bottom: peekH + 12 }} onClick={surprise} data-testid="map-surprise">🎲 {t('dc.map.surprise')}</button>
+          <button type="button" className="wm-surprise tappable" style={{ bottom: peekH + 12 }} onClick={surprise} data-testid="map-surprise"><Icon name="dice-outline" size={20} />{t('dc.map.surprise')}</button>
         )}
         {/* The sticky sheet: the visible area's spots, a selected pin's card first. */}
         {center && (

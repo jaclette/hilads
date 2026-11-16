@@ -11103,14 +11103,15 @@ html.kb-open .quick-row { display: none; }
    votes and the local badge; 44 px+ targets. ── */
 .wm-row { display: flex; align-items: center; gap: var(--sp-12); width: 100%; min-height: 76px; padding: var(--sp-12) var(--sp-16); border: none; border-bottom: 1px solid var(--line);
   background: transparent; color: var(--text); font: inherit; text-align: left; cursor: pointer; }
-.wm-row-photo { width: 64px; height: 64px; flex-shrink: 0; border-radius: 12px; object-fit: cover; background: var(--surface2); }
+.wm-row-photo { width: 64px; height: 64px; flex-shrink: 0; border-radius: var(--r-inner); object-fit: cover; background: var(--surface2); }
 .wm-row-photo--empty { display: flex; align-items: center; justify-content: center; color: var(--primary-text); }
 .wm-row-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: var(--sp-4); }
 .wm-row-name { font-size: var(--fs-sm); font-weight: 800; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .wm-row-chips { display: flex; flex-wrap: wrap; gap: var(--sp-8); }
 /* !important: beats the inline ROW gap of MapSheet */
 .wm-row-theme, .wm-row-local { gap: var(--sp-4) !important; padding: var(--sp-2) var(--sp-8); border-radius: var(--r-chip); font-size: var(--fs-xs); font-weight: 700; }
-.wm-row-theme { background: var(--primary-tint); color: var(--primary-on-tint); }
+.wm-row-theme { --chip: var(--chip-l, var(--primary-on-tint)); background: color-mix(in srgb, var(--chip) 14%, transparent); color: var(--chip); }
+[data-theme="dark"] .wm-row-theme { --chip: var(--chip-d, var(--primary-on-tint)); }
 .wm-row-local { background: var(--local-bg); color: var(--local-text); }
 .wm-row-meta { display: flex; align-items: center; gap: var(--sp-12); font-size: var(--fs-xs); font-weight: 600; color: var(--muted2); }
 
@@ -12044,9 +12045,11 @@ html[data-event="halloween"] { --header-art: #FFA552; --header-art-opacity: 0.28
 .wm-msheet-body { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding-bottom: max(40px, env(safe-area-inset-bottom)); background: var(--bg); }
 .wm-msheet--peek .wm-msheet-body { overflow: hidden; }
 .wm-msheet .wm-sheet { position: relative; left: auto; right: auto; bottom: auto; margin: 0 var(--sp-12) var(--sp-12); box-shadow: none; }
-.wm-surprise { position: absolute; left: 12px; z-index: 1050; min-height: 44px; padding: 0 var(--sp-16); border: 0; border-radius: var(--r-chip); background: var(--text); color: var(--bg);
-  font-size: var(--fs-sm); font-weight: 800; cursor: pointer; box-shadow: var(--shadow-sm); }
-.wm-surprise:active { transform: scale(0.96); }
+.wm-surprise { position: absolute; left: var(--gutter); z-index: 1050; min-height: 44px; padding: 0 var(--sp-16); display: inline-flex; align-items: center; gap: var(--sp-8);
+  border: 1px solid var(--line); border-radius: var(--r-control); background: var(--surface); color: var(--text);
+  font: inherit; font-size: var(--fs-body); font-weight: 800; cursor: pointer; box-shadow: var(--elev-float); }
+.wm-surprise .icon, .wm-surprise svg { color: var(--primary-text); }
+
 .wm-pioneer { display: block; width: calc(100% - 24px); margin: var(--sp-4) var(--sp-12) var(--sp-12); padding: var(--sp-16); border: 0; border-radius: 18px; background: var(--primary-tint);
   color: var(--primary-on-tint); font-size: var(--fs-sm); font-weight: 800; text-align: center; cursor: pointer; }
 .wm-map .wm-mapbox-logo { bottom: calc(var(--wm-peek, 84px) + 8px); }
@@ -12061,7 +12064,7 @@ html[data-event="halloween"] { --header-art: #FFA552; --header-art-opacity: 0.28
 .wm-polaroid--1 { left: 12px; top: 2px; z-index: 2; transform: rotate(3deg); }
 .wm-polaroid--2 { left: 22px; z-index: 1; transform: rotate(11deg); }
 @keyframes wm-fade { from { opacity: 0 } }
-.wm-ticket-pin { flex-shrink: 0; width: 48px; height: 48px; border-radius: 14px; background: var(--on-peek); display: flex; align-items: center; justify-content: center; font-size: 24px; }
+.wm-ticket-pin { flex-shrink: 0; width: 48px; height: 48px; border-radius: var(--r-inner); background: var(--on-peek); color: var(--peek-ink, var(--primary)); display: flex; align-items: center; justify-content: center; }
 .wm-ticket-text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: var(--sp-4); }
 /* One line: the font shrinks (down to 70 %) when a language needs it (--wm-title-scale, measured). */
 .wm-ticket-title { display: flex; flex-wrap: nowrap; align-items: center; column-gap: var(--sp-8); font-size: calc(19px * var(--wm-title-scale, 1)); line-height: 24px; font-weight: 900; color: var(--on-peek); white-space: nowrap; min-width: 0; }

@@ -503,12 +503,12 @@
         "sortNew": "Новые",
         "pioneer": "Стань первопроходцем: сыграй здесь сегодня 📍",
         "peekNearest": "Ближайшее в {{distance}}",
-        "peekSwipe": "смахни вверх 👆",
+        "peekSwipe": "смахни вверх",
         "peekEmpty": "Здесь пока нет мест, стань первым 📍",
-        "peekTitle_one": "📍 {{num}} место для открытий",
-        "peekTitle_few": "📍 {{num}} места для открытий",
-        "peekTitle_many": "📍 {{num}} мест для открытий",
-        "peekTitle_other": "📍 {{num}} мест для открытий"
+        "peekTitle_one": "{{num}} место для открытий",
+        "peekTitle_few": "{{num}} места для открытий",
+        "peekTitle_many": "{{num}} мест для открытий",
+        "peekTitle_other": "{{num}} мест для открытий"
       },
       "surprise": "Удиви меня"
     },

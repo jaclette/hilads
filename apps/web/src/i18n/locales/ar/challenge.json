@@ -525,14 +525,14 @@
         "sortNew": "الأحدث",
         "pioneer": "كن الرائد: العب هنا اليوم 📍",
         "peekNearest": "الأقرب على بُعد {{distance}}",
-        "peekSwipe": "اسحب للأعلى 👆",
+        "peekSwipe": "اسحب للأعلى",
         "peekEmpty": "لا أماكن هنا بعد، كن الرائد 📍",
-        "peekTitle_zero": "📍 {{num}} أماكن لاستكشافها",
-        "peekTitle_one": "📍 {{num}} مكان لاستكشافه",
-        "peekTitle_two": "📍 {{num}} مكانان لاستكشافهما",
-        "peekTitle_few": "📍 {{num}} أماكن لاستكشافها",
-        "peekTitle_many": "📍 {{num}} مكانًا لاستكشافه",
-        "peekTitle_other": "📍 {{num}} مكان لاستكشافه"
+        "peekTitle_zero": "{{num}} أماكن لاستكشافها",
+        "peekTitle_one": "{{num}} مكان لاستكشافه",
+        "peekTitle_two": "{{num}} مكانان لاستكشافهما",
+        "peekTitle_few": "{{num}} أماكن لاستكشافها",
+        "peekTitle_many": "{{num}} مكانًا لاستكشافه",
+        "peekTitle_other": "{{num}} مكان لاستكشافه"
       },
       "surprise": "فاجئني"
     },

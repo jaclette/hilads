@@ -271,9 +271,9 @@
       "count_other": "{{count}} tempat di {{city}}",
       "countHere_other": "{{count}} tempat di sini",
       "peekNearest": "Terdekat {{distance}}",
-      "peekSwipe": "geser ke atas 👆",
+      "peekSwipe": "geser ke atas",
       "peekEmpty": "Belum ada spot di sini, jadilah pelopor 📍",
-      "peekTitle_other": "📍 {{num}} spot untuk dijelajahi"
+      "peekTitle_other": "{{num}} spot untuk dijelajahi"
     }
   },
   "leaderboard": {

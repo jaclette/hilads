@@ -9,7 +9,7 @@ import { BackgroundLayer, Camera, CircleLayer, FillLayer, Images, LineLayer, Map
 import Animated, { cancelAnimation, useAnimatedStyle, useSharedValue, withRepeat, withSequence, withSpring, withTiming } from 'react-native-reanimated';
 import { useIsFocused } from '@react-navigation/native';
 import * as Haptics from 'expo-haptics';
-import { Space, FontSizes, Radius, Spacing, type ThemeColors } from '@/constants';
+import { Space, FontSizes, Radius, Spacing, Gutter, Type, IconSize, Elevation, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { SeasonalMapSky } from '@/features/event/SeasonalArt';
 import { useEventFeature } from '@/features/event/seasonal';
@@ -36,7 +36,7 @@ import { MapSheet, SHEET_PEEK, type MapSheetHandle } from '@/features/map/MapShe
 import { ScopeSelector } from '@/features/shell/ScopeSelector';
 import { shortCityName } from '@/i18n/cityName';
 import type { DailyThemeKey } from '@/types';
-import { Avatar, Chip, CityFlag, IconButton, ListRow, RowGroup, TextField } from '@/ui';
+import { Avatar, Chip, CityFlag, IconButton, ListRow, RowGroup, Tappable, TextField } from '@/ui';
 import { useBackClose } from '@/lib/useBackClose';
 
 const PLACE_THEMES = THEME_KEYS.filter(k => isPlaceTheme(k));
@@ -691,11 +691,12 @@ export default function MapScreen() {
         {notice && <Text style={styles.notice}>{notice}</Text>}
         <View style={styles.floatRow} pointerEvents="box-none">
           {!worldView && shown.length > 0 && (
-            <TouchableOpacity style={styles.surprise} onPress={surprise} activeOpacity={0.85} accessibilityRole="button" testID="map-surprise">
-              <Text style={styles.surpriseText}>🎲 {t('map.surprise')}</Text>
-            </TouchableOpacity>
+            <Tappable style={styles.surprise} onPress={surprise} accessibilityRole="button" testID="map-surprise">
+              <Ionicons name="dice-outline" size={IconSize.md} color={colors.primaryText} />
+              <Text style={styles.surpriseText}>{t('map.surprise')}</Text>
+            </Tappable>
           )}
-          <IconButton icon="locate-outline" label={t('map.locate')} onPress={locate} style={styles.locate} />
+          <IconButton icon="locate-outline" label={t('map.locate')} onPress={locate} style={styles.float} />
         </View>
       </View>
 
@@ -894,25 +895,27 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   container:     { flex: 1, backgroundColor: c.bg },
   center:        { alignItems: 'center', justifyContent: 'center', padding: Spacing.lg },
   muted:         { fontSize: FontSizes.md, color: c.muted, textAlign: 'center' },
-  top:           { position: 'absolute', left: 0, right: 0, top: 0, paddingHorizontal: Spacing.md, gap: Space.md, paddingBottom: Space.md,
-                   backgroundColor: c.bg + 'E6', borderBottomLeftRadius: 22, borderBottomRightRadius: 22 },
-  results:       { backgroundColor: c.bg2, borderRadius: Radius.card, borderWidth: 1.5, borderColor: c.line, paddingVertical: Space.xs },
+  top:           { position: 'absolute', left: 0, right: 0, top: 0, paddingHorizontal: Gutter, gap: Space.md, paddingBottom: Space.md,
+                   backgroundColor: c.bg + 'E6', borderBottomLeftRadius: Radius.hero, borderBottomRightRadius: Radius.hero },
+  results:       { backgroundColor: c.bg2, borderRadius: Radius.card, borderWidth: 1, borderColor: c.line, paddingVertical: Space.xs, ...Elevation(c, 'float') },
   result:        { flexDirection: 'row', alignItems: 'center', gap: Space.md, minHeight: 48, paddingHorizontal: Space.lg },
   resultBody:    { flex: 1 },
-  resultName:    { fontSize: FontSizes.sm, fontWeight: '700', color: c.text },
-  resultTags:    { fontSize: FontSizes.xs, color: c.muted },
-  resultEmpty:   { fontSize: FontSizes.sm, color: c.muted, padding: Space.lg },
-  chips:         { gap: Space.sm, paddingRight: Spacing.md },
+  resultName:    { ...Type.body, fontWeight: '700', color: c.text },
+  resultTags:    { ...Type.caption, fontWeight: '500', color: c.muted },
+  resultEmpty:   { ...Type.body, color: c.muted, padding: Space.lg },
+  chips:         { gap: Space.sm, paddingRight: Gutter },
   searchRow:     { flexDirection: 'row', alignItems: 'center', gap: Space.sm },
   scope:         { flex: 0, maxWidth: 150, height: 48 },
   search:        { flex: 1 },
   loading:       { position: 'absolute', alignSelf: 'center' },
-  floating:      { position: 'absolute', left: 8, right: 8, gap: Space.md },
-  floatRow:      { flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', gap: Space.md, marginRight: Space.sm },
-  locate:        {},
-  surprise:      { flexDirection: 'row', alignItems: 'center', minHeight: 44, paddingHorizontal: Space.lg, borderRadius: Radius.full,
-                   backgroundColor: c.text },
-  surpriseText:  { fontSize: FontSizes.sm, fontWeight: '800', color: c.bg },
+  floating:      { position: 'absolute', left: Gutter, right: Gutter, gap: Space.md },
+  floatRow:      { flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', gap: Space.md },
+  // The floating buttons over the map (design pass): the surface, a hairline and the floating elevation,
+  // the same in both themes (no more ink pill turning light in dark mode).
+  float:         { ...Elevation(c, 'float') },
+  surprise:      { flexDirection: 'row', alignItems: 'center', gap: Space.sm, minHeight: 44, paddingHorizontal: Space.lg, borderRadius: Radius.control,
+                   backgroundColor: c.bg2, borderWidth: 1, borderColor: c.line, ...Elevation(c, 'float') },
+  surpriseText:  { ...Type.body, fontWeight: '800', color: c.text },
   worldList:     { paddingHorizontal: Spacing.md, paddingBottom: Space.sm },
   worldRow:      { flexDirection: 'row', alignItems: 'center', gap: Space.md, minHeight: 48, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: c.line },
   worldName:     { flex: 1, fontSize: FontSizes.body, fontWeight: '700', color: c.text },
@@ -922,11 +925,11 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   me:            { width: 56, height: 56, alignItems: 'center', justifyContent: 'center' },
   meRing:        { position: 'absolute', width: 40, height: 40, borderRadius: 20, backgroundColor: c.primary },
   meAvatar:      { borderRadius: 19, borderWidth: 3, borderColor: '#FFFFFF', backgroundColor: c.bg2 },
-  notice:        { alignSelf: 'center', fontSize: FontSizes.xs, color: c.text, backgroundColor: c.bg2, borderRadius: Radius.card,
+  notice:        { alignSelf: 'center', ...Type.caption, color: c.text, backgroundColor: c.bg2, borderRadius: Radius.control,
                    paddingHorizontal: Space.lg, paddingVertical: Space.sm, overflow: 'hidden', borderWidth: 1, borderColor: c.line },
   selectedWrap:  { alignItems: 'center', gap: Space.sm },
-  selectedLabel: { maxWidth: 220, fontSize: FontSizes.xs, fontWeight: '700', color: c.text, backgroundColor: c.bg2, borderRadius: 12,
-                   borderWidth: 1.5, borderColor: c.line, paddingHorizontal: Space.md, paddingVertical: Space.sm, overflow: 'hidden' },
+  selectedLabel: { maxWidth: 220, ...Type.caption, fontWeight: '700', color: c.text, backgroundColor: c.bg2, borderRadius: Radius.control,
+                   borderWidth: 1, borderColor: c.line, paddingHorizontal: Space.md, paddingVertical: Space.sm, overflow: 'hidden' },
   selectedPin:   { width: 50, height: 50, borderRadius: Radius.full, backgroundColor: c.primary, borderWidth: 4, borderColor: c.primaryTint,
                    alignItems: 'center', justifyContent: 'center' },
   planWrap:      { alignItems: 'center' },

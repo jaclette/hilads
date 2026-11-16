@@ -470,9 +470,9 @@
         "sortNew": "ใหม่สุด",
         "pioneer": "เป็นผู้บุกเบิก: เล่นที่นี่วันนี้เลย 📍",
         "peekNearest": "ใกล้สุด {{distance}}",
-        "peekSwipe": "ปัดขึ้น 👆",
+        "peekSwipe": "ปัดขึ้น",
         "peekEmpty": "ยังไม่มีสปอตตรงนี้ มาเป็นคนแรกกัน 📍",
-        "peekTitle_other": "📍 {{num}} สปอตให้สำรวจ"
+        "peekTitle_other": "{{num}} สปอตให้สำรวจ"
       },
       "surprise": "เซอร์ไพรส์ฉัน"
     },

@@ -470,9 +470,9 @@
         "sortNew": "Mới nhất",
         "pioneer": "Làm người tiên phong: chơi ở đây hôm nay nha 📍",
         "peekNearest": "Gần nhất cách {{distance}}",
-        "peekSwipe": "vuốt lên 👆",
+        "peekSwipe": "vuốt lên",
         "peekEmpty": "Chưa có spot nào ở đây, hãy là người tiên phong 📍",
-        "peekTitle_other": "📍 {{num}} spot để khám phá"
+        "peekTitle_other": "{{num}} spot để khám phá"
       },
       "surprise": "Bất ngờ đi"
     },

@@ -492,10 +492,10 @@
         "sortNew": "Più nuovi",
         "pioneer": "Sii il pioniere: gioca qui oggi 📍",
         "peekNearest": "Il più vicino a {{distance}}",
-        "peekSwipe": "scorri in su 👆",
+        "peekSwipe": "scorri in su",
         "peekEmpty": "Ancora nessuno spot qui, sii il pioniere 📍",
-        "peekTitle_one": "📍 {{num}} spot da esplorare",
-        "peekTitle_other": "📍 {{num}} spot da esplorare"
+        "peekTitle_one": "{{num}} spot da esplorare",
+        "peekTitle_other": "{{num}} spot da esplorare"
       },
       "surprise": "Sorprendimi"
     },

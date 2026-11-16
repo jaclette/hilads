@@ -481,10 +481,10 @@
         "sortNew": "Pinakabago",
         "pioneer": "Maging pioneer: maglaro dito ngayon 📍",
         "peekNearest": "Pinakamalapit: {{distance}}",
-        "peekSwipe": "mag-swipe pataas 👆",
+        "peekSwipe": "mag-swipe pataas",
         "peekEmpty": "Wala pang spot dito, ikaw na ang mauna 📍",
-        "peekTitle_one": "📍 {{num}} spot na matutuklasan",
-        "peekTitle_other": "📍 {{num}} spot na matutuklasan"
+        "peekTitle_one": "{{num}} spot na matutuklasan",
+        "peekTitle_other": "{{num}} spot na matutuklasan"
       },
       "surprise": "Surprise me"
     },

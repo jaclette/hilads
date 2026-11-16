@@ -470,9 +470,9 @@
         "sortNew": "最新",
         "pioneer": "成為先鋒：今天就在這裡出戰 📍",
         "peekNearest": "最近的 {{distance}}",
-        "peekSwipe": "向上滑 👆",
+        "peekSwipe": "向上滑",
         "peekEmpty": "這裡還沒有地點，來當第一個 📍",
-        "peekTitle_other": "📍 {{num}} 個地點等你探索"
+        "peekTitle_other": "{{num}} 個地點等你探索"
       },
       "surprise": "給我驚喜"
     },

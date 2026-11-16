@@ -481,10 +481,10 @@
         "sortNew": "Neueste",
         "pioneer": "Sei Pionier: Spiel heute hier 📍",
         "peekNearest": "Der nächste in {{distance}}",
-        "peekSwipe": "nach oben wischen 👆",
+        "peekSwipe": "nach oben wischen",
         "peekEmpty": "Noch keine Spots hier, sei der Pionier 📍",
-        "peekTitle_one": "📍 {{num}} Spot zum Entdecken",
-        "peekTitle_other": "📍 {{num}} Spots zum Entdecken"
+        "peekTitle_one": "{{num}} Spot zum Entdecken",
+        "peekTitle_other": "{{num}} Spots zum Entdecken"
       },
       "surprise": "Überrasch mich"
     },

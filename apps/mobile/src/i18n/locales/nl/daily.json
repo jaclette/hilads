@@ -282,10 +282,10 @@
       "countHere_one": "{{count}} plek hier",
       "countHere_other": "{{count}} plekken hier",
       "peekNearest": "Dichtstbijzijnde op {{distance}}",
-      "peekSwipe": "veeg omhoog 👆",
+      "peekSwipe": "veeg omhoog",
       "peekEmpty": "Nog geen spots hier, wees de pionier 📍",
-      "peekTitle_one": "📍 {{num}} spot om te ontdekken",
-      "peekTitle_other": "📍 {{num}} spots om te ontdekken"
+      "peekTitle_one": "{{num}} spot om te ontdekken",
+      "peekTitle_other": "{{num}} spots om te ontdekken"
     }
   },
   "leaderboard": {

@@ -481,10 +481,10 @@
         "sortNew": "Nieuwste",
         "pioneer": "Wees de pionier: speel hier vandaag 📍",
         "peekNearest": "Dichtstbijzijnde op {{distance}}",
-        "peekSwipe": "veeg omhoog 👆",
+        "peekSwipe": "veeg omhoog",
         "peekEmpty": "Nog geen spots hier, wees de pionier 📍",
-        "peekTitle_one": "📍 {{num}} spot om te ontdekken",
-        "peekTitle_other": "📍 {{num}} spots om te ontdekken"
+        "peekTitle_one": "{{num}} spot om te ontdekken",
+        "peekTitle_other": "{{num}} spots om te ontdekken"
       },
       "surprise": "Verras me"
     },
