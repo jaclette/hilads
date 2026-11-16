@@ -470,9 +470,9 @@
         "sortNew": "Terbaru",
         "pioneer": "Jadi pelopor: main di sini hari ini 📍",
         "peekNearest": "Terdekat {{distance}}",
-        "peekSwipe": "geser ke atas 👆",
+        "peekSwipe": "geser ke atas",
         "peekEmpty": "Belum ada spot di sini, jadilah pelopor 📍",
-        "peekTitle_other": "📍 {{num}} spot untuk dijelajahi"
+        "peekTitle_other": "{{num}} spot untuk dijelajahi"
       },
       "surprise": "Kejutkan aku"
     },
@@ -766,7 +766,7 @@
         "week": "Minggu",
         "alltime": "Sepanjang masa"
       },
-      "timeLeftMin": "⏳ Sisa kurang dari satu jam untuk vote",
+      "timeLeftMin": "Sisa kurang dari satu jam untuk vote",
       "bestPerCity": "Foto terbaik tiap kota",
       "new": "baru",
       "you": {
@@ -796,7 +796,7 @@
         "generic": "🏆 Hasil kemarin sudah keluar",
         "see": "Lihat hasil →"
       },
-      "timeLeft_other": "⏳ Sisa {{count}} jam untuk vote",
+      "timeLeft_other": "Sisa {{count}} jam untuk vote",
       "pts_other": "{{count}} poin",
       "ghost": {
         "photo": "Fotomu di sini? 📸",

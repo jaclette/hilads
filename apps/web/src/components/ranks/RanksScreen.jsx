@@ -104,6 +104,7 @@ export default function RanksScreen({ header, initial }) {
           </div>
           {info && (
             <div className="r6-info-row">
+              <Icon name="hourglass-outline" size={16} className="r6-info-icon" />
               <span className="r6-info"><FitText min={0.75}>{info}</FitText></span>
             </div>
           )}
@@ -119,13 +120,13 @@ export default function RanksScreen({ header, initial }) {
 }
 
 function Chip({ on, onClick, children }) {
-  return <button type="button" role="tab" aria-selected={on} className={`r6-chip${on ? ' r6-chip--on' : ''}`} style={on ? { background: GOLD.fill, borderColor: GOLD.fill, color: GOLD.onFill } : undefined} onClick={onClick}>{children}</button>
+  return <button type="button" role="tab" aria-selected={on} className={`r6-chip${on ? ' r6-chip--on' : ''}`} onClick={onClick}>{children}</button>
 }
 
 function Empty({ text, failed, loading }) {
   const { t } = useDc()
   if (loading) return <div className="r6-empty"><span className="r6-spinner" /></div>
-  return <div className="r6-empty"><span className="r6-empty-emoji">{failed ? '📡' : '🏆'}</span><p>{failed ? t('loadFailed') : text}</p></div>
+  return <div className="r6-empty"><span className={`r6-empty-disc${failed ? ' r6-empty-disc--off' : ''}`}><Icon name={failed ? 'cloud-offline-outline' : 'trophy-outline'} size={34} /></span><p>{failed ? t('loadFailed') : text}</p></div>
 }
 
 const handle = (u) => (u?.username ? `@${u.username}` : u?.displayName ?? '')
@@ -176,7 +177,7 @@ function Photos({ data, failed, period, ghost, loadMore, focusAt = null }) {
   const top = items.filter(i => i.rank <= 3)
   const rest = items.filter(i => i.rank > 3)
   const podium = top.map(i => ({
-    key: i.proof.id, rank: i.rank, label: handle(i.proof.user), value: i.proof.voteCount, format: n => `${n} ❤️`, onClick: () => open(proofs, i.proof),
+    key: i.proof.id, rank: i.rank, label: handle(i.proof.user), value: i.proof.voteCount, format: n => String(n), heart: true, onClick: () => open(proofs, i.proof),
     lead: <img className="r6-podium-photo" style={{ borderColor: MEDAL[i.rank - 1] }} src={thumbUrl(i.proof.thumbUrl || i.proof.photoUrl)} alt="" loading="lazy" />,
   }))
   // The "You" bar: my best photo of the period and the likes it needs to pass the one above.
@@ -208,7 +209,7 @@ function Photos({ data, failed, period, ghost, loadMore, focusAt = null }) {
         </div>
       )}
       <div className="r6-list r6-list--you">
-        {rest.map(i => <PhotoRow key={i.proof.id} item={i} week={period === 'week'} mine={me?.proofId === i.proof.id} rowRef={el => { rows.current[i.proof.id] = el }} onClick={() => open(proofs, i.proof)} />)}
+        {rest.map(i => <PhotoRow key={i.proof.id} item={i} week={period === 'week'} single={period === 'today' || period === 'yesterday'} mine={me?.proofId === i.proof.id} rowRef={el => { rows.current[i.proof.id] = el }} onClick={() => open(proofs, i.proof)} />)}
         <div ref={end} className="r6-more">{loading && <span className="r6-spinner" />}</div>
       </div>
       <YouBar text={you} onClick={onYou} />
@@ -217,8 +218,12 @@ function Photos({ data, failed, period, ghost, loadMore, focusAt = null }) {
   )
 }
 
-/** A photo from #4: the big rank, the thumbnail, the challenge and its theme, the author, "4 ❤️ · 2 💬" (ties: comments, then the earliest posted). */
-function PhotoRow({ item, mine, week, onClick, rowRef }) {
+/**
+ * A photo from #4: the big rank, the thumbnail, the author and city, likes and comments as icons (ties: comments, then the
+ * earliest posted). Week / All time add the challenge and its theme; a one-challenge board (`single`) would repeat them on
+ * every row, so the player leads (design pass, as in the app).
+ */
+function PhotoRow({ item, mine, week, single, onClick, rowRef }) {
   const p = item.proof
   const theme = p.context?.theme?.key ?? null
   const who = handle(p.user)
@@ -232,6 +237,13 @@ function PhotoRow({ item, mine, week, onClick, rowRef }) {
       </span>
       <img className="r6-pthumb" src={thumbUrl(p.thumbUrl || p.photoUrl)} alt="" loading="lazy" />
       <span className="r6-pbody">
+        {single ? (<>
+          <span className="r6-pwho r6-pwho--lead">
+            <AvatarWithFlag userId={p.user.id} displayName={p.user.displayName ?? p.user.username} photoUrl={p.user.photoUrl} size={24} />
+            <span className="r6-pname">{who}</span>
+          </span>
+          {p.city && <span className="r6-pwho"><FlagSticker country={p.city.country} size={14} /><span className="r6-pname">{shortCityName(p.city.name ?? '')}</span></span>}
+        </>) : (<>
         {p.context?.text && <span className="r6-ptitle">{p.context.text}</span>}
         {theme && (
           // The theme's text color (light / dark), not its fill: the peach ones (and the retired themes of
@@ -245,8 +257,10 @@ function PhotoRow({ item, mine, week, onClick, rowRef }) {
           <span className="r6-pname">{who}</span>
           <FlagSticker country={p.city?.country} size={14} />
         </span>
+        </>)}
       </span>
-      <span className="r6-pill">{p.voteCount} ❤️ · {p.commentCount ?? 0} 💬</span>
+      <span className="r6-pill"><Icon name="heart" size={15} className="r6-heart" />{p.voteCount}
+        {(p.commentCount ?? 0) > 0 && <><Icon name="chatbubble-outline" size={14} className="r6-pill-gap" />{p.commentCount}</>}</span>
     </button>
   )
 }
@@ -309,7 +323,7 @@ function Cities({ data, failed, period, myCityId, ghost }) {
                    mine={e.city.id === myCityId} onClick={() => openCity(e.city)}
                    movement={<Movement rank={e.rank} prevRank={e.prevRank} show={period !== 'today'} />}
                    lead={<FlagSticker country={e.city.country} size={34} />}
-                   sub={<>{t('mosaic.players', { count: e.players })} · {e.likes} ❤️</>}
+                   sub={<>{t('mosaic.players', { count: e.players })} <Icon name="heart" size={13} className="r6-heart" />{e.likes}</>}
                    extra={<RaceBar ratio={e.photos / Math.max(1, leader)} color={e.city.id === myCityId ? 'var(--cta)' : GOLD.fill} delay={Math.min(i, 8) * 60} />} />
         ))}
       </div>

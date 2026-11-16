@@ -481,10 +481,10 @@
         "sortNew": "Newest",
         "pioneer": "Be the pioneer: play here today 📍",
         "peekNearest": "Nearest {{distance}} away",
-        "peekSwipe": "swipe up 👆",
+        "peekSwipe": "swipe up",
         "peekEmpty": "No spots here yet, be the pioneer 📍",
-        "peekTitle_one": "📍 {{num}} spot to explore",
-        "peekTitle_other": "📍 {{num}} spots to explore"
+        "peekTitle_one": "{{num}} spot to explore",
+        "peekTitle_other": "{{num}} spots to explore"
       },
       "surprise": "Surprise me"
     },
@@ -789,7 +789,7 @@
         "week": "Week",
         "alltime": "All time"
       },
-      "timeLeftMin": "⏳ Less than an hour left to vote",
+      "timeLeftMin": "Less than an hour left to vote",
       "bestPerCity": "Best photo per city",
       "new": "new",
       "you": {
@@ -823,8 +823,8 @@
         "generic": "🏆 Yesterday's results are in",
         "see": "See results →"
       },
-      "timeLeft_one": "⏳ {{count}} hour left to vote",
-      "timeLeft_other": "⏳ {{count}} hours left to vote",
+      "timeLeft_one": "{{count}} hour left to vote",
+      "timeLeft_other": "{{count}} hours left to vote",
       "pts_one": "{{count}} pt",
       "pts_other": "{{count}} pts",
       "ghost": {

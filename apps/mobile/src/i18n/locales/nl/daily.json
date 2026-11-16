@@ -282,10 +282,10 @@
       "countHere_one": "{{count}} plek hier",
       "countHere_other": "{{count}} plekken hier",
       "peekNearest": "Dichtstbijzijnde op {{distance}}",
-      "peekSwipe": "veeg omhoog 👆",
+      "peekSwipe": "veeg omhoog",
       "peekEmpty": "Nog geen spots hier, wees de pionier 📍",
-      "peekTitle_one": "📍 {{num}} spot om te ontdekken",
-      "peekTitle_other": "📍 {{num}} spots om te ontdekken"
+      "peekTitle_one": "{{num}} spot om te ontdekken",
+      "peekTitle_other": "{{num}} spots om te ontdekken"
     }
   },
   "leaderboard": {
@@ -846,7 +846,7 @@
       "city": "Mijn stad",
       "world": "Wereld"
     },
-    "timeLeftMin": "⏳ Nog minder dan een uur om te stemmen",
+    "timeLeftMin": "Nog minder dan een uur om te stemmen",
     "bestPerCity": "Beste foto per stad",
     "new": "nieuw",
     "you": {
@@ -888,8 +888,8 @@
       "generic": "🏆 De uitslag van gisteren is er",
       "see": "Bekijk de uitslag →"
     },
-    "timeLeft_one": "⏳ Nog {{count}} uur om te stemmen",
-    "timeLeft_other": "⏳ Nog {{count}} uur om te stemmen",
+    "timeLeft_one": "Nog {{count}} uur om te stemmen",
+    "timeLeft_other": "Nog {{count}} uur om te stemmen",
     "pts_one": "{{count}} pt",
     "pts_other": "{{count}} ptn",
     "ghost": {

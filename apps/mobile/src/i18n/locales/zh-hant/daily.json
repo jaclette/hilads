@@ -271,9 +271,9 @@
       "count_other": "{{city}} 有 {{count}} 個地點",
       "countHere_other": "這裡有 {{count}} 個地點",
       "peekNearest": "最近的 {{distance}}",
-      "peekSwipe": "向上滑 👆",
+      "peekSwipe": "向上滑",
       "peekEmpty": "這裡還沒有地點，來當第一個 📍",
-      "peekTitle_other": "📍 {{num}} 個地點等你探索"
+      "peekTitle_other": "{{num}} 個地點等你探索"
     }
   },
   "leaderboard": {
@@ -809,7 +809,7 @@
       "city": "我的城市",
       "world": "全球"
     },
-    "timeLeftMin": "⏳ 投票剩不到一小時",
+    "timeLeftMin": "投票剩不到一小時",
     "bestPerCity": "每座城市的最佳照片",
     "new": "新",
     "you": {
@@ -849,7 +849,7 @@
       "generic": "🏆 昨天的結果出來了",
       "see": "查看結果 →"
     },
-    "timeLeft_other": "⏳ 還剩 {{count}} 小時投票",
+    "timeLeft_other": "還剩 {{count}} 小時投票",
     "pts_other": "{{count}} 分",
     "ghost": {
       "photo": "你的照片放這裡？📸",

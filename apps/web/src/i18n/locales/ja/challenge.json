@@ -470,9 +470,9 @@
         "sortNew": "新しい順",
         "pioneer": "パイオニアになろう：今日ここで参加 📍",
         "peekNearest": "いちばん近くて {{distance}}",
-        "peekSwipe": "上にスワイプ 👆",
+        "peekSwipe": "上にスワイプ",
         "peekEmpty": "まだスポットがありません。最初の一人になろう 📍",
-        "peekTitle_other": "📍 探検できるスポット {{num}} 件"
+        "peekTitle_other": "探検できるスポット {{num}} 件"
       },
       "surprise": "おまかせ"
     },
@@ -766,7 +766,7 @@
         "week": "今週",
         "alltime": "歴代"
       },
-      "timeLeftMin": "⏳ 投票はあと1時間もないよ",
+      "timeLeftMin": "投票はあと1時間もないよ",
       "bestPerCity": "街ごとのベストフォト",
       "new": "NEW",
       "you": {
@@ -796,7 +796,7 @@
         "generic": "🏆 昨日の結果が出ました",
         "see": "結果を見る →"
       },
-      "timeLeft_other": "⏳ 投票はあと{{count}}時間",
+      "timeLeft_other": "投票はあと{{count}}時間",
       "pts_other": "{{count}}pt",
       "ghost": {
         "photo": "ここに君の写真を? 📸",

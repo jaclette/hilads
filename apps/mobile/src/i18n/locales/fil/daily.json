@@ -282,10 +282,10 @@
       "countHere_one": "{{count}} spot dito",
       "countHere_other": "{{count}} spots dito",
       "peekNearest": "Pinakamalapit: {{distance}}",
-      "peekSwipe": "mag-swipe pataas 👆",
+      "peekSwipe": "mag-swipe pataas",
       "peekEmpty": "Wala pang spot dito, ikaw na ang mauna 📍",
-      "peekTitle_one": "📍 {{num}} spot na matutuklasan",
-      "peekTitle_other": "📍 {{num}} spot na matutuklasan"
+      "peekTitle_one": "{{num}} spot na matutuklasan",
+      "peekTitle_other": "{{num}} spot na matutuklasan"
     }
   },
   "leaderboard": {
@@ -846,7 +846,7 @@
       "city": "City ko",
       "world": "Mundo"
     },
-    "timeLeftMin": "⏳ Wala nang isang oras para mag-vote",
+    "timeLeftMin": "Wala nang isang oras para mag-vote",
     "bestPerCity": "Best photo kada city",
     "new": "bago",
     "you": {
@@ -888,8 +888,8 @@
       "generic": "🏆 Lumabas na ang resulta kahapon",
       "see": "Tingnan ang resulta →"
     },
-    "timeLeft_one": "⏳ {{count}} oras na lang para mag-vote",
-    "timeLeft_other": "⏳ {{count}} oras na lang para mag-vote",
+    "timeLeft_one": "{{count}} oras na lang para mag-vote",
+    "timeLeft_other": "{{count}} oras na lang para mag-vote",
     "pts_one": "{{count}} pt",
     "pts_other": "{{count}} pts",
     "ghost": {

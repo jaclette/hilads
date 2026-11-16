@@ -492,10 +492,10 @@
         "sortNew": "Mais novos",
         "pioneer": "Seja o pioneiro: jogue aqui hoje 📍",
         "peekNearest": "O mais perto a {{distance}}",
-        "peekSwipe": "deslize para cima 👆",
+        "peekSwipe": "deslize para cima",
         "peekEmpty": "Ainda não há spots aqui, seja o pioneiro 📍",
-        "peekTitle_one": "📍 {{num}} spot para explorar",
-        "peekTitle_other": "📍 {{num}} spots para explorar"
+        "peekTitle_one": "{{num}} spot para explorar",
+        "peekTitle_other": "{{num}} spots para explorar"
       },
       "surprise": "Me surpreenda"
     },
@@ -811,7 +811,7 @@
         "week": "Semana",
         "alltime": "Desde sempre"
       },
-      "timeLeftMin": "⏳ Falta menos de uma hora pra votar",
+      "timeLeftMin": "Falta menos de uma hora pra votar",
       "bestPerCity": "Melhor foto por cidade",
       "new": "novo",
       "you": {
@@ -847,9 +847,9 @@
         "generic": "🏆 Os resultados de ontem saíram",
         "see": "Ver resultados →"
       },
-      "timeLeft_one": "⏳ Falta {{count}} hora pra votar",
-      "timeLeft_other": "⏳ Faltam {{count}} horas pra votar",
-      "timeLeft_many": "⏳ Faltam {{count}} horas pra votar",
+      "timeLeft_one": "Falta {{count}} hora pra votar",
+      "timeLeft_other": "Faltam {{count}} horas pra votar",
+      "timeLeft_many": "Faltam {{count}} horas pra votar",
       "pts_one": "{{count}} pt",
       "pts_other": "{{count}} pts",
       "pts_many": "{{count}} pts",

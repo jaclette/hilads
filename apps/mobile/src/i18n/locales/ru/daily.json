@@ -304,12 +304,12 @@
       "countHere_many": "{{count}} мест рядом",
       "countHere_other": "{{count}} места рядом",
       "peekNearest": "Ближайшее в {{distance}}",
-      "peekSwipe": "смахни вверх 👆",
+      "peekSwipe": "смахни вверх",
       "peekEmpty": "Здесь пока нет мест, стань первым 📍",
-      "peekTitle_one": "📍 {{num}} место для открытий",
-      "peekTitle_few": "📍 {{num}} места для открытий",
-      "peekTitle_many": "📍 {{num}} мест для открытий",
-      "peekTitle_other": "📍 {{num}} мест для открытий"
+      "peekTitle_one": "{{num}} место для открытий",
+      "peekTitle_few": "{{num}} места для открытий",
+      "peekTitle_many": "{{num}} мест для открытий",
+      "peekTitle_other": "{{num}} мест для открытий"
     }
   },
   "leaderboard": {
@@ -920,7 +920,7 @@
       "city": "Мой город",
       "world": "Мир"
     },
-    "timeLeftMin": "⏳ До конца голосования меньше часа",
+    "timeLeftMin": "До конца голосования меньше часа",
     "bestPerCity": "Лучшее фото каждого города",
     "new": "новый",
     "you": {
@@ -970,10 +970,10 @@
       "generic": "🏆 Итоги вчерашнего дня готовы",
       "see": "Смотреть итоги →"
     },
-    "timeLeft_one": "⏳ До конца голосования {{count}} час",
-    "timeLeft_few": "⏳ До конца голосования {{count}} часа",
-    "timeLeft_many": "⏳ До конца голосования {{count}} часов",
-    "timeLeft_other": "⏳ До конца голосования {{count}} часа",
+    "timeLeft_one": "До конца голосования {{count}} час",
+    "timeLeft_few": "До конца голосования {{count}} часа",
+    "timeLeft_many": "До конца голосования {{count}} часов",
+    "timeLeft_other": "До конца голосования {{count}} часа",
     "pts_one": "{{count}} очко",
     "pts_few": "{{count}} очка",
     "pts_many": "{{count}} очков",

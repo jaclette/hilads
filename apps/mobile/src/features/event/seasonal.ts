@@ -65,6 +65,8 @@ const HALLOWEEN_COLORS: ThemeColors = {
   line:          '#3D2A64',
   ticketLine:    '#5A3E85',
   goldTint:      '#3A2E40',
+  selected:      '#4A2A3A',   // the shared selected state, on the night purple
+  onSelected:    '#FFC48A',
 };
 
 export const SEASONAL_THEMES: Record<string, SeasonalTheme> = {

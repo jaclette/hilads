@@ -282,10 +282,10 @@
       "countHere_one": "{{count}} Spot hier",
       "countHere_other": "{{count}} Spots hier",
       "peekNearest": "Der nächste in {{distance}}",
-      "peekSwipe": "nach oben wischen 👆",
+      "peekSwipe": "nach oben wischen",
       "peekEmpty": "Noch keine Spots hier, sei der Pionier 📍",
-      "peekTitle_one": "📍 {{num}} Spot zum Entdecken",
-      "peekTitle_other": "📍 {{num}} Spots zum Entdecken"
+      "peekTitle_one": "{{num}} Spot zum Entdecken",
+      "peekTitle_other": "{{num}} Spots zum Entdecken"
     }
   },
   "leaderboard": {
@@ -846,7 +846,7 @@
       "city": "Meine Stadt",
       "world": "Welt"
     },
-    "timeLeftMin": "⏳ Weniger als eine Stunde zum Abstimmen",
+    "timeLeftMin": "Weniger als eine Stunde zum Abstimmen",
     "bestPerCity": "Bestes Foto pro Stadt",
     "new": "neu",
     "you": {
@@ -888,8 +888,8 @@
       "generic": "🏆 Die Ergebnisse von gestern sind da",
       "see": "Ergebnisse ansehen →"
     },
-    "timeLeft_one": "⏳ Noch {{count}} Stunde zum Abstimmen",
-    "timeLeft_other": "⏳ Noch {{count}} Stunden zum Abstimmen",
+    "timeLeft_one": "Noch {{count}} Stunde zum Abstimmen",
+    "timeLeft_other": "Noch {{count}} Stunden zum Abstimmen",
     "pts_one": "{{count}} Pkt.",
     "pts_other": "{{count}} Pkt.",
     "ghost": {

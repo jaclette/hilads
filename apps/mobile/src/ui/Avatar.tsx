@@ -1,16 +1,29 @@
 import { Text, View, StyleSheet } from 'react-native';
 import { Image } from 'expo-image';
-import { FontSizes, Radius, type ThemeColors } from '@/constants';
-import { useThemedStyles } from '@/context/ThemeContext';
-import { avatarColor } from '@/lib/avatarColors';
+import { Radius, type ThemeColors } from '@/constants';
+import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { thumbUrl } from '@/lib/imageThumb';
+import { THEME_COLORS, tint } from './joy';
+
+/** The avatar sizes: a tile or row footer, a list row, a profile head. */
+export const AvatarSize = { sm: 24, md: 40, lg: 72 } as const;
+
+// The theme color pairs an initial can wear (one per person, stable): never two peaches.
+const PAIRS = ['hidden_gem', 'taste', 'get_around', 'local_find', 'night_out', 'sip'] as const;
+
+function pairFor(name: string) {
+  let h = 0;
+  for (let i = 0; i < name.length; i++) h = (h * 31 + name.charCodeAt(i)) | 0;
+  return THEME_COLORS[PAIRS[Math.abs(h) % PAIRS.length]];
+}
 
 /**
- * Round avatar: the photo, else the initial on a tinted ground (`tint`) or on
- * the person's own color (`color`). `ring` adds the primary ring (Passport).
+ * Round avatar (design pass): the photo, else ONE fallback everywhere: the initial in a theme's
+ * color on that color's soft tint, stable per person. `ring` adds the primary ring (Passport).
+ * `fallback` is kept for older callers; both values draw the same fallback now.
  * An uploaded photo shows at its ≤400 px size (never the original, up to 1600 px).
  */
-export function Avatar({ uri, name, size, fallback = 'tint', ring = false }: {
+export function Avatar({ uri, name, size, ring = false }: {
   uri?: string | null;
   name: string;
   size: number;
@@ -18,16 +31,18 @@ export function Avatar({ uri, name, size, fallback = 'tint', ring = false }: {
   ring?: boolean;
 }) {
   const styles = useThemedStyles(makeStyles);
+  const { theme } = useTheme();
   const box = { width: size, height: size };
-  const tint = fallback === 'tint';
   if (uri) {
-    return <Image source={{ uri: thumbUrl(uri) ?? uri }} style={[styles.round, box, tint && styles.tint, ring && styles.ring]} contentFit="cover" cachePolicy="memory-disk" />;
+    return <Image source={{ uri: thumbUrl(uri) ?? uri }} style={[styles.round, box, styles.photo, ring && styles.ring]} contentFit="cover" cachePolicy="memory-disk" />;
   }
-  const initial = (name.replace('@', '') || '?')[0].toUpperCase();
-  const textSize = size >= 80 ? styles.xl : size >= 56 ? styles.lg : size >= 36 ? styles.md : styles.sm;
+  const clean = name.replace('@', '').trim() || '?';
+  const pair = pairFor(clean.toLowerCase());
+  const ink = theme === 'dark' ? pair.textDark : pair.textLight;
   return (
-    <View style={[styles.round, styles.center, box, tint ? styles.tint : { backgroundColor: avatarColor(name) }, ring && styles.ring]}>
-      <Text style={[textSize, tint ? styles.onTint : styles.onColor]}>{initial}</Text>
+    <View style={[styles.round, styles.center, box, { backgroundColor: tint(pair.fill, theme === 'dark' ? 0.22 : 0.26) }, ring && styles.ring]}>
+      {/* Sized from the box (both inline, so scaling.ts leaves the pair proportional); weight kept with it. */}
+      <Text style={[styles.initial, { fontSize: Math.round(size * 0.44), color: ink }]}>{clean[0].toUpperCase()}</Text>
     </View>
   );
 }
@@ -35,13 +50,7 @@ export function Avatar({ uri, name, size, fallback = 'tint', ring = false }: {
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
   round:   { borderRadius: Radius.full },
   center:  { alignItems: 'center', justifyContent: 'center' },
-  tint:    { backgroundColor: c.primaryTint },
+  photo:   { backgroundColor: c.bg3 },
   ring:    { borderWidth: 2.5, borderColor: c.primary },
-  // Each size carries its weight: src/scaling.ts gives a size-only text style the Regular family.
-  xl:      { fontSize: 34, fontWeight: '800' },
-  lg:      { fontSize: 24, fontWeight: '800' },
-  md:      { fontSize: FontSizes.sm, fontWeight: '800' },
-  sm:      { fontSize: FontSizes.xs, fontWeight: '800' },
-  onTint:  { color: c.primaryOnTint },
-  onColor: { color: c.white },
+  initial: { fontWeight: '800' },
 });

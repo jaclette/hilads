@@ -1,7 +1,8 @@
-import { TouchableOpacity, View, StyleSheet, type StyleProp, type ViewStyle } from 'react-native';
+import { View, StyleSheet, type StyleProp, type ViewStyle } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Border, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
+import { Tappable } from './Tappable';
 
 /**
  * Round 44 px icon button (back, gear, bell, locate), with an optional unread
@@ -21,11 +22,11 @@ export function IconButton({ icon, onPress, label, badge = false, iconSize = 22,
   const styles = useThemedStyles(makeStyles);
   const { colors } = useTheme();
   return (
-    <TouchableOpacity style={[styles.round, tone === 'onPhoto' && styles.onPhoto, style]} onPress={onPress} accessibilityRole="button" accessibilityLabel={label} testID={testID}
+    <Tappable style={[styles.round, tone === 'onPhoto' && styles.onPhoto, style]} onPress={onPress} accessibilityRole="button" accessibilityLabel={label} testID={testID}
                       hitSlop={tone === 'onPhoto' ? ON_PHOTO_SLOP : undefined}>
       <Ionicons name={icon} size={iconSize} color={tone === 'onPhoto' ? colors.white : colors.text} />
       {badge && <View style={styles.dot} />}
-    </TouchableOpacity>
+    </Tappable>
   );
 }
 

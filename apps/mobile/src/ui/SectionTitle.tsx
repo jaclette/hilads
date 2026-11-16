@@ -1,6 +1,6 @@
 import { Text, TouchableOpacity, View, StyleSheet, type StyleProp, type TextStyle } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Space, FontSizes, type ThemeColors } from '@/constants';
+import { Space, Type, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { HighlightText, plain } from './joy';
 
@@ -42,8 +42,8 @@ export function SectionTitle({ title, action, small = false, style, onPress, hig
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
   row:   { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: Space.sm },
   titleLink: { flexDirection: 'row', alignItems: 'center', gap: Space.xxs, flexShrink: 1 },
-  // DESIGN.md type scale: section 19/24, card 17/22, tight tracking.
-  title: { flexShrink: 1, fontSize: FontSizes.lg, lineHeight: 24, fontWeight: '800', color: c.text, letterSpacing: -0.3 },
-  small: { fontSize: FontSizes.md, lineHeight: 22, fontWeight: '800' },
-  link:  { fontSize: FontSizes.sm, fontWeight: '700', color: c.primaryText },
+  // Type roles: a section is `title`, a card's heading `label`; the link is a caption in primary.
+  title: { flexShrink: 1, ...Type.title, color: c.text },
+  small: { ...Type.label, letterSpacing: 0 },
+  link:  { ...Type.caption, fontWeight: '800', color: c.primaryText },
 });

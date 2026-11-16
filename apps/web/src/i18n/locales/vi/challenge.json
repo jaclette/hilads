@@ -470,9 +470,9 @@
         "sortNew": "Mới nhất",
         "pioneer": "Làm người tiên phong: chơi ở đây hôm nay nha 📍",
         "peekNearest": "Gần nhất cách {{distance}}",
-        "peekSwipe": "vuốt lên 👆",
+        "peekSwipe": "vuốt lên",
         "peekEmpty": "Chưa có spot nào ở đây, hãy là người tiên phong 📍",
-        "peekTitle_other": "📍 {{num}} spot để khám phá"
+        "peekTitle_other": "{{num}} spot để khám phá"
       },
       "surprise": "Bất ngờ đi"
     },
@@ -766,7 +766,7 @@
         "week": "Tuần",
         "alltime": "Mọi lúc"
       },
-      "timeLeftMin": "⏳ Còn chưa tới một giờ để bình chọn",
+      "timeLeftMin": "Còn chưa tới một giờ để bình chọn",
       "bestPerCity": "Ảnh đỉnh nhất mỗi thành phố",
       "new": "mới",
       "you": {
@@ -796,7 +796,7 @@
         "generic": "🏆 Đã có kết quả hôm qua",
         "see": "Xem kết quả →"
       },
-      "timeLeft_other": "⏳ Còn {{count}} giờ để bình chọn",
+      "timeLeft_other": "Còn {{count}} giờ để bình chọn",
       "pts_other": "{{count}} điểm",
       "ghost": {
         "photo": "Ảnh của bạn ở đây? 📸",

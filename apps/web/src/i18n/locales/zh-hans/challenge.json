@@ -470,9 +470,9 @@
         "sortNew": "最新",
         "pioneer": "成为先锋：今天就在这里出战 📍",
         "peekNearest": "最近的 {{distance}}",
-        "peekSwipe": "向上滑 👆",
+        "peekSwipe": "向上滑",
         "peekEmpty": "这里还没有地点，来当第一个 📍",
-        "peekTitle_other": "📍 {{num}} 个地点等你探索"
+        "peekTitle_other": "{{num}} 个地点等你探索"
       },
       "surprise": "给我惊喜"
     },
@@ -766,7 +766,7 @@
         "week": "本周",
         "alltime": "历史"
       },
-      "timeLeftMin": "⏳ 投票还剩不到一小时",
+      "timeLeftMin": "投票还剩不到一小时",
       "bestPerCity": "每座城市的最佳照片",
       "new": "新",
       "you": {
@@ -796,7 +796,7 @@
         "generic": "🏆 昨天的结果出来了",
         "see": "查看结果 →"
       },
-      "timeLeft_other": "⏳ 还剩 {{count}} 小时投票",
+      "timeLeft_other": "还剩 {{count}} 小时投票",
       "pts_other": "{{count}} 分",
       "ghost": {
         "photo": "你的照片放这里？📸",

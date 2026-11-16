@@ -271,9 +271,9 @@
       "count_other": "{{count}} ที่ใน{{city}}",
       "countHere_other": "{{count}} ที่แถวนี้",
       "peekNearest": "ใกล้สุด {{distance}}",
-      "peekSwipe": "ปัดขึ้น 👆",
+      "peekSwipe": "ปัดขึ้น",
       "peekEmpty": "ยังไม่มีสปอตตรงนี้ มาเป็นคนแรกกัน 📍",
-      "peekTitle_other": "📍 {{num}} สปอตให้สำรวจ"
+      "peekTitle_other": "{{num}} สปอตให้สำรวจ"
     }
   },
   "leaderboard": {
@@ -809,7 +809,7 @@
       "city": "เมืองของฉัน",
       "world": "ทั่วโลก"
     },
-    "timeLeftMin": "⏳ เหลือเวลาโหวตไม่ถึงชั่วโมง",
+    "timeLeftMin": "เหลือเวลาโหวตไม่ถึงชั่วโมง",
     "bestPerCity": "รูปเด็ดสุดของแต่ละเมือง",
     "new": "ใหม่",
     "you": {
@@ -849,7 +849,7 @@
       "generic": "🏆 ผลของเมื่อวานออกแล้ว",
       "see": "ดูผล →"
     },
-    "timeLeft_other": "⏳ เหลือเวลาโหวตอีก {{count}} ชั่วโมง",
+    "timeLeft_other": "เหลือเวลาโหวตอีก {{count}} ชั่วโมง",
     "pts_other": "{{count}} แต้ม",
     "ghost": {
       "photo": "รูปของคุณตรงนี้? 📸",

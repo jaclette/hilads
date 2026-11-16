@@ -293,10 +293,10 @@
       "countHere_other": "{{count}} posti qui",
       "countHere_many": "{{count}} posti qui",
       "peekNearest": "Il più vicino a {{distance}}",
-      "peekSwipe": "scorri in su 👆",
+      "peekSwipe": "scorri in su",
       "peekEmpty": "Ancora nessuno spot qui, sii il pioniere 📍",
-      "peekTitle_one": "📍 {{num}} spot da esplorare",
-      "peekTitle_other": "📍 {{num}} spot da esplorare"
+      "peekTitle_one": "{{num}} spot da esplorare",
+      "peekTitle_other": "{{num}} spot da esplorare"
     }
   },
   "leaderboard": {
@@ -882,7 +882,7 @@
       "city": "La mia città",
       "world": "Mondo"
     },
-    "timeLeftMin": "⏳ Manca meno di un'ora per votare",
+    "timeLeftMin": "Manca meno di un'ora per votare",
     "bestPerCity": "Foto migliore per città",
     "new": "nuovo",
     "you": {
@@ -926,9 +926,9 @@
       "generic": "🏆 I risultati di ieri sono arrivati",
       "see": "Vedi i risultati →"
     },
-    "timeLeft_one": "⏳ Manca {{count}} ora per votare",
-    "timeLeft_other": "⏳ Mancano {{count}} ore per votare",
-    "timeLeft_many": "⏳ Mancano {{count}} ore per votare",
+    "timeLeft_one": "Manca {{count}} ora per votare",
+    "timeLeft_other": "Mancano {{count}} ore per votare",
+    "timeLeft_many": "Mancano {{count}} ore per votare",
     "pts_one": "{{count}} pt",
     "pts_other": "{{count}} pt",
     "pts_many": "{{count}} pt",
