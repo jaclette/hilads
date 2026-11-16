@@ -1,6 +1,5 @@
 {
   "share": {
-    "bringPeople": "拉人来",
     "linkCopied": "链接已复制",
     "vibeTitle": "分享这个 vibe",
     "eventAria": "分享活动"
@@ -92,7 +91,6 @@
     "title": "你今天已经创建过活动了！",
     "body": "Hilads 想让一切保持新鲜：每天一个活动，每个计划都能被大家看到。明天再来发起下一个吧。",
     "legendLink": "成为传奇，无限发起活动",
-    "legendA11y": "了解怎么成为传奇",
     "legendAlertTitle": "成为传奇",
     "legendAlertBody": "传奇是我们选出来、让城市保持热闹的本地人，他们想办多少活动都行。想成为传奇？联系 contact@hilads.live。",
     "gotIt": "知道了",

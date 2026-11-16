@@ -2,20 +2,8 @@
   "create": {
     "startTitle": "Hi now",
     "editTitle": "Edit nongkrong",
-    "category": "Kategori",
-    "cat": {
-      "general": "Umum",
-      "tips": "Tips",
-      "food": "Makanan",
-      "drinks": "Minuman",
-      "help": "Bantuan",
-      "meetup": "Ketemuan"
-    },
     "titleLabel": "Lagi kepikiran apa?",
     "titlePlaceholder": "Aku mau ngopi",
-    "detailsLabel": "Tambah detail",
-    "optional": "(opsional)",
-    "detailsPlaceholder": "Kasih sedikit konteks…",
     "expiry": "Otomatis berakhir dalam 8 jam",
     "saving": "Lagi disimpan…",
     "starting": "Lagi dimulai…",
@@ -73,7 +61,6 @@
     "photo": "Foto",
     "unavailable": "Pesan asli tidak tersedia"
   },
-  "composer": {},
   "errors": {
     "locFailed": "Gagal dapat lokasimu. Aktifkan akses lokasi dan coba lagi.",
     "imageType": "Pilih gambar JPEG, PNG, atau WebP, ya.",

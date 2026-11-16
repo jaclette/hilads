@@ -1,6 +1,5 @@
 {
   "share": {
-    "bringPeople": "Mag-invite ng tao",
     "linkCopied": "Na-copy ang link",
     "vibeTitle": "I-share ang vibe na 'to",
     "eventAria": "I-share ang event"
@@ -93,7 +92,6 @@
     "title": "Nakagawa ka na ng event mo ngayon!",
     "body": "Sa Hilads, gusto naming laging fresh - isang event kada araw para mapansin ang bawat lakad. Balik ka bukas para gumawa ulit.",
     "legendLink": "Maging Legend para gumawa ng unlimited na events",
-    "legendA11y": "Alamin kung paano maging Legend",
     "legendAlertTitle": "Maging Legend",
     "legendAlertBody": "Ang mga Legend ay locals na pinili para panatilihing buhay ang city nila - puwede silang mag-host ng kahit ilang events. Gusto mong maging isa? Mag-message sa contact@hilads.live.",
     "gotIt": "Gets",

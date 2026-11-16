@@ -2,20 +2,8 @@
   "create": {
     "startTitle": "Hi now",
     "editTitle": "編輯聚會",
-    "category": "類別",
-    "cat": {
-      "general": "一般",
-      "tips": "小撇步",
-      "food": "美食",
-      "drinks": "喝一杯",
-      "help": "求助",
-      "meetup": "聚會"
-    },
     "titleLabel": "你在想什麼？",
     "titlePlaceholder": "我想去喝杯咖啡",
-    "detailsLabel": "補充細節",
-    "optional": "（選填）",
-    "detailsPlaceholder": "補充一點背景…",
     "expiry": "8 小時後自動結束",
     "saving": "儲存中…",
     "starting": "發起中…",
@@ -73,7 +61,6 @@
     "photo": "照片",
     "unavailable": "原始訊息已無法顯示"
   },
-  "composer": {},
   "errors": {
     "locFailed": "無法取得你的位置。請開啟定位權限後再試一次。",
     "imageType": "請選擇 JPEG、PNG 或 WebP 圖片。",

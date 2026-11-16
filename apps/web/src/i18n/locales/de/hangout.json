@@ -2,20 +2,8 @@
   "create": {
     "startTitle": "Hi now",
     "editTitle": "Treffen bearbeiten",
-    "category": "Kategorie",
-    "cat": {
-      "general": "Allgemein",
-      "tips": "Tipps",
-      "food": "Essen",
-      "drinks": "Drinks",
-      "help": "Hilfe",
-      "meetup": "Treffen"
-    },
     "titleLabel": "Worauf hast du Lust?",
     "titlePlaceholder": "Ich hätte Lust auf einen Kaffee",
-    "detailsLabel": "Details hinzufügen",
-    "optional": "(optional)",
-    "detailsPlaceholder": "Erzähl ein bisschen mehr…",
     "expiry": "Läuft nach 8 Std. automatisch ab",
     "saving": "Wird gespeichert…",
     "starting": "Wird gestartet…",
@@ -73,7 +61,6 @@
     "photo": "Foto",
     "unavailable": "Originalnachricht nicht verfügbar"
   },
-  "composer": {},
   "errors": {
     "locFailed": "Wir konnten deinen Standort nicht finden. Erlaub den Standortzugriff und versuch's nochmal.",
     "imageType": "Wähl ein JPEG-, PNG- oder WebP-Bild.",

@@ -2,20 +2,8 @@
   "create": {
     "startTitle": "Hi now",
     "editTitle": "Modifier la sortie",
-    "category": "Catégorie",
-    "cat": {
-      "general": "Général",
-      "tips": "Astuces",
-      "food": "Cuisine",
-      "drinks": "Boissons",
-      "help": "Aide",
-      "meetup": "Rencontre"
-    },
     "titleLabel": "Qu'est-ce qui te passe par la tête ?",
     "titlePlaceholder": "J'ai envie d'un café",
-    "detailsLabel": "Ajoute des détails",
-    "optional": "(facultatif)",
-    "detailsPlaceholder": "Donne un peu de contexte…",
     "expiry": "Expire dans 8 h",
     "saving": "Enregistrement…",
     "starting": "Lancement…",
@@ -73,7 +61,6 @@
     "photo": "Photo",
     "unavailable": "Message d'origine indisponible"
   },
-  "composer": {},
   "errors": {
     "locFailed": "Impossible d'obtenir ta position. Active la localisation et réessaie.",
     "imageType": "Choisis une image JPEG, PNG ou WebP.",

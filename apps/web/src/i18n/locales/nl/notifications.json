@@ -43,7 +43,6 @@
     "view": "👀 {{name}} bekeek je profiel",
     "other": "🔔 Er is nieuws voor je",
     "dismiss": "Sluiten",
-    "open": "Bekijk wat nieuw is",
     "more_one": "{{count}} meer",
     "more_other": "{{count}} meer"
   },
@@ -67,7 +66,6 @@
     "read": "Gelezen",
     "unread": "Ongelezen",
     "delete": "Verwijderen",
-    "allRead": "Alles bijgewerkt ✨",
     "row": {
       "like": "{{names}} vindt je foto leuk",
       "mention": "{{names}} noemde je",

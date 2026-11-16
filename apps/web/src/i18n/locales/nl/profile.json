@@ -1,5 +1,4 @@
 {
-  "pageTitle": "Mijn profiel",
   "changePhoto": "Profielfoto wijzigen",
   "yourProfile": "Je profiel",
   "mode": "Modus",
@@ -77,32 +76,11 @@
     "story": "Verhaal over de stad",
     "storyPlaceholder": "Iets wat je geweldig vindt aan deze stad"
   },
-  "hangouts": {
-    "empty": "Nog geen meetups, start er een 🗣️",
-    "host": "Host"
-  },
-  "events": {
-    "going": "Ga ik heen",
-    "goingEmpty": "Nog geen plannen - zoek iets leuks 🔥",
-    "hosting": "Ik organiseer",
-    "hostingEmpty": "Nog niets georganiseerd - begin iets ✨",
-    "live": "Live",
-    "recurring": "↻ Terugkerend",
-    "upcoming": "Komt eraan",
-    "deleteEvent": "Evenement verwijderen"
-  },
-  "friends": {
-    "requests": "Vriendschapsverzoeken",
-    "empty": "Nog geen vrienden. Voeg ze toe vanaf hun profiel.",
-    "mine": "Mijn vrienden"
-  },
   "vibesTab": {
-    "received": "Ontvangen vibes",
     "score": "{{score}} vibescore",
     "basedOn_one": "gebaseerd op {{count}} vibe",
     "basedOn_other": "gebaseerd op {{count}} vibes",
-    "empty": "Nog geen vibes",
-    "emptyHint": "Je score verschijnt hier zodra mensen een notitie voor je achterlaten ✨"
+    "empty": "Nog geen vibes"
   },
   "save": {
     "uploading": "Uploaden…",
@@ -127,10 +105,6 @@
     "usernameInvalid": "Ongeldige gebruikersnaam",
     "saveFailed": "Opslaan lukte niet. Probeer het opnieuw.",
     "generic": "Er ging iets mis. Probeer het opnieuw."
-  },
-  "challenges": {
-    "empty": "Nog geen challenges, start er een 🔥",
-    "challenger": "Challenger"
   },
   "appearance": "Weergave",
   "themeLight": "Licht",
@@ -169,15 +143,11 @@
       "inReview_other": "{{count}} worden bekeken",
       "specialTitle": "Speciale stempels",
       "specialSub": "Beperkte editie, één per speciale dag. Telt niet mee voor de Local Pass.",
-      "compared_one": "Vergeleken met {{count}} land",
-      "compared_other": "Vergeleken met {{count}} landen",
       "stampsOf_one": "{{count}} van {{total}} stempels",
       "stampsOf_other": "{{count}} van {{total}} stempels",
       "passEarned": "Behaald in {{city}}",
       "passToGo_one": "Nog {{count}} stempel",
       "passToGo_other": "Nog {{count}} stempels",
-      "comparedCities_one": "Vergeleken met {{count}} stad",
-      "comparedCities_other": "Vergeleken met {{count}} steden",
       "myPhotos": "Mijn foto's",
       "noPhotos": "Je Daily Challenge-foto's verschijnen hier.",
       "share": "Deel mijn paspoort",

@@ -1,6 +1,5 @@
 {
   "share": {
-    "bringPeople": "Inviter du monde",
     "linkCopied": "Lien copié",
     "vibeTitle": "Partager cette vibe",
     "eventAria": "Partager l'événement"
@@ -94,7 +93,6 @@
     "title": "Tu as déjà créé ton événement aujourd'hui !",
     "body": "Chez Hilads, on aime que ça bouge : un événement par jour, pour que chaque plan ait l'attention qu'il mérite. Reviens demain pour en créer un autre.",
     "legendLink": "Deviens une Légende pour créer des événements illimités",
-    "legendA11y": "En savoir plus pour devenir une Légende",
     "legendAlertTitle": "Deviens une Légende",
     "legendAlertBody": "Les Légendes sont des gens du coin choisis pour faire vivre leur ville : elles peuvent organiser autant d'événements qu'elles veulent. Tu veux en devenir une ? Écris à contact@hilads.live.",
     "gotIt": "Compris",

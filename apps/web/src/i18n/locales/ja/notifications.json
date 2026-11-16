@@ -43,7 +43,6 @@
     "view": "👀 {{name}}さんがプロフィールを見たよ",
     "other": "🔔 新しいお知らせ",
     "dismiss": "閉じる",
-    "open": "新着を見る",
     "more_one": "ほか{{count}}件",
     "more_other": "ほか{{count}}件"
   },
@@ -67,7 +66,6 @@
     "read": "既読",
     "unread": "未読",
     "delete": "削除",
-    "allRead": "すべて既読 ✨",
     "row": {
       "like": "{{names}}さんが写真にいいね",
       "mention": "{{names}}さんからメンション",

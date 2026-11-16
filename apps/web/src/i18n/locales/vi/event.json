@@ -1,6 +1,5 @@
 {
   "share": {
-    "bringPeople": "Rủ thêm người",
     "linkCopied": "Đã copy link",
     "vibeTitle": "Chia sẻ vibe này",
     "eventAria": "Chia sẻ sự kiện"
@@ -92,7 +91,6 @@
     "title": "Hôm nay bạn đã tạo sự kiện rồi!",
     "body": "Ở Hilads, mỗi người một sự kiện mỗi ngày để kèo nào cũng được chú ý. Mai quay lại tạo kèo mới nhé.",
     "legendLink": "Trở thành Huyền thoại để tạo sự kiện không giới hạn",
-    "legendA11y": "Tìm hiểu cách trở thành Huyền thoại",
     "legendAlertTitle": "Trở thành Huyền thoại",
     "legendAlertBody": "Huyền thoại là những người dân địa phương được chọn để giữ thành phố luôn sôi động, họ tổ chức bao nhiêu sự kiện cũng được. Muốn làm Huyền thoại? Nhắn tụi mình ở contact@hilads.live.",
     "gotIt": "Hiểu rồi",

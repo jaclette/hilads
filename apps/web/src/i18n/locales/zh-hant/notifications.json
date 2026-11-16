@@ -43,7 +43,6 @@
     "view": "👀 {{name}} 看了你的個人頁",
     "other": "🔔 有新動態",
     "dismiss": "關閉",
-    "open": "查看新動態",
     "more_one": "還有 {{count}} 則",
     "more_other": "還有 {{count}} 則"
   },
@@ -67,7 +66,6 @@
     "read": "已讀",
     "unread": "未讀",
     "delete": "刪除",
-    "allRead": "全部看完了 ✨",
     "row": {
       "like": "{{names}} 對你的照片按讚",
       "mention": "{{names}} 提到你",

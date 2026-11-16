@@ -16,11 +16,7 @@
     "eventTitle": "Sự kiện địa phương: {{title}} | Hilads",
     "eventDesc": "Tham gia {{title}} trên Hilads - một sự kiện địa phương đang diễn ra. Xem ai sẽ đi và chat trực tiếp với mọi người."
   },
-  "nowTitle": "Bây giờ",
   "filterEvents": "🎉 Sự kiện địa phương",
-  "hiLocalTitle": "Hi Local",
-  "filterHangouts": "🗣️ Tụ tập",
-  "publicEventsSection": "🎫 Sự kiện công khai",
   "accountWelcome": {
     "title": "Chúc mừng {{username}}!",
     "subtitle": "Tài khoản đã sẵn sàng - giờ bạn làm được mấy cái này",
@@ -32,68 +28,6 @@
     "fc1": "Thách dân địa phương ở thành phố của bạn",
     "fc2": "Thách một thành phố khác bên kia thế giới",
     "cta": "Đi thôi"
-  },
-  "onboarding": {
-    "skip": "Bỏ qua ✕",
-    "next": "Tiếp",
-    "fallbackCity": "thành phố của bạn",
-    "slide1": {
-      "title": "Chơi địa phương. So toàn cầu.",
-      "body": "Hilads là app biến du khách thành dân địa phương - và giúp dân địa phương khoe điều làm thành phố mình sống động."
-    },
-    "slide2": {
-      "title": "Ba cách sống trọn thành phố",
-      "itemChallenges": "🤝 Thử thách - thách người khác hoặc nhận lời thách: tìm chỗ hay ít ai biết, ăn món thật, chia sẻ văn hóa hay giúp một tay.",
-      "itemHangouts": "🗣️ Hi now - gặp ai đó liền, không cần hẹn",
-      "itemEvents": "🎉 Hi plan - lên kèo hẹn gặp"
-    },
-    "slide3": {
-      "title": "Ghi dấu ấn ở thành phố",
-      "body": "Mỗi thử thách bạn hoàn thành, mỗi lần gặp mặt, mỗi địa điểm bạn khám phá đều cho bạn điểm. Điểm cho thấy bạn đã \"địa phương\" tới đâu ở {{city}}. Leo lên đầu bảng Thổ địa và có chỗ đứng giữa những người làm thành phố sôi động."
-    },
-    "slide4": {
-      "title": "Sẵn sàng lên đường chưa?",
-      "ctaChallenge": "📍 Nhận thử thách đầu tiên ở {{city}}",
-      "ctaMostLocal": "🤝 Xem Thổ địa của {{city}}",
-      "ctaLookAround": "👀 Cứ ngó qua trước đã",
-      "ctaHiNow": "🗣️ Hi now",
-      "ctaHiLater": "🎉 Hi plan"
-    }
-  },
-  "challengeIntro": {
-    "title": "Thử thách chơi thế nào",
-    "slide1": {
-      "title": "Thử thách biến chuyến đi thành chuyện để kể",
-      "body": "Dân địa phương và du khách thách nhau khoe chất thật của thành phố - đồ ăn, địa điểm, văn hóa, giúp đỡ. Phần thưởng? Gặp nhau ngoài đời - hoặc gửi bằng chứng từ xa."
-    },
-    "slide2": {
-      "title": "Tung lời thách",
-      "body": "Đồ ăn, địa điểm, văn hóa hay giúp đỡ. Chọn dành cho ai, bao nhiêu suất, và chốt kiểu gì - gặp mặt hay gửi ảnh làm bằng chứng."
-    },
-    "slide3": {
-      "title": "Có người nhận lời",
-      "body": "Họ gửi yêu cầu. Bạn xem rồi đồng ý - khung chat riêng mở ra để hai bên nhắn tin và lên kèo."
-    },
-    "slide4": {
-      "title": "Gặp mặt hay gửi bằng chứng",
-      "body": "Gặp ngoài đời hay gửi ảnh từ xa - tùy bạn. Kiểu nào thì từng bước cũng được ghi lại."
-    },
-    "slide5": {
-      "title": "Chốt lại",
-      "body": "Gặp xong (hoặc khi ảnh tới), đánh dấu hoàn thành. Sống thành phố thật sự - từng thử thách một."
-    },
-    "next": "Tiếp",
-    "done": "Hiểu rồi!",
-    "skip": "Bỏ qua ✕",
-    "slide6": {
-      "title": "Vượt ra ngoài thành phố",
-      "body": "Thách bất kỳ ai, ở bất cứ đâu. Họ gửi bằng chứng - một tấm ảnh có gắn vị trí - và bạn xác nhận từ xa. Thử thách tại chỗ cũng gửi ảnh y vậy. Ở đây hay khắp thế giới, thử thách nào cũng tính."
-    },
-    "slide7": {
-      "title": "Trở thành Thổ địa",
-      "body": "Thử thách nào cũng cho bạn điểm - ở thành phố VÀ trên toàn thế giới. Gặp ngoài đời được thưởng thêm +50. Dân địa phương hay du khách, quan trọng là bạn góp gì ở đây. Bảng xếp hạng làm mới mỗi tháng."
-    },
-    "createCta": "🔥 Tạo thử thách"
   },
   "share": {
     "title": "Chia sẻ gì đó",
@@ -211,7 +145,6 @@
   "settings": "Cài đặt",
   "firstLaunch": "Chơi địa phương. So toàn cầu.",
   "subtitles": {
-    "map": "Địa điểm từ ảnh khắp thế giới.",
     "hi": "Chào thành phố. Vào một kèo.",
     "passport": "Thành phố, ảnh và con dấu của bạn."
   },
@@ -233,18 +166,9 @@
     "textPassportNoCity": "Hộ chiếu Hilads của mình. Cùng thử thách. Những thế giới khác nhau."
   },
   "represent": {
-    "empty": "Hôm nay {{city}} chưa ai chơi. Mở màn đi!",
-    "beFirst": "Làm người đầu tiên chơi cho {{city}}",
-    "emptyThere": "Hôm nay {{city}} chưa ai chơi.",
-    "notIn": "Không ở {{city}}?",
-    "change": "Đổi",
     "locationNeeded": "Bật vị trí để chơi cho nơi bạn đang ở.",
-    "button": "Chơi cho {{city}}",
-    "firstPosted": "Bạn đã đưa {{city}} lên bản đồ thế giới hôm nay.",
     "pioneer": "Pioneer của {{city}}",
     "spotOne": "Địa điểm #1 ở {{city}}",
-    "streak_other": "{{city}} đã chơi {{count}} ngày liên tiếp",
-    "board_other": "Hôm nay đã có {{count}} thành phố lên bảng. {{city}} thì chưa.",
     "mapEmpty": "{{city}} chưa có trên bản đồ thế giới. Đưa lên đi!",
     "invite": "Mời bạn bè",
     "share": "Cùng mình chơi cho {{city}} trên Hilads.",
@@ -286,8 +210,7 @@
     "mainNav": "Điều hướng chính",
     "emojiPicker": "Chọn emoji",
     "cancelReply": "Hủy trả lời",
-    "welcome": "Chào mừng",
-    "approve": "Đồng ý"
+    "welcome": "Chào mừng"
   },
   "tapToOpenMaps": "Chạm để mở bản đồ",
   "openInApp": {

@@ -6,31 +6,16 @@
     "pulses": "Quedadas",
     "challenges": "Retos"
   },
-  "range": {
-    "recent": "Recientes",
-    "last7": "Últimos 7 días",
-    "last14": "Últimos 14 días",
-    "custom": "Personalizado"
-  },
-  "picker": {
-    "pickEnd": "Ahora elige el último día",
-    "pickStart": "Elige el primer día (hasta {{max}} días)",
-    "apply": "Aplicar"
-  },
   "public": "Público",
   "went_one": "{{count}} fue",
   "went_many": "{{count}} fueron",
   "went_other": "{{count}} fueron",
-  "hangoutTag": "Quedada",
   "replies_one": "{{count}} respuesta",
   "replies_many": "{{count}} respuestas",
   "replies_other": "{{count}} respuestas",
-  "noReplies": "Sin respuestas",
   "error": "No se pudo cargar el archivo",
   "retry": "Reintentar",
   "emptyTitle": "Aún no hay nada",
-  "emptyRecentSub": "Los eventos y quedadas pasados aparecerán aquí cuando la ciudad tenga algo de historial.",
-  "emptyWindowSub": "No hay eventos ni quedadas en este periodo. Prueba con un rango más amplio.",
   "loadMore": "Ver más",
   "loading": "Cargando…"
 }

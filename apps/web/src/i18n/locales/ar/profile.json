@@ -1,5 +1,4 @@
 {
-  "pageTitle": "ملفي الشخصي",
   "changePhoto": "تغيير صورة الملف الشخصي",
   "yourProfile": "ملفك الشخصي",
   "mode": "الوضع",
@@ -77,27 +76,7 @@
     "story": "قصة المدينة",
     "storyPlaceholder": "شيء تحبه في هذه المدينة"
   },
-  "hangouts": {
-    "empty": "لا توجد لقاءات بعد - ابدأ واحدًا 🗣️",
-    "host": "المضيف"
-  },
-  "events": {
-    "going": "الحضور",
-    "goingEmpty": "لا خطط بعد، اعثر على شيء 🔥",
-    "hosting": "أستضيف",
-    "hostingEmpty": "لم تستضف شيئًا بعد، ابدأ شيئًا ✨",
-    "live": "مباشر",
-    "recurring": "↻ متكررة",
-    "upcoming": "القادمة",
-    "deleteEvent": "حذف الفعالية"
-  },
-  "friends": {
-    "requests": "طلبات الصداقة",
-    "empty": "لا أصدقاء بعد. أضف بعضهم من الملفات الشخصية.",
-    "mine": "أصدقائي"
-  },
   "vibesTab": {
-    "received": "الـ vibes المستلمة",
     "score": "درجة vibe: {{score}}",
     "basedOn_zero": "بناءً على {{count}} vibe",
     "basedOn_one": "بناءً على vibe واحد",
@@ -105,8 +84,7 @@
     "basedOn_few": "بناءً على {{count}} vibes",
     "basedOn_many": "بناءً على {{count}} vibe",
     "basedOn_other": "بناءً على {{count}} vibe",
-    "empty": "لا توجد vibes بعد",
-    "emptyHint": "ستظهر نقاطك هنا حين يترك لك الناس ملاحظة ✨"
+    "empty": "لا توجد vibes بعد"
   },
   "save": {
     "uploading": "جارٍ الرفع…",
@@ -131,10 +109,6 @@
     "usernameInvalid": "اسم المستخدم غير صالح",
     "saveFailed": "فشل الحفظ. حاول مرة أخرى.",
     "generic": "حدث خطأ ما. حاول مرة أخرى."
-  },
-  "challenges": {
-    "empty": "لا توجد تحديات بعد - أطلق واحدًا 🔥",
-    "challenger": "صاحب التحدّي"
   },
   "appearance": "المظهر",
   "themeLight": "فاتح",
@@ -189,12 +163,6 @@
       "inReview_other": "{{count}} قيد المراجعة",
       "specialTitle": "أختام مميزة",
       "specialSub": "إصدار محدود، ختم لكل يوم مميز. لا يُحتسب ضمن Local Pass.",
-      "compared_zero": "لا مقارنات بعد",
-      "compared_one": "مقارنة مع دولة واحدة",
-      "compared_two": "مقارنة مع دولتين",
-      "compared_few": "مقارنة مع {{count}} دول",
-      "compared_many": "مقارنة مع {{count}} دولة",
-      "compared_other": "مقارنة مع {{count}} دولة",
       "stampsOf_zero": "{{count}} من {{total}} أختام",
       "stampsOf_one": "ختم واحد من {{total}}",
       "stampsOf_two": "ختمان من {{total}}",
@@ -208,12 +176,6 @@
       "passToGo_few": "بقيت {{count}} أختام",
       "passToGo_many": "بقي {{count}} ختمًا",
       "passToGo_other": "بقي {{count}} ختم",
-      "comparedCities_zero": "لا مقارنات بعد",
-      "comparedCities_one": "مقارنة مع مدينة واحدة",
-      "comparedCities_two": "مقارنة مع مدينتين",
-      "comparedCities_few": "مقارنة مع {{count}} مدن",
-      "comparedCities_many": "مقارنة مع {{count}} مدينة",
-      "comparedCities_other": "مقارنة مع {{count}} مدينة",
       "myPhotos": "صوري",
       "noPhotos": "ستظهر هنا صورك في Daily Challenge.",
       "share": "شارك جواز سفري",

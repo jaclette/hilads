@@ -2,20 +2,8 @@
   "create": {
     "startTitle": "Hi now",
     "editTitle": "Editar o rolê",
-    "category": "Categoria",
-    "cat": {
-      "general": "Geral",
-      "tips": "Dicas",
-      "food": "Comida",
-      "drinks": "Drinks",
-      "help": "Ajuda",
-      "meetup": "Encontro"
-    },
     "titleLabel": "Tá a fim de quê?",
     "titlePlaceholder": "Quero tomar um café",
-    "detailsLabel": "Adicionar detalhes",
-    "optional": "(opcional)",
-    "detailsPlaceholder": "Dê um pouco de contexto…",
     "expiry": "Expira automaticamente em 8 h",
     "saving": "Salvando…",
     "starting": "Começando…",
@@ -73,7 +61,6 @@
     "photo": "Foto",
     "unavailable": "Mensagem original indisponível"
   },
-  "composer": {},
   "errors": {
     "locFailed": "Não deu pra pegar sua localização. Ative o acesso à localização e tente de novo.",
     "imageType": "Escolha uma imagem JPEG, PNG ou WebP.",

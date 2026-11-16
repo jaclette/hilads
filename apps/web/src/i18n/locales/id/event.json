@@ -1,6 +1,5 @@
 {
   "share": {
-    "bringPeople": "Ajak orang",
     "linkCopied": "Tautan disalin",
     "vibeTitle": "Bagikan vibe ini",
     "eventAria": "Bagikan acara"
@@ -92,7 +91,6 @@
     "title": "Kamu sudah bikin acara hari ini!",
     "body": "Di Hilads, semuanya dijaga tetap segar: satu acara per hari, biar tiap rencana dapat perhatian yang layak. Balik lagi besok buat bikin acara lagi.",
     "legendLink": "Jadi Legenda buat bikin acara tanpa batas",
-    "legendA11y": "Cara jadi Legenda",
     "legendAlertTitle": "Jadi Legenda",
     "legendAlertBody": "Legenda adalah warga lokal yang dipilih untuk menghidupkan kotanya: mereka bisa bikin acara sebanyak yang mereka mau. Mau jadi salah satunya? Hubungi contact@hilads.live.",
     "gotIt": "Oke",

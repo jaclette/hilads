@@ -2,20 +2,8 @@
   "create": {
     "startTitle": "Hi now",
     "editTitle": "Editar o convívio",
-    "category": "Categoria",
-    "cat": {
-      "general": "Geral",
-      "tips": "Dicas",
-      "food": "Comida",
-      "drinks": "Bebidas",
-      "help": "Ajuda",
-      "meetup": "Encontro"
-    },
     "titleLabel": "O que te apetece?",
     "titlePlaceholder": "Quero tomar um café",
-    "detailsLabel": "Adiciona detalhes",
-    "optional": "(opcional)",
-    "detailsPlaceholder": "Dá-lhe algum contexto…",
     "expiry": "Expira sozinho em 8 h",
     "saving": "A guardar…",
     "starting": "A iniciar…",
@@ -73,7 +61,6 @@
     "photo": "Foto",
     "unavailable": "Mensagem original indisponível"
   },
-  "composer": {},
   "errors": {
     "locFailed": "Não foi possível obter a tua localização. Ativa o acesso à localização e tenta novamente.",
     "imageType": "Escolhe uma imagem JPEG, PNG ou WebP.",

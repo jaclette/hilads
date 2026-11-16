@@ -1,6 +1,5 @@
 {
   "share": {
-    "bringPeople": "Chamar a galera",
     "linkCopied": "Link copiado",
     "vibeTitle": "Compartilhar esta vibe",
     "eventAria": "Compartilhar evento"
@@ -94,7 +93,6 @@
     "title": "Você já criou seu evento de hoje!",
     "body": "No Hilads, a gente mantém tudo fresquinho: um evento por dia, para cada rolê ter a atenção que merece. Volte amanhã para criar outro.",
     "legendLink": "Vire uma Lenda para criar eventos sem limite",
-    "legendA11y": "Saiba como virar uma Lenda",
     "legendAlertTitle": "Vire uma Lenda",
     "legendAlertBody": "As Lendas são moradores escolhidos para manter a cidade viva: podem organizar quantos eventos quiserem. Quer ser uma? Fale com a gente em contact@hilads.live.",
     "gotIt": "Entendi",

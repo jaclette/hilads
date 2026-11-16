@@ -1,25 +1,16 @@
 {
   "world": {
     "tab": "Welt",
-    "banner_one": "{{count}} Städte-Challenge live",
-    "banner_other": "{{count}} Städte-Challenges live",
-    "online": "{{count}} online",
-    "cities_one": "{{count}} Stadt",
-    "cities_other": "{{count}} Städte",
     "sys": {
       "challengeCreated": "🔥 {{nickname}} hat eine Challenge gestartet: {{cityA}} → {{cityB}}",
       "newUser": "🎉 {{nickname}} aus {{city}} ist neu bei Hilads",
       "challengeWon": "🏆 {{nickname}} aus {{city}} hat die Challenge {{challenge}} gewonnen"
     },
     "quietCard": "Ruhig hier? {{count}} ungelesen in Welt, tippen zum Öffnen",
-    "heroEmpty": "Fordere als Erstes eine Stadt heraus",
-    "heroEmptySub": "Starte eine Challenge zwischen Städten",
-    "leaderboard": "Bestenliste",
     "arrivals_one": "{{count}} Ankunft",
     "arrivals_other": "{{count}} Ankünfte",
     "arrivalsTitle": "Neue Ankünfte",
-    "arrivalsEmpty": "Keine neuen Ankünfte",
-    "seeAll": "Alle ansehen"
+    "arrivalsEmpty": "Keine neuen Ankünfte"
   },
   "inspiration": {
     "heading": "Treffen-Ideen",
@@ -31,37 +22,7 @@
   },
   "guestGate": {
     "createAccount": "Konto erstellen",
-    "signIn": "Anmelden",
-    "create_event": {
-      "pageTitle": "Event erstellen",
-      "title": "Ghosts dürfen stöbern, aber nichts veranstalten.",
-      "sub": "Erstell ein Konto, um dein eigenes Event zu starten und deine Stadt auf die Karte zu bringen."
-    },
-    "view_profile": {
-      "pageTitle": "Profil",
-      "title": "Ghosts dürfen stöbern, aber Profile sind für Mitglieder.",
-      "sub": "Erstell ein Konto, um Profile zu sehen, Leute kennenzulernen und deine Stadt-Crew aufzubauen."
-    },
-    "join_hangout": {
-      "pageTitle": "Bei einem Treffen mitmachen",
-      "title": "Ghosts dürfen stöbern, aber nicht bei Treffen mitmachen.",
-      "sub": "Registrier dich, um bei Treffen mitzumachen, deinen Namen zu sichern und Bescheid zu kriegen, wenn Leute sich treffen wollen."
-    },
-    "create_hangout": {
-      "pageTitle": "Treffen starten",
-      "title": "Ghosts dürfen stöbern, aber nichts veranstalten.",
-      "sub": "Registrier dich, um ein Treffen zu starten, deinen Namen zu sichern und Leute dazuzuholen."
-    },
-    "create_challenge": {
-      "pageTitle": "Challenge starten",
-      "title": "Ghosts dürfen stöbern, aber niemanden herausfordern.",
-      "sub": "Registrier dich, um eine Challenge für Locals oder Reisende zu starten und selbst über die Fotos zu entscheiden."
-    },
-    "accept_challenge": {
-      "pageTitle": "Challenge annehmen",
-      "title": "Registriere dich, um diese Challenge anzunehmen",
-      "sub": "Dauert 3 Sekunden. Danach bist du gleich wieder bei der Challenge."
-    }
+    "signIn": "Anmelden"
   },
   "welcome": {
     "live": "{{city}} ist live",
@@ -107,15 +68,12 @@
   "joiningDefault": "Verbinde mit dem Chat…",
   "tryAgain": "Nochmal versuchen",
   "feed": {
-    "hangoutTag": "Treffen",
-    "eventTag": "Event",
     "nowTag": "Now",
     "laterTag": "Plan",
     "hiNow": "Hi now",
     "hiLater": "Hi plan",
     "public": "Öffentlich",
     "activeNow": "Jetzt aktiv",
-    "repliesNew": "Noch keine Antworten. Mach den Anfang",
     "sayHi": "Sag {{name}} hallo",
     "sayHiGeneric": "Sag Hallo",
     "hostWaiting": "Warten auf das erste Hallo",
@@ -128,8 +86,6 @@
     "groupPublic": "Öffentliche Events",
     "groupPublicTicket": "Öffentliche Events",
     "createEvent": "Lokales Event erstellen",
-    "startHangout": "Treffen starten",
-    "openPlace": "Lade an deinen Spot ein",
     "loadError": "Events konnten nicht geladen werden",
     "loadErrorSub": "Zieh nach unten, um es nochmal zu versuchen, oder starte was Neues in {{city}}.",
     "emptyLocalTitle": "Hol Leute an deinen Spot",
@@ -137,28 +93,16 @@
     "emptyLocalSub": "Bring Leben nach {{city}}. Starte ein wiederkehrendes Event an deinem Lieblingsort.",
     "emptySub": "Bring als Erstes was in {{city}} ins Rollen",
     "noEvents": "Gerade keine lokalen Events",
-    "noHangouts": "Noch keine Treffen",
-    "noEventsSub": "Erstell das erste in {{city}}",
-    "noHangoutsSub": "Starte ein Treffen und bring die Stadt zum Reden",
-    "filterAll": "Alle",
-    "seeComing": "Schau, was kommt",
-    "seeHappened": "schau, was los war",
-    "createNew": "Neu erstellen",
-    "hiNowHint": "jetzt treffen",
-    "hiLaterHint": "ein Event planen"
+    "noEventsSub": "Erstell das erste in {{city}}"
   },
   "header": {
     "online": "{{count}} in der Nähe",
     "liveNow": "jetzt live",
     "seeWhosHere": "Schau, wer da ist",
-    "onlineAria_one": "{{count}} Person in der Nähe, tippen, um zu sehen, wer",
-    "onlineAria_other": "{{count}} Leute in der Nähe, tippen, um zu sehen, wer",
     "notifications": "Benachrichtigungen",
     "messages": "Nachrichten",
     "shareCity": "Stadt teilen",
-    "switchCity": "Stadt wechseln",
-    "changeCity": "Stadt wechseln",
-    "currentWeather": "Aktuelles Wetter: {{label}}"
+    "switchCity": "Stadt wechseln"
   },
   "here": {
     "title": "Leute hier",
@@ -167,7 +111,6 @@
     "filterMode": "Modus",
     "you": "(du)",
     "hereNow": "Jetzt hier",
-    "noMatchLive": "Gerade passt niemand zu diesen Filtern.",
     "legends": "Hilads-Legenden",
     "legendsSub": "Sie bringen die Stadt zum Leben",
     "cityCrew": "Stadt-Crew",
@@ -176,7 +119,6 @@
     "messageAria": "{{name}} eine Nachricht senden"
   },
   "eventHeader": {
-    "yourEvent": "Dein Event",
     "edit": "Bearbeiten",
     "join": "Mitmachen",
     "joined": "Dabei",
@@ -193,26 +135,7 @@
     "firstHi": "Sag als Erstes hallo"
   },
   "create": {
-    "title": "Was geht?",
-    "hangoutTitle": "Treffen starten",
-    "hangoutSub": "Sofort - lass Leute jetzt gleich dazukommen",
-    "eventTitle": "Event erstellen",
-    "eventSub": "Plane etwas, bei dem andere mitmachen können",
-    "challengeTitle": "Challenge starten",
-    "challengeSub": "Locals & Reisende - lernt euch über eine Challenge kennen",
-    "challengePageTitle": "Challenge erstellen",
-    "challengeAudience": "Für wen?",
-    "challengeAudLocals": "Locals",
-    "challengeAudExplorers": "Reisende",
-    "challengeType": "Typ",
-    "challengeTypeFood": "Essen",
-    "challengeTypePlace": "Ort",
-    "challengeTypeCulture": "Kultur",
-    "challengeTypeHelp": "Verrückt",
-    "challengeTitleLabel": "Deine Challenge",
-    "challengeTitlePlaceholder": "z. B. Zeig mir dein verstecktes Lieblingscafé",
-    "challengeCta": "Challenge starten",
-    "challengeErrStart": "Challenge konnte nicht gestartet werden"
+    "title": "Was geht?"
   },
   "goingModal": {
     "going": "dabei",
@@ -286,9 +209,6 @@
     "challengeValidated": "Challenge geschafft! {{name}} hat „{{title}}“ bestätigt.",
     "challengeInternational": "{{fromFlag}} → {{toFlag}} Internationale Challenge: {{title}}"
   },
-  "replyPreview": {
-    "photo": "📷 Foto"
-  },
   "typing": {
     "one": "{{name}} schreibt…",
     "two": "{{a}} und {{b}} schreiben…",
@@ -305,29 +225,11 @@
     "sheetTitle": "Ankünfte",
     "empty": "Noch keine Ankünfte"
   },
-  "cityHero": {
-    "mainEmpty": "🌱 noch keine Challenges in {{city}}",
-    "subRanked": "Nimm deine nächste Challenge an →",
-    "subUnranked": "Nimm deine erste Challenge an und steig auf →",
-    "subTop": "Verteidige deinen Titel →",
-    "subEmpty": "Erstell die erste für Reisende →",
-    "members_one": "{{count}} Mitglied",
-    "members_other": "{{count}} Mitglieder",
-    "nearby": "{{count}} in der Nähe",
-    "recent": "{{count}} neu",
-    "mainUnranked_one": "🔥 {{count}} Challenge in {{city}}",
-    "mainUnranked_other": "🔥 {{count}} Challenges in {{city}}",
-    "mainRanked_one": "🔥 {{count}} Challenge · 🏆 #{{rank}} in {{city}}",
-    "mainRanked_other": "🔥 {{count}} Challenges · 🏆 #{{rank}} in {{city}}",
-    "mainTop_one": "🔥 {{count}} Challenge · 🏆 #1 in {{city}}",
-    "mainTop_other": "🔥 {{count}} Challenges · 🏆 #1 in {{city}}"
-  },
   "daily": {
     "kicker": "Daily Challenge",
     "localTwist": "Local Twist",
     "local": "Local",
     "traveler": "Reisende",
-    "ctaApp": "Spiel die Challenge in der App",
     "localPass": "Local Pass",
     "early": "Früh",
     "proposedBy": "Vorgeschlagen von {{name}}",

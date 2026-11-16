@@ -2,20 +2,8 @@
   "create": {
     "startTitle": "Hi now",
     "editTitle": "تعديل اللقاء",
-    "category": "الفئة",
-    "cat": {
-      "general": "عام",
-      "tips": "نصائح",
-      "food": "طعام",
-      "drinks": "مشروبات",
-      "help": "مساعدة",
-      "meetup": "لقاء"
-    },
     "titleLabel": "بماذا تفكر؟",
     "titlePlaceholder": "أريد أن أشرب قهوة",
-    "detailsLabel": "أضف تفاصيل",
-    "optional": "(اختياري)",
-    "detailsPlaceholder": "أضف بعض السياق…",
     "expiry": "ينتهي تلقائيًا بعد 8 س",
     "saving": "جارٍ الحفظ…",
     "starting": "جارٍ البدء…",
@@ -73,7 +61,6 @@
     "photo": "صورة",
     "unavailable": "الرسالة الأصلية غير متاحة"
   },
-  "composer": {},
   "errors": {
     "locFailed": "تعذّر الحصول على موقعك. فعّل الوصول إلى الموقع وحاول مرة أخرى.",
     "imageType": "اختر صورة بصيغة JPEG أو PNG أو WebP.",

@@ -43,7 +43,6 @@
     "view": "👀 {{name}} vừa xem hồ sơ của bạn",
     "other": "🔔 Có tin mới cho bạn nè",
     "dismiss": "Đóng",
-    "open": "Xem tin mới",
     "more_one": "Thêm {{count}}",
     "more_other": "Thêm {{count}}"
   },
@@ -67,7 +66,6 @@
     "read": "Đã đọc",
     "unread": "Chưa đọc",
     "delete": "Xóa",
-    "allRead": "Đã xem hết rồi ✨",
     "row": {
       "like": "{{names}} đã thả tim ảnh của bạn",
       "mention": "{{names}} nhắc tới bạn",

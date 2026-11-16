@@ -1,25 +1,16 @@
 {
   "world": {
     "tab": "World",
-    "banner_one": "{{count}} cross-city challenge live",
-    "banner_other": "{{count}} cross-city challenges live",
-    "online": "{{count}} online",
-    "cities_one": "{{count}} city",
-    "cities_other": "{{count}} cities",
     "sys": {
       "challengeCreated": "🔥 {{nickname}} launched a challenge {{cityA}} → {{cityB}}",
       "newUser": "🎉 {{nickname}} from {{city}} just joined Hilads",
       "challengeWon": "🏆 {{nickname}} from {{city}} won the challenge {{challenge}}"
     },
     "quietCard": "Quiet here? {{count}} unread in World - tap to open",
-    "heroEmpty": "Be the first to challenge a city",
-    "heroEmptySub": "Launch a cross-city challenge",
-    "leaderboard": "Leaderboard",
     "arrivals_one": "{{count}} arrival",
     "arrivals_other": "{{count}} arrivals",
     "arrivalsTitle": "Recent arrivals",
-    "arrivalsEmpty": "No recent arrivals",
-    "seeAll": "See all"
+    "arrivalsEmpty": "No recent arrivals"
   },
   "inspiration": {
     "heading": "Hangout ideas",
@@ -31,37 +22,7 @@
   },
   "guestGate": {
     "createAccount": "Create account",
-    "signIn": "Sign in",
-    "create_event": {
-      "pageTitle": "Create event",
-      "title": "Ghosts can browse, but can't host.",
-      "sub": "Create an account to throw your own event and put your city on the map."
-    },
-    "view_profile": {
-      "pageTitle": "Profile",
-      "title": "Ghosts can browse, but profiles are for members.",
-      "sub": "Create an account to unlock profiles, connect with people, and build your city crew."
-    },
-    "join_hangout": {
-      "pageTitle": "Join a hangout",
-      "title": "Ghosts can browse, but can't join hangouts.",
-      "sub": "Sign up to join hangouts, save your name, and get notified when people want to meet."
-    },
-    "create_hangout": {
-      "pageTitle": "Start a hangout",
-      "title": "Ghosts can browse, but can't host.",
-      "sub": "Sign up to start a hangout, save your name, and get people to join you."
-    },
-    "create_challenge": {
-      "pageTitle": "Launch a challenge",
-      "title": "Ghosts can browse, but can't challenge.",
-      "sub": "Sign up to launch a challenge for locals or travelers, and own its validation."
-    },
-    "accept_challenge": {
-      "pageTitle": "Accept a challenge",
-      "title": "Sign up to take this challenge",
-      "sub": "Takes 3 seconds. You'll come right back to the challenge."
-    }
+    "signIn": "Sign in"
   },
   "welcome": {
     "live": "{{city}} is live",
@@ -107,15 +68,12 @@
   "joiningDefault": "Joining the chat…",
   "tryAgain": "Try again",
   "feed": {
-    "hangoutTag": "Hangout",
-    "eventTag": "Event",
     "nowTag": "Now",
     "laterTag": "Plan",
     "hiNow": "Hi now",
     "hiLater": "Hi plan",
     "public": "Public",
     "activeNow": "Active now",
-    "repliesNew": "No replies yet - be the first",
     "sayHi": "Say hi to {{name}}",
     "sayHiGeneric": "Say hi",
     "hostWaiting": "Waiting for the first hi",
@@ -128,8 +86,6 @@
     "groupPublic": "Public Local Events",
     "groupPublicTicket": "Public Local Events",
     "createEvent": "Create Local Event",
-    "startHangout": "Start a hangout",
-    "openPlace": "Open your place",
     "loadError": "Couldn't load events",
     "loadErrorSub": "Pull to retry later or create something new in {{city}}.",
     "emptyLocalTitle": "Host your spot",
@@ -137,28 +93,16 @@
     "emptyLocalSub": "Make {{city}} feel alive. Start a recurring event at your favorite place.",
     "emptySub": "Be the first to make something happen in {{city}}",
     "noEvents": "No Local Events right now",
-    "noHangouts": "No hangouts yet",
-    "noEventsSub": "Be the first to create one in {{city}}",
-    "noHangoutsSub": "Start a hangout and get the city talking",
-    "filterAll": "All",
-    "seeComing": "See what's coming",
-    "seeHappened": "see what happened",
-    "createNew": "Create new",
-    "hiNowHint": "hang out now",
-    "hiLaterHint": "plan an event"
+    "noEventsSub": "Be the first to create one in {{city}}"
   },
   "header": {
     "online": "{{count}} nearby",
     "liveNow": "live now",
     "seeWhosHere": "See who's here",
-    "onlineAria_one": "{{count}} person nearby, tap to see who",
-    "onlineAria_other": "{{count}} people nearby, tap to see who",
     "notifications": "Notifications",
     "messages": "Messages",
     "shareCity": "Share city",
-    "switchCity": "Switch city",
-    "changeCity": "Change city",
-    "currentWeather": "Current weather: {{label}}"
+    "switchCity": "Switch city"
   },
   "here": {
     "title": "People here",
@@ -167,7 +111,6 @@
     "filterMode": "Mode",
     "you": "(you)",
     "hereNow": "Here now",
-    "noMatchLive": "Nobody matches these filters right now.",
     "legends": "Hilads Legends",
     "legendsSub": "They make the city happen",
     "cityCrew": "City crew",
@@ -176,7 +119,6 @@
     "messageAria": "Message {{name}}"
   },
   "eventHeader": {
-    "yourEvent": "Your event",
     "edit": "Edit",
     "join": "Join",
     "joined": "Joined",
@@ -193,26 +135,7 @@
     "firstHi": "Be the first to say hi"
   },
   "create": {
-    "title": "What's the move?",
-    "hangoutTitle": "Start a hangout",
-    "hangoutSub": "Instant - let people join you right now",
-    "eventTitle": "Create an event",
-    "eventSub": "Plan something others can join",
-    "challengeTitle": "Launch a challenge",
-    "challengeSub": "Locals & travelers - connect through a challenge",
-    "challengePageTitle": "Create a challenge",
-    "challengeAudience": "Who's it for?",
-    "challengeAudLocals": "Locals",
-    "challengeAudExplorers": "Travelers",
-    "challengeType": "Type",
-    "challengeTypeFood": "Food",
-    "challengeTypePlace": "Place",
-    "challengeTypeCulture": "Culture",
-    "challengeTypeHelp": "Crazy",
-    "challengeTitleLabel": "Your challenge",
-    "challengeTitlePlaceholder": "e.g. Bring me to your favorite hidden coffee spot",
-    "challengeCta": "Launch challenge",
-    "challengeErrStart": "Failed to launch challenge"
+    "title": "What's the move?"
   },
   "goingModal": {
     "going": "going",
@@ -286,9 +209,6 @@
     "challengeValidated": "Challenge done! {{name}} validated \"{{title}}\".",
     "challengeInternational": "{{fromFlag}} → {{toFlag}} International challenge: {{title}}"
   },
-  "replyPreview": {
-    "photo": "📷 Photo"
-  },
   "typing": {
     "one": "{{name}} is typing…",
     "two": "{{a}} and {{b}} are typing…",
@@ -305,29 +225,11 @@
     "sheetTitle": "Arrivals",
     "empty": "No arrivals yet"
   },
-  "cityHero": {
-    "mainEmpty": "🌱 no challenges yet in {{city}}",
-    "subRanked": "Tap to accept your next challenge →",
-    "subUnranked": "Accept your first challenge to start climbing →",
-    "subTop": "Defend your title →",
-    "subEmpty": "Create the first one for travelers to accept →",
-    "members_one": "{{count}} member",
-    "members_other": "{{count}} members",
-    "nearby": "{{count}} nearby",
-    "recent": "{{count}} recent",
-    "mainUnranked_one": "🔥 {{count}} challenge in {{city}}",
-    "mainUnranked_other": "🔥 {{count}} challenges in {{city}}",
-    "mainRanked_one": "🔥 {{count}} challenge · 🏆 #{{rank}} in {{city}}",
-    "mainRanked_other": "🔥 {{count}} challenges · 🏆 #{{rank}} in {{city}}",
-    "mainTop_one": "🔥 {{count}} challenge · 🏆 #1 in {{city}}",
-    "mainTop_other": "🔥 {{count}} challenges · 🏆 #1 in {{city}}"
-  },
   "daily": {
     "kicker": "Daily Challenge",
     "localTwist": "Local Twist",
     "local": "Local",
     "traveler": "Traveler",
-    "ctaApp": "Take the challenge in the app",
     "localPass": "Local Pass",
     "early": "Early",
     "proposedBy": "Proposed by {{name}}",

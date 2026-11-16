@@ -16,11 +16,7 @@
     "eventTitle": "Local Event: {{title}} | Hilads",
     "eventDesc": "Sumali sa {{title}} sa Hilads - isang Local Event na nangyayari ngayon. Tingnan kung sino'ng pupunta at makipag-live chat sa mga online."
   },
-  "nowTitle": "Ngayon",
   "filterEvents": "🎉 Local Events",
-  "hiLocalTitle": "Hi Local",
-  "filterHangouts": "🗣️ Tambayan",
-  "publicEventsSection": "🎫 Public Local Events",
   "accountWelcome": {
     "title": "Congrats, {{username}}!",
     "subtitle": "Ready na ang account mo. Eto ang puwede mong gawin ngayon",
@@ -32,68 +28,6 @@
     "fc1": "I-challenge ang locals sa city mo",
     "fc2": "I-challenge ang ibang city sa kabilang dulo ng mundo",
     "cta": "Tara na"
-  },
-  "onboarding": {
-    "skip": "Skip ✕",
-    "next": "Next",
-    "fallbackCity": "city mo",
-    "slide1": {
-      "title": "Laro lokal. Kumpara global.",
-      "body": "Ang Hilads ang app na ginagawang local ang mga biyahero - at tumutulong sa locals na i-share kung ano'ng nagpapabuhay sa city nila."
-    },
-    "slide2": {
-      "title": "Tatlong paraan para i-live ang city",
-      "itemChallenges": "🤝 Challenges - mag-dare o ma-dare na hanapin ang hidden spots, tikman ang totoong pagkain, mag-share ng kultura, o tumulong.",
-      "itemHangouts": "🗣️ Hi now - makipagkita agad-agad",
-      "itemEvents": "🎉 Hi plan - magplano ng oras para magkita"
-    },
-    "slide3": {
-      "title": "Kunin ang puwesto mo sa city",
-      "body": "Bawat challenge na natapos mo, bawat meet, bawat spot na nadiskubre mo, may points. Pinapakita ng points kung gaano ka na ka-local sa {{city}}. Abutin ang top ng Most Local at kunin ang puwesto mo kasama ng mga nagpapabuhay sa city."
-    },
-    "slide4": {
-      "title": "Ready ka na bang magsimula?",
-      "ctaChallenge": "📍 Gawin ang first challenge mo sa {{city}}",
-      "ctaMostLocal": "🤝 Tingnan ang Most Local ng {{city}}",
-      "ctaLookAround": "👀 Titingin-tingin muna",
-      "ctaHiNow": "🗣️ Hi now",
-      "ctaHiLater": "🎉 Hi plan"
-    }
-  },
-  "challengeIntro": {
-    "title": "Paano gumagana ang mga challenge",
-    "slide1": {
-      "title": "Ginagawang kwento ng challenges ang biyahe",
-      "body": "Nagda-dare-an ang locals at biyahero na i-share kung ano ang totoong city - pagkain, lugar, kultura, tulong. Ang reward? Magkita in person - o magpadala ng proof mula sa malayo."
-    },
-    "slide2": {
-      "title": "I-launch ang dare mo",
-      "body": "Pagkain, lugar, kultura o tulong. Piliin kung para kanino, ilang slot, at paano tatapusin - meetup o photo proof."
-    },
-    "slide3": {
-      "title": "May tumanggap",
-      "body": "Magse-send sila ng request. I-check mo at tanggapin - magbubukas ang private thread niyo para mag-chat at magplano."
-    },
-    "slide4": {
-      "title": "Magkita o mag-send ng proof",
-      "body": "Magkita in person o mag-send ng photo mula sa malayo - ikaw ang bahala. Kahit alin, naka-track ang bawat step."
-    },
-    "slide5": {
-      "title": "Tapusin na",
-      "body": "Pagkatapos ng meetup (o pagdating ng photo), i-mark as accomplished. Ang city mo, na-live nang totoo - isang challenge at a time."
-    },
-    "next": "Next",
-    "done": "Gets!",
-    "skip": "Skip ✕",
-    "slide6": {
-      "title": "Lampas sa city mo",
-      "body": "I-challenge ang kahit sino, kahit saan. Magse-send sila ng proof - geotagged na photo - at ikaw ang magva-validate mula sa malayo. Ganito rin ang photo flow sa local. Local man o global, bawat challenge may bilang."
-    },
-    "slide7": {
-      "title": "Maging Most Local",
-      "body": "Bawat challenge may points - sa city mo AT sa buong mundo. Magkita in person para sa dagdag na +50 bonus. Local man o biyahero, ang mahalaga ay kung ano'ng binubuo mo rito. Bagong leaderboard kada buwan."
-    },
-    "createCta": "🔥 Gumawa ng challenge"
   },
   "share": {
     "title": "Mag-share ng kahit ano",
@@ -211,7 +145,6 @@
   "settings": "Settings",
   "firstLaunch": "Laro lokal. Kumpara global.",
   "subtitles": {
-    "map": "Mga spot mula sa photos ng buong mundo.",
     "hi": "Mag-hi sa city mo. Sumali sa isang lakad.",
     "passport": "Ang mga city, photos at stamps mo."
   },
@@ -233,20 +166,9 @@
     "textPassportNoCity": "Ang Hilads passport ko. Iisang challenge. Iba-ibang mundo."
   },
   "represent": {
-    "empty": "Hindi pa naglalaro ang {{city}} ngayon. Ikaw na ang mauna.",
-    "beFirst": "Ikaw ang maunang maglaro para sa {{city}}",
-    "emptyThere": "Hindi pa naglalaro ang {{city}} ngayon.",
-    "notIn": "Wala ka sa {{city}}?",
-    "change": "Palitan",
     "locationNeeded": "Payagan ang location para maglaro para sa kung nasaan ka.",
-    "button": "Maglaro para sa {{city}}",
-    "firstPosted": "Nailagay mo ang {{city}} sa world map ngayon.",
     "pioneer": "Pioneer ng {{city}}",
     "spotOne": "Spot #1 sa {{city}}",
-    "streak_one": "{{count}} araw nang naglalaro ang {{city}}",
-    "streak_other": "{{count}} araw nang sunod-sunod naglalaro ang {{city}}",
-    "board_one": "{{count}} city na ang nasa board ngayon. Wala pa ang {{city}}.",
-    "board_other": "{{count}} cities na ang nasa board ngayon. Wala pa ang {{city}}.",
     "mapEmpty": "Wala pa sa world map ang {{city}}. Ilagay mo na.",
     "invite": "Mag-invite ng friend",
     "share": "Maglaro tayo para sa {{city}} sa Hilads.",
@@ -288,8 +210,7 @@
     "mainNav": "Main",
     "emojiPicker": "Pumili ng emoji",
     "cancelReply": "I-cancel ang reply",
-    "welcome": "Welcome",
-    "approve": "I-approve"
+    "welcome": "Welcome"
   },
   "tapToOpenMaps": "I-tap para buksan sa maps",
   "openInApp": {

@@ -1,5 +1,4 @@
 {
-  "pageTitle": "โปรไฟล์ของฉัน",
   "changePhoto": "เปลี่ยนรูปโปรไฟล์",
   "yourProfile": "โปรไฟล์ของคุณ",
   "mode": "โหมด",
@@ -77,31 +76,10 @@
     "story": "เรื่องเล่าของเมือง",
     "storyPlaceholder": "สิ่งที่คุณรักเกี่ยวกับเมืองนี้"
   },
-  "hangouts": {
-    "empty": "ยังไม่มีนัดเจอ เริ่มเลย 🗣️",
-    "host": "ผู้จัด"
-  },
-  "events": {
-    "going": "จะไป",
-    "goingEmpty": "ยังไม่มีแพลน หาอะไรทำกัน 🔥",
-    "hosting": "เป็นเจ้าภาพ",
-    "hostingEmpty": "ยังไม่ได้จัดอะไร เริ่มเลย ✨",
-    "live": "ไลฟ์",
-    "recurring": "↻ ประจำ",
-    "upcoming": "กำลังจะมาถึง",
-    "deleteEvent": "ลบกิจกรรม"
-  },
-  "friends": {
-    "requests": "คำขอเป็นเพื่อน",
-    "empty": "ยังไม่มีเพื่อน เพิ่มเพื่อนได้จากโปรไฟล์",
-    "mine": "เพื่อนของฉัน"
-  },
   "vibesTab": {
-    "received": "Vibes ที่ได้รับ",
     "score": "คะแนน vibe {{score}}",
     "basedOn_other": "จาก {{count}} vibes",
-    "empty": "ยังไม่มี vibes",
-    "emptyHint": "คะแนนของคุณจะแสดงที่นี่เมื่อมีคนฝากโน้ตให้คุณ ✨"
+    "empty": "ยังไม่มี vibes"
   },
   "save": {
     "uploading": "กำลังอัปโหลด…",
@@ -126,10 +104,6 @@
     "usernameInvalid": "ชื่อผู้ใช้ไม่ถูกต้อง",
     "saveFailed": "บันทึกไม่สำเร็จ ลองใหม่อีกครั้ง",
     "generic": "เกิดข้อผิดพลาด ลองใหม่อีกครั้ง"
-  },
-  "challenges": {
-    "empty": "ยังไม่มีชาเลนจ์ เปิดสักอันเลย 🔥",
-    "challenger": "ผู้ท้า"
   },
   "appearance": "การแสดงผล",
   "themeLight": "สว่าง",
@@ -164,11 +138,9 @@
       "inReview_other": "รอตรวจ {{count}}",
       "specialTitle": "แสตมป์พิเศษ",
       "specialSub": "รุ่นลิมิเต็ด วันพิเศษละหนึ่งดวง ไม่นับรวมใน Local Pass",
-      "compared_other": "เทียบกับ {{count}} ประเทศแล้ว",
       "stampsOf_other": "แสตมป์ {{count}}/{{total}}",
       "passEarned": "ได้รับที่ {{city}}",
       "passToGo_other": "อีก {{count}} ดวง",
-      "comparedCities_other": "เทียบกับ {{count}} เมืองแล้ว",
       "myPhotos": "รูปของฉัน",
       "noPhotos": "รูป Daily Challenge ของคุณจะขึ้นตรงนี้",
       "share": "แชร์พาสปอร์ตของฉัน",
