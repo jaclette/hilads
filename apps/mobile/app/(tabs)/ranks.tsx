@@ -63,11 +63,9 @@ function RanksContent() {
   useEffect(() => { if (params.focus === 'me') setFocusMe(true); }, [params.focus]);
   const [tab, setTab] = useState<RanksTab>('photos');
   const [period, setPeriod] = useState<RanksPeriod>('today');
-  // One scope control (UX audit): the header's pill (my city or World), World without a city. A
-  // deep link's scope (a push, Passport) applies here only, until the pill changes.
-  const { scope: appScope } = useScope();
-  const [scope, setScope] = useState<RanksScope>(appScope);
-  useEffect(() => { setScope(appScope); }, [appScope]);
+  // One scope control: the header's pill (my city or World), app-wide; a link's scope (a push, Passport) sets it too,
+  // so the pill always says what the ranking shows.
+  const { scope, setScope } = useScope();
   // Each response is kept with what it was asked for: a view only ever gets its own shape (switching
   // tabs, or a slow answer for the previous tab, used to hand Cities rows to the Players view).
   const [resp, setResp] = useState<{ key: string; data: PlayersRanks | CitiesRanks | PhotosRanks } | null>(null);
@@ -89,7 +87,7 @@ function RanksContent() {
     const pd = (['today', 'yesterday', 'week', 'alltime'] as RanksPeriod[]).find(x => x === params.period);
     if (pd) setPeriod(pd);
     if (params.scope === 'city' || params.scope === 'world') setScope(params.scope);
-  }, [params.tab, params.period, params.scope]);
+  }, [params.tab, params.period, params.scope, setScope]);
   useEffect(() => { if (!PERIODS[tab].includes(period)) setPeriod('today'); }, [tab]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const load = useCallback(async () => {
