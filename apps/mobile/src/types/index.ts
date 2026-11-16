@@ -169,7 +169,7 @@ export interface ChallengeThreadSummary {
 /** Backend error code shape on accept-failure 403s. */
 // `cap_reached` retired with the 1:1 model - still listed for back-compat
 // in case an older API build returns it. `in_progress` is the new code.
-export type AcceptFailureCode = 'not_creator' | 'mode_required' | 'mode_mismatch' | 'cap_reached' | 'in_progress' | 'completed';
+export type AcceptFailureCode = 'not_creator' | 'mode_required' | 'mode_mismatch' | 'cap_reached' | 'in_progress' | 'completed' | 'closed_to_new_joins' | 'legacy_retired';
 
 /** Leaderboard scope/period selectors mirrored from GET /api/v1/leaderboard.
  *  'cities' ranks cities themselves (sum of their members' points), not users. */
@@ -214,28 +214,6 @@ export interface LeaderboardResponse {
     rank:    number | null;
     points:  number;
   };
-}
-
-/** A single rate-eligible meet-up the caller has not rated yet - surfaced by
- *  GET /me/rate-prompts. The in-app banner on the threads screen reads off
- *  these; the rating sheet posts back to POST /challenges/:id/ratings. */
-export interface RatePrompt {
-  acceptance_id:   string;
-  challenge_id:    string;
-  challenge_title: string;
-  /** Caller's role for this prompt - matches the trigger's role mapping. */
-  role:            'challenger' | 'taker';
-  counterparty: {
-    id:             string;
-    displayName:    string;
-    thumbAvatarUrl: string | null;
-  };
-  /** Epoch seconds when the meet-up ended (or started, if no end set). May
-   *  be null for legacy 'approved' rows where no proposal was recorded. */
-  meetup_ended_at: number | null;
-  /** True iff the OTHER party has already rated. Lets the banner warm the
-   *  copy ("they're waiting on you") vs. a neutral nudge. */
-  other_rated:    boolean;
 }
 
 export interface Challenge {

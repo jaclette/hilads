@@ -54,9 +54,7 @@ export function ChallengeChannelMembersStrip({
       if (evtId === challenge.id) void load();
     };
     const offA = socket.on('challenge_accepted',             onChange);
-    const offC = socket.on('challenge_acceptance_cancelled', onChange);
-    const offL = socket.on('challenge_acceptor_left',        onChange);
-    return () => { offA(); offC(); offL(); };
+    return () => { offA(); };
   }, [challenge?.id, load]);
 
   // Preview: Challenger first, Taker second, then joined participants.

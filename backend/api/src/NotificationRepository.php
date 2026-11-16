@@ -334,26 +334,6 @@ class NotificationRepository
             // Cross-city heads-up - tap lands the user on the challenge so
             // they can decide whether to take it on.
             'challenge_international_target'  => isset($data['challengeId']) ? "/challenge/{$data['challengeId']}" : '/(tabs)/now',
-            // PR47 - mutual rating complete. Tap → channel; the
-            // ScoreCelebrationLaunchGate on app-open also surfaces the
-            // popin with the newly-earned debrief points.
-            'challenge_rated_complete'        => isset($data['challengeId']) ? "/challenge/{$data['challengeId']}" : '/notifications',
-            // FIRST rating landed → push the counterparty back to the
-            // challenge so the RatePromptLaunchGate can surface the
-            // RateSheet for the side that hasn't rated yet.
-            'rating_received'                 => isset($data['challengeId']) ? "/challenge/{$data['challengeId']}" : '/notifications',
-            // Date proposed - tap lands the recipient in the channel
-            // where the ScheduleBlock surfaces the Approve / Counter-
-            // propose buttons.
-            'challenge_date_proposed'         => isset($data['challengeId']) ? "/challenge/{$data['challengeId']}" : '/notifications',
-            // Taker left - creator taps through to their (now reopened) challenge.
-            'challenge_acceptor_left'         => isset($data['challengeId']) ? "/challenge/{$data['challengeId']}" : '/notifications',
-            // Creator restarted - removed taker taps through to the (reopened) challenge.
-            'challenge_restarted'             => isset($data['challengeId']) ? "/challenge/{$data['challengeId']}" : '/notifications',
-            // Date approved - same target as proposed; recipient lands
-            // in the channel to see "✅ Meet on …" + the celebration
-            // popin the SCG re-fires off the WS broadcast on entry.
-            'challenge_date_approved'         => isset($data['challengeId']) ? "/challenge/{$data['challengeId']}" : '/notifications',
             // New message in a challenge channel - fan-out to creator,
             // active takers, and explicit spectators. Tap lands in the
             // challenge chat just like an event message lands in the
@@ -365,7 +345,6 @@ class NotificationRepository
             'challenge_group_result_photo',
             'challenge_group_result_meet'     => isset($data['challengeId']) ? "/challenge/{$data['challengeId']}" : '/notifications',
             'challenge_group_join'            => isset($data['challengeId']) ? "/challenge/{$data['challengeId']}" : '/notifications',
-            'challenge_takeon_request'        => isset($data['challengeId']) ? "/challenge/{$data['challengeId']}" : '/notifications',
             default                           => '/',
         };
     }
@@ -391,10 +370,6 @@ class NotificationRepository
             'join_request_accepted'   => 'joinacc-'       . ($data['topicId'] ?? 'topic'),
             'admin_announcement'      => 'admin-'         . ($data['broadcastId'] ?? 'b'),
             'challenge_invitation'    => 'chinv-'         . ($data['invitationId'] ?? 'x'),
-            'challenge_rated_complete' => 'chrated-'      . ($data['challengeId'] ?? 'c'),
-            'rating_received'         => 'chrating-'     . ($data['challengeId'] ?? 'c'),
-            'challenge_date_proposed' => 'chdate-'       . ($data['challengeId'] ?? 'c'),
-            'challenge_date_approved' => 'chdateok-'     . ($data['challengeId'] ?? 'c'),
             // Tag per (challenge, conversation) so a burst of messages
             // collapses into one push group on the device (mirrors how
             // dm_message / event_message tag by their channel).
