@@ -17,7 +17,7 @@ import { trackLocalPassEarned } from '@/features/daily/localPassTracking';
 import { ThemeIcon } from '@/ui/ThemeIcon';
 import { CoverPhoto } from '@/ui/Photo';
 import { CoverScrim } from '@/ui/CoverScrim';
-import { FlagSticker, themeColor } from '@/ui/joy';
+import { themeColor } from '@/ui/joy';
 import { themeCover } from './covers';
 import { PulseButton, type PulseTone } from './PulseButton';
 import { HowItWorksSheet } from './HowItWorksSheet';
@@ -45,9 +45,8 @@ const FIRST_PROOF_KEY = 'hilads_daily_first_proof_done';
  * Today's Daily Challenge, the hero (SPEC 9.3, V3 polish): the cover photo
  * with the theme chip and the time left; the short headline and, under it, the
  * full ask; for a player who never played, the three steps (Snap it, Name it,
- * Compare); the live strip of the cities that played today (the same list as
- * the compare section under it: GET /daily/today/countries), which opens the
- * compare view; "Snap it for [city]" (straight to the camera), then "You played
+ * Compare) (the cities that played today are the block under it, not a strip
+ * here: UX audit 2026-11); "Snap it for [city]" (straight to the camera), then "You played
  * · See the world" once my photo is in. Tapping the photo opens the challenge.
  */
 export function TodayTicket({ data, countries, loading, error = false, secondsLeft, visible = true, onReload }: {
@@ -136,9 +135,8 @@ export function TodayTicket({ data, countries, loading, error = false, secondsLe
   };
   const placeTheme = isPlaceTheme(challenge.theme?.key);
   const cityShort = here?.name ? shortCityName(here.name) : null;
-  // Today's cities, the same list as the compare section: is mine in?
+  // Today's cities, the same list as the block under the hero (for the tracking).
   const cities = todayCities(countries);
-  const mineIn = !!myProof || (!!here && cities.some(c => c.city.id === here.id));
   // "Only in Saigon" in city scope, "Only here" in World; a special day's own name.
   const themeLabel = challenge.theme
     ? themeName(challenge.theme.key, { special: challenge.special, city: scope === 'city' ? city?.name : null })
@@ -225,8 +223,6 @@ export function TodayTicket({ data, countries, loading, error = false, secondsLe
           {!!ask && <Text style={styles.ask} numberOfLines={2}>{ask}</Text>}
         </View>
         {showSteps && <Steps compareType={challenge.compare?.type ?? null} price={!!challenge.compare?.priceLabel} />}
-        <LiveStrip cities={cities} mineIn={mineIn} city={cityShort} active={challenge.isActive}
-                   onPress={() => openCompare('hero_strip')} />
         {myProof ? (
           <>
             {myProof.status !== 'approved' && <DailyStatusChip status={myProof.status} />}
@@ -288,38 +284,6 @@ function Steps({ compareType, price }: { compareType: DailyCompareType | null; p
   );
 }
 
-/**
- * The live strip: the flags of the cities that played today (mine first) and
- * where my city stands ("2 cities in. Saigon isn't yet!", "3 cities in ·
- * Compare", "Be the first city in the world today"). Opens the compare view.
- */
-function LiveStrip({ cities, mineIn, city, active, onPress }: {
-  cities: ReturnType<typeof todayCities>; mineIn: boolean; city: string | null; active: boolean; onPress: () => void;
-}) {
-  const styles = useThemedStyles(makeStyles);
-  const { t } = useTranslation('daily');
-  const n = cities.length;
-  if (n === 0 && !active) return null;
-  const text = n === 0 ? t('hero.firstCity')
-    : mineIn ? `${t('hero.citiesIn', { count: n })} · ${t('compare.seeAnswers')}`
-    : city ? t('hero.citiesMissing', { count: n, city })
-    : t('hero.citiesIn', { count: n });
-  return (
-    <Pressable style={({ pressed }) => [styles.strip, pressed && styles.pressed]} onPress={onPress}
-               accessibilityRole="button" accessibilityLabel={text} hitSlop={4} testID="today-live-strip">
-      {n > 0 ? (
-        <View style={styles.flags}>
-          {cities.slice(0, 4).map((c, i) => (
-            <FlagSticker key={c.city.id} country={c.city.country} size={22} style={i > 0 ? styles.flagOverlap : undefined} />
-          ))}
-        </View>
-      ) : <Ionicons name="earth-outline" size={18} color="#FFFFFF" />}
-      <Text style={styles.stripText} numberOfLines={1}>{text}</Text>
-      <Ionicons name="chevron-forward" size={16} color="#FFFFFF" />
-    </Pressable>
-  );
-}
-
 // White on the photo: a soft shadow keeps 4.5:1 over the gradients (SPEC 9.3).
 // On the photo the button is white (or "sun orange"); the primary stays for small accents.
 const HERO_CTA_TONE: PulseTone = 'white';
@@ -343,12 +307,6 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   step:        { flexDirection: 'row', alignItems: 'center', gap: 5, paddingHorizontal: 9, paddingVertical: 5, borderRadius: 999,
                  backgroundColor: 'rgba(255,255,255,0.18)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.35)' },
   stepText:    { fontSize: 12, fontWeight: '800', color: '#FFFFFF' },
-  strip:       { flexDirection: 'row', alignItems: 'center', gap: 8, minHeight: 40, paddingLeft: 8, paddingRight: 10, paddingVertical: 6,
-                 borderRadius: 20, backgroundColor: 'rgba(0,0,0,0.5)', alignSelf: 'flex-start', maxWidth: '100%' },
-  pressed:     { opacity: 0.7 },
-  flags:       { flexDirection: 'row', alignItems: 'center' },
-  flagOverlap: { marginLeft: -7 },
-  stripText:   { flexShrink: 1, fontSize: 13, fontWeight: '700', color: '#FFFFFF' },
   ticket:      { backgroundColor: c.bg2, borderWidth: 1.5, borderColor: c.ticketLine, borderRadius: 22 },
   placeholder: { minHeight: 180, alignItems: 'center', justifyContent: 'center' },
   top:         { paddingHorizontal: 18, paddingTop: 14, paddingBottom: 12, gap: 8, zIndex: 2 },

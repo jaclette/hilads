@@ -1,5 +1,5 @@
 import { memo, useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
-import { ScrollView, Text, TouchableOpacity, View, StyleSheet } from 'react-native';
+import { Text, TouchableOpacity, View, StyleSheet } from 'react-native';
 import Animated, {
   interpolateColor, runOnJS, runOnUI, useAnimatedStyle, useSharedValue, withDelay, withSequence, withSpring, withTiming, type SharedValue,
 } from 'react-native-reanimated';
@@ -8,7 +8,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Haptics from 'expo-haptics';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import Svg, { Path } from 'react-native-svg';
 import { useTranslation } from 'react-i18next';
 import { FontSizes, Spacing, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
@@ -16,7 +15,7 @@ import { useApp } from '@/context/AppContext';
 import { fetchDailyProofsByIds, fetchDailyTour } from '@/api/daily';
 import { shortCityName } from '@/i18n/cityName';
 import { proofTitle, TITLE_FIT } from '@/features/compare/format';
-import { hasUnseen, isSeen, useSeen } from '@/features/daily/seen';
+import { hasUnseen, useSeen } from '@/features/daily/seen';
 import { seedProofs, useVoteState } from '@/features/daily/votes';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { useHere } from '@/hooks/useDaily';
@@ -30,19 +29,13 @@ import { FlagSticker, themeColor } from '@/ui/joy';
 import type { DailyCityGroup, DailyProof, DailyToday, DailyTodayCountries, DailyTour } from '@/types';
 import { todayCities } from './useTodayCountries';
 
-const CIRCLE = 64;
-const RING = 3;
-const MAX_SEGMENTS = 8;
+const MAX_SEGMENTS = 8;   // a pile's dots, at most
 const MOSAIC_MAX = 6;
 
 /**
- * "Same challenge. Different worlds." (V3 polish 2): today's photos by city,
- * right under the hero, from the hero's own list (useTodayCountries).
- * - The stories row, "[n] cities played today": one bubble per city (flag,
- *   name), its ring cut in one segment per photo (8 at most), in today's theme
- *   color while unseen, grey once seen, a count badge past one photo; my city,
- *   before I play, as a dashed "Saigon?" bubble that opens the camera. A
- *   bubble opens the story viewer at that city, the next cities following.
+ * Around the world today (Today's block 3; the stories row of rings went in the UX
+ * audit, 2026-11): today's photos by city, right under the hero, from the hero's
+ * own list (useTodayCountries), titled "[n] cities played today" with "See all".
  * - The mosaic: one card per city (its most liked photo), a polaroid pile
  *   behind it when the city has several photos (top right, clear of a selfie:
  *   "2 players", or "3 · 2 players" when someone posted twice), its answer
@@ -53,7 +46,6 @@ const MOSAIC_MAX = 6;
  */
 export function TodayCountries({ today, data }: { today: DailyToday | null; data: DailyTodayCountries | null }) {
   const styles = useThemedStyles(makeStyles);
-  const { colors } = useTheme();
   const { t } = useTranslation('daily');
   const router = useRouter();
   const { account, identity } = useApp();
@@ -85,72 +77,30 @@ export function TodayCountries({ today, data }: { today: DailyToday | null; data
   const canPlay = challenge.isActive && !myProof;
   const myCity = here?.name ? shortCityName(here.name) : null;
   const mineIn = !!here && cities.some(c => c.city.id === here.id);
-  // The server's order, kept fresh as photos get seen here: my city, then unseen, then the most recent.
-  const stories = [...cities].sort((a, b) =>
-    Number(b.city.id === here?.id) - Number(a.city.id === here?.id)
-    || Number(hasUnseen(b)) - Number(hasUnseen(a))
-    || b.latestAt - a.latestAt);
   // The mosaic: my city first, then the most liked.
   const cards = [...cities].sort((a, b) =>
     Number(b.city.id === here?.id) - Number(a.city.id === here?.id)
     || (b.totalLikes ?? b.top.voteCount) - (a.totalLikes ?? a.top.voteCount)
     || b.count - a.count).slice(0, MOSAIC_MAX);
   const theme = themeColor(challenge.special ? 'special' : challenge.theme?.key);
-  const ring = theme.line ?? theme.fill;
   const slot = canPlay && !mineIn;
 
   const play = () => {
     track('today_countries_play', { has_photos: cities.length > 0 });
     router.push((account ? '/daily/proof' : '/auth-gate?reason=daily_proof&returnTo=%2Fdaily%2Fproof') as never);
   };
-  const openCity = (g: DailyCityGroup, source: 'today_stories' | 'today_mosaic', photo?: string) => {
-    track(source === 'today_stories' ? 'today_countries_story' : 'today_countries_tile', { country: g.city.country, unseen: hasUnseen(g) });
-    router.push(`/daily/stories?city=${g.city.id}&source=${source}${photo ? `&photo=${photo}` : ''}` as never);
+  const openCity = (g: DailyCityGroup, photo?: string) => {
+    track('today_countries_tile', { country: g.city.country, unseen: hasUnseen(g) });
+    router.push(`/daily/stories?city=${g.city.id}&source=today_mosaic${photo ? `&photo=${photo}` : ''}` as never);
   };
-  openRef.current = (g, photo) => openCity(g, 'today_mosaic', photo);
+  openRef.current = (g, photo) => openCity(g, photo);
   const yesterday = (tour?.slides ?? []).slice().sort((a, b) => (a.podium ?? 99) - (b.podium ?? 99)).slice(0, 3);
 
   return (
     <View style={styles.wrap} testID="today-countries">
       {(cities.length > 0 || canPlay) && (
         <View style={styles.block}>
-          {cities.length > 0 && <SectionTitle small title={t(copy?.played ?? 'stories.played', { count: cities.length })} />}
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.row}>
-            {/* My city, before I play: "Saigon?" straight to the camera. */}
-            {slot && (
-              <TouchableOpacity style={styles.story} onPress={play} accessibilityRole="button" testID="country-story-mine"
-                                accessibilityLabel={t(copy?.represent ?? 'countries.represent')}>
-                <View style={[styles.ring, styles.dashed]}>
-                  <Ionicons name="add" size={28} color={colors.primaryText} />
-                </View>
-                <Text style={styles.storyName} numberOfLines={1}>{myCity ? t('stories.yourCity', { city: myCity }) : t('countries.yourCity')}</Text>
-              </TouchableOpacity>
-            )}
-            {stories.map(g => {
-              const unseen = hasUnseen(g);
-              return (
-                <TouchableOpacity key={g.city.id} style={styles.story} onPress={() => openCity(g, 'today_stories')} onPressIn={() => prefetchProof(g.top)} accessibilityRole="button"
-                                  testID="country-story" accessibilityLabel={t('countries.openCountry', { city: shortCityName(g.city.name) })}>
-                  <View style={styles.ringBox}>
-                    <SegmentRing ids={g.ids} color={ring} seenColor={colors.line} />
-                    <View style={styles.inner}><FlagSticker country={g.city.country} size={CIRCLE - 22} /></View>
-                    {g.count > 1 && (
-                      <View style={[styles.countBadge, { backgroundColor: theme.fill }]}>
-                        <Text style={[styles.countText, { color: theme.onFill }]}>{g.count}</Text>
-                      </View>
-                    )}
-                  </View>
-                  <Text style={[styles.storyName, !unseen && styles.storySeen]} numberOfLines={1}>{shortCityName(g.city.name)}</Text>
-                </TouchableOpacity>
-              );
-            })}
-          </ScrollView>
-        </View>
-      )}
-
-      {(cities.length > 0 || canPlay) && (
-        <View style={styles.block}>
-          <SectionTitle small title={t('worlds.tagline')}
+          <SectionTitle small title={cities.length > 0 ? t(copy?.played ?? 'stories.played', { count: cities.length }) : t('worlds.tagline')}
                         action={cities.length > 0 ? { label: t('today.seeAll'), onPress: () => router.push('/daily/countries?source=today_mosaic' as never) } : undefined} />
           {/* My city's slot (V6): a compact call above the grid, not a big empty card in it. */}
           {slot && <SlotCard city={myCity} first={cities.length === 0} label={copy?.represent} onPress={play} />}
@@ -169,35 +119,6 @@ export function TodayCountries({ today, data }: { today: DailyToday | null; data
         </View>
       )}
     </View>
-  );
-}
-
-/** A story ring cut in one segment per photo: theme color while unseen, grey once seen. */
-function SegmentRing({ ids, color, seenColor }: { ids: string[]; color: string; seenColor: string }) {
-  const n = Math.min(ids.length, MAX_SEGMENTS);
-  const r = (CIRCLE - RING) / 2;
-  const c = CIRCLE / 2;
-  const gap = n > 1 ? 10 : 0;   // degrees between segments
-  const arc = (from: number, to: number) => {
-    const p = (deg: number) => {
-      const rad = ((deg - 90) * Math.PI) / 180;
-      return `${c + r * Math.cos(rad)} ${c + r * Math.sin(rad)}`;
-    };
-    return `M ${p(from)} A ${r} ${r} 0 ${to - from > 180 ? 1 : 0} 1 ${p(to)}`;
-  };
-  if (n <= 1) {
-    return (
-      <View style={[StyleSheet.absoluteFill, { borderRadius: CIRCLE / 2, borderWidth: RING, borderColor: isSeen(ids[0] ?? '') ? seenColor : color }]} />
-    );
-  }
-  const step = 360 / n;
-  return (
-    <Svg width={CIRCLE} height={CIRCLE} style={StyleSheet.absoluteFill}>
-      {ids.slice(0, n).map((id, i) => (
-        <Path key={id} d={arc(i * step + gap / 2, (i + 1) * step - gap / 2)} stroke={isSeen(id) ? seenColor : color}
-              strokeWidth={RING} strokeLinecap="round" fill="none" />
-      ))}
-    </Svg>
   );
 }
 
@@ -539,17 +460,6 @@ function SlotCard({ city, first, label, onPress }: { city: string | null; first:
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
   wrap:      { gap: 14 },
   block:     { gap: 8 },
-  row:       { gap: 14, paddingVertical: 4, paddingRight: 4 },
-  story:     { width: CIRCLE + 8, alignItems: 'center', gap: 6 },
-  ringBox:   { width: CIRCLE, height: CIRCLE, alignItems: 'center', justifyContent: 'center' },
-  ring:      { width: CIRCLE, height: CIRCLE, borderRadius: CIRCLE / 2, borderWidth: RING, alignItems: 'center', justifyContent: 'center' },
-  inner:     { width: CIRCLE - 10, height: CIRCLE - 10, borderRadius: (CIRCLE - 10) / 2, backgroundColor: c.bg2, alignItems: 'center', justifyContent: 'center' },
-  dashed:    { borderStyle: 'dashed', borderColor: c.primaryText, borderWidth: 2, backgroundColor: c.primaryTint },
-  countBadge: { position: 'absolute', right: -2, bottom: -2, minWidth: 22, height: 22, borderRadius: 11, paddingHorizontal: 5,
-                alignItems: 'center', justifyContent: 'center', borderWidth: 2, borderColor: c.bg },
-  countText: { fontSize: 11, fontWeight: '800' },
-  storyName: { fontSize: 12, fontWeight: '700', color: c.text, maxWidth: CIRCLE + 8 },
-  storySeen: { color: c.muted },
   grid:      { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', rowGap: 16, paddingTop: 4 },
   cardWrap:  { width: '48.5%' },
   faded:     { opacity: 0.92 },   // yesterday's cards stay readable (V6: 0.55 read washed out)

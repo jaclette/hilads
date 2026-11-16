@@ -181,6 +181,13 @@ export function TodayWeek({ today }: { today: DailyToday | null }) {
                    }} />
         </RowGroup>
       )}
+      {/* Every past challenge (was under yesterday's card, now off Today). */}
+      <TouchableOpacity style={styles.archive} onPress={() => router.push('/daily/archive?source=today_week' as never)}
+                        accessibilityRole="button" hitSlop={6} testID="today-archive">
+        <Ionicons name="calendar-outline" size={16} color={colors.primaryText} />
+        <Text style={styles.archiveText}>{t('today.allPast')}</Text>
+        <Ionicons name="chevron-forward" size={15} color={colors.primaryText} />
+      </TouchableOpacity>
     </View>
   );
 }
@@ -223,6 +230,8 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   streak:       { minHeight: 32, justifyContent: 'center' },
   streakInner:  { flexDirection: 'row', alignItems: 'center', gap: 6 },
   tomorrowRow:  { flexDirection: 'row', alignItems: 'center', gap: 5, flexShrink: 1 },
+  archive:      { flexDirection: 'row', alignItems: 'center', gap: 6, minHeight: 28 },
+  archiveText:  { flex: 1, fontSize: 14, fontWeight: '700', color: c.primaryText },
   risk:         { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 10, paddingVertical: 8, borderRadius: 12, backgroundColor: c.primaryTint },
   riskText:     { flexShrink: 1, fontSize: 13, fontWeight: '700', color: c.primaryOnTint },
   streakText:   { fontSize: 15, fontWeight: '800', color: c.text },

@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { fetchDailyBoard, fetchDailyCalendar, fetchDailySheet, fetchDailyToday } from '../../api'
-import ProposeCard from './ProposeCard'
 import { shortCityName } from '../../i18n/cityName'
 import { track } from '../../lib/analytics'
 import { shareLink } from '../../lib/shareLink'
@@ -9,17 +8,16 @@ import { deviceStore, themeName } from '../map/spotsShared'
 import { openAppModal } from '../AppModal'
 import { themeIcon } from '../../lib/icons'
 import Icon from '../Icon'
-import { IndexCarousel } from '../daily/Comparisons'
 import WhileAwayCard from '../notifications/WhileAwayCard'
-import { ResultsCard, TodayRace } from '../ranks/TodayRace'
-import TodayCountries, { YesterdayRecap, todayCities, useTodayCountries } from './TodayCountries'
+import { ResultsCard } from '../ranks/ResultsCard'
+import TodayCountries, { todayCities, useTodayCountries } from './TodayCountries'
 import {
   challengeCover, useDaily, useDc, useCountdown, formatCountdown, isFinalHours, seedProofs, seedVotesLeft, StatusChip, setLastHere, setLastToday, useOriginal,
 } from '../daily/dailyShared'
 import { ymd } from '../daily/CalendarScreen'
 import { coverImage } from '../../lib/imageThumb'
 import { thumbFallback } from '../../lib/thumbFallback'
-import { FlagSticker, Wordmark, themeColor } from '../joy/Joy'
+import { Wordmark, themeColor } from '../joy/Joy'
 import { SeasonalDayIcon, SeasonalHeroDecor, SeasonalTeaser, isEventDay, setSeasonalEvent, useSeasonal, useSeasonalAttr, useSeasonalLive } from '../event/seasonal'
 
 const ROW = { display: 'inline-flex', alignItems: 'center', gap: 6 }
@@ -84,7 +82,7 @@ export default function TodayScreen({ header }) {
       .finally(() => { if (alive) setLoading(false) })
     return () => { alive = false }
   }, [cityId, i18n.language, hereKey, hereVersion]) // eslint-disable-line react-hooks/exhaustive-deps
-  // Today's cities, one list for the hero's live strip and the compare section.
+  // Today's cities (the hero knows whether my city is in; block 3 shows them).
   const countries = useTodayCountries(data)
 
   return (
@@ -92,25 +90,17 @@ export default function TodayScreen({ header }) {
       {/* The header, fixed: the logo row, then the brand line (stays visible while scrolling). */}
       <div className="tab-app-header">{header}<BrandLine /></div>
       <div className="page-body today-body">
-        {/* V6: unseen comments, likes and results since the last visit. */}
+        {/* Since you were away (one card at a time): unseen comments, likes and results, else
+            yesterday's unread results on their own (never over the hero). */}
         <WhileAwayCard account={account} />
-        {/* V6: yesterday's results, here when the away card doesn't carry them (never over the hero). */}
         <ResultsCard account={account} />
         <Ticket data={data} countries={countries} loading={loading} />
         {/* A seasonal event's countdown (teaser days). */}
         <SeasonalTeaser />
-        {/* Today's photos by country: the stories row and the mosaic (players' photos only). */}
+        {/* Around the world today: one card per city (the mosaic), "See all"; yesterday's best on an empty day. */}
         <TodayCountries today={data} data={countries} />
-        {/* V6: the city race of the day, live. */}
-        <TodayRace />
-        {/* Your week: the streak, tomorrow's theme and the week strip. */}
+        {/* Your week: the streak, tomorrow's theme, the week strip and every past challenge. */}
         <Week today={data} />
-        {/* Yesterday's recap (the winning photo, the question, how many cities played) and every past challenge. */}
-        <YesterdayRecap today={data} />
-        {/* The world, compared (SPEC 10.9): last week's comparisons, every day. */}
-        <IndexCarousel />
-        {/* Not while today's challenge is loading or can't be reached (a dead end under a missing today). */}
-        {data && <ProposeCard />}
       </div>
     </div>
   )
@@ -174,9 +164,8 @@ function usePulseVisible(el) {
  * Today's Daily Challenge, the hero (SPEC 9.3, V3 polish, the app's
  * TodayTicket): the cover photo with the theme chip and the time left; the
  * short headline and, under it, the full ask; for a player who never played,
- * the three steps (Snap it, Name it, Compare); the live strip of the cities
- * that played today (the same list as the compare section under it: GET
- * /daily/today/countries), which opens the compare view; "Snap it for [city]"
+ * the three steps (Snap it, Name it, Compare) (the cities that played today
+ * are the block under it, not a strip here: UX audit 2026-11); "Snap it for [city]"
  * (the web opens the app modal: photos are posted from the app), then "You
  * played · See the world" once my photo is in. Tapping the photo opens the challenge.
  */
@@ -217,9 +206,8 @@ function Ticket({ data, countries, loading }) {
   // Where I am (never the browsed city): the button's city.
   const here = data.here ?? null
   const cityShort = here?.name ? shortCityName(here.name) : null
-  // Today's cities, the same list as the compare section: is mine in?
+  // Today's cities, the same list as the block under the hero (for the tracking).
   const cities = todayCities(countries)
-  const mineIn = !!myProof || (!!here && cities.some(c => String(c.city.id) === String(here.id)))
   // The compare view: every city's photos, side by side (the same as the compare section's "See all").
   const openCompare = (source) => {
     track('world_teaser_tapped', { cities: cities.length, source, platform_surface: 'web' })
@@ -266,8 +254,6 @@ function Ticket({ data, countries, loading }) {
           {!!ask && <p className="today-hero-ask">{ask}</p>}
         </div>
         {showSteps && <Steps compareType={challenge.compare?.type ?? null} price={!!challenge.compare?.priceLabel} />}
-        <LiveStrip cities={cities} mineIn={mineIn} city={cityShort} active={challenge.isActive}
-                   onClick={(e) => { e.stopPropagation(); openCompare('hero_strip') }} />
         {myProof ? (
           <>
             {myProof.status !== 'approved' && <StatusChip status={myProof.status} />}
@@ -314,32 +300,6 @@ function Steps({ compareType, price }) {
         </span>
       ))}
     </p>
-  )
-}
-
-/**
- * The live strip: the flags of the cities that played today (mine first) and
- * where my city stands ("2 cities in. Saigon isn't yet!", "3 cities in ·
- * Compare", "Be the first city in the world today"). Opens the compare view.
- */
-function LiveStrip({ cities, mineIn, city, active, onClick }) {
-  const { t } = useDc()
-  const n = cities.length
-  if (n === 0 && !active) return null
-  const text = n === 0 ? t('hero.firstCity')
-    : mineIn ? `${t('hero.citiesIn', { count: n })} · ${t('compare.seeAnswers')}`
-    : city ? t('hero.citiesMissing', { count: n, city })
-    : t('hero.citiesIn', { count: n })
-  return (
-    <button type="button" className="today-strip" onClick={onClick} aria-label={text}>
-      {n > 0 ? (
-        <span className="today-strip-flags" aria-hidden="true">
-          {cities.slice(0, 4).map(c => <FlagSticker key={c.city.id} country={c.city.country} size={22} />)}
-        </span>
-      ) : <Icon name="earth-outline" size={18} />}
-      <span className="today-strip-text">{text}</span>
-      <Icon name="chevron-forward" size={16} />
-    </button>
   )
 }
 
@@ -467,6 +427,10 @@ function Week({ today }) {
                    }} />
         </div>
       )}
+      {/* Every past challenge (was under yesterday's card, now off Today). */}
+      <button type="button" className="tc-archive" onClick={() => openDaily('archive', { source: 'today_week' })}>
+        <Icon name="calendar-outline" size={16} /><span className="tc-archive-text">{t('today.allPast')}</span><Icon name="chevron-forward" size={15} />
+      </button>
     </div>
   )
 }

@@ -11,6 +11,7 @@ import i18n from '../../i18n'
 import Icon from '../Icon'
 import { themeIcon } from '../../lib/icons'
 import { Confetti, FitText, MEDAL, Movement, Podium, RaceBar, RankRow, ScopeToggle, YouBar } from './parts'
+import { IndexCarousel } from '../daily/Comparisons'
 
 const PERIODS = { photos: ['today', 'yesterday', 'week', 'alltime'], players: ['today', 'week', 'alltime'], cities: ['today', 'week', 'alltime'] }
 const GOLD = themeColor('sip')
@@ -313,6 +314,8 @@ function Cities({ data, failed, period, myCityId, ghost }) {
                    extra={<RaceBar ratio={e.photos / Math.max(1, leader)} color={e.city.id === myCityId ? 'var(--cta)' : GOLD.fill} delay={Math.min(i, 8) * 60} />} />
         ))}
       </div>
+      {/* How the cities answered (the Hilads Index): its home, under the city ranking. */}
+      <div className="r6-index"><IndexCarousel alwaysLink source="ranks" /></div>
       {mine && (
         <YouBar text={mine.rank === 1 ? t('ranks.city.lineTop', { city: name(mine.city) })
           : t('ranks.city.youBar', { city: name(mine.city), rank: mine.rank, count: mine.gap ?? 1, next: mine.next ? shortCityName(mine.next.name) : '' })}
