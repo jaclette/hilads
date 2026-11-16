@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import {
   Modal, View, Text, TextInput, TouchableOpacity, Pressable, StyleSheet,
-  ActivityIndicator, Alert,
+  Alert,
 } from 'react-native';
 import { Image } from 'expo-image';
 import { Ionicons } from '@expo/vector-icons';
@@ -12,6 +12,7 @@ import { avatarColor } from '@/lib/avatarColors';
 import { Border, FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import type { RatePrompt } from '@/types';
+import { Button } from '@/ui/Button';
 import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 
 const COMMENT_MAX = 500;
@@ -139,16 +140,7 @@ export function RateSheet({ prompt, visible, onClose, onSubmitted }: Props) {
             )}
           </View>
 
-          <TouchableOpacity
-            style={[styles.submit, !canSubmit && styles.submitDisabled]}
-            disabled={!canSubmit}
-            onPress={handleSubmit}
-            activeOpacity={0.85}
-          >
-            {busy
-              ? <ActivityIndicator color={colors.white} size="small" />
-              : <Text style={styles.submitText}>{t('ratePrompts.sheet.submit')}</Text>}
-          </TouchableOpacity>
+          <Button label={t('ratePrompts.sheet.submit')} onPress={handleSubmit} loading={busy} disabled={!canSubmit && !busy} />
 
           <TouchableOpacity style={styles.skip} onPress={busy ? undefined : onClose} activeOpacity={0.7}>
             <Text style={styles.skipText}>{t('ratePrompts.sheet.later')}</Text>
@@ -198,14 +190,6 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   },
   charCount: { alignSelf: 'flex-end', marginTop: 4, fontSize: FontSizes.xs, color: c.mutedDim },
 
-  submit: {
-    backgroundColor: c.primary,
-    borderRadius: Radius.full,
-    paddingVertical: Spacing.md,
-    alignItems: 'center',
-  },
-  submitDisabled: { opacity: 0.4 },
-  submitText: { color: c.white, fontSize: FontSizes.md, fontWeight: '800' },
 
   skip:     { paddingVertical: Spacing.sm, alignItems: 'center', marginTop: 4 },
   skipText: { color: c.muted, fontSize: FontSizes.sm, fontWeight: '600' },

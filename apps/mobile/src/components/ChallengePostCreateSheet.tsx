@@ -105,12 +105,12 @@ function SeedView({
       <Text style={styles.subtitle}>{t('postCreate.subtitle')}</Text>
 
       <TouchableOpacity style={styles.ctaPrimary} onPress={onPickPeople} activeOpacity={0.85}>
-        <Ionicons name="people" size={20} color={colors.white} />
+        <Ionicons name="people" size={20} color={colors.onCta} />
         <View style={{ flex: 1 }}>
           <Text style={styles.ctaPrimaryText}>{t('postCreate.ctaInvite', { city })}</Text>
           <Text style={styles.ctaPrimarySub}>{t('postCreate.ctaInviteSub', { audience: audienceLabel })}</Text>
         </View>
-        <Ionicons name="chevron-forward" size={18} color={colors.onCaramelMuted} />
+        <Ionicons name="chevron-forward" size={18} color={colors.onCta} />
       </TouchableOpacity>
 
       <TouchableOpacity style={styles.ctaSecondary} onPress={onShare} activeOpacity={0.85}>
@@ -304,7 +304,7 @@ function PickerView({
         activeOpacity={0.85}
       >
         {sending
-          ? <ActivityIndicator color={colors.white} size="small" />
+          ? <ActivityIndicator color={colors.onCta} size="small" />
           : (
             <Text style={styles.sendBtnText}>
               {selected.size === 0
@@ -340,13 +340,13 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   // ── Seed view CTAs ─────────────────────────────────────────────────────────
   ctaPrimary: {
     flexDirection: 'row', alignItems: 'center', gap: 12,
-    backgroundColor: c.primary,
-    paddingVertical: Spacing.md, paddingHorizontal: Spacing.md,
-    borderRadius: Radius.lg,
+    backgroundColor: c.cta,
+    minHeight: 48, paddingVertical: Spacing.sm, paddingHorizontal: Spacing.md,
+    borderRadius: Radius.button,
     marginTop: Spacing.xs,
   },
-  ctaPrimaryText: { color: c.white, fontSize: FontSizes.md, fontWeight: '800' },
-  ctaPrimarySub:  { color: c.onCaramelMuted, fontSize: FontSizes.xs + 1, marginTop: 2 },
+  ctaPrimaryText: { color: c.onCta, fontSize: FontSizes.md, fontWeight: '800' },
+  ctaPrimarySub:  { color: c.onCta, opacity: 0.75, fontSize: FontSizes.xs + 1, marginTop: 2 },
 
   ctaSecondary: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10,
@@ -396,11 +396,11 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
 
   sendBtn: {
     marginTop: Spacing.sm,
-    backgroundColor: c.primary,
-    borderRadius: Radius.full,
-    paddingVertical: Spacing.md,
-    alignItems: 'center',
+    backgroundColor: c.cta,
+    borderRadius: Radius.button,
+    minHeight: 48, paddingHorizontal: 16,
+    alignItems: 'center', justifyContent: 'center',
   },
-  sendBtnDisabled: { opacity: 0.4 },
-  sendBtnText: { color: c.white, fontSize: FontSizes.md, fontWeight: '800' },
+  sendBtnDisabled: { opacity: 0.5 },
+  sendBtnText: { color: c.onCta, fontSize: FontSizes.md, fontWeight: '800' },
 });

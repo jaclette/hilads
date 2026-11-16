@@ -12,6 +12,7 @@ import { fetchPlaceSuggestions, type PlaceSuggestion } from '@/lib/placeSuggesti
 import { distance } from '@/features/today/format';
 import type { DailyThemeKey, NearbyPlace } from '@/types';
 import { KeyboardForm } from '@/ui/keyboard';
+import { Button } from '@/ui/Button';
 
 /** Above this, the position is flagged as approximate (the check allows 150 m). */
 const APPROX_M = 100;
@@ -103,9 +104,7 @@ export function PlaceStep({ theme, onPicked }: {
         <View style={styles.icon}><Ionicons name="location-outline" size={30} color={colors.primaryOnTint} /></View>
         <Text style={styles.title}>{t('place.title')}</Text>
         <Text style={styles.body}>{t('place.why')}</Text>
-        <TouchableOpacity style={styles.cta} onPress={locate} accessibilityRole="button">
-          <Text style={styles.ctaText}>{t('place.find')}</Text>
-        </TouchableOpacity>
+        <Button label={t('place.find')} onPress={locate} style={styles.cta} />
       </View>
     );
   }
@@ -119,13 +118,9 @@ export function PlaceStep({ theme, onPicked }: {
         <Text style={styles.title}>{phase === 'denied' ? t('place.deniedTitle') : t('place.failedTitle')}</Text>
         <Text style={styles.body}>{phase === 'denied' ? t('place.deniedBody') : t('place.failedBody')}</Text>
         {settings && (
-          <TouchableOpacity style={styles.cta} onPress={() => Linking.openSettings().catch(() => {})} accessibilityRole="button">
-            <Text style={styles.ctaText}>{t('place.openSettings')}</Text>
-          </TouchableOpacity>
+          <Button label={t('place.openSettings')} onPress={() => Linking.openSettings().catch(() => {})} style={styles.cta} />
         )}
-        <TouchableOpacity style={[styles.cta, settings && styles.secondary]} onPress={locate} accessibilityRole="button">
-          <Text style={[styles.ctaText, settings && styles.secondaryText]}>{t('place.retry')}</Text>
-        </TouchableOpacity>
+        <Button label={t('place.retry')} variant={settings ? 'secondary' : 'primary'} onPress={locate} style={styles.cta} />
       </View>
     );
   }
@@ -135,10 +130,7 @@ export function PlaceStep({ theme, onPicked }: {
   return (
     // The new place's name stays in sight above the keyboard, its button rides on top of it.
     <KeyboardForm contentContainerStyle={styles.list} footerStyle={styles.footer} footer={phase === 'new' ? (
-      <TouchableOpacity style={[styles.cta, name.trim() === '' && styles.off]} onPress={pickNew} disabled={name.trim() === ''}
-                        accessibilityRole="button" testID="place-use-new">
-        <Text style={styles.ctaText}>{t('place.useNew')}</Text>
-      </TouchableOpacity>
+      <Button label={t('place.useNew')} onPress={pickNew} disabled={name.trim() === ''} testID="place-use-new" />
     ) : undefined}>
       <Text style={styles.title}>{t('place.title')}</Text>
       {approximate && (
@@ -237,11 +229,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   icon:          { width: 64, height: 64, borderRadius: Radius.full, backgroundColor: c.primaryTint, alignItems: 'center', justifyContent: 'center' },
   title:         { fontSize: FontSizes.lg, fontWeight: '800', color: c.text, textAlign: 'center' },
   body:          { fontSize: FontSizes.sm, color: c.muted, textAlign: 'center' },
-  cta:           { alignSelf: 'stretch', minHeight: 48, borderRadius: 16, backgroundColor: c.primary, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 16 },
-  ctaText:       { color: c.white, fontSize: FontSizes.md, fontWeight: '700' },
-  secondary:     { backgroundColor: c.bg2, borderWidth: 1.5, borderColor: c.line },
-  secondaryText: { color: c.text },
-  off:           { opacity: 0.45 },
+  cta:           { alignSelf: 'stretch' },
   list:          { padding: Spacing.md, gap: 10, paddingBottom: Spacing.xl },
   footer:        { padding: Spacing.md, borderTopWidth: 1, borderTopColor: c.line, backgroundColor: c.bg },
   warn:          { flexDirection: 'row', alignItems: 'center', gap: 8, padding: 10, borderRadius: 14, backgroundColor: c.bg2, borderWidth: 1.5, borderColor: c.line },

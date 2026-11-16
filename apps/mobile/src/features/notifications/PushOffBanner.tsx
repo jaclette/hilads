@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles } from '@/context/ThemeContext';
 import { hasPushPermission } from '@/services/push';
+import { Button } from '@/ui/Button';
 
 const DISMISSED_KEY = 'hilads_push_off_banner_dismissed';
 
@@ -35,9 +36,7 @@ export function PushOffBanner() {
         <Pressable onPress={() => { setDismissed(true); AsyncStorage.setItem(DISMISSED_KEY, '1').catch(() => {}); }} hitSlop={8} accessibilityRole="button">
           <Text style={styles.later}>{t('inbox.pushOff.dismiss')}</Text>
         </Pressable>
-        <Pressable onPress={() => Linking.openSettings().catch(() => {})} style={styles.on} accessibilityRole="button">
-          <Text style={styles.onText}>{t('inbox.pushOff.on')}</Text>
-        </Pressable>
+        <Button size="sm" label={t('inbox.pushOff.on')} onPress={() => Linking.openSettings().catch(() => {})} />
       </View>
     </View>
   );
@@ -48,6 +47,4 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   text:    { fontSize: 14, lineHeight: 19, fontWeight: '700', color: c.text },
   actions: { flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center', gap: 16 },
   later:   { fontSize: 14, fontWeight: '700', color: c.muted },
-  on:      { paddingHorizontal: 16, height: 36, borderRadius: Radius.full, backgroundColor: c.cta, alignItems: 'center', justifyContent: 'center' },
-  onText:  { fontSize: 14, fontWeight: '800', color: c.onCta },
 });

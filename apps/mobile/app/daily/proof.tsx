@@ -654,18 +654,13 @@ function DailyProofScreenContent() {
           <View style={styles.icon}><Ionicons name="camera-outline" size={32} color={colors.primaryOnTint} /></View>
           <Text style={styles.stepTitle}>{t('proof.takeTitle')}</Text>
           {placeName && <Text style={styles.muted}>{t('place.at', { name: placeName })}</Text>}
-          <TouchableOpacity style={styles.cta} onPress={takePhoto} accessibilityRole="button">
-            <Ionicons name="camera" size={20} color={colors.white} />
-            <Text style={styles.ctaText}>{t('proof.camera')}</Text>
-          </TouchableOpacity>
+          <Button label={t('proof.camera')} icon="camera" onPress={takePhoto} style={styles.cta} />
         </View>
       ) : (
         <KeyboardForm contentContainerStyle={styles.body} footer={(
             <View style={styles.footer}>
-              <TouchableOpacity style={[styles.submit, (!photo || sending) && styles.submitOff]} onPress={afterDetails} disabled={sending} accessibilityRole="button">
-                {sending ? <ActivityIndicator color={colors.white} />
-                  : <Text style={styles.submitText}>{showHome ? t('compare.next') : original ? t('proof.save') : t('proof.submit')}</Text>}
-              </TouchableOpacity>
+              <Button label={showHome ? t('compare.next') : original ? t('proof.save') : t('proof.submit')}
+                      onPress={afterDetails} loading={sending} style={!photo && styles.submitOff} />
             </View>
           )}>
           {photo && (
@@ -702,12 +697,8 @@ function DailyProofScreenContent() {
                 {t('place.tooFar', { distance: distance(tooFar.distanceM, i18n.language), name: placeName ?? '', radius: tooFar.radiusM })}
               </Text>
               <View style={styles.tooFarActions}>
-                <TouchableOpacity style={[styles.smallBtn, styles.smallPrimary]} onPress={() => submit(true)} accessibilityRole="button">
-                  <Text style={styles.smallPrimaryText}>{t('place.tryAgain')}</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.smallBtn} onPress={() => { setTooFar(null); setPlace(null); setStep('place'); }} accessibilityRole="button">
-                  <Text style={styles.smallBtnText}>{t('place.pickAnother')}</Text>
-                </TouchableOpacity>
+                <Button size="sm" label={t('place.tryAgain')} onPress={() => submit(true)} style={styles.smallBtn} />
+                <Button size="sm" variant="secondary" label={t('place.pickAnother')} onPress={() => { setTooFar(null); setPlace(null); setStep('place'); }} style={styles.smallBtn} />
               </View>
             </View>
           )}
@@ -791,8 +782,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   stepTitle:   { fontSize: FontSizes.lg, fontWeight: '800', color: c.text, textAlign: 'center' },
   boardRow:     { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, flexWrap: 'wrap' },
   boardSub:     { fontSize: 15, fontWeight: '700', color: c.primaryText, textAlign: 'center' },
-  cta:         { alignSelf: 'stretch', flexDirection: 'row', gap: 8, minHeight: 48, borderRadius: 16, backgroundColor: c.primary, alignItems: 'center', justifyContent: 'center' },
-  ctaText:     { color: c.white, fontSize: FontSizes.md, fontWeight: '700' },
+  cta:         { alignSelf: 'stretch' },
   body:        { padding: Spacing.md, gap: 8, paddingBottom: 30 },
   photoWrap:   { gap: 8 },
   photoActions: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: 12 },
@@ -804,10 +794,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   tooFar:      { gap: 10, padding: 14, borderRadius: 16, backgroundColor: c.primaryTint },
   tooFarText:  { fontSize: FontSizes.sm, fontWeight: '600', color: c.primaryOnTint },
   tooFarActions: { flexDirection: 'row', gap: 8 },
-  smallBtn:    { flex: 1, minHeight: 44, borderRadius: 14, alignItems: 'center', justifyContent: 'center', backgroundColor: c.bg2, borderWidth: 1.5, borderColor: c.line, paddingHorizontal: 8 },
-  smallBtnText:{ fontSize: FontSizes.sm, fontWeight: '700', color: c.text },
-  smallPrimary:{ backgroundColor: c.primary, borderColor: c.primary },
-  smallPrimaryText: { fontSize: FontSizes.sm, fontWeight: '700', color: c.white },
+  smallBtn:    { flex: 1, paddingHorizontal: 8 },
   label:       { fontSize: FontSizes.sm, fontWeight: '700', color: c.text, marginTop: 10 },
   input:       { backgroundColor: c.bg2, borderWidth: 1.5, borderColor: c.line, borderRadius: 14, paddingHorizontal: 14, paddingVertical: 12, fontSize: FontSizes.sm, color: c.text },
   counter:     { alignSelf: 'flex-end', fontSize: 12, color: c.muted },
@@ -833,9 +820,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   qQuestion:   { fontSize: 22, lineHeight: 27, fontWeight: '800', color: '#FFFFFF', letterSpacing: -0.3 },
   qAnswer:     { alignSelf: 'flex-start', marginTop: 8, paddingHorizontal: 12, paddingVertical: 6, borderRadius: 999, backgroundColor: '#FFFFFF' },
   qAnswerText: { color: '#2A1C13', fontSize: FontSizes.md, fontWeight: '800' },
-  submit:      { backgroundColor: c.primary, borderRadius: 16, minHeight: 52, alignItems: 'center', justifyContent: 'center' },
   submitOff:   { opacity: 0.5 },
-  submitText:  { color: c.white, fontSize: FontSizes.md, fontWeight: '700' },
 });
 
 /** The answer as it will read (the photo card's live preview): the text, or the time. */

@@ -1124,7 +1124,7 @@ export default function ChallengeChatScreen() {
           ) : isEnded ? (
             isOwner ? (
               <TouchableOpacity style={[styles.statusPill, styles.statusPillRestart]} onPress={handleRelaunch} activeOpacity={0.8}>
-                <Ionicons name="refresh-outline" size={11} color={colors.white} />
+                <Ionicons name="refresh-outline" size={11} color={colors.onCta} />
                 <Text style={[styles.statusPillText, styles.statusPillTextRestart]}>{t('relaunch.cta', { defaultValue: 'Restart' })}</Text>
               </TouchableOpacity>
             ) : (
@@ -1346,7 +1346,7 @@ export default function ChallengeChatScreen() {
                   {challenge.closed_to_new_joins
                     ? t('group.closed', { defaultValue: 'Closed to new joins' })
                     : <>
-                        <Ionicons name="add" size={16} color={colors.white} />{' '}
+                        <Ionicons name="add" size={16} color={colors.onCta} />{' '}
                         {isGroupPhoto
                           ? t('group.joinContestCta', { defaultValue: 'Join the challenge (+2 pts)' })
                           : t('group.joinCta', { defaultValue: 'Join the challenge (+2 pts)' })}
@@ -2346,12 +2346,12 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   statusPillDone:      { backgroundColor: c.localBg,  borderColor: c.localText },
   statusPillLive:      { backgroundColor: c.goldTint, borderColor: c.gold },
   statusPillEnded:     { backgroundColor: c.bg3, borderColor: c.line },
-  statusPillRestart:   { backgroundColor: c.primary, borderColor: 'transparent' },
+  statusPillRestart:   { backgroundColor: c.cta, borderColor: 'transparent' },
   statusPillText:      { fontSize: 10, fontWeight: '800', letterSpacing: 0.5 },
   statusPillTextDone:  { color: c.localText },
   statusPillTextLive:  { color: c.gold },
   statusPillTextEnded: { color: c.mutedDim },
-  statusPillTextRestart: { color: c.white },
+  statusPillTextRestart: { color: c.onCta },
   statusLiveDot:       { width: 6, height: 6, borderRadius: 3, backgroundColor: c.green },
 
   // Violet tint - see ChallengeVersusCard for the rationale (distinct from
@@ -2423,11 +2423,11 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   groupPrimaryBtn: {
     // Solid fill = unmistakably tappable. The old translucent/outlined style
     // read as an already-done state ("✓ validated") rather than a CTA.
-    paddingVertical: 14, borderRadius: 14, alignItems: 'center', justifyContent: 'center',
-    // V3: flat primary fill (no glow shadow).
-    backgroundColor: c.primary,
+    minHeight: 48, paddingVertical: 12, paddingHorizontal: 16, borderRadius: Radius.button, alignItems: 'center', justifyContent: 'center',
+    // V3: the shared primary look (Button): tangerine with ink text.
+    backgroundColor: c.cta,
   },
-  groupPrimaryBtnText: { color: c.white, fontSize: 15, fontWeight: '800' },
+  groupPrimaryBtnText: { color: c.onCta, fontSize: FontSizes.md, fontWeight: '800', textAlign: 'center' },
 
   // Visibility pill tints - applied to BOTH the TouchableOpacity (for
   // background + borderColor) and the inner Text (for color). Split into
@@ -2608,12 +2608,13 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   joinCta: {
     marginTop:       Spacing.sm,
     paddingHorizontal: Spacing.xl,
-    paddingVertical:   Spacing.sm + 2,
-    borderRadius:      Radius.full,
-    backgroundColor:   c.primary,
+    minHeight:         48,
+    justifyContent:    'center',
+    borderRadius:      Radius.button,
+    backgroundColor:   c.cta,
   },
   joinCtaText: {
-    color:      c.white,
+    color:      c.onCta,
     fontSize:   FontSizes.md,
     fontWeight: '800',
   },
@@ -2670,12 +2671,11 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   },
   takeonRejectText: { color: c.muted, fontSize: FontSizes.sm, fontWeight: '700' },
   takeonAcceptBtn: {
-    paddingHorizontal: 16,
-    paddingVertical:   10,
-    borderRadius:      999,
-    backgroundColor:   c.primary,
-    borderWidth:       Border,
-    borderColor:       c.primary,
+    paddingHorizontal: 14,
+    minHeight:         44,
+    justifyContent:    'center',
+    borderRadius:      14,
+    backgroundColor:   c.cta,
   },
-  takeonAcceptText: { color: c.white, fontSize: FontSizes.sm, fontWeight: '800' },
+  takeonAcceptText: { color: c.onCta, fontSize: FontSizes.sm, fontWeight: '800' },
 });

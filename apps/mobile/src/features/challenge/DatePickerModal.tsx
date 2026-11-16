@@ -535,9 +535,9 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   },
   submit: {
     marginHorizontal: Spacing.md, marginTop: Spacing.sm,
-    backgroundColor: c.primary, borderRadius: Radius.full,
-    paddingVertical: Spacing.md, alignItems: 'center',
+    backgroundColor: c.cta, borderRadius: Radius.button,
+    minHeight: 48, paddingHorizontal: 16, alignItems: 'center', justifyContent: 'center',
   },
-  submitDisabled: { opacity: 0.45 },
-  submitText: { color: c.white, fontWeight: '800', fontSize: FontSizes.md, letterSpacing: 0.2 },
+  submitDisabled: { opacity: 0.5 },
+  submitText: { color: c.onCta, fontWeight: '800', fontSize: FontSizes.md },
 });

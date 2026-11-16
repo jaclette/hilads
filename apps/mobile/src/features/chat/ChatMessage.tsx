@@ -1120,8 +1120,9 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   bubbleText:     { fontSize: FontSizes.sm, fontWeight: '400', color: c.text, lineHeight: 20 },
   bubbleTextMine: { color: c.white },
   // The primary token like every other button; a white ring keeps it distinct on my own (orange) bubble.
-  sharedLinkCta:  { alignSelf: 'flex-start', marginTop: 8, minHeight: 40, justifyContent: 'center', paddingHorizontal: 14, borderRadius: Radius.full, backgroundColor: c.primary, borderWidth: 1.5, borderColor: 'rgba(255,255,255,0.7)' },
-  sharedLinkCtaText:     { fontSize: FontSizes.xs, fontWeight: '800', color: c.white },
+  // Button size sm's look (two lines allowed, so not the Button itself).
+  sharedLinkCta:  { alignSelf: 'flex-start', marginTop: 8, minHeight: 44, justifyContent: 'center', paddingHorizontal: 14, borderRadius: 14, backgroundColor: c.cta, borderWidth: 1.5, borderColor: 'rgba(255,255,255,0.7)' },
+  sharedLinkCtaText:     { fontSize: FontSizes.sm, fontWeight: '800', color: c.onCta },
   sharedLinkCtaCampaign: { alignSelf: 'stretch', alignItems: 'center' },
   campaignScopePill:     { alignSelf: 'flex-start', flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 8, marginBottom: 6,
                            paddingHorizontal: 9, height: 22, borderRadius: Radius.full, backgroundColor: c.gold },

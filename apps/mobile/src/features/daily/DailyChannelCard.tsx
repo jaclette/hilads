@@ -371,8 +371,9 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   twistHead:     { flexDirection: 'row', alignItems: 'center', gap: 6 },
   twistLabel:    { fontSize: 12, fontWeight: '700', color: c.muted },
   twistText:     { fontSize: FontSizes.sm, color: c.text },
-  cta:           { alignSelf: 'flex-start', minHeight: 44, justifyContent: 'center', backgroundColor: c.primary, borderRadius: 14, paddingHorizontal: 16 },
-  ctaText:       { color: c.white, fontSize: FontSizes.sm, fontWeight: '700' },
+  // Not a Button: the whole card is the touch target, this is its visible call to action (the primary button's look).
+  cta:           { alignSelf: 'flex-start', minHeight: 48, justifyContent: 'center', backgroundColor: c.cta, borderRadius: Radius.button, paddingHorizontal: 16 },
+  ctaText:       { color: c.onCta, fontSize: FontSizes.md, fontWeight: '800' },
   authorRow:     { flexDirection: 'row', alignItems: 'center', gap: 8 },
   author:        { flex: 1, flexDirection: 'row', alignItems: 'center', gap: 8 },
   avatar:        { width: 30, height: 30, borderRadius: 15 },

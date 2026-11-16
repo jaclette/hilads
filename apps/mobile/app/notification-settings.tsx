@@ -12,7 +12,7 @@ import { useTranslation } from 'react-i18next';
 import * as Haptics from 'expo-haptics';
 import { fetchNotificationPreferences, updateNotificationPreferences, type NotifCategory, type NotificationPreferences } from '@/api/notifications';
 import { Radius, Spacing, type ThemeColors } from '@/constants';
-import { Screen, ScreenHeader } from '@/ui';
+import { Button, Screen, ScreenHeader } from '@/ui';
 import { tint } from '@/ui/joy';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { CATEGORY_EMOJI, categoryColor } from '@/features/notifications/categories';
@@ -106,9 +106,7 @@ export default function NotificationSettingsScreen() {
             {push === false && <Text style={styles.sub}>{t('settings.pushOffSub')}</Text>}
           </View>
           {push === false && (
-            <Pressable onPress={() => Linking.openSettings().catch(() => {})} style={styles.turnOn} accessibilityRole="button">
-              <Text style={styles.turnOnText}>{t('settings.turnOn')}</Text>
-            </Pressable>
+            <Button size="sm" label={t('settings.turnOn')} onPress={() => Linking.openSettings().catch(() => {})} />
           )}
         </View>
 
@@ -199,8 +197,6 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   card:       { backgroundColor: c.bg2, borderRadius: Radius.card, borderWidth: 1.5, borderColor: c.line, padding: 14, gap: 4 },
   pushCard:   { flexDirection: 'row', alignItems: 'center', gap: 12 },
   pushTitle:  { fontSize: 16, lineHeight: 21, fontWeight: '800', color: c.text },
-  turnOn:     { paddingHorizontal: 16, height: 40, borderRadius: Radius.full, backgroundColor: c.cta, alignItems: 'center', justifyContent: 'center' },
-  turnOnText: { fontSize: 14, fontWeight: '800', color: c.onCta },
   groupHead:  { flexDirection: 'row', alignItems: 'center', gap: 10, paddingBottom: 6 },
   groupEmoji: { width: 36, height: 36, borderRadius: 18, alignItems: 'center', justifyContent: 'center' },
   emoji:      { fontSize: 18, lineHeight: 23 },

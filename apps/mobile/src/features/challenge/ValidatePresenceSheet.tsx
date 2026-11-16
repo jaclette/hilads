@@ -132,7 +132,7 @@ export function ValidatePresenceSheet({ visible, participants, submitting, mode 
           onPress={() => onConfirm(selectedIds, isWinner ? null : rating)}
         >
           {submitting
-            ? <ActivityIndicator color={colors.white} />
+            ? <ActivityIndicator color={colors.onCta} />
             : <Text style={styles.confirmText}>
                 {isWinner
                   ? t('group.winnerConfirm', { defaultValue: 'Crown the winner' })
@@ -169,8 +169,8 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   stars:     { flexDirection: 'row', gap: 8 },
   confirmBtn: {
     // Solid fill - reads as a primary action, not an already-done state.
-    marginTop: 14, paddingVertical: 14, borderRadius: 14, alignItems: 'center',
-    backgroundColor: c.primary,
+    marginTop: 14, minHeight: 48, paddingHorizontal: 16, borderRadius: Radius.button, alignItems: 'center', justifyContent: 'center',
+    backgroundColor: c.cta,
   },
-  confirmText: { color: c.white, fontSize: 15, fontWeight: '800' },
+  confirmText: { color: c.onCta, fontSize: FontSizes.md, fontWeight: '800' },
 });

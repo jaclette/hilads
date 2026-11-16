@@ -7,6 +7,7 @@ import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { useApp } from '@/context/AppContext';
 import { track } from '@/services/analytics';
 import { ThemeIcon } from '@/ui/ThemeIcon';
+import { Button } from '@/ui/Button';
 import { DailyStatusChip } from './DailyStatusChip';
 import type { DailyToday } from '@/types';
 
@@ -67,9 +68,7 @@ export function DailyPinBar({ data, source = 'pin', compact = false }: {
       </View>
       {myProof ? <DailyStatusChip status={myProof.status} />
         : challenge.isActive ? (
-          <TouchableOpacity style={styles.take} onPress={take} accessibilityRole="button">
-            <Text style={styles.takeText}>{t('takeIt')}</Text>
-          </TouchableOpacity>
+          <Button size="sm" label={t('takeIt')} onPress={take} />
         ) : null}
     </TouchableOpacity>
   );
@@ -87,6 +86,4 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   body:     { flex: 1, minWidth: 0 },
   kicker:   { fontSize: 12, fontWeight: '700', color: c.primaryText },
   text:     { fontSize: FontSizes.sm, fontWeight: '600', color: c.text },
-  take:     { minHeight: 44, paddingHorizontal: 14, borderRadius: 14, backgroundColor: c.primary, alignItems: 'center', justifyContent: 'center' },
-  takeText: { color: c.white, fontSize: FontSizes.sm, fontWeight: '700' },
 });

@@ -321,10 +321,10 @@ export function ChallengeProofBlock({
         activeOpacity={0.85}
       >
         {busy === 'submit'
-          ? <ActivityIndicator color={colors.white} />
+          ? <ActivityIndicator color={colors.onCta} />
           : (
             <View style={styles.iconRow}>
-              <Ionicons name="camera-outline" size={compact ? 16 : 18} color={colors.white} />
+              <Ionicons name="camera-outline" size={compact ? 16 : 18} color={colors.onCta} />
               <Text style={[styles.submitBtnText, compact && styles.submitBtnTextCompact]}>
                 {canRetry ? t('intl.proof.tryAgainCta', { count: attemptsLeft }) : t('intl.proof.submitCta')}
               </Text>
@@ -373,17 +373,20 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   verdictApproveText: { color: c.white, fontWeight: '800', fontSize: FontSizes.sm },
   verdictRejectText:  { color: c.red, fontWeight: '800', fontSize: FontSizes.sm },
 
+  // The shared primary look (Button): tangerine with ink text.
   submitBtn: {
-    backgroundColor: c.primary,
-    paddingVertical: Spacing.md,
-    borderRadius:    Radius.full,
+    backgroundColor: c.cta,
+    minHeight:       48,
+    paddingHorizontal: 16,
+    borderRadius:    Radius.button,
     alignItems:      'center',
+    justifyContent:  'center',
     marginTop:       Spacing.xs,
   },
-  submitBtnText: { color: c.white, fontWeight: '800', fontSize: FontSizes.md },
-  // Compact variant - group photo channel, keeps the chat visible below.
+  submitBtnText: { color: c.onCta, fontWeight: '800', fontSize: FontSizes.md },
+  // Compact variant - group photo channel, keeps the chat visible below (Button size sm).
   cardCompact:      { marginVertical: Spacing.xs, paddingVertical: Spacing.sm },
-  submitBtnCompact: { paddingVertical: Spacing.sm, marginTop: 0 },
+  submitBtnCompact: { minHeight: 44, marginTop: 0 },
   submitBtnTextCompact: { fontSize: FontSizes.sm },
 
   iconRow:      { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6 },

@@ -7,7 +7,7 @@ import * as Haptics from 'expo-haptics';
 import { Radius, Spacing, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { useApp } from '@/context/AppContext';
-import { Screen, ScreenHeader, Avatar } from '@/ui';
+import { Button, Screen, ScreenHeader, Avatar } from '@/ui';
 import { Confetti, FlagSticker, themeColor, tint } from '@/ui/joy';
 import { shortCityName } from '@/i18n/cityName';
 import { thumbUrl } from '@/lib/imageThumb';
@@ -95,13 +95,11 @@ export default function RivalScreen() {
       {!data.playedToday && today?.challenge?.isActive && (
         <View style={[styles.nudge, { backgroundColor: tint(themeColor('get_around').fill, 0.18) }]}>
           <Text style={styles.nudgeText}>{t('rivals.notToday', { city: rival })}</Text>
-          <Pressable style={styles.nudgeBtn} accessibilityRole="button" testID="rival-send"
-                     onPress={() => {
-                       track('rival_challenge_shared', { city: data.city.name });
-                       setShare(representShare(today.challenge!, { name: data.city.name, country: data.city.country }));
-                     }}>
-            <Text style={styles.nudgeBtnText}>📣 {t('rivals.send')}</Text>
-          </Pressable>
+          <Button size="sm" label={`📣 ${t('rivals.send')}`} style={styles.nudgeBtn} testID="rival-send"
+                  onPress={() => {
+                    track('rival_challenge_shared', { city: data.city.name });
+                    setShare(representShare(today.challenge!, { name: data.city.name, country: data.city.country }));
+                  }} />
         </View>
       )}
       {data.duels.length > 0 && <Text style={styles.section}>{t('rivals.duels', { count: data.duels.length })}</Text>}
@@ -176,8 +174,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   mood:         { fontSize: 15, lineHeight: 20, fontWeight: '700', color: c.text, textAlign: 'center', marginBottom: 12 },
   nudge:        { borderRadius: Radius.card, padding: 14, gap: 10, marginBottom: 14 },
   nudgeText:    { fontSize: 15, lineHeight: 20, fontWeight: '700', color: c.text },
-  nudgeBtn:     { alignSelf: 'flex-start', paddingHorizontal: 16, height: 40, borderRadius: Radius.full, backgroundColor: c.cta, justifyContent: 'center' },
-  nudgeBtnText: { fontSize: 14, fontWeight: '800', color: c.onCta },
+  nudgeBtn:     { alignSelf: 'flex-start' },
   section:      { fontSize: 13, fontWeight: '800', color: c.muted, marginBottom: 4 },
   empty:        { fontSize: 15, color: c.muted, textAlign: 'center', paddingVertical: 32 },
   duel:         { borderRadius: Radius.card, backgroundColor: c.bg2, borderWidth: 1.5, borderColor: c.line, padding: 12, gap: 10 },
