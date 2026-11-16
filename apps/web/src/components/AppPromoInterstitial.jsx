@@ -38,7 +38,7 @@ export default function AppPromoInterstitial() {
 
         <button
           type="button"
-          className="app-promo-interstitial-cta"
+          className="app-promo-interstitial-cta btn-primary"
           onClick={() => trackCtaClick('interstitial')}
         >
           {t('appPromo.ctaPlay')}

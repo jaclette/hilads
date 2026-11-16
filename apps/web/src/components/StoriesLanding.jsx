@@ -290,7 +290,7 @@ export default function StoriesLanding({
       <section className="sl-screen sl-screen--convert" data-idx="4" ref={setRef(4)}>
         <h2 className="sl-headline sl-headline--convert">{t('stories.liveHeadline', { city: headlineCity })}</h2>
         <div className="sl-cta-group">
-          <button className="sl-cta-big" onClick={primary}>{ctaLabel}</button>
+          <button className="sl-cta-big btn-primary" onClick={primary}>{ctaLabel}</button>
           <p className="sl-reassure">{t('stories.reassurance')}</p>
         </div>
 
@@ -316,7 +316,7 @@ export default function StoriesLanding({
           padded so the whole block stays above in-app browser chrome. */}
       {active < LAST && (
         <div className="sl-cta-dock">
-          <button className="sl-cta" onClick={primary}>{ctaLabel}</button>
+          <button className="sl-cta btn-primary" onClick={primary}>{ctaLabel}</button>
           <p className="sl-reassure">{t('stories.reassurance')}</p>
         </div>
       )}

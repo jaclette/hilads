@@ -131,15 +131,15 @@ export default function SpotPage({ spotId, onBack }) {
             )}
 
             <div className="wm-spot-actions">
-              <a className="wm-btn wm-btn--ghost" href={directionsLink(getMapsApp() ?? 'google', spot.lat, spot.lng, mode)} target="_blank" rel="noopener noreferrer"
+              <a className="wm-btn btn-secondary" href={directionsLink(getMapsApp() ?? 'google', spot.lat, spot.lng, mode)} target="_blank" rel="noopener noreferrer"
                  onClick={directions}>
                 <Icon name="navigate-outline" size={18} />{t('map.directions')}
               </a>
-              <button type="button" className="wm-btn"
+              <button type="button" className="wm-btn btn-primary"
                  onClick={() => { track('web_app_map_card_clicked', { store: store ?? 'ios', placement: 'spot' }); openAppModal({ action: 'play', surface: 'spot' }) }}>
                 <Icon name="camera-outline" size={18} />{t('spot.proofInApp')}
               </button>
-              <button type="button" className="wm-btn wm-btn--ghost wm-spot-share" onClick={share}>
+              <button type="button" className="wm-btn btn-secondary wm-spot-share" onClick={share}>
                 <Icon name="share-social-outline" size={18} />{copied ? tc('shareLink.copied') : tc('shareLink.share')}
               </button>
             </div>
@@ -163,7 +163,7 @@ export default function SpotPage({ spotId, onBack }) {
                     </figure>
                   ))}
                 </div>
-                {next !== null && <button type="button" className="wm-btn wm-btn--ghost wm-more" onClick={more}>{t('spot.morePhotos')}</button>}
+                {next !== null && <button type="button" className="wm-btn btn-secondary wm-more" onClick={more}>{t('spot.morePhotos')}</button>}
               </>
             )}
 

@@ -25,7 +25,7 @@ export default function AccountWelcome({ username, onClose }) {
         <ul className="account-welcome-features">
           {features.map((f, i) => <li key={i}>{f}</li>)}
         </ul>
-        <button className="account-welcome-cta" onClick={onClose}>{t('accountWelcome.cta')}</button>
+        <button className="account-welcome-cta btn-primary" onClick={onClose}>{t('accountWelcome.cta')}</button>
       </div>
     </div>
   )

@@ -31,8 +31,8 @@ export default function SignUpSheet({ reason, city = null, onAuth, onClose }) {
         <img className="v3-mark su-mark" src="/logo/icon.svg" alt="" aria-hidden="true" />
         <h2 className="su-title">{title}</h2>
         <p className="dc-muted su-sub">{t('sheet.comeBack')}</p>
-        <button type="button" className="today-cta dc-full" onClick={() => onAuth('signup', r)}>{t('sheet.signUp')}</button>
-        <button type="button" className="su-secondary" onClick={() => onAuth('login', r)}>{t('sheet.haveAccount')}</button>
+        <button type="button" className="today-cta dc-full btn-primary" onClick={() => onAuth('signup', r)}>{t('sheet.signUp')}</button>
+        <button type="button" className="su-secondary btn-secondary" onClick={() => onAuth('login', r)}>{t('sheet.haveAccount')}</button>
         <button type="button" className="dc-link su-notnow" onClick={onClose}>{t('sheet.notNow')}</button>
       </div>
     </div>

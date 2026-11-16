@@ -273,7 +273,7 @@ function EmptyCard({ today, t }) {
     <>
       <span className="wm-sheet-title" style={ROW}><Icon name="location-outline" size={20} style={{ color: 'var(--primary-text)' }} />{cityShort ? tc('represent.mapEmpty', { city: cityShort }) : t('map.emptyTitle')}</span>
       {challenge && <span className="wm-empty-text">{challenge.text}</span>}
-      {canTake && <span className="wm-sheet-cta">{t('dc.takeIt')}</span>}
+      {canTake && <span className="wm-sheet-cta btn-primary">{t('dc.takeIt')}</span>}
       {challenge?.isActive && !placeTheme && tomorrowKey && <span className="wm-empty-tomorrow">{t('map.spotsTomorrow', { theme: themeName(tomorrowKey) })}</span>}
     </>
   )
@@ -676,12 +676,12 @@ export default function MapScreen({ channelId, cityName, onOpenPlan, initialSpot
           </span>
         </button>
         {canPlayHere && (
-          <button type="button" className="wm-sheet-cta"
+          <button type="button" className="wm-sheet-cta btn-primary"
                   onClick={() => { track('web_today_take_clicked', { store: deviceStore() ?? 'ios', surface: 'map_spot' }); openAppModal({ action: 'play', surface: 'map_spot' }) }}>
             <Icon name="camera-outline" size={18} />{t('map.playHere')}
           </button>
         )}
-        <button type="button" className={`wm-sheet-cta${canPlayHere ? ' wm-btn--ghost' : ''}`} onClick={() => setOpenSpotId(selected.id)}>{t('map.openSpot')}</button>
+        <button type="button" className={`wm-sheet-cta ${canPlayHere ? 'btn-secondary' : 'btn-primary'}`} onClick={() => setOpenSpotId(selected.id)}>{t('map.openSpot')}</button>
         {/* The cover photo's comments (their header loads from the photo). */}
         {selected.cover?.proofId && <CommentButton target={{ proofId: selected.cover.proofId, thumbUrl: selected.cover.thumbUrl ?? selected.cover.photoUrl }} variant="inline" />}
       </div>

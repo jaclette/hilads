@@ -60,7 +60,7 @@ export default function CreateTopicPage({ channelId, guest, onCreated, onUpdated
           <span className="topic-gated-sub">
             {t('create.limitSub', { title: limitTopic.title })}
           </span>
-          <button className="topic-join-btn" onClick={() => onGoToHangout?.(limitTopic.id)}>{t('create.limitGo')}</button>
+          <button className="topic-join-btn btn-primary" onClick={() => onGoToHangout?.(limitTopic.id)}>{t('create.limitGo')}</button>
         </div>
       </div>
     )
@@ -108,7 +108,7 @@ export default function CreateTopicPage({ channelId, guest, onCreated, onUpdated
 
           <button
             type="submit"
-            className="cef-submit"
+            className="cef-submit btn-primary"
             disabled={submitting || !title.trim()}
           >
             {submitting ? (isEdit ? t('create.saving') : t('create.starting')) : (isEdit ? t('create.saveChanges') : t('create.startCta'))}

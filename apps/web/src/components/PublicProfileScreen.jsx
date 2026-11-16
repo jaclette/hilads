@@ -699,7 +699,7 @@ export default function PublicProfileScreen({ userId, account, guest, onBack, on
       {user && userId !== account?.id && (
         <div className="pub-profile-sticky-bar">
           {onSendDm && (
-            <button className="pub-profile-dm-btn" onClick={handleSendDm} disabled={dmBusy}>
+            <button className="pub-profile-dm-btn btn-primary" onClick={handleSendDm} disabled={dmBusy}>
               {!dmBusy && <Icon name="chatbubble-outline" size={20} />}{dmBusy ? t('actions.opening') : t('actions.message')}
             </button>
           )}
