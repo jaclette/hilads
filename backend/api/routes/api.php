@@ -424,25 +424,6 @@ function broadcastEventMessageToParticipants(string $eventId, array $message, ?s
 }
 
 /**
- * International proof verdict (approve/reject). The proof routes used to call
- * broadcastChallengeAcceptedToWs and stuff the real event name inside the
- * payload — but that helper hardcodes 'event' => 'challenge_accepted', so
- * the actual WS event delivered to clients was wrong (`challenge_accepted`
- * instead of `challenge_proof_approved`). Clients couldn't subscribe to
- * the right name and verdicts looked silent until a reload.
- */
-function broadcastChallengeProofVerdictToWs(string $targetUserId, string $verdict, array $payload): void
-{
-    $event = $verdict === 'approved' ? 'challenge_proof_approved' : 'challenge_proof_rejected';
-    error_log("[ws-broadcast] → {$event} target=user:{$targetUserId} acceptanceId=" . ($payload['acceptanceId'] ?? 'null'));
-    postToWs('/broadcast/user-event', [
-        'userId'  => $targetUserId,
-        'event'   => $event,
-        'payload' => $payload,
-    ]);
-}
-
-/**
  * Photo proof submitted. Emits the correctly-named `challenge_proof_submitted`
  * event (the old code reused broadcastChallengeAcceptedToWs, which hardcodes
  * 'challenge_accepted' - so the creator's pipeline updated under the wrong
@@ -456,127 +437,6 @@ function broadcastChallengeProofSubmittedToWs(string $targetUserId, array $paylo
     postToWs('/broadcast/user-event', [
         'userId'  => $targetUserId,
         'event'   => 'challenge_proof_submitted',
-        'payload' => $payload,
-    ]);
-}
-
-function broadcastChallengeAcceptanceCancelledToWs(string $targetUserId, array $payload): void
-{
-    error_log("[ws-broadcast] → challenge-acceptance-cancelled target=user:{$targetUserId} acceptanceId=" . ($payload['acceptanceId'] ?? 'null'));
-    postToWs('/broadcast/user-event', [
-        'userId'  => $targetUserId,
-        'event'   => 'challenge_acceptance_cancelled',
-        'payload' => $payload,
-    ]);
-}
-
-/**
- * PR3 - date concertation events. All three reuse /broadcast/user-event and
- * fire to a single target user (the OTHER party of the thread). For sync
- * across the proposer's own devices, the proposer fans-out client-side after
- * the HTTP response - keeps server WS push to one packet per state change.
- */
-function broadcastChallengeDateProposedToWs(string $targetUserId, array $payload): void
-{
-    error_log("[ws-broadcast] → challenge-date-proposed target=user:{$targetUserId} acceptanceId=" . ($payload['acceptanceId'] ?? 'null'));
-    postToWs('/broadcast/user-event', [
-        'userId'  => $targetUserId,
-        'event'   => 'challenge_date_proposed',
-        'payload' => $payload,
-    ]);
-}
-
-function broadcastChallengeDateApprovedToWs(string $targetUserId, array $payload): void
-{
-    error_log("[ws-broadcast] → challenge-date-approved target=user:{$targetUserId} acceptanceId=" . ($payload['acceptanceId'] ?? 'null'));
-    postToWs('/broadcast/user-event', [
-        'userId'  => $targetUserId,
-        'event'   => 'challenge_date_approved',
-        'payload' => $payload,
-    ]);
-}
-
-function broadcastChallengeDateWithdrawnToWs(string $targetUserId, array $payload): void
-{
-    error_log("[ws-broadcast] → challenge-date-withdrawn target=user:{$targetUserId} acceptanceId=" . ($payload['acceptanceId'] ?? 'null'));
-    postToWs('/broadcast/user-event', [
-        'userId'  => $targetUserId,
-        'event'   => 'challenge_date_withdrawn',
-        'payload' => $payload,
-    ]);
-}
-
-/** Taker abandoned an active take-on. Fires to the creator so their open
- *  challenge screen resets the pipeline (the challenge is now un-taken). */
-function broadcastChallengeAcceptorLeftToWs(string $targetUserId, array $payload): void
-{
-    error_log("[ws-broadcast] → challenge-acceptor-left target=user:{$targetUserId} challengeId=" . ($payload['challengeId'] ?? 'null'));
-    postToWs('/broadcast/user-event', [
-        'userId'  => $targetUserId,
-        'event'   => 'challenge_acceptor_left',
-        'payload' => $payload,
-    ]);
-}
-
-/** Creator restarted the challenge - fires to the removed taker so their open
- *  screen resets (their take-on is gone, the challenge reopened). */
-function broadcastChallengeRestartedToWs(string $targetUserId, array $payload): void
-{
-    error_log("[ws-broadcast] → challenge-restarted target=user:{$targetUserId} challengeId=" . ($payload['challengeId'] ?? 'null'));
-    postToWs('/broadcast/user-event', [
-        'userId'  => $targetUserId,
-        'event'   => 'challenge_restarted',
-        'payload' => $payload,
-    ]);
-}
-
-/** PR5 - creator approved or rejected a pending take-on request. payload.decision = 'approved' | 'rejected' */
-function broadcastChallengeTakeOnReviewedToWs(string $targetUserId, array $payload): void
-{
-    error_log("[ws-broadcast] → challenge-takeon-reviewed target=user:{$targetUserId} acceptanceId=" . ($payload['acceptanceId'] ?? 'null') . ' decision=' . ($payload['decision'] ?? 'null'));
-    postToWs('/broadcast/user-event', [
-        'userId'  => $targetUserId,
-        'event'   => 'challenge_takeon_reviewed',
-        'payload' => $payload,
-    ]);
-}
-
-/** PR47 - mutual rating completed (the SECOND rater just submitted, so
- *  both parties' debrief points landed). Fires to BOTH users so their
- *  open ScoreCelebrationLaunchGate refetches /me/score-celebration and
- *  surfaces the "+30/+40 points" popin without a manual refresh. */
-function broadcastMutualRatingCompleteToWs(string $targetUserId, array $payload): void
-{
-    error_log("[ws-broadcast] → mutual-rating-complete target=user:{$targetUserId} challengeId=" . ($payload['challengeId'] ?? 'null'));
-    postToWs('/broadcast/user-event', [
-        'userId'  => $targetUserId,
-        'event'   => 'mutual_rating_complete',
-        'payload' => $payload,
-    ]);
-}
-
-/** FIRST rating landed → poke the OTHER party so their open
- *  RatePromptLaunchGate refetches /me/rate-prompts and opens the
- *  RateSheet for the challenge. Push backs this up for backgrounded
- *  apps; the WS event is the in-session fast path. */
-function broadcastRatingReceivedToWs(string $targetUserId, array $payload): void
-{
-    error_log("[ws-broadcast] → rating-received target=user:{$targetUserId} challengeId=" . ($payload['challengeId'] ?? 'null'));
-    postToWs('/broadcast/user-event', [
-        'userId'  => $targetUserId,
-        'event'   => 'rating_received',
-        'payload' => $payload,
-    ]);
-}
-
-/** PR4 - debrief verdicts. Same shape as proposed/approved/withdrawn. */
-function broadcastChallengeVerdictToWs(string $targetUserId, string $verdict, array $payload): void
-{
-    $event = $verdict === 'approved' ? 'challenge_verdict_approved' : 'challenge_verdict_rejected';
-    error_log("[ws-broadcast] → {$event} target=user:{$targetUserId} acceptanceId=" . ($payload['acceptanceId'] ?? 'null'));
-    postToWs('/broadcast/user-event', [
-        'userId'  => $targetUserId,
-        'event'   => $event,
         'payload' => $payload,
     ]);
 }
@@ -8977,9 +8837,10 @@ $router->add('POST', '/api/v1/channels/{channelId}/challenges', function (array 
     // 'friends' accepted at create-time; 'private' is reachable only via
     // the mutual privacy_requests flow (PR #4) post-acceptance.
     $visibility         = $body['visibility']          ?? 'public';
-    // Group model (Phase 4): a local MEET challenge created with `format:'group'`
-    // carries a meet date + location set at creation. Parsed/validated below.
-    $format             = $body['format']     ?? 'legacy';
+    // Group model: every challenge is 'group' (Phase 5 retired the legacy
+    // 1-to-1 format). A MEET carries a meet date (+ optional place), a
+    // PHOTO-PROOF contest a submission deadline. Parsed/validated below.
+    $format             = $body['format']     ?? 'group';
     $meetAt             = $body['meetAt']      ?? null;   // unix seconds
     $meetEndsAt         = $body['meetEndsAt']  ?? null;   // unix seconds (optional)
     $venue              = $body['venue']       ?? null;
@@ -9039,45 +8900,46 @@ $router->add('POST', '/api/v1/channels/{channelId}/challenges', function (array 
         $proofRequirements = mb_substr(trim(strip_tags((string) $proofRequirements)), 0, 300);
     }
 
-    // Group challenge validation: only local MEET challenges can be 'group',
-    // and they MUST carry a meet date + location (set at creation per the
-    // model). Built into $groupOpts and handed to create(); legacy create
-    // (format omitted / 'legacy') passes null and behaves exactly as before.
-    $groupOpts = null;
-    if ($format === 'group') {
-        // MEET group = local + meet (needs a meet date; venue optional). PHOTO-PROOF
-        // group = photo_proof (local or international); meet_at is the submission
-        // DEADLINE and there's no venue (it's at a distance).
-        $isGroupMeet  = $mode === 'local' && $validationMethod === 'meet';
-        $isGroupPhoto = $validationMethod === 'photo_proof';
-        if (!$isGroupMeet && !$isGroupPhoto) {
-            Response::json(['error' => 'Group challenges must be a local meet or a photo-proof contest', 'code' => 'group_invalid'], 400);
-        }
-        $meetAtInt = filter_var($meetAt, FILTER_VALIDATE_INT);
-        if ($meetAtInt === false || $meetAtInt < 946684800) { // sanity: after year 2000
-            Response::json([
-                'error' => $isGroupPhoto ? 'A submission deadline is required' : 'meetAt (unix seconds) is required for a group challenge',
-                'code'  => 'meet_at_required',
-            ], 400);
-        }
-        $venueStr = null;
-        if ($isGroupMeet) {
-            // Venue is OPTIONAL for a group meet - the creator can set just a
-            // date and leave the exact place loose (pinned later in chat).
-            // Normalize empty → null rather than rejecting the create.
-            $venueStr = is_string($venue) ? mb_substr(trim(strip_tags($venue)), 0, 160) : '';
-            if ($venueStr === '') $venueStr = null;
-        }
-        $meetEndsInt = filter_var($meetEndsAt, FILTER_VALIDATE_INT);
-        $groupOpts = [
-            'format'       => 'group',
-            'meet_at'      => $meetAtInt,
-            'meet_ends_at' => $meetEndsInt !== false ? $meetEndsInt : null,
-            'venue'        => $venueStr,
-            'venue_lat'    => ($isGroupMeet && is_numeric($venueLat)) ? (float) $venueLat : null,
-            'venue_lng'    => ($isGroupMeet && is_numeric($venueLng)) ? (float) $venueLng : null,
-        ];
+    // Group challenge validation: a local MEET or a photo-proof contest, and it
+    // MUST carry a meet date / deadline. Built into $groupOpts for create().
+    if ($format !== 'group') {
+        Response::json([
+            'error' => "Only group challenges can be created (format must be 'group')",
+            'code'  => 'legacy_retired',
+        ], 400);
     }
+    // MEET group = local + meet (needs a meet date; venue optional). PHOTO-PROOF
+    // group = photo_proof (local or international); meet_at is the submission
+    // DEADLINE and there's no venue (it's at a distance).
+    $isGroupMeet  = $mode === 'local' && $validationMethod === 'meet';
+    $isGroupPhoto = $validationMethod === 'photo_proof';
+    if (!$isGroupMeet && !$isGroupPhoto) {
+        Response::json(['error' => 'Group challenges must be a local meet or a photo-proof contest', 'code' => 'group_invalid'], 400);
+    }
+    $meetAtInt = filter_var($meetAt, FILTER_VALIDATE_INT);
+    if ($meetAtInt === false || $meetAtInt < 946684800) { // sanity: after year 2000
+        Response::json([
+            'error' => $isGroupPhoto ? 'A submission deadline is required' : 'meetAt (unix seconds) is required for a group challenge',
+            'code'  => 'meet_at_required',
+        ], 400);
+    }
+    $venueStr = null;
+    if ($isGroupMeet) {
+        // Venue is OPTIONAL for a group meet - the creator can set just a
+        // date and leave the exact place loose (pinned later in chat).
+        // Normalize empty → null rather than rejecting the create.
+        $venueStr = is_string($venue) ? mb_substr(trim(strip_tags($venue)), 0, 160) : '';
+        if ($venueStr === '') $venueStr = null;
+    }
+    $meetEndsInt = filter_var($meetEndsAt, FILTER_VALIDATE_INT);
+    $groupOpts = [
+        'format'       => 'group',
+        'meet_at'      => $meetAtInt,
+        'meet_ends_at' => $meetEndsInt !== false ? $meetEndsInt : null,
+        'venue'        => $venueStr,
+        'venue_lat'    => ($isGroupMeet && is_numeric($venueLat)) ? (float) $venueLat : null,
+        'venue_lng'    => ($isGroupMeet && is_numeric($venueLng)) ? (float) $venueLng : null,
+    ];
 
     // Moderation gate - title + return clause + proof requirements all run
     // through the blocklist/regex check. First hit wins and the create is
@@ -9569,50 +9431,6 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/unvalidate', function (ar
     Response::json($updated);
 });
 
-// POST /api/v1/challenges/{challengeId}/participants/toggle
-// LEGACY toggle for the existing mobile build. Routes through the new
-// ChallengeParticipantRepository so the kick + closed_to_new_joins gates
-// can't be bypassed. New web/mobile builds use /join + DELETE /participants/me.
-$router->add('POST', '/api/v1/challenges/{challengeId}/participants/toggle', function (array $params) {
-    $challengeId = $params['challengeId'] ?? '';
-    if (!preg_match('/^[a-f0-9]{16}$/', $challengeId)) {
-        Response::json(['error' => 'Invalid challengeId'], 400);
-    }
-    $authUser  = AuthService::requireAuth();
-    $userId    = $authUser['id'];
-
-    // Visibility-aware: anon hitting a friends/private challenge URL gets
-    // 404, same surface as the read path.
-    $challenge = ChallengeRepository::findById($challengeId, $userId);
-    if ($challenge === null) {
-        Response::json(['error' => 'Challenge not found'], 404);
-    }
-
-    enforceRateLimit('challenge_participant_toggle', 60, 300, $challengeId);
-
-    $alreadyIn = ChallengeParticipantRepository::isParticipant($challengeId, $userId);
-    if ($alreadyIn) {
-        ChallengeParticipantRepository::leave($challengeId, $userId);
-        $isIn = false;
-    } else {
-        if (ChallengeParticipantRepository::isKicked($challengeId, $userId)) {
-            Response::json(['error' => "You can't join - you've been removed from this challenge.", 'code' => 'kicked'], 403);
-        }
-        if (!empty($challenge['closed_to_new_joins'])) {
-            Response::json(['error' => 'This challenge is closed to new joins.', 'code' => 'closed_to_new_joins'], 403);
-        }
-        ChallengeParticipantRepository::join($challengeId, $userId);
-        $isIn = true;
-    }
-    $count = ChallengeParticipantRepository::countForChannel($challengeId);
-
-    if ($isIn) {
-        AnalyticsService::defer('joined_challenge', $userId, ['challenge_id' => $challengeId]);
-    }
-
-    Response::json(['count' => $count, 'isIn' => $isIn]);
-});
-
 // POST /api/v1/challenges/{challengeId}/join
 // Explicit join - instant, registered-only, idempotent. Refused on kick,
 // closed_to_new_joins, or visibility scope (the read gate catches the latter
@@ -9868,463 +9686,6 @@ $router->add('GET', '/api/v1/challenges/{challengeId}/participants/me', function
     ]);
 });
 
-// ── Challenge ratings (PR6 - mutual rating + scoring) ─────────────────────────
-// Scope: Local challenges only. International challenges keep their existing
-// proof → creator-verdict flow (ChallengeProofBlock + /submit-proof, /approve,
-// /reject) untouched. The rating endpoints below 422-out on mode='international'.
-//
-// All scoring + the phase='approved' flip are handled by the DB trigger
-// trg_chrate_mutual_complete (see migrate.php:1524). PHP NEVER computes points.
-//
-// Mutual-reveal: a rating about the caller is exposed via the visible_ratings
-// view only once BOTH parties have rated. /of-me returns { revealed: false }
-// until that happens - the UI can show "waiting for X to rate".
-
-// POST /api/v1/challenges/{challengeId}/ratings
-// Body: { stars: 1..5, comment?: string<=500 }
-//
-// Resolves caller's role: challenger if cc.created_by, taker if the active
-// (non-rejected) acceptor. Other party = ratee. Inserts one challenge_ratings
-// row. UNIQUE(challenge_id, rater_id) → 409 on second submit from same user.
-//
-// Rate-eligibility (Local only): there must be a non-rejected acceptance for
-// this challenge whose effective_phase is 'debrief' (meetup ended) or
-// 'approved' (legacy verdict already fired, or the trigger has - but a second
-// distinct rater still slots in). Otherwise 403 with code='not_rate_eligible'.
-//
-// Returns { rating, revealed } - revealed=true when this insert was the
-// second rating (so the trigger just fired). Lets the client refetch /of-me
-// in the same tick without polling.
-$router->add('POST', '/api/v1/challenges/{challengeId}/ratings', function (array $params) {
-    $challengeId = $params['challengeId'] ?? '';
-    if (!preg_match('/^[a-f0-9]{16}$/', $challengeId)) {
-        Response::json(['error' => 'Invalid challengeId'], 400);
-    }
-
-    $authUser = AuthService::requireAuth();
-    $callerId = $authUser['id'];
-
-    $challenge = ChallengeRepository::findByIdUnchecked($challengeId);
-    if ($challenge === null) {
-        Response::json(['error' => 'Challenge not found'], 404);
-    }
-
-    // PR44 - open mutual rating to international challenges too. The
-    // previous design treated the creator's proof verdict as the final
-    // outcome, but per UX feedback the verdict step should END with
-    // both parties rating each other (same as local). Phase='approved'
-    // - which on international is reached when the creator approves the
-    // proof, on local when both met up - gates eligibility uniformly
-    // (see /me/rate-prompts below + the effective_phase fall-through).
-    // The mutual-rating trigger in migrate.php already fires regardless
-    // of mode, so debrief points (+30 challenger / +40 taker) flow on
-    // international too once both rate.
-
-    // Body validation.
-    $body = Request::json();
-    if ($body === null) {
-        Response::json(['error' => 'Invalid JSON body'], 400);
-    }
-    $stars = filter_var(
-        $body['stars'] ?? null,
-        FILTER_VALIDATE_INT,
-        ['options' => ['min_range' => 1, 'max_range' => 5]],
-    );
-    if ($stars === false) {
-        Response::json(['error' => 'stars must be an integer between 1 and 5'], 400);
-    }
-    $comment = $body['comment'] ?? null;
-    if ($comment !== null) {
-        $comment = mb_substr(trim(strip_tags((string) $comment)), 0, 500);
-        if ($comment === '') $comment = null;
-    }
-
-    // Moderation gate - same shape as challenge create/edit. Hits log the
-    // field for ops review; client gets a tailored 422 + code.
-    if ($comment !== null) {
-        $modHit = ModerationService::checkBundle(['comment' => $comment]);
-        if ($modHit !== null) {
-            error_log("[moderation] rating blocked challengeId={$challengeId} reason={$modHit['reason']} hit={$modHit['hit']}");
-            Response::json([
-                'error' => 'Your comment was flagged by moderation - please rephrase.',
-                'code'  => 'moderation_blocked',
-                'field' => 'comment',
-            ], 422);
-        }
-    }
-
-    // Modest rate limit - the UNIQUE constraint is the real dedup; this just
-    // bounds malformed-body spam attempts.
-    enforceRateLimit('rating_create', 10, 600, $callerId);
-
-    // Pick the rate-target acceptance for this caller + challenge.
-    //
-    // Bug fix (Jun 2026): the previous SELECT used `ORDER BY created_at DESC
-    // LIMIT 1` over all non-rejected rows. When a challenge has had multiple
-    // acceptances over time - e.g. an OLD phase='approved' (mutually
-    // completed, caller still hasn't written their rating) AND a NEWER
-    // phase='accepted' (a different taker just took it on) - that picker
-    // grabbed the new one and the effective_phase gate refused. The result
-    // was a 403 not_rate_eligible for a rating the caller legitimately
-    // wanted to leave on the older meet-up.
-    //
-    // Two-branch resolution that mirrors /me/rate-prompts exactly:
-    //   - Caller is creator → any rate-eligible acceptance on this challenge
-    //     (phase='approved', OR phase='scheduled' with end past). Most
-    //     recent first.
-    //   - Caller is acceptor → their own acceptance for this challenge
-    //     (unique per UNIQUE(challenge_id, acceptor_user_id)). The
-    //     downstream effective_phase check handles the gate.
-    $isChallengerEarly = $challenge['created_by'] === $callerId;
-    if ($isChallengerEarly) {
-        $stmt = Database::pdo()->prepare("
-            SELECT ca.id
-            FROM challenge_acceptances ca
-            WHERE ca.challenge_id = :cid
-              AND ca.phase <> 'rejected'
-              AND (
-                  ca.phase = 'approved'
-                  OR (ca.phase = 'scheduled'
-                      AND ca.proposed_starts_at IS NOT NULL
-                      AND (ca.proposed_starts_at + interval '30 minutes') < now())
-              )
-            ORDER BY ca.created_at DESC
-            LIMIT 1
-        ");
-        $stmt->execute(['cid' => $challengeId]);
-    } else {
-        $stmt = Database::pdo()->prepare("
-            SELECT ca.id
-            FROM challenge_acceptances ca
-            WHERE ca.challenge_id = :cid AND ca.acceptor_user_id = :uid
-            LIMIT 1
-        ");
-        $stmt->execute(['cid' => $challengeId, 'uid' => $callerId]);
-    }
-    $accId = $stmt->fetchColumn();
-    if ($accId === false) {
-        Response::json([
-            'error' => $isChallengerEarly
-                ? "No rate-eligible meet-up on this challenge yet."
-                : "You're not a party to this challenge.",
-            'code'  => $isChallengerEarly ? 'no_acceptance' : 'not_a_party',
-        ], 403);
-    }
-    // findById gives us the derived effective_phase alongside the row.
-    $acceptance = ChallengeAcceptanceRepository::findById((string) $accId);
-
-    // Rate-eligibility - meetup must be over. 'debrief' = scheduled + meetup
-    // end is past. 'approved' = trigger already fired OR legacy verdict path.
-    // A second distinct rater still slots in cleanly on 'approved'. For the
-    // CREATOR branch above, the SQL already filtered to rate-eligible rows,
-    // so this check is effectively for the ACCEPTOR branch (whose own
-    // acceptance might be in pending / accepted / scheduled-not-past).
-    if (!in_array($acceptance['effective_phase'], ['debrief', 'approved'], true)) {
-        $msg = $acceptance['phase'] === 'pending'
-            ? "Wait until the creator accepts your take-on."
-            : ($acceptance['phase'] === 'accepted'
-                ? "Lock in a meet-up date first."
-                : "Wait until the meet-up is over.");
-        Response::json([
-            'error' => $msg,
-            'code'  => 'not_rate_eligible',
-            'phase' => $acceptance['effective_phase'],
-        ], 403);
-    }
-
-    // Role resolution. Either party may rate; nobody else.
-    $isChallenger = $challenge['created_by']        === $callerId;
-    $isTaker      = $acceptance['acceptor_user_id'] === $callerId;
-    if (!$isChallenger && !$isTaker) {
-        Response::json([
-            'error' => "You're not a party to this challenge.",
-            'code'  => 'not_a_party',
-        ], 403);
-    }
-    $raterRole = $isChallenger ? 'challenger' : 'taker';
-    $rateeId   = $isChallenger ? $acceptance['acceptor_user_id'] : $challenge['created_by'];
-
-    // Insert. The trigger handles all scoring + the phase flip on the second
-    // rating; we never touch score_events.
-    $ratingId = bin2hex(random_bytes(8));
-    try {
-        Database::pdo()->prepare("
-            INSERT INTO challenge_ratings
-                (id, challenge_id, rater_id, ratee_id, rater_role, stars, comment)
-            VALUES
-                (:id, :cid, :rater, :ratee, :role, :stars, :comment)
-        ")->execute([
-            'id'      => $ratingId,
-            'cid'     => $challengeId,
-            'rater'   => $callerId,
-            'ratee'   => $rateeId,
-            'role'    => $raterRole,
-            'stars'   => $stars,
-            'comment' => $comment,
-        ]);
-    } catch (\PDOException $e) {
-        // 23505 = unique_violation on (challenge_id, rater_id).
-        if ($e->getCode() === '23505') {
-            Response::json([
-                'error' => "You already rated this challenge.",
-                'code'  => 'already_rated',
-            ], 409);
-        }
-        error_log('[ratings] insert failed ch=' . $challengeId . ' uid=' . $callerId . ': ' . $e->getMessage());
-        Response::json(['error' => 'Failed to submit rating'], 500);
-    }
-
-    // Did this insert trigger the mutual-reveal? Cheap: count ratings for
-    // this challenge - 2 means the trigger has fired (or is firing).
-    $stmt = Database::pdo()->prepare("
-        SELECT COUNT(*) FROM challenge_ratings WHERE challenge_id = ?
-    ");
-    $stmt->execute([$challengeId]);
-    $revealed = ((int) $stmt->fetchColumn()) >= 2;
-
-    // PR47 - second rating landed → the mutual-rating trigger has just
-    // awarded debrief points to BOTH users. Two side-effects fire here:
-    //   1. WS broadcast to both - open clients refresh /me/score-celebration
-    //      so the "+30/+40 points" popin appears immediately. The
-    //      LaunchGate listens to 'mutual_rating_complete'.
-    //   2. Push to the FIRST rater (the OTHER party) - they're not the
-    //      one calling this endpoint, so they need to be pulled back
-    //      into the app. The just-submitting rater (caller) sees the
-    //      popin via the WS broadcast on their own open client; they
-    //      don't need a push (would be redundant).
-    if ($revealed) {
-        try {
-            // Both users get the WS event - the just-submitting rater's
-            // own client refetches the celebration too, so the popin
-            // surfaces without leaving the channel.
-            broadcastMutualRatingCompleteToWs($callerId, [
-                'challengeId' => $challengeId,
-                'role'        => $raterRole,
-            ]);
-            broadcastMutualRatingCompleteToWs($rateeId, [
-                'challengeId' => $challengeId,
-                'role'        => $raterRole === 'challenger' ? 'taker' : 'challenger',
-            ]);
-        } catch (\Throwable $e) {
-            error_log('[ratings] mutual ws broadcast failed (non-fatal): ' . $e->getMessage());
-        }
-
-        // Push the FIRST rater. rateeId on this just-inserted row is who
-        // the CALLER rated - i.e. the other party - who is exactly the
-        // first rater (they had to have rated before this row was the
-        // SECOND one). Keep the type name self-describing for ops.
-        try {
-            $callerName = $authUser['display_name'] ?? 'Someone';
-            NotificationRepository::create(
-                $rateeId,
-                'challenge_rated_complete',
-                "{$callerName} rated you",
-                "Mutual rating done - your points just landed for \"{$challenge['title']}\"",
-                [
-                    'challengeId'    => $challengeId,
-                    'raterName'      => $callerName,
-                    'challengeTitle' => $challenge['title'] ?? '',
-                ],
-            );
-        } catch (\Throwable $e) {
-            error_log('[ratings] mutual push failed (non-fatal): ' . $e->getMessage());
-        }
-
-        // Second rating just fired the debrief trigger: +30 challenger,
-        // +40 taker. Both users' monthly scores changed; both their
-        // city + world ranks may have flipped. Service dedupes the
-        // city if they share one (local challenge case).
-        MonthlyRankService::recalcAfterScoreChange($callerId, $rateeId);
-
-        // Reopen the challenge channel so a new taker can start the
-        // next round. The completed acceptance row stays as 'approved'
-        // (the mutual-rating trigger already flipped it; the +5/+5
-        // +30/+40 score_events are attributed to it for the history).
-        // Only the channel-level status resets so the card on the city
-        // feed flips from "Validated" back to "Available" and any
-        // viewer who didn't trigger the reset sees it via WS.
-        try {
-            $stmt = Database::pdo()->prepare("
-                UPDATE channel_challenges
-                SET status       = 'open',
-                    validated_at = NULL,
-                    updated_at   = now()
-                WHERE channel_id = :id
-                  AND status     = 'validated'
-                RETURNING channel_id, city_id
-            ");
-            $stmt->execute(['id' => $challengeId]);
-            $resetRow = $stmt->fetch(\PDO::FETCH_ASSOC);
-            if ($resetRow && is_string($resetRow['city_id'] ?? null)
-                && preg_match('/^city_(\d+)$/', $resetRow['city_id'], $m)) {
-                $reopened = ChallengeRepository::findById($challengeId, null);
-                if ($reopened !== null) {
-                    broadcastChallengeUnvalidatedToWs((int) $m[1], $reopened);
-                }
-            }
-        } catch (\Throwable $e) {
-            error_log('[ratings] channel reset after mutual failed (non-fatal): ' . $e->getMessage());
-        }
-    } else {
-        // FIRST rating just landed - the OTHER party hasn't rated yet.
-        // Two side-effects, both non-fatal so the rating insert is never
-        // rolled back because of a flaky push or WS:
-        //   1. WS poke so their open RatePromptLaunchGate refetches and
-        //      surfaces the RateSheet immediately.
-        //   2. Push so a backgrounded / killed app pulls them back to
-        //      finish the loop. NotificationI18n translates the title +
-        //      body per recipient locale (see rating_received entry).
-        $callerName = $authUser['display_name'] ?? 'Someone';
-        try {
-            broadcastRatingReceivedToWs($rateeId, [
-                'challengeId' => $challengeId,
-                'raterName'   => $callerName,
-            ]);
-        } catch (\Throwable $e) {
-            error_log('[ratings] first-rating ws broadcast failed (non-fatal): ' . $e->getMessage());
-        }
-        try {
-            NotificationRepository::create(
-                $rateeId,
-                'rating_received',
-                "{$callerName} rated you",
-                "Your turn to rate them back",
-                [
-                    'challengeId'    => $challengeId,
-                    'senderName'     => $callerName,
-                    'challengeTitle' => $challenge['title'] ?? '',
-                ],
-            );
-        } catch (\Throwable $e) {
-            error_log('[ratings] first-rating push failed (non-fatal): ' . $e->getMessage());
-        }
-    }
-
-    AnalyticsService::defer('challenge_rated', $callerId, [
-        'challenge_id' => $challengeId,
-        'rater_role'   => $raterRole,
-        'stars'        => $stars,
-        'revealed'     => $revealed,
-    ]);
-
-    Response::json([
-        'rating' => [
-            'id'           => $ratingId,
-            'challenge_id' => $challengeId,
-            'rater_id'     => $callerId,
-            'ratee_id'     => $rateeId,
-            'rater_role'   => $raterRole,
-            'stars'        => $stars,
-            'comment'      => $comment,
-        ],
-        'revealed' => $revealed,
-    ], 201);
-});
-
-// GET /api/v1/challenges/{challengeId}/ratings/mine
-// The caller's own rating - always visible to its writer (no mutual-reveal
-// gate on the rater's own row). Returns { rating: null } when the caller
-// hasn't rated yet so the client can branch cleanly without catching a 404.
-$router->add('GET', '/api/v1/challenges/{challengeId}/ratings/mine', function (array $params) {
-    $challengeId = $params['challengeId'] ?? '';
-    if (!preg_match('/^[a-f0-9]{16}$/', $challengeId)) {
-        Response::json(['error' => 'Invalid challengeId'], 400);
-    }
-
-    $authUser = AuthService::requireAuth();
-    $callerId = $authUser['id'];
-
-    $stmt = Database::pdo()->prepare("
-        SELECT id, challenge_id, rater_id, ratee_id, rater_role, stars, comment,
-               EXTRACT(EPOCH FROM created_at)::INTEGER AS created_at
-        FROM challenge_ratings
-        WHERE challenge_id = :cid AND rater_id = :uid
-        LIMIT 1
-    ");
-    $stmt->execute(['cid' => $challengeId, 'uid' => $callerId]);
-    $row = $stmt->fetch(\PDO::FETCH_ASSOC);
-
-    if (!$row) {
-        Response::json(['rating' => null]);
-    }
-
-    Response::json([
-        'rating' => [
-            'id'           => $row['id'],
-            'challenge_id' => $row['challenge_id'],
-            'rater_id'     => $row['rater_id'],
-            'ratee_id'     => $row['ratee_id'],
-            'rater_role'   => $row['rater_role'],
-            'stars'        => (int) $row['stars'],
-            'comment'      => $row['comment'],
-            'created_at'   => (int) $row['created_at'],
-        ],
-    ]);
-});
-
-// GET /api/v1/challenges/{challengeId}/ratings/of-me
-// The rating ABOUT the caller - mutual-reveal gated. Reads from
-// visible_ratings, which only exposes a row once both parties have rated
-// (see migrate.php:1538). Filtering by ratee_id = caller.id therefore yields:
-//   - waiting on caller to rate          → empty (revealed=false)
-//   - waiting on the other party to rate → empty (revealed=false)
-//   - both rated                         → the row, revealed=true
-// The two empty cases are intentionally indistinguishable here; the client
-// disambiguates "I haven't rated yet" vs. "the other party hasn't rated yet"
-// by also calling /ratings/mine, which is paid-for in the same UI tick.
-$router->add('GET', '/api/v1/challenges/{challengeId}/ratings/of-me', function (array $params) {
-    $challengeId = $params['challengeId'] ?? '';
-    if (!preg_match('/^[a-f0-9]{16}$/', $challengeId)) {
-        Response::json(['error' => 'Invalid challengeId'], 400);
-    }
-
-    $authUser = AuthService::requireAuth();
-    $callerId = $authUser['id'];
-
-    $stmt = Database::pdo()->prepare("
-        SELECT id, challenge_id, rater_id, ratee_id, rater_role, stars, comment,
-               EXTRACT(EPOCH FROM created_at)::INTEGER AS created_at
-        FROM visible_ratings
-        WHERE challenge_id = :cid AND ratee_id = :uid
-        LIMIT 1
-    ");
-    $stmt->execute(['cid' => $challengeId, 'uid' => $callerId]);
-    $row = $stmt->fetch(\PDO::FETCH_ASSOC);
-
-    if (!$row) {
-        Response::json(['revealed' => false]);
-    }
-
-    Response::json([
-        'revealed' => true,
-        'rating' => [
-            'id'           => $row['id'],
-            'challenge_id' => $row['challenge_id'],
-            'rater_id'     => $row['rater_id'],
-            'ratee_id'     => $row['ratee_id'],
-            'rater_role'   => $row['rater_role'],
-            'stars'        => (int) $row['stars'],
-            'comment'      => $row['comment'],
-            'created_at'   => (int) $row['created_at'],
-        ],
-    ]);
-});
-
-// ── Challenge acceptances (PR2 - new take-on flow) ────────────────────────────
-// The old /participants/toggle above is the legacy pooled-acceptance path
-// (kept for backward-compat with the live mobile build until the next app
-// release). The endpoints below are the new model: each accept creates a
-// 1:1 thread channel between creator + acceptor.
-
-// POST /api/v1/challenges/{challengeId}/accept
-// New take-on. Creates a challenge_acceptances row + a channels.type='challenge_thread'
-// row (the 1:1 chat). Idempotent - re-accepting returns the existing row.
-//
-// Gates (all 403 with `code` field for client to disambiguate):
-//   - not_creator       : you can't accept your own challenge
-//   - mode_required     : your users.mode is null - set it before accepting
-//   - mode_mismatch     : you're a local but the challenge is for travelers (or vice-versa)
-//   - cap_reached       : challenge already at max_participants
 // POST /api/v1/challenges/{challengeId}/validate-presence  (Phase 3, GROUP only)
 // The challenger validates who showed up at the group meet. Body:
 //   { presentUserIds: [userId, ...] }
@@ -10815,6 +10176,10 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/pick-winner', function (a
     Response::json(['ok' => true, 'winnerUserId' => $winnerUserId]);
 });
 
+// POST /api/v1/challenges/{challengeId}/accept
+// Joins a GROUP challenge (no approval, multiple takers, +2 join spark). The
+// legacy 1-to-1 take-on was retired in Phase 5: legacy rows answer 409
+// code=legacy_retired.
 $router->add('POST', '/api/v1/challenges/{challengeId}/accept', function (array $params) {
     $challengeId = $params['challengeId'] ?? '';
     if (!preg_match('/^[a-f0-9]{16}$/', $challengeId)) {
@@ -10842,8 +10207,7 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/accept', function (array 
     // anyone who can see it (visibility already enforced by findById above) just
     // joins and becomes a taker. Multiple takers coexist. The +2 join spark is
     // credited by the on_challenge_join_award DB trigger - immediate, once per
-    // (user, challenge), never re-credited on rejoin. Legacy challenges fall
-    // through to the existing accept→approve→date→rate flow untouched.
+    // (user, challenge), never re-credited on rejoin.
     if (($challenge['challenge_format'] ?? 'legacy') === 'group') {
         if (!empty($challenge['closed_to_new_joins'])) {
             Response::json(['error' => 'This challenge is closed to new joins.', 'code' => 'closed_to_new_joins'], 403);
@@ -10941,526 +10305,10 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/accept', function (array 
         Response::json(['acceptance' => $acceptance, 'challengeId' => $challengeId, 'joined' => true], 201);
     }
 
-    // Idempotency: already actively accepted? Return the existing row (201
-    // would be misleading; 200 = "you're already in, here's your acceptance").
-    // Active-only on purpose - a terminal row from a prior round (the user
-    // was the taker, both rated, channel reopened) must NOT short-circuit
-    // the new accept attempt; otherwise tapping "Take on the challenge"
-    // silently no-ops because the server hands back the stale terminal row
-    // and the client maps it to activeAcceptance=null, leaving the CTA on.
-    $existing = ChallengeAcceptanceRepository::findActiveByUser($challengeId, $userId);
-    if ($existing !== null) {
-        Response::json($existing);
-    }
-
-    // Mode/audience gate REMOVED for local challenges - they are now "for
-    // everyone in the city" (the locals/travelers audience choice was dropped
-    // at creation for being too much friction). Anyone can take on a local
-    // challenge regardless of their local/traveler mode. International
-    // challenges never gated on mode anyway (the proof verdict is the gate).
-    $isInternational = ($challenge['mode'] ?? 'local') === 'international';
-    if ($isInternational) {
-        // PR49 - International challenge with a TARGET city: only users
-        // whose current_city_id matches that target can take it on.
-        // target_city_id IS NULL = "anywhere" → no gate (kept open).
-        // Example: someone from HCMC posts "find me the best kebab in
-        // Berlin" - only Berlin members should be allowed to take it.
-        $targetCityId = $challenge['target_city_id'] ?? null;
-        if (is_string($targetCityId) && $targetCityId !== '') {
-            $userCityId = $authUser['current_city_id'] ?? null;
-            if ($userCityId !== $targetCityId) {
-                // Try to resolve the target city name for a friendlier
-                // error message ("Only Berlin members…"). Falls back to
-                // generic copy if the lookup fails - never 500 on this.
-                $targetCityName = null;
-                if (preg_match('/^city_(\d+)$/', $targetCityId, $m)) {
-                    $row = CityRepository::findById((int) $m[1]);
-                    $targetCityName = $row['name'] ?? null;
-                }
-                Response::json([
-                    'error' => $targetCityName !== null
-                        ? "Only {$targetCityName} members can take this challenge."
-                        : "Only members of the target city can take this challenge.",
-                    'code'  => 'wrong_city',
-                    'required_city_id'   => $targetCityId,
-                    'required_city_name' => $targetCityName,
-                ], 403);
-            }
-        }
-    }
-
-    // 1:1 gate - refuse a new take-on while the challenge has any
-    // non-terminal acceptance. The first taker holds the challenge until
-    // their meet-up wraps up (approved / rejected) or they cancel - at which
-    // point the row frees and the next traveler can take it on. Commit 3
-    // adds a lazy "ghosted taker" rule so a long-stale debrief also frees
-    // the challenge without manual intervention.
-    //
-    // International challenges share the same 1:1 lock at the data layer
-    // (one open acceptance at a time) - but the lock releases on proof
-    // verdict instead of meetup completion. Same semantics, different flow.
-    // One-shot rule: a SUCCESSFULLY completed challenge (an acceptance reached
-    // 'approved') is closed for good - it never reopens for new takers. Checked
-    // before the in-progress gate since "completed" is the more terminal state.
-    // Bail/cancel/restart/rejected leave no 'approved' row, so they still reopen.
-    if (ChallengeAcceptanceRepository::hasApprovedAcceptance($challengeId)) {
-        Response::json([
-            'error' => 'This challenge is done - it has already been completed',
-            'code'  => 'completed',
-        ], 403);
-    }
-
-    if (ChallengeAcceptanceRepository::hasActiveAcceptance($challengeId)) {
-        Response::json([
-            'error' => "Someone's already on this one - check back when it's done",
-            'code'  => 'in_progress',
-        ], 403);
-    }
-
-    enforceRateLimit('challenge_accept', 20, 3600, $userId);
-
-    // International challenges auto-approve the take-on (no IRL filter step).
-    // A personally-invited user also lands directly as the taker - the
-    // invitation is the creator's pre-selection, so there's nothing left to
-    // vet. Everyone else stays gated at 'pending' for the creator to review.
-    $invited      = ChallengeInvitationRepository::existsFor($challengeId, $userId);
-    $autoApproved = $isInternational || $invited;
-    $initialPhase = $autoApproved ? 'accepted' : 'pending';
-
-    try {
-        $acceptance = ChallengeAcceptanceRepository::create($challengeId, $userId, $initialPhase);
-    } catch (\Throwable $e) {
-        error_log('[challenges] accept failed ch=' . $challengeId . ' uid=' . $userId . ': ' . $e->getMessage());
-        Response::json(['error' => 'Failed to accept challenge'], 500);
-    }
-
-    // Live push to BOTH parties. The creator's threads list updates; and when
-    // the take-on is auto-approved (international / invited → phase='accepted',
-    // which fires the +5/+5 score trigger inline) the taker is pushed too so
-    // their pipeline advances AND the score-celebration gate pops on both sides.
-    // (Plain local take-ons land in 'pending' - no score yet, no taker push;
-    // the celebration fires later at approve-takeon.)
-    try {
-        $acceptedPayload = [
-            'acceptance' => $acceptance,
-            'challenge'  => [
-                'id'             => $challenge['id'],
-                'title'          => $challenge['title'],
-                'challenge_type' => $challenge['challenge_type'],
-                'mode'           => $challenge['mode'] ?? 'local',
-            ],
-            'acceptor' => [
-                'id'             => $userId,
-                'displayName'    => $authUser['display_name'] ?? null,
-                'thumbAvatarUrl' => R2Uploader::thumbProxy($authUser['profile_thumb_photo_url'] ?? null),
-            ],
-        ];
-        if (!empty($challenge['created_by'])) {
-            broadcastChallengeAcceptedToWs($challenge['created_by'], $acceptedPayload);
-        }
-        if ($autoApproved) {
-            broadcastChallengeAcceptedToWs($userId, $acceptedPayload);
-        }
-    } catch (\Throwable $e) {
-        error_log('[challenges] ws accept broadcast failed (non-fatal): ' . $e->getMessage());
-    }
-
-    // Push notification to the creator - copy differs by mode:
-    //   Local         → "take-on REQUEST" (creator must review)
-    //   International → "challenge accepted" (auto-approved; creator just
-    //                   knows someone's on it, waiting for proof)
-    // Same type for now (challenge_takeon_request) - keeps NotificationI18n
-    // and the bell row simple. Future step can split if the difference
-    // becomes UX-meaningful, but for now the body distinction below is
-    // enough - clients render off `data.mode` to differentiate CTAs.
-    try {
-        if (!empty($challenge['created_by'])) {
-            $acceptorName = $authUser['display_name'] ?? 'Someone';
-            $title = $autoApproved ? "Challenge accepted" : "New take-on request";
-            $body  = $isInternational
-                ? "{$acceptorName} accepted \"{$challenge['title']}\". Wait for the proof."
-                : ($invited
-                    ? "{$acceptorName} accepted your challenge \"{$challenge['title']}\""
-                    : "{$acceptorName} wants to take on \"{$challenge['title']}\"");
-            NotificationRepository::create(
-                $challenge['created_by'],
-                'challenge_takeon_request',
-                $title,
-                $body,
-                [
-                    'challengeId'    => $challengeId,
-                    'acceptanceId'   => $acceptance['id'],
-                    'acceptorName'   => $acceptorName,
-                    // Plumbed through so NotificationI18n templates can render
-                    // a localized body for non-EN recipients.
-                    'challengeTitle' => $challenge['title'] ?? '',
-                    'mode'           => $challenge['mode'] ?? 'local',
-                ],
-            );
-        }
-    } catch (\Throwable $e) {
-        error_log('[challenges] takeon-request push failed (non-fatal): ' . $e->getMessage());
-    }
-
-    AnalyticsService::defer('challenge_take_on', $userId, [
-        'challenge_id'  => $challengeId,
-        'acceptance_id' => $acceptance['id'],
-        'mode'          => $challenge['mode'] ?? 'local',
-        'auto_approved' => $autoApproved,
-    ]);
-
-    // Auto-approved acceptances (international OR invited) land in
-    // phase='accepted', which fires the +5 challenger trigger inline. Plain
-    // local take-ons insert in 'pending' - no score yet (approve-takeon
-    // handles it). The challenger is the only user whose score moved.
-    if ($autoApproved && !empty($challenge['created_by'])) {
-        MonthlyRankService::recalcAfterScoreChange($challenge['created_by']);
-    }
-
-    Response::json($acceptance, 201);
-});
-
-// ── PR5: pending take-on review (creator approve / reject) ──────────────────
-
-/**
- * Shared validator for the two take-on review routes. Returns
- * [acceptance, challenge, authUser] on success, or short-circuits with a JSON
- * error. Gate: caller is the challenge creator, acceptance phase='pending'.
- */
-function gateTakeOnReview(string $acceptanceId): array
-{
-    if (!preg_match('/^[a-f0-9]{16}$/', $acceptanceId)) {
-        Response::json(['error' => 'Invalid acceptanceId'], 400);
-    }
-    $authUser = AuthService::requireAuth();
-    $acceptance = ChallengeAcceptanceRepository::findById($acceptanceId);
-    if ($acceptance === null) {
-        Response::json(['error' => 'Acceptance not found'], 404);
-    }
-    $challenge = ChallengeRepository::findByIdUnchecked($acceptance['challenge_id']);
-    if ($challenge === null) {
-        Response::json(['error' => 'Challenge not found'], 404);
-    }
-    if ($challenge['created_by'] !== $authUser['id']) {
-        Response::json(['error' => 'Only the challenge creator can review take-on requests'], 403);
-    }
-    if ($acceptance['phase'] !== 'pending') {
-        Response::json([
-            'error' => "This take-on isn't pending review",
-            'code'  => 'phase_locked',
-        ], 409);
-    }
-    return [$acceptance, $challenge, $authUser];
-}
-
-// POST /api/v1/acceptances/{acceptanceId}/approve-takeon
-// Creator accepts a pending take-on request → phase flips to 'accepted'.
-// The thread chat unlocks for the acceptor; a system message lands in the
-// thread; the acceptor gets a push.
-$router->add('POST', '/api/v1/acceptances/{acceptanceId}/approve-takeon', function (array $params) {
-    [$acceptance, $challenge, $authUser] = gateTakeOnReview($params['acceptanceId'] ?? '');
-    $userId       = $authUser['id'];
-    $acceptanceId = $params['acceptanceId'];
-
-    try {
-        $updated = ChallengeAcceptanceRepository::approveTakeOn($acceptanceId);
-    } catch (\Throwable $e) {
-        error_log('[challenges] approve-takeon failed acc=' . $acceptanceId . ': ' . $e->getMessage());
-        Response::json(['error' => 'Failed to approve take-on'], 500);
-    }
-    if ($updated === null) {
-        Response::json(['error' => 'Failed to approve take-on'], 500);
-    }
-
-    // System message in the thread - "✅ X accepted your take-on. Let's plan!"
-    // Sent as a regular message of type='system' so it persists in history
-    // and shows up the moment the chat unlocks.
-    try {
-        $creatorName = $authUser['display_name'] ?? 'The creator';
-        $sysMsg = MessageRepository::addSystemMessage(
-            $acceptance['thread_channel_id'],
-            "{$creatorName} accepted your take-on - let's plan the meet-up!",
-        );
-        broadcastMessageToWs($acceptance['thread_channel_id'], $sysMsg);
-    } catch (\Throwable $e) {
-        error_log('[challenges] approve-takeon system msg failed (non-fatal): ' . $e->getMessage());
-    }
-
-    // WS broadcast to the acceptor - their UI flips from "Waiting..." to chat.
-    try {
-        if (!empty($acceptance['acceptor_user_id'])) {
-            broadcastChallengeTakeOnReviewedToWs($acceptance['acceptor_user_id'], [
-                'acceptanceId'    => $acceptanceId,
-                'challengeId'     => $acceptance['challenge_id'],
-                'threadChannelId' => $acceptance['thread_channel_id'],
-                'decision'        => 'approved',
-                'acceptance'      => $updated,
-            ]);
-        }
-    } catch (\Throwable $e) {
-        error_log('[challenges] approve-takeon WS broadcast failed (non-fatal): ' . $e->getMessage());
-    }
-
-    // Match confirmed: phase pending → 'accepted' fired the +5/+5 score trigger.
-    // Broadcast challenge_accepted to BOTH the creator (who approved via HTTP)
-    // and the acceptor so the score-celebration gate pops on both sides live,
-    // and both pipelines advance. (challenge_takeon_reviewed above already
-    // updates the acceptor's UI; this adds the creator + the celebration.)
-    try {
-        $acceptedPayload = [
-            'acceptance'  => $updated,
-            'challengeId' => $acceptance['challenge_id'],
-            'challenge'   => ['id' => $acceptance['challenge_id']],
-        ];
-        broadcastChallengeAcceptedToWs($authUser['id'], $acceptedPayload);
-        if (!empty($acceptance['acceptor_user_id'])) {
-            broadcastChallengeAcceptedToWs($acceptance['acceptor_user_id'], $acceptedPayload);
-        }
-    } catch (\Throwable $e) {
-        error_log('[challenges] approve-takeon accepted broadcast failed (non-fatal): ' . $e->getMessage());
-    }
-
-    // Push to the acceptor - their take-on is now active.
-    try {
-        if (!empty($acceptance['acceptor_user_id'])) {
-            $creatorName = $authUser['display_name'] ?? 'The creator';
-            NotificationRepository::create(
-                $acceptance['acceptor_user_id'],
-                'challenge_takeon_approved',
-                "Take-on accepted",
-                "{$creatorName} accepted your take-on of \"{$challenge['title']}\". Time to plan!",
-                [
-                    'challengeId'    => $acceptance['challenge_id'],
-                    'acceptanceId'   => $acceptanceId,
-                    'creatorName'    => $creatorName,
-                    'challengeTitle' => $challenge['title'] ?? '',
-                ],
-            );
-        }
-    } catch (\Throwable $e) {
-        error_log('[challenges] approve-takeon push failed (non-fatal): ' . $e->getMessage());
-    }
-
-    // Phase flip pending → accepted fires the +5 challenger trigger.
-    // Only the creator's score moved; the acceptor doesn't earn until
-    // a later step. Recalc their rank in-line.
-    if (!empty($challenge['created_by'])) {
-        MonthlyRankService::recalcAfterScoreChange($challenge['created_by']);
-    }
-
-    Response::json(['acceptance' => $updated]);
-});
-
-// POST /api/v1/acceptances/{acceptanceId}/reject-takeon
-// Creator declines a pending take-on request → phase flips to 'rejected'.
-// The thread chat stays hidden; a system message lands in the thread
-// (audit trail) and the acceptor gets a push.
-$router->add('POST', '/api/v1/acceptances/{acceptanceId}/reject-takeon', function (array $params) {
-    [$acceptance, $challenge, $authUser] = gateTakeOnReview($params['acceptanceId'] ?? '');
-    $userId       = $authUser['id'];
-    $acceptanceId = $params['acceptanceId'];
-
-    try {
-        $updated = ChallengeAcceptanceRepository::rejectTakeOn($acceptanceId);
-    } catch (\Throwable $e) {
-        error_log('[challenges] reject-takeon failed acc=' . $acceptanceId . ': ' . $e->getMessage());
-        Response::json(['error' => 'Failed to reject take-on'], 500);
-    }
-    if ($updated === null) {
-        Response::json(['error' => 'Failed to reject take-on'], 500);
-    }
-
-    // System message in the thread - audit trail even though the chat
-    // doesn't unlock. The acceptor's "Waiting..." state morphs into a
-    // rejection notice that references this message.
-    try {
-        $creatorName = $authUser['display_name'] ?? 'The creator';
-        $sysMsg = MessageRepository::addSystemMessage(
-            $acceptance['thread_channel_id'],
-            "{$creatorName} declined your take-on.",
-        );
-        broadcastMessageToWs($acceptance['thread_channel_id'], $sysMsg);
-    } catch (\Throwable $e) {
-        error_log('[challenges] reject-takeon system msg failed (non-fatal): ' . $e->getMessage());
-    }
-
-    // WS broadcast + push to acceptor - same payload as approve, different decision.
-    try {
-        if (!empty($acceptance['acceptor_user_id'])) {
-            broadcastChallengeTakeOnReviewedToWs($acceptance['acceptor_user_id'], [
-                'acceptanceId'    => $acceptanceId,
-                'challengeId'     => $acceptance['challenge_id'],
-                'threadChannelId' => $acceptance['thread_channel_id'],
-                'decision'        => 'rejected',
-                'acceptance'      => $updated,
-            ]);
-        }
-    } catch (\Throwable $e) {
-        error_log('[challenges] reject-takeon WS broadcast failed (non-fatal): ' . $e->getMessage());
-    }
-
-    try {
-        if (!empty($acceptance['acceptor_user_id'])) {
-            $creatorName = $authUser['display_name'] ?? 'The creator';
-            NotificationRepository::create(
-                $acceptance['acceptor_user_id'],
-                'challenge_takeon_rejected',
-                "Take-on declined",
-                "{$creatorName} declined your take-on of \"{$challenge['title']}\".",
-                [
-                    'challengeId'    => $acceptance['challenge_id'],
-                    'acceptanceId'   => $acceptanceId,
-                    'creatorName'    => $creatorName,
-                    'challengeTitle' => $challenge['title'] ?? '',
-                ],
-            );
-        }
-    } catch (\Throwable $e) {
-        error_log('[challenges] reject-takeon push failed (non-fatal): ' . $e->getMessage());
-    }
-
-    Response::json(['acceptance' => $updated]);
-});
-
-// POST /api/v1/acceptances/{acceptanceId}/abandon
-// The TAKER leaves an active take-on. Hard-deletes the acceptance (the challenge
-// reopens from zero - hasActiveAcceptance is live-derived) and wipes the
-// challenge channel chat for a clean slate, then pushes + WS-resets the creator.
-// Acceptor-only; active phases only (pending/accepted/scheduled) - terminal
-// rows (approved/rejected) 409.
-$router->add('POST', '/api/v1/acceptances/{acceptanceId}/abandon', function (array $params) {
-    $acceptanceId = $params['acceptanceId'] ?? '';
-    if (!preg_match('/^[a-f0-9]{16}$/', $acceptanceId)) {
-        Response::json(['error' => 'Invalid acceptanceId'], 400);
-    }
-    $authUser = AuthService::requireAuth();
-    $userId   = $authUser['id'];
-
-    $acceptance = ChallengeAcceptanceRepository::findById($acceptanceId);
-    if ($acceptance === null) {
-        Response::json(['error' => 'Acceptance not found'], 404);
-    }
-    if ($acceptance['acceptor_user_id'] !== $userId) {
-        Response::json(['error' => 'Only the taker can leave', 'code' => 'not_acceptor'], 403);
-    }
-    if (!in_array($acceptance['phase'], ['pending', 'accepted', 'scheduled'], true)) {
-        Response::json(['error' => "Can't leave at this stage", 'code' => 'phase_locked'], 409);
-    }
-
-    $challenge = ChallengeRepository::findByIdUnchecked($acceptance['challenge_id']);
-
-    try {
-        $wiped = ChallengeAcceptanceRepository::abandon($acceptanceId);
-    } catch (\Throwable $e) {
-        error_log('[challenges] abandon failed acc=' . $acceptanceId . ': ' . $e->getMessage());
-        Response::json(['error' => 'Failed to leave challenge'], 500);
-    }
-    if ($wiped === null) {
-        Response::json(['error' => 'Acceptance not found'], 404);
-    }
-
-    // Notify + reset the creator (skip if challenge/creator is gone, or the
-    // creator somehow equals the acceptor).
-    $creatorId      = is_array($challenge) ? ($challenge['created_by'] ?? null) : null;
-    $challengeTitle = is_array($challenge) ? (string) ($challenge['title'] ?? '') : '';
-    if ($creatorId !== null && $creatorId !== $userId) {
-        $acceptorName = (string) ($authUser['display_name'] ?? 'Someone');
-        $data = [
-            'challengeId'    => $acceptance['challenge_id'],
-            'acceptanceId'   => $acceptanceId,
-            'acceptorUserId' => $userId,
-            'acceptorName'   => $acceptorName,
-            'challengeTitle' => $challengeTitle,
-        ];
-        try {
-            broadcastChallengeAcceptorLeftToWs($creatorId, $data);
-        } catch (\Throwable $e) {
-            error_log('[challenges] abandon WS broadcast failed (non-fatal): ' . $e->getMessage());
-        }
-        try {
-            NotificationRepository::create(
-                $creatorId,
-                'challenge_acceptor_left',
-                'Taker left',
-                "{$acceptorName} left the challenge \"{$challengeTitle}\"",
-                $data,
-            );
-        } catch (\Throwable $e) {
-            error_log('[challenges] abandon push failed (non-fatal): ' . $e->getMessage());
-        }
-    }
-
-    Response::json(['ok' => true, 'challengeId' => $acceptance['challenge_id']]);
-});
-
-// POST /api/v1/challenges/{challengeId}/restart
-// The CREATOR restarts from zero: removes the current active taker (deletes
-// their acceptance), wipes the challenge channel chat, and reopens the
-// challenge, then pushes + WS-resets the removed taker. Creator-only; 409 if
-// there's no active taker to remove.
-$router->add('POST', '/api/v1/challenges/{challengeId}/restart', function (array $params) {
-    challengeCreationGate();
-    $challengeId = $params['challengeId'] ?? '';
-    if (!preg_match('/^[a-f0-9]{16}$/', $challengeId)) {
-        Response::json(['error' => 'Invalid challengeId'], 400);
-    }
-    $authUser = AuthService::requireAuth();
-    $userId   = $authUser['id'];
-
-    $challenge = ChallengeRepository::findByIdUnchecked($challengeId);
-    if ($challenge === null) {
-        Response::json(['error' => 'Challenge not found'], 404);
-    }
-    if (($challenge['created_by'] ?? null) !== $userId) {
-        Response::json(['error' => 'Only the creator can restart this challenge', 'code' => 'not_creator'], 403);
-    }
-
-    $acceptanceId = ChallengeAcceptanceRepository::findActiveAcceptanceId($challengeId);
-    if ($acceptanceId === null) {
-        Response::json(['error' => 'No active taker to remove', 'code' => 'no_active_taker'], 409);
-    }
-    $acceptance = ChallengeAcceptanceRepository::findById($acceptanceId);
-    $takerId    = is_array($acceptance) ? ($acceptance['acceptor_user_id'] ?? null) : null;
-
-    try {
-        $wiped = ChallengeAcceptanceRepository::abandon($acceptanceId);
-    } catch (\Throwable $e) {
-        error_log('[challenges] restart failed ch=' . $challengeId . ': ' . $e->getMessage());
-        Response::json(['error' => 'Failed to restart challenge'], 500);
-    }
-    if ($wiped === null) {
-        Response::json(['error' => 'No active taker to remove', 'code' => 'no_active_taker'], 409);
-    }
-
-    // Notify + reset the removed taker.
-    $challengeTitle = (string) ($challenge['title'] ?? '');
-    if ($takerId !== null && $takerId !== $userId) {
-        $creatorName = (string) ($authUser['display_name'] ?? 'The creator');
-        $data = [
-            'challengeId'    => $challengeId,
-            'acceptanceId'   => $acceptanceId,
-            'creatorName'    => $creatorName,
-            'challengeTitle' => $challengeTitle,
-        ];
-        try {
-            broadcastChallengeRestartedToWs($takerId, $data);
-        } catch (\Throwable $e) {
-            error_log('[challenges] restart WS broadcast failed (non-fatal): ' . $e->getMessage());
-        }
-        try {
-            NotificationRepository::create(
-                $takerId,
-                'challenge_restarted',
-                'Challenge restarted',
-                "{$creatorName} restarted \"{$challengeTitle}\" - the take-on was reset",
-                $data,
-            );
-        } catch (\Throwable $e) {
-            error_log('[challenges] restart push failed (non-fatal): ' . $e->getMessage());
-        }
-    }
-
-    Response::json(['ok' => true, 'challengeId' => $challengeId]);
+    // Legacy 1-to-1 take-on (accept -> approve -> date -> rate) was retired in
+    // Phase 5: only group challenges can be joined. Old legacy rows stay
+    // readable (archive + chat) but can no longer be taken on.
+    Response::json(['error' => 'This challenge can no longer be taken on', 'code' => 'legacy_retired'], 409);
 });
 
 // POST /api/v1/challenges/{challengeId}/relaunch
@@ -11492,524 +10340,19 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/relaunch', function (arra
     Response::json(['ok' => true, 'challenge' => $updated]);
 });
 
-// POST /api/v1/acceptances/{acceptanceId}/cancel
-// Either party can cancel - but only in phase 'accepted'. Hard-delete: the
-// thread channel goes (cascade kills messages + the acceptance row via FK).
-// PR3+ phases (scheduled, debrief, approved, rejected) return 409.
-$router->add('POST', '/api/v1/acceptances/{acceptanceId}/cancel', function (array $params) {
-    $acceptanceId = $params['acceptanceId'] ?? '';
-    if (!preg_match('/^[a-f0-9]{16}$/', $acceptanceId)) {
-        Response::json(['error' => 'Invalid acceptanceId'], 400);
-    }
-
-    $authUser = AuthService::requireAuth();
-    $userId   = $authUser['id'];
-
-    $acceptance = ChallengeAcceptanceRepository::findById($acceptanceId);
-    if ($acceptance === null) {
-        Response::json(['error' => 'Acceptance not found'], 404);
-    }
-    $challenge = ChallengeRepository::findByIdUnchecked($acceptance['challenge_id']);
-    if ($challenge === null) {
-        Response::json(['error' => 'Challenge not found'], 404);
-    }
-
-    $isAcceptor = $acceptance['acceptor_user_id'] === $userId;
-    $isCreator  = $challenge['created_by'] === $userId;
-    if (!$isAcceptor && !$isCreator) {
-        Response::json(['error' => 'Not allowed'], 403);
-    }
-    // Cancel is allowed while the take-on is still under review ('pending')
-    // OR after acceptance but before a date is scheduled ('accepted'). Once a
-    // date is scheduled the chat history matters and we lock the row.
-    if ($acceptance['phase'] !== 'accepted' && $acceptance['phase'] !== 'pending') {
-        Response::json([
-            'error' => "Can't cancel after a date is scheduled",
-            'code'  => 'phase_locked',
-        ], 409);
-    }
-
-    // Snapshot the IDs BEFORE delete - the cascade wipes them.
-    $otherUserId    = $isAcceptor ? $challenge['created_by'] : $acceptance['acceptor_user_id'];
-    $threadId       = $acceptance['thread_channel_id'];
-    $challengeIdSnap = $acceptance['challenge_id'];
-
-    if (!ChallengeAcceptanceRepository::cancel($acceptanceId)) {
-        Response::json(['error' => 'Failed to cancel'], 500);
-    }
-
-    try {
-        if ($otherUserId !== null) {
-            broadcastChallengeAcceptanceCancelledToWs($otherUserId, [
-                'cancelledBy'      => $userId,
-                'acceptanceId'     => $acceptanceId,
-                'challengeId'      => $challengeIdSnap,
-                'threadChannelId'  => $threadId,
-            ]);
-        }
-    } catch (\Throwable $e) {
-        error_log('[challenges] ws cancel broadcast failed (non-fatal): ' . $e->getMessage());
-    }
-
-    Response::json(['ok' => true]);
-});
-
-// ── Date concertation (PR3) ───────────────────────────────────────────────────
-
-// POST /api/v1/acceptances/{acceptanceId}/propose-date
-// Either party proposes; counter-proposals overwrite.
-// Body: {startsAt: unix_int, endsAt?: unix_int, venue?: string}
-$router->add('POST', '/api/v1/acceptances/{acceptanceId}/propose-date', function (array $params) {
-    $acceptanceId = $params['acceptanceId'] ?? '';
-    if (!preg_match('/^[a-f0-9]{16}$/', $acceptanceId)) {
-        Response::json(['error' => 'Invalid acceptanceId'], 400);
-    }
-
-    $authUser = AuthService::requireAuth();
-    $userId   = $authUser['id'];
-
-    $acceptance = ChallengeAcceptanceRepository::findById($acceptanceId);
-    if ($acceptance === null) {
-        Response::json(['error' => 'Acceptance not found'], 404);
-    }
-    $challenge = ChallengeRepository::findByIdUnchecked($acceptance['challenge_id']);
-    if ($challenge === null) {
-        Response::json(['error' => 'Challenge not found'], 404);
-    }
-
-    $isAcceptor = $acceptance['acceptor_user_id'] === $userId;
-    $isCreator  = $challenge['created_by'] === $userId;
-    if (!$isAcceptor && !$isCreator) {
-        Response::json(['error' => 'Not a thread member'], 403);
-    }
-    // 'accepted' = initial proposal/counter-proposal. 'scheduled' = either
-    // party reschedules an already-approved date - the repo flips it back to
-    // 'accepted' so the other party re-approves. After 'scheduled' (debrief /
-    // approved / rejected) the date is final.
-    if ($acceptance['phase'] !== 'accepted' && $acceptance['phase'] !== 'scheduled') {
-        Response::json(['error' => "Can't change the date at this stage", 'code' => 'phase_locked'], 409);
-    }
-
-    $body     = Request::json() ?? [];
-    $startsAt = filter_var($body['startsAt'] ?? null, FILTER_VALIDATE_INT);
-    $endsAt   = isset($body['endsAt']) ? filter_var($body['endsAt'], FILTER_VALIDATE_INT) : null;
-    $venue    = isset($body['venue']) && is_string($body['venue']) ? $body['venue'] : null;
-
-    if ($startsAt === false || $startsAt <= 0) {
-        Response::json(['error' => 'startsAt is required (unix timestamp)'], 400);
-    }
-    // 5 years out is the realistic ceiling - beyond that is almost certainly a
-    // client bug (ms vs s confusion, etc.). Also reject anything in the past
-    // by more than a day (clock skew + UX honesty).
-    $nowTs = time();
-    if ($startsAt < $nowTs - 86400) {
-        Response::json(['error' => 'startsAt is in the past'], 400);
-    }
-    if ($startsAt > $nowTs + 5 * 365 * 86400) {
-        Response::json(['error' => 'startsAt is too far in the future'], 400);
-    }
-    if ($endsAt !== false && $endsAt !== null) {
-        if ($endsAt <= $startsAt) {
-            Response::json(['error' => 'endsAt must be after startsAt'], 400);
-        }
-        if ($endsAt > $startsAt + 30 * 86400) {
-            Response::json(['error' => 'endsAt is more than 30 days after startsAt'], 400);
-        }
-    }
-
-    enforceRateLimit('challenge_propose_date', 30, 3600, $userId);
-
-    $updated = ChallengeAcceptanceRepository::proposeDate(
-        $acceptanceId,
-        $userId,
-        (int) $startsAt,
-        $endsAt === false || $endsAt === null ? null : (int) $endsAt,
-        $venue,
-    );
-    if ($updated === null) {
-        Response::json(['error' => 'Failed to propose'], 500);
-    }
-
-    // Push to the OTHER party (the proposer's own devices update via the
-    // HTTP response + a client-side fan-out / state set).
-    $otherUserId = $isAcceptor ? $challenge['created_by'] : $acceptance['acceptor_user_id'];
-    try {
-        if ($otherUserId !== null) {
-            broadcastChallengeDateProposedToWs($otherUserId, [
-                'acceptanceId'     => $acceptanceId,
-                'challengeId'      => $acceptance['challenge_id'],
-                'threadChannelId'  => $acceptance['thread_channel_id'],
-                'acceptance'       => $updated,
-                'proposedBy'       => $userId,
-            ]);
-        }
-    } catch (\Throwable $e) {
-        error_log('[challenges] ws propose-date broadcast failed (non-fatal): ' . $e->getMessage());
-    }
-
-    // Persistent + push notification to the OTHER party. Until this
-    // landed the propose-date flow was WS-only - anyone who'd
-    // backgrounded the app missed the proposal entirely and the date
-    // sat awaiting approval no one knew about. NotificationRepository
-    // re-renders the title/body per recipient locale (see
-    // NotificationI18n::T['challenge_date_proposed']); the strings here
-    // are just the English fallback.
-    try {
-        if ($otherUserId !== null) {
-            $proposerName   = (string) ($authUser['display_name'] ?? 'Someone');
-            $challengeTitle = (string) ($challenge['title']        ?? '');
-            NotificationRepository::create(
-                $otherUserId,
-                'challenge_date_proposed',
-                'New date proposed',
-                "{$proposerName} proposed a date for \"{$challengeTitle}\"",
-                [
-                    'challengeId'    => $acceptance['challenge_id'],
-                    'acceptanceId'   => $acceptanceId,
-                    'proposerUserId' => $userId,
-                    'proposerName'   => $proposerName,
-                    'challengeTitle' => $challengeTitle,
-                ],
-            );
-        }
-    } catch (\Throwable $e) {
-        error_log('[challenges] propose-date push failed (non-fatal): ' . $e->getMessage());
-    }
-
-    Response::json($updated);
-});
-
-// POST /api/v1/acceptances/{acceptanceId}/withdraw-proposal
-// Proposer-only - clears the current proposal. Phase stays 'accepted'.
-$router->add('POST', '/api/v1/acceptances/{acceptanceId}/withdraw-proposal', function (array $params) {
-    $acceptanceId = $params['acceptanceId'] ?? '';
-    if (!preg_match('/^[a-f0-9]{16}$/', $acceptanceId)) {
-        Response::json(['error' => 'Invalid acceptanceId'], 400);
-    }
-
-    $authUser   = AuthService::requireAuth();
-    $userId     = $authUser['id'];
-    $acceptance = ChallengeAcceptanceRepository::findById($acceptanceId);
-    if ($acceptance === null) {
-        Response::json(['error' => 'Acceptance not found'], 404);
-    }
-    $challenge = ChallengeRepository::findByIdUnchecked($acceptance['challenge_id']);
-    if ($challenge === null) {
-        Response::json(['error' => 'Challenge not found'], 404);
-    }
-    if ($acceptance['proposed_by_user_id'] !== $userId) {
-        Response::json(['error' => 'Only the proposer can withdraw'], 403);
-    }
-    if ($acceptance['phase'] !== 'accepted' || $acceptance['proposed_starts_at'] === null) {
-        Response::json(['error' => 'No active proposal'], 409);
-    }
-
-    $updated = ChallengeAcceptanceRepository::withdrawProposal($acceptanceId);
-
-    try {
-        $otherUserId = $acceptance['acceptor_user_id'] === $userId
-            ? $challenge['created_by']
-            : $acceptance['acceptor_user_id'];
-        if ($otherUserId !== null) {
-            broadcastChallengeDateWithdrawnToWs($otherUserId, [
-                'acceptanceId'    => $acceptanceId,
-                'challengeId'     => $acceptance['challenge_id'],
-                'threadChannelId' => $acceptance['thread_channel_id'],
-                'acceptance'      => $updated,
-                'withdrawnBy'     => $userId,
-            ]);
-        }
-    } catch (\Throwable $e) {
-        error_log('[challenges] ws withdraw-proposal broadcast failed (non-fatal): ' . $e->getMessage());
-    }
-
-    Response::json($updated);
-});
-
-// POST /api/v1/acceptances/{acceptanceId}/approve-date
-// CREATOR ONLY. Approves the current proposal and flips phase to 'scheduled'.
-// The thread chat IS the meet-up surface - no event row, no system message
-// (previously inserted a "🎉 New event" card which was misleading inside the
-// thread; the pipeline's Meet step is the visible cue now).
-$router->add('POST', '/api/v1/acceptances/{acceptanceId}/approve-date', function (array $params) {
-    $acceptanceId = $params['acceptanceId'] ?? '';
-    if (!preg_match('/^[a-f0-9]{16}$/', $acceptanceId)) {
-        Response::json(['error' => 'Invalid acceptanceId'], 400);
-    }
-
-    $authUser   = AuthService::requireAuth();
-    $userId     = $authUser['id'];
-    $acceptance = ChallengeAcceptanceRepository::findById($acceptanceId);
-    if ($acceptance === null) {
-        Response::json(['error' => 'Acceptance not found'], 404);
-    }
-    $challenge = ChallengeRepository::findByIdUnchecked($acceptance['challenge_id']);
-    if ($challenge === null) {
-        Response::json(['error' => 'Challenge not found'], 404);
-    }
-    // Either the challenger OR the active taker is a "thread member" who
-    // could potentially approve. The proposer themself MUST NOT approve
-    // their own proposal - only the other party signs off. This flips
-    // the prior "only creator can approve" rule, which was wrong for the
-    // common case of a creator-side proposal (they'd approve their own
-    // date, defeating the whole "mutual agreement" point).
-    $isChallenger = ($challenge['created_by']         ?? null) === $userId;
-    $isAcceptor   = ($acceptance['acceptor_user_id']  ?? null) === $userId;
-    if (!$isChallenger && !$isAcceptor) {
-        Response::json(['error' => 'Not a participant in this acceptance'], 403);
-    }
-    if (($acceptance['proposed_by_user_id'] ?? null) === $userId) {
-        Response::json([
-            'error' => "You can't approve your own proposal - the other party does.",
-            'code'  => 'self_proposal',
-        ], 403);
-    }
-    if ($acceptance['phase'] !== 'accepted') {
-        Response::json(['error' => 'Date already scheduled', 'code' => 'phase_locked'], 409);
-    }
-    if ($acceptance['proposed_starts_at'] === null) {
-        Response::json(['error' => 'No date proposed yet'], 409);
-    }
-
-    try {
-        $result = ChallengeAcceptanceRepository::approveDate($acceptanceId, (string) $challenge['title']);
-    } catch (\Throwable $e) {
-        error_log('[challenges] approve-date failed acc=' . $acceptanceId . ': ' . $e->getMessage());
-        Response::json(['error' => 'Failed to approve date'], 500);
-    }
-    if ($result === null) {
-        Response::json(['error' => 'Failed to approve date'], 500);
-    }
-    $updated = $result['acceptance'];
-
-    // date_approved_at UPDATE fires the +5 / +5 date_locked trigger
-    // for BOTH challenger AND taker. Both their rank scopes may have
-    // shifted; the service dedupes their cities internally.
-    $userIds = array_values(array_filter([
-        $challenge['created_by']        ?? null,
-        $acceptance['acceptor_user_id'] ?? null,
-    ]));
-    if (!empty($userIds)) {
-        MonthlyRankService::recalcAfterScoreChange(...$userIds);
-    }
-
-    // WS broadcast to BOTH parties. Each side earned +5 from the
-    // date_locked trigger above - both need the live signal so the
-    // ScoreCelebrationLaunchGate refetches without an app reload.
-    // The party who tapped Approve also gets the broadcast (in
-    // addition to their HTTP response) - costs nothing and keeps
-    // multi-device sessions consistent.
-    $proposerId = $acceptance['proposed_by_user_id'] ?? null;
-    $approverId = $userId;
-    $broadcastTargets = array_values(array_unique(array_filter([$proposerId, $approverId])));
-    foreach ($broadcastTargets as $targetId) {
-        try {
-            broadcastChallengeDateApprovedToWs($targetId, [
-                'acceptanceId'    => $acceptanceId,
-                'challengeId'     => $acceptance['challenge_id'],
-                'threadChannelId' => $acceptance['thread_channel_id'],
-                'acceptance'      => $updated,
-                // Hint to the client which side it is - saves them
-                // re-deriving from the acceptance payload.
-                'approverUserId'  => $approverId,
-                'proposerUserId'  => $proposerId,
-            ]);
-        } catch (\Throwable $e) {
-            error_log('[challenges] ws approve-date broadcast failed to ' . $targetId
-                . ' (non-fatal): ' . $e->getMessage());
-        }
-    }
-
-    // Push notification to the proposer - they weren't looking when
-    // their date was approved. Until this landed the approve-date
-    // flow was WS-only, so a backgrounded proposer learned nothing
-    // happened. Mirrors the challenge_date_proposed push surface in
-    // shape and click-through path.
-    try {
-        if (!empty($proposerId) && $proposerId !== $approverId) {
-            $approverName   = (string) ($authUser['display_name'] ?? 'Someone');
-            $challengeTitle = (string) ($challenge['title']        ?? '');
-            NotificationRepository::create(
-                $proposerId,
-                'challenge_date_approved',
-                'Date approved',
-                "{$approverName} approved your date for \"{$challengeTitle}\"",
-                [
-                    'challengeId'    => $acceptance['challenge_id'],
-                    'acceptanceId'   => $acceptanceId,
-                    'approverUserId' => $approverId,
-                    'approverName'   => $approverName,
-                    'challengeTitle' => $challengeTitle,
-                ],
-            );
-        }
-    } catch (\Throwable $e) {
-        error_log('[challenges] approve-date push failed (non-fatal): ' . $e->getMessage());
-    }
-
-    Response::json(['acceptance' => $updated]);
-});
-
-// ── PR4: debrief verdicts (approve / reject the challenge) ────────────────────
-
-/**
- * Shared gate for both verdict routes. Returns [acceptance, challenge] on
- * success, or short-circuits with the right error JSON. Both verdicts share:
- *   - creator-only
- *   - effective_phase must be 'debrief' (i.e. phase='scheduled' + meetup ended)
- *
- * effective_phase is recomputed server-side (the repo SELECT carries it) so
- * the client can't bypass the gate by lying about when the event ended.
- */
-function gateForVerdict(string $acceptanceId): array
-{
-    $authUser   = AuthService::requireAuth();
-    $userId     = $authUser['id'];
-    $acceptance = ChallengeAcceptanceRepository::findById($acceptanceId);
-    if ($acceptance === null) {
-        Response::json(['error' => 'Acceptance not found'], 404);
-    }
-    $challenge = ChallengeRepository::findByIdUnchecked($acceptance['challenge_id']);
-    if ($challenge === null) {
-        Response::json(['error' => 'Challenge not found'], 404);
-    }
-    if ($challenge['created_by'] !== $userId) {
-        Response::json(['error' => 'Only the challenge creator can decide the outcome'], 403);
-    }
-    if ($acceptance['effective_phase'] !== 'debrief') {
-        Response::json([
-            'error' => $acceptance['phase'] === 'scheduled'
-                ? "Wait until the meetup is over"
-                : "This take-on is already decided",
-            'code'  => 'phase_locked',
-        ], 409);
-    }
-    return [$acceptance, $challenge, $authUser];
-}
-
-// POST /api/v1/acceptances/{acceptanceId}/approve-challenge
-$router->add('POST', '/api/v1/acceptances/{acceptanceId}/approve-challenge', function (array $params) {
-    $acceptanceId = $params['acceptanceId'] ?? '';
-    if (!preg_match('/^[a-f0-9]{16}$/', $acceptanceId)) {
-        Response::json(['error' => 'Invalid acceptanceId'], 400);
-    }
-    [$acceptance, $challenge, $authUser] = gateForVerdict($acceptanceId);
-
-    $updated = ChallengeAcceptanceRepository::approve($acceptanceId);
-    if ($updated === null) {
-        Response::json(['error' => 'Failed to approve'], 500);
-    }
-
-    // Push notif to the acceptor - they've earned a 🎉.
-    try {
-        $creatorName = $authUser['display_name'] ?? 'Someone';
-        $title       = $challenge['title'] ?? 'a challenge';
-        NotificationRepository::create(
-            $acceptance['acceptor_user_id'],
-            'challenge_verdict_approved',
-            'Challenge accomplished',
-            "{$creatorName} marked \"{$title}\" as done",
-            [
-                'acceptanceId'    => $acceptanceId,
-                'challengeId'     => $acceptance['challenge_id'],
-                'threadChannelId' => $acceptance['thread_channel_id'],
-                'senderUserId'    => $authUser['id'],
-                'senderName'      => $creatorName,
-                'challengeTitle'  => $title,
-            ],
-        );
-    } catch (\Throwable $e) {
-        error_log('[challenges] approve-challenge notif failed (non-fatal): ' . $e->getMessage());
-    }
-
-    try {
-        broadcastChallengeVerdictToWs($acceptance['acceptor_user_id'], 'approved', [
-            'acceptanceId'    => $acceptanceId,
-            'challengeId'     => $acceptance['challenge_id'],
-            'threadChannelId' => $acceptance['thread_channel_id'],
-            'acceptance'      => $updated,
-        ]);
-    } catch (\Throwable $e) {
-        error_log('[challenges] approve-challenge ws failed (non-fatal): ' . $e->getMessage());
-    }
-
-    AnalyticsService::defer('challenge_verdict_approved', $authUser['id'], [
-        'challenge_id'  => $acceptance['challenge_id'],
-        'acceptance_id' => $acceptanceId,
-    ]);
-
-    Response::json($updated);
-});
-
-// POST /api/v1/acceptances/{acceptanceId}/reject-challenge
-// "Reject" is the negative verdict - no-show, didn't really meet, etc.
-// Tone is gentler in copy (the acceptor sees "closed", not "rejected").
-$router->add('POST', '/api/v1/acceptances/{acceptanceId}/reject-challenge', function (array $params) {
-    $acceptanceId = $params['acceptanceId'] ?? '';
-    if (!preg_match('/^[a-f0-9]{16}$/', $acceptanceId)) {
-        Response::json(['error' => 'Invalid acceptanceId'], 400);
-    }
-    [$acceptance, $challenge, $authUser] = gateForVerdict($acceptanceId);
-
-    $updated = ChallengeAcceptanceRepository::reject($acceptanceId);
-    if ($updated === null) {
-        Response::json(['error' => 'Failed to reject'], 500);
-    }
-
-    try {
-        $creatorName = $authUser['display_name'] ?? 'Someone';
-        $title       = $challenge['title'] ?? 'a challenge';
-        NotificationRepository::create(
-            $acceptance['acceptor_user_id'],
-            'challenge_verdict_rejected',
-            'Challenge closed',
-            "{$creatorName} closed \"{$title}\"",
-            [
-                'acceptanceId'    => $acceptanceId,
-                'challengeId'     => $acceptance['challenge_id'],
-                'threadChannelId' => $acceptance['thread_channel_id'],
-                'senderUserId'    => $authUser['id'],
-                'senderName'      => $creatorName,
-                'challengeTitle'  => $title,
-            ],
-        );
-    } catch (\Throwable $e) {
-        error_log('[challenges] reject-challenge notif failed (non-fatal): ' . $e->getMessage());
-    }
-
-    try {
-        broadcastChallengeVerdictToWs($acceptance['acceptor_user_id'], 'rejected', [
-            'acceptanceId'    => $acceptanceId,
-            'challengeId'     => $acceptance['challenge_id'],
-            'threadChannelId' => $acceptance['thread_channel_id'],
-            'acceptance'      => $updated,
-        ]);
-    } catch (\Throwable $e) {
-        error_log('[challenges] reject-challenge ws failed (non-fatal): ' . $e->getMessage());
-    }
-
-    AnalyticsService::defer('challenge_verdict_rejected', $authUser['id'], [
-        'challenge_id'  => $acceptance['challenge_id'],
-        'acceptance_id' => $acceptanceId,
-    ]);
-
-    Response::json($updated);
-});
-
-// ── International challenge proofs ───────────────────────────────────────────
-// Acceptor submits a proof for an international challenge; creator approves
-// or rejects (with mandatory reason). Capped at 3 attempts per acceptance.
-// Geotag is verified server-side against the target city (if set) using
-// per-city tolerance with an env fallback.
+// ── Challenge photo proofs ───────────────────────────────────────────────────
+// A joined taker of a GROUP photo-proof challenge submits a photo; the
+// challenger then picks the winner (/pick-winner). Capped at 3 attempts per
+// acceptance. Geotag is verified server-side against the target city (if set)
+// using per-city tolerance with an env fallback. (The legacy 1-to-1 creator
+// verdict, /proofs/:id/approve|reject, was retired in Phase 5.)
 //
 //   POST /api/v1/acceptances/:id/submit-proof - acceptor only
-//   POST /api/v1/proofs/:id/approve           - creator only
-//   POST /api/v1/proofs/:id/reject            - creator only, body.reason
 
 /**
  * Shared gate for proof submission. Returns [$acceptance, $challenge, $authUser]
- * or short-circuits with a JSON error. Caller is the acceptor; challenge is
- * international; phase is not terminal-rejected/-approved.
+ * or short-circuits with a JSON error. Caller is the acceptor; challenge is a
+ * group photo-proof one; phase is not terminal-rejected/-approved.
  */
 function gateProofSubmit(string $acceptanceId): array
 {
@@ -12038,38 +10381,13 @@ function gateProofSubmit(string $acceptanceId): array
     if (!$usesPhotoProof) {
         Response::json(['error' => 'This challenge does not use photo proof', 'code' => 'wrong_mode'], 403);
     }
+    if (($challenge['challenge_format'] ?? 'legacy') !== 'group') {
+        Response::json(['error' => 'This challenge can no longer take proofs', 'code' => 'legacy_retired'], 409);
+    }
     if (in_array($acceptance['phase'] ?? '', ['approved', 'rejected'], true)) {
         Response::json(['error' => 'This take-on is closed', 'code' => 'terminal'], 403);
     }
     return [$acceptance, $challenge, $authUser];
-}
-
-/**
- * Shared gate for proof review (approve/reject). Returns [$proof, $acceptance,
- * $challenge, $authUser]. Caller is the challenge creator.
- */
-function gateProofReview(string $proofId): array
-{
-    if (!preg_match('/^[a-f0-9]{32}$/', $proofId)) {
-        Response::json(['error' => 'Invalid proofId'], 400);
-    }
-    $authUser = AuthService::requireAuth();
-    $proof    = ChallengeProofRepository::findById($proofId);
-    if ($proof === null) {
-        Response::json(['error' => 'Proof not found'], 404);
-    }
-    $acceptance = ChallengeAcceptanceRepository::findById($proof['acceptance_id']);
-    if ($acceptance === null) {
-        Response::json(['error' => 'Acceptance not found'], 404);
-    }
-    $challenge = ChallengeRepository::findByIdUnchecked($acceptance['challenge_id']);
-    if ($challenge === null) {
-        Response::json(['error' => 'Challenge not found'], 404);
-    }
-    if (($challenge['created_by'] ?? null) !== $authUser['id']) {
-        Response::json(['error' => 'Only the creator can review proofs'], 403);
-    }
-    return [$proof, $acceptance, $challenge, $authUser];
 }
 
 // POST /api/v1/acceptances/{acceptanceId}/submit-proof
@@ -12175,10 +10493,7 @@ $router->add('POST', '/api/v1/acceptances/{acceptanceId}/submit-proof', function
     }
 
     // PR43 - broadcast the phase change so the detail page can refresh
-    // myAcceptance + the pipeline without a manual reload. Reuses the
-    // existing challenge_takeon_reviewed event shape (the client only
-    // cares that the acceptance state changed); no new client wiring
-    // beyond keeping the existing listener live.
+    // myAcceptance + the submissions gallery without a manual reload.
     try {
         $proofPayload = [
             'challengeId'  => $challenge['id'],
@@ -12229,215 +10544,6 @@ $router->add('POST', '/api/v1/acceptances/{acceptanceId}/submit-proof', function
         'attempt'     => $attempts + 1,
         'maxAttempts' => ChallengeProofRepository::MAX_ATTEMPTS,
     ], 201);
-});
-
-// POST /api/v1/proofs/{proofId}/approve
-$router->add('POST', '/api/v1/proofs/{proofId}/approve', function (array $params) {
-    [$proof, $acceptance, $challenge, $authUser] = gateProofReview($params['proofId'] ?? '');
-    $proofId      = $proof['id'];
-    $acceptanceId = $acceptance['id'];
-
-    if ($proof['status'] !== 'pending') {
-        // Idempotent - already-terminal is a no-op success.
-        Response::json(['proof' => $proof]);
-    }
-
-    try {
-        $updated = ChallengeProofRepository::approve($proofId);
-    } catch (\Throwable $e) {
-        error_log('[proof] approve failed proof=' . $proofId . ': ' . $e->getMessage());
-        Response::json(['error' => 'Failed to approve'], 500);
-    }
-    if ($updated === null) {
-        Response::json(['error' => 'Failed to approve'], 500);
-    }
-
-    // Promote the parent acceptance to 'approved' - final state, mirror the
-    // Local verdict flow so client phase logic stays uniform.
-    Database::pdo()->prepare("
-        UPDATE challenge_acceptances
-        SET phase = 'approved', approved_at = now(), updated_at = now()
-        WHERE id = ?
-    ")->execute([$acceptanceId]);
-
-    // A 1-1 (non-group) challenge is DONE once its proof is approved - the
-    // single taker succeeded. Flip the challenge to 'validated' so the list
-    // card stops showing "Available" + a deadline countdown and reads as a
-    // success. Group challenges validate via pick-winner instead (multiple
-    // takers, one winner), so don't auto-close those here.
-    if (($challenge['challenge_format'] ?? 'legacy') !== 'group') {
-        try {
-            Database::pdo()->prepare("
-                UPDATE channel_challenges
-                SET status = 'validated', validated_at = COALESCE(validated_at, now()), updated_at = now()
-                WHERE channel_id = ? AND status = 'open'
-            ")->execute([$challenge['id']]);
-            broadcastChallengeValidatedToWs((int) substr((string) ($challenge['city_id'] ?? 'city_0'), 5), $challenge);
-        } catch (\Throwable $e) {
-            error_log('[proof] approve auto-validate failed (non-fatal): ' . $e->getMessage());
-        }
-    }
-
-    // Push to the acceptor - they nailed it.
-    try {
-        if (!empty($acceptance['acceptor_user_id'])) {
-            $creatorName = $authUser['display_name'] ?? 'The creator';
-            NotificationRepository::create(
-                $acceptance['acceptor_user_id'],
-                'challenge_proof_approved',
-                "Proof approved",
-                "{$creatorName} approved your proof for \"{$challenge['title']}\"",
-                [
-                    'challengeId'    => $challenge['id'],
-                    'acceptanceId'   => $acceptanceId,
-                    'proofId'        => $proofId,
-                    'creatorName'    => $creatorName,
-                    'challengeTitle' => $challenge['title'] ?? '',
-                ],
-            );
-        }
-    } catch (\Throwable $e) {
-        error_log('[proof] approve push failed (non-fatal): ' . $e->getMessage());
-    }
-
-    // Broadcast the verdict on the WS so the acceptor's screen + the
-    // creator's other devices flip to "approved" without a manual reload.
-    // Uses broadcastChallengeProofVerdictToWs so the actual event name on
-    // the wire is `challenge_proof_approved` (not the old `challenge_accepted`
-    // bug where the intended event was buried inside the payload and the
-    // helper hardcoded a different one).
-    try {
-        $verdictPayload = [
-            'challengeId'  => $challenge['id'],
-            'acceptanceId' => $acceptanceId,
-        ];
-        if (!empty($challenge['created_by'])) {
-            broadcastChallengeProofVerdictToWs($challenge['created_by'], 'approved', $verdictPayload);
-        }
-        if (!empty($acceptance['acceptor_user_id'])) {
-            broadcastChallengeProofVerdictToWs($acceptance['acceptor_user_id'], 'approved', $verdictPayload);
-        }
-    } catch (\Throwable $e) {
-        error_log('[proof] approve ws broadcast failed (non-fatal): ' . $e->getMessage());
-    }
-
-    AnalyticsService::defer('challenge_proof_approved', $authUser['id'], [
-        'challenge_id'  => $challenge['id'],
-        'acceptance_id' => $acceptanceId,
-        'proof_id'      => $proofId,
-    ]);
-
-    Response::json(['proof' => $updated]);
-});
-
-// POST /api/v1/proofs/{proofId}/reject
-// body: { reason: string (1–200 chars, required) }
-$router->add('POST', '/api/v1/proofs/{proofId}/reject', function (array $params) {
-    [$proof, $acceptance, $challenge, $authUser] = gateProofReview($params['proofId'] ?? '');
-    $proofId      = $proof['id'];
-    $acceptanceId = $acceptance['id'];
-
-    $body   = Request::json();
-    $reason = $body['reason'] ?? null;
-    if (!is_string($reason)) {
-        Response::json(['error' => 'reason is required'], 400);
-    }
-    $reason = trim(strip_tags($reason));
-    if ($reason === '') {
-        Response::json(['error' => 'reason cannot be empty'], 400);
-    }
-    if (mb_strlen($reason) > 200) {
-        Response::json(['error' => 'reason must be 200 characters or fewer'], 400);
-    }
-
-    if ($proof['status'] !== 'pending') {
-        Response::json(['proof' => $proof]);
-    }
-
-    try {
-        $updated = ChallengeProofRepository::reject($proofId, $reason);
-    } catch (\Throwable $e) {
-        error_log('[proof] reject failed proof=' . $proofId . ': ' . $e->getMessage());
-        Response::json(['error' => 'Failed to reject'], 500);
-    }
-    if ($updated === null) {
-        Response::json(['error' => 'Failed to reject'], 500);
-    }
-
-    // If this rejection was the acceptor's MAX_ATTEMPTS-th try, terminally
-    // close the acceptance. Otherwise keep phase='proof_submitted' so the
-    // acceptor can re-submit (UI will offer "Try again" with attempts left).
-    $attempts = ChallengeProofRepository::attemptCountByAcceptance($acceptanceId);
-    $isFinal  = $attempts >= ChallengeProofRepository::MAX_ATTEMPTS;
-    if ($isFinal) {
-        Database::pdo()->prepare("
-            UPDATE challenge_acceptances
-            SET phase = 'rejected', rejected_at = now(), updated_at = now()
-            WHERE id = ?
-        ")->execute([$acceptanceId]);
-    }
-
-    // Push to the acceptor - reason carries verbatim in the body so they
-    // know what to fix on re-submit.
-    try {
-        if (!empty($acceptance['acceptor_user_id'])) {
-            $creatorName = $authUser['display_name'] ?? 'The creator';
-            $body        = $isFinal
-                ? "{$creatorName} rejected your proof for \"{$challenge['title']}\" - no more attempts"
-                : "{$creatorName} rejected your proof for \"{$challenge['title']}\". Reason: {$reason}";
-            NotificationRepository::create(
-                $acceptance['acceptor_user_id'],
-                'challenge_proof_rejected',
-                "Proof rejected",
-                $body,
-                [
-                    'challengeId'     => $challenge['id'],
-                    'acceptanceId'    => $acceptanceId,
-                    'proofId'         => $proofId,
-                    'creatorName'     => $creatorName,
-                    'challengeTitle'  => $challenge['title'] ?? '',
-                    'rejectionReason' => $reason,
-                    'attemptsLeft'    => max(0, ChallengeProofRepository::MAX_ATTEMPTS - $attempts),
-                    'isFinal'         => $isFinal,
-                ],
-            );
-        }
-    } catch (\Throwable $e) {
-        error_log('[proof] reject push failed (non-fatal): ' . $e->getMessage());
-    }
-
-    // Broadcast the verdict on the WS so both sides refresh without a
-    // manual reload. Same fix as the approve path — actual wire event is
-    // `challenge_proof_rejected` now, not the old buried-in-payload form.
-    try {
-        $verdictPayload = [
-            'challengeId'  => $challenge['id'],
-            'acceptanceId' => $acceptanceId,
-            'isFinal'      => $isFinal,
-        ];
-        if (!empty($challenge['created_by'])) {
-            broadcastChallengeProofVerdictToWs($challenge['created_by'], 'rejected', $verdictPayload);
-        }
-        if (!empty($acceptance['acceptor_user_id'])) {
-            broadcastChallengeProofVerdictToWs($acceptance['acceptor_user_id'], 'rejected', $verdictPayload);
-        }
-    } catch (\Throwable $e) {
-        error_log('[proof] reject ws broadcast failed (non-fatal): ' . $e->getMessage());
-    }
-
-    AnalyticsService::defer('challenge_proof_rejected', $authUser['id'], [
-        'challenge_id'  => $challenge['id'],
-        'acceptance_id' => $acceptanceId,
-        'proof_id'      => $proofId,
-        'is_final'      => $isFinal,
-        'attempts'      => $attempts,
-    ]);
-
-    Response::json([
-        'proof'        => $updated,
-        'isFinal'      => $isFinal,
-        'attemptsLeft' => max(0, ChallengeProofRepository::MAX_ATTEMPTS - $attempts),
-    ]);
 });
 
 // GET /api/v1/acceptances/{acceptanceId}/proofs
@@ -12984,111 +11090,6 @@ $router->add('GET', '/api/v1/me/challenge-reveals', function () {
     }, $rows);
 
     Response::json(['reveals' => $reveals]);
-});
-
-// GET /api/v1/me/rate-prompts
-// Single bounded read returning the caller's currently rate-eligible
-// challenges. The client polls this on app open / threads-screen mount and
-// surfaces an in-app prompt; there is intentionally NO server-driven push,
-// per the on-app-open decision in the (B) audit.
-//
-// Eligibility - same gate as POST /ratings, expressed as a list filter:
-//   - caller is creator OR active acceptor
-//   - acceptance phase = 'scheduled' AND meetup ended  (effective 'debrief'),
-//       OR phase = 'approved'                          (legacy / post-trigger
-//                                                       - on international,
-//                                                       this is the creator's
-//                                                       proof approval; PR44)
-//   - caller has NOT already rated this challenge
-//
-// `other_rated` lets the UI warm the prompt copy ("they're waiting on you")
-// vs. neutral. Sorted oldest-meetup-first so the most-overdue prompt is at
-// the top of the banner stack. LIMIT 50 - above any realistic backlog; we
-// log if we hit it.
-$router->add('GET', '/api/v1/me/rate-prompts', function () {
-    $authUser = AuthService::requireAuth();
-    $callerId = $authUser['id'];
-
-    $LIMIT = 50;
-
-    $stmt = Database::pdo()->prepare("
-        SELECT
-            ca.id                                                AS acceptance_id,
-            cc.channel_id                                        AS challenge_id,
-            cc.title                                             AS challenge_title,
-            cc.created_by                                        AS creator_user_id,
-            ca.acceptor_user_id,
-            EXTRACT(EPOCH FROM
-                COALESCE(ca.proposed_ends_at, ca.proposed_starts_at)
-            )::INTEGER                                           AS meetup_ended_at,
-            ca.phase                                             AS phase,
-            creator.display_name                                 AS creator_display_name,
-            creator.profile_thumb_photo_url                      AS creator_thumb,
-            acceptor.display_name                                AS acceptor_display_name,
-            acceptor.profile_thumb_photo_url                     AS acceptor_thumb,
-            EXISTS(
-                SELECT 1 FROM challenge_ratings cr_other
-                WHERE cr_other.challenge_id = cc.channel_id
-                  AND cr_other.rater_id = CASE
-                      WHEN cc.created_by = :uid THEN ca.acceptor_user_id
-                      ELSE cc.created_by
-                  END
-            )                                                    AS other_rated
-        FROM challenge_acceptances ca
-        JOIN channel_challenges cc ON cc.channel_id = ca.challenge_id
-        JOIN users creator         ON creator.id    = cc.created_by
-        JOIN users acceptor        ON acceptor.id   = ca.acceptor_user_id
-        WHERE
-            (cc.created_by = :uid OR ca.acceptor_user_id = :uid)
-            -- PR44: dropped `cc.mode = 'local'` so the international
-            -- mutual-rating path (acceptor sends proof → creator
-            -- approves → both can rate) flows through this query too.
-            -- The 'scheduled+end-past' branch never matches intl
-            -- acceptances (no proposed_starts_at), and the 'approved'
-            -- branch covers both modes uniformly.
-            AND (
-                (ca.phase = 'scheduled'
-                 AND ca.proposed_starts_at IS NOT NULL
-                 AND (ca.proposed_starts_at + interval '30 minutes') < now())
-                OR ca.phase = 'approved'
-            )
-            AND NOT EXISTS (
-                SELECT 1 FROM challenge_ratings cr_me
-                WHERE cr_me.challenge_id = cc.channel_id
-                  AND cr_me.rater_id     = :uid
-            )
-        ORDER BY COALESCE(ca.proposed_ends_at, ca.proposed_starts_at) ASC
-        LIMIT {$LIMIT}
-    ");
-    $stmt->execute(['uid' => $callerId]);
-    $rows = $stmt->fetchAll(\PDO::FETCH_ASSOC);
-
-    if (count($rows) >= $LIMIT) {
-        error_log("[rate-prompts] caller {$callerId} hit LIMIT {$LIMIT} - backlog unusually large");
-    }
-
-    $prompts = [];
-    foreach ($rows as $r) {
-        $isChallenger = $r['creator_user_id'] === $callerId;
-        $prompts[] = [
-            'acceptance_id'   => $r['acceptance_id'],
-            'challenge_id'    => $r['challenge_id'],
-            'challenge_title' => $r['challenge_title'],
-            'role'            => $isChallenger ? 'challenger' : 'taker',
-            'counterparty'    => [
-                'id'             => $isChallenger ? $r['acceptor_user_id']        : $r['creator_user_id'],
-                'displayName'    => $isChallenger ? $r['acceptor_display_name']   : $r['creator_display_name'],
-                'thumbAvatarUrl' => R2Uploader::thumbProxy($isChallenger ? $r['acceptor_thumb']          : $r['creator_thumb']),
-            ],
-            'meetup_ended_at' => isset($r['meetup_ended_at']) ? (int) $r['meetup_ended_at'] : null,
-            'other_rated'     => (bool) $r['other_rated'],
-        ];
-    }
-
-    Response::json([
-        'prompts' => $prompts,
-        'count'   => count($prompts),
-    ]);
 });
 
 // GET /api/v1/leaderboard
@@ -13773,10 +11774,10 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/invite', function (array 
 
 // POST /api/v1/invitations/{invitationId}/accept
 // Called from the push action button OR from the in-app notification list.
-// Marks the invitation accepted, then forwards into the standard take-on path
-// (same gating: mode match, not creator, no in-progress acceptance). If the
-// take-on can't proceed (mode mismatch, in-progress…), we still mark the
-// invitation accepted but return the gate error so the client can show it.
+// Marks the invitation accepted, then joins the group challenge (same gates as
+// /challenges/:id/accept). If the join can't proceed (closed, legacy row…), we
+// still mark the invitation accepted but return the gate error so the client
+// can show it.
 $router->add('POST', '/api/v1/invitations/{invitationId}/accept', function (array $params) {
     $invitationId = $params['invitationId'] ?? '';
     if (!preg_match('/^[a-f0-9]{32}$/', $invitationId)) {
@@ -13795,7 +11796,7 @@ $router->add('POST', '/api/v1/invitations/{invitationId}/accept', function (arra
 
     ChallengeInvitationRepository::respond($invitationId, $userId, 'accepted');
 
-    // Mirror the same gates as /challenges/:id/accept. If any fails, the
+    // Mirror the gates of /challenges/:id/accept. If any fails, the
     // invitation is marked accepted but we surface the gate error so the
     // client can deep-link them to the challenge page with the right toast.
     $challengeId = $invitation['challenge_id'];
@@ -13815,45 +11816,23 @@ $router->add('POST', '/api/v1/invitations/{invitationId}/accept', function (arra
         Response::json(['acceptance' => $existing, 'challengeId' => $challengeId]);
     }
 
-    // Local-only audience gate (international skips - same logic as
-    // POST /challenges/:id/accept).
-    $isInternational = ($challenge['mode'] ?? 'local') === 'international';
-    if (!$isInternational) {
-        $expectedMode = $challenge['audience'] === 'locals' ? 'local' : 'exploring';
-        $actualMode   = $authUser['mode'] ?? null;
-        if (empty($actualMode) || $actualMode !== $expectedMode) {
-            Response::json([
-                'error'         => 'Mode required',
-                'code'          => empty($actualMode) ? 'mode_required' : 'mode_mismatch',
-                'required_mode' => $expectedMode,
-                'challengeId'   => $challengeId,
-            ], 403);
-        }
+    // Legacy 1-to-1 take-ons were retired in Phase 5: an invitation to a
+    // legacy row can't be taken on any more. Group rows join like /accept.
+    if (($challenge['challenge_format'] ?? 'legacy') !== 'group') {
+        Response::json(['error' => 'This challenge can no longer be taken on', 'code' => 'legacy_retired', 'challengeId' => $challengeId], 409);
     }
-    if (ChallengeAcceptanceRepository::hasActiveAcceptance($challengeId)) {
-        Response::json([
-            'error'       => 'In progress',
-            'code'        => 'in_progress',
-            'challengeId' => $challengeId,
-        ], 403);
+    if (!empty($challenge['closed_to_new_joins'])) {
+        Response::json(['error' => 'This challenge is closed to new joins.', 'code' => 'closed_to_new_joins', 'challengeId' => $challengeId], 403);
     }
-
-    // A personal invitation IS the creator's pre-selection of this taker, so
-    // accepting it lands them directly as the taker - no second approval step -
-    // for BOTH local and international. (Previously only international
-    // auto-approved; local invitees were dropped into 'pending'/a request.)
-    $initialPhase = 'accepted';
 
     try {
-        $acceptance = ChallengeAcceptanceRepository::create($challengeId, $userId, $initialPhase);
+        $acceptance = ChallengeAcceptanceRepository::joinGroup($challengeId, $userId);
     } catch (\Throwable $e) {
-        error_log('[invite-accept] take-on create failed ch=' . $challengeId . ' uid=' . $userId . ': ' . $e->getMessage());
-        Response::json(['error' => 'Failed to take on'], 500);
+        error_log('[invite-accept] group join failed ch=' . $challengeId . ' uid=' . $userId . ': ' . $e->getMessage());
+        Response::json(['error' => 'Failed to join challenge'], 500);
     }
 
-    // Broadcast to BOTH parties (phase is always 'accepted' here → +5/+5 fired
-    // inline). The creator's threads list updates; the taker's pipeline advances
-    // and the score-celebration gate pops - on both sides, live via WS.
+    // Live update both sides (same payload shape as /accept's group join).
     try {
         $acceptedPayload = [
             'acceptance' => $acceptance,
@@ -13861,6 +11840,7 @@ $router->add('POST', '/api/v1/invitations/{invitationId}/accept', function (arra
                 'id'             => $challenge['id'],
                 'title'          => $challenge['title'],
                 'challenge_type' => $challenge['challenge_type'],
+                'mode'           => $challenge['mode'] ?? 'local',
             ],
             'acceptor' => [
                 'id'             => $userId,
@@ -13880,28 +11860,24 @@ $router->add('POST', '/api/v1/invitations/{invitationId}/accept', function (arra
             $acceptorName = $authUser['display_name'] ?? 'Someone';
             NotificationRepository::create(
                 $challenge['created_by'],
-                'challenge_takeon_request',
-                "Challenge accepted",
-                "{$acceptorName} accepted your challenge \"{$challenge['title']}\"",
+                'challenge_group_join',
+                'New joiner',
+                "{$acceptorName} joined your challenge \"{$challenge['title']}\"",
                 [
                     'challengeId'    => $challengeId,
-                    'acceptanceId'   => $acceptance['id'],
+                    'acceptanceId'   => $acceptance['id'] ?? null,
                     'acceptorName'   => $acceptorName,
-                    // Plumbed through so NotificationI18n templates can render
-                    // a localized body for non-EN recipients.
                     'challengeTitle' => $challenge['title'] ?? '',
+                    'mode'           => $challenge['mode'] ?? 'local',
                 ],
             );
         }
     } catch (\Throwable $e) {
-        error_log('[invite-accept] takeon-request push failed: ' . $e->getMessage());
+        error_log('[invite-accept] group join push failed (non-fatal): ' . $e->getMessage());
     }
 
-    // The acceptance is always 'accepted' now, so the +5 challenger trigger
-    // fired inline for both modes - recalc the challenger's rank.
-    if (!empty($challenge['created_by'])) {
-        MonthlyRankService::recalcAfterScoreChange($challenge['created_by']);
-    }
+    // The +2 join trigger fired inline → recalc the joiner's rank.
+    try { MonthlyRankService::recalcAfterScoreChange($userId); } catch (\Throwable $e) {}
 
     Response::json(['acceptance' => $acceptance, 'challengeId' => $challengeId], 201);
 });

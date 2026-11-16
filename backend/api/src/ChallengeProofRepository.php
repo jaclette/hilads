@@ -141,48 +141,6 @@ final class ChallengeProofRepository
         return (int) $stmt->fetchColumn();
     }
 
-    /**
-     * Flip 'pending' → 'approved'. Idempotent if already approved.
-     * Returns the updated row or null if not found / wrong status.
-     */
-    public static function approve(string $id): ?array
-    {
-        $stmt = Database::pdo()->prepare("
-            UPDATE challenge_proofs
-            SET status = 'approved', reviewed_at = now()
-            WHERE id = ? AND status = 'pending'
-            RETURNING id, acceptance_id, media_url, media_type, geotag_lat, geotag_lng, geotag_verified,
-                      status, rejection_reason,
-                      to_char(submitted_at AT TIME ZONE 'UTC', 'YYYY-MM-DD\"T\"HH24:MI:SS\"Z\"') AS submitted_at,
-                      to_char(reviewed_at  AT TIME ZONE 'UTC', 'YYYY-MM-DD\"T\"HH24:MI:SS\"Z\"') AS reviewed_at
-        ");
-        $stmt->execute([$id]);
-        $row = $stmt->fetch(\PDO::FETCH_ASSOC);
-        // Already-terminal rows return the existing snapshot - caller can
-        // distinguish (the route layer wants to know whether to fire pushes).
-        return $row ? self::normalise($row) : self::findById($id);
-    }
-
-    /**
-     * Flip 'pending' → 'rejected' with mandatory reason. Caller has already
-     * validated the reason is 1–200 chars. Idempotent on the terminal state.
-     */
-    public static function reject(string $id, string $reason): ?array
-    {
-        $stmt = Database::pdo()->prepare("
-            UPDATE challenge_proofs
-            SET status = 'rejected', rejection_reason = ?, reviewed_at = now()
-            WHERE id = ? AND status = 'pending'
-            RETURNING id, acceptance_id, media_url, media_type, geotag_lat, geotag_lng, geotag_verified,
-                      status, rejection_reason,
-                      to_char(submitted_at AT TIME ZONE 'UTC', 'YYYY-MM-DD\"T\"HH24:MI:SS\"Z\"') AS submitted_at,
-                      to_char(reviewed_at  AT TIME ZONE 'UTC', 'YYYY-MM-DD\"T\"HH24:MI:SS\"Z\"') AS reviewed_at
-        ");
-        $stmt->execute([$reason, $id]);
-        $row = $stmt->fetch(\PDO::FETCH_ASSOC);
-        return $row ? self::normalise($row) : self::findById($id);
-    }
-
     private static function normalise(array $row): array
     {
         $row['geotag_lat']      = (float) $row['geotag_lat'];
