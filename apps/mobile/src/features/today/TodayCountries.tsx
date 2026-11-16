@@ -1,5 +1,5 @@
 import { memo, useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
-import { Text, TouchableOpacity, View, StyleSheet } from 'react-native';
+import { Text, View, StyleSheet } from 'react-native';
 import Animated, {
   interpolateColor, runOnJS, runOnUI, useAnimatedStyle, useSharedValue, withDelay, withSequence, withSpring, withTiming, type SharedValue,
 } from 'react-native-reanimated';
@@ -9,7 +9,7 @@ import * as Haptics from 'expo-haptics';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
-import { Space, Radius, FontSizes, type ThemeColors } from '@/constants';
+import { Space, Radius, FontSizes, Type, IconSize, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { useApp } from '@/context/AppContext';
 import { fetchDailyProofsByIds, fetchDailyTour } from '@/api/daily';
@@ -23,7 +23,7 @@ import { useSeasonalLive } from '@/features/event/seasonal';
 import { rememberTour, useLastTour } from '@/features/tour/store';
 import { openPhotoFeed } from '@/features/daily/openFeed';
 import { track } from '@/services/analytics';
-import { Avatar, DualPhoto, Photo, SectionTitle } from '@/ui';
+import { Avatar, AvatarSize, DualPhoto, Photo, SectionTitle, Tappable } from '@/ui';
 import { selfieOf } from '@/features/daily/selfie';
 import { prefetchProof } from '@/lib/prefetch';
 import { FlagSticker, themeColor } from '@/ui/joy';
@@ -40,10 +40,10 @@ const MOSAIC_MAX = 6;
  * - The mosaic: one card per city (its most liked photo), a polaroid pile
  *   behind it when the city has several photos (top right, clear of a selfie:
  *   "2 players", or "3 · 2 players" when someone posted twice), its answer
- *   large, its players' avatars and its likes; cards lean a little, each its
- *   own way. My city's empty slot comes first until I play.
+ *   large, its players' avatars and its likes; cards sit square in the grid (design pass).
  * - Nobody played yet: yesterday's top 3 cities, greyed ("Yesterday the world
- *   said…"; a tap plays yesterday's photos in the feed), and my city's slot to be the first.
+ *   said…"; a tap plays yesterday's photos in the feed). The hero is the call to play: no slot tile
+ *   here any more (design pass: "Represent your city" said the hero's CTA again).
  */
 export function TodayCountries({ today, data }: { today: DailyToday | null; data: DailyTodayCountries | null }) {
   const styles = useThemedStyles(makeStyles);
@@ -76,20 +76,12 @@ export function TodayCountries({ today, data }: { today: DailyToday | null; data
   if (!challenge || !data) return null;
   const myProof = today?.myProof ?? null;
   const canPlay = challenge.isActive && !myProof;
-  const myCity = here?.name ? shortCityName(here.name) : null;
-  const mineIn = !!here && cities.some(c => c.city.id === here.id);
   // The mosaic: my city first, then the most liked.
   const cards = [...cities].sort((a, b) =>
     Number(b.city.id === here?.id) - Number(a.city.id === here?.id)
     || (b.totalLikes ?? b.top.voteCount) - (a.totalLikes ?? a.top.voteCount)
     || b.count - a.count).slice(0, MOSAIC_MAX);
   const theme = themeColor(challenge.special ? 'special' : challenge.theme?.key);
-  const slot = canPlay && !mineIn;
-
-  const play = () => {
-    track('today_countries_play', { has_photos: cities.length > 0 });
-    router.push((account ? '/daily/proof' : '/auth-gate?reason=daily_proof&returnTo=%2Fdaily%2Fproof') as never);
-  };
   const openCity = (g: DailyCityGroup, photo?: string) => {
     track('today_countries_tile', { country: g.city.country, unseen: hasUnseen(g) });
     router.push(`/daily/stories?city=${g.city.id}&source=today_mosaic${photo ? `&photo=${photo}` : ''}` as never);
@@ -103,8 +95,6 @@ export function TodayCountries({ today, data }: { today: DailyToday | null; data
         <View style={styles.block}>
           <SectionTitle small title={cities.length > 0 ? t(copy?.played ?? 'stories.played', { count: cities.length }) : t('worlds.tagline')}
                         action={cities.length > 0 ? { label: t('today.seeAll'), onPress: () => router.push('/daily/countries?source=today_mosaic' as never) } : undefined} />
-          {/* My city's slot (V6): a compact call above the grid, not a big empty card in it. */}
-          {slot && <SlotCard city={myCity} first={cities.length === 0} label={copy?.represent} onPress={play} />}
           {cities.length === 0 && yesterday.length > 0 && <Text style={styles.invite}>{t('mosaic.yesterday')}</Text>}
           <View style={styles.grid}>
             {cities.length > 0
@@ -116,17 +106,11 @@ export function TodayCountries({ today, data }: { today: DailyToday | null; data
           </View>
           {/* Until the first swipe ever: the piles can be swiped. */}
           {cities.length > 0 && swiped === false && cards.some(g => g.count > 1) && <Text style={styles.hint}>{t('mosaic.swipeHint')}</Text>}
-          {cities.length === 0 && yesterday.length === 0 && !slot && <Text style={styles.invite}>{t('countries.emptyBody')}</Text>}
+          {cities.length === 0 && yesterday.length === 0 && <Text style={styles.invite}>{t('countries.emptyBody')}</Text>}
         </View>
       )}
     </View>
   );
-}
-
-/** A small, steady lean per city (±1.5°), never changing between renders. */
-function lean(id: number): number {
-  const x = Math.sin(id * 12.9898) * 43758.5453;
-  return (x - Math.floor(x)) * 3 - 1.5;
 }
 
 // The pile's back poses (x, y, degrees): the next photo, then the one after; deeper ones are hidden.
@@ -237,10 +221,10 @@ const CityCard = memo(function CityCard({ group, onOpen, pileColor, badge, faded
 
   return (
     <GestureDetector gesture={pan}>
-      <View style={[styles.cardWrap, { transform: [{ rotate: `${lean(group.city.id)}deg` }] }, faded && styles.faded]}
+      <View style={[styles.cardWrap, faded && styles.faded]}
             onLayout={e => { w.value = e.nativeEvent.layout.width; }}>
-        <TouchableOpacity onPress={() => { if (!dragging.current) onOpen(group, p.id); }} onPressIn={() => prefetchProof(p)} activeOpacity={0.9}
-                          accessibilityRole="button" testID="mosaic-tile"
+        <Tappable onPress={() => { if (!dragging.current) onOpen(group, p.id); }} onPressIn={() => prefetchProof(p)}
+                  accessibilityRole="button" testID="mosaic-tile"
                           accessibilityLabel={[shortCityName(group.city.name), line, pile ? t('mosaic.players', { count: players }) : null,
                                               swipeable ? t('stories.of', { index: front + 1, total: photos.length }) : null, String(likes),
                                               comments ? t('comments.count', { count: comments }) : null].filter(Boolean).join(', ')}
@@ -258,7 +242,7 @@ const CityCard = memo(function CityCard({ group, onOpen, pileColor, badge, faded
                        city={group} badge={badge} counter={pile && !faded} total={photos.length > 1 ? photos.length : Math.min(group.count, PILE_MAX)}
                        dots={swipeable ? photos.length : 0} />
           ))}
-        </TouchableOpacity>
+        </Tappable>
       </View>
     </GestureDetector>
   );
@@ -361,17 +345,17 @@ const PileLayer = memo(function PileLayer({ proof, index, n, front, motion, pile
           <View style={styles.foot}>
             <View style={styles.avatars}>
               <View style={styles.avatar}>
-                <Avatar uri={proof.user.photoUrl ?? null} name={proof.user.displayName || proof.user.username || ''} size={20} />
+                <Avatar uri={proof.user.photoUrl ?? null} name={proof.user.displayName || proof.user.username || ''} size={AvatarSize.sm} />
               </View>
             </View>
             <View style={styles.votes}>
               {comments > 0 && (
                 <>
-                  <Ionicons name="chatbubble-outline" size={14} color={colors.muted} />
+                  <Ionicons name="chatbubble-outline" size={IconSize.sm} color={colors.muted} />
                   <Text style={[styles.votesText, styles.commentsText]}>{comments}</Text>
                 </>
               )}
-              <Ionicons name={state?.myVote ? 'heart' : 'heart-outline'} size={15} color={state?.myVote ? colors.primary : colors.muted} />
+              <Ionicons name={state?.myVote ? 'heart' : 'heart-outline'} size={IconSize.sm} color={state?.myVote ? colors.primary : colors.muted} />
               <Text style={styles.votesText}>{likes}</Text>
             </View>
           </View>
@@ -436,33 +420,11 @@ function claimNudge(): boolean {
   return true;
 }
 
-/** My city's empty slot: "Saigon is missing! Represent your city" (or, first of all, "Represent Saigon"). */
-function SlotCard({ city, first, label, onPress }: { city: string | null; first: boolean; label?: string; onPress: () => void }) {
-  const styles = useThemedStyles(makeStyles);
-  const { colors } = useTheme();
-  const { t } = useTranslation('daily');
-  const title = first ? (city ? t('mosaic.slotCta', { city }) : t(label ?? 'countries.represent'))
-    : city ? t('mosaic.missing', { city }) : t(label ?? 'countries.represent');
-  // Under the title: the call when the title names the city, else nothing to repeat.
-  const sub = first ? t('mosaic.beFirstSub') : city ? t(label ?? 'countries.represent') : null;
-  return (
-    <TouchableOpacity style={styles.slot} onPress={onPress} accessibilityRole="button" testID="represent-tile"
-                      accessibilityLabel={[title, sub].filter(Boolean).join('. ')}>
-      <View style={styles.camera}><Ionicons name="camera" size={22} color={colors.primaryText} /></View>
-      <View style={styles.slotBody}>
-        <Text style={styles.slotTitle} numberOfLines={2}>{title}</Text>
-        {!!sub && <Text style={styles.slotSub} numberOfLines={2}>{sub}</Text>}
-      </View>
-      <Ionicons name="chevron-forward" size={20} color={colors.primaryOnTint} />
-    </TouchableOpacity>
-  );
-}
-
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
   wrap:      { gap: Space.lg },
   block:     { gap: Space.sm },
-  grid:      { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', rowGap: Space.lg, paddingTop: Space.xs },
-  cardWrap:  { width: '48.5%' },
+  grid:      { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', rowGap: Space.md, paddingTop: Space.xs },
+  cardWrap:  { width: '48%' },
   faded:     { opacity: 0.92 },   // yesterday's cards stay readable (V6: 0.55 read washed out)
   // The polaroid pile: theme-colored sheets peeking out behind the card.
   layer:     { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, borderRadius: Radius.card, opacity: 0.55 },
@@ -475,33 +437,28 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
                borderRadius: 8, backgroundColor: c.photoPill },
   dot:       { width: 5, height: 5, borderRadius: 3, backgroundColor: c.photoControl },
   dotOn:     { backgroundColor: c.white },
-  card:      { borderRadius: Radius.card, overflow: 'hidden', backgroundColor: c.bg2, borderWidth: 1.5, borderColor: c.line },
+  card:      { borderRadius: Radius.card, overflow: 'hidden', backgroundColor: c.bg2, borderWidth: 1, borderColor: c.line },
   cardFill:  { flex: 1 },
   photo:     { width: '100%', aspectRatio: 1, backgroundColor: c.bg3 },
   // Leaves the left 30 % to the selfie inset (24 % + its margin); a long count truncates.
   corner:    { position: 'absolute', top: 6, right: 6, left: '30%', flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center', gap: Space.xs },
   pill:      { flexDirection: 'row', alignItems: 'center', gap: Space.xs, paddingHorizontal: Space.sm, paddingVertical: Space.xs, flexShrink: 1,
-               borderRadius: 12, backgroundColor: c.photoPill },
-  pillText:  { fontSize: FontSizes.xs, fontWeight: '800', color: c.white, flexShrink: 1 },
+               borderRadius: Radius.control, backgroundColor: c.photoPill },
+  pillText:  { ...Type.caption, fontWeight: '800', color: c.white, flexShrink: 1 },
   badge:     { width: 28, height: 28, borderRadius: 14, backgroundColor: c.photoControl,
                alignItems: 'center', justifyContent: 'center' },
   badgeText: { fontSize: FontSizes.body },
-  tileBody:  { padding: Space.md, gap: Space.xs },
+  tileBody:  { padding: Space.md, gap: Space.sm },
   cityRow:   { flexDirection: 'row', alignItems: 'center', gap: Space.xs },
-  city:      { flexShrink: 1, fontSize: FontSizes.xs, fontWeight: '700', color: c.text },
-  answer:    { fontSize: FontSizes.lg, lineHeight: 24, fontWeight: '800', color: c.text, minHeight: 44 },
+  city:      { flexShrink: 1, ...Type.caption, color: c.muted },
+  // Two lines kept even for a short answer: the tiles of a row end level.
+  answer:    { ...Type.label, color: c.text, minHeight: Type.label.lineHeight * 2 },
   foot:      { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: Space.sm },
   avatars:   { flexDirection: 'row', alignItems: 'center' },
-  avatar:    { borderRadius: 12, borderWidth: 2, borderColor: c.bg2 },
+  avatar:    { borderRadius: Radius.full },
   votes:     { flexDirection: 'row', alignItems: 'center', gap: Space.xs },
-  votesText: { fontSize: FontSizes.xs, fontWeight: '700', color: c.muted },
+  votesText: { ...Type.caption, color: c.muted },
   commentsText: { marginRight: Space.sm },
-  slot:      { flexDirection: 'row', alignItems: 'center', gap: Space.md, minHeight: 64, paddingVertical: Space.md, paddingHorizontal: Space.md, borderRadius: Radius.card,
-               borderStyle: 'dashed', borderColor: c.primaryText, borderWidth: 1.5, backgroundColor: c.primaryTint },
-  camera:    { width: 42, height: 42, borderRadius: 21, backgroundColor: c.bg2, alignItems: 'center', justifyContent: 'center' },
-  slotBody:  { flex: 1, gap: Space.xxs },
-  slotTitle: { fontSize: FontSizes.md, fontWeight: '800', color: c.primaryOnTint },
-  slotSub:   { fontSize: FontSizes.xs, fontWeight: '600', color: c.primaryOnTint },
-  invite:    { fontSize: FontSizes.sm, lineHeight: 20, fontWeight: '600', color: c.muted },
-  hint:      { fontSize: FontSizes.xs, fontWeight: '600', color: c.muted, textAlign: 'center' },
+  invite:    { ...Type.body, color: c.muted },
+  hint:      { ...Type.caption, color: c.muted, textAlign: 'center' },
 });

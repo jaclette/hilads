@@ -3,7 +3,6 @@ import { fetchDailyProofsByIds, fetchDailyTodayCountries, fetchDailyTour } from 
 import { shortCityName } from '../../i18n/cityName'
 import { track } from '../../lib/analytics'
 import { thumbFallback } from '../../lib/thumbFallback'
-import { openAppModal } from '../AppModal'
 import AvatarWithFlag from '../AvatarWithFlag'
 import Icon from '../Icon'
 import { FlagSticker, themeColor } from '../joy/Joy'
@@ -114,21 +113,17 @@ export default function TodayCountries({ today, data }) {
   const isMine = (g) => !!here && String(g.city.id) === String(here.id)
   const myProof = today?.myProof ?? null
   const canPlay = challenge.isActive && !myProof
-  const myCity = here?.name ? shortCityName(here.name) : null
-  const mineIn = cities.some(isMine)
   // The mosaic: my city first, then the most liked.
   const cards = [...cities].sort((a, b) =>
     Number(isMine(b)) - Number(isMine(a))
     || (b.totalLikes ?? b.top.voteCount) - (a.totalLikes ?? a.top.voteCount)
     || b.count - a.count).slice(0, MOSAIC_MAX)
   const theme = themeColor(challenge.special ? 'special' : challenge.theme?.key)
-  const slot = canPlay && !mineIn
   // Yesterday's podium first, one card per city.
   const slides = tour?.slides ?? []
   const yesterday = slides.map((s, i) => ({ s, i })).sort((a, b) => (a.s.podium ?? 99) - (b.s.podium ?? 99))
     .filter((x, k, all) => all.findIndex(y => y.s.city.id === x.s.city.id) === k).slice(0, 3)
 
-  const play = () => { track('today_countries_play', { has_photos: cities.length > 0, platform_surface: 'web' }); openAppModal({ action: 'play', surface: 'today_countries' }) }
   const openCity = (g, photo) => {
     track('today_countries_tile', { country: g.city.country, unseen: hasUnseen(g), platform_surface: 'web' })
     openDaily('stories', { city: g.city.id, source: 'today_mosaic', ...(photo ? { photo } : {}) })
@@ -143,8 +138,6 @@ export default function TodayCountries({ today, data }) {
             {cities.length > 0 && <button type="button" className="dc-link" onClick={() => openDaily('countries', { source: 'today_mosaic' })}>{t('today.seeAll')}</button>}
           </div>
           {cities.length === 0 && yesterday.length > 0 && <p className="dc-muted">{t('mosaic.yesterday')}</p>}
-          {/* My city's slot (V6): a compact call above the grid, not a big empty card in it. */}
-          {slot && <SlotCard city={myCity} first={cities.length === 0} label={copy?.represent} onOpen={play} />}
           <div className="tc-grid">
             {cities.length > 0
               ? cards.map(g => <CityCard key={g.city.id} group={g} pileColor={theme.fill} badge={seasonal?.theme.emoji} onOpen={photo => openCity(g, photo)} />)
@@ -155,19 +148,13 @@ export default function TodayCountries({ today, data }) {
           </div>
           {/* Until the first swipe ever: the piles can be swiped. */}
           {cities.length > 0 && !swiped && cards.some(g => g.count > 1) && <p className="dc-muted tc-hint">{t('mosaic.swipeHint')}</p>}
-          {cities.length === 0 && yesterday.length === 0 && !slot && <p className="dc-muted">{t('countries.emptyBody')}</p>}
+          {cities.length === 0 && yesterday.length === 0 && <p className="dc-muted">{t('countries.emptyBody')}</p>}
         </div>
       )}
     </div>
   )
 }
 
-
-/** A small, steady lean per city (±1.5°), never changing between renders (the app's formula). */
-function lean(id) {
-  const x = Math.sin(Number(id) * 12.9898) * 43758.5453
-  return (x - Math.floor(x)) * 3 - 1.5
-}
 
 /**
  * A city's card: its most liked photo (a polaroid pile behind it when the city
@@ -275,7 +262,6 @@ function CityCard({ group, onOpen, pileColor, badge, faded = false }) {
 
   return (
     <button type="button" className={`tc-card${faded ? ' tc-card--faded' : ''}${swipeable ? ' tc-card--pile' : ''}`}
-            style={{ transform: `rotate(${lean(group.city.id)}deg)` }}
             onClick={e => { if (dragged.current) { e.preventDefault(); dragged.current = false; return } onOpen(p.id) }}
             onPointerDown={onPointerDown} onPointerMove={onPointerMove} onPointerUp={onPointerUp}
             onPointerCancel={() => { drag.current = null; setTop(0, 'transform 200ms ease') }}
@@ -382,23 +368,3 @@ function claimNudge() {
   nudged = true
   return true
 }
-
-/** My city's empty slot: "Saigon is missing! Represent your city" (or, first of all, "Represent Saigon"). */
-function SlotCard({ city, first, label, onOpen }) {
-  const { t } = useDc()
-  const title = first ? (city ? t('mosaic.slotCta', { city }) : t(label ?? 'countries.represent'))
-    : city ? t('mosaic.missing', { city }) : t(label ?? 'countries.represent')
-  // Under the title: the call when the title names the city, else nothing to repeat.
-  const sub = first ? t('mosaic.beFirstSub') : city ? t(label ?? 'countries.represent') : null
-  return (
-    <button type="button" className="tc-slot" onClick={onOpen} data-testid="represent-tile">
-      <span className="tc-slot-camera"><Icon name="camera" size={22} /></span>
-      <span className="tc-slot-body">
-        <span className="tc-slot-title">{title}</span>
-        {sub && <span className="tc-slot-sub">{sub}</span>}
-      </span>
-      <Icon name="chevron-forward" size={20} />
-    </button>
-  )
-}
-
