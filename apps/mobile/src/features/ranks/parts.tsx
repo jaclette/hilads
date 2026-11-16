@@ -11,7 +11,6 @@ import { Confetti, tint } from '@/ui/joy';
 export function medalColor(c: ThemeColors, rank: number): string {
   return [c.gold, c.silver, c.bronze][rank - 1] ?? c.gold;
 }
-export const MEDAL_EMOJI = ['🥇', '🥈', '🥉'];
 
 /** A number counting up from 0 (once), plain with "reduce motion". */
 export function CountUp({ value, format, style }: { value: number; format?: (n: number) => string; style?: object }) {

@@ -65,12 +65,6 @@ export function hasUnseen(group: { unseen: boolean | null; ids: string[] }): boo
   return (group.unseen ?? true) && group.ids.some(id => !seen.has(id));
 }
 
-/** One photo already viewed on this device (a story ring's segment). */
-export function isSeen(id: string): boolean {
-  load();
-  return seen.has(id);
-}
-
 /** Re-render when what I've seen changes. */
 export function useSeen(): number {
   load();

@@ -17,23 +17,6 @@ export function PickBadge({ style }: { style?: StyleProp<ViewStyle> }) {
   );
 }
 
-/**
- * The compact pick mark on a photo (Today strips): a small dark pill in the
- * top-left corner, a gold star and "Hilads" (a brand name: the same in every
- * locale), so it never truncates. Place it inside the photo's box.
- */
-export function PickPill() {
-  const styles = useThemedStyles(makeStyles);
-  const { colors } = useTheme();
-  const { t } = useTranslation('common');
-  return (
-    <View style={styles.pill} accessibilityLabel={t('pick.badge')}>
-      <Ionicons name="star" size={10} color={colors.gold} />
-      <Text style={styles.pillText}>Hilads</Text>
-    </View>
-  );
-}
-
 /** A pick's "Good to know": context that stays when players' photos take the cover. */
 export function GoodToKnow({ note }: { note: string | null | undefined }) {
   const styles = useThemedStyles(makeStyles);

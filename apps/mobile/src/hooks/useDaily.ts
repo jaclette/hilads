@@ -4,13 +4,13 @@ import i18n from '@/i18n';
 import { useFocusEffect } from 'expo-router';
 import { useIsFocused } from '@react-navigation/native';
 import { readOffline, writeOffline } from '@/lib/offlineCache';
-import { fetchDailyArchive, fetchDailyBoard, fetchDailyCalendar, fetchDailyGuide, fetchDailySheet, fetchDailyToday } from '@/api/daily';
+import { fetchDailyArchive, fetchDailyBoard, fetchDailyCalendar, fetchDailySheet, fetchDailyToday } from '@/api/daily';
 import { useApp } from '@/context/AppContext';
 import { onDailyDropped } from '@/lib/dailyEvents';
 import { isGpsCity } from '@/lib/gpsCityCorrection';
 import { seedProofs, seedVotesLeft } from '@/features/daily/votes';
 import { setSeasonalEvent } from '@/features/event/seasonal';
-import type { DailyArchiveItem, DailyCalendar, DailyGuide, DailyProof, DailySheet, DailyToday } from '@/types';
+import type { DailyArchiveItem, DailyCalendar, DailyProof, DailySheet, DailyToday } from '@/types';
 
 // Daily Challenge data hooks. Same plain useState/useEffect pattern as the rest
 // of the app (no query library). Today's data refreshes on screen focus, when
@@ -388,21 +388,3 @@ export function useDailyCalendar(from: string, to: string) {
   return { data, loading, reload: load };
 }
 
-/** City guide (one summary per theme) and my Local Pass progress in that city. */
-export function useDailyGuide(cityId: string | null | undefined) {
-  const { identity, account } = useApp();
-  const guestId = account ? null : identity?.guestId ?? null;
-  const [guide, setGuide] = useState<DailyGuide | null>(null);
-
-  const load = useCallback(async () => {
-    try {
-      setGuide(await fetchDailyGuide(cityId, guestId));
-    } catch (err) {
-      console.warn('[daily] guide failed:', String(err));
-    }
-  }, [cityId, guestId]);
-
-  useEffect(() => { setGuide(null); load(); }, [load]);
-  useFocusEffect(useCallback(() => { load(); }, [load]));
-  return guide;
-}

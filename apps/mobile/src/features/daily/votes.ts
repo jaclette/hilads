@@ -150,11 +150,6 @@ export function useVoteState(proofId: string | null | undefined, guestId?: strin
   return proofId ? states.get(proofId) ?? null : null;
 }
 
-export function useVotesLeft(): number | null {
-  useSyncExternalStore(subscribe, () => version);
-  return votesLeft;
-}
-
 // ── Voting ─────────────────────────────────────────────────────────────────
 
 /**

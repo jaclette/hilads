@@ -110,6 +110,3 @@ export function searchUrl(query: string): string {
     : `geo:0,0?q=${encodeURIComponent(query)}`;
 }
 
-export function openMapsUrl(url: string): void {
-  Linking.openURL(url).catch(() => {});
-}

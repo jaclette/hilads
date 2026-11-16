@@ -57,42 +57,6 @@ export async function fetchShowcaseItem(challengeId: string): Promise<ShowcaseIt
   }
 }
 
-export interface ChallengeExampleLine {
-  kind:   'created' | 'winner' | 'present' | 'submission' | 'host';
-  name?:  string;
-  count?: number;
-  points: number;
-  per?:   boolean;
-}
-export interface ChallengeExample {
-  id:          string;
-  title:       string;
-  type:        string;
-  format:      'photo' | 'meet';
-  creatorName: string;
-  lines:       ChallengeExampleLine[];
-}
-
-/** One inert example for the zero-challenge empty state. No challenge id by
- *  design - these are read-only inspiration, never takeable. */
-export interface InspirationExample {
-  id:                       string;
-  title:                    string;
-  challenge_type:           ChallengeType;
-  mode:                     'local' | 'international';
-  country:                  string | null;   // origin (the inspiration city)
-  target_country:           string | null;   // only on international challenges
-  creator_username:         string | null;
-  creator_display_name:     string | null;
-  creator_thumb_avatar_url: string | null;
-}
-
-export interface ChallengeInspiration {
-  city:     string | null;   // source city name (for the small "by … · city" line)
-  cityId:   string | null;
-  examples: InspirationExample[];
-}
-
 export async function fetchChallengeById(challengeId: string): Promise<{
   challenge: Challenge;
   channelId: number;
@@ -124,31 +88,6 @@ export async function fetchUserChallenges(userId: string): Promise<ProfileChalle
 }
 
 // ── Writes ────────────────────────────────────────────────────────────────────
-
-/** Optional fields for International mode + visibility (privacy layer).
- *  Mode/target/proof fields are ignored by the server when `mode='local'`.
- *  `targetCityChannelId` null = "anywhere". `visibility` is 'public' or
- *  'friends' at input - 'private' is reachable only via the mutual privacy
- *  flow once the challenge has an acceptor. Server forces 'public' on
- *  International rows regardless of what we send. */
-export interface InternationalChallengeFields {
-  mode?:                 'local' | 'international';
-  targetCityChannelId?:  string | number | null;
-  proofRequirements?:    string | null;
-  /** Validation method per challenge. International is locked to
-   *  'photo_proof' by the server regardless of input; local creators
-   *  pick. Default 'meet' preserves the historical IRL flow. */
-  validationMethod?:     'meet' | 'photo_proof' | null;
-  visibility?:           'public' | 'friends' | null;
-  // Group model (Phase 4): a local MEET challenge created with format='group'
-  // carries a meet date + location set at creation.
-  format?:               'legacy' | 'group';
-  meetAt?:               number | null;   // unix seconds
-  meetEndsAt?:           number | null;   // unix seconds (optional)
-  venue?:                string | null;
-  venueLat?:             number | null;
-  venueLng?:             number | null;
-}
 
 /** GROUP challenges: the challenger validates who was present at the meet.
  *  Returns the count + ids now marked present. Present takers earn the big

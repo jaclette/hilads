@@ -21,16 +21,6 @@ export async function fetchNowFeed(
   }
 }
 
-// Active topics only - used when you need just the topic list.
-export async function fetchCityTopics(channelId: string): Promise<Topic[]> {
-  try {
-    const data = await api.get<{ topics: Topic[] }>(`/channels/${channelId}/topics`);
-    return data.topics ?? [];
-  } catch {
-    return [];
-  }
-}
-
 export async function fetchTopicById(topicId: string): Promise<Topic> {
   const data = await api.get<{ topic: Topic }>(`/topics/${topicId}`);
   return data.topic;

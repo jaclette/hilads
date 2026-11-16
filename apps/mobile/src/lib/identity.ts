@@ -87,18 +87,6 @@ export async function clearIdentity(): Promise<void> {
 
 const DETECTED_CITY_KEY = 'hilads_detected_city';
 
-export async function saveDetectedCity(city: City | null): Promise<void> {
-  try {
-    if (!city) {
-      await AsyncStorage.removeItem(DETECTED_CITY_KEY);
-    } else {
-      await AsyncStorage.setItem(DETECTED_CITY_KEY, JSON.stringify(city));
-    }
-  } catch {
-    // Non-critical - worst case the button appears a few seconds late
-  }
-}
-
 export async function loadDetectedCity(): Promise<City | null> {
   try {
     const raw = await AsyncStorage.getItem(DETECTED_CITY_KEY);

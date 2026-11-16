@@ -52,23 +52,6 @@ export async function fetchEventInspiration(excludeChannelId: string): Promise<E
   }
 }
 
-// Public (ticketmaster) events for a city - mirrors web fetchCityEvents().
-// Endpoint: GET /channels/{id}/city-events
-export async function fetchPublicCityEvents(channelId: string): Promise<HiladsEvent[]> {
-  try {
-    const data = await api.get<{ events: Record<string, unknown>[] }>(
-      `/channels/${channelId}/city-events`,
-    );
-    return (data.events ?? []).map(e => ({
-      ...e,
-      event_type: (e.event_type ?? e.type) as HiladsEvent['event_type'],
-      source_type: (e.source_type ?? e.source ?? 'ticketmaster') as HiladsEvent['source_type'],
-    })) as HiladsEvent[];
-  } catch {
-    return [];
-  }
-}
-
 export async function fetchMyEvents(guestId: string): Promise<HiladsEvent[]> {
   const data = await api.get<{ events: HiladsEvent[] }>('/users/me/events', {
     params: { guestId },

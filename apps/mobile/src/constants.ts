@@ -15,11 +15,6 @@ export const WS_URL =
 export const BASE_URL =
   process.env.EXPO_PUBLIC_BASE_URL ?? 'https://hilads.live';
 
-// ── Feature flags ─────────────────────────────────────────────────────────────
-// Hangouts (topics) are re-enabled as the "Hi now" temporality in the Hi Local
-// feed (spontaneous, ~8h TTL) alongside events ("Hi later").
-export const HANGOUTS_ENABLED = true;
-
 // ── Link builders ─────────────────────────────────────────────────────────────
 
 // Active-locale prefix for shared links: '' for English (default), '/fr' | '/vi'
@@ -61,16 +56,6 @@ export function buildChallengeUrl(challenge: { id: string; title?: string } | st
   return `${BASE_URL}${lp}/challenge/${challengeSlug(challenge)}`;
 }
 
-/**
- * Shareable leaderboard URL carrying the current filter. Tapping it (in a feed
- * link card) re-opens the leaderboard on the same scope + period.
- */
-export function buildLeaderboardUrl(scope: string, period: string): string {
-  // No locale prefix: the shared message is English-only and the leaderboard is
-  // an in-app overlay (not an SSR page), so the prefix would be dead weight.
-  return `${BASE_URL}/leaderboard?scope=${encodeURIComponent(scope)}&period=${encodeURIComponent(period)}`;
-}
-
 // ── Env diagnostics - unconditional, fires in both dev and production APK ─────
 console.log('[env] EXPO_PUBLIC_API_URL =', process.env.EXPO_PUBLIC_API_URL ?? '(undefined - will use localhost fallback!)');
 console.log('[env] API_URL (resolved)  =', API_URL);
@@ -80,7 +65,6 @@ if (!process.env.EXPO_PUBLIC_API_URL) {
 }
 
 export const APP_VERSION = '1.0.0';
-export const IS_DEV = __DEV__;
 
 // ── Design tokens - aligned with web app ──────────────────────────────────────
 // Web source: apps/web/src/index.css CSS variables
