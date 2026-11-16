@@ -1597,11 +1597,11 @@ html, body, #root {
   padding: 0;
 }
 
-.profile-avatar-lg {
+.profile-avatar-lg {             /* !important: beats .online-avatar's size, declared later */
   width: 72px !important;
   height: 72px !important;
   font-size: 1.7rem !important;
-  border-radius: 50% !important;
+  border-radius: 50%;
 }
 
 .profile-hint {
@@ -1661,12 +1661,12 @@ html, body, #root {
   padding: var(--sp-16) var(--sp-16) var(--sp-12);
 }
 
-.profile-avatar-identity {
+.profile-avatar-identity {       /* !important: beats .online-avatar's size, declared later */
   width: 68px !important;
   height: 68px !important;
-  border-radius: 50% !important;
+  border-radius: 50%;
   flex-shrink: 0;
-  border: 2px solid var(--accent) !important;
+  border: 2px solid var(--accent);
   font-size: 1.5rem !important; /* initials scale with avatar size */
 }
 
@@ -4369,7 +4369,7 @@ html, body, #root {
 }
 
 .online-avatar--legend {
-  border: 1.5px solid rgba(255, 193, 7, 0.35) !important;
+  border: 1.5px solid rgba(255, 193, 7, 0.35);
 }
 
 .legend-pick-preview {
@@ -4518,10 +4518,10 @@ html, body, #root {
 }
 
 .pub-profile-avatar {
-  width: 72px !important;
-  height: 72px !important;
+  width: 72px;
+  height: 72px;
   border-radius: 50%;
-  font-size: 1.9rem !important;
+  font-size: 1.9rem;
   object-fit: cover;
   flex-shrink: 0;
 }
@@ -8407,12 +8407,12 @@ img.dm-header-avatar {
 @media (max-width: 640px) {
   .lp-split-row,
   .lp-split-row--local {
-    flex-direction: column !important;
+    flex-direction: column;
     padding: 3rem var(--sp-24);
     gap: 2.25rem;
   }
   .lp-split-row--exploring {
-    flex-direction: column-reverse !important;
+    flex-direction: column-reverse;
     padding: 3rem var(--sp-24);
     gap: 2.25rem;
   }
@@ -11225,7 +11225,7 @@ body.has-app-promo-banner .page-header {
 /* ── Tab bar like the app's (W1): 4 tabs, stroke icon over a label, the
    active tab on a primary-tint pill. Overrides the older glowing tab bar. ── */
 .bottom-nav {
-  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;   /* Today · World · Map · Passport (UX audit option B) */
+  grid-template-columns: repeat(4, minmax(0, 1fr));   /* Today · World · Map · Passport (UX audit option B) */
   gap: var(--sp-8);
   border-radius: 0;
   background: var(--bg);
@@ -11783,8 +11783,8 @@ html.kb-open .quick-row { display: none; }
 .here-section-header { text-transform: none; letter-spacing: 0; font-size: var(--fs-body); font-weight: 800; color: var(--text); }
 .people-drawer-row { padding: var(--sp-12) var(--sp-16); background: var(--surface); border: 1.5px solid var(--line); border-radius: 20px; box-shadow: none; }
 .people-drawer-name { font-size: var(--fs-body); font-weight: 700; color: var(--text); }
-.vibe-badge--local { color: var(--local-text) !important; }
-.vibe-badge--exploring { color: var(--traveler-text) !important; }
+.vibe-badge--local { color: var(--local-text); }
+.vibe-badge--exploring { color: var(--traveler-text); }
 /* Small filter chips (profile challenge filter). */
 .challenge-type-chip { min-height: 34px; border: 1.5px solid var(--line); background: var(--surface); color: var(--text); font-weight: 600; }
 .challenge-type-chip--active { border-color: var(--primary); background: var(--primary); color: #fff; }
@@ -11983,6 +11983,7 @@ html.kb-open .quick-row { display: none; }
 .wm-row-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: var(--sp-4); }
 .wm-row-name { font-size: var(--fs-sm); font-weight: 800; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .wm-row-chips { display: flex; flex-wrap: wrap; gap: var(--sp-8); }
+/* !important: beats the inline ROW gap of MapSheet */
 .wm-row-theme, .wm-row-local { gap: var(--sp-4) !important; padding: var(--sp-2) var(--sp-8); border-radius: var(--r-chip); font-size: var(--fs-xs); font-weight: 700; }
 .wm-row-theme { background: var(--primary-tint); color: var(--primary-on-tint); }
 .wm-row-local { background: var(--local-bg); color: var(--local-text); }
@@ -12690,6 +12691,7 @@ html[data-event="halloween"] { --header-art: #FFA552; --header-art-opacity: 0.28
 
 /* ── V6 notifications (n6-*): the bell, "While you were away", the inbox, settings, tab badges ── */
 .n6-bell { position: relative; }
+/* !important: beats .header-icon-btn:hover (desktop bell) */
 .n6-bell--on { background: var(--cta) !important; border-color: var(--cta) !important; color: var(--on-cta) !important; }
 .n6-bell-icon { display: inline-flex; transform-origin: 50% 2px; }
 .n6-bell-icon--ring { animation: n6-ring 0.6s ease-in-out 0.3s; }
