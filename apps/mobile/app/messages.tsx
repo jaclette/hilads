@@ -13,7 +13,7 @@ import { thumbUrl } from '@/lib/imageThumb';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import {
-  View, Text, ScrollView, TouchableOpacity, Switch,
+  View, Text, ScrollView, TouchableOpacity,
   ActivityIndicator, RefreshControl, StyleSheet, Alert,
 } from 'react-native';
 import { useRouter, useFocusEffect } from 'expo-router';
@@ -23,10 +23,6 @@ import { Ionicons } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
 import { useConversations } from '@/hooks/useConversations';
 import { fetchMyEvents } from '@/api/events';
-import {
-  fetchNotificationPreferences, updateNotificationPreferences,
-  type NotificationPreferences,
-} from '@/api/notifications';
 import { UpgradePrompt } from '@/features/auth/UpgradePrompt';
 import { Border, FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
@@ -234,22 +230,6 @@ export default function MessagesScreen() {
 
   useEffect(() => { loadEvents(); }, [loadEvents]);
 
-  // ── Envelope-scoped notification preferences ─────────────────────────────
-  // Three toggles: DMs, event-chat, city-chat - mirroring the three notification
-  // types that route to the envelope icon. Other prefs live on the bell screen.
-  const [prefs, setPrefs] = useState<NotificationPreferences | null>(null);
-  useEffect(() => {
-    if (!account) return;
-    fetchNotificationPreferences().then(setPrefs).catch(() => {});
-  }, [account]);
-
-  const togglePref = useCallback((key: keyof NotificationPreferences, value: boolean) => {
-    if (!prefs) return;
-    const prev = prefs;
-    setPrefs({ ...prefs, [key]: value });
-    updateNotificationPreferences({ [key]: value }).catch(() => setPrefs(prev));
-  }, [prefs]);
-
   const reload = useCallback(() => { reloadDMs(); loadEvents(); }, [reloadDMs, loadEvents]);
   const goBack = () => (router.canGoBack() ? router.back() : router.replace('/(tabs)/passport' as never));
 
@@ -358,62 +338,13 @@ export default function MessagesScreen() {
             ) : activeFilter === 'events' ? null : null
           )}
 
-          {/* ── Notification preferences (envelope-scoped) ────────────────── */}
-          {prefs && (
-            <View style={styles.prefSection}>
-              <Text style={styles.prefSectionTitle}>{t('prefTitle')}</Text>
-              <View style={styles.prefCard}>
-                <PrefRow
-                  label={t('pref.dmLabel')}
-                  subtitle={t('pref.dmSub')}
-                  value={prefs.dm_push}
-                  onChange={v => togglePref('dm_push', v)}
-                />
-                <View style={styles.prefDivider} />
-                <PrefRow
-                  label={t('pref.eventLabel')}
-                  subtitle={t('pref.eventSub')}
-                  value={prefs.event_message_push}
-                  onChange={v => togglePref('event_message_push', v)}
-                />
-                <View style={styles.prefDivider} />
-                <PrefRow
-                  label={t('pref.cityLabel')}
-                  subtitle={t('pref.citySub')}
-                  value={prefs.channel_message_push}
-                  onChange={v => togglePref('channel_message_push', v)}
-                />
-              </View>
-            </View>
-          )}
+          {/* Message notifications: in Notification settings (every push setting in one place). */}
+          <TouchableOpacity style={styles.prefLink} onPress={() => router.push('/notification-settings' as never)} accessibilityRole="button">
+            <Text style={styles.prefLinkText}>{t('prefTitle')}</Text>
+          </TouchableOpacity>
         </ScrollView>
       )}
     </Screen>
-  );
-}
-
-// ── Preference toggle row (local - same shape as the bell screen's PrefRow) ──
-
-function PrefRow({
-  label, subtitle, value, onChange,
-}: { label: string; subtitle: string; value: boolean; onChange: (v: boolean) => void }) {
-  const { colors } = useTheme();
-  const styles = useThemedStyles(makeStyles);
-  return (
-    <View style={styles.prefRow}>
-      <View style={styles.prefText}>
-        <Text style={styles.prefLabel}>{label}</Text>
-        <Text style={styles.prefSub}>{subtitle}</Text>
-      </View>
-      <Switch
-        value={value}
-        onValueChange={onChange}
-        trackColor={{ false: colors.line, true: colors.primary }}
-        thumbColor={colors.white}
-        ios_backgroundColor={colors.line}
-        accessibilityLabel={label}
-      />
-    </View>
   );
 }
 
@@ -447,12 +378,6 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   rowPreviewUnread: { fontWeight: '600', color: c.text },
   unreadDot:        { width: 10, height: 10, borderRadius: Radius.full, backgroundColor: c.primary },
 
-  prefSection:      { paddingHorizontal: Spacing.md, paddingTop: Spacing.lg, gap: 8 },
-  prefSectionTitle: { fontSize: FontSizes.md, fontWeight: '800', color: c.text },
-  prefCard:         { borderRadius: Radius.card, borderWidth: Border, borderColor: c.line, backgroundColor: c.bg2, paddingHorizontal: 14 },
-  prefDivider:      { height: 1, backgroundColor: c.line },
-  prefRow:          { flexDirection: 'row', alignItems: 'center', gap: 12, minHeight: 64, paddingVertical: 10 },
-  prefText:         { flex: 1, gap: 2 },
-  prefLabel:        { fontSize: 15, fontWeight: '700', color: c.text },
-  prefSub:          { fontSize: FontSizes.xs, fontWeight: '400', color: c.muted },
+  prefLink:         { paddingHorizontal: Spacing.md, paddingVertical: Spacing.lg, alignItems: 'center' },
+  prefLinkText:     { fontSize: 14, fontWeight: '700', color: c.primaryText },
 });

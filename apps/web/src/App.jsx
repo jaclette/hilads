@@ -6949,6 +6949,7 @@ export default function App() {
           conversations={conversations}
           onConversationsLoaded={setConversations}
           onBack={() => setShowConversations(false)}
+          onOpenNotifSettings={() => setShowNotifSettings(true)}
           onOpenDm={(dm) => {
             // Optimistically clear unread before navigating
             setConversations(prev => prev ? {
@@ -7022,6 +7023,7 @@ export default function App() {
         <ProfileScreen
           account={account}
           onBack={() => setShowSettings(false)}
+          onOpenNotifSettings={() => setShowNotifSettings(true)}
           city={city}
           cityChannelId={channelId}
           onCityChange={async (newChannelId) => {

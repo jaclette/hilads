@@ -490,6 +490,11 @@ export default function SettingsScreen() {
           />
           <LanguageRow divider />
           <DirectionsRow divider />
+          {/* Every push setting (was only behind the ⚙️ of Notifications). */}
+          {!isGuest && (
+            <ListRow icon="notifications-outline" title={t('settings.title', { ns: 'notifications' })} divider
+                     onPress={() => router.push('/notification-settings' as never)} />
+          )}
           {!isGuest && (
             <ListRow icon="ban-outline" title={t('blockedUsers')} divider onPress={() => router.push('/blocked-users' as never)} />
           )}

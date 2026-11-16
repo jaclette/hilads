@@ -54,8 +54,8 @@ const AMBASSADOR_PICKS = [
  * appearance and language, save, sign out, delete account. Friends and vibes
  * live in Passport → Friends now.
  */
-export default function ProfileScreen({ account, onSave, onBack, onSignOut, onDeleteAccount, tabMode = false, renderAppHeader, city, cityChannelId, onCityChange }) {
-  const { t } = useTranslation(['profile', 'common'])
+export default function ProfileScreen({ account, onSave, onBack, onSignOut, onDeleteAccount, tabMode = false, renderAppHeader, city, cityChannelId, onCityChange, onOpenNotifSettings }) {
+  const { t } = useTranslation(['profile', 'common', 'notifications'])
   const [photoUrl,        setPhotoUrl]        = useState(account.profile_photo_url ?? null)
   const [thumbPhotoUrl,   setThumbPhotoUrl]   = useState(account.thumbAvatarUrl ?? account.profile_photo_url ?? null)
   const [username,        setUsername]        = useState(account.username ?? '')
@@ -294,6 +294,18 @@ export default function ProfileScreen({ account, onSave, onBack, onSignOut, onDe
           {/* Appearance (theme) + Language — shared with the guest Me view
               so members and guests get the identical pickers. */}
           <AppearanceLanguageCard account={account} onSave={onSave} />
+
+          {/* Every push setting (was only behind the ⚙️ of Notifications). */}
+          {onOpenNotifSettings && (
+            <div className="pp-rows">
+              <button type="button" className="pp-row" onClick={onOpenNotifSettings}>
+                <Icon name="notifications-outline" size={20} style={{ color: 'var(--primary-text)' }} />
+                <span className="pp-row-label">{t('notifications:settings.title')}</span>
+                <span className="pp-row-value" />
+                <Icon name="chevron-forward" size={18} style={{ color: 'var(--muted2)' }} />
+              </button>
+            </div>
+          )}
 
         </div>
 

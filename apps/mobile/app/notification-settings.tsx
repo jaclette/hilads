@@ -1,6 +1,6 @@
 /**
- * Notification settings (V6, from the ⚙️ of Notifications): push status at the
- * top, then one group per category (same emoji and color as the inbox) with a
+ * Notification settings (V6; from the ⚙️ of Notifications and from Settings): every push
+ * setting in one place. Push status at the top, then one group per category (same emoji and color as the inbox) with a
  * master toggle and its toggles, each with a one-line description, and quiet
  * hours. Every change is saved at once (optimistic), with a little ✓.
  */
@@ -51,6 +51,14 @@ const GROUPS: { category: NotifCategory; toggles: Toggle[] }[] = [
     { label: 'announce', keys: ['admin_announcement_push'] },
   ] },
 ];
+
+/** Private, plan and city messages (dm:pref.* strings): they lived on the Messages screen. */
+const MESSAGE_TOGGLES: { label: string; key: Key }[] = [
+  { label: 'dm', key: 'dm_push' },
+  { label: 'event', key: 'event_message_push' },
+  { label: 'city', key: 'channel_message_push' },
+];
+const MESSAGE_KEYS = MESSAGE_TOGGLES.map(x => x.key);
 
 const DEFAULT_QUIET = { start: 23 * 60, end: 8 * 60 };
 const hhmm = (m: number) => `${String(Math.floor(m / 60)).padStart(2, '0')}:${String(m % 60).padStart(2, '0')}`;
@@ -126,6 +134,26 @@ export default function NotificationSettingsScreen() {
             </View>
           );
         })}
+
+        {/* Messages (moved here from the Messages screen: every push setting in one place). */}
+        {prefs && (
+          <View style={styles.card} testID="prefs-messages">
+            <View style={styles.groupHead}>
+              <View style={[styles.groupEmoji, { backgroundColor: colors.primaryTint }]}><Text style={styles.emoji}>💬</Text></View>
+              <Text style={styles.groupTitle}>{t('prefTitle', { ns: 'dm' })}</Text>
+              <PrefSwitch value={on(MESSAGE_KEYS)} onChange={v => setAll(MESSAGE_KEYS, v)} color={colors.primary} label={t('prefTitle', { ns: 'dm' })} />
+            </View>
+            {MESSAGE_TOGGLES.map(x => (
+              <View key={x.label} style={styles.row}>
+                <View style={styles.flex}>
+                  <Text style={styles.label}>{t(`pref.${x.label}Label`, { ns: 'dm' })}</Text>
+                  <Text style={styles.sub}>{t(`pref.${x.label}Sub`, { ns: 'dm' })}</Text>
+                </View>
+                <PrefSwitch value={on([x.key])} onChange={v => setAll([x.key], v)} color={colors.primary} label={t(`pref.${x.label}Label`, { ns: 'dm' })} />
+              </View>
+            ))}
+          </View>
+        )}
 
         {prefs && (
           <View style={styles.card}>
