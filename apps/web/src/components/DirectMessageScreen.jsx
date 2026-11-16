@@ -390,7 +390,7 @@ export default function DirectMessageScreen({ conversation, otherUser, account, 
 
       {/* Messages */}
       <div className="dm-messages" ref={feedRef} onScroll={handleFeedScroll}>
-        {error && <p className="profile-error" style={{ margin: '12px 16px' }}>{error}</p>}
+        {error && <p className="profile-error" style={{ margin: 'var(--sp-12) var(--sp-16)' }}>{error}</p>}
 
         {loadingOlder && (
           <div className="messages-load-older"><span className="messages-load-older-spinner" /></div>

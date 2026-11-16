@@ -108,7 +108,7 @@ export default function GuestProfileCard({ guestId, nickname, cityName, account,
 
         {/* Report a guest - the only moderation action available on a ghost
             (guests have no account, so no friend/DM/block on web yet). */}
-        <div className="pub-profile-actions" style={{ justifyContent: 'center', marginTop: 8 }}>
+        <div className="pub-profile-actions" style={{ justifyContent: 'center', marginTop: 'var(--sp-8)' }}>
           <button
             className="pub-profile-report-btn"
             onClick={() => { setShowReportForm(f => !f); setReportSent(false); setReportError(null) }}
@@ -139,7 +139,7 @@ export default function GuestProfileCard({ guestId, nickname, cityName, account,
                   disabled={reportBusy}
                 />
                 {reportReason.trim().length < 10 && (
-                  <p style={{ margin: '6px 2px 0', fontSize: 12, color: '#8a8a8a' }}>
+                  <p style={{ margin: 'var(--sp-8) var(--sp-2) 0', fontSize: 'var(--fs-xs)', color: '#8a8a8a' }}>
                     {reportReason.trim().length}/10
                   </p>
                 )}

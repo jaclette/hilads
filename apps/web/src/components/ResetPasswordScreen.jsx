@@ -58,7 +58,7 @@ export default function ResetPasswordScreen({ token, onSuccess, onRequestNew }) 
             <p className="auth-success-body">
               {t('resetPassword.expiredBody')}
             </p>
-            <button className="modal-submit btn-primary" onClick={onRequestNew} style={{ marginTop: 24 }}>
+            <button className="modal-submit btn-primary" onClick={onRequestNew} style={{ marginTop: 'var(--sp-24)' }}>
               {t('resetPassword.requestNew')}
             </button>
           </div>

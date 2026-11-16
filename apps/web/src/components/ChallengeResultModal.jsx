@@ -101,14 +101,14 @@ export default function ChallengeResultModal({ reveal, visible, onClose, onOpenL
         {showPhoto ? (
           <div className="crm-photo-wrap">
             <img className="crm-photo" src={mediumUrl(winnerPhotoUrl)} onError={thumbFallback(winnerPhotoUrl)} alt="" />
-            {winnerName ? <span className="crm-photo-caption" style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}><Icon name="ribbon-outline" size={14} />{winnerName}</span> : null}
+            {winnerName ? <span className="crm-photo-caption" style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--sp-4)' }}><Icon name="ribbon-outline" size={14} />{winnerName}</span> : null}
           </div>
         ) : (
           <div className="crm-big-emoji" aria-hidden="true" style={{ color: 'var(--gold)', lineHeight: 0 }}><Icon name={icon} size={64} /></div>
         )}
 
-        <div className="crm-title" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}><Icon name={icon} size={20} style={{ color: 'var(--gold)' }} />{title}</div>
-        {challengeTitle ? <div className="crm-challenge-name" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4 }}><Icon name="pin-outline" size={14} style={{ color: 'var(--muted2)' }} />{challengeTitle}</div> : null}
+        <div className="crm-title" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 'var(--sp-8)' }}><Icon name={icon} size={20} style={{ color: 'var(--gold)' }} />{title}</div>
+        {challengeTitle ? <div className="crm-challenge-name" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 'var(--sp-4)' }}><Icon name="pin-outline" size={14} style={{ color: 'var(--muted2)' }} />{challengeTitle}</div> : null}
         {body ? <div className="crm-body">{body}</div> : null}
 
         {showPoints ? (
@@ -122,10 +122,10 @@ export default function ChallengeResultModal({ reveal, visible, onClose, onOpenL
                       <span key={i} className="crm-pop-emoji"><Icon name="person-outline" size={14} /></span>
                     ))}
                     <span> = +{hb.perHead * revealedHeads}</span>
-                    {revealedHeads >= headCount ? <span style={{ marginLeft: 12 }}><Icon name="home-outline" size={14} /> +{hb.base}</span> : null}
+                    {revealedHeads >= headCount ? <span style={{ marginLeft: 'var(--sp-12)' }}><Icon name="home-outline" size={14} /> +{hb.base}</span> : null}
                   </>
                 ) : (
-                  <span><Icon name="person-outline" size={14} />{` ×${headCount} = +${hb.perHead * headCount}`}<Icon name="home-outline" size={14} style={{ marginLeft: 12 }} />{` +${hb.base}`}</span>
+                  <span><Icon name="person-outline" size={14} />{` ×${headCount} = +${hb.perHead * headCount}`}<Icon name="home-outline" size={14} style={{ marginLeft: 'var(--sp-12)' }} />{` +${hb.base}`}</span>
                 )}
               </div>
             ) : null}

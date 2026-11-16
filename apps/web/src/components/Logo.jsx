@@ -11,9 +11,9 @@
 import { useId } from 'react'
 
 const SIZES = {
-  sm: { icon: 22, fontSize: '0.85rem', gap: 6 },
-  md: { icon: 32, fontSize: '1.1rem',  gap: 8 },
-  lg: { icon: 46, fontSize: '1.5rem',  gap: 11 },
+  sm: { icon: 22, fontSize: 'var(--fs-sm)', gap: 'var(--sp-8)' },
+  md: { icon: 32, fontSize: 'var(--fs-md)', gap: 'var(--sp-8)' },
+  lg: { icon: 46, fontSize: 'var(--fs-xl)', gap: 'var(--sp-12)' },
 }
 
 export default function Logo({ variant = 'wordmark', size = 'md' }) {

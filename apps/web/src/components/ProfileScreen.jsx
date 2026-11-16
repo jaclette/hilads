@@ -261,11 +261,11 @@ export default function ProfileScreen({ account, onSave, onBack, onSignOut, onDe
                   <span className={`badge-pill badge-pill--${account.primaryBadge.key}`}>{badgeLabel(account.primaryBadge.key)}</span>
                 )}
                 {homeCity && (
-                  <span className="profile-identity-city" style={{ display: 'inline-flex', alignItems: 'center', gap: 3 }}><Icon name="location-outline" size={12} />{homeCity}</span>
+                  <span className="profile-identity-city" style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--sp-4)' }}><Icon name="location-outline" size={12} />{homeCity}</span>
                 )}
               </div>
               {vibe && VIBES.find(v => v.key === vibe) && (
-                <p className="profile-identity-vibe" style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                <p className="profile-identity-vibe" style={{ display: 'flex', alignItems: 'center', gap: 'var(--sp-4)' }}>
                   <Icon name={VIBES.find(v => v.key === vibe).icon} size={13} />{t(`vibes.${vibe}`)}
                 </p>
               )}
@@ -368,7 +368,7 @@ export default function ProfileScreen({ account, onSave, onBack, onSignOut, onDe
                     type="button"
                     className="modal-input modal-input--tappable"
                     onClick={() => setCityPickerOpen(true)}
-                    style={{ textAlign: 'left', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}
+                    style={{ textAlign: 'left', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 'var(--sp-8)' }}
                   >
                     <span>{currentCityName ? localizeCityName(currentCityName) : t('fields.homeCityPlaceholder')}</span>
                     <span aria-hidden="true" style={{ color: 'var(--muted2)' }}>▾</span>
@@ -407,7 +407,7 @@ export default function ProfileScreen({ account, onSave, onBack, onSignOut, onDe
                       type="button"
                       className={`vibe-chip${vibe === v.key ? ' vibe-chip--on' : ''}`}
                       onClick={() => setVibe(v.key)}
-                      style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}
+                      style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--sp-8)' }}
                     >
                       <Icon name={v.icon} size={15} />{t(`vibes.${v.key}`)}
                     </button>
@@ -438,14 +438,14 @@ export default function ProfileScreen({ account, onSave, onBack, onSignOut, onDe
             {account.isAmbassador && (
               <div className="profile-card profile-fields">
                 <p className="me-section-label">{t('ambassador.title')}</p>
-                <p style={{ fontSize: '0.8rem', color: 'var(--muted)', margin: '-4px 0 8px' }}>
+                <p style={{ fontSize: 'var(--fs-xs)', color: 'var(--muted)', margin: '-4px 0 var(--sp-8)' }}>
                   {t('ambassador.subtitle')}
                 </p>
                 {AMBASSADOR_PICKS.map(({ key, icon, maxLen }) => {
                   const [val, set] = pickState[key]
                   return (
                     <div key={key} className="modal-field">
-                      <label className="modal-label" style={{ display: 'flex', alignItems: 'center', gap: 6 }}><Icon name={icon} size={15} />{t(`ambassador.${key}`)}</label>
+                      <label className="modal-label" style={{ display: 'flex', alignItems: 'center', gap: 'var(--sp-8)' }}><Icon name={icon} size={15} />{t(`ambassador.${key}`)}</label>
                       <textarea
                         className="modal-input"
                         value={val}

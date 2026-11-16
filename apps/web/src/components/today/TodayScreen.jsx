@@ -20,7 +20,7 @@ import { thumbFallback } from '../../lib/thumbFallback'
 import { Wordmark, themeColor } from '../joy/Joy'
 import { SeasonalDayIcon, SeasonalHeroDecor, SeasonalTeaser, isEventDay, setSeasonalEvent, useSeasonal, useSeasonalAttr, useSeasonalLive } from '../event/seasonal'
 
-const ROW = { display: 'inline-flex', alignItems: 'center', gap: 6 }
+const ROW = { display: 'inline-flex', alignItems: 'center', gap: 'var(--sp-8)' }
 /** Brand term: English in every locale. */
 const DAILY_CHALLENGE = 'Daily Challenge'
 // The button on the hero's photo (SPEC 9.3): 'white', or the "sun orange" option ('sun').

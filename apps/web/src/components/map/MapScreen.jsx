@@ -25,7 +25,7 @@ import { thumbUrl } from '../../lib/imageThumb'
 import { placeholderStyle } from '../../lib/thumbhash'
 
 const IDLE_MS = 350
-const ROW = { display: 'inline-flex', alignItems: 'center', gap: 6 }
+const ROW = { display: 'inline-flex', alignItems: 'center', gap: 'var(--sp-8)' }
 /** A selected theme chip wears the theme's color (the pins' color: the Map's legend). */
 const chipOn = (k) => { const c = themeColor(k); return { background: c.fill, borderColor: c.line ?? c.fill, color: c.onFill } }
 // The camera stays around the city (like the app): about 110 km each way.
