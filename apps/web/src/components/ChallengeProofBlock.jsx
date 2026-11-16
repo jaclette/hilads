@@ -1,22 +1,20 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
-  fetchProofs, submitProof, approveProof, rejectProof, uploadImage,
+  fetchProofs, submitProof, uploadImage,
 } from '../api'
 import Icon from './Icon'
 import { mediumUrl } from '../lib/imageThumb'
 import { thumbFallback } from '../lib/thumbFallback'
 
 /**
- * Web mirror of mobile's ChallengeProofBlock - proof submission +
- * verdict surface for International challenges.
+ * Web mirror of mobile's ChallengeProofBlock - photo submission surface for a
+ * GROUP photo-proof challenge (the joined taker's side; the challenger picks
+ * the winner from the submissions gallery).
  *
- * Three faces (same as mobile):
- *   - Acceptor with no pending proof → "Submit your proof" CTA
- *     (file input + browser geolocation; mandatory both).
+ * Faces (same as mobile):
+ *   - Acceptor with no pending proof → "Submit your proof" CTA (file input).
  *   - Acceptor with pending proof → media preview + waiting line.
- *   - Creator with pending proof → preview + Approve / Reject buttons.
- *     Reject opens a reason input (1–200 chars, mandatory).
  *   - Terminal (approved/closed) → compact status line.
  *
  * Media upload uses the existing /uploads POST (same as chat images).
@@ -29,9 +27,7 @@ export default function ChallengeProofBlock({
   const [attempts,    setAttempts]    = useState(0)
   const [maxAttempts, setMaxAttempts] = useState(3)
   const [loading,     setLoading]     = useState(true)
-  const [busy,        setBusy]        = useState(null)  // 'submit' | 'approve' | 'reject' | null
-  const [rejectOpen,  setRejectOpen]  = useState(false)
-  const [rejectReason, setRejectReason] = useState('')
+  const [busy,        setBusy]        = useState(null)  // 'submit' | null
   const [error, setError] = useState(null)
 
   const load = useCallback(async () => {
@@ -87,40 +83,6 @@ export default function ChallengeProofBlock({
     }
   }, [acceptanceId, load, t])
 
-  // ── Creator: approve / reject ───────────────────────────────────────────
-  const handleApprove = useCallback(async () => {
-    if (!latest || busy) return
-    setBusy('approve')
-    try {
-      await approveProof(latest.id)
-      await load()
-    } catch (err) {
-      setError(err?.message || t('intl.proof.reviewFailTitle'))
-    } finally {
-      setBusy(null)
-    }
-  }, [latest, busy, load, t])
-
-  const handleReject = useCallback(async () => {
-    if (!latest || busy) return
-    const reason = rejectReason.trim()
-    if (reason.length === 0 || reason.length > 200) {
-      setError(t('intl.proof.reasonRequiredBody'))
-      return
-    }
-    setBusy('reject')
-    try {
-      await rejectProof(latest.id, reason)
-      setRejectOpen(false)
-      setRejectReason('')
-      await load()
-    } catch (err) {
-      setError(err?.message || t('intl.proof.reviewFailTitle'))
-    } finally {
-      setBusy(null)
-    }
-  }, [latest, busy, rejectReason, load, t])
-
   // ── Render ──────────────────────────────────────────────────────────────
   if (loading) {
     return <div className="proof-block proof-block--loading">…</div>
@@ -141,67 +103,14 @@ export default function ChallengeProofBlock({
   }
 
   if (latest?.status === 'pending') {
-    // PR62 - creator's verdict UI moved into ProofReviewModal (opens
-    // from the pipeline's "Review the proof" sub-CTA). The photo lives
-    // in the chat thread above already, so leaving a duplicate photo +
-    // button pair here was noise. Skip the card entirely for creators;
-    // acceptors still see the "Waiting for verdict" line.
+    // The challenger has nothing to do here (they pick the winner from the
+    // submissions gallery); the taker sees their photo + the waiting line.
     if (iAmCreator) return null
     return (
       <div className="proof-block">
         <img src={mediumUrl(latest.media_url)} onError={thumbFallback(latest.media_url)} alt="" className="proof-media" />
-        {/* PR59 - geotag chip removed; we no longer ask the client for
-            coordinates, so a "geotag verified" badge would be misleading. */}
-        {iAmCreator ? (
-          <div className="proof-verdict-row">
-            <button
-              type="button"
-              className="proof-verdict-btn proof-verdict-btn--approve"
-              onClick={handleApprove}
-              disabled={!!busy}
-            >
-              {busy === 'approve' ? '…' : <><Icon name="checkmark" size={16} /> {t('intl.proof.approveCta')}</>}
-            </button>
-            <button
-              type="button"
-              className="proof-verdict-btn proof-verdict-btn--reject"
-              onClick={() => setRejectOpen(true)}
-              disabled={!!busy}
-            >
-              <Icon name="close" size={16} /> {t('intl.proof.rejectCta')}
-            </button>
-          </div>
-        ) : (
-          <span className="proof-terminal">{t('intl.proof.waitingVerdict')}</span>
-        )}
+        <span className="proof-terminal">{t('intl.proof.waitingVerdict')}</span>
         {error ? <p className="proof-error">{error}</p> : null}
-
-        {rejectOpen && (
-          <div className="modal-overlay" onClick={() => !busy && setRejectOpen(false)}>
-            <div className="modal-panel proof-reject-modal" onClick={e => e.stopPropagation()}>
-              <p className="proof-reject-title">{t('intl.proof.rejectModalTitle')}</p>
-              <p className="proof-reject-hint">{t('intl.proof.rejectModalHint', { count: attemptsLeft })}</p>
-              <textarea
-                className="proof-reason-input"
-                rows={3}
-                maxLength={200}
-                value={rejectReason}
-                onChange={e => setRejectReason(e.target.value)}
-                placeholder={t('intl.proof.reasonPlaceholder')}
-                autoFocus
-              />
-              <span className="proof-charcount">{rejectReason.length} / 200</span>
-              <button
-                type="button"
-                className="proof-reject-submit"
-                onClick={handleReject}
-                disabled={!rejectReason.trim() || busy === 'reject'}
-              >
-                {busy === 'reject' ? '…' : t('intl.proof.rejectConfirm')}
-              </button>
-            </div>
-          </div>
-        )}
       </div>
     )
   }

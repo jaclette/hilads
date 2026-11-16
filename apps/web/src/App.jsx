@@ -51,7 +51,6 @@ import { splitContentByMentions } from './lib/mentions'
 import { countryToFlag } from './lib/countryFlag'
 import { linkifyText, extractFirstUrl } from './linkify.jsx'
 import LinkPreviewCard from './components/LinkPreviewCard'
-import RatePromptLaunchGate from './components/RatePromptLaunchGate'
 import ScoreCelebrationLaunchGate from './components/ScoreCelebrationLaunchGate'
 import ChallengeResultLaunchGate from './components/ChallengeResultLaunchGate'
 import ThumbImg from './components/ThumbImg'
@@ -1401,9 +1400,8 @@ export default function App() {
   const [showLeaderboard,       setShowLeaderboard]       = useState(false) // the Ranks tab (V6; was LeaderboardPage)
   const [leaderboardScope,      setLeaderboardScope]      = useState('city') // PR38 - initial scope when opened
   const [leaderboardPeriod,     setLeaderboardPeriod]     = useState('month') // initial period (for share deeplink)
-  const [celebrationRefetchKey, setCelebrationRefetchKey] = useState(0)     // PR47 - bumps on WS mutual_rating_complete
+  const [celebrationRefetchKey, setCelebrationRefetchKey] = useState(0)     // bumps on WS score pings (join, own create)
   const [challengeResultRefetchKey, setChallengeResultRefetchKey] = useState(0) // bumps on WS challenge_validated → group result reveal
-  const [ratePromptRefetchKey,  setRatePromptRefetchKey]  = useState(0)     // bumps on WS rating_received (first rating)
   const [myCityRank,            setMyCityRank]            = useState(null)  // caller's monthly city rank - drives the 🏆 chip in renderCityHero
   // Sign-up / sign-in opened from the sign-up sheet or a Sign up button (W5):
   // above the current screen, so the guest is back where they were. { tab, action }
@@ -3475,39 +3473,10 @@ export default function App() {
         triggerReactionBurstRef.current?.(type, messageId)
       })
 
-      // PR47 - mutual rating just completed (for THIS user - server
-      // dispatched the event to both the rater + ratee). Bump the
-      // celebration refetch key so the launch gate refetches
-      // /me/score-celebration and surfaces the "+30/+40" debrief popin
-      // without a page reload.
-      socket.on('mutual_rating_complete', () => {
-        setCelebrationRefetchKey(k => k + 1)
-      })
-
-      // Take-on accepted - phase → 'accepted' awarded +5/+5 to challenger +
-      // taker. The server broadcasts challenge_accepted to BOTH parties
-      // (international/invited accept, and the creator's approve-takeon for
-      // local), so the recipient sees the "+5 points!" popin without a reload.
+      // Group join - the +2 join spark landed. The server broadcasts
+      // challenge_accepted to the joiner + the creator, so the "+points"
+      // popin shows without a reload.
       socket.on('challenge_accepted', () => {
-        setCelebrationRefetchKey(k => k + 1)
-      })
-
-      // Date approved - the date_locked trigger awarded +5/+5 to both
-      // parties. Same refetch + popin pattern as mutual rating so the
-      // recipient (proposer who just heard "approved" via WS, or the
-      // approver via HTTP) sees the celebration without a reload.
-      socket.on('challenge_date_approved', () => {
-        setCelebrationRefetchKey(k => k + 1)
-      })
-
-      // International proof approved - the proof-verdict trigger awarded
-      // debrief +30/+40 to both parties (this is the verdict moment for
-      // international, equivalent to mutual rating on local). Same
-      // refetch path so the creator (who just hit Approve) and the
-      // acceptor (who hears about it via WS) both see the celebration
-      // without a reload. Reject path skipped intentionally - no points
-      // are earned on rejection, no celebration to surface.
-      socket.on('challenge_proof_approved', () => {
         setCelebrationRefetchKey(k => k + 1)
       })
 
@@ -3516,14 +3485,6 @@ export default function App() {
       // after creating (self-gates if the daily cap was hit).
       socket.on('challenge_created_self', () => {
         setCelebrationRefetchKey(k => k + 1)
-      })
-
-      // First rating just landed - the counterparty rated US. Bump the
-      // rate-prompt refetch key so RatePromptLaunchGate re-runs its
-      // /me/rate-prompts fetch and surfaces the RateSheet for OUR side
-      // of the verdict without waiting for a reload or another nav.
-      socket.on('rating_received', () => {
-        setRatePromptRefetchKey(k => k + 1)
       })
 
       socket.joinRoom(location.channelId, sessionIdRef.current, name, accountRef.current?.id ?? null, accountRef.current?.mode ?? 'exploring', session.guestId)
@@ -7481,9 +7442,7 @@ export default function App() {
 
 
       {/* PR17 - "+X points!" popin once per page load when the user has
-          unacknowledged score_events. Lands first so the celebratory moment
-          isn't blocked by the rate-sheet; the rate gate's effect is keyed
-          independently so it follows on the same screen. */}
+          unacknowledged score_events. */}
       <ChallengeResultLaunchGate
         account={account}
         refetchKey={challengeResultRefetchKey}
@@ -7500,11 +7459,6 @@ export default function App() {
         onOpenRanks={({ tab, period, scope }) => openRanks({ tab, period, scope })}
         onToast={(msg) => { setSuccessToast({ msg }); setTimeout(() => setSuccessToast(null), 2500) }}
       />
-
-      {/* PR11 - auto-open the RateSheet once per page load when the caller
-          has a rate-eligible meet-up (web parity with mobile's
-          RatePromptLaunchGate). The /threads banner stays as fallback. */}
-      <RatePromptLaunchGate account={account} refetchKey={ratePromptRefetchKey} />
 
       {/* Desktop-only sidebar - always rendered to preserve 3-column layout */}
       <aside className="online-sidebar">

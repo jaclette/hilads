@@ -785,20 +785,6 @@ export async function fetchChallengeParticipants(challengeId) {
   return res.json() // { participants, count }
 }
 
-export async function toggleChallengeParticipation(challengeId, guestId, nickname = null) {
-  const res = await fetch(`${BASE}/challenges/${encodeURIComponent(challengeId)}/participants/toggle`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    credentials: 'include',
-    body: JSON.stringify({ guestId, nickname }),
-  })
-  if (!res.ok) {
-    const data = await res.json().catch(() => ({}))
-    throw new Error(data.error || 'Failed to toggle participation')
-  }
-  return res.json() // { count, isIn }
-}
-
 // Optional `intl` carries International-mode fields: targetCityChannelId,
 // proofRequirements. Mode itself is not editable - delete + recreate. The
 // server ignores both fields on Local rows.
@@ -883,7 +869,7 @@ export async function createChallenge(channelId, guestId, nickname, title, chall
       visibility:          intl.visibility ?? 'public',
       // Group model: a local MEET challenge with format='group' carries a meet
       // date + location set at creation.
-      format:              intl.format     ?? 'legacy',
+      format:              intl.format     ?? 'group',
       meetAt:              intl.meetAt      ?? null,
       meetEndsAt:          intl.meetEndsAt  ?? null,
       venue:               intl.venue       ?? null,
@@ -1037,7 +1023,7 @@ export async function unvalidateChallenge(challengeId, guestId) {
   return res.json()
 }
 
-// ── PR2 take-on flow ──────────────────────────────────────────────────────────
+// ── Group challenge join ──────────────────────────────────────────────────────
 
 /** Typed error from POST /accept - carries the backend `code` + (sometimes)
  *  `requiredMode` so UI can show a tailored alert + offer a mode-switch. */
@@ -1045,7 +1031,7 @@ export class AcceptChallengeError extends Error {
   constructor(code, message, requiredMode) {
     super(message)
     this.name = 'AcceptChallengeError'
-    this.code = code           // 'not_creator' | 'mode_required' | 'mode_mismatch' | 'cap_reached' (legacy) | 'in_progress'
+    this.code = code           // 'not_creator' | 'closed_to_new_joins' | 'legacy_retired' | …
     this.requiredMode = requiredMode  // 'local' | 'exploring' | undefined
   }
 }
@@ -1097,34 +1083,6 @@ export async function submitProof(acceptanceId, { mediaUrl, mediaType, lat, lng 
   return res.json() // { proof, attempt, maxAttempts }
 }
 
-export async function approveProof(proofId) {
-  const res = await fetch(`${BASE}/proofs/${encodeURIComponent(proofId)}/approve`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    credentials: 'include',
-    body: JSON.stringify({}),
-  })
-  if (!res.ok) {
-    const data = await res.json().catch(() => ({}))
-    throw new Error(data.error || 'Failed to approve proof')
-  }
-  return res.json() // { proof }
-}
-
-export async function rejectProof(proofId, reason) {
-  const res = await fetch(`${BASE}/proofs/${encodeURIComponent(proofId)}/reject`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    credentials: 'include',
-    body: JSON.stringify({ reason }),
-  })
-  if (!res.ok) {
-    const data = await res.json().catch(() => ({}))
-    throw new Error(data.error || 'Failed to reject proof')
-  }
-  return res.json() // { proof, isFinal, attemptsLeft }
-}
-
 // ── Personal challenge invitations ──────────────────────────────────────────
 
 export async function inviteToChallenge(challengeId, userIds) {
@@ -1162,61 +1120,11 @@ export async function ignoreInvitation(invitationId) {
   })
 }
 
-export async function cancelAcceptance(acceptanceId) {
-  const res = await fetch(`${BASE}/acceptances/${encodeURIComponent(acceptanceId)}/cancel`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    credentials: 'include',
-    body: JSON.stringify({}),
-  })
-  if (!res.ok) {
-    const data = await res.json().catch(() => ({}))
-    throw new Error(data?.error || 'Failed to cancel')
-  }
-}
-
 export async function fetchMyAcceptances() {
   const res = await fetch(`${BASE}/me/acceptances`, { credentials: 'include' })
   if (!res.ok) return []
   const data = await res.json().catch(() => ({}))
   return data.threads ?? []
-}
-
-// ── PR6: rate-prompts + ratings ──────────────────────────────────────────────
-
-/**
- * Caller's currently rate-eligible meet-ups. Returns [] on network error so
- * the banner just doesn't render (non-blocking surface).
- */
-export async function fetchRatePrompts() {
-  const res = await fetch(`${BASE}/me/rate-prompts`, { credentials: 'include' })
-  if (!res.ok) return []
-  const data = await res.json().catch(() => ({}))
-  return data.prompts ?? []
-}
-
-/**
- * Submit a rating for a challenge. Throws an Error tagged with .status so the
- * UI can branch on 409 (already_rated) / 403 (not_rate_eligible) - both
- * recoverable races: dismiss + refetch the prompts list.
- */
-export async function submitRating(challengeId, stars, comment) {
-  const body = { stars }
-  if (comment && comment.length > 0) body.comment = comment
-  const res = await fetch(`${BASE}/challenges/${encodeURIComponent(challengeId)}/ratings`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    credentials: 'include',
-    body: JSON.stringify(body),
-  })
-  if (!res.ok) {
-    const data = await res.json().catch(() => ({}))
-    const err = new Error(data?.error || 'Failed to submit rating')
-    err.status = res.status
-    err.code   = data?.code
-    throw err
-  }
-  return res.json()
 }
 
 // ── PR17: score celebration popin ───────────────────────────────────────────
@@ -1332,144 +1240,6 @@ export async function sendThreadMessage(threadChannelId, content) {
   if (!res.ok) {
     const data = await res.json().catch(() => ({}))
     throw new Error(data?.error || 'Failed to send message')
-  }
-  return res.json()
-}
-
-// ── PR3: date concertation ──────────────────────────────────────────────────
-
-export async function proposeDate(acceptanceId, startsAt, endsAt, venue) {
-  const res = await fetch(`${BASE}/acceptances/${encodeURIComponent(acceptanceId)}/propose-date`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    credentials: 'include',
-    body: JSON.stringify({ startsAt, endsAt, venue }),
-  })
-  if (!res.ok) {
-    const data = await res.json().catch(() => ({}))
-    throw new Error(data?.error || 'Failed to propose date')
-  }
-  return res.json()
-}
-
-export async function withdrawProposal(acceptanceId) {
-  const res = await fetch(`${BASE}/acceptances/${encodeURIComponent(acceptanceId)}/withdraw-proposal`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    credentials: 'include',
-    body: JSON.stringify({}),
-  })
-  if (!res.ok) {
-    const data = await res.json().catch(() => ({}))
-    throw new Error(data?.error || 'Failed to withdraw')
-  }
-  return res.json()
-}
-
-export async function approveDate(acceptanceId) {
-  const res = await fetch(`${BASE}/acceptances/${encodeURIComponent(acceptanceId)}/approve-date`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    credentials: 'include',
-    body: JSON.stringify({}),
-  })
-  if (!res.ok) {
-    const data = await res.json().catch(() => ({}))
-    throw new Error(data?.error || 'Failed to approve')
-  }
-  return res.json()
-}
-
-// ── PR4: debrief verdicts ───────────────────────────────────────────────────
-
-export async function approveChallenge(acceptanceId) {
-  const res = await fetch(`${BASE}/acceptances/${encodeURIComponent(acceptanceId)}/approve-challenge`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    credentials: 'include',
-    body: JSON.stringify({}),
-  })
-  if (!res.ok) {
-    const data = await res.json().catch(() => ({}))
-    throw new Error(data?.error || 'Failed to approve challenge')
-  }
-  return res.json()
-}
-
-export async function rejectChallenge(acceptanceId) {
-  const res = await fetch(`${BASE}/acceptances/${encodeURIComponent(acceptanceId)}/reject-challenge`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    credentials: 'include',
-    body: JSON.stringify({}),
-  })
-  if (!res.ok) {
-    const data = await res.json().catch(() => ({}))
-    throw new Error(data?.error || 'Failed to close challenge')
-  }
-  return res.json()
-}
-
-// ── PR5: pending take-on review (creator only) ────────────────────────────
-// Creator approves/rejects a pending take-on request. Approve flips the row
-// to 'accepted' (chat unlocks for the acceptor); reject flips to 'rejected'
-// (acceptor notified, slot reopens).
-export async function approveTakeOn(acceptanceId) {
-  const res = await fetch(`${BASE}/acceptances/${encodeURIComponent(acceptanceId)}/approve-takeon`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    credentials: 'include',
-    body: JSON.stringify({}),
-  })
-  if (!res.ok) {
-    const data = await res.json().catch(() => ({}))
-    throw new Error(data?.error || 'Failed to approve take-on')
-  }
-  return res.json()
-}
-
-export async function rejectTakeOn(acceptanceId) {
-  const res = await fetch(`${BASE}/acceptances/${encodeURIComponent(acceptanceId)}/reject-takeon`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    credentials: 'include',
-    body: JSON.stringify({}),
-  })
-  if (!res.ok) {
-    const data = await res.json().catch(() => ({}))
-    throw new Error(data?.error || 'Failed to reject take-on')
-  }
-  return res.json()
-}
-
-// Taker leaves an active take-on: deletes the acceptance (challenge reopens
-// from zero), wipes the challenge chat, pushes + WS-resets the creator.
-export async function abandonAcceptance(acceptanceId) {
-  const res = await fetch(`${BASE}/acceptances/${encodeURIComponent(acceptanceId)}/abandon`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    credentials: 'include',
-    body: JSON.stringify({}),
-  })
-  if (!res.ok) {
-    const data = await res.json().catch(() => ({}))
-    throw new Error(data?.error || 'Failed to leave challenge')
-  }
-  return res.json()
-}
-
-// Creator restarts from zero: removes the active taker (deletes their
-// acceptance), wipes the chat, reopens the challenge, pushes + WS-resets the taker.
-export async function restartChallenge(challengeId) {
-  const res = await fetch(`${BASE}/challenges/${encodeURIComponent(challengeId)}/restart`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    credentials: 'include',
-    body: JSON.stringify({}),
-  })
-  if (!res.ok) {
-    const data = await res.json().catch(() => ({}))
-    throw new Error(data?.error || 'Failed to restart challenge')
   }
   return res.json()
 }
