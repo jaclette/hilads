@@ -179,13 +179,13 @@ function DmRow({ msg, isMine, isFirst, isLast, color, initial, dateLabel, onImag
       Animated.timing(opacity,    { toValue: 1, duration: 180, useNativeDriver: true }),
       Animated.timing(translateY, { toValue: 0, duration: 180, useNativeDriver: true }),
     ]).start();
-  }, []);
+  }, [opacity, translateY]);
 
   useEffect(() => {
     if (!isHighlighted) return;
     highlightAnim.setValue(0.22);
     Animated.timing(highlightAnim, { toValue: 0, duration: 1400, useNativeDriver: false }).start();
-  }, [isHighlighted]);
+  }, [isHighlighted, highlightAnim]);
 
   const isSending = msg.status === 'sending';
   const isFailed  = msg.status === 'failed';
@@ -361,7 +361,7 @@ function DMThread({ conversationId, displayName }: { conversationId: string; dis
   const flatListRef = useRef<FlatList<DmMessage>>(null);
   const lastSel   = useRef({ start: 0, end: 0 });
 
-  function scrollToMessage(id: string) {
+  const scrollToMessage = useCallback((id: string) => {
     const idx = messages.findIndex(m => m.id === id);
     if (idx < 0) return;
     setHighlightedMsgId(id);
@@ -371,7 +371,7 @@ function DMThread({ conversationId, displayName }: { conversationId: string; dis
     try {
       flatListRef.current?.scrollToIndex({ index: idx, animated: true, viewPosition: 0.5 });
     } catch { /* not measured / transient - highlight already applied */ }
-  }
+  }, [messages]);
   const vibScale  = useRef(new Animated.Value(1)).current;
 
   function vibePressIn() {
@@ -389,6 +389,7 @@ function DMThread({ conversationId, displayName }: { conversationId: string; dis
   useEffect(() => {
     if (editingMsg) setText(editingMsg.content);
     else setText('');
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- seed once per edited message (keyed on its id), never overwrite what's being typed
   }, [editingMsg?.id]);
 
   function handleSend() {
@@ -574,7 +575,7 @@ function DMThread({ conversationId, displayName }: { conversationId: string; dis
         }}
       />
     );
-  }, [messages, account?.id, color, initial, highlightedMsgId, setMessageReactions, conversationId]);
+  }, [messages, account?.id, color, initial, highlightedMsgId, setMessageReactions, conversationId, scrollToMessage]);
 
   return (
     <KeyboardAvoidingView
@@ -871,6 +872,7 @@ export default function DMThreadScreen() {
         if (!cancelled) setResolveError(t('resolveError'));
       });
     return () => { cancelled = true; };
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- resolve the thread once per route/account; name/displayName/t only feed logs and the error copy
   }, [id, conv, account]);
 
   function handleBlockPress() {

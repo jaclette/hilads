@@ -20,6 +20,7 @@ import { requestAndRegisterPush } from '@/services/push';
 
 export function usePushRegistration(): void {
   const { account, identity } = useApp();
+  const accountId = account?.id;
 
   // Prevent re-registering for the same identity within one app session.
   // Keyed by account id (so a logout→login of a different account re-registers)
@@ -34,8 +35,7 @@ export function usePushRegistration(): void {
     // and sign-up no longer trigger the system dialog; the ask happens in
     // context (askDailyPush / promptPushAfterAction), which registers the token
     // then.
-    const isAccount = !!account?.id;
-    const key = isAccount ? `user:${account!.id}` : (guestId ? `guest:${guestId}` : null);
+    const key = accountId ? `user:${accountId}` : (guestId ? `guest:${guestId}` : null);
 
     // No account and no guest id yet, or already registered this session.
     if (!key || lastRegisteredFor.current === key) return;
@@ -49,5 +49,5 @@ export function usePushRegistration(): void {
         console.warn('[push-reg] registration failed - will retry on next trigger:', String(err));
         // intentionally NOT setting lastRegisteredFor so the next trigger retries
       });
-  }, [account?.id, identity?.guestId]);
+  }, [accountId, identity?.guestId]);
 }

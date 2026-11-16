@@ -142,7 +142,7 @@ export default function PublicProfileScreen() {
     if (!canAccessProfile(account)) {
       router.replace('/auth-gate');
     }
-  }, [account]);
+  }, [account, router]);
 
   useEffect(() => {
     if (!id) return;
@@ -192,6 +192,7 @@ export default function PublicProfileScreen() {
         if (vib.myVibe) { setVibeRating(vib.myVibe.rating); setVibeMessage(vib.myVibe.message ?? ''); }
       })
       .catch(() => {});
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- fetch once per profile id; account (report preflight) and t (error copy) must not refetch it
   }, [id]);
 
   function handleFriendToggle() {

@@ -16,7 +16,7 @@ import i18n from '@/i18n';
 import type { Message } from '@/types';
 import { useApp } from '@/context/AppContext';
 import { canAccessProfile } from '@/lib/profileAccess';
-import { formatSmartTime } from '@/lib/messageTime';
+import { formatSmartTime, toMs } from '@/lib/messageTime';
 import { Space, FontSizes, type ThemeColors } from '@/constants';
 import { useThemedStyles } from '@/context/ThemeContext';
 import { Avatar, EmptyState, Sheet, SheetScrollView, SheetTitle } from '@/ui';
@@ -69,7 +69,7 @@ export function ArrivalsSheet({ visible, arrivals, onClose }: Props) {
         ) : (
           // Newest at the top → oldest at the bottom, like the chat feed.
           [...arrivals]
-            .sort((a, b) => (b.createdAt ?? 0) - (a.createdAt ?? 0))
+            .sort((a, b) => toMs(b.createdAt) - toMs(a.createdAt))
             .map((m, i) => {
               const tappable = !!m.userId || !!m.guestId;
               return (

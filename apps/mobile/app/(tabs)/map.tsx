@@ -447,7 +447,10 @@ export default function MapScreen() {
 
   // Today's spots: a photo of today's challenge (the spot's latest challenge is today's).
   const isToday = (s: Spot) => !!todayDate && s.lastProofDate === todayDate;
-  const shown = plansOnly ? [] : todayOnly ? spots.filter(isToday) : spots;
+  const shown = useMemo(
+    () => (plansOnly ? [] : todayOnly ? spots.filter(s => !!todayDate && s.lastProofDate === todayDate) : spots),
+    [plansOnly, todayOnly, spots, todayDate],
+  );
   const showPlans = plansOnly || zoom >= PLAN_MIN_ZOOM;
   // Zoom changes by fractions: the sides follow it in steps of a quarter level.
   const zoomStep = Math.round(zoom * 4) / 4;

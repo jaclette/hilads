@@ -30,7 +30,7 @@ import { DirectionsRow } from '@/features/settings/DirectionsRow';
 import { ModePicker } from '@/features/profile/ModePicker';
 import { VIBE_ICONS } from '@/features/profile/vibes';
 import { HomeCityPicker } from '@/features/compare/HomeCityPicker';
-import type { HomeCityRef } from '@/types';
+import type { HomeCityRef, ModeKey } from '@/types';
 import { KeyboardAwareScrollView, KeyboardStickyView, useKeyboardState } from 'react-native-keyboard-controller';
 
 // ── Constants - must match backend allowed lists ──────────────────────────────
@@ -44,8 +44,7 @@ const INTERESTS = [
   'hangout', 'socializing', 'gaming', 'tech', 'dating',
 ];
 
-type Mode = 'local' | 'exploring';
-const asMode = (m: string | null): Mode | null => (m === 'local' || m === 'exploring' ? m : null);
+const asMode = (m: string | null): ModeKey | null => (m === 'local' || m === 'exploring' ? m : null);
 
 // ── Screen ────────────────────────────────────────────────────────────────────
 
@@ -112,6 +111,7 @@ export default function SettingsScreen() {
     setSelectedVibe(account?.vibe ?? 'chill');
     setSelectedMode(account?.mode ?? identity?.mode ?? null);
     setSelectedInterests(account?.interests ?? []);
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- re-seed from the account only; identity.mode changes come from this screen's own guest picker
   }, [account?.username, account?.about_me, account?.home_city, account?.age, account?.vibe, account?.mode, account?.interests]);
 
   // Version tap easter egg
@@ -234,7 +234,7 @@ export default function SettingsScreen() {
     }
   }
 
-  function handleGuestMode(key: string) {
+  function handleGuestMode(key: ModeKey) {
     const next = selectedMode === key ? null : key;
     setSelectedMode(next);
     if (identity) {

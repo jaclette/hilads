@@ -24,12 +24,6 @@ interface SubmitBlockParams {
   guestId?:         string | null;
 }
 
-interface UnblockByTargetParams {
-  targetUserId?:  string | null;
-  targetGuestId?: string | null;
-  guestId?:       string | null;
-}
-
 // ── Endpoints ─────────────────────────────────────────────────────────────────
 
 /** Block a user or guest. Idempotent - re-blocking returns the existing row. */
@@ -47,19 +41,6 @@ export async function submitBlock(params: SubmitBlockParams): Promise<BlockRow> 
 /** Unblock by row id (preferred when the client has it from listMyBlocks). */
 export async function unblockById(blockId: number, guestId?: string | null): Promise<void> {
   await api.delete(`/blocks/${blockId}`, guestId ? { guestId } : undefined);
-}
-
-/**
- * Unblock by target identity. Used by the "re-block from same screen" path
- * and the unblock button in Settings → Blocked Users when the row id has
- * already been removed from local state.
- */
-export async function unblockByTarget(params: UnblockByTargetParams): Promise<void> {
-  await api.delete('/blocks', {
-    target_user_id:  params.targetUserId  ?? undefined,
-    target_guest_id: params.targetGuestId ?? undefined,
-    guestId:         params.guestId       ?? undefined,
-  });
 }
 
 /** List blocks I've made - auth required. Powers Settings → Blocked Users. */

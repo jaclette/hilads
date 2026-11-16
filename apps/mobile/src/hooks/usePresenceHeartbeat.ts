@@ -11,16 +11,17 @@ const HEARTBEAT_MS = 30_000;
 
 export function usePresenceHeartbeat(): void {
   const { city, sessionId } = useApp();
+  const channelId = city?.channelId;
 
   useEffect(() => {
-    if (!city || !sessionId) return;
+    if (!channelId || !sessionId) return;
 
     const id = setInterval(() => {
       if (socket.isConnected) {
-        socket.heartbeat(city.channelId, sessionId);
+        socket.heartbeat(channelId, sessionId);
       }
     }, HEARTBEAT_MS);
 
     return () => clearInterval(id);
-  }, [city?.channelId, sessionId]);
+  }, [channelId, sessionId]);
 }

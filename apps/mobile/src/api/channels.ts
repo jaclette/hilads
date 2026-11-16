@@ -222,10 +222,6 @@ export async function bootstrapChannel(
   };
 }
 
-export async function leaveChannel(channelId: string, sessionId: string): Promise<void> {
-  await api.post(`/channels/${channelId}/leave`, { sessionId }).catch(() => {});
-}
-
 // POST /me/city - commit a manual city switch as users.current_city_id.
 // Backend bypasses the two-signal rule and sets the city immediately. Errors
 // are swallowed: the local UI switch is the source of truth for this frame;
@@ -236,15 +232,6 @@ export async function setCurrentCity(channelId: string | number): Promise<void> 
   } catch (err) {
     console.log('[me/city] failed', { channelId, err: String(err) });
   }
-}
-
-export async function heartbeat(
-  channelId: string,
-  sessionId: string,
-  guestId: string,
-  nickname: string,
-): Promise<void> {
-  await api.post(`/channels/${channelId}/heartbeat`, { sessionId, guestId, nickname });
 }
 
 // ── Messages ──────────────────────────────────────────────────────────────────

@@ -179,6 +179,7 @@ function RootLayoutInner() {
 
   useEffect(() => {
     if (!booting && !bootError && joined) track('app_open');
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- once per boot/join transition; bootError only gates it (a retry clearing it must not re-track)
   }, [booting, joined]);
 
   // NotificationHandler always mounted so cold-start push taps are captured early.

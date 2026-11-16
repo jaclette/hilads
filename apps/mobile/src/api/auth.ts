@@ -2,10 +2,6 @@ import { api, setAuthToken, getAuthToken, isAuthFailure } from './client';
 import { persistToken } from '@/services/session';
 import type { User } from '@/types';
 
-export async function createGuestSession(nickname: string): Promise<{ guestId: string }> {
-  return api.post('/guest/session', { nickname });
-}
-
 /**
  * The signed-in user, or null when the session is gone (401: the token is no longer valid).
  * Any other failure (offline, timeout, a 5xx / 502 during a deploy) THROWS: the session may be
@@ -106,24 +102,3 @@ export async function authForgotPassword(email: string): Promise<void> {
   await api.post('/auth/forgot-password', { email });
 }
 
-export async function authValidateResetToken(token: string): Promise<boolean> {
-  const data = await api.get<{ valid: boolean }>(`/auth/reset-password/validate?token=${encodeURIComponent(token)}`);
-  return data.valid === true;
-}
-
-export async function authResetPassword(
-  token: string,
-  password: string,
-  passwordConfirmation: string,
-): Promise<{ user: User }> {
-  const res = await api.post<{ user: User; token?: string }>('/auth/reset-password', {
-    token,
-    password,
-    password_confirmation: passwordConfirmation,
-  });
-  if (res.token) {
-    setAuthToken(res.token);
-  }
-  await persistToken();
-  return res;
-}

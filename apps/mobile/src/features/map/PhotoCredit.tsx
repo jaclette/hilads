@@ -26,11 +26,6 @@ export function PhotoCredit({ by, credit, url, overlay = false, style }: {
   );
 }
 
-/** The author alone from a credit ("Chivista, CC0, Wikimedia Commons" → "Chivista"; "Jane Doe / Unsplash" → "Jane Doe"). */
-export function creditAuthor(credit: string): string {
-  return credit.split(',')[0].split(' / ')[0].trim() || credit;
-}
-
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
   overlay: { position: 'absolute', left: 6, bottom: 6, maxWidth: '90%', paddingHorizontal: Space.sm, paddingVertical: Space.xxs, borderRadius: 9,
              overflow: 'hidden', backgroundColor: 'rgba(0,0,0,0.58)', color: '#FFFFFF', fontSize: FontSizes.xs, fontWeight: '700' },
