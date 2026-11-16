@@ -13,6 +13,7 @@ import HeaderArt from '../HeaderArt'
 import { FlagSticker, themeColor } from '../joy/Joy'
 import { RankMedal } from '../daily/dailyShared'
 import { useBackLayer } from '../../lib/backLayers'
+import { useNotifCounts } from '../../lib/notifCounts'
 
 // Each stamp sits at its own slight angle, like a real passport (passport.html).
 const ROTATION = [-6, 5, -3, 7, -5, 4, -7]
@@ -38,6 +39,9 @@ const usePp = () => useTranslation('profile', { keyPrefix: 'pp' })
 export default function PassportScreen({ account, guestName, guestMode, cityId, cityName, cityCountry, onSettings, onSignUp, onSignIn, onOpen }) {
   const { t, i18n } = usePp()
   const { t: tc } = useTranslation('challenge')
+  const { t: tn } = useTranslation('notifications')
+  const { t: tdm } = useTranslation('dm')
+  const { total: unreadNotifs } = useNotifCounts()
   const [stats, setStats] = useState(null)
   const [today, setToday] = useState(null)
   const [counts, setCounts] = useState({ spots: null, proposals: null, friends: null, week: null, alltime: null })
@@ -185,6 +189,12 @@ export default function PassportScreen({ account, guestName, guestMode, cityId, 
 
         {(stats?.pioneerOf?.length ?? 0) > 0 && <PioneerBadges pioneers={stats.pioneerOf} />}
         {(stats?.specialStamps?.length ?? 0) > 0 && <SpecialStamps stamps={stats.specialStamps} />}
+
+        {/* The inbox (UX audit option B): notifications and private messages live here, Hi being no longer a tab. */}
+        <div className="pp-rows">
+          <Row icon="notifications-outline" label={tn('title')} value={unreadNotifs > 0 ? String(unreadNotifs) : ''} onClick={() => onOpen('notifications')} />
+          <Row icon="chatbubbles-outline" label={tdm('title')} onClick={() => onOpen('messages')} />
+        </div>
 
         <div className="pp-rows">
           <Row label={t('passport.myPhotos')} value={stats?.photos !== undefined ? String(stats.photos) : ''} onClick={() => onOpen('photos')} />

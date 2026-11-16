@@ -10,7 +10,7 @@ import { shareLink } from '../../lib/shareLink'
 import i18n from '../../i18n'
 import Icon from '../Icon'
 import { themeIcon } from '../../lib/icons'
-import { Confetti, FitText, MEDAL, Movement, Podium, RaceBar, RankRow, ScopeToggle, YouBar } from './parts'
+import { Confetti, FitText, MEDAL, Movement, Podium, RaceBar, RankRow, YouBar } from './parts'
 import { IndexCarousel } from '../daily/Comparisons'
 
 const PERIODS = { photos: ['today', 'yesterday', 'week', 'alltime'], players: ['today', 'week', 'alltime'], cities: ['today', 'week', 'alltime'] }
@@ -28,16 +28,16 @@ const GOLD = themeColor('sip')
  */
 export default function RanksScreen({ header, initial }) {
   const { t } = useDc()
-  const { cityId: browsedCity, openToday } = useDaily()
+  const { cityId: browsedCity, openToday, scope: appScope } = useDaily()
   const [tab, setTab] = useState(initial?.tab ?? 'photos')
   const [period, setPeriod] = useState(initial?.period ?? 'today')
-  // The scope follows the city chosen in the header (World without one).
-  const [scope, setScope] = useState(initial?.scope ?? 'city')
+  // One scope control (UX audit): the header's pill (my city or World), World without a city. A
+  // deep link's scope applies here only, until the pill changes.
+  const [scope, setScope] = useState(initial?.scope ?? appScope ?? 'city')
+  useEffect(() => { if (appScope) setScope(appScope) }, [appScope])
   const [resp, setResp] = useState(null)
   const [failed, setFailed] = useState(false)
   const cityId = Number(initial?.cityId) || Number(browsedCity) || null
-  const cityName = getLastToday()?.city?.name ?? null
-  const cityCountry = getLastToday()?.city?.country ?? null
   const scopeNow = cityId ? scope : 'world'
   const key = `${tab}|${period}|${scopeNow}|${cityId}`
   // Each answer is kept with what it was asked for: a view only gets its own shape.
@@ -61,11 +61,10 @@ export default function RanksScreen({ header, initial }) {
     return () => { alive = false }
   }, [key]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  // The info line (today's photos: the time left to vote), on the left of the scope toggle.
+  // The info line (today's photos: the time left to vote).
   const endsAt = tab === 'photos' && period === 'today' ? data?.endsAt ?? null : null
   const hours = endsAt ? Math.max(0, Math.floor((endsAt * 1000 - Date.now()) / 3600000)) : null
   const info = hours === null ? '' : hours > 0 ? t('ranks.timeLeft', { count: hours }) : t('ranks.timeLeftMin')
-  const showToggle = tab !== 'cities' && !!cityId
   // An empty podium place (as the app): a past period has nobody to call ("Nobody took this spot");
   // today, before I've played: play (Today: the web has no camera); once I've played: invite a
   // friend (my photo's link, else today's challenge).
@@ -99,13 +98,9 @@ export default function RanksScreen({ header, initial }) {
           <div className="r6-chips" role="tablist">
             {PERIODS[tab].map(p => <Chip key={p} on={period === p} onClick={() => setPeriod(p)}><FitText>{t(`ranks.period.${p}`)}</FitText></Chip>)}
           </div>
-          {(showToggle || info) && (
+          {info && (
             <div className="r6-info-row">
               <span className="r6-info"><FitText min={0.75}>{info}</FitText></span>
-              {showToggle && (
-                <ScopeToggle value={scope} onChange={setScope} worldLabel={t('ranks.scope.world')} country={cityCountry}
-                             city={cityName ? shortCityName(cityName) : t('ranks.scope.city')} />
-              )}
             </div>
           )}
         </div>

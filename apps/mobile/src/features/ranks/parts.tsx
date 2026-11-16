@@ -121,46 +121,6 @@ function GhostStep({ rank, ghost: make }: { rank: number; ghost: PodiumGhost }) 
   );
 }
 
-/**
- * The scope toggle: "🇻🇳 Saigon | 🌍 World", the flag of the city chosen in the header; the
- * selected side on a gold thumb that slides across (still with reduced motion).
- */
-export function ScopeToggle({ value, onChange, city, country, worldLabel }: {
-  value: 'city' | 'world'; onChange: (v: 'city' | 'world') => void; city: string; country: string | null | undefined; worldLabel: string;
-}) {
-  const styles = useThemedStyles(makeStyles);
-  const reduced = useReducedMotion();
-  const [w, setW] = useState<[number, number]>([0, 0]);
-  const x = useSharedValue(0);
-  const tw = useSharedValue(0);
-  useEffect(() => {
-    const left = value === 'city' ? 0 : w[0];
-    const width = value === 'city' ? w[0] : w[1];
-    if (!width) return;
-    const first = tw.value === 0;
-    x.value = reduced || first ? left : withTiming(left, { duration: 220, easing: Easing.out(Easing.cubic) });
-    tw.value = reduced || first ? width : withTiming(width, { duration: 220, easing: Easing.out(Easing.cubic) });
-  }, [value, w[0], w[1], reduced]); // eslint-disable-line react-hooks/exhaustive-deps
-  const thumb = useAnimatedStyle(() => ({ width: tw.value, transform: [{ translateX: x.value }], opacity: tw.value ? 1 : 0 }));
-  const side = (v: 'city' | 'world', label: ReactNode, a11y: string, i: 0 | 1) => (
-    <Pressable onPress={() => { if (v !== value) onChange(v); }} style={styles.toggleSide} accessibilityRole="tab" accessibilityState={{ selected: value === v }}
-               accessibilityLabel={a11y} testID={`ranks-scope-${v}`}
-               onLayout={e => { const lw = e.nativeEvent.layout.width; setW(prev => (Math.abs(prev[i] - lw) < 0.5 ? prev : (i === 0 ? [lw, prev[1]] : [prev[0], lw]))); }}>
-      {label}
-    </Pressable>
-  );
-  return (
-    <View style={styles.toggle} accessibilityRole="tablist">
-      <Animated.View style={[styles.toggleThumb, thumb]} />
-      {side('city', <>
-        <FlagSticker country={country} size={16} />
-        <Text style={[styles.toggleText, value === 'city' && styles.toggleTextOn, styles.toggleCity]} numberOfLines={1}>{city}</Text>
-      </>, city, 0)}
-      {side('world', <Text style={[styles.toggleText, value === 'world' && styles.toggleTextOn]} numberOfLines={1}>🌍 {worldLabel}</Text>, worldLabel, 1)}
-    </View>
-  );
-}
-
 /** A row from #4: rank, leading visual, name and sub line, movement, value pill. `mine`: highlighted. */
 export function RankRow({ rank, lead, title, sub, movement, value, mine, onPress, extra }: {
   rank: number; lead: ReactNode; title: string; sub?: ReactNode; movement?: ReactNode; value: string; mine?: boolean; onPress?: () => void; extra?: ReactNode;

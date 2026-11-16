@@ -13,6 +13,7 @@ import { TodayCountries } from '@/features/today/TodayCountries';
 import { useTodayCountries } from '@/features/today/useTodayCountries';
 import { StampCelebration } from '@/features/today/StampCelebration';
 import { BrandLine } from '@/features/today/BrandLine';
+import { CityChatRow } from '@/features/today/CityChatRow';
 import { WhileAwayCard } from '@/features/notifications/WhileAwayCard';
 import { ResultsCard } from '@/features/ranks/ResultsCard';
 import { SeasonalScope, SeasonalTeaser } from '@/features/event/SeasonalArt';
@@ -21,7 +22,7 @@ import { SeasonalScope, SeasonalTeaser } from '@/features/event/SeasonalArt';
  * TODAY, the home (SPEC 9.3; UX audit 2026-11: four blocks, one place per concept):
  * 1. since you were away (one card at a time), 2. the Daily Challenge hero,
  * 3. around the world today (one card per city, "See all"), 4. your week (streak,
- * tomorrow, every past challenge). Never empty: without photos block 3 shows
+ * tomorrow, every past challenge), with the city's chat (Hi) as a row between 3 and 4. Never empty: without photos block 3 shows
  * yesterday's best cities and my city's slot. Elsewhere now: the city race and the
  * Index (Ranks › Cities), proposing a challenge (Passport), yesterday's tour (from
  * block 3 on an empty day, and the archive).
@@ -78,6 +79,8 @@ function TodayContent() {
         <SeasonalTeaser />
         {/* Around the world today: one card per city (the mosaic), "See all"; yesterday's best on an empty day. */}
         <TodayCountries today={daily.data} data={countries} />
+        {/* The city's chat (Hi): a screen of the city, no longer a tab. */}
+        <CityChatRow />
         {/* Your week: the streak, tomorrow's theme, the week strip and every past challenge. */}
         <TodayWeek today={daily.data} />
       </ScrollView>

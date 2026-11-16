@@ -294,14 +294,10 @@ export default function SwitchCityScreen() {
 
   const goBack = () => {
     // Often opened with router.replace (no history to pop). Fall back:
-    // history → back; no city yet → Today; already in a city → the city chat.
+    // history → back; else Today (no city yet: back to the city question).
     if (router.canGoBack()) { router.back(); return; }
-    if (!activeCity) {
-      setJoined(false);
-      router.replace('/(tabs)/today' as never);
-    } else {
-      router.replace('/(tabs)/chat');
-    }
+    if (!activeCity) setJoined(false);
+    router.replace('/(tabs)/today' as never);
   };
 
   return (

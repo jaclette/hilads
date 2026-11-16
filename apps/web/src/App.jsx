@@ -441,19 +441,11 @@ const NAV_ICON_PROPS = {
 
 // CHALLENGES tab - flame. Asymmetric flickering shape (à la Lucide) so it
 // reads as fire, not a water drop. Single path keeps the stroke clean.
-// The app's tab icons (Ionicons outline equivalents): today, map, chat, passport.
+// The app's tab icons (Ionicons outline equivalents): today, world, map, passport.
 function NavIconToday() {
   return (
     <svg {...NAV_ICON_PROPS}>
       <rect x="3" y="5" width="18" height="16" rx="3" /><path d="M3 10h18M8 3v4M16 3v4" />
-    </svg>
-  )
-}
-
-function NavIconChat() {
-  return (
-    <svg {...NAV_ICON_PROPS}>
-      <path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z" />
     </svg>
   )
 }
@@ -466,10 +458,11 @@ function NavIconPassport() {
   )
 }
 
-function NavIconRanks() {
+// World (UX audit option B: the ranks tab, renamed): a globe.
+function NavIconWorld() {
   return (
     <svg {...NAV_ICON_PROPS}>
-      <path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0V4z" /><path d="M17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3" />
+      <circle cx="12" cy="12" r="9" /><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18" />
     </svg>
   )
 }
@@ -5333,6 +5326,8 @@ export default function App() {
     openRanks: (params) => openRanks(params),
     // Ranks' empty podium places lead to Today.
     openToday: () => goToTodayTab(),
+    // The city's chat (Hi), from Today's row (no longer a tab).
+    openCityChat: () => { track('city_chat_opened', { source: 'today', mentions: notifCounts.badges.chat ?? 0 }); goToCityChannel() },
   }
 
   return (
@@ -5460,6 +5455,8 @@ export default function App() {
                     Tapping the active city changes city; unread counts on the
                     other side. */}
                 <div className="chat-top has-art">
+                  {/* A screen of the city since the UX audit (opened from Today): back returns there. */}
+                  <BackButton onClick={goToTodayTab} />
                   <HeaderArt kind="hi" />
                   <div className="tab-heading">
                     <h1 className="chat-title">{t('tabTitle', { ns: 'chat' })}</h1>
@@ -6099,26 +6096,24 @@ export default function App() {
             const onPassport = showProfileDrawer
             const onChat = !showToday && !showMap && !onPassport && !showEventDrawer &&
               !showCityPicker && !showPeopleDrawer && !showConversations && !showNotifications && !showLeaderboard
+            // Four tabs (UX audit option B, as the app): Today, World (the ranks), Map, Passport.
+            // Hi is a screen of the city, opened from Today: Today stays lit while it's open.
             const tabs = [
-              { key: 'today',    active: showToday && !showMap && !onPassport && !showLeaderboard, onClick: goToTodayTab, Icon: NavIconToday },
-              { key: 'map',      active: showMap,                              onClick: goToMapTab,      Icon: NavIconMap },
-              // V6: the game hub.
-              { key: 'ranks',    active: showLeaderboard && !showMap && !onPassport, onClick: goToRanksTab, Icon: NavIconRanks },
-              { key: 'chat',     active: onChat,                               onClick: goToCityChannel, Icon: NavIconChat },
-              { key: 'passport', active: onPassport,                           onClick: goToMeTab,       Icon: NavIconPassport },
+              { key: 'today',    label: 'tabs.today',    active: (showToday || onChat) && !showMap && !onPassport && !showLeaderboard, onClick: goToTodayTab, Icon: NavIconToday },
+              { key: 'ranks',    label: 'scope.world',   active: showLeaderboard && !showMap && !onPassport, onClick: goToRanksTab, Icon: NavIconWorld },
+              { key: 'map',      label: 'tabs.map',      active: showMap,                              onClick: goToMapTab,      Icon: NavIconMap },
+              { key: 'passport', label: 'tabs.passport', active: onPassport,                           onClick: goToMeTab,       Icon: NavIconPassport },
             ]
-            // V6 tab badges: Hi = unread chat mentions (a count), Passport = a new Local Pass, Ranks = results out (dots).
-            const badge = { chat: notifCounts.badges.chat, passport: notifCounts.badges.passport, ranks: notifCounts.badges.ranks }
-            return tabs.map(({ key, active, onClick, Icon }) => (
+            // V6 tab badges (dots): Passport = a new Local Pass, World = results out. Hi's mentions: the bell, the inbox.
+            const badge = { passport: notifCounts.badges.passport, ranks: notifCounts.badges.ranks }
+            return tabs.map(({ key, label, active, onClick, Icon }) => (
               <button key={key} type="button" className={`bottom-nav-tab${active ? ' active' : ''}`} onClick={onClick}
                       aria-current={active ? 'page' : undefined}>
                 {active && <TabGhost />}
                 <span className="bottom-nav-icon">{key === 'today' && seasonalLive?.key === 'halloween' ? <SeasonalDayIcon themeKey="halloween" size={26} /> : <Icon />}
-                  {!active && badge[key] > 0 && (key === 'chat'
-                    ? <span className="n6-tab-badge">{badge[key] > 9 ? '9+' : badge[key]}</span>
-                    : <span className="n6-tab-dot" />)}
+                  {!active && badge[key] > 0 && <span className="n6-tab-dot" />}
                 </span>
-                <span className="bottom-nav-label">{t(`tabs.${key}`, { ns: 'common' })}</span>
+                <span className="bottom-nav-label">{t(label, { ns: 'common' })}</span>
               </button>
             ))
           })()}
@@ -7002,6 +6997,8 @@ export default function App() {
             if (['proposals', 'propose', 'challenge', 'stories', 'rivals'].includes(row)) openDaily(row, params)
             else if (row === 'alltime') { openRanks({ tab: 'players', period: 'alltime', scope: channelId ? 'city' : 'world' }) }
             else if (row === 'week') { openRanks({ tab: 'players', period: 'week', scope: channelId ? 'city' : 'world' }) }
+            else if (row === 'notifications') { setNotifOnly(null); setShowNotifications(true) }
+            else if (row === 'messages') setShowConversations(true)
             else setPassportSub(row)
           }}
         />

@@ -873,8 +873,9 @@ export default function ChatTab() {
       {!keyboardUp && (
       <View style={styles.header}>
 
-        {/* ── Header (chat.html): "Hi" and its subtitle, share the city, private messages. ── */}
-        <ScreenHeader variant="tab" title={t('tabTitle')} subtitle={t('subtitles.hi', { ns: 'common' })} art="hi" right={
+        {/* ── Header: "Hi" with a back button (a screen of the city since the UX audit, opened
+            from Today; back returns there), share the city, private messages. ── */}
+        <ScreenHeader title={t('tabTitle')} right={
           <View style={styles.headerButtons}>
             <IconButton icon="share-outline" iconSize={20} label={t('shareCity')} onPress={async () => {
               // Locale-prefixed URL (Option A) so the link preview (OG tags -

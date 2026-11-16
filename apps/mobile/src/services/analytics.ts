@@ -116,6 +116,7 @@ export type AnalyticsEvent =
   | 'today_countries_sort'
   // Navigation: tab_pressed { from, to } (the $screen events come from trackScreen)
   | 'tab_pressed'
+  | 'city_chat_opened'          // { source, mentions }: Hi from Today (no longer a tab)
   // V6
   | 'ranks_viewed'
   | 'ranks_ghost_tapped'

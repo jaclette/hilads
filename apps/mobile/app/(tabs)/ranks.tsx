@@ -24,7 +24,8 @@ import {
   fetchRanks, type CitiesRanks, type PhotosRanks, type PlayersRanks, type RanksPeriod, type RanksScope, type RanksTab,
 } from '@/api/ranks';
 import type { DailyProof } from '@/types';
-import { MEDAL, Movement, Podium, RaceBar, RankRow, ScopeToggle, YouBar, type PodiumGhost, type PodiumItem } from '@/features/ranks/parts';
+import { MEDAL, Movement, Podium, RaceBar, RankRow, YouBar, type PodiumGhost, type PodiumItem } from '@/features/ranks/parts';
+import { useScope } from '@/context/ScopeContext';
 import { IndexCarousel } from '@/features/index/IndexCarousel';
 
 // The last answer of each view (segment, period, scope, city), in memory.
@@ -62,8 +63,11 @@ function RanksContent() {
   useEffect(() => { if (params.focus === 'me') setFocusMe(true); }, [params.focus]);
   const [tab, setTab] = useState<RanksTab>('photos');
   const [period, setPeriod] = useState<RanksPeriod>('today');
-  // The scope follows the city chosen in the header (World without one).
-  const [scope, setScope] = useState<RanksScope>('city');
+  // One scope control (UX audit): the header's pill (my city or World), World without a city. A
+  // deep link's scope (a push, Passport) applies here only, until the pill changes.
+  const { scope: appScope } = useScope();
+  const [scope, setScope] = useState<RanksScope>(appScope);
+  useEffect(() => { setScope(appScope); }, [appScope]);
   // Each response is kept with what it was asked for: a view only ever gets its own shape (switching
   // tabs, or a slow answer for the previous tab, used to hand Cities rows to the Players view).
   const [resp, setResp] = useState<{ key: string; data: PlayersRanks | CitiesRanks | PhotosRanks } | null>(null);
@@ -109,7 +113,6 @@ function RanksContent() {
   const endsAt = tab === 'photos' && period === 'today' ? (data as PhotosRanks | null)?.endsAt ?? null : null;
   const hours = endsAt ? Math.max(0, Math.floor((endsAt * 1000 - Date.now()) / 3_600_000)) : null;
   const info = hours === null ? '' : hours > 0 ? t('ranks.timeLeft', { count: hours }) : t('ranks.timeLeftMin');
-  const showToggle = tab !== 'cities' && !!cityId;
   // An empty podium place sends to the camera (today's photos) or to Today.
   // An empty podium place depends on where I stand: a past period has nobody to call ("Nobody
   // took this spot"); today, before I've played: play (the camera, never the edit of a photo I
@@ -151,13 +154,9 @@ function RanksContent() {
           <Chip key={p} on={period === p} label={t(`ranks.period.${p}`)} onPress={() => pick(setPeriod, p)} />
         ))}
       </View>
-      {(showToggle || !!info) && (
+      {!!info && (
         <View style={styles.infoRow}>
           <Text style={styles.info} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.75}>{info}</Text>
-          {showToggle && (
-            <ScopeToggle value={scope} onChange={v => pick(setScope, v)} worldLabel={t('ranks.scope.world')}
-                         city={city?.name ? shortCityName(city.name) : t('ranks.scope.city')} country={city?.country} />
-          )}
         </View>
       )}
     </View>

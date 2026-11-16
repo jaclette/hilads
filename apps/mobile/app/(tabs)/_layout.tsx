@@ -19,8 +19,8 @@ import { track } from '@/services/analytics';
 const GOLD = themeColor('sip');
 
 // V6 tab badges: what each tab's badge counts, and the notification types its visit marks read.
-const TAB_BADGE: Record<string, { key: 'chat' | 'passport' | 'ranks'; types: string[]; count: boolean }> = {
-  chat:     { key: 'chat',     types: ['mention', 'city_here'],            count: true },
+// (Hi is no longer a tab: its mentions reach the bell and the inbox.)
+const TAB_BADGE: Record<string, { key: 'passport' | 'ranks'; types: string[]; count: boolean }> = {
   passport: { key: 'passport', types: ['daily_local_pass'],                count: false },
   ranks:    { key: 'ranks',    types: ['daily_result', 'daily_rank'],      count: false },
 };
@@ -34,12 +34,13 @@ type TabDef = {
   icon:  React.ComponentProps<typeof Ionicons>['name'];
 };
 
+// Four tabs (UX audit option B, 2026-11): play (Today), compare (World: the ranks route, its
+// photos, players, cities and the Index), where (Map: spots and plans), me (Passport: inbox,
+// settings). Hi is a screen of the city, opened from Today, not a tab.
 const TABS: TabDef[] = [
   { name: 'today',    label: 'tabs.today',    icon: 'flame-outline' },
+  { name: 'ranks',    label: 'scope.world',   icon: 'earth-outline' },
   { name: 'map',      label: 'tabs.map',      icon: 'map-outline' },
-  // V6: the game hub, gold when active.
-  { name: 'ranks',    label: 'tabs.ranks',    icon: 'trophy-outline' },
-  { name: 'chat',     label: 'tabs.chat',     icon: 'chatbubble-outline' },
   { name: 'passport', label: 'tabs.passport', icon: 'id-card-outline' },
 ];
 
@@ -62,11 +63,10 @@ function CustomTabBar({ state, navigation }: BottomTabBarProps) {
     const onHide = Keyboard.addListener(hideEvt, () => setKeyboardUp(false));
     return () => { onShow.remove(); onHide.remove(); };
   }, []);
-  // A hidden route (challenges, me...) highlights the tab it belongs to.
+  // A hidden route (challenges, me, Hi and its lists...) highlights the tab it belongs to.
   const current = state.routes[state.index]?.name;
   const activeTab = current === 'me' ? 'passport'
-    : current === 'challenges' ? 'today'
-    : current === 'events' || current === 'here' ? 'chat'
+    : current === 'challenges' || current === 'chat' || current === 'events' || current === 'here' ? 'today'
     : current;
 
   // Opening a tab clears its badge (the notifications behind it are read).
@@ -117,7 +117,7 @@ function CustomTabBar({ state, navigation }: BottomTabBarProps) {
             {focused && <TabGhost />}
             <View>
               {halloween && tab.name === 'today' ? <PumpkinIcon size={24} color={color} />
-                : <Ionicons name={gold ? 'trophy' : tab.icon} size={24} color={color} />}
+                : <Ionicons name={gold ? 'earth' : tab.icon} size={24} color={color} />}
               <TabBadge n={TAB_BADGE[tab.name] && !focused ? badges[TAB_BADGE[tab.name].key] : 0} count={!!TAB_BADGE[tab.name]?.count} />
             </View>
             <Text style={[styles.label, { color }, focused && styles.labelActive]} numberOfLines={1}>{label}</Text>

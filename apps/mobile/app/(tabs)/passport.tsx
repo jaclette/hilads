@@ -13,6 +13,7 @@ import type { ShareContent } from '@/features/share/content';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { LogoHat } from '@/features/event/SeasonalArt';
 import { useApp } from '@/context/AppContext';
+import { useNotifCounts } from '@/features/notifications/counts';
 import { shortCityName } from '@/i18n/cityName';
 import { thumbUrl } from '@/lib/imageThumb';
 import { useDailyToday } from '@/hooks/useDaily';
@@ -50,7 +51,9 @@ export default function PassportScreen() {
   const { t } = useTranslation('me');
   const router = useRouter();
   const { width } = useWindowDimensions();
-  const { account, identity, city } = useApp();
+  const { account, identity, city, unreadDMs } = useApp();
+  // The inbox (UX audit option B): notifications and private messages live here, Hi being no longer a tab.
+  const { total: unreadNotifs } = useNotifCounts();
   const today = useDailyToday(city?.channelId);
   const cacheKey = account ? `${account.id}|${city?.channelId ?? ''}` : '';
   // Shown at once from the last visit (stale-while-revalidate), refreshed below.
@@ -232,6 +235,11 @@ export default function PassportScreen() {
 
         {(stats?.pioneerOf?.length ?? 0) > 0 && <PioneerBadges pioneers={stats!.pioneerOf!} />}
         {(stats?.specialStamps?.length ?? 0) > 0 && <SpecialStamps stamps={stats!.specialStamps!} />}
+
+        <RowGroup>
+          <ListRow icon="notifications-outline" title={t('notifications', { ns: 'common' })} badge={unreadNotifs} onPress={() => router.push('/notifications' as never)} />
+          <ListRow divider icon="chatbubbles-outline" title={t('messages', { ns: 'common' })} badge={unreadDMs} onPress={() => router.push('/messages' as never)} />
+        </RowGroup>
 
         <RowGroup>
           <ListRow title={t('passport.myPhotos')} value={stats?.photos !== undefined ? String(stats.photos) : ''} onPress={() => router.push('/my-photos' as never)} />

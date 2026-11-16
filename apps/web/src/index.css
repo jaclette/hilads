@@ -2167,7 +2167,7 @@ html, body, #root {
 
   .bottom-nav {
     display: grid;
-    grid-template-columns: repeat(5, minmax(0, 1fr));
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     position: fixed;
     left: 50%;
     bottom: 0;
@@ -16222,7 +16222,7 @@ body.has-app-promo-banner .page-header {
 /* ── Tab bar like the app's (W1): 4 tabs, stroke icon over a label, the
    active tab on a primary-tint pill. Overrides the older glowing tab bar. ── */
 .bottom-nav {
-  grid-template-columns: repeat(5, minmax(0, 1fr)) !important;   /* Today · Map · Ranks · Hi · Passport (V6) */
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;   /* Today · World · Map · Passport (UX audit option B) */
   gap: 6px;
   border-radius: 0;
   background: var(--bg);

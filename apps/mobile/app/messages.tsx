@@ -251,7 +251,7 @@ export default function MessagesScreen() {
   }, [prefs]);
 
   const reload = useCallback(() => { reloadDMs(); loadEvents(); }, [reloadDMs, loadEvents]);
-  const goBack = () => (router.canGoBack() ? router.back() : router.replace('/(tabs)/chat'));
+  const goBack = () => (router.canGoBack() ? router.back() : router.replace('/(tabs)/passport' as never));
 
   if (!account) {
     return (

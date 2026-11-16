@@ -99,31 +99,6 @@ export function FitText({ children, min = 0.7 }) {
   return <span ref={ref} className="r6-fit" style={scale < 1 ? { fontSize: `${scale}em` } : undefined}>{children}</span>
 }
 
-/**
- * The scope toggle: "🇻🇳 Saigon | 🌍 World" (the flag of the header's city); the selected side
- * on a gold thumb that slides across (still with reduced motion), a little vibration.
- */
-export function ScopeToggle({ value, onChange, city, country, worldLabel }) {
-  const box = useRef(null)
-  const [thumb, setThumb] = useState(null)
-  useLayoutEffect(() => {
-    const el = box.current?.querySelector(`[data-scope="${value}"]`)
-    if (el) setThumb({ left: el.offsetLeft, width: el.offsetWidth })
-  }, [value, city, worldLabel])
-  const pick = (v) => { if (v === value) return; navigator.vibrate?.(8); onChange(v) }
-  return (
-    <span ref={box} className="r6-scope" role="tablist">
-      {thumb && <span className="r6-scope-thumb" style={{ left: thumb.left, width: thumb.width }} aria-hidden="true" />}
-      <button type="button" role="tab" data-scope="city" aria-selected={value === 'city'} className={`r6-scope-side${value === 'city' ? ' is-on' : ''}`} onClick={() => pick('city')}>
-        <FlagSticker country={country} size={16} /><span className="r6-scope-city">{city}</span>
-      </button>
-      <button type="button" role="tab" data-scope="world" aria-selected={value === 'world'} className={`r6-scope-side${value === 'world' ? ' is-on' : ''}`} onClick={() => pick('world')}>
-        🌍 {worldLabel}
-      </button>
-    </span>
-  )
-}
-
 /** An empty podium place: an invitation (a button), or, for a past period, just "Nobody took this spot". */
 function GhostStep({ rank, ghost, delay }) {
   const Tag = ghost.onClick ? 'button' : 'span'

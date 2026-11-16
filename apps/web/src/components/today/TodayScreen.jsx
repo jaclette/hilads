@@ -99,6 +99,8 @@ export default function TodayScreen({ header }) {
         <SeasonalTeaser />
         {/* Around the world today: one card per city (the mosaic), "See all"; yesterday's best on an empty day. */}
         <TodayCountries today={data} data={countries} />
+        {/* The city's chat (Hi): a screen of the city, no longer a tab. */}
+        <CityChatRow />
         {/* Your week: the streak, tomorrow's theme, the week strip and every past challenge. */}
         <Week today={data} />
       </div>
@@ -446,6 +448,18 @@ function LinkRow({ icon, title, sub, onClick, accent }) {
       </span>
       <Icon name="chevron-forward" size={18} className="link-row-chevron" />
     </button>
+  )
+}
+
+/** The city's chat (Hi), from Today (UX audit option B: no longer a tab). */
+function CityChatRow() {
+  const { t } = useTranslation('common')
+  const { openCityChat } = useDaily()
+  if (!openCityChat) return null
+  return (
+    <div className="link-rows">
+      <LinkRow icon="chatbubble-outline" accent="var(--primary)" title={t('tabs.chat')} sub={t('subtitles.hi')} onClick={openCityChat} />
+    </div>
   )
 }
 
