@@ -239,7 +239,6 @@ export default function EditEventScreen() {
 // ── Styles ────────────────────────────────────────────────────────────────────
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  scroll:       { flex: 1 },
   content:      { paddingHorizontal: Spacing.md, paddingTop: Spacing.sm, paddingBottom: Spacing.xl, gap: Space.xl },
   footer:       { paddingHorizontal: Spacing.md, paddingTop: Space.md, paddingBottom: Space.md, borderTopWidth: 1, borderTopColor: c.line, backgroundColor: c.bg },
   loadingBlock: { flex: 1, alignItems: 'center', justifyContent: 'center' },

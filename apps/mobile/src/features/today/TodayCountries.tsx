@@ -493,8 +493,6 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   foot:      { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: Space.sm },
   avatars:   { flexDirection: 'row', alignItems: 'center' },
   avatar:    { borderRadius: 12, borderWidth: 2, borderColor: c.bg2 },
-  avatarOverlap: { marginLeft: -7 },
-  more:      { marginLeft: Space.xs, fontSize: FontSizes.xs, fontWeight: '700', color: c.muted },
   votes:     { flexDirection: 'row', alignItems: 'center', gap: Space.xs },
   votesText: { fontSize: FontSizes.xs, fontWeight: '700', color: c.muted },
   commentsText: { marginRight: Space.sm },

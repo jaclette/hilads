@@ -1234,30 +1234,6 @@ export interface DailyPlacePin {
   challengeText?: string;
 }
 
-/** One line of the provisional leaderboard (GET /daily/leaderboard). */
-export interface DailyLeaderboardEntry {
-  rank:      number;          // shared on ties (1, 1, 3)
-  proofId:   string;
-  voteCount: number;
-  isLocal:   boolean;
-  user:      DailyPerson;
-  city:      { id: number; name: string; country?: string | null } | null;
-  thumbUrl:  string | null;
-}
-
-/** Provisional leaderboard of the active challenge (V2-01). */
-export interface DailyLeaderboard {
-  date:          string | null;
-  endsAt:        number | null;
-  provisional:   boolean;
-  approvedCount: number;
-  minProofs:     number;
-  ranked:        boolean;     // false below minProofs approved proofs
-  world:         DailyLeaderboardEntry[];
-  cities:        { city: { id: number; name: string; country?: string | null }; entries: DailyLeaderboardEntry[] }[];
-  me:            { proofId: string; rank: number; cityRank: number | null; voteCount: number } | null;
-}
-
 /** Live vote state of a proof (GET /daily/proofs/state). */
 export interface DailyVoteState {
   voteCount:        number;

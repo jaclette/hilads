@@ -54,7 +54,6 @@ const T = {
   coins: 850, coinGap: 90, coinDur: 650, odo: 1150, odoDur: 1100, chip: 1600, medals: [2000, 2250, 2500], medalDur: 450,
   goal: 2900, bar: 3100, barDur: 1000, ctas: 3300, fade: 400, end: 4100,
 };
-const COINS = 5;
 const OVERSHOOT = Easing.bezier(0.2, 1.8, 0.4, 1);
 
 function mix(a: string, b: string, t: number): string {

@@ -399,7 +399,6 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   proofOf:       { fontSize: FontSizes.xs, color: c.muted },
   time:          { fontSize: FontSizes.xs, color: c.muted, marginTop: Space.xs, alignSelf: 'flex-start' },
   voteRow:       { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: Space.md },
-  badge:         { flexShrink: 1, fontSize: FontSizes.tiny, fontWeight: '700', color: c.green },
   strip:         { flexDirection: 'row', gap: Space.sm },
   stripCell:     { flex: 1, aspectRatio: 1 },
   stripPhoto:    { width: '100%', height: '100%', borderRadius: Radius.md, backgroundColor: c.bg3 },

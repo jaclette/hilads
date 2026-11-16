@@ -8,7 +8,6 @@ import type {
   DailyArchive,
   DailyCalendar,
   DailyGuide,
-  DailyLeaderboard,
   DailyPlacePin,
   DailyProposal,
   DailyProof,
@@ -307,19 +306,6 @@ export async function fetchDailyProofStates(ids: string[], guestId?: string | nu
   items: Record<string, DailyVoteState>; myVotes: { used: number; left: number } | null;
 }> {
   return api.get('/daily/proofs/state', { params: { ids: ids.join(','), guestId: guestId ?? undefined } });
-}
-
-/**
- * Provisional leaderboard of the active challenge. Pass the last ETag: the
- * result is null when nothing changed (304).
- */
-export async function fetchDailyLeaderboard(etag: string | null, guestId?: string | null): Promise<{ data: DailyLeaderboard; etag: string | null } | null> {
-  try {
-    return await api.getWithEtag<DailyLeaderboard>('/daily/leaderboard', etag, { params: { guestId: guestId ?? undefined } });
-  } catch (err) {
-    if (err instanceof ApiError && err.status === 304) return null;
-    throw err;
-  }
 }
 
 /** Propose a Daily Challenge (signed in; one pending at a time). */
