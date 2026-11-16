@@ -251,7 +251,7 @@
     "off": "Disattivo"
   },
   "wakingUp": {
-    "title": "Hilads si sta svegliando… 🌍",
-    "body": "Qualche secondo e ci siamo, intanto riproviamo."
+    "title": "Impossibile raggiungere Hilads",
+    "body": "Controlla la connessione. Intanto riproviamo."
   }
 }

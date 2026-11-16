@@ -249,7 +249,7 @@
     "off": "Off"
   },
   "wakingUp": {
-    "title": "Hilads is waking up… 🌍",
-    "body": "Back in a few seconds, we'll keep trying."
+    "title": "Can't reach Hilads",
+    "body": "Check your connection. We'll keep trying."
   }
 }

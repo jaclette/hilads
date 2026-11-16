@@ -251,7 +251,7 @@
     "off": "Não"
   },
   "wakingUp": {
-    "title": "O Hilads está acordando… 🌍",
-    "body": "Volta em alguns segundos, a gente continua tentando."
+    "title": "Não foi possível acessar o Hilads",
+    "body": "Confere sua conexão. A gente continua tentando."
   }
 }

@@ -247,7 +247,7 @@
     "off": "Tắt"
   },
   "wakingUp": {
-    "title": "Hilads đang thức dậy… 🌍",
-    "body": "Vài giây nữa là xong, Hilads sẽ tự thử lại."
+    "title": "Không kết nối được với Hilads",
+    "body": "Kiểm tra kết nối của bạn nhé. Hilads sẽ tự thử lại."
   }
 }

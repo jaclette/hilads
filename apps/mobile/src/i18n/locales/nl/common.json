@@ -249,7 +249,7 @@
     "off": "Uit"
   },
   "wakingUp": {
-    "title": "Hilads wordt wakker… 🌍",
-    "body": "Over een paar tellen zijn we terug, we blijven het proberen."
+    "title": "Hilads is niet bereikbaar",
+    "body": "Check je verbinding. We blijven het proberen."
   }
 }
