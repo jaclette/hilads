@@ -27,6 +27,7 @@ import type { DailyProof } from '@/types';
 import { MEDAL, Movement, Podium, RaceBar, RankRow, YouBar, type PodiumGhost, type PodiumItem } from '@/features/ranks/parts';
 import { useScope } from '@/context/ScopeContext';
 import { IndexCarousel } from '@/features/index/IndexCarousel';
+import { RivalsBlock } from '@/features/ranks/RivalsBlock';
 
 // The last answer of each view (segment, period, scope, city), in memory.
 const ranksCache = new Map<string, PlayersRanks | CitiesRanks | PhotosRanks>();
@@ -465,8 +466,8 @@ function CitiesView({ data, header, failed, refreshing, onRefresh, period, list,
         contentContainerStyle={[styles.listPad, { paddingBottom: 96 }]}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.primary} colors={[colors.primary]} />}
         ListEmptyComponent={data || failed ? <Empty text={t('ranks.empty.cities')} failed={failed} /> : null}
-        // How the cities answered (the Hilads Index): its home, under the city ranking.
-        ListFooterComponent={<View style={styles.indexFoot}><IndexCarousel /></View>}
+        // Under the city ranking: my rivals (moved from Passport), then how the cities answered (the Hilads Index).
+        ListFooterComponent={<View style={styles.indexFoot}><RivalsBlock /><IndexCarousel /></View>}
         onScrollToIndexFailed={() => {}}
         renderItem={({ item: e, index }) => (
           <View style={styles.rowPad}>
@@ -501,7 +502,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   chipText:     { fontSize: 14, lineHeight: 18, fontWeight: '800', color: c.text },
   chipTextOn:   { color: themeColor('sip').onFill },
   listPad:      { paddingBottom: 32 },
-  indexFoot:    { marginTop: 24, paddingHorizontal: Spacing.md - 4 },
+  indexFoot:    { marginTop: 24, paddingHorizontal: Spacing.md - 4, gap: 24 },
   rowPad:       { paddingHorizontal: Spacing.md - 4 },
   podiumPhoto:  { width: 72, height: 72, borderRadius: 16, borderWidth: 3, backgroundColor: c.bg3 },
   podiumAvatar: { borderRadius: 32, borderWidth: 3, padding: 1 },

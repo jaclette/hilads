@@ -6,7 +6,6 @@ import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { FontSizes, Radius, Spacing, type ThemeColors } from '@/constants';
 import { Avatar, Button, Card, CityFlag, IconButton, ListRow, ModeLabel, RowGroup, ScreenHeader } from '@/ui';
-import { FlagSticker } from '@/ui/joy';
 import { RankMedal } from '@/features/daily/RankMedal';
 import { ShareSheet } from '@/features/share/ShareSheet';
 import type { ShareContent } from '@/features/share/content';
@@ -187,30 +186,7 @@ export default function PassportScreen() {
             </Card>
           </TouchableOpacity>
         </View>
-        {/* Your rivals (V6): the cities I played the same challenges as, most duels first; a tap opens the face-off. */}
-        {stats && (
-          <View style={styles.comparedBlock} testID="passport-rivals">
-            <Text style={styles.rivalsTitle}>⚔️ {t('passport.rivals')}</Text>
-            {(stats.comparedCities?.length ?? 0) > 0 ? (
-              <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.flagsRow}>
-                {stats.comparedCities!.map(c => (
-                  <TouchableOpacity key={c.id} style={styles.flagChip} accessibilityRole="button"
-                                    accessibilityLabel={`${shortCityName(c.name ?? '')}, ${t('passport.duels', { count: c.duels ?? 1 })}`}
-                                    onPress={() => account && router.push(`/rivals/${c.id}?user=${account.id}` as never)}>
-                    <FlagSticker country={c.country} size={22} />
-                    <View>
-                      <Text style={styles.flagName} numberOfLines={1}>{shortCityName(c.name ?? '')}</Text>
-                      {!!c.duels && <Text style={styles.duels}>{t('passport.duels', { count: c.duels })}</Text>}
-                    </View>
-                  </TouchableOpacity>
-                ))}
-              </ScrollView>
-            ) : (
-              <Text style={styles.comparedText}>{t('passport.rivalsEmpty')}</Text>
-            )}
-          </View>
-        )}
-
+        {/* Your rivals moved to World › Cities (UX audit: one place to compare cities). */}
         {progress.length > 1 ? (
           <View style={styles.pagesWrap}>
             {/* One page per city: snaps page by page (no pagingEnabled: the pages are narrower than the screen). */}
@@ -314,18 +290,11 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   cards:          { flexDirection: 'row', gap: 10 },
   card:           { flex: 1, paddingHorizontal: 14, paddingVertical: 12, gap: 3 },
   cardTap:        { flex: 1 },
-  rivalsTitle:    { fontSize: FontSizes.md, fontWeight: '800', color: c.text },
-  duels:          { fontSize: 11, fontWeight: '700', color: c.muted },
   cardFill:       { flex: 1 },
   cardHead:       { flexDirection: 'row', alignItems: 'center', gap: 6 },
   cardTitle:      { flexShrink: 1, fontSize: FontSizes.md, fontWeight: '800', color: c.text },
   cardSub:        { fontSize: FontSizes.xs, color: c.muted },
   compared:       { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  comparedBlock:  { gap: 8 },
-  flagsRow:       { gap: 8 },
-  flagChip:       { flexDirection: 'row', alignItems: 'center', gap: 6, minHeight: 44, paddingLeft: 6, paddingRight: 12, borderRadius: Radius.full,
-                    borderWidth: 1.5, borderColor: c.line, backgroundColor: c.bg2 },
-  flagName:       { fontSize: 13, fontWeight: '700', color: c.text, maxWidth: 120 },
   pagesWrap:      { gap: 8 },
   dots:           { flexDirection: 'row', justifyContent: 'center', gap: 6 },
   dot:            { width: 7, height: 7, borderRadius: 4, backgroundColor: c.line },
@@ -334,7 +303,6 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   stats:          { flexDirection: 'row', flexWrap: 'wrap', columnGap: 12 },
   stat:           { fontSize: 13, fontWeight: '600', color: c.muted },
   statN:          { fontWeight: '800', color: c.text },
-  comparedText:   { fontSize: FontSizes.sm, fontWeight: '600', color: c.muted },
   pages:          { gap: 10 },
   center:         { alignSelf: 'center' },
   guest:          { gap: 10, padding: 16, borderRadius: 20 },

@@ -10,7 +10,7 @@ import { themeIcon } from '../../lib/icons'
 import { shareLink } from '../../lib/shareLink'
 import Icon from '../Icon'
 import HeaderArt from '../HeaderArt'
-import { FlagSticker, themeColor } from '../joy/Joy'
+import { themeColor } from '../joy/Joy'
 import { RankMedal } from '../daily/dailyShared'
 import { useBackLayer } from '../../lib/backLayers'
 import { useNotifCounts } from '../../lib/notifCounts'
@@ -146,28 +146,7 @@ export default function PassportScreen({ account, guestName, guestMode, cityId, 
             <span className="dc-muted pp-ellipsis">{city ? t('passport.mostLocalIn', { city }) : t('passport.mostLocalWorld')}</span>
           </button>
         </div>
-        {/* Your rivals (V6): the cities I played the same challenges as, most duels first; a click opens the face-off. */}
-        {stats && (
-          <div className="pp-compared-block" data-testid="passport-rivals">
-            <span className="pp-rivals-title">⚔️ {t('passport.rivals')}</span>
-            {(stats.comparedCities?.length ?? 0) > 0 ? (
-              <div className="pp-flags">
-                {stats.comparedCities.map(c => (
-                  <button key={c.id} type="button" className="pp-flag-chip"
-                          aria-label={`${shortCityName(c.name ?? '')}, ${t('passport.duels', { count: c.duels ?? 1 })}`}
-                          onClick={() => onOpen('rivals', { city: c.id, user: account.id })}>
-                    <FlagSticker country={c.country} size={22} />
-                    <span className="pp-flag-name">{shortCityName(c.name ?? '')}</span>
-                    {!!c.duels && <span className="pp-duels">{t('passport.duels', { count: c.duels })}</span>}
-                  </button>
-                ))}
-              </div>
-            ) : (
-              <span className="dc-muted pp-compared">{t('passport.rivalsEmpty')}</span>
-            )}
-          </div>
-        )}
-
+        {/* Your rivals moved to World › Cities (UX audit: one place to compare cities). */}
         {progress.length > 0 && (
           <div className="pp-pages-wrap">
             {/* One page per city, snapping page by page. */}
