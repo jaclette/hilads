@@ -888,9 +888,9 @@
   },
   "ranks": {
     "seg": {
-      "photos": "📸 Photos",
-      "players": "🙋 Players",
-      "cities": "🌍 Cities"
+      "photos": "Photos",
+      "players": "Players",
+      "cities": "Cities"
     },
     "period": {
       "today": "Ngayon",

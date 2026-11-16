@@ -26,6 +26,8 @@ const GOLD = themeColor('sip')
  * with the scope toggle on its right ("🇻🇳 Saigon | 🌍 World", the header's city;
  * none on Cities); a podium short of 3 shows dashed ghost places leading to Today.
  */
+const SEG_ICON = { photos: 'camera-outline', players: 'person-outline', cities: 'flag-outline' }
+
 export default function RanksScreen({ header, initial }) {
   const { t } = useDc()
   const { cityId: browsedCity, openToday, scope: appScope } = useDaily()
@@ -90,7 +92,8 @@ export default function RanksScreen({ header, initial }) {
           <div className="leaderboard-seg r6-seg" role="tablist">
             {['photos', 'players', 'cities'].map(k => (
               <button key={k} type="button" role="tab" aria-selected={tab === k} className={`leaderboard-seg-item${tab === k ? ' is-active' : ''}`} onClick={() => setTab(k)}>
-                <FitText>{t(`ranks.seg.${k}`)}</FitText>
+                {/* Icons, not emoji in the labels (one icon system: UX audit visual review). */}
+                <Icon name={SEG_ICON[k]} size={16} /><FitText>{t(`ranks.seg.${k}`)}</FitText>
               </button>
             ))}
           </div>

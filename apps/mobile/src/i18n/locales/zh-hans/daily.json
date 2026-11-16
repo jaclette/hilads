@@ -846,9 +846,9 @@
   },
   "ranks": {
     "seg": {
-      "photos": "📸 照片",
-      "players": "🙋 玩家",
-      "cities": "🌍 城市"
+      "photos": "照片",
+      "players": "玩家",
+      "cities": "城市"
     },
     "period": {
       "today": "今天",

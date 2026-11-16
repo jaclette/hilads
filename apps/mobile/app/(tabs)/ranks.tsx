@@ -146,7 +146,9 @@ function RanksContent() {
   const header = (
     <View style={styles.controls}>
       <Segmented<RanksTab> value={tab} onChange={v => pick(setTab, v)} options={[
-        { key: 'photos', label: t('ranks.seg.photos') }, { key: 'players', label: t('ranks.seg.players') }, { key: 'cities', label: t('ranks.seg.cities') },
+        // Icons, not emoji in the labels (one icon system: UX audit visual review).
+        { key: 'photos', label: t('ranks.seg.photos'), icon: 'camera-outline' }, { key: 'players', label: t('ranks.seg.players'), icon: 'person-outline' },
+        { key: 'cities', label: t('ranks.seg.cities'), icon: 'flag-outline' },
       ]} />
       {/* The periods: equal chips across the width, no scrolling (nothing hidden off screen). */}
       <View style={styles.periods} accessibilityRole="tablist">

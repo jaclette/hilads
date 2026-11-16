@@ -1556,9 +1556,9 @@
     },
     "ranks": {
       "seg": {
-        "photos": "📸 Ảnh",
-        "players": "🙋 Người chơi",
-        "cities": "🌍 Thành phố"
+        "photos": "Ảnh",
+        "players": "Người chơi",
+        "cities": "Thành phố"
       },
       "period": {
         "today": "Hôm nay",

@@ -1056,9 +1056,9 @@
   },
   "ranks": {
     "seg": {
-      "photos": "📸 الصور",
-      "players": "🙋 اللاعبون",
-      "cities": "🌍 المدن"
+      "photos": "الصور",
+      "players": "اللاعبون",
+      "cities": "المدن"
     },
     "period": {
       "today": "اليوم",

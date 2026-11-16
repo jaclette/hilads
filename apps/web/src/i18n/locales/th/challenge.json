@@ -1556,9 +1556,9 @@
     },
     "ranks": {
       "seg": {
-        "photos": "📸 รูป",
-        "players": "🙋 ผู้เล่น",
-        "cities": "🌍 เมือง"
+        "photos": "รูป",
+        "players": "ผู้เล่น",
+        "cities": "เมือง"
       },
       "period": {
         "today": "วันนี้",

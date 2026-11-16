@@ -846,9 +846,9 @@
   },
   "ranks": {
     "seg": {
-      "photos": "📸 Foto",
-      "players": "🙋 Pemain",
-      "cities": "🌍 Kota"
+      "photos": "Foto",
+      "players": "Pemain",
+      "cities": "Kota"
     },
     "period": {
       "today": "Hari ini",

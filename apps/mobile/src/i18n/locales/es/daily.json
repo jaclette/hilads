@@ -928,9 +928,9 @@
   },
   "ranks": {
     "seg": {
-      "photos": "📸 Fotos",
-      "players": "🙋 Jugadores",
-      "cities": "🌍 Ciudades"
+      "photos": "Fotos",
+      "players": "Jugadores",
+      "cities": "Ciudades"
     },
     "period": {
       "today": "Hoy",

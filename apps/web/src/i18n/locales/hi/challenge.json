@@ -1596,9 +1596,9 @@
     },
     "ranks": {
       "seg": {
-        "photos": "📸 फ़ोटो",
-        "players": "🙋 खिलाड़ी",
-        "cities": "🌍 शहर"
+        "photos": "फ़ोटो",
+        "players": "खिलाड़ी",
+        "cities": "शहर"
       },
       "period": {
         "today": "आज",

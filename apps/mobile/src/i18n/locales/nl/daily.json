@@ -888,9 +888,9 @@
   },
   "ranks": {
     "seg": {
-      "photos": "📸 Foto's",
-      "players": "🙋 Spelers",
-      "cities": "🌍 Steden"
+      "photos": "Foto's",
+      "players": "Spelers",
+      "cities": "Steden"
     },
     "period": {
       "today": "Vandaag",

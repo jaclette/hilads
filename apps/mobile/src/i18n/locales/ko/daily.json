@@ -846,9 +846,9 @@
   },
   "ranks": {
     "seg": {
-      "photos": "📸 사진",
-      "players": "🙋 참가자",
-      "cities": "🌍 도시"
+      "photos": "사진",
+      "players": "참가자",
+      "cities": "도시"
     },
     "period": {
       "today": "오늘",

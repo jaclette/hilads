@@ -17210,14 +17210,7 @@ html.kb-open .quick-row { display: none; }
 .cmp-back { display: inline-flex; align-items: center; gap: 4px; align-self: flex-start; min-height: 44px; border: 0; background: none; font: inherit; font-weight: 700; color: var(--text); cursor: pointer; }
 .cmp-city-title { display: flex; align-items: center; gap: 8px; margin: 0; font-size: 1.2rem; font-weight: 800; color: var(--text); }
 
-/* ── Yesterday around the world (SPEC 10.7): Today's row and the story viewer (dark in both themes) ── */
-.tour-circles { display: flex; gap: 12px; overflow-x: auto; padding: 4px 2px 2px; scrollbar-width: none; }
-.tour-circles::-webkit-scrollbar { display: none; }
-.tour-circle { flex: 0 0 auto; width: 76px; display: flex; flex-direction: column; align-items: center; gap: 6px; border: 0; background: none; padding: 0; cursor: pointer; font: inherit; }
-.tour-circle-ring { position: relative; width: 76px; height: 76px; border-radius: 50%; border: 2.5px solid var(--primary); display: flex; align-items: center; justify-content: center; }
-.tour-circle-ring > img { width: 66px; height: 66px; border-radius: 50%; object-fit: cover; background: var(--bg2); }
-.tour-circle-flag { position: absolute; right: -2px; bottom: -2px; display: flex; border-radius: 4px; overflow: hidden; border: 2px solid var(--surface); }
-.tour-circle-name { font-size: 12px; font-weight: 700; color: var(--text); max-width: 76px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* ── The story viewer's frame (the old yesterday tour's classes, kept for stories; dark in both themes) ── */
 .tour { position: fixed; inset: 0; z-index: 1000; background: #0b0908; color: #fff; overflow: hidden; }
 .tour-photo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 .tour-shade { position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(0,0,0,0.55), rgba(0,0,0,0) 22%, rgba(0,0,0,0) 45%, rgba(0,0,0,0.6) 70%, rgba(0,0,0,0.92)); pointer-events: none; }
@@ -17227,25 +17220,13 @@ html.kb-open .quick-row { display: none; }
 .tour-bar { flex: 1; height: 3px; border-radius: 2px; background: rgba(255,255,255,0.22); overflow: hidden; }
 .tour-bar-fill { display: block; height: 3px; width: 0; background: #fff; }
 .tour-bar-fill--done { width: 100%; }
-.tour-bar-fill--run { animation: tour-fill 6s linear forwards; }
 @keyframes tour-fill { from { width: 0; } to { width: 100%; } }
 .tour-head { display: flex; align-items: center; gap: 10px; }
 .tour-city { flex: 1; display: flex; align-items: center; gap: 10px; min-width: 0; }
 .tour-city span { display: flex; flex-direction: column; min-width: 0; }
 .tour-city strong { font-size: 1.5rem; font-weight: 800; }
 .tour-city small { font-size: 12px; font-weight: 700; color: rgba(255,255,255,0.78); }
-.tour-close, .tour-share { pointer-events: auto; width: 44px; height: 44px; border-radius: 50%; border: 0; background: rgba(0,0,0,0.45); color: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; margin-left: auto; }
-.tour-bottom { position: absolute; left: 0; right: 0; bottom: 0; padding: 0 16px max(16px, env(safe-area-inset-bottom)); display: flex; flex-direction: column; gap: 10px; pointer-events: none; }
-.tour-bottom a, .tour-bottom button { pointer-events: auto; }
-.tour-meta { margin: 0; font-size: 14px; font-weight: 700; }
-.tour-caption { margin: 0; font-size: 16px; font-weight: 500; }
-.tour-actions { display: flex; align-items: center; gap: 10px; }
-.tour-tagline { flex: 1; font-size: 13px; font-weight: 700; color: rgba(255,255,255,0.78); }
-.tour-turn { top: 0; justify-content: flex-end; padding-bottom: max(24px, env(safe-area-inset-bottom)); }
-.tour-turn-title { margin: 0; font-size: 2rem; font-weight: 800; }
-.tour-turn-text { margin: 0 0 12px; font-size: 1.2rem; line-height: 1.4; font-weight: 700; }
-.tour-link { align-self: center; min-height: 44px; border: 0; background: none; font: inherit; font-weight: 700; color: var(--primary-text); cursor: pointer; }
-@media (prefers-reduced-motion: reduce) { .tour-bar-fill--run { animation: none; width: 100%; } }
+.tour-close { pointer-events: auto; width: 44px; height: 44px; border-radius: 50%; border: 0; background: rgba(0,0,0,0.45); color: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; margin-left: auto; }
 
 /* ── The Hilads Index (SPEC 10.9) ── */
 .index-row { display: flex; gap: 10px; overflow-x: auto; padding: 2px 2px 4px; scrollbar-width: none; }
@@ -17344,14 +17325,6 @@ html.kb-open .quick-row { display: none; }
 .today-step-arrow { color: rgba(255,255,255,.75); }
 .today-step { display: inline-flex; align-items: center; gap: 5px; padding: 5px 9px; border-radius: 999px; white-space: nowrap;
               background: rgba(255,255,255,.18); border: 1px solid rgba(255,255,255,.35); font-size: 12px; font-weight: 800; color: #fff; }
-/* The live strip: today's cities' flags (overlapping) and where my city stands, on a dark pill; opens the compare view. */
-.today-strip { align-self: flex-start; max-width: 100%; display: flex; align-items: center; gap: 8px; min-height: 40px; padding: 6px 10px 6px 8px;
-               border: 0; border-radius: 20px; background: rgba(0,0,0,.5); color: #fff; font: inherit; text-align: left; cursor: pointer; }
-.today-strip:active { opacity: .7; }
-.today-strip > .icon { flex-shrink: 0; }
-.today-strip-flags { display: inline-flex; align-items: center; flex-shrink: 0; }
-.today-strip-flags > .joy-flag + .joy-flag { margin-left: -7px; }
-.today-strip-text { min-width: 0; font-size: 13px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 /* The button on the photo: white, ink label, primary camera icon, white rings (75%); the primary
    (#D9622A, as on dark surfaces: the hero is always dark) stays for small accents. */
 .today-hero .today-cta { min-height: 52px; border-radius: 16px; background: #fff; color: #2A1C13; }
@@ -17476,10 +17449,6 @@ button.today-cta { width: 100%; }
 [data-theme="dark"] .week-dot--today, [data-theme="dark"] .week-dot--tomorrow, [data-theme="dark"] .week-dot--none { color: var(--ctd); }
 .link-row-icon { background: color-mix(in srgb, var(--a, transparent) 22%, transparent); }
 .today-card-title, .today-card-title--link { font-size: 17px; line-height: 22px; letter-spacing: -.3px; }
-.tour-circles { position: relative; }
-.tour-circles > .joy-route { position: absolute; left: 38px; top: 18px; width: calc(100% - 76px); height: 44px; color: var(--text); pointer-events: none; }
-.tour-circle-ring { border: 3px solid var(--a); background: var(--surface); }
-.tour-circle-flag { right: -3px; bottom: -3px; border: 0; border-radius: 50%; overflow: visible; }
 .proof-strip-cityrow { gap: 5px; height: 20px; }
 .proof-strip-cityrow .joy-flag { flex-shrink: 0; }
 
@@ -17565,12 +17534,6 @@ body.dc-photos-open .app-promo-banner, body.dch-open .app-promo-banner { display
 .tc-title { margin: 0; font-size: 15px; font-weight: 800; color: var(--text); }
 .tc-stories { display: flex; gap: 14px; overflow-x: auto; padding: 2px 2px 4px; scrollbar-width: none; }
 .tc-stories::-webkit-scrollbar { display: none; }
-.tc-story { flex: 0 0 auto; width: 72px; display: flex; flex-direction: column; align-items: center; gap: 6px; border: 0; background: none; padding: 0; font: inherit; cursor: pointer; }
-.tc-ring { width: 64px; height: 64px; border-radius: 50%; border: 3px solid var(--line); display: flex; align-items: center; justify-content: center; }
-.tc-inner { width: 54px; height: 54px; border-radius: 50%; background: var(--surface); display: flex; align-items: center; justify-content: center; }
-.tc-ring--mine { border: 2px dashed var(--primary-text); background: var(--primary-tint); color: var(--primary-text); }
-.tc-story-name { max-width: 72px; font-size: 12px; font-weight: 700; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.tc-story-name--seen { color: var(--muted); }
 .tc-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
 .tc-tile { display: flex; flex-direction: column; border-radius: 16px; overflow: hidden; background: var(--surface); border: 1.5px solid var(--line); padding: 0; font: inherit; text-align: left; cursor: pointer; color: var(--text); }
 .tc-photo { width: 100%; aspect-ratio: 1; object-fit: cover; display: block; background: var(--surface2); }
@@ -17584,13 +17547,6 @@ body.dc-photos-open .app-promo-banner, body.dch-open .app-promo-banner { display
 .tc-banner .tc-represent-text { flex: 1; text-align: left; }
 .tc-camera { width: 50px; height: 50px; flex-shrink: 0; border-radius: 50%; background: var(--surface); color: var(--primary-text); display: flex; align-items: center; justify-content: center; }
 .tc-represent-text { font-size: 16px; font-weight: 800; color: var(--primary-on-tint); text-align: center; }
-.tc-recap { display: flex; align-items: center; gap: 12px; border: 0; background: none; padding: 0; font: inherit; text-align: left; cursor: pointer; color: var(--text); }
-.tc-recap-photo { position: relative; flex-shrink: 0; }
-.tc-recap-photo img { width: 84px; height: 84px; border-radius: 16px; object-fit: cover; display: block; background: var(--surface2); }
-.tc-recap-medal { position: absolute; top: -6px; left: -6px; }
-.tc-recap-body { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
-.tc-recap-q { font-size: 16px; line-height: 21px; font-weight: 800; }
-.tc-recap-answer { color: var(--primary-text); font-weight: 800; }
 /* Every past challenge: the recap card's footer, or alone in a card without a recap (V3 polish 3.2). */
 .tc-archive-footer { border-top: 1px solid var(--line); padding-top: 4px; }
 .tc-archive { width: 100%; display: flex; align-items: center; gap: 6px; min-height: 40px; padding: 0; border: 0; background: none; font: inherit; font-size: 14px; font-weight: 700; color: var(--primary-text); text-align: left; cursor: pointer; }
@@ -17598,11 +17554,6 @@ body.dc-photos-open .app-promo-banner, body.dch-open .app-promo-banner { display
 .tc-archive-text { flex: 1; min-width: 0; }
 /* The stories row by city (V3 polish 2): a ring cut in one segment per photo, a count badge. */
 .tc-stories { padding: 4px 2px; }
-.tc-ring-box { position: relative; width: 64px; height: 64px; display: flex; align-items: center; justify-content: center; }
-.tc-ring--seg, .tc-ring-svg { position: absolute; inset: 0; }
-.tc-ring-box .tc-inner { position: relative; }
-.tc-count { position: absolute; right: -2px; bottom: -2px; min-width: 22px; height: 22px; padding: 0 5px; box-sizing: border-box; border-radius: 11px; border: 2px solid var(--bg);
-            display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 800; }
 /* The mosaic: one card per city, a theme-colored polaroid pile behind it, leaning its own way (inline). */
 .tc-grid { row-gap: 16px; padding-top: 4px; align-items: start; }
 .tc-card { position: relative; display: block; min-width: 0; border: 0; background: none; padding: 0; font: inherit; text-align: left; color: var(--text); cursor: pointer; }
@@ -17638,11 +17589,7 @@ body.dc-photos-open .app-promo-banner, body.dch-open .app-promo-banner { display
 /* Today's stories viewer (the tour's frame): a 5 s segment per photo, held to pause. */
 .st-bar-fill--run { animation: tour-fill 5s linear forwards; }
 .st-tap { touch-action: manipulation; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; -webkit-tap-highlight-color: transparent; }
-
 /* ── "See all": every country's photos ── */
-.dc-sort { display: flex; padding: 4px; border-radius: 999px; border: 1.5px solid var(--line); background: var(--surface); }
-.dc-sort-btn { flex: 1; min-height: 40px; border: 0; border-radius: 999px; background: none; font: inherit; font-size: 15px; font-weight: 700; color: var(--text); cursor: pointer; }
-.dc-sort-btn--on { background: var(--primary); color: #fff; }
 .dc-country { display: flex; flex-direction: column; gap: 10px; scroll-margin-top: 8px; }
 .dc-country-head { display: flex; align-items: center; gap: 10px; padding-top: 10px; }
 .dc-country-city { flex: 1; min-width: 0; font-size: 18px; font-weight: 800; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -18050,7 +17997,7 @@ html[data-event="halloween"] { --header-art: #FFA552; --header-art-opacity: 0.28
 .r6-body { padding-bottom: 96px; }
 .r6-controls { padding: 6px 16px 0; display: flex; flex-direction: column; gap: 10px; }
 .r6-seg { display: flex; }
-.r6-seg .leaderboard-seg-item { flex: 1; min-width: 0; padding: 0 6px; }
+.r6-seg .leaderboard-seg-item { flex: 1; min-width: 0; padding: 0 6px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
 .r6-chips { display: flex; gap: 6px; }   /* V6.4: equal chips across the width, no scrolling */
 .r6-chip { flex: 1; min-width: 0; height: 36px; padding: 0 6px; border-radius: 999px; border: 1.5px solid var(--line); background: var(--surface); color: var(--text);
   font-size: 14px; font-weight: 800; cursor: pointer; white-space: nowrap; }
