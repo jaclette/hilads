@@ -4,7 +4,7 @@ import {
   type ViewToken,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { prefetchProof, takeHandedList, takeHandedProof } from '@/lib/prefetch';
+import { prefetchProof, takeHandedChallenge, takeHandedList, takeHandedProof } from '@/lib/prefetch';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
@@ -30,7 +30,8 @@ import { lastCountries } from '@/features/today/useTodayCountries';
 import { rankCountryProofs } from '@/features/daily/countryOrder';
 import { CommentButton } from '@/features/daily/CommentButton';
 import { COMMENT_BAR_H, StoryCommentBar } from '@/features/daily/StoryCommentBar';
-import { commentsTargetOf, PhotoCommentsHost } from '@/features/daily/PhotoCommentsSheet';
+import { commentsTargetOf, openPhotoComments, PhotoCommentsHost } from '@/features/daily/PhotoCommentsSheet';
+import { PhotoCredit } from '@/features/map/PhotoCredit';
 import { useCastVote } from '@/features/daily/DailyVoteButton';
 import { DailyVotersSheet } from '@/features/daily/DailyVotersSheet';
 import { LocalPassBadge } from '@/features/daily/LocalPassBadge';
@@ -77,9 +78,14 @@ function PhotosScreenContent() {
   const router = useRouter();
   const { account, identity, city } = useApp();
   const guestId = account ? null : identity?.guestId ?? null;
-  const { proof: pinnedId, source, tab: tabParam, country, list: listKey } = useLocalSearchParams<{ proof?: string; source?: string; tab?: string; country?: string; list?: string }>();
-  // A ranked list (the Ranks tab, V6): played in its order from the tapped photo, no tabs.
+  const { proof: pinnedId, source, tab: tabParam, country, list: listKey, share: shareParam, comment: commentParam } =
+    useLocalSearchParams<{ proof?: string; source?: string; tab?: string; country?: string; list?: string; share?: string; comment?: string }>();
+  // A handed list (openPhotoFeed: a ranking, a day's or a profile's photos…): played in its order,
+  // opening on the tapped photo (the ones before it a scroll up), no tabs; with its challenge when
+  // it isn't today's (Share).
   const [ranked] = useState<DailyProof[] | null>(() => takeHandedList(listKey));
+  const [handedChallenge] = useState(() => takeHandedChallenge(listKey));
+  const rankedStart = ranked ? Math.max(0, ranked.findIndex(p => p.id === pinnedId)) : 0;
   const today = useDailyToday(city?.channelId).data;
   const here = useHere();
   const challenge = today?.challenge ?? null;
@@ -92,7 +98,7 @@ function PhotosScreenContent() {
   const [pinned, setPinned] = useState<DailyProof | null>(() => takeHandedProof(pinnedId));
   const [failed, setFailed] = useState(false);
   const [height, setHeight] = useState(() => Dimensions.get('window').height);
-  const [index, setIndex] = useState(0);
+  const [index, setIndex] = useState(rankedStart);
   const [composing, setComposing] = useState(false);
   const [share, setShare] = useState<ShareContent | null>(null);
   const [votersOf, setVotersOf] = useState<string | null>(null);
@@ -110,7 +116,7 @@ function PhotosScreenContent() {
 
   // The push's photo leads; one from another day opens on its own challenge instead.
   useEffect(() => {
-    if (!pinnedId) return;
+    if (!pinnedId || ranked) return;   // a handed list already holds it (any day)
     fetchDailyProof(pinnedId).then(p => {
       if (challenge && p.date !== challenge.date) {
         router.replace(`/daily/${p.date}?source=push&proof=${encodeURIComponent(p.id)}` as never);
@@ -149,10 +155,7 @@ function PhotosScreenContent() {
   }, [country, proofs]);
 
   const items: Item[] = useMemo(() => {
-    if (ranked) {
-      const at = Math.max(0, ranked.findIndex(p => p.id === pinnedId));
-      return [...ranked.slice(at).map(p => ({ kind: 'photo' as const, proof: p })), { kind: 'end' as const }];
-    }
+    if (ranked) return [...ranked.map(p => ({ kind: 'photo' as const, proof: p })), { kind: 'end' as const }];
     if (proofs === null) return pinned ? [{ kind: 'photo' as const, proof: pinned }] : [];
     if (story && tab === 'world') {
       // Photos posted since Today loaded follow the story.
@@ -162,7 +165,23 @@ function PhotosScreenContent() {
     const rest = (proofs ?? []).filter(p => p.id !== pinned?.id);
     const photos = pinned && tab === 'world' ? [pinned, ...rest] : pinned && pinned.city?.id === cityId ? [pinned, ...rest] : rest;
     return [...photos.map(p => ({ kind: 'photo' as const, proof: p })), { kind: 'end' as const }];
-  }, [proofs, pinned, tab, cityId, story, ranked, pinnedId]);
+  }, [proofs, pinned, tab, cityId, story, ranked]);
+
+  // A photo's challenge for Share: today's, or the handed list's (another day's).
+  const shareChallengeOf = (p: DailyProof) => (challenge && p.challengeId === challenge.id ? challenge
+    : handedChallenge && p.challengeId === handedChallenge.id ? handedChallenge : null);
+  // ?share=1 (yesterday's podium, "Share"): the share sheet on the start photo at once; ?comment=<id>
+  // (a comment notification): its comments, on that comment.
+  const startOpened = useRef(false);
+  useEffect(() => {
+    if (startOpened.current || !ranked) return;
+    const start = ranked[rankedStart];
+    if (!start) return;
+    startOpened.current = true;
+    const c = shareChallengeOf(start);
+    if (shareParam === '1' && c) setShare(proofShare(start, c));
+    if (commentParam !== undefined) setTimeout(() => openPhotoComments(commentsTargetOf(start, Number(commentParam) || null)), 450);
+  }, [challenge?.id]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const switchTab = (next: Tab) => {
     if (next === tab) return;
@@ -223,6 +242,7 @@ function PhotosScreenContent() {
           showsVerticalScrollIndicator={false}
           decelerationRate="fast"
           getItemLayout={(_, i) => ({ length: height, offset: height * i, index: i })}
+          initialScrollIndex={rankedStart}
           onViewableItemsChanged={onViewable}
           viewabilityConfig={{ itemVisiblePercentThreshold: 60 }}
           windowSize={3}
@@ -232,7 +252,7 @@ function PhotosScreenContent() {
             <Slide proof={item.proof} height={height} first={i === 0 && photoCount > 1}
                    insetBottom={insets.bottom + (item.proof.status === 'approved' ? COMMENT_BAR_H : 0)}
                    onProfile={openProfile} onVoted={onVoted} onZoom={setZooming}
-                   onShare={challenge && item.proof.challengeId === challenge.id ? () => setShare(proofShare(item.proof, challenge)) : null}
+                   onShare={shareChallengeOf(item.proof) ? () => setShare(proofShare(item.proof, shareChallengeOf(item.proof)!)) : null}
                    onVoters={() => setVotersOf(item.proof.id)} />
           ) : (
             <End height={height} empty={photoCount === 0} tab={tab} cityName={cityName}
@@ -388,6 +408,8 @@ function Slide({ proof, height, first, insetBottom, onProfile, onVoted, onShare,
             </View>
           </TouchableOpacity>
           {proof.answer && !proof.backHome && <AnswerChip answer={proof.answer} onDark />}
+          {/* A Hilads suggestion (a real place we picked): its photo credit. */}
+          {proof.suggestion && !!proof.credit && <PhotoCredit by={null} credit={proof.credit} url={proof.creditUrl} overlay />}
           {!!proof.caption && !captionRepeatsAnswer(proof.caption, proof.backHome ? null : proof.answer, i18n.language) && (
             <Text style={styles.caption} numberOfLines={3}>{proof.caption}</Text>
           )}

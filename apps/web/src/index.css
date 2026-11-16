@@ -15703,6 +15703,8 @@ body.has-app-promo-banner .page-header {
 .dc-viewer-actions { display: flex; align-items: center; justify-content: space-between; gap: var(--sp-12); }
 .dc-viewer-report { border: none; background: none; font: inherit; font-size: var(--fs-xs); color: #bbb; text-decoration: underline; cursor: pointer; }
 .dc-viewer-notice { font-size: var(--fs-xs); color: #fff; margin: 0; }
+/* The photo feed's notice (a report sent): a dark pill above the comment bar. */
+.dc-photos-notice { position: fixed; left: 50%; bottom: calc(96px + env(safe-area-inset-bottom)); transform: translateX(-50%); z-index: 1200; padding: var(--sp-8) var(--sp-16); border-radius: var(--r-chip); background: rgba(0,0,0,0.75); max-width: calc(100% - 32px); text-align: center; }
 .dc-me { background: var(--primary-tint); color: var(--primary-on-tint); border-radius: 14px; padding: var(--sp-12) var(--sp-12); display: flex; flex-direction: column; gap: var(--sp-2); font-size: var(--fs-sm); font-weight: 700; }
 .dc-row { display: flex; align-items: center; gap: var(--sp-12); min-height: 56px; padding: var(--sp-8) var(--sp-8); border: none; border-radius: 12px; background: transparent; font: inherit; text-align: left; cursor: pointer; color: var(--text); }
 .dc-row--mine { background: var(--primary-tint); }

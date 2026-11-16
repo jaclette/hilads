@@ -14,7 +14,7 @@ import { AnswerChip, captionRepeatsAnswer } from './compareShared'
 import { lastCountries, rankCountryProofs } from './countryOrder'
 import { flushSeen, markSeen } from './seen'
 import {
-  LocalPassBadge, RoleLabel, VotersSheet, getLastToday, personName, seedProofs, useCastVote, useDaily, useDc,
+  LocalPassBadge, ReportProofSheet, RoleLabel, VotersSheet, getLastToday, personName, seedProofs, useCastVote, useDaily, useDc,
 } from './dailyShared'
 import { SeasonalZone } from '../event/seasonal'
 import { CommentButton, commentsTargetOf } from './PhotoCommentsSheet'
@@ -46,7 +46,7 @@ export default function PhotosScreen(props) {
 // `list` (V6, the Ranks tab, a face-off): these photos, played in their order from `proofId`, no tabs.
 function PhotosScreenContent({ tab: initialTab = 'world', proofId = null, country = null, source = 'today', list = null, onBack }) {
   const { t } = useDc()
-  const { cityId, account, openDaily, openProfile } = useDaily()
+  const { cityId, account, openDaily, openProfile, needAccount } = useDaily()
   const today = getLastToday()
   const challenge = today?.challenge ?? null
   const city = today?.city ?? null
@@ -57,6 +57,9 @@ function PhotosScreenContent({ tab: initialTab = 'world', proofId = null, countr
   const [voters, setVoters] = useState(null)
   const [index, setIndex] = useState(0)
   const [composing, setComposing] = useState(false)
+  const [reporting, setReporting] = useState(null)   // the photo being reported (the flag)
+  const [notice, setNotice] = useState(null)
+  useEffect(() => { if (!notice) return undefined; const id = setTimeout(() => setNotice(null), 3000); return () => clearTimeout(id) }, [notice])
   const scroller = useRef(null)
   const seen = useRef(new Set())
   useBackLayer(voters !== null, () => setVoters(null))   // the list closes before the photos
@@ -109,12 +112,20 @@ function PhotosScreenContent({ tab: initialTab = 'world', proofId = null, countr
   }, [country, proofs])
 
   const photos = useMemo(() => {
-    if (list) return list.slice(Math.max(0, list.findIndex(p => p.id === proofId)))
+    if (list) return list
     if (story && tab === 'world') return [...(proofs ?? [])].sort((a, b) => (story.get(a.id) ?? 1e9) - (story.get(b.id) ?? 1e9))
     const rest = (proofs ?? []).filter(p => p.id !== pinned?.id)
     const lead = pinned && (tab === 'world' || pinned.city?.id === city?.id)
     return lead ? [pinned, ...rest] : rest
   }, [proofs, pinned, tab, city?.id, story, list, proofId])
+  // A handed list (a ranking, a day's or a profile's photos) opens on the tapped photo; the ones
+  // before it stay a scroll up.
+  const listStart = list ? Math.max(0, list.findIndex(p => p.id === proofId)) : 0
+  useEffect(() => {
+    if (!list || listStart === 0) return
+    const el = scroller.current
+    if (el) { el.scrollTop = listStart * el.clientHeight; setIndex(listStart) }
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
   // The inline comment bar's photo: the one on screen, once approved.
   const barProof = photos[index]?.status === 'approved' ? photos[index] : null
 
@@ -175,7 +186,8 @@ function PhotosScreenContent({ tab: initialTab = 'world', proofId = null, countr
         <div className="dc-photos-scroll" ref={scroller} onScroll={onScroll}>
           {photos.map((p, i) => (
             <Slide key={p.id} proof={p} hint={i === 0 && photos.length > 1}
-                   onProfile={(u) => openProfile(u.id, u.username)} onVoters={() => showVoters(p.id)} />
+                   onProfile={(u) => openProfile(u.id, u.username)} onVoters={() => showVoters(p.id)}
+                   onReport={p.isMine ? null : () => (account ? setReporting(p) : needAccount('view_profile'))} />
           ))}
           <End empty={photos.length === 0} tab={tab} cityName={city?.name ? shortCityName(city.name) : null}
                canPlay={!!challenge?.isActive && !today?.myProof} onClose={onBack} />
@@ -185,6 +197,8 @@ function PhotosScreenContent({ tab: initialTab = 'world', proofId = null, countr
       {/* The inline comment bar, for the photo on screen; typing: the feed holds still, the photo dims. */}
       {composing && <div className="scb-dim" aria-hidden="true" />}
       {barProof && <StoryCommentBar key={barProof.id} proof={barProof} onComposing={setComposing} />}
+      <ReportProofSheet proof={reporting} onClose={() => setReporting(null)} onNotice={setNotice} />
+      {notice && <p className="dc-viewer-notice dc-photos-notice" role="status">{notice}</p>}
 
       {/* On top: close, World / my city, and today's challenge as a pill. */}
       <div className="dc-photos-top">
@@ -216,7 +230,7 @@ function PhotosScreenContent({ tab: initialTab = 'world', proofId = null, countr
 }
 
 /** One photo, full screen: the photo (blurred around it), its player and answer, the heart and Share. */
-function Slide({ proof, hint, onProfile, onVoters }) {
+function Slide({ proof, hint, onProfile, onVoters, onReport }) {
   const { t, i18n } = useDc()
   const { state, canVote, voteLabel, error, press } = useCastVote(proof, 'photos')
   const [burst, setBurst] = useState(0)
@@ -291,6 +305,12 @@ function Slide({ proof, hint, onProfile, onVoters }) {
                   onClick={() => shareLink({ type: 'proof', path: `/p/${proof.id}`, text: t('worlds.tagline'), source: 'photos' })}>
             <span className="dc-photos-heart-btn"><Icon name="paper-plane-outline" size={24} /></span>
           </button>
+          {/* Report (someone else's photo): the reasons sheet. */}
+          {onReport && (
+            <button type="button" className="dc-photos-heart" aria-label={t('report.title')} onClick={onReport}>
+              <span className="dc-photos-heart-btn"><Icon name="flag-outline" size={22} /></span>
+            </button>
+          )}
         </div>
       </div>
     </section>

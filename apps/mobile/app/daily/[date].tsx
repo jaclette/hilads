@@ -16,8 +16,7 @@ import { track } from '@/services/analytics';
 import { deleteDailyProof, fetchDailyProof, fetchDailySheet, fetchDailyToday, fetchDailyTodayCountries } from '@/api/daily';
 import { formatCountdown, isFinalHours, useCountdown, useDailySheet, useHere, getLastToday } from '@/hooks/useDaily';
 import { SheetSkeleton } from '@/features/daily/SheetSkeleton';
-import { DailyProofViewer } from '@/features/daily/DailyProofViewer';
-import { commentsTargetOf, openPhotoComments } from '@/features/daily/PhotoCommentsSheet';
+import { openPhotoFeed } from '@/features/daily/openFeed';
 import { DailyStatusChip } from '@/features/daily/DailyStatusChip';
 import { formatAmount } from '@/features/daily/currency';
 import { compareCountryGroups, compareCountryProofs } from '@/features/daily/countryOrder';
@@ -109,8 +108,6 @@ function Challenge({ date, openProofId, source, pushType, shareProof, commentPar
   const { city, account, identity } = useApp();
   const guestId = account ? null : identity?.guestId ?? null;
   const here = useHere();   // "Play for [city]", my city block: where I am, not the browsed city
-  const [viewing, setViewing] = useState<DailyProof | null>(null);
-  const [autoShare, setAutoShare] = useState(shareProof);
   const [inviteShare, setInviteShare] = useState<ShareContent | null>(null);
   const [showOriginal, toggleOriginal] = useOriginal();
   // The sticky bar's measured height (safe area included): the scroll ends right above it.
@@ -161,13 +158,18 @@ function Challenge({ date, openProofId, source, pushType, shareProof, commentPar
     opened.current = true;
     const local = sheet.proofs.find(p => p.id === openProofId) ?? (sheet.myProof?.id === openProofId ? sheet.myProof : null);
     // ?comment=<id> (a comment push or bell row): its comments open over the photo, on that comment.
-    const show = (p: DailyProof) => {
-      setViewing(p);
-      if (commentParam !== undefined) setTimeout(() => openPhotoComments(commentsTargetOf(p, Number(commentParam) || null)), 450);
-    };
+    const show = (p: DailyProof) => openProof(p, source ?? 'challenge_link', {
+      share: shareProof, comment: commentParam !== undefined ? Number(commentParam) || null : undefined,
+    });
     if (local) { show(local); return; }
     fetchDailyProof(openProofId).then(show).catch(() => {});
   }, [openProofId, sheet]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // A photo of this day opens in the feed (the one photo viewer), the day's photos around it.
+  const openProof = (p: DailyProof, from: string, opts: { share?: boolean; comment?: number | null } = {}) => {
+    const all = sheet?.proofs ?? [];
+    openPhotoFeed(all.some(x => x.id === p.id) ? all : [p, ...all], p.id, from, { challenge, ...opts });
+  };
 
   const goProfile = useCallback((userId: string) => {
     if (!canAccessProfile(account)) { router.push('/auth-gate?reason=view_profile' as never); return; }
@@ -177,7 +179,7 @@ function Challenge({ date, openProofId, source, pushType, shareProof, commentPar
   const play = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
     track('challenge_cta_tapped', { played: !!myProof });
-    if (myProof) { setViewing(myProof); return; }
+    if (myProof) { openProof(myProof, 'challenge_mine'); return; }
     if (!account) { router.push('/auth-gate?reason=daily_proof&returnTo=%2Fdaily%2Fproof' as never); return; }
     router.push('/daily/proof' as never);
   };
@@ -316,7 +318,7 @@ function Challenge({ date, openProofId, source, pushType, shareProof, commentPar
           {/* My photo: its status, edit and delete. */}
           {myProof && (
             <View style={styles.cardRow}>
-              <TouchableOpacity onPress={() => setViewing(myProof)} accessibilityRole="button">
+              <TouchableOpacity onPress={() => openProof(myProof, 'challenge_mine')} accessibilityRole="button">
                 <Photo thumb={myProof.thumbUrl} full={myProof.photoUrl} hash={myProof.thumbHash} style={styles.thumb} contentFit="cover" />
               </TouchableOpacity>
               <View style={styles.flex}>
@@ -391,8 +393,6 @@ function Challenge({ date, openProofId, source, pushType, shareProof, commentPar
       )}
 
       <ShareSheet content={inviteShare} source="sheet_after_answer" onClose={() => setInviteShare(null)} />
-      <DailyProofViewer proof={viewing} challenge={challenge} autoShare={autoShare && viewing?.id === openProofId}
-                        onClose={() => { setViewing(null); setAutoShare(false); }} />
     </View>
   );
 }

@@ -10,7 +10,7 @@ import { thumbFallback } from '../../lib/thumbFallback'
 import { answerText, captionRepeatsAnswer } from './compareShared'
 import { compareCountryGroups, lastCountries, rankCountryProofs } from './countryOrder'
 import {
-  EarlyBadge, LocalPassBadge, ProofViewer, RoleLabel, SheetSkeleton, VoteButton, getLastToday, personName, seedProofs,
+  EarlyBadge, LocalPassBadge, RoleLabel, SheetSkeleton, VoteButton, getLastToday, personName, seedProofs,
   useDaily, useDc, useHere,
 } from './dailyShared'
 import { SeasonalZone } from '../event/seasonal'
@@ -43,7 +43,6 @@ function CountriesScreenContent({ date: dateParam = null, country = null, source
   const [data, setData] = useState(date ? null : lastCountries())
   const [proofs, setProofs] = useState(null)
   const [failed, setFailed] = useState(false)
-  const [viewing, setViewing] = useState(null)
 
   const load = async () => {
     setFailed(false)
@@ -78,7 +77,9 @@ function CountriesScreenContent({ date: dateParam = null, country = null, source
     requestAnimationFrame(() => document.getElementById(`country-${country.toUpperCase()}`)?.scrollIntoView({ block: 'start' }))
   }, [sections, country])
 
-  const open = (p) => (date ? setViewing(p) : openDaily('photos', { proofId: p.id, source: 'today_all' }))
+  // Today: Today's photos on it; a past day: that day's photos in the feed (the one photo viewer), in this order.
+  const open = (p) => (date ? openDaily('photos', { list: sections.flatMap(s => s.list), proofId: p.id, source: 'countries_past' })
+    : openDaily('photos', { proofId: p.id, source: 'today_all' }))
 
   return (
     <div className="full-page dc-page">
@@ -112,7 +113,6 @@ function CountriesScreenContent({ date: dateParam = null, country = null, source
           )
         })}
       </div>
-      <ProofViewer proof={viewing} onClose={() => setViewing(null)} />
     </div>
   )
 }

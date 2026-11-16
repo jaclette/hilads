@@ -7,10 +7,10 @@ import { Space, Border, FontSizes, Radius, type ThemeColors } from '@/constants'
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { Button, CityFlag, Photo } from '@/ui';
 import { fetchUserDaily } from '@/api/daily';
-import { DailyProofViewer } from './DailyProofViewer';
+import { openPhotoFeed } from './openFeed';
 import { RankMedal } from './RankMedal';
 import { shortCityName } from '@/i18n/cityName';
-import type { DailyProof, DailyUserStats } from '@/types';
+import type { DailyUserStats } from '@/types';
 
 /**
  * Daily Challenge stats on a profile (Challenges tab): current streak, best
@@ -24,7 +24,6 @@ export function DailyProfileStats({ userId, isMe }: { userId: string; isMe: bool
   const { t } = useTranslation('daily');
   const router = useRouter();
   const [stats, setStats] = useState<DailyUserStats | null>(null);
-  const [viewing, setViewing] = useState<DailyProof | null>(null);
 
   useEffect(() => {
     let alive = true;
@@ -83,7 +82,7 @@ export function DailyProfileStats({ userId, isMe }: { userId: string; isMe: bool
               <Text style={styles.subTitle}>{t('profile.bestProofs')}</Text>
               <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.thumbs}>
                 {stats.bestProofs.map(p => (
-                  <TouchableOpacity key={p.id} onPress={() => setViewing(p)} accessibilityRole="button" accessibilityLabel={p.caption ?? t('kicker')}>
+                  <TouchableOpacity key={p.id} onPress={() => openPhotoFeed(stats.bestProofs, p.id, 'profile')} accessibilityRole="button" accessibilityLabel={p.caption ?? t('kicker')}>
                     <Photo thumb={p.thumbUrl} full={p.photoUrl} hash={p.thumbHash} style={styles.thumb} contentFit="cover" />
                     {p.worldRank !== null && p.worldRank <= 3 && <RankMedal rank={p.worldRank} size={22} style={styles.medal} />}
                   </TouchableOpacity>
@@ -93,7 +92,6 @@ export function DailyProfileStats({ userId, isMe }: { userId: string; isMe: bool
           )}
         </>
       )}
-      <DailyProofViewer proof={viewing} onClose={() => setViewing(null)} />
     </View>
   );
 }

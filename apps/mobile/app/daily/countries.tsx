@@ -14,7 +14,7 @@ import { lastCountries } from '@/features/today/useTodayCountries';
 import { getLastToday, useHere } from '@/hooks/useDaily';
 import { track } from '@/services/analytics';
 import { Button, EmptyState, Screen, ScreenHeader } from '@/ui';
-import { DailyProofViewer } from '@/features/daily/DailyProofViewer';
+import { openPhotoFeed } from '@/features/daily/openFeed';
 import { FlagSticker } from '@/ui/joy';
 import type { DailyCountryGroup, DailyProof, DailyTodayCountries } from '@/types';
 import { SeasonalScope } from '@/features/event/SeasonalArt';
@@ -49,7 +49,6 @@ function CountriesScreenContent() {
   const lastToday = getLastToday();
   // A past day (the challenge screen of that day), else today.
   const date = dateParam && dateParam !== lastToday?.challenge?.date ? dateParam : null;
-  const [viewing, setViewing] = useState<DailyProof | null>(null);
   const list = useRef<SectionList<DailyProof[], Section>>(null);
   const { account, identity } = useApp();
   const guestId = account ? null : identity?.guestId ?? null;
@@ -92,9 +91,9 @@ function CountriesScreenContent() {
     });
   }, [data, proofs, here?.country]);
 
-  // Today: Today's photos on it; a past day: the photo on its own.
+  // Today: Today's photos on it; a past day: that day's photos in the feed (the one photo viewer), in this order.
   const open = (p: DailyProof) => {
-    if (date) { setViewing(p); return; }
+    if (date) { openPhotoFeed(sections.flatMap(sec => sec.data.flat()), p.id, 'countries_past'); return; }
     handOffProof(p);
     router.push(`/daily/photos?proof=${p.id}&source=today_all` as never);
   };
@@ -155,7 +154,6 @@ function CountriesScreenContent() {
           ListEmptyComponent={<EmptyState icon="camera-outline" title={t('beFirst')} body={t('beFirstSub')} />}
         />
       )}
-      <DailyProofViewer proof={viewing} challenge={null} onClose={() => setViewing(null)} />
     </Screen>
   );
 }
