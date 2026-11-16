@@ -599,7 +599,7 @@ export default function ChatTab() {
       } catch { /* fall through */ }
       router.push('/event/create');
     } else if (subtype === 'explore') {
-      router.push('/(tabs)/events');
+      router.navigate('/(tabs)/events');
     }
   }, [city, identity?.guestId, router]);
 

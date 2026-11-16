@@ -303,7 +303,7 @@ function Challenge({ date, openProofId, source, pushType, shareProof, commentPar
                 )}
                 {placesCount > 0 && (
                   <TouchableOpacity style={styles.tile} accessibilityRole="button" testID="challenge-places"
-                                    onPress={() => router.push(`/(tabs)/map?source=challenge${challenge.theme && isPlaceTheme(challenge.theme.key) ? `&theme=${challenge.theme.key}` : ''}` as never)}>
+                                    onPress={() => router.navigate(`/(tabs)/map?source=challenge${challenge.theme && isPlaceTheme(challenge.theme.key) ? `&theme=${challenge.theme.key}` : ''}` as never)}>
                     <Ionicons name="location-outline" size={18} color={colors.primaryText} />
                     <Text style={styles.tileValue}>{t('places', { count: placesCount })}</Text>
                     <Text style={styles.tileLink}>{t('map.see')} ›</Text>

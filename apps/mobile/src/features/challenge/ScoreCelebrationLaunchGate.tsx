@@ -89,7 +89,7 @@ export function ScoreCelebrationLaunchGate() {
   const openRanks = useCallback((to: RanksTarget) => {
     track('score_win_ranks', { tab: to.tab, scope: to.scope, period: to.period });
     close();
-    router.push(`/ranks?tab=${to.tab}&period=${to.period}&scope=${to.scope}` as never);
+    router.navigate(`/ranks?tab=${to.tab}&period=${to.period}&scope=${to.scope}` as never);
   }, [close, router]);
 
   const openShare = useCallback((win: ScoreWin, medal: ScoreWinMedal | null) => {

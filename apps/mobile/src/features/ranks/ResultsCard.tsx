@@ -60,7 +60,7 @@ export function ResultsCard() {
   return (
     <Animated.View entering={reduced ? undefined : FadeIn.duration(400)} exiting={reduced ? undefined : FadeOut.duration(200)} style={styles.results}>
       <Pressable style={styles.resultsBody} accessibilityRole="button" testID="results-card" accessibilityLabel={`${line}. ${t('ranks.results.see')}`}
-                 onPress={() => { done(); router.push('/ranks?tab=photos&period=yesterday&focus=me' as never); }}>
+                 onPress={() => { done(); router.navigate('/ranks?tab=photos&period=yesterday&focus=me' as never); }}>
         <Text style={styles.resultsTitle} numberOfLines={2}>
           {line}<Text style={styles.resultsSee}>{'  '}{t('ranks.results.see')}</Text>
         </Text>

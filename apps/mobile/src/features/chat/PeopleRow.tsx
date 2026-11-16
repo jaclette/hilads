@@ -34,7 +34,7 @@ export function PeopleRow({ cityId, onArrivals }: { cityId: string; onArrivals: 
   const chips: ReactNode[] = [];
   if (counts.hiNow !== null) {
     chips.push(
-      <TouchableOpacity key="hinow" style={[styles.chip, styles.accent]} onPress={() => router.push('/(tabs)/events' as never)} accessibilityRole="button"
+      <TouchableOpacity key="hinow" style={[styles.chip, styles.accent]} onPress={() => router.navigate('/(tabs)/events' as never)} accessibilityRole="button"
                         accessibilityLabel={t('people.hiNowA11y', { count: counts.hiNow })}>
         <Ionicons name="hand-left-outline" size={17} color={colors.primaryOnTint} />
         <Text style={styles.accentText}>{t('people.hiNow')}</Text>
@@ -65,7 +65,7 @@ export function PeopleRow({ cityId, onArrivals }: { cityId: string; onArrivals: 
   }
   if (counts.nearby !== null) {
     chips.push(
-      <TouchableOpacity key="nearby" style={styles.chip} onPress={() => router.push('/(tabs)/here' as never)} accessibilityRole="button">
+      <TouchableOpacity key="nearby" style={styles.chip} onPress={() => router.navigate('/(tabs)/here' as never)} accessibilityRole="button">
         <View style={styles.dot} />
         <Text style={styles.text}>{t('people.nearby', { count: counts.nearby })}</Text>
       </TouchableOpacity>,

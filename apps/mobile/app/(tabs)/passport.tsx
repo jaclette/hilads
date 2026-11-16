@@ -177,7 +177,7 @@ export default function PassportScreen() {
           </Card>
           {/* V6: opens Ranks › Players › This week. */}
           <TouchableOpacity style={styles.cardTap} activeOpacity={0.8} accessibilityRole="button" testID="passport-week-rank"
-                            onPress={() => router.push(`/ranks?tab=players&period=week&scope=${cityKey ? 'city' : 'world'}` as never)}>
+                            onPress={() => router.navigate(`/ranks?tab=players&period=week&scope=${cityKey ? 'city' : 'world'}` as never)}>
             <Card style={[styles.card, styles.cardFill]}>
               <View style={styles.cardHead}>
                 <Ionicons name="trophy-outline" size={18} color={colors.text} />
@@ -251,7 +251,7 @@ export default function PassportScreen() {
           <ListRow divider title={t('passport.mostLocalAllTime')}
                    leading={counts.alltime && counts.alltime <= 3 ? <RankMedal rank={counts.alltime} size={26} /> : undefined}
                    value={counts.alltime ? (cityName ? t('passport.allTimeRank', { rank: counts.alltime, city: cityName }) : `#${counts.alltime}`) : ''}
-                   onPress={() => router.push(`/ranks?tab=players&period=alltime&scope=${cityKey ? 'city' : 'world'}` as never)} />
+                   onPress={() => router.navigate(`/ranks?tab=players&period=alltime&scope=${cityKey ? 'city' : 'world'}` as never)} />
         </RowGroup>
 
         <Button icon="share-social-outline" label={t('passport.share')} onPress={sharePassport} testID="passport-share" />

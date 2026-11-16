@@ -620,7 +620,7 @@ export default function ChallengeChatScreen() {
             t(`accept.err.${err.code}.body`),
             [
               { text: t('cancel', { ns: 'common' }), style: 'cancel' },
-              { text: t('accept.err.openSettings'), onPress: () => router.push('/(tabs)/me' as never) },
+              { text: t('accept.err.openSettings'), onPress: () => router.navigate('/(tabs)/me' as never) },
             ],
           );
         } else {

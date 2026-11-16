@@ -325,7 +325,7 @@ function ProofCard({ message, reactions, time, longPress }: {
           : <Photo thumb={p.thumbUrl} full={p.photoUrl} hash={p.thumbHash} style={styles.photo} contentFit="cover" transition={150} />}
         {!!p.caption && <Text style={styles.caption}>{p.caption}</Text>}
         {!!p.spot && (
-          <TouchableOpacity style={styles.spot} onPress={() => router.push(`/(tabs)/map?spot=${p.spot!.id}&source=chat` as never)} accessibilityRole="button" hitSlop={{ top: 13, bottom: 13, left: 6, right: 6 }}>
+          <TouchableOpacity style={styles.spot} onPress={() => router.navigate(`/(tabs)/map?spot=${p.spot!.id}&source=chat` as never)} accessibilityRole="button" hitSlop={{ top: 13, bottom: 13, left: 6, right: 6 }}>
             <Ionicons name="location-outline" size={14} color={colors.primaryText} />
             <Text style={styles.spotText} numberOfLines={1}>{p.spot.name}</Text>
           </TouchableOpacity>
