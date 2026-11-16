@@ -6479,7 +6479,7 @@ export default function App() {
                   <div className="events-empty-state">
                     <p className="events-empty-title">{t('feed.loadError')}</p>
                     <p className="events-empty-sub">{t('feed.loadErrorSub', { city })}</p>
-                    <button className="events-empty-cta" onClick={openCreate}>{t('feed.createEvent')}</button>
+                    <button className="events-empty-cta btn-primary" onClick={openCreate}>{t('feed.createEvent')}</button>
                   </div>
                 )
               }
@@ -6563,7 +6563,7 @@ export default function App() {
                   <div className="events-empty-state">
                     <p className="events-empty-title">{t('feed.noEvents')}</p>
                     <p className="events-empty-sub">{t('feed.noEventsSub', { city })}</p>
-                    <button className="events-empty-cta" onClick={openCreate}>{t('feed.createEvent')}</button>
+                    <button className="events-empty-cta btn-primary" onClick={openCreate}>{t('feed.createEvent')}</button>
                   </div>
                 )
               }
@@ -6593,13 +6593,13 @@ export default function App() {
               hangout) + "Hi later" (planned event). "See what's coming" below. */}
           <div className="now-actions-bar now-actions-bar--hilocal">
             <button
-              className="hilocal-cta hilocal-cta--now"
+              className="hilocal-cta hilocal-cta--now btn-primary"
               onClick={() => { setShowEventDrawer(false); openCreateHangout() }}
             >
               <Icon name="flash-outline" size={18} /> {t('feed.hiNow')}
             </button>
             <button
-              className="hilocal-cta hilocal-cta--later"
+              className="hilocal-cta hilocal-cta--later btn-secondary"
               onClick={() => { setShowEventDrawer(false); tryOpenCreateEvent({ fromDrawer: true }) }}
             >
               <Icon name="calendar-outline" size={18} /> {t('feed.hiLater')}
@@ -7140,7 +7140,7 @@ export default function App() {
                   />
                 </div>
                 <button
-                  className="modal-submit"
+                  className="modal-submit btn-primary"
                   onClick={() => {
                     const trimmed = profileNickInput.trim()
                     if (trimmed) {
@@ -7160,11 +7160,11 @@ export default function App() {
               <div className="me-card">
                 <div className="me-upgrade">
                   <p className="me-upgrade-hint">{t('nickname.upgradeHint')}</p>
-                  <button className="me-upgrade-btn" onClick={() => { setShowAuthScreenTab('signup'); setShowAuthScreen(true) }}>
+                  <button className="me-upgrade-btn btn-primary" onClick={() => { setShowAuthScreenTab('signup'); setShowAuthScreen(true) }}>
                     {t('guestGate.createAccount')}
                   </button>
                   <p className="me-upgrade-signin-hint">{t('nickname.haveAccount')}</p>
-                  <button className="me-upgrade-btn me-upgrade-btn--secondary" onClick={() => { setShowAuthScreenTab('login'); setShowAuthScreen(true) }}>
+                  <button className="me-upgrade-btn btn-secondary" onClick={() => { setShowAuthScreenTab('login'); setShowAuthScreen(true) }}>
                     {t('guestGate.signIn')}
                   </button>
                 </div>

@@ -534,7 +534,7 @@ export default function TopicChatPage({ topic, guest, nickname, account, onBack,
             {joinState === 'requested' ? t('gated.pending') : t('gated.prompt')}
           </span>
           {joinState !== 'requested' && (
-            <button className="topic-join-btn" onClick={handleRequestToJoin}>{t('gated.requestBtn')}</button>
+            <button className="topic-join-btn btn-primary" onClick={handleRequestToJoin}>{t('gated.requestBtn')}</button>
           )}
         </div>
       ) : (

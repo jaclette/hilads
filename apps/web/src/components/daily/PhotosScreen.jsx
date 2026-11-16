@@ -167,7 +167,7 @@ function PhotosScreenContent({ tab: initialTab = 'world', proofId = null, countr
           {failed ? (
             <>
               <p className="dc-photos-end-body">{t('loadFailed')}</p>
-              <button type="button" className="today-cta" onClick={load}>{t('place.retry')}</button>
+              <button type="button" className="today-cta btn-primary" onClick={load}>{t('place.retry')}</button>
             </>
           ) : <span className="dc-photos-spinner" aria-hidden="true" />}
         </div>
@@ -307,7 +307,7 @@ function End({ empty, tab, cityName, canPlay, onClose }) {
       <p className="dc-photos-end-title">{title}</p>
       <p className="dc-photos-end-body">{canPlay ? t('feed.endPlay') : t('feed.endBody')}</p>
       {canPlay && (
-        <button type="button" className="today-cta" onClick={() => { track('web_today_take_clicked', { surface: 'photos' }); openAppModal({ action: 'play', surface: 'photos' }) }}>
+        <button type="button" className="today-cta btn-primary" onClick={() => { track('web_today_take_clicked', { surface: 'photos' }); openAppModal({ action: 'play', surface: 'photos' }) }}>
           <Icon name="camera-outline" size={20} />{t('ctaAnswerNoCity')}
         </button>
       )}

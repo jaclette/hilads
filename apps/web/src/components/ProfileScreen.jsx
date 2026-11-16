@@ -471,7 +471,7 @@ export default function ProfileScreen({ account, onSave, onBack, onSignOut, onDe
       <div className="profile-sticky-cta">
         {error && <p className="profile-sticky-error">{error}</p>}
         <button
-          className="modal-submit profile-sticky-save"
+          className="modal-submit btn-primary"
           onClick={handleSave}
           disabled={saving || uploading || !username.trim()}
         >

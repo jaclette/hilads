@@ -613,45 +613,11 @@ html, body, #root {
 
 .ob-btn {
   width: 100%;
-  padding: 0.9375rem;
-  background: linear-gradient(135deg, var(--accent), var(--accent2));
-  color: #fff;
-  border: none;
-  border-radius: 14px;
-  font-size: 1rem;
-  font-weight: 700;
-  cursor: pointer;
   margin-top: 0.25rem;
-  transition: opacity 0.15s, transform 0.12s, box-shadow 0.2s;
-  box-shadow: 0 4px 20px rgba(194, 74, 56, 0.25);
-}
-
-.ob-btn:hover {
-  box-shadow: 0 6px 28px rgba(194, 74, 56, 0.45);
-  transform: translateY(-1px);
-}
-
-.ob-btn:active {
-  transform: scale(0.98) translateY(0);
-  opacity: 0.9;
-  box-shadow: 0 2px 10px rgba(194, 74, 56, 0.2);
 }
 
 /* Demoted variant - the web-app "Join" action is now secondary to the store
    download. Outline, not the dominant orange gradient. */
-.ob-btn--secondary {
-  background: transparent;
-  border: 1px solid var(--accent);
-  color: var(--accent);
-  box-shadow: none;
-  padding: 0.75rem;
-}
-.ob-btn--secondary:hover {
-  background: rgba(194, 74, 56, 0.1);
-  box-shadow: none;
-  transform: none;
-}
-.ob-btn--secondary:active { box-shadow: none; }
 
 .ob-hint {
   text-align: center;
@@ -922,7 +888,7 @@ html, body, #root {
 
 /* Primary toggle (My city / World) uses the orange gradient on active. */
 .leaderboard-seg--primary .leaderboard-seg-item.is-active {
-  background: linear-gradient(135deg, #FF7A3C, #C24A38);
+  background: var(--primary);
   color: #fff;
   font-weight: 800;
 }
@@ -1117,31 +1083,8 @@ html, body, #root {
    gradient pill nudges the viewer straight into the create-challenge
    flow. Branded primary gradient (#C24A38 → #B87228). */
 .leaderboard-unranked-cta {
-  display:           flex;
-  align-items:       center;
-  justify-content:   center;
-  gap:               0.625rem;
   margin:            0.625rem 0.875rem;
-  padding:           0.875rem 1.125rem;
   width:             calc(100% - 28px);
-  border:            none;
-  border-radius:     999px;
-  background:        linear-gradient(135deg, #C24A38, #B87228);
-  color:             #fff;
-  font-size: 0.9375rem;
-  font-weight:       800;
-  letter-spacing:    -0.2px;
-  cursor:            pointer;
-  box-shadow:        0 4px 14px rgba(194, 74, 56, 0.35);
-  transition:        transform 120ms ease, box-shadow 120ms ease, opacity 120ms ease;
-}
-.leaderboard-unranked-cta:hover {
-  transform:  translateY(-1px);
-  box-shadow: 0 6px 18px rgba(194, 74, 56, 0.45);
-}
-.leaderboard-unranked-cta:active {
-  transform:  translateY(0);
-  opacity:    0.92;
 }
 .leaderboard-unranked-cta-arrow {
   font-size: 1.125rem;
@@ -2008,7 +1951,6 @@ html, body, #root {
   text-overflow: ellipsis;
   max-width: 100%;
 }
-
 
 .you-badge {
   font-size: 0.78rem;
@@ -2902,9 +2844,6 @@ html, body, #root {
   flex-direction: column;
   gap: 0.125rem;
 }
-.profile-sticky-save {
-  /* inherits modal-submit full-width orange gradient */
-}
 .profile-sticky-bottom-row {
   display: flex;
   justify-content: space-between;
@@ -3034,17 +2973,8 @@ html, body, #root {
   margin-bottom: 0.75rem;
 }
 .me-upgrade-btn {
-  background: #FF7A3C;
-  color: #fff;
-  border: none;
-  border-radius: 10px;
-  padding: 0.75rem 1.75rem;
-  font-size: 0.95rem;
-  font-weight: 600;
-  cursor: pointer;
   width: 100%;
 }
-.me-upgrade-btn:active { transform: scale(0.97); }
 
 .me-upgrade-signin-hint {
   font-size: 0.78rem;
@@ -3052,13 +2982,6 @@ html, body, #root {
   margin: 0.875rem 0 0.5rem;
   text-align: center;
 }
-
-.me-upgrade-btn--secondary {
-  background: transparent;
-  color: var(--text);
-  border: 1px solid var(--border);
-}
-.me-upgrade-btn--secondary:active { transform: scale(0.97); }
 
 /* ── Auth screen ───────────────────────────────────────── */
 .auth-tabs {
@@ -4502,21 +4425,7 @@ html, body, #root {
 
 .loc-picker-confirm {
   width: 100%;
-  padding: 1rem;
-  background: linear-gradient(135deg, var(--accent), var(--accent2));
-  color: #fff;
-  border: none;
-  border-radius: 14px;
-  font-size: 1rem;
-  font-weight: 700;
-  cursor: pointer;
-  box-shadow: 0 6px 18px rgba(194, 74, 56, 0.3);
-  transition: opacity 0.15s, transform 0.1s;
 }
-
-.loc-picker-confirm:hover:not(:disabled) { opacity: 0.9; }
-.loc-picker-confirm:active:not(:disabled) { transform: scale(0.98); }
-.loc-picker-confirm:disabled { opacity: 0.4; cursor: default; }
 
 .loc-picker-cancel {
   width: 100%;
@@ -4540,22 +4449,17 @@ html, body, #root {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, var(--accent), var(--accent2));
-  color: #fff;
+  background: var(--cta);
+  color: var(--on-cta);
   border: none;
   border-radius: 50%;
   cursor: pointer;
-  box-shadow: 0 6px 18px rgba(194, 74, 56, 0.32);
   transition: opacity 0.15s, transform 0.1s, box-shadow 0.15s;
 }
 
 .send-btn svg {
   width: 20px;
   height: 20px;
-}
-
-.send-btn:not(:disabled):hover {
-  box-shadow: 0 10px 24px rgba(194, 74, 56, 0.4);
 }
 
 .send-btn:not(:disabled):active {
@@ -5377,7 +5281,6 @@ html, body, #root {
   border: 2px solid var(--surface);
 }
 
-
 /* ── People drawer ────────────────────────────────────── */
 
 .people-drawer-row {
@@ -6127,23 +6030,6 @@ img.pub-profile-avatar {
   cursor: default;
 }
 
-.pub-profile-dm-btn {
-  padding: 0.8125rem 0.625rem;
-  border-radius: 12px;
-  background: var(--accent);
-  color: #fff;
-  font-size: 0.9rem;
-  font-weight: 700;
-  border: none;
-  cursor: pointer;
-  transition: opacity 0.15s;
-}
-
-.pub-profile-dm-btn:disabled {
-  opacity: 0.5;
-  cursor: default;
-}
-
 /* ── Friends section on public profile ─────────────── */
 
 .pub-profile-friends {
@@ -6475,17 +6361,7 @@ img.pub-profile-avatar {
 }
 .limit-primary-btn {
   width: 100%;
-  background: var(--accent);
-  color: #fff;
-  border: 0;
-  border-radius: 14px;
-  padding: 1rem 1.25rem;
-  font-size: 1rem;
-  font-weight: 700;
-  letter-spacing: -0.01em;
-  cursor: pointer;
 }
-.limit-primary-btn:active { opacity: 0.85; }
 
 /* Legend info modal - minimal, dismissable */
 .limit-legend-modal {
@@ -7024,29 +6900,9 @@ img.pub-profile-avatar {
 .hilocal-cta-row > .hilocal-cta { flex: 1 1 0; min-width: 0; }
 .hilocal-cta {
   width: 100%;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.375rem;
-  padding: 0.875rem 0.75rem;
-  border-radius: 14px;
-  font-size: 0.95rem;
-  font-weight: 700;
-  line-height: 1.2;
   white-space: nowrap;
   text-align: center;
-  cursor: pointer;
-  border: 1px solid;
-  background: transparent;
-  transition: filter .15s;
 }
-.hilocal-cta:active { filter: brightness(1.15); }
-.hilocal-cta--now {
-  color: var(--hot-text);
-  border-color: rgba(255, 122, 60, 0.45);
-  background: rgba(255, 122, 60, 0.10);
-}
-.hilocal-cta--later,
 .hilocal-cta--coming {
   color: var(--text);
   border-color: var(--separator);
@@ -8551,28 +8407,7 @@ img.pub-profile-avatar {
 }
 
 .events-empty-cta {
-  padding: 0.8125rem 1.875rem;
-  background: #FF7A3C;
-  color: #fff;
-  border: none;
-  border-radius: 24px;
-  font-size: 0.95rem;
-  font-weight: 700;
-  cursor: pointer;
-  box-shadow: 0 4px 18px rgba(255, 122, 60, 0.35);
-  transition: opacity 0.15s, transform 0.12s;
-  -webkit-tap-highlight-color: transparent;
   margin-top: 0.5rem;
-}
-
-.events-empty-cta:hover {
-  opacity: 0.9;
-  transform: translateY(-1px);
-}
-
-.events-empty-cta:active {
-  transform: scale(0.97);
-  opacity: 0.88;
 }
 
 /* ── Shared zero-challenge empty state (EmptyCityChallenges) ───────────
@@ -8626,13 +8461,12 @@ img.pub-profile-avatar {
   padding: 0.8125rem 1.25rem;
   border: none;
   border-radius: 14px;
-  background: linear-gradient(135deg, #FF7A3C, #C24A38);
-  color: #fff;
+  background: var(--cta);
+  color: var(--on-cta);
   font-size: 0.95rem;
   font-weight: 800;
   letter-spacing: 0.2px;
   cursor: pointer;
-  box-shadow: 0 4px 18px rgba(255, 122, 60, 0.35);
   transition: opacity 0.15s, transform 0.12s;
   -webkit-tap-highlight-color: transparent;
 }
@@ -8661,21 +8495,8 @@ img.pub-profile-avatar {
 .amc-stores { align-self: stretch; display: flex; gap: 0.5rem; margin-top: 0.25rem; }
 .amc-store {
   flex: 1;
-  min-height: 48px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 14px;
-  background: linear-gradient(135deg, #FF7A3C, #C24A38);
-  color: #fff;
-  font-size: 0.95rem;
-  font-weight: 800;
-  text-decoration: none;
-  -webkit-tap-highlight-color: transparent;
 }
-.amc-store:active { transform: scale(0.98); }
-.amc-map { align-self: stretch; flex: none; border: none; cursor: pointer; margin-top: 0.25rem; }
-.amc-store--ghost { background: var(--surface); color: var(--text); border: 1.5px solid var(--border); }
+.amc-map { align-self: stretch; flex: none; margin-top: 0.25rem; }
 
 .challenge-inspiration-block {
   align-self: stretch;
@@ -9146,33 +8967,6 @@ img.pub-profile-avatar {
 
 .cef-submit {
   width: 100%;
-  padding: 0.9375rem;
-  background: linear-gradient(135deg, #FF7A3C, #B87228);
-  color: #fff;
-  border: none;
-  border-radius: 14px;
-  font-size: 1rem;
-  font-weight: 700;
-  cursor: pointer;
-  transition: opacity 0.15s, transform 0.12s;
-  box-shadow: 0 4px 20px rgba(255, 122, 60, 0.25);
-}
-
-.cef-submit:hover {
-  opacity: 0.92;
-  transform: translateY(-1px);
-}
-
-.cef-submit:active {
-  transform: scale(0.98);
-  opacity: 0.88;
-}
-
-.cef-submit:disabled {
-  opacity: 0.35;
-  cursor: default;
-  transform: none;
-  box-shadow: none;
 }
 
 /* ── Delete event button (edit mode only) ─────────────── */
@@ -9890,10 +9684,6 @@ img.pub-profile-avatar {
 }
 .join-req-resolved { font-size: 0.78rem; color: #4ade80; font-weight: 600; }
 .join-req-resolved.muted { color: var(--muted2); }
-.topic-join-btn {
-  align-self: center; margin: 0.5rem auto; padding: 0.5rem 1.125rem; border: none; border-radius: 999px;
-  background: var(--accent); color: #fff; font-weight: 700; font-size: 0.85rem; cursor: pointer; font-family: inherit;
-}
 .topic-join-btn.done { background: var(--overlay); color: var(--muted); }
 
 /* Members-only gate panel - shown to non-members (pending requesters). */
@@ -9963,21 +9753,7 @@ img.pub-profile-avatar {
 
 .modal-submit {
   width: 100%;
-  padding: 0.8125rem;
-  background: linear-gradient(135deg, var(--accent), var(--accent2));
-  color: #fff;
-  border: none;
-  border-radius: 12px;
-  font-size: 0.95rem;
-  font-weight: 700;
-  cursor: pointer;
-  transition: opacity 0.15s;
   margin-top: 0.25rem;
-}
-
-.modal-submit:disabled {
-  opacity: 0.45;
-  cursor: default;
 }
 
 /* ── Header icon cluster (bell + messages) ────────────────────────────────── */
@@ -10973,9 +10749,8 @@ img.dm-header-avatar {
   border-radius: 50%;
   border: none;
   cursor: pointer;
-  background: linear-gradient(135deg, #C24A38 0%, #B87228 100%);
-  box-shadow: 0 0 12px rgba(194, 74, 56, 0.38), 0 3px 10px rgba(0, 0, 0, 0.3);
-  color: #fff;            /* SVG currentColor resolves to white on the gradient */
+  background: var(--cta);
+  color: var(--on-cta);
   font-size: 1.125rem;
   line-height: 1;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
@@ -11184,7 +10959,6 @@ img.dm-header-avatar {
   margin-top: 0.25rem;
   width: 100%;
 }
-
 
 /* ═══════════════════════════════════════════════════════════════════════════
    LANDING PAGE - lp-*
@@ -12093,7 +11867,6 @@ img.dm-header-avatar {
   letter-spacing: 0.01em;
 }
 
-
 /* ── Join card auth section (jc-auth-*) ──────────────────────────────────── */
 
 .jc-auth {
@@ -12856,16 +12629,6 @@ body.has-app-promo-banner .page-header {
 
 .app-promo-interstitial-cta {
   width: 100%;
-  background: var(--accent);
-  color: #fff;
-  border: none;
-  border-radius: 12px;
-  padding: 0.875rem;
-  font-size: 1rem;
-  font-weight: 800;
-  cursor: pointer;
-  font-family: inherit;
-  letter-spacing: 0.01em;
 }
 
 .app-promo-interstitial-skip {
@@ -13132,17 +12895,7 @@ body.has-app-promo-banner .page-header {
 .account-welcome-cta {
   margin-top: 0.5rem;
   width: 100%;
-  padding: 0.9375rem;
-  border: none;
-  border-radius: 14px;
-  background: var(--accent, #FF7A3C);
-  color: #fff;
-  font-size: 1rem;
-  font-weight: 700;
-  cursor: pointer;
-  box-shadow: 0 6px 20px rgba(255, 122, 60, 0.3);
 }
-.account-welcome-cta:active { transform: scale(0.98); }
 
 /* ─────────────────────────────────────────────────────────────────────────
    Challenge chat page - Phase 10. Mirrors topic-chat-page layout (header,
@@ -15783,20 +15536,7 @@ body.has-app-promo-banner .page-header {
 .sl-cta-big {
   position: relative;
   overflow: hidden;                 /* clip the shimmer overlay to the rounded rect */
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
   text-align: center;
-  border: none;
-  cursor: pointer;
-  color: #fff;
-  font-weight: 800;
-  font-size: 1rem;
-  line-height: 1.2;
-  border-radius: 16px;
-  background: linear-gradient(135deg, var(--accent), var(--accent2));
-  box-shadow: 0 8px 30px rgba(194, 74, 56, 0.35);
-  -webkit-tap-highlight-color: transparent;
   /* Layer 2 - breathing pulse (2.5s, very subtle). GPU: transform only. */
   transform-origin: center;
   animation: sl-cta-breathe 2.5s ease-in-out infinite;
@@ -15849,14 +15589,11 @@ body.has-app-promo-banner .page-header {
 }
 .sl-cta {
   width: 100%;
-  padding: 16px 20px;
 }
 .sl-cta-big {
-  padding: 18px 26px;
   max-width: 460px;
   width: 100%;
 }
-.sl-cta:active, .sl-cta-big:active { filter: brightness(1.12); }
 
 /* S5: centered button + reassurance group (mirrors the sticky dock layout). */
 .sl-cta-group {
@@ -16171,8 +15908,6 @@ body.has-app-promo-banner .page-header {
 .wm-sheet-info { display: flex; flex-direction: column; gap: 0.2rem; min-width: 0; }
 .wm-sheet-title { font-size: 1.05rem; font-weight: 800; color: var(--text); margin: 0; }
 .wm-sheet-meta { font-size: 0.8rem; color: var(--muted2); }
-.wm-sheet-cta, .wm-btn { min-height: 50px; display: flex; align-items: center; justify-content: center; gap: 0.375rem; border: none; border-radius: 14px; background: linear-gradient(135deg, #FF7A3C, #C24A38); color: #fff; font-size: 0.95rem; font-weight: 800; text-decoration: none; cursor: pointer; }
-.wm-btn--ghost { background: var(--surface); color: var(--text); border: 1.5px solid var(--border); }
 .wm-spot-name { font-size: 1.5rem; font-weight: 800; color: var(--text); margin: 0.25rem 0 0.25rem; letter-spacing: -0.3px; }
 .wm-spot-meta { font-size: 0.88rem; color: var(--muted2); margin: 0.2rem 0; }
 .wm-spot-rank { font-size: 0.92rem; font-weight: 700; color: var(--accent2); margin: 0.375rem 0; }
@@ -16730,7 +16465,7 @@ html.kb-open .quick-row { display: none; }
 .su-mark { width: 52px; height: 52px; }
 .su-title { margin: 0; font-size: 20px; font-weight: 800; color: var(--text); letter-spacing: -0.3px; }
 .su-sub { margin-bottom: 4px; }
-.su-secondary { width: 100%; min-height: 54px; border-radius: 16px; border: 1.5px solid var(--line); background: var(--surface); font: inherit; font-size: 1rem; font-weight: 700; color: var(--text); cursor: pointer; }
+.su-secondary { width: 100%; }
 .su-notnow { align-self: center; min-height: 44px; color: var(--muted2); }
 .brand-line { margin: 2px 0 0; font-size: 13px; line-height: 18px; font-weight: 500; color: var(--muted2);
               white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -16827,8 +16562,6 @@ html.kb-open .quick-row { display: none; }
 .leaderboard-points { font-size: 14px; color: var(--muted2); }
 .leaderboard-city-flag { background: var(--surface2); }
 .leaderboard-pinned { border-top: 1px solid var(--line); background: var(--bg); }
-.leaderboard-unranked-cta { min-height: 48px; border-radius: 16px; background: var(--primary); box-shadow: none; font-size: 15px; font-weight: 700; }
-.leaderboard-unranked-cta:hover { transform: none; box-shadow: none; }
 
 /* Secondary pill (Share my rank, Share in my city): the app's secondary Button, small. */
 .share-to-city-pill { min-height: 40px; padding: 0 14px; border: 1.5px solid var(--line); background: var(--surface); color: var(--text); font-size: 14px; font-weight: 700; }
@@ -16869,8 +16602,7 @@ html.kb-open .quick-row { display: none; }
 .pub-profile-event-row, .pub-profile-friend-row, .pub-profile-vibe-row { border-color: var(--line); }
 /* Bottom bar: Message = primary Button, Friend = secondary, report = round icon button. */
 .pub-profile-sticky-bar { gap: 10px; padding: 10px 16px calc(10px + env(safe-area-inset-bottom)); background: var(--bg); border-top: 1px solid var(--line); box-shadow: none; }
-.pub-profile-dm-btn, .pub-profile-friend-btn, .pub-profile-unfriend-btn, .pub-profile-unfriend-cancel { min-height: 48px; border-radius: 16px; font-size: 15px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; gap: 8px; box-shadow: none; }
-.pub-profile-dm-btn { background: var(--primary); color: #fff; border: none; }
+.pub-profile-friend-btn, .pub-profile-unfriend-btn, .pub-profile-unfriend-cancel { min-height: 48px; border-radius: 16px; font-size: 15px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; gap: 8px; box-shadow: none; }
 .pub-profile-friend-btn, .pub-profile-friend-btn--active, .pub-profile-unfriend-cancel { background: var(--surface); color: var(--text); border: 1.5px solid var(--line); }
 .pub-profile-unfriend-btn { background: var(--surface); color: #C0392B; border: 1.5px solid #C0392B; }
 .pub-profile-report-btn { border-radius: 50%; border: 1.5px solid var(--line); background: var(--surface); color: var(--muted2); opacity: 1; }
@@ -16934,7 +16666,7 @@ html.kb-open .quick-row { display: none; }
 .topic-members-see { color: var(--primary-text); }
 .topic-gated-title { font-size: 16px; font-weight: 800; }
 .topic-gated-sub { font-size: 14px; color: var(--muted2); }
-.topic-join-btn { align-self: stretch; margin: 8px 0 0; min-height: 48px; border-radius: 16px; background: var(--primary); font-size: 15px; font-weight: 700; }
+.topic-join-btn { align-self: stretch; margin: 8px 0 0; }
 .topic-owner-btn { min-height: 40px; padding: 0 14px; border: 1.5px solid var(--line); background: var(--surface); color: var(--text); }
 .topic-owner-btn--danger { color: #C0392B; border-color: var(--line); background: var(--surface); }
 .profile-host-tag { border: none; background: var(--primary-tint); color: var(--primary-on-tint); }
@@ -16951,8 +16683,6 @@ html.kb-open .quick-row { display: none; }
 .cef-date-chip, .cef-date-input, .cef-recur-btn, .cef-day-btn { min-height: 40px; border-radius: 999px; border: 1.5px solid var(--line); background: var(--surface); color: var(--text); font-size: 14px; font-weight: 600; color-scheme: light; }
 [data-theme="dark"] .cef-date-input { color-scheme: dark; }
 .cef-date-chip.selected, .cef-date-input.selected, .cef-recur-btn.selected, .cef-day-btn.selected { border-color: var(--primary); background: var(--primary); color: #fff; }
-.cef-submit, .cef-submit:hover { min-height: 52px; padding: 0 16px; border-radius: 16px; background: var(--primary); box-shadow: none; transform: none; font-size: 16px; font-weight: 700; }
-.cef-submit:disabled { opacity: 0.45; }
 .topic-geohint, [data-theme="light"] .topic-geohint { border: 1.5px solid var(--line); border-radius: 16px; background: var(--surface); color: var(--text); font-size: 14px; font-weight: 600; text-align: left; }
 .cef-cat-btn.selected { color: var(--primary-on-tint); box-shadow: none; }
 /* Hi now list (the app's stripped events screen): cards, two create buttons. */
@@ -16960,9 +16690,6 @@ html.kb-open .quick-row { display: none; }
 .city-row, .city-row:hover { border: 1.5px solid var(--line); border-radius: 20px; background: var(--surface); box-shadow: none; }
 .event-row-card { padding: 12px 14px; gap: 4px; margin-bottom: 8px; }
 .now-actions-bar--hilocal { gap: 8px; padding: 10px 16px 14px; background: var(--bg); border-top: 1px solid var(--line); }
-.hilocal-cta { min-height: 48px; border-radius: 16px; font-size: 15px; gap: 8px; }
-.hilocal-cta--now { border: none; background: var(--primary); color: #fff; }
-.hilocal-cta--later { border: 1.5px solid var(--line); background: var(--surface); color: var(--text); }
 /* Empty states (the app's EmptyState): stroke icon, title, body, primary Button. */
 .events-empty-icon { color: var(--primary-text); display: flex; justify-content: center; }
 /* The icon in a soft bubble with the Hilads logo peeking at its corner (V3 polish 7). */
@@ -16976,7 +16703,6 @@ html.kb-open .quick-row { display: none; }
 }
 .events-empty-title { font-size: 16px; font-weight: 800; color: var(--text); }
 .events-empty-sub { font-size: 14px; color: var(--muted2); }
-.events-empty-cta, .events-empty-cta:hover { min-height: 48px; padding: 0 20px; border: none; border-radius: 16px; background: var(--primary); color: #fff; font-size: 15px; font-weight: 700; box-shadow: none; transform: none; }
 /* Hi now / plan cards: V3 chips (tint), link-style reply, readable title. */
 .er-title { font-size: 15px; font-weight: 800; color: var(--text); }
 .er-going, .er-going--now, .er-going--later, .er-going--public, .er-going--event, .er-going--topic { font-size: 12px; font-weight: 700; color: var(--primary-on-tint); background: var(--primary-tint); border: none; border-radius: 999px; padding: 2px 8px; }
@@ -16992,7 +16718,6 @@ html.kb-open .quick-row { display: none; }
 .modal-textarea { min-height: 96px; }
 .modal-input:focus, .username-input-row:focus-within { border-color: var(--primary); }
 .modal-input--muted { color: var(--muted2); background: var(--surface2); }
-.modal-submit { min-height: 52px; padding: 0 16px; background: var(--primary); border-radius: 16px; font-size: 16px; font-weight: 700; box-shadow: none; }
 .auth-tabs { padding: 4px; gap: 4px; border-radius: 999px; border: 1.5px solid var(--line); background: var(--surface); }
 .auth-tab { min-height: 40px; border-radius: 999px; color: var(--text); font-weight: 600; }
 .auth-tab--active, .auth-page .auth-tab--active { background: var(--primary); color: #fff; font-weight: 700; }
@@ -17095,7 +16820,6 @@ html.kb-open .quick-row { display: none; }
 .wm-sheet--empty .wm-sheet-title { margin: 0; }
 .wm-empty-text { margin: 0; font-size: 14px; color: var(--muted2); }
 .wm-empty-tomorrow { margin: 0; font-size: 14px; font-weight: 700; color: var(--primary-text); }
-.wm-sheet--empty .wm-sheet-cta { background: var(--primary); }
 .wm-sheet--empty { font: inherit; text-align: left; color: var(--text); text-decoration: none; cursor: pointer; }
 .wm-sheet--empty:disabled { cursor: default; }
 .wm-sheet--empty .wm-empty-text, .wm-sheet--empty .wm-empty-tomorrow { display: block; }
@@ -17349,9 +17073,7 @@ html.kb-open .quick-row { display: none; }
 .app-modal-icon { width: 56px; height: 56px; border-radius: 14px; margin-top: 4px; }
 .app-modal-title { margin: 4px 0 0; font-size: 20px; line-height: 26px; font-weight: 800; color: var(--text); letter-spacing: -.2px; }
 .app-modal-sub { margin: 0; font-size: 14px; line-height: 20px; color: var(--muted2); }
-.app-modal-cta { align-self: stretch; min-height: 52px; margin-top: 8px; display: flex; align-items: center; justify-content: center; gap: 8px;
-                 border-radius: 16px; background: var(--primary); color: #fff; font-size: 16px; font-weight: 800; text-decoration: none; }
-.app-modal-cta:active { transform: scale(.97); }
+.app-modal-cta { align-self: stretch; margin-top: 8px; }
 .app-modal-desktop { display: flex; flex-direction: column; align-items: center; gap: 8px; margin-top: 6px; }
 .app-modal-qr { width: 168px; height: 168px; padding: 6px; border-radius: 16px; background: #fff; border: 1.5px solid var(--line); }
 .app-modal-qr svg { width: 100%; height: 100%; display: block; }
@@ -17367,7 +17089,7 @@ html.kb-open .quick-row { display: none; }
   .app-modal .v3-sheet-grabber { display: none; }
 }
 /* Store links that became app-modal buttons keep their link look. */
-button.today-cta, button.feed-daily-cta, button.pin-bar-take, button.wm-btn, button.amc-store { font-family: inherit; cursor: pointer; border: none; }
+button.today-cta, button.feed-daily-cta, button.pin-bar-take { font-family: inherit; cursor: pointer; border: none; }
 button.today-cta { width: 100%; }
 
 /* Challenge sheet placeholders (the sheet opens at once; photos and board fill in). */
@@ -17426,14 +17148,13 @@ button.today-cta { width: 100%; }
 .joy-screen-title { font-size: 28px; font-weight: 800; letter-spacing: -.3px; }
 
 /* ── The joyful pass (DESIGN.md) ───────────────────────────────────────────
-   Every primary button: tangerine with ink text, the same in both themes
-   (the app's Button "primary"). The hero's white button on the photo keeps
-   its own, more specific rule. */
-.today-cta, .v3-signup, .pin-bar-take, .install-banner-add, .leaderboard-unranked-cta, .pub-profile-dm-btn, .friend-req-accept,
-.event-join-btn, .event-join-btn:hover, .topic-join-btn, .cef-submit, .cef-submit:hover, .hilocal-cta--now, .events-empty-cta, .events-empty-cta:hover,
-.modal-submit, .challenge-validate-btn, .challenge-validate-btn-inline, .challenge-owner-invite-cta, .challenge-owner-invite-cta:hover,
+   Full-size primary buttons are .btn-primary (end of file). The compact ones
+   below (pills, round icon buttons, in-row actions) keep their own size and
+   share the tangerine fill with ink text. */
+.v3-signup, .pin-bar-take, .install-banner-add, .friend-req-accept, .event-join-btn, .event-join-btn:hover,
+.challenge-validate-btn, .challenge-validate-btn-inline, .challenge-owner-invite-cta, .challenge-owner-invite-cta:hover,
 .challenge-join-gate-cta, .modal-btn--primary, .dm-vibe-btn, .dm-vibe-btn:hover:not(:disabled), .dm-vibe-btn:active:not(:disabled),
-.feed-daily-cta, .wm-sheet--empty .wm-sheet-cta, .app-modal-cta { background: var(--cta); color: var(--on-cta); font-weight: 800; }
+.feed-daily-cta { background: var(--cta); color: var(--on-cta); font-weight: 800; }
 
 /* Today */
 .brand-line--joy { display: flex; align-items: center; gap: 8px; margin: 2px 0 8px; min-width: 0; }
@@ -18331,4 +18052,41 @@ html[data-event="halloween"] { --header-art: #FFA552; --header-art-opacity: 0.28
   .win, .win-plus, .win-chip, .win-medal, .win-goal, .win-ctas, .win-trophy { animation: none; opacity: 1; transform: none }
   .win-rays { animation: none }
   .win-bar i { animation: none; width: var(--p) }
+}
+
+/* ── Buttons: the app's Button (constants.ts) ─────────────────────────────────
+   One primary and one secondary, the only definitions. Last in the file so they
+   win over a component's own class (which keeps layout only: width, margin,
+   flex). Tokens only, so light, dark and the seasonal palette all follow.
+   The Today hero's white pulsing CTA on the photo is not a .btn-primary. */
+.btn-primary,
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 48px;
+  padding: 0 16px;
+  border-radius: 16px;
+  font-family: inherit;
+  font-size: 17px;
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: 0;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  box-shadow: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 0.12s ease, opacity 0.15s ease;
+}
+.btn-primary { border: none; background: var(--cta); color: var(--on-cta); }
+.btn-secondary { border: 1.5px solid var(--line); background: var(--surface); color: var(--text); }
+.btn-primary:active:not(:disabled),
+.btn-secondary:active:not(:disabled) { transform: scale(0.97); }
+.btn-primary:disabled,
+.btn-secondary:disabled { opacity: 0.45; cursor: default; }
+@media (prefers-reduced-motion: reduce) {
+  .btn-primary, .btn-secondary { transition: none; }
+  .btn-primary:active:not(:disabled), .btn-secondary:active:not(:disabled) { transform: none; }
 }

@@ -289,7 +289,7 @@ function Challenge({ date, proofId = null, source = null, onBack }) {
       {showBar && (
         <div className="dch-bar">
           {!myProof && <p className="dch-rule">{isPlaceTheme(challenge.theme?.key) ? t('proofHint.place') : t('proofHint.noPlace')}</p>}
-          <button type="button" className={`today-cta${myProof ? ' today-cta--taken' : ''}`} onClick={play}>
+          <button type="button" className={`today-cta ${myProof ? 'today-cta--taken btn-secondary' : 'btn-primary'}`} onClick={play}>
             <Icon name="camera-outline" size={20} />
             {myProof ? t('myCity.seeMine') : here?.name ? t('ctaAnswer', { city: shortCityName(here.name) }) : t('ctaAnswerNoCity')}
           </button>

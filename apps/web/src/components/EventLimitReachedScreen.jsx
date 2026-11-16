@@ -105,7 +105,7 @@ export default function EventLimitReachedScreen({ onClose, guest, cityTimezone, 
         <div className="limit-footer">
           <button
             type="button"
-            className="limit-primary-btn"
+            className="limit-primary-btn btn-primary"
             onClick={onClose}
           >
             {t('limit.backToNow')}

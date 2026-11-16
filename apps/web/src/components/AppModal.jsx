@@ -73,7 +73,7 @@ function AppModal() {
         <p className="app-modal-title">{title}</p>
         <p className="app-modal-sub">{t('appModal.sub')}</p>
         {store ? (
-          <a className="app-modal-cta" href={link(store)} target="_blank" rel="noopener noreferrer" onClick={clicked(store)}>
+          <a className="app-modal-cta btn-primary" href={link(store)} target="_blank" rel="noopener noreferrer" onClick={clicked(store)}>
             <Icon name="download-outline" size={20} />{t('appModal.download')}
           </a>
         ) : (

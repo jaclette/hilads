@@ -255,7 +255,7 @@ export default function LeaderboardPage({ account, city, cityChannelId, onBack, 
           ) : (
             <button
               type="button"
-              className="leaderboard-unranked-cta"
+              className="leaderboard-unranked-cta btn-primary"
               onClick={onCreateChallenge}
             >
               <span className="leaderboard-unranked-cta-label">

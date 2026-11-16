@@ -21,10 +21,10 @@ export default function AppMapCard({ city, placement, compact = false, onOpenMap
       <p className="amc-title">{city ? t('appMap.titleCity', { city }) : t('appMap.title')}</p>
       {!compact && <p className="amc-body">{t('appMap.body')}</p>}
       {onOpenMap && (
-        <button type="button" className="amc-store amc-map" onClick={openMap}>{t('map.see')}</button>
+        <button type="button" className="amc-store amc-map btn-primary" onClick={openMap}>{t('map.see')}</button>
       )}
       <div className="amc-stores">
-        <button type="button" className={`amc-store${onOpenMap ? ' amc-store--ghost' : ''}`} onClick={click}>
+        <button type="button" className={`amc-store ${onOpenMap ? 'btn-secondary' : 'btn-primary'}`} onClick={click}>
           {t('appModal.download', { ns: 'common' })}
         </button>
       </div>

@@ -87,7 +87,7 @@ export function ProposeScreen({ source = null, onBack }) {
           <span className="dc-big-emoji" style={{ color: 'var(--primary-text)' }}><Icon name="bulb-outline" size={44} /></span>
           <p className="dc-empty-title">{t('propose.sentTitle')}</p>
           <p className="dc-muted">{t('propose.sentBody')}</p>
-          <button type="button" className="today-cta dc-full" onClick={() => { onBack(); openDaily('proposals') }}>{t('propose.seeMine')}</button>
+          <button type="button" className="today-cta dc-full btn-primary" onClick={() => { onBack(); openDaily('proposals') }}>{t('propose.seeMine')}</button>
         </div>
       </Page>
     )
@@ -133,7 +133,7 @@ export function ProposeScreen({ source = null, onBack }) {
         </div>
       ) : error && <div className="dc-error">{error}</div>}
 
-      <button type="button" className="today-cta dc-full" onClick={submit} disabled={!canSend}>
+      <button type="button" className="today-cta dc-full btn-primary" onClick={submit} disabled={!canSend}>
         {sending ? '…' : t('propose.submit')}
       </button>
     </Page>
@@ -246,7 +246,7 @@ export function TwistScreen({ onBack }) {
               {error && <div className="dc-error">{error}</div>}
               <div className="dc-actions">
                 {editing && <button type="button" className="dc-link" onClick={() => setEditing(false)}>{t('cancel')}</button>}
-                <button type="button" className="today-cta dc-full" onClick={submit} disabled={!text.trim() || sending}>
+                <button type="button" className="today-cta dc-full btn-primary" onClick={submit} disabled={!text.trim() || sending}>
                   {sending ? '…' : proposal ? t('proof.save') : t('twist.submit')}
                 </button>
               </div>
@@ -280,7 +280,7 @@ export function ProposalsScreen({ onBack }) {
 
   return (
     <Page title={t('propose.mineTitle')} onBack={onBack}>
-      <button type="button" className="today-cta dc-full" style={{ gap: 8 }} onClick={() => openDaily('propose', { source: 'my_proposals' })}><Icon name="bulb-outline" size={18} />{t('propose.cta')}</button>
+      <button type="button" className="today-cta dc-full btn-primary" style={{ gap: 8 }} onClick={() => openDaily('propose', { source: 'my_proposals' })}><Icon name="bulb-outline" size={18} />{t('propose.cta')}</button>
       {failed && !items ? (
         <div className="dc-center"><p className="dc-muted">{t('loadFailed')}</p><button type="button" className="dc-link" onClick={load}>{t('retry')}</button></div>
       ) : !items ? <div className="dc-center"><span className="wm-spinner" aria-hidden="true" /></div>

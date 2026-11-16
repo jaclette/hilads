@@ -132,7 +132,7 @@ function JoinCard({ city, cityCountry, geoState, nickname, setNickname, handleJo
       >
         {noGeo ? (
           <>
-            <button type="submit" className="ob-btn">{t('join.browseCities')}</button>
+            <button type="submit" className="ob-btn btn-primary">{t('join.browseCities')}</button>
             <label className="ob-label" style={{ marginTop: 4 }}>{t('join.yourName')}</label>
             <div className="ob-input-row">
               <span
@@ -176,7 +176,7 @@ function JoinCard({ city, cityCountry, geoState, nickname, setNickname, handleJo
                 placeholder={t('join.namePlaceholder')}
               />
             </div>
-            <button type="submit" className={`ob-btn${variant === 'secondary' ? ' ob-btn--secondary' : ''}`}>
+            <button type="submit" className={`ob-btn ${variant === 'secondary' ? 'btn-secondary' : 'btn-primary'}`}>
               {city ? t('join.joinCity', { city }) : t('join.joinChat')}
             </button>
           </>

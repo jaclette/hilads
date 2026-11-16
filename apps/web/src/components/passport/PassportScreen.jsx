@@ -93,7 +93,7 @@ export default function PassportScreen({ account, guestName, guestMode, cityId, 
           <div className="pp-guest">
             <p className="pp-guest-title">{t('passport.guestTitle')}</p>
             <p className="dc-muted">{t('passport.guestBody')}</p>
-            <button type="button" className="today-cta dc-full" onClick={onSignUp}>{t('passport.signUp')}</button>
+            <button type="button" className="today-cta dc-full btn-primary" onClick={onSignUp}>{t('passport.signUp')}</button>
             <button type="button" className="dc-link pp-center" onClick={onSignIn}>{t('passport.signIn')}</button>
           </div>
         </div>
@@ -208,7 +208,7 @@ export default function PassportScreen({ account, guestName, guestMode, cityId, 
                onClick={() => onOpen('alltime')} />
         </div>
 
-        <button type="button" className="today-cta dc-full" style={{ gap: 8 }} onClick={share}>
+        <button type="button" className="today-cta dc-full btn-primary" style={{ gap: 8 }} onClick={share}>
           <Icon name="share-social-outline" size={18} />{copied ? i18n.t('shareLink.copied', { ns: 'common' }) : t('passport.share')}
         </button>
         <button type="button" className="dc-link pp-help" style={ROW} onClick={() => setHelp(true)}><Icon name="information-circle-outline" size={16} />{t('passport.howPoints')}</button>
@@ -383,7 +383,7 @@ function PointsSheet({ onClose }) {
           ))}
         </div>
         <p className="dc-muted">{t('points.weekly')}</p>
-        <button type="button" className="today-cta dc-full" onClick={onClose}>{t('passport.gotIt')}</button>
+        <button type="button" className="today-cta dc-full btn-primary" onClick={onClose}>{t('passport.gotIt')}</button>
       </div>
     </div>
   )
