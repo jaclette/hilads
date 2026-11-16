@@ -41,8 +41,6 @@
     "ended": "종료됨",
     "awaitingResults": "결과 기다리는 중"
   },
-  "forLocals": "현지인 대상",
-  "forExplorers": "여행자 대상",
   "notFound": "챌린지를 찾을 수 없어요",
   "typeBadge": {
     "food": "음식 챌린지",

@@ -43,8 +43,6 @@
     "ended": "Terminado",
     "awaitingResults": "Esperando resultados"
   },
-  "forLocals": "Para gente local",
-  "forExplorers": "Para viajeros",
   "notFound": "Reto no encontrado",
   "typeBadge": {
     "food": "Reto de comida",
