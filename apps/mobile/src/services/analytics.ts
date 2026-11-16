@@ -152,6 +152,7 @@ export type AnalyticsEvent =
   // V3-07: the map of spots (SPEC 9.13)
   | 'map_viewed'
   | 'map_filter_used'
+  | 'plan_opened'             // { source }: a Hi plan opened from the Map's Plans list
   | 'map_first_spot_tapped'
   | 'map_view_switched'
   | 'map_city_bubble_tapped'

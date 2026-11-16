@@ -36,7 +36,7 @@ import { MapSheet, SHEET_PEEK, type MapSheetHandle } from '@/features/map/MapShe
 import { ScopeSelector } from '@/features/shell/ScopeSelector';
 import { shortCityName } from '@/i18n/cityName';
 import type { DailyThemeKey } from '@/types';
-import { Avatar, Chip, CityFlag, IconButton, TextField } from '@/ui';
+import { Avatar, Chip, CityFlag, IconButton, ListRow, RowGroup, TextField } from '@/ui';
 import { useBackClose } from '@/lib/useBackClose';
 
 const PLACE_THEMES = THEME_KEYS.filter(k => isPlaceTheme(k));
@@ -163,6 +163,8 @@ export default function MapScreen() {
   useEffect(() => { if (!pumpkins && themeFilter === SPECIAL) setThemeFilter(null); }, [pumpkins, themeFilter]);
   // "Today": only the spots of today's challenge photos (a chip before the themes).
   const [todayOnly, setTodayOnly] = useState(false);
+  // Plans (UX audit option B: the Map is the plans' home): only the Hi plans, pinned and listed.
+  const [plansOnly, setPlansOnly] = useState(false);
   const reduceMotion = useReducedMotion();
   // The pins grow in once, when the first spots arrive.
   const [grown, setGrown] = useState(false);
@@ -392,6 +394,7 @@ export default function MapScreen() {
   const pickTheme = (k: DailyThemeKey | typeof SPECIAL | null) => {
     setThemeFilter(k);
     setTodayOnly(false);
+    setPlansOnly(false);
     setSelected(null);
     track('map_filter_used', { theme: k ?? 'all', is_today: k !== null && k === todayTheme });
   };
@@ -400,8 +403,17 @@ export default function MapScreen() {
   const pickToday = () => {
     setThemeFilter(null);
     setTodayOnly(true);
+    setPlansOnly(false);
     setSelected(null);
     track('map_filter_used', { theme: 'today', is_today: true });
+  };
+
+  const pickPlans = () => {
+    setThemeFilter(null);
+    setTodayOnly(false);
+    setPlansOnly(true);
+    setSelected(null);
+    track('map_filter_used', { theme: 'plans', is_today: false });
   };
 
   const locate = async () => {
@@ -435,8 +447,8 @@ export default function MapScreen() {
 
   // Today's spots: a photo of today's challenge (the spot's latest challenge is today's).
   const isToday = (s: Spot) => !!todayDate && s.lastProofDate === todayDate;
-  const shown = todayOnly ? spots.filter(isToday) : spots;
-  const showPlans = zoom >= PLAN_MIN_ZOOM;
+  const shown = plansOnly ? [] : todayOnly ? spots.filter(isToday) : spots;
+  const showPlans = plansOnly || zoom >= PLAN_MIN_ZOOM;
   // Zoom changes by fractions: the sides follow it in steps of a quarter level.
   const zoomStep = Math.round(zoom * 4) / 4;
   const planSides = useMemo(() => new Map(plans.slice(0, 30).map(p => [`${p.id}@${p.startsAt}`, planSide(p, shown, zoomStep)])), [plans, shown, zoomStep]);
@@ -476,13 +488,13 @@ export default function MapScreen() {
     return <View style={[styles.container, styles.center]}><Text style={styles.muted}>{t('map.noToken')}</Text></View>;
   }
 
-  const showEmpty = loaded && cityEmpty && scope === 'city' && !selected && spots.length === 0;
+  const showEmpty = loaded && cityEmpty && scope === 'city' && !selected && spots.length === 0 && !plansOnly;
   // The list shares the map's state: the search hits (in the theme) or the area's spots.
-  const listSpots = results !== null ? results.filter(s => themeFilter === null || themeFilter === SPECIAL || s.themes.includes(themeFilter)) : shown;
+  const listSpots = plansOnly ? [] : results !== null ? results.filter(s => themeFilter === null || themeFilter === SPECIAL || s.themes.includes(themeFilter)) : shown;
   const bboxCentre: [number, number] | null = lastBbox.current
     ? [(lastBbox.current[0] + lastBbox.current[2]) / 2, (lastBbox.current[1] + lastBbox.current[3]) / 2] : center;
   // Zoomed into a place with no spot (the city has some): "Nothing here yet. Be the pioneer 📍".
-  const emptyArea = loaded && scope === 'city' && !cityEmpty && !worldView && shown.length === 0 && results === null;
+  const emptyArea = loaded && scope === 'city' && !cityEmpty && !worldView && shown.length === 0 && results === null && !plansOnly;
 
   // 🎲 Surprise me: fly to a random good spot of the area (a photo and some likes first) and open its card.
   const surprise = () => {
@@ -657,7 +669,10 @@ export default function MapScreen() {
           </View>
         )}
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.chips} keyboardShouldPersistTaps="handled">
-          <Chip variant="filter" label={t('map.all')} selected={themeFilter === null && !todayOnly} onPress={() => pickTheme(null)} />
+          <Chip variant="filter" label={t('map.all')} selected={themeFilter === null && !todayOnly && !plansOnly} onPress={() => pickTheme(null)} />
+          {scope === 'city' && (plans.length > 0 || plansOnly) && (
+            <Chip variant="filter" label={t('inbox.cat.plans', { ns: 'notifications' })} selected={plansOnly} onPress={pickPlans} />
+          )}
           {!!todayDate && <Chip variant="filter" theme={todayTheme} label={t('map.todayChip')} selected={todayOnly} onPress={pickToday} />}
           {pumpkins && <Chip variant="filter" label={t('map.halloween')} selected={themeFilter === SPECIAL} onPress={() => pickTheme(SPECIAL)} />}
           {PLACE_THEMES.map(k => (
@@ -689,7 +704,7 @@ export default function MapScreen() {
         me={me}
         origin={bboxCentre}
         place={scope === 'city' && city?.name ? shortCityName(city.name) : null}
-        filterLabel={todayOnly ? t('map.todayChip') : themeFilter === SPECIAL ? t('map.halloween') : themeFilter ? themeName(themeFilter) : null}
+        filterLabel={plansOnly ? t('inbox.cat.plans', { ns: 'notifications' }) : todayOnly ? t('map.todayChip') : themeFilter === SPECIAL ? t('map.halloween') : themeFilter ? themeName(themeFilter) : null}
         emptyArea={emptyArea}
         onPick={s => select(s, 'map_list', true)}
         selectedCard={selected ? (
@@ -704,7 +719,7 @@ export default function MapScreen() {
               ? () => { track('map_play_here', { spot: selected.id }); playToday('daily_proof'); } : undefined}
           />
         ) : null}
-        topNote={worldView && screenReader ? <WorldCityList bubbles={bubbles} onOpen={openBubble} />
+        topNote={plansOnly ? <PlanList plans={plans} /> : worldView && screenReader ? <WorldCityList bubbles={bubbles} onOpen={openBubble} />
           : showEmpty ? <EmptyCity today={today.data} /> : emptyArea ? (
           <TouchableOpacity style={styles.pioneer} onPress={() => playToday('first_spot')} accessibilityRole="button">
             <Text style={styles.pioneerText}>{t('map.sheet.pioneer')}</Text>
@@ -716,11 +731,8 @@ export default function MapScreen() {
   );
 }
 
-/** A Hi plan as a dated pin: "Birdy, now · 10 going", "Birdy, in 2 hours". Caramel; opens the plan. */
-function PlanMarker({ plan, side }: { plan: PlanPin; side: PlanSide }) {
-  const styles = useThemedStyles(makeStyles);
-  const { i18n, t } = useTranslation('daily');
-  const router = useRouter();
+/** A plan's time and attendance: "now", "in 2 hours" soon, else the day and time; "10 going". */
+function planTime(plan: PlanPin, t: (k: string, o?: Record<string, unknown>) => string, lang: string) {
   const start = new Date(plan.startsAt * 1000);
   const now = Date.now();
   const ongoing = plan.startsAt * 1000 <= now && (plan.endsAt ? plan.endsAt * 1000 > now : true);
@@ -728,10 +740,37 @@ function PlanMarker({ plan, side }: { plan: PlanPin; side: PlanSide }) {
   // Soon: relative ("in 2 hours", localized); later: the day and time.
   // Hermes on Android has no Intl.RelativeTimeFormat (new undefined → crash): the time instead.
   const time = ongoing ? t('map.planNow')
-    : hours < 6 && typeof Intl.RelativeTimeFormat === 'function' ? new Intl.RelativeTimeFormat(i18n.language, { numeric: 'auto' }).format(Math.max(1, Math.round(hours * (hours < 1 ? 60 : 1))), hours < 1 ? 'minute' : 'hour')
-    : start.toLocaleString(i18n.language, start.toDateString() === new Date().toDateString()
+    : hours < 6 && typeof Intl.RelativeTimeFormat === 'function' ? new Intl.RelativeTimeFormat(lang, { numeric: 'auto' }).format(Math.max(1, Math.round(hours * (hours < 1 ? 60 : 1))), hours < 1 ? 'minute' : 'hour')
+    : start.toLocaleString(lang, start.toDateString() === new Date().toDateString()
         ? { hour: 'numeric', minute: '2-digit' } : { weekday: 'short', hour: 'numeric', minute: '2-digit' });
   const going = plan.participantCount > 1 ? t('map.planGoing', { count: plan.participantCount }) : null;
+  return { start, ongoing, time, going };
+}
+
+/** The Plans filter's list in the sheet: each plan with its time and who's going; a tap opens it. */
+function PlanList({ plans }: { plans: PlanPin[] }) {
+  const { i18n, t } = useTranslation('daily');
+  const router = useRouter();
+  return (
+    <RowGroup>
+      {plans.slice(0, 30).map((p, i) => {
+        const { time, going } = planTime(p, t, i18n.language);
+        return (
+          <ListRow key={`${p.id}@${p.startsAt}`} divider={i > 0} icon="calendar-outline" title={p.title}
+                   value={[time, going].filter(Boolean).join(' · ')}
+                   onPress={() => { track('plan_opened', { source: 'map_plans' }); router.push(`/event/${p.id}` as never); }} />
+        );
+      })}
+    </RowGroup>
+  );
+}
+
+/** A Hi plan as a dated pin: "Birdy, now · 10 going", "Birdy, in 2 hours". Caramel; opens the plan. */
+function PlanMarker({ plan, side }: { plan: PlanPin; side: PlanSide }) {
+  const styles = useThemedStyles(makeStyles);
+  const { i18n, t } = useTranslation('daily');
+  const router = useRouter();
+  const { start, ongoing, time, going } = planTime(plan, t, i18n.language);
   const day = start.toLocaleDateString(i18n.language, { day: 'numeric', month: 'short' });
   return (
     // A little calendar page on a stem: the day on top, then the title, the time and who's going.
