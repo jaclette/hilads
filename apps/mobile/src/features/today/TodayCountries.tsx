@@ -9,7 +9,7 @@ import * as Haptics from 'expo-haptics';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
-import { Space, Radius, FontSizes, Spacing, type ThemeColors } from '@/constants';
+import { Space, Radius, FontSizes, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { useApp } from '@/context/AppContext';
 import { fetchDailyProofsByIds, fetchDailyTour } from '@/api/daily';
@@ -27,7 +27,7 @@ import { Avatar, DualPhoto, Photo, SectionTitle } from '@/ui';
 import { selfieOf } from '@/features/daily/selfie';
 import { prefetchProof } from '@/lib/prefetch';
 import { FlagSticker, themeColor } from '@/ui/joy';
-import type { DailyCityGroup, DailyProof, DailyToday, DailyTodayCountries, DailyTour } from '@/types';
+import type { DailyCityGroup, DailyProof, DailyToday, DailyTodayCountries } from '@/types';
 import { todayCities } from './useTodayCountries';
 
 const MAX_SEGMENTS = 8;   // a pile's dots, at most

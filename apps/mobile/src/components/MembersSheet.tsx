@@ -1,5 +1,5 @@
 import { thumbUrl } from '@/lib/imageThumb';
-import { View, Text, ScrollView, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import type { UserDTO, BadgeKey } from '@/types';
 import { BADGE_META } from '@/types';

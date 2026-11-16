@@ -17,7 +17,6 @@ import { ShareSheet } from '@/features/chat/ShareSheet';
 import { LocationPicker } from '@/features/chat/LocationPicker';
 import * as Haptics from 'expo-haptics';
 import * as ImagePicker from 'expo-image-picker';
-import * as Location from 'expo-location';
 import { requestFeatureLocation } from '@/lib/geoFeature';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useLocalSearchParams } from 'expo-router';

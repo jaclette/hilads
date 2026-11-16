@@ -5,7 +5,7 @@ import Animated, { useAnimatedStyle, useReducedMotion, useSharedValue, withDelay
 import { useTranslation } from 'react-i18next';
 import { Space, FontSizes, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
-import { Confetti, FlagSticker, tint } from '@/ui/joy';
+import { Confetti, tint } from '@/ui/joy';
 
 /** A podium place's medal color (1 gold, 2 silver, 3 bronze): the theme's medal tokens, one palette in every theme. */
 export function medalColor(c: ThemeColors, rank: number): string {
