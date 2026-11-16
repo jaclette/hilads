@@ -71,7 +71,7 @@ export function TextField({ variant = 'field', label, error, onClear, clearLabel
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
   search:      { flexDirection: 'row', alignItems: 'center', gap: 10, height: 48, paddingHorizontal: 16, borderRadius: Radius.full,
                  borderWidth: Border, borderColor: c.line, backgroundColor: c.bg2 },
-  searchInput: { flex: 1, fontSize: 15, fontWeight: '500', color: c.text, paddingVertical: 0 },
+  searchInput: { flex: 1, fontSize: FontSizes.body, fontWeight: '500', color: c.text, paddingVertical: 0 },
   fieldWrap:   { gap: 6 },
   label:       { fontSize: FontSizes.xs, fontWeight: '700', color: c.muted },
   field:       { flexDirection: 'row', alignItems: 'center', gap: 6, minHeight: 48, paddingHorizontal: 14, borderRadius: Radius.button,

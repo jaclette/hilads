@@ -106,7 +106,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   separator:   { height: 1, backgroundColor: c.line },
   row:         { flexDirection: 'row', alignItems: 'center', gap: 12, minHeight: 64, paddingVertical: 10 },
   body:        { flex: 1, minWidth: 0 },
-  name:        { fontSize: 15, fontWeight: '700', color: c.text },
+  name:        { fontSize: FontSizes.body, fontWeight: '700', color: c.text },
   sub:         { fontSize: FontSizes.xs, fontWeight: '400', color: c.muted, marginTop: 2 },
   actions:     { flexDirection: 'row', gap: 8 },
 });

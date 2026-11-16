@@ -433,7 +433,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
     fontSize:          FontSizes.md,
     color:             c.text,
   },
-  charCount: { fontSize: 11, color: c.mutedDim, textAlign: 'right' },
+  charCount: { fontSize: FontSizes.xs, color: c.mutedDim, textAlign: 'right' },
   modalSubmit: {
     backgroundColor: c.red,
     paddingVertical: Spacing.md,

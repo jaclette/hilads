@@ -24,5 +24,5 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   text:     { fontSize: FontSizes.tiny, fontWeight: '800', color: c.warning },
   textDark: { color: c.white },
   pillSmall: { paddingHorizontal: 5, paddingVertical: 0 },
-  textSmall: { fontSize: 10, fontWeight: '800' },
+  textSmall: { fontSize: FontSizes.xs, fontWeight: '800' },
 });

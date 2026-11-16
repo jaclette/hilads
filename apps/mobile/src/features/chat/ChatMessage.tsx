@@ -118,7 +118,7 @@ const makeLocStyles = (c: ThemeColors) => StyleSheet.create({
   icon:        { marginTop: 1, flexShrink: 0 },
   body:        { flex: 1, flexShrink: 1, minWidth: 0, gap: 3 },
   line1:       { fontSize: FontSizes.sm, fontWeight: '700', color: c.text, lineHeight: 20 },
-  addr:        { fontSize: 12, fontWeight: '400', color: c.muted, lineHeight: 17 },
+  addr:        { fontSize: FontSizes.xs, fontWeight: '400', color: c.muted, lineHeight: 17 },
   textMine:    { color: c.white },
   addrMine:    { color: c.onCaramelMuted },
   tapHint:     { fontSize: FontSizes.xs, fontWeight: '600', color: c.primaryText, marginTop: 2 },
@@ -373,7 +373,7 @@ function BadgePill({ badge }: { badge: { key: string; label: string } }) {
 
 const makeBadgeStyles = (c: ThemeColors) => StyleSheet.create({
   pill: { height: 20, justifyContent: 'center', borderRadius: Radius.full, paddingHorizontal: 7, backgroundColor: c.bg3 },
-  text: { fontSize: 11, fontWeight: '700', color: c.gold },
+  text: { fontSize: FontSizes.xs, fontWeight: '700', color: c.gold },
 });
 
 // PR9 - role badge (Challenger / Taker) on unified challenge channel rows.
@@ -387,7 +387,7 @@ const makeRoleStyles = (c: ThemeColors) => StyleSheet.create({
   pillChallenger: { backgroundColor: c.primaryTint },
   pillTaker:      { backgroundColor: c.localBg },
   pillSpectator:  { backgroundColor: c.bg3 },
-  text:           { fontSize: 11, fontWeight: '700', letterSpacing: 0.4, textTransform: 'uppercase' },
+  text:           { fontSize: FontSizes.xs, fontWeight: '700', letterSpacing: 0.4, textTransform: 'uppercase' },
   textChallenger: { color: c.primaryOnTint },
   textTaker:      { color: c.localText },
   textSpectator:  { color: c.muted },
@@ -1092,12 +1092,12 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   feedArrow: { width: 44, height: 44, borderRadius: Radius.full, backgroundColor: c.primary, alignItems: 'center', justifyContent: 'center' },
 
   activityRow:  { alignSelf: 'center', marginVertical: 4, paddingHorizontal: 14, paddingVertical: 4 },
-  activityText: { fontSize: 12, fontWeight: '600', color: c.muted, textAlign: 'center' },
+  activityText: { fontSize: FontSizes.xs, fontWeight: '600', color: c.muted, textAlign: 'center' },
 
   // ── System line (chat.html): small, muted, centred ──
   systemRow:  { alignItems: 'center', marginVertical: 6, paddingHorizontal: Spacing.md, gap: 2 },
-  systemText: { fontSize: 12, fontWeight: '600', color: c.muted, textAlign: 'center' },
-  systemTime: { fontSize: 11, fontWeight: '400', color: c.mutedDim },
+  systemText: { fontSize: FontSizes.xs, fontWeight: '600', color: c.muted, textAlign: 'center' },
+  systemTime: { fontSize: FontSizes.xs, fontWeight: '400', color: c.mutedDim },
 
   row:        { flexDirection: 'column', maxWidth: '78%' },
   rowOther:   { alignSelf: 'flex-start', alignItems: 'flex-start', paddingLeft: Spacing.md },
@@ -1107,8 +1107,8 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   rowSending: { opacity: 0.65 },
 
   meta:   { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 4 },
-  author: { fontSize: 13, fontWeight: '700', color: c.text },
-  modeLabel:          { fontSize: 11, fontWeight: '700', paddingHorizontal: 7, paddingVertical: 2, borderRadius: 9, overflow: 'hidden' },
+  author: { fontSize: FontSizes.xs, fontWeight: '700', color: c.text },
+  modeLabel:          { fontSize: FontSizes.xs, fontWeight: '700', paddingHorizontal: 7, paddingVertical: 2, borderRadius: 9, overflow: 'hidden' },
   modeLabelLocal:     { color: c.primaryOnTint, backgroundColor: c.primaryTint },
   modeLabelExploring: { color: c.travelerText, backgroundColor: c.travelerBg },
   modeFlag:           { fontSize: FontSizes.xs },
@@ -1126,10 +1126,10 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   sharedLinkCtaCampaign: { alignSelf: 'stretch', alignItems: 'center' },
   campaignScopePill:     { alignSelf: 'flex-start', flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 8, marginBottom: 6,
                            paddingHorizontal: 9, height: 22, borderRadius: Radius.full, backgroundColor: c.gold },
-  campaignScopePillText: { fontSize: 11, fontWeight: '800', color: c.white },
+  campaignScopePillText: { fontSize: FontSizes.xs, fontWeight: '800', color: c.white },
   bubbleTombstone: { opacity: 0.7 },
   tombstoneText:   { fontSize: FontSizes.sm, fontWeight: '400', fontStyle: 'italic', color: c.muted, lineHeight: 20 },
-  editedTag:       { fontSize: 11, fontWeight: '400', color: c.muted },
+  editedTag:       { fontSize: FontSizes.xs, fontWeight: '400', color: c.muted },
   editedTagMine:   { color: c.onCaramelMuted },
   mentionText:     { fontWeight: '700', color: c.primaryText },
   mentionMine:     { color: c.white, textDecorationLine: 'underline' },
@@ -1150,9 +1150,9 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
 
   dateSepRow:  { flexDirection: 'row', alignItems: 'center', marginVertical: 16, paddingHorizontal: Spacing.md, gap: 10 },
   dateSepLine: { flex: 1, height: 1, backgroundColor: c.line },
-  dateSepText: { fontSize: 12, fontWeight: '700', color: c.muted },
+  dateSepText: { fontSize: FontSizes.xs, fontWeight: '700', color: c.muted },
 
-  timestamp:      { fontSize: 11, fontWeight: '400', marginTop: 3, color: c.mutedDim },
+  timestamp:      { fontSize: FontSizes.xs, fontWeight: '400', marginTop: 3, color: c.mutedDim },
   timestampMine:  { textAlign: 'right', paddingRight: 2 },
   timestampOther: { textAlign: 'left', paddingLeft: 2 },
 
@@ -1160,9 +1160,9 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   replyQuote:         { marginBottom: 6, paddingLeft: 8, paddingVertical: 2, borderLeftWidth: 3 },
   replyQuoteOther:    { borderLeftColor: c.primary },
   replyQuoteMine:     { borderLeftColor: c.onCaramelMuted },
-  replyQuoteName:     { fontSize: 12, fontWeight: '700', color: c.primaryText, lineHeight: 16 },
+  replyQuoteName:     { fontSize: FontSizes.xs, fontWeight: '700', color: c.primaryText, lineHeight: 16 },
   replyQuoteNameMine: { color: c.white },
-  replyQuoteText:     { fontSize: 12, fontWeight: '400', color: c.muted, lineHeight: 16 },
+  replyQuoteText:     { fontSize: FontSizes.xs, fontWeight: '400', color: c.muted, lineHeight: 16 },
   replyQuoteTextMine: { color: c.onCaramelMuted },
 
   image:      { width: 260, height: 220, marginTop: 2 },

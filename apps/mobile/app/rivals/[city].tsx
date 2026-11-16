@@ -4,7 +4,7 @@ import { Image } from 'expo-image';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import * as Haptics from 'expo-haptics';
-import { Radius, Spacing, type ThemeColors } from '@/constants';
+import { FontSizes, Radius, Spacing, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { useApp } from '@/context/AppContext';
 import { Button, Screen, ScreenHeader, Avatar } from '@/ui';
@@ -163,31 +163,31 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   list:         { padding: Spacing.md, paddingBottom: Spacing.xl, gap: 14 },
   versus:       { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: 12 },
   side:         { flex: 1, alignItems: 'center', gap: 6 },
-  sideName:     { fontSize: 16, fontWeight: '800', color: c.text, maxWidth: '100%' },
+  sideName:     { fontSize: FontSizes.body, fontWeight: '800', color: c.text, maxWidth: '100%' },
   trophy:       { fontSize: 20 },
   vsCol:        { alignItems: 'center', gap: 8 },
   vs:           { width: 48, height: 48, borderRadius: 24, backgroundColor: c.cta, alignItems: 'center', justifyContent: 'center', transform: [{ rotate: '-8deg' }] },
-  vsText:       { fontSize: 18, fontWeight: '900', color: c.onCta },
+  vsText:       { fontSize: FontSizes.md, fontWeight: '800', color: c.onCta },
   score:        { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  scoreNum:     { fontSize: 30, lineHeight: 36, fontWeight: '900', color: c.text },
-  scoreDash:    { fontSize: 24, fontWeight: '800', color: c.muted },
-  mood:         { fontSize: 15, lineHeight: 20, fontWeight: '700', color: c.text, textAlign: 'center', marginBottom: 12 },
+  scoreNum:     { fontSize: FontSizes.xxl, lineHeight: 39, fontWeight: '800', color: c.text },
+  scoreDash:    { fontSize: FontSizes.xl, fontWeight: '800', color: c.muted },
+  mood:         { fontSize: FontSizes.body, lineHeight: 20, fontWeight: '700', color: c.text, textAlign: 'center', marginBottom: 12 },
   nudge:        { borderRadius: Radius.card, padding: 14, gap: 10, marginBottom: 14 },
-  nudgeText:    { fontSize: 15, lineHeight: 20, fontWeight: '700', color: c.text },
+  nudgeText:    { fontSize: FontSizes.body, lineHeight: 20, fontWeight: '700', color: c.text },
   nudgeBtn:     { alignSelf: 'flex-start' },
-  section:      { fontSize: 13, fontWeight: '800', color: c.muted, marginBottom: 4 },
-  empty:        { fontSize: 15, color: c.muted, textAlign: 'center', paddingVertical: 32 },
+  section:      { fontSize: FontSizes.xs, fontWeight: '800', color: c.muted, marginBottom: 4 },
+  empty:        { fontSize: FontSizes.body, color: c.muted, textAlign: 'center', paddingVertical: 32 },
   duel:         { borderRadius: Radius.card, backgroundColor: c.bg2, borderWidth: 1.5, borderColor: c.line, padding: 12, gap: 10 },
   duelHead:     { gap: 6 },
-  duelText:     { fontSize: 15, lineHeight: 20, fontWeight: '800', color: c.text },
+  duelText:     { fontSize: FontSizes.body, lineHeight: 20, fontWeight: '800', color: c.text },
   themeChip:    { alignSelf: 'flex-start', paddingHorizontal: 8, paddingVertical: 2, borderRadius: Radius.full },
-  themeText:    { fontSize: 12, fontWeight: '700', color: c.text },
+  themeText:    { fontSize: FontSizes.xs, fontWeight: '700', color: c.text },
   pair:         { flexDirection: 'row', gap: 10 },
   photoBox:     { flex: 1, borderRadius: 14, overflow: 'hidden', borderWidth: 3, borderColor: 'transparent', backgroundColor: c.bg3 },
   photoWin:     { borderColor: GOLD },
   photo:        { width: '100%', aspectRatio: 1 },
   crown:        { position: 'absolute', top: 6, right: 8, fontSize: 22 },
   photoFoot:    { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 8, paddingVertical: 6, backgroundColor: c.bg2 },
-  photoLabel:   { flex: 1, fontSize: 12, fontWeight: '700', color: c.muted },
-  photoLikes:   { fontSize: 13, fontWeight: '800', color: c.text },
+  photoLabel:   { flex: 1, fontSize: FontSizes.xs, fontWeight: '700', color: c.muted },
+  photoLikes:   { fontSize: FontSizes.xs, fontWeight: '800', color: c.text },
 });

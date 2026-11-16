@@ -4,7 +4,7 @@ import Animated, { FadeIn, FadeOut, useReducedMotion } from 'react-native-reanim
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
-import { Radius, type ThemeColors } from '@/constants';
+import { FontSizes, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { useApp } from '@/context/AppContext';
 import { shortCityName } from '@/i18n/cityName';
@@ -77,6 +77,6 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
                   borderRadius: Radius.card, backgroundColor: c.primaryTint, borderWidth: 1.5, borderColor: c.primary },
   resultsBody:  { flex: 1 },
   resultsClose: { width: 32, height: 32, borderRadius: 16, alignItems: 'center', justifyContent: 'center' },
-  resultsTitle: { fontSize: 15, lineHeight: 20, fontWeight: '800', color: c.text },
-  resultsSee:   { fontSize: 15, fontWeight: '800', color: c.primaryOnTint },
+  resultsTitle: { fontSize: FontSizes.body, lineHeight: 20, fontWeight: '800', color: c.text },
+  resultsSee:   { fontSize: FontSizes.body, fontWeight: '800', color: c.primaryOnTint },
 });

@@ -371,13 +371,13 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   eventIcon:        { width: 48, height: 48, borderRadius: 14, backgroundColor: c.primaryTint, alignItems: 'center', justifyContent: 'center' },
   rowBody:          { flex: 1, minWidth: 0, gap: 2 },
   rowTop:           { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  rowName:          { flex: 1, fontSize: 15, fontWeight: '600', color: c.text },
+  rowName:          { flex: 1, fontSize: FontSizes.body, fontWeight: '600', color: c.text },
   rowNameUnread:    { fontWeight: '800' },
-  rowTime:          { fontSize: 12, fontWeight: '400', color: c.muted },
+  rowTime:          { fontSize: FontSizes.xs, fontWeight: '400', color: c.muted },
   rowPreview:       { fontSize: FontSizes.sm, fontWeight: '400', color: c.muted },
   rowPreviewUnread: { fontWeight: '600', color: c.text },
   unreadDot:        { width: 10, height: 10, borderRadius: Radius.full, backgroundColor: c.primary },
 
   prefLink:         { paddingHorizontal: Spacing.md, paddingVertical: Spacing.lg, alignItems: 'center' },
-  prefLinkText:     { fontSize: 14, fontWeight: '700', color: c.primaryText },
+  prefLinkText:     { fontSize: FontSizes.sm, fontWeight: '700', color: c.primaryText },
 });

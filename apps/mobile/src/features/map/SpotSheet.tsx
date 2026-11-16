@@ -97,7 +97,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   inline:       { flexDirection: 'row', alignItems: 'center', gap: 4 },
   meta:         { fontSize: FontSizes.xs, fontWeight: '600', color: c.muted },
   badge:        { alignSelf: 'flex-start', flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 8, paddingVertical: 3, borderRadius: Radius.full, backgroundColor: c.localBg },
-  badgeText:    { fontSize: 12, fontWeight: '700', color: c.localText },
+  badgeText:    { fontSize: FontSizes.tiny, fontWeight: '700', color: c.localText },
   caption:      { fontSize: FontSizes.sm, fontStyle: 'italic', color: c.text },
   credit:       { marginTop: -4 },
   actions:      { flexDirection: 'row', gap: 10 },

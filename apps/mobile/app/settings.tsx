@@ -607,7 +607,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   fieldGroup:           { gap: 6 },
   fieldLabel:           { fontSize: FontSizes.xs, fontWeight: '700', color: c.muted },
   fieldHint:            { fontSize: FontSizes.xs, fontWeight: '400', color: c.muted },
-  counter:              { alignSelf: 'flex-end', fontSize: 12, fontWeight: '500', color: c.muted },
+  counter:              { alignSelf: 'flex-end', fontSize: FontSizes.xs, fontWeight: '500', color: c.muted },
   uOkHint:              { marginTop: -12, fontSize: FontSizes.xs, fontWeight: '600', color: c.localText },
   readField:            { flexDirection: 'row', alignItems: 'center', gap: 8, minHeight: 48, paddingHorizontal: 14, borderRadius: Radius.button,
                           borderWidth: Border, borderColor: c.line, backgroundColor: c.bg2 },

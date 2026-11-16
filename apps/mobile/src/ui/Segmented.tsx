@@ -43,5 +43,5 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   label:     { fontSize: FontSizes.sm, fontWeight: '600', color: c.text },
   labelOn:   { fontWeight: '700', color: c.white },
   badge:     { minWidth: 18, paddingHorizontal: 5, borderRadius: 9, overflow: 'hidden', backgroundColor: c.primary,
-               color: c.white, fontSize: 11, fontWeight: '800', textAlign: 'center' },
+               color: c.white, fontSize: FontSizes.tiny, fontWeight: '800', textAlign: 'center' },
 });

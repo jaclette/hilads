@@ -76,7 +76,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
     paddingHorizontal: Spacing.xl, paddingVertical: Spacing.xl, gap: Spacing.md,
   },
   party: { width: 80, height: 80, borderRadius: Radius.full, backgroundColor: c.primaryTint, alignItems: 'center', justifyContent: 'center', marginBottom: Spacing.sm },
-  title: { fontSize: 26, fontWeight: '800', color: c.text, textAlign: 'center', letterSpacing: -0.5 },
+  title: { fontSize: FontSizes.title, fontWeight: '800', color: c.text, textAlign: 'center', letterSpacing: -0.5 },
   subtitle: { fontSize: FontSizes.md, color: c.muted, textAlign: 'center', marginBottom: Spacing.sm },
   features: { alignSelf: 'stretch', gap: Spacing.md, marginTop: Spacing.sm },
   feature: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 14, paddingHorizontal: 16 },

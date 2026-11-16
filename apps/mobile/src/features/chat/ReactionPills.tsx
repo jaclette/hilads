@@ -8,7 +8,7 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import type { Reaction } from '@/types';
-import { Border, Radius, type ThemeColors } from '@/constants';
+import { FontSizes, Border, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles } from '@/context/ThemeContext';
 
 interface Props {
@@ -50,6 +50,6 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
                  borderWidth: Border, borderColor: c.line, backgroundColor: c.bg2 },
   pillActive:  { backgroundColor: c.primaryTint, borderColor: c.primary },
   emoji:       { fontSize: 14 },
-  count:       { fontSize: 12, fontWeight: '700', color: c.muted },
+  count:       { fontSize: FontSizes.tiny, fontWeight: '700', color: c.muted },
   countActive: { color: c.primaryOnTint },
 });

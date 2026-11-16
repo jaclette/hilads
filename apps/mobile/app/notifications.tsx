@@ -19,7 +19,7 @@ import {
   deleteNotifications, fetchInbox, markNotificationCategoriesRead, markNotificationsRead, markNotificationsSeen,
   markNotificationsUnread, NOTIF_CATEGORIES, type InboxItem, type NotifCategory,
 } from '@/api/notifications';
-import { Radius, type ThemeColors } from '@/constants';
+import { FontSizes, Radius, type ThemeColors } from '@/constants';
 import { IconButton, Screen, ScreenHeader } from '@/ui';
 import { tint } from '@/ui/joy';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
@@ -257,25 +257,25 @@ function Skeleton() {
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
   flex:          { flex: 1 },
   headerRight:   { flexDirection: 'row', alignItems: 'center', gap: 12 },
-  markAll:       { fontSize: 14, fontWeight: '800', color: c.primaryText },
+  markAll:       { fontSize: FontSizes.sm, fontWeight: '800', color: c.primaryText },
   chips:         { paddingHorizontal: 16, paddingBottom: 10, gap: 8 },
   chip:          { flexDirection: 'row', alignItems: 'center', gap: 6, height: 38, paddingHorizontal: 14, borderRadius: Radius.full,
                    borderWidth: 1.5, borderColor: c.line, backgroundColor: c.bg2 },
-  chipText:      { fontSize: 14, lineHeight: 18, fontWeight: '800', color: c.text },
+  chipText:      { fontSize: FontSizes.sm, lineHeight: 18, fontWeight: '800', color: c.text },
   chipCount:     { minWidth: 20, height: 20, paddingHorizontal: 5, borderRadius: 10, alignItems: 'center', justifyContent: 'center' },
-  chipCountText: { fontSize: 11, lineHeight: 14, fontWeight: '800', color: c.text },
+  chipCountText: { fontSize: FontSizes.tiny, lineHeight: 14, fontWeight: '800', color: c.text },
   list:          { paddingBottom: 32 },
   onlyBar:       { flexDirection: 'row', alignItems: 'center', gap: 10, marginHorizontal: 16, marginTop: 8, paddingVertical: 8, paddingLeft: 14, paddingRight: 8,
                    borderRadius: 16, backgroundColor: c.primaryTint },
-  onlyText:      { flex: 1, fontSize: 14, fontWeight: '800', color: c.primaryOnTint },
+  onlyText:      { flex: 1, fontSize: FontSizes.sm, fontWeight: '800', color: c.primaryOnTint },
   onlyAll:       { height: 30, paddingHorizontal: 12, borderRadius: 15, backgroundColor: c.bg2, justifyContent: 'center' },
-  onlyAllText:   { fontSize: 13, fontWeight: '800', color: c.text },
-  section:       { paddingHorizontal: 16, paddingTop: 16, paddingBottom: 4, fontSize: 13, lineHeight: 17, fontWeight: '800', color: c.muted, backgroundColor: c.bg },
+  onlyAllText:   { fontSize: FontSizes.xs, fontWeight: '800', color: c.text },
+  section:       { paddingHorizontal: 16, paddingTop: 16, paddingBottom: 4, fontSize: FontSizes.xs, lineHeight: 17, fontWeight: '800', color: c.muted, backgroundColor: c.bg },
   emptyWrap:     { flexGrow: 1 },
   empty:         { flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 40, paddingVertical: 60, gap: 16 },
   emptyBubble:   { width: 96, height: 96, borderRadius: 48, alignItems: 'center', justifyContent: 'center' },
   emptyEmoji:    { fontSize: 44, lineHeight: 54 },
-  emptyText:     { fontSize: 16, lineHeight: 22, fontWeight: '700', color: c.text, textAlign: 'center' },
+  emptyText:     { fontSize: FontSizes.body, lineHeight: 22, fontWeight: '700', color: c.text, textAlign: 'center' },
   sweep:         { position: 'absolute', top: 0, bottom: 0, left: 0 },
   skelRow:       { flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: 16, paddingVertical: 12 },
   skelAvatar:    { width: 46, height: 46, borderRadius: 23, backgroundColor: c.bg3 },

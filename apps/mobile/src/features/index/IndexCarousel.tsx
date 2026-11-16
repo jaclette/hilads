@@ -84,7 +84,7 @@ export function IndexCarousel({ refreshKey = 0, source = 'ranks' }: { refreshKey
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
   wrap:    { gap: 4 },
-  sub:     { fontSize: 13, fontWeight: '500', color: c.muted, marginBottom: 4 },
+  sub:     { fontSize: FontSizes.xs, fontWeight: '500', color: c.muted, marginBottom: 4 },
   row:     { gap: 10, paddingRight: 4 },
   card:    { width: CARD_W },
   all:     { alignItems: 'center', justifyContent: 'center', gap: 10, padding: 14, borderRadius: Radius.card, borderWidth: Border,

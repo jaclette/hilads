@@ -699,10 +699,10 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   shareToCity: { alignSelf: 'flex-start' },
 
   infoRow:       { flexDirection: 'row', alignItems: 'center', gap: 8, minHeight: 24 },
-  eventMeta:     { flex: 1, fontSize: 13, fontWeight: '500', color: c.muted },
+  eventMeta:     { flex: 1, fontSize: FontSizes.xs, fontWeight: '500', color: c.muted },
   goingLink:     { fontWeight: '700', color: c.text, textDecorationLine: 'underline' },
-  eventLocation: { flex: 1, fontSize: 13, fontWeight: '700', color: c.primaryText },
-  eventHost:     { flex: 1, fontSize: 13, fontWeight: '500', color: c.muted },
+  eventLocation: { flex: 1, fontSize: FontSizes.xs, fontWeight: '700', color: c.primaryText },
+  eventHost:     { flex: 1, fontSize: FontSizes.xs, fontWeight: '500', color: c.muted },
 
   errorBanner: { marginHorizontal: Spacing.md, marginTop: Spacing.sm },
 

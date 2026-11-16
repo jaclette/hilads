@@ -2157,7 +2157,7 @@ export default function ChallengeChatScreen() {
                 >
                   <View style={{ flex: 1 }}>
                     <Text style={styles.manageRowText}>{t(`visibility.badge.${opt}`)}</Text>
-                    <Text style={{ fontSize: FontSizes.sm - 1, color: colors.muted, marginTop: 2 }}>{hint}</Text>
+                    <Text style={{ fontSize: FontSizes.xs, color: colors.muted, marginTop: 2 }}>{hint}</Text>
                   </View>
                 </TouchableOpacity>
               );
@@ -2317,7 +2317,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   navCreatorRow:    { flexDirection: 'row', alignItems: 'center', gap: 5, marginTop: 2 },
   navCreatorTap:    { flexDirection: 'row', alignItems: 'center', gap: 5, flexShrink: 1 },
   navCreatorAvatar: { width: 14, height: 14, borderRadius: 7 },
-  navCreatorText:   { fontSize: 11, fontWeight: '600', color: c.muted, flexShrink: 1 },
+  navCreatorText:   { fontSize: FontSizes.xs, fontWeight: '600', color: c.muted, flexShrink: 1 },
   // Sized to roughly match the back-pill width so the title stays centered
   // without needing a manual right-side spacer.
   navEmoji:  { fontSize: 28, lineHeight: 32, minWidth: 64, textAlign: 'center' },
@@ -2338,7 +2338,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
     paddingHorizontal: 8, paddingVertical: 2,
     borderWidth:       Border, borderColor: c.primary,
   },
-  kindBadgeText: { fontSize: 10, fontWeight: '800', color: c.primaryOnTint, letterSpacing: 0.5 },
+  kindBadgeText: { fontSize: FontSizes.tiny, fontWeight: '800', color: c.primaryOnTint, letterSpacing: 0.5 },
 
   // Row so the leading stroke icon (checkmark / refresh / hourglass / live
   // dot) sits next to the label.
@@ -2347,7 +2347,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   statusPillLive:      { backgroundColor: c.goldTint, borderColor: c.gold },
   statusPillEnded:     { backgroundColor: c.bg3, borderColor: c.line },
   statusPillRestart:   { backgroundColor: c.cta, borderColor: 'transparent' },
-  statusPillText:      { fontSize: 10, fontWeight: '800', letterSpacing: 0.5 },
+  statusPillText:      { fontSize: FontSizes.xs, fontWeight: '800', letterSpacing: 0.5 },
   statusPillTextDone:  { color: c.localText },
   statusPillTextLive:  { color: c.gold },
   statusPillTextEnded: { color: c.mutedDim },
@@ -2362,7 +2362,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
     paddingHorizontal: 8, paddingVertical: 2,
     borderWidth:       Border, borderColor: c.primary,
   },
-  audiencePillText: { fontSize: 11, fontWeight: '700', color: c.primaryText, letterSpacing: 0.3 },
+  audiencePillText: { fontSize: FontSizes.xs, fontWeight: '700', color: c.primaryText, letterSpacing: 0.3 },
 
   // International chip - cyan, distinct from audience violet so Local vs
   // Intl reads at a glance (mirrors the NOW-card pattern from step 8).
@@ -2374,7 +2374,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
     borderWidth:       Border, borderColor: c.travelerText,
     flexShrink:        1,
   },
-  intlPillText: { fontSize: 11, fontWeight: '700', color: c.travelerText, letterSpacing: 0.3, flexShrink: 1 },
+  intlPillText: { fontSize: FontSizes.xs, fontWeight: '700', color: c.travelerText, letterSpacing: 0.3, flexShrink: 1 },
 
   // Share inline pill - same height/padding as the kind + audience pills so
   // the three sit on a single row without alignment drift. Orange brand tint
@@ -2386,7 +2386,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
     paddingHorizontal: 8, paddingVertical: 2,
     borderWidth:       Border, borderColor: c.primary,
   },
-  sharePillInlineText: { fontSize: 11, fontWeight: '700', color: c.primaryText, letterSpacing: 0.3 },
+  sharePillInlineText: { fontSize: FontSizes.xs, fontWeight: '700', color: c.primaryText, letterSpacing: 0.3 },
 
   // Share - V3 drops the legacy violet: same primary tint as the other
   // inline pills (kept as a separate style so it can diverge again).
@@ -2418,7 +2418,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
     backgroundColor: c.bg2, borderRadius: 10, borderWidth: Border, borderColor: c.line,
     paddingHorizontal: Spacing.md, paddingVertical: 6,
   },
-  groupMeetLine:  { flex: 1, fontSize: FontSizes.xs + 1, fontWeight: '600', color: c.muted },
+  groupMeetLine:  { flex: 1, fontSize: FontSizes.sm, fontWeight: '600', color: c.muted },
   groupStateText: { fontSize: FontSizes.sm, fontWeight: '700', color: c.green, textAlign: 'center', paddingVertical: 4 },
   groupPrimaryBtn: {
     // Solid fill = unmistakably tappable. The old translucent/outlined style
@@ -2511,10 +2511,10 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
     alignItems: 'center', justifyContent: 'center',
     overflow: 'hidden',
   },
-  challengerAvatarLetter: { color: c.white, fontWeight: '700', fontSize: 18 },
+  challengerAvatarLetter: { color: c.white, fontWeight: '700', fontSize: FontSizes.md },
   challengerInfo: { flex: 1, gap: 2, minWidth: 0 },
   challengerName: { fontSize: FontSizes.md, fontWeight: '700', color: c.text },
-  challengerTag:  { fontSize: 11, fontWeight: '800', color: c.primaryText, letterSpacing: 0.3 },
+  challengerTag:  { fontSize: FontSizes.xs, fontWeight: '800', color: c.primaryText, letterSpacing: 0.3 },
 
   // Inline quick-action group - Share is a labeled pill (verb is the
   // social hook), Accept is the compact icon-only round next to it.
@@ -2531,7 +2531,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
     borderColor:      c.primary,
     maxWidth:         200,
   },
-  sharePillText: { color: c.primaryText, fontSize: 12, fontWeight: '800', letterSpacing: 0.1 },
+  sharePillText: { color: c.primaryText, fontSize: FontSizes.xs, fontWeight: '800', letterSpacing: 0.1 },
   quickBtn: {
     width:           36,
     height:          36,

@@ -65,7 +65,7 @@ function DateSeparator({ label }: { label: string }) {
 const makeSepStyles = (c: ThemeColors) => StyleSheet.create({
   row:  { flexDirection: 'row', alignItems: 'center', marginVertical: 16, paddingHorizontal: Spacing.md, gap: 10 },
   line: { flex: 1, height: 1, backgroundColor: c.line },
-  text: { fontSize: 12, fontWeight: '700', color: c.muted },
+  text: { fontSize: FontSizes.xs, fontWeight: '700', color: c.muted },
 });
 
 // ── Message row ───────────────────────────────────────────────────────────────
@@ -156,8 +156,8 @@ const makeDmLocStyles = (c: ThemeColors) => StyleSheet.create({
   cardMine:    { backgroundColor: c.caramel, borderTopRightRadius: 6 },
   icon:        { marginTop: 1, flexShrink: 0 },
   body:        { flex: 1, flexShrink: 1, minWidth: 0, gap: 3 },
-  line1:       { fontSize: 14, fontWeight: '700', color: c.text, lineHeight: 20 },
-  addr:        { fontSize: 12, fontWeight: '400', color: c.muted, lineHeight: 17 },
+  line1:       { fontSize: FontSizes.sm, fontWeight: '700', color: c.text, lineHeight: 20 },
+  addr:        { fontSize: FontSizes.xs, fontWeight: '400', color: c.muted, lineHeight: 17 },
   textMine:    { color: c.white },
   addrMine:    { color: c.onCaramelMuted },
   tapHint:     { fontSize: FontSizes.xs, fontWeight: '600', color: c.primaryText, marginTop: 2 },
@@ -1000,9 +1000,9 @@ const makeDmReplyStyles = (c: ThemeColors) => StyleSheet.create({
   quote:      { marginBottom: 6, paddingLeft: 8, paddingVertical: 2, borderLeftWidth: 3 },
   quoteOther: { borderLeftColor: c.primary },
   quoteMine:  { borderLeftColor: c.onCaramelMuted },
-  name:       { fontSize: 12, fontWeight: '700', color: c.primaryText, lineHeight: 16 },
+  name:       { fontSize: FontSizes.xs, fontWeight: '700', color: c.primaryText, lineHeight: 16 },
   nameMine:   { color: c.white },
-  text:       { fontSize: 12, fontWeight: '400', color: c.muted, lineHeight: 16 },
+  text:       { fontSize: FontSizes.xs, fontWeight: '400', color: c.muted, lineHeight: 16 },
   textMine:   { color: c.onCaramelMuted },
 });
 
@@ -1010,8 +1010,8 @@ const makeDmComposerReplyStyles = (c: ThemeColors) => StyleSheet.create({
   strip:   { flexDirection: 'row', alignItems: 'center', gap: 10, paddingLeft: Spacing.md, paddingRight: 6, paddingVertical: 4,
              backgroundColor: c.bg2, borderTopWidth: 1, borderTopColor: c.line, borderLeftWidth: 3, borderLeftColor: c.primary },
   body:    { flex: 1, minWidth: 0 },
-  name:    { fontSize: 12, fontWeight: '700', color: c.primaryText, marginBottom: 2 },
-  preview: { fontSize: 12, fontWeight: '400', color: c.muted },
+  name:    { fontSize: FontSizes.xs, fontWeight: '700', color: c.primaryText, marginBottom: 2 },
+  preview: { fontSize: FontSizes.xs, fontWeight: '400', color: c.muted },
   close:   { width: 44, height: 44, alignItems: 'center', justifyContent: 'center' },
 });
 
@@ -1019,8 +1019,8 @@ const makeDmComposerEditStyles = (c: ThemeColors) => StyleSheet.create({
   strip:   { flexDirection: 'row', alignItems: 'center', gap: 10, paddingLeft: Spacing.md, paddingRight: 6, paddingVertical: 4,
              backgroundColor: c.primaryTint, borderTopWidth: 1, borderTopColor: c.line },
   body:    { flex: 1, minWidth: 0 },
-  name:    { fontSize: 12, fontWeight: '700', color: c.primaryOnTint, marginBottom: 2 },
-  preview: { fontSize: 12, fontWeight: '400', color: c.primaryOnTint },
+  name:    { fontSize: FontSizes.xs, fontWeight: '700', color: c.primaryOnTint, marginBottom: 2 },
+  preview: { fontSize: FontSizes.xs, fontWeight: '400', color: c.primaryOnTint },
 });
 
 // ── Styles ────────────────────────────────────────────────────────────────────
@@ -1036,7 +1036,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   headerTap:  { flex: 1, flexDirection: 'row', alignItems: 'center', gap: 10, minHeight: 44 },
   headerInfo: { flex: 1, minWidth: 0 },
   headerName: { fontSize: FontSizes.md, fontWeight: '800', color: c.text },
-  headerSub:  { fontSize: 12, fontWeight: '400', color: c.muted },
+  headerSub:  { fontSize: FontSizes.xs, fontWeight: '400', color: c.muted },
 
   center:          { flex: 1, alignItems: 'center', justifyContent: 'center', padding: Spacing.lg },
   errorBanner:     { flexDirection: 'row', alignItems: 'center', gap: 8, minHeight: 44, marginHorizontal: Spacing.md, marginTop: 6,
@@ -1044,7 +1044,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   errorBannerText: { flex: 1, fontSize: FontSizes.xs, fontWeight: '600', color: c.red },
   listContent:      { paddingHorizontal: Spacing.md, paddingVertical: 16 },
   loadingOlderWrap: { paddingVertical: 14, alignItems: 'center' },
-  beginningText:    { fontSize: 12, fontWeight: '600', color: c.muted },
+  beginningText:    { fontSize: FontSizes.xs, fontWeight: '600', color: c.muted },
   emptyWrap:        { flex: 1, justifyContent: 'center', padding: Spacing.lg },
 
   // ── Rows and bubbles (same look as the city chat) ──
@@ -1066,14 +1066,14 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   bubbleText:      { fontSize: FontSizes.sm, fontWeight: '400', color: c.text, lineHeight: 20 },
   bubbleTextMine:  { color: c.white },
   tombstone:       { fontStyle: 'italic', color: c.muted },
-  edited:          { fontSize: 11, fontWeight: '400', color: c.muted },
+  edited:          { fontSize: FontSizes.xs, fontWeight: '400', color: c.muted },
   editedMine:      { color: c.onCaramelMuted },
   imageBubble:     { borderRadius: 18, overflow: 'hidden' },
   bubbleImage:     { width: 240, height: 200 },
   metaRow:         { marginTop: 3, paddingHorizontal: 2 },
   metaRowMine:     { alignItems: 'flex-end' },
-  metaText:        { fontSize: 11, fontWeight: '400', color: c.mutedDim },
-  metaTextFailed:  { fontSize: 11, fontWeight: '600', color: c.red },
+  metaText:        { fontSize: FontSizes.xs, fontWeight: '400', color: c.mutedDim },
+  metaTextFailed:  { fontSize: FontSizes.xs, fontWeight: '600', color: c.red },
 
   // ── Composer (same look as the city chat composer) ──
   composer:         { flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: Spacing.md, paddingVertical: 10,
@@ -1085,7 +1085,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   emojiBtn:         { width: 44, height: 44, flexShrink: 0, alignItems: 'center', justifyContent: 'center', borderRadius: Radius.full, marginHorizontal: -4 },
   emojiBtnActive:   { backgroundColor: c.primaryTint },
   input:            { flex: 1, minWidth: 0, minHeight: 44, maxHeight: 130, backgroundColor: c.bg2, borderRadius: 22, borderWidth: Border,
-                      borderColor: c.line, paddingHorizontal: 16, paddingVertical: 11, color: c.text, fontSize: 15, fontWeight: '400', lineHeight: 20 },
+                      borderColor: c.line, paddingHorizontal: 16, paddingVertical: 11, color: c.text, fontSize: FontSizes.body, fontWeight: '400', lineHeight: 20 },
   sendBtn:          { width: 44, height: 44, borderRadius: Radius.full, backgroundColor: c.primary, alignItems: 'center', justifyContent: 'center' },
   sendBtnOff:       { opacity: 0.35 },
 });

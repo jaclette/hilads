@@ -100,10 +100,10 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   name:       { fontSize: FontSizes.sm, fontWeight: '800', color: c.text },
   chips:      { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
   theme:      { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 8, paddingVertical: 2, borderRadius: Radius.full, backgroundColor: c.primaryTint },
-  themeText:  { fontSize: 12, fontWeight: '700', color: c.primaryOnTint },
+  themeText:  { fontSize: FontSizes.xs, fontWeight: '700', color: c.primaryOnTint },
   local:      { flexDirection: 'row', alignItems: 'center', gap: 3, paddingHorizontal: 8, paddingVertical: 2, borderRadius: Radius.full, backgroundColor: c.localBg },
-  localText:  { fontSize: 12, fontWeight: '700', color: c.localText },
+  localText:  { fontSize: FontSizes.xs, fontWeight: '700', color: c.localText },
   metaRow:    { flexDirection: 'row', alignItems: 'center', gap: 10 },
-  meta:       { fontSize: 12, fontWeight: '600', color: c.muted },
+  meta:       { fontSize: FontSizes.xs, fontWeight: '600', color: c.muted },
   votes:      { flexDirection: 'row', alignItems: 'center', gap: 3 },
 });

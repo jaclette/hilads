@@ -191,7 +191,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   input:     { flex: 1, paddingVertical: 10, fontSize: FontSizes.sm, color: c.white },
   send:      { width: 32, height: 32, borderRadius: 16, backgroundColor: c.cta, alignItems: 'center', justifyContent: 'center' },
   quick:     { width: 40, height: 44, alignItems: 'center', justifyContent: 'center' },
-  quickText: { fontSize: 26 },
+  quickText: { fontSize: FontSizes.xl },
   float:     { position: 'absolute', top: 0, fontSize: 30 },
   mentions:  { marginHorizontal: 12, marginBottom: 4, borderRadius: Radius.card, overflow: 'hidden' },
   toast:     { alignSelf: 'center', marginBottom: 6, paddingHorizontal: 14, paddingVertical: 7, borderRadius: Radius.full, backgroundColor: 'rgba(0,0,0,0.7)' },

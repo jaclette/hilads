@@ -461,11 +461,11 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   tile:        { alignItems: 'center', justifyContent: 'center', gap: 6, borderRadius: Radius.card, borderWidth: Border,
                  borderColor: c.line, backgroundColor: c.bg2 },
   tileOn:      { borderColor: c.primary, backgroundColor: c.primaryTint },
-  tileLabel:   { fontSize: 12, fontWeight: '700', color: c.muted },
+  tileLabel:   { fontSize: FontSizes.xs, fontWeight: '700', color: c.muted },
   tileLabelOn: { color: c.primaryOnTint },
   presetRow:   { flexDirection: 'row', gap: 8 },
   presetTile:  { flex: 1, paddingVertical: 14, paddingHorizontal: 6 },
-  presetDesc:  { fontSize: 11, fontWeight: '500', color: c.muted, textAlign: 'center' },
+  presetDesc:  { fontSize: FontSizes.xs, fontWeight: '500', color: c.muted, textAlign: 'center' },
 
   clearDate: { width: 44, height: 44, alignItems: 'center', justifyContent: 'center' },
 

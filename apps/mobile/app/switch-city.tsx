@@ -428,7 +428,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   card:           { paddingHorizontal: 14, paddingVertical: 12, gap: 6 },
   cardActive:     { borderColor: c.primary },
   cardTop:        { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  cityName:       { flex: 1, fontSize: 15, fontWeight: '700', color: c.text },
+  cityName:       { flex: 1, fontSize: FontSizes.body, fontWeight: '700', color: c.text },
   statsRow:       { flexDirection: 'row', flexWrap: 'wrap', columnGap: 12, rowGap: 2, paddingLeft: 16 },
   stat:           { fontSize: FontSizes.xs, fontWeight: '600', color: c.muted },
   statStrong:     { fontSize: FontSizes.xs, fontWeight: '700', color: c.primaryText },

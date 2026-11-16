@@ -69,6 +69,6 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   numberRow:   { flexDirection: 'row', alignItems: 'center', gap: 12 },
   unit:        { fontSize: FontSizes.md, fontWeight: '700', color: c.text, maxWidth: '45%' },
   textWrap:    { gap: 4 },
-  counter:     { alignSelf: 'flex-end', fontSize: 12, color: c.muted },
+  counter:     { alignSelf: 'flex-end', fontSize: FontSizes.xs, color: c.muted },
   counterNear: { color: c.primaryText, fontWeight: '700' },
 });

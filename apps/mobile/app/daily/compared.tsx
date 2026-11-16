@@ -194,7 +194,7 @@ export default function ComparedScreen() {
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
   loading:      { marginTop: 40 },
   body:         { paddingHorizontal: Spacing.md, paddingBottom: 40, gap: 12 },
-  sub:          { fontSize: 15, lineHeight: 20, fontWeight: '500', color: c.muted },
+  sub:          { fontSize: FontSizes.body, lineHeight: 20, fontWeight: '500', color: c.muted },
   muted:        { fontSize: FontSizes.sm, color: c.muted, textAlign: 'center', paddingVertical: 16 },
   section:      { gap: 10, marginTop: 4 },
   focused:      { borderColor: c.primary },
@@ -211,7 +211,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   pairCols:     { flexDirection: 'row', gap: 10 },
   pairCol:      { flex: 1, gap: 2 },
   pairCity:     { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  pairCityName: { flexShrink: 1, fontSize: 13, fontWeight: '600', color: c.muted },
+  pairCityName: { flexShrink: 1, fontSize: FontSizes.xs, fontWeight: '600', color: c.muted },
   pairValue:    { fontSize: FontSizes.md, fontWeight: '800', color: c.text },
   sheet:        { gap: 6, maxHeight: '80%' },
   sheetTitle:   { fontSize: FontSizes.md, fontWeight: '800', color: c.text, marginBottom: 4 },

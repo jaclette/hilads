@@ -137,9 +137,9 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   btnOn:     { borderColor: c.primary, backgroundColor: c.primaryTint },
   count:     { flexShrink: 1, fontSize: FontSizes.sm, fontWeight: '700', color: c.text },
   countTile: { fontSize: FontSizes.xs },
-  countStrip: { fontSize: 12, lineHeight: 15, fontWeight: '700', textAlign: 'center' },
+  countStrip: { fontSize: FontSizes.xs, lineHeight: 16, fontWeight: '700', textAlign: 'center' },
   white:     { color: c.white },
   subWrap:   { flexShrink: 1 },
-  sub:       { fontSize: 11, fontWeight: '600', color: c.muted },
+  sub:       { fontSize: FontSizes.xs, fontWeight: '600', color: c.muted },
   subDark:   { color: c.onCaramelMuted },
 });

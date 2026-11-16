@@ -40,7 +40,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
     padding:         Spacing.xl,
   },
   logo: {
-    fontSize:      40,
+    fontSize:      FontSizes.hero,
     fontWeight:    '800',
     color:         c.primaryText,
     letterSpacing: -1,

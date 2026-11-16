@@ -3,7 +3,7 @@ import { Pressable, Text, View, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import Animated, { useAnimatedStyle, useReducedMotion, useSharedValue, withDelay, withSpring, withTiming, Easing } from 'react-native-reanimated';
 import { useTranslation } from 'react-i18next';
-import { Radius, type ThemeColors } from '@/constants';
+import { FontSizes, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { Confetti, FlagSticker, tint } from '@/ui/joy';
 
@@ -177,36 +177,36 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   step:        { flex: 1, alignItems: 'center', maxWidth: 130 },
   lead:        { alignItems: 'center', marginBottom: 6 },
   crown:       { fontSize: 24, lineHeight: 30, marginBottom: -4 },
-  podiumName:  { fontSize: 13, lineHeight: 17, fontWeight: '800', color: c.text, maxWidth: '100%' },
-  podiumValue: { fontSize: 13, lineHeight: 17, fontWeight: '700', color: c.muted, marginBottom: 6 },
+  podiumName:  { fontSize: FontSizes.xs, lineHeight: 17, fontWeight: '800', color: c.text, maxWidth: '100%' },
+  podiumValue: { fontSize: FontSizes.xs, lineHeight: 17, fontWeight: '700', color: c.muted, marginBottom: 6 },
   block:       { width: '100%', borderTopLeftRadius: 14, borderTopRightRadius: 14, alignItems: 'center', paddingTop: 8, overflow: 'hidden' },
-  blockRank:   { fontSize: 26, lineHeight: 32, fontWeight: '900', color: '#2A1C13' },
+  blockRank:   { fontSize: FontSizes.xl, lineHeight: 32, fontWeight: '800', color: '#2A1C13' },
   ghostLead:   { width: 56, height: 56, borderRadius: 28, borderWidth: 2, borderStyle: 'dashed', alignItems: 'center', justifyContent: 'center' },
-  ghostLabel:  { fontSize: 13, lineHeight: 17, fontWeight: '800', color: c.text, textAlign: 'center', marginBottom: 6, minHeight: 34 },
+  ghostLabel:  { fontSize: FontSizes.xs, lineHeight: 17, fontWeight: '800', color: c.text, textAlign: 'center', marginBottom: 6, minHeight: 34 },
   ghostMuted:  { color: c.muted, fontWeight: '700' },
   ghostBlock:  { width: '100%', borderRadius: 14, borderWidth: 2, borderStyle: 'dashed', alignItems: 'center', paddingTop: 6 },
-  ghostRank:   { fontSize: 24, lineHeight: 30, fontWeight: '900', color: c.muted },
+  ghostRank:   { fontSize: FontSizes.xl, lineHeight: 30, fontWeight: '800', color: c.muted },
   toggle:      { flexDirection: 'row', alignItems: 'center', height: 34, padding: 3, borderRadius: 17, backgroundColor: c.bg2, borderWidth: 1.5, borderColor: c.line, flexShrink: 0 },
   toggleThumb: { position: 'absolute', left: 3, top: 3, bottom: 3, borderRadius: 14, backgroundColor: MEDAL[0] },
   toggleSide:  { flexDirection: 'row', alignItems: 'center', gap: 5, height: 28, paddingHorizontal: 10 },
-  toggleText:  { fontSize: 13, lineHeight: 17, fontWeight: '800', color: c.text },
+  toggleText:  { fontSize: FontSizes.xs, lineHeight: 17, fontWeight: '800', color: c.text },
   toggleTextOn: { color: c.onGold },
   toggleCity:  { maxWidth: 96 },
   row:         { flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 10, paddingHorizontal: 12, borderRadius: Radius.card },
   rowMine:     { backgroundColor: c.primaryTint },
-  rank:        { width: 28, fontSize: 16, fontWeight: '900', color: c.muted, textAlign: 'center' },
+  rank:        { width: 28, fontSize: FontSizes.body, fontWeight: '800', color: c.muted, textAlign: 'center' },
   rowBody:     { flex: 1, gap: 2 },
-  rowTitle:    { fontSize: 15, lineHeight: 20, fontWeight: '800', color: c.text },
+  rowTitle:    { fontSize: FontSizes.body, lineHeight: 20, fontWeight: '800', color: c.text },
   rowSub:      { flexDirection: 'row', alignItems: 'center', gap: 6, flexWrap: 'wrap' },
   pill:        { paddingHorizontal: 10, height: 28, borderRadius: 14, backgroundColor: tint('#FFC93C', 0.25), alignItems: 'center', justifyContent: 'center' },
-  pillText:    { fontSize: 13, fontWeight: '800', color: c.text },
-  move:        { fontSize: 13, fontWeight: '800', minWidth: 28, textAlign: 'right' },
+  pillText:    { fontSize: FontSizes.xs, fontWeight: '800', color: c.text },
+  move:        { fontSize: FontSizes.xs, fontWeight: '800', minWidth: 28, textAlign: 'right' },
   newChip:     { paddingHorizontal: 6, height: 20, borderRadius: 10, backgroundColor: c.primaryTint, justifyContent: 'center' },
-  newText:     { fontSize: 11, fontWeight: '800', color: c.primaryOnTint },
+  newText:     { fontSize: FontSizes.xs, fontWeight: '800', color: c.primaryOnTint },
   youWrap:     { position: 'absolute', left: 12, right: 12, bottom: 10 },
   you:         { minHeight: 52, paddingHorizontal: 16, paddingVertical: 10, borderRadius: Radius.full, backgroundColor: c.text, justifyContent: 'center',
                  shadowColor: '#000', shadowOpacity: 0.18, shadowRadius: 10, shadowOffset: { width: 0, height: 4 }, elevation: 4 },
-  youText:     { fontSize: 15, lineHeight: 20, fontWeight: '800', color: c.bg },
+  youText:     { fontSize: FontSizes.body, lineHeight: 20, fontWeight: '800', color: c.bg },
   track:       { height: 8, borderRadius: 4, backgroundColor: c.bg3, overflow: 'hidden', marginTop: 4 },
   fill:        { height: 8, borderRadius: 4 },
 });

@@ -5,7 +5,7 @@ import { Image } from 'expo-image';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import * as Haptics from 'expo-haptics';
-import { Radius, type ThemeColors } from '@/constants';
+import { FontSizes, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { Avatar } from '@/ui';
 import { tint } from '@/ui/joy';
@@ -113,14 +113,14 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
                 alignItems: 'center', justifyContent: 'center' },
   catEmoji:   { fontSize: 11, lineHeight: 14 },
   body:       { flex: 1, gap: 2 },
-  sentence:   { fontSize: 15, lineHeight: 20, color: c.text },
+  sentence:   { fontSize: FontSizes.body, lineHeight: 20, color: c.text },
   bold:       { fontWeight: '800' },
-  quote:      { fontSize: 14, lineHeight: 19, color: c.muted },
-  time:       { fontSize: 12, lineHeight: 16, fontWeight: '700', color: c.muted, marginTop: 2 },
+  quote:      { fontSize: FontSizes.sm, lineHeight: 19, color: c.muted },
+  time:       { fontSize: FontSizes.xs, lineHeight: 16, fontWeight: '700', color: c.muted, marginTop: 2 },
   thumb:      { width: 48, height: 48, borderRadius: 10, backgroundColor: c.bg3 },
   dot:        { position: 'absolute', right: 8, top: '50%', width: 8, height: 8, borderRadius: 4 },
   action:     { width: 96, alignItems: 'center', justifyContent: 'center', gap: 4 },
   actionLeft: { borderTopRightRadius: Radius.card, borderBottomRightRadius: Radius.card },
   actionRight: { borderTopLeftRadius: Radius.card, borderBottomLeftRadius: Radius.card },
-  actionText: { fontSize: 12, fontWeight: '800', color: c.white },
+  actionText: { fontSize: FontSizes.xs, fontWeight: '800', color: c.white },
 });

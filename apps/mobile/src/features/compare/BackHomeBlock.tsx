@@ -53,6 +53,6 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   label:    { flexShrink: 1, fontSize: FontSizes.xs, fontWeight: '700', color: c.white },
   none:     { fontSize: FontSizes.xs, color: c.onCaramelMuted },
   price:    { fontSize: FontSizes.xs, fontWeight: '700', color: c.white },
-  original: { fontSize: 11, fontWeight: '500', color: c.onCaramelMuted },
+  original: { fontSize: FontSizes.xs, fontWeight: '500', color: c.onCaramelMuted },
   line:     { fontSize: FontSizes.xs, fontStyle: 'italic', color: c.onCaramelMuted },
 });

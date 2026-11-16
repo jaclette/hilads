@@ -9,7 +9,7 @@ import * as MediaLibrary from 'expo-media-library';
 import { useTranslation } from 'react-i18next';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import { Radius, type ThemeColors } from '@/constants';
+import { FontSizes, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { IconButton } from '@/ui';
 import { Image } from 'expo-image';
@@ -255,5 +255,5 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   actionBtn:     { flexDirection: 'row', alignItems: 'center', gap: 8, minHeight: 44, paddingHorizontal: 18, borderRadius: Radius.full,
                    backgroundColor: c.photoControl },
   actionBtnBusy: { opacity: 0.5 },
-  actionLabel:   { color: c.white, fontSize: 15, fontWeight: '700' },
+  actionLabel:   { color: c.white, fontSize: FontSizes.body, fontWeight: '700' },
 });

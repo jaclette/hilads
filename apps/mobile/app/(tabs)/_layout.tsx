@@ -157,10 +157,10 @@ const styles = StyleSheet.create({
     minHeight:      56,
     borderRadius:   16,
   },
-  label:       { fontSize: FontSizes.tiny + 1, fontWeight: '600' },
+  label:       { fontSize: FontSizes.xs, fontWeight: '600' },
   badge:       { position: 'absolute', top: -5, right: -10, minWidth: 18, height: 18, paddingHorizontal: 4, borderRadius: 9,
                  borderWidth: 2, alignItems: 'center', justifyContent: 'center' },
-  badgeText:   { fontSize: 10, lineHeight: 12, fontWeight: '800' },
+  badgeText:   { fontSize: FontSizes.tiny, lineHeight: 14, fontWeight: '800' },
   dot:         { position: 'absolute', top: -2, right: -4, width: 11, height: 11, borderRadius: 6, borderWidth: 2 },
   labelActive: { fontWeight: '700' },
 });

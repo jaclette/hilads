@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { ImageBackground, ScrollView, Text, View, StyleSheet } from 'react-native';
-import { type ThemeColors } from '@/constants';
+import { FontSizes, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { Screen, ScreenHeader } from '@/ui';
 import {
@@ -78,22 +78,22 @@ export default function DesignGallery() {
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
   body:      { padding: 16, gap: 12, paddingBottom: 60 },
-  h:         { marginTop: 14, fontSize: 12, fontWeight: '800', color: c.muted, textTransform: 'uppercase', letterSpacing: 0.6 },
+  h:         { marginTop: 14, fontSize: FontSizes.xs, fontWeight: '800', color: c.muted, textTransform: 'uppercase', letterSpacing: 0.6 },
   row:       { flexDirection: 'row', alignItems: 'center', gap: 10 },
-  tag:       { fontSize: 13, fontWeight: '500', color: c.muted },
-  title:     { fontSize: 19, lineHeight: 26, fontWeight: '800', color: c.text, letterSpacing: -0.3 },
-  screenTitle: { fontSize: 28, lineHeight: 34, fontWeight: '800', color: c.text, letterSpacing: -0.3 },
+  tag:       { fontSize: FontSizes.xs, fontWeight: '500', color: c.muted },
+  title:     { fontSize: FontSizes.lg, lineHeight: 26, fontWeight: '800', color: c.text, letterSpacing: -0.3 },
+  screenTitle: { fontSize: FontSizes.xxl, lineHeight: 39, fontWeight: '800', color: c.text, letterSpacing: -0.3 },
   wrap:      { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
-  colored:   { fontSize: 15, fontWeight: '800' },
+  colored:   { fontSize: FontSizes.body, fontWeight: '800' },
   swatch:    { width: 36, height: 36, borderRadius: 18 },
   photo:     { height: 240, justifyContent: 'flex-end', padding: 16, gap: 12 },
   photoImg:  { borderRadius: 24 },
   onPhotoBtn: { alignSelf: 'stretch' },
   photoBubble: { position: 'absolute', top: 20, left: 16 },
-  link:      { fontSize: 15, fontWeight: '800' },
+  link:      { fontSize: FontSizes.body, fontWeight: '800' },
   cmpRow:    { flexDirection: 'row', alignItems: 'center', gap: 12, padding: 12, borderRadius: 16, backgroundColor: c.bg2, borderWidth: 1.5, borderColor: c.line },
-  city:      { fontSize: 12, fontWeight: '700', color: c.muted },
-  price:     { fontSize: 12, fontWeight: '700', color: c.text },
+  city:      { fontSize: FontSizes.xs, fontWeight: '700', color: c.muted },
+  price:     { fontSize: FontSizes.xs, fontWeight: '700', color: c.text },
   header:    { height: 70, justifyContent: 'center', paddingHorizontal: 4 },
   party:     { height: 220, alignItems: 'center', justifyContent: 'center', gap: 10, borderRadius: 20, backgroundColor: c.bg2, overflow: 'hidden' },
 });

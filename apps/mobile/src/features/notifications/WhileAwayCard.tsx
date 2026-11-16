@@ -6,7 +6,7 @@ import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import * as Haptics from 'expo-haptics';
 import { Ionicons } from '@expo/vector-icons';
-import { Radius, type ThemeColors } from '@/constants';
+import { FontSizes, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { useApp } from '@/context/AppContext';
 import { Avatar } from '@/ui';
@@ -235,9 +235,9 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   stack:  { height: 34 },
   avatar: { position: 'absolute', top: 0, borderRadius: 17, borderWidth: 2, borderColor: c.primaryTint },
   body:   { flex: 1 },
-  title:  { fontSize: 12, lineHeight: 16, fontWeight: '800', color: c.primaryOnTint },
-  line:   { fontSize: 14, lineHeight: 19, fontWeight: '700', color: c.text, marginTop: 1 },
+  title:  { fontSize: FontSizes.xs, lineHeight: 16, fontWeight: '800', color: c.primaryOnTint },
+  line:   { fontSize: FontSizes.sm, lineHeight: 19, fontWeight: '700', color: c.text, marginTop: 1 },
   more:   { minWidth: 34, height: 26, paddingHorizontal: 8, borderRadius: 13, backgroundColor: c.primary, alignItems: 'center', justifyContent: 'center' },
-  moreText: { fontSize: 13, lineHeight: 17, fontWeight: '800', color: c.white },
+  moreText: { fontSize: FontSizes.xs, lineHeight: 17, fontWeight: '800', color: c.white },
   close:  { width: 32, height: 32, borderRadius: 16, alignItems: 'center', justifyContent: 'center' },
 });

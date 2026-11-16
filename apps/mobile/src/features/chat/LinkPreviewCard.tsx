@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Image, Linking, Pressable, StyleSheet, Text, View } from 'react-native';
 import { getLinkPreview, type LinkPreview } from '@/lib/linkPreviewCache';
-import { type ThemeColors } from '@/constants';
+import { FontSizes, type ThemeColors } from '@/constants';
 import { useThemedStyles } from '@/context/ThemeContext';
 
 interface Props {
@@ -67,8 +67,8 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   cardMine: { backgroundColor: c.caramel, borderColor: c.onCaramelMuted },
   image:    { width: 80, height: 80, backgroundColor: c.bg3 },
   body:     { flex: 1, paddingHorizontal: 10, paddingVertical: 8, justifyContent: 'center', gap: 2 },
-  site:     { fontSize: 11, fontWeight: '600', letterSpacing: 0.5, color: c.muted },
-  title:    { fontSize: 13, fontWeight: '700', color: c.text, lineHeight: 17 },
-  desc:     { fontSize: 12, fontWeight: '400', color: c.muted, lineHeight: 16, marginTop: 1 },
+  site:     { fontSize: FontSizes.xs, fontWeight: '600', letterSpacing: 0.5, color: c.muted },
+  title:    { fontSize: FontSizes.xs, fontWeight: '700', color: c.text, lineHeight: 17 },
+  desc:     { fontSize: FontSizes.xs, fontWeight: '400', color: c.muted, lineHeight: 16, marginTop: 1 },
   textMine: { color: c.white },
 });

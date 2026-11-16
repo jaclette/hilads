@@ -61,6 +61,6 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   tab:          { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: Spacing.md, paddingTop: 10, paddingBottom: 6, overflow: 'hidden' },
   tabText:      { flexShrink: 1, gap: 2, zIndex: 1 },
   artSlot:      { alignSelf: 'stretch', flexGrow: 1, flexShrink: 0, minWidth: 0, marginVertical: -10 },
-  tabTitle:     { fontSize: 26, fontWeight: '800', color: c.text, letterSpacing: -0.3 },
-  subtitle:     { fontSize: 14, lineHeight: 19, fontWeight: '500', color: c.muted },
+  tabTitle:     { fontSize: FontSizes.title, fontWeight: '800', color: c.text, letterSpacing: -0.3 },
+  subtitle:     { fontSize: FontSizes.sm, lineHeight: 19, fontWeight: '500', color: c.muted },
 });

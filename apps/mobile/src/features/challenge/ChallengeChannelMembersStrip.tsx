@@ -141,7 +141,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
     overflow:        'hidden',
     borderWidth:     2, borderColor: c.bg,
   },
-  avatarText: { color: c.white, fontWeight: '700', fontSize: 11 },
+  avatarText: { color: c.white, fontWeight: '700', fontSize: FontSizes.xs },
   countLabel: { flex: 1, fontSize: FontSizes.sm, color: c.text, fontWeight: '600' },
   seeAll:     { fontSize: FontSizes.sm, color: c.primaryText, fontWeight: '700' },
 });

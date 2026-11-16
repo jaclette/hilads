@@ -155,7 +155,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
     borderColor:     c.primary,
   },
   number: {
-    fontWeight:        '900',
+    fontWeight:        '800',
     letterSpacing:     -0.5,
     includeFontPadding: false,
   },

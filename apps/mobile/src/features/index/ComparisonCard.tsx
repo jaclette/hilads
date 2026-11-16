@@ -93,6 +93,6 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   city:  { flex: 1, fontSize: FontSizes.sm, fontWeight: '700', color: c.text },
   value: { maxWidth: '55%', fontSize: FontSizes.sm, fontWeight: '800', color: c.text, fontVariant: ['tabular-nums'] },
   word:  { fontWeight: '700' },
-  more:  { fontSize: 12, fontWeight: '600', color: c.muted },
+  more:  { fontSize: FontSizes.xs, fontWeight: '600', color: c.muted },
   fun:   { fontSize: FontSizes.sm, fontWeight: '700', color: c.primaryText, marginTop: 2 },
 });

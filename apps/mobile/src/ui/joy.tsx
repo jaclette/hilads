@@ -5,7 +5,7 @@ import Svg, { Path } from 'react-native-svg';
 import { Image } from 'expo-image';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '@/context/ThemeContext';
-import { Highlight } from '@/constants';
+import { FontSizes, Highlight } from '@/constants';
 import { FLAGS } from './flags';
 import { ThemeIcon } from './ThemeIcon';
 
@@ -221,9 +221,9 @@ const styles = StyleSheet.create({
   tail:       { position: 'absolute', transform: [{ rotate: '45deg' }], borderRadius: 2 },
   hl:         { fontWeight: '800', borderRadius: 6 },
   btn:        { height: 52, borderRadius: 16, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, paddingHorizontal: 18 },
-  btnText:    { fontSize: 16, fontWeight: '800', color: INK },
+  btnText:    { fontSize: FontSizes.body, fontWeight: '800', color: INK },
   chip:       { alignSelf: 'flex-start', flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 11, paddingVertical: 6, borderRadius: 999 },
-  chipText:   { fontSize: 13, fontWeight: '800' },
+  chipText:   { fontSize: FontSizes.xs, fontWeight: '800' },
   stamp:      { borderWidth: 2.5, borderStyle: 'dashed', alignItems: 'center', justifyContent: 'center' },
   stampLabel: { fontSize: 11, fontWeight: '700', textAlign: 'center' },
   lockup:     { flexDirection: 'row', alignItems: 'center', gap: 8 },

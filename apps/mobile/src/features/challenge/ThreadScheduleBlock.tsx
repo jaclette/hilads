@@ -334,7 +334,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   bandTextWrap: { flex: 1, minWidth: 0 },
   bandTitle:    { fontSize: FontSizes.sm, fontWeight: '800', color: c.text },
   bandTitleScheduled: { fontSize: FontSizes.sm, fontWeight: '800', color: c.localText },
-  bandSubtitle: { fontSize: 12, color: c.muted, marginTop: 2 },
+  bandSubtitle: { fontSize: FontSizes.xs, color: c.muted, marginTop: 2 },
   bandActions:  { flexDirection: 'row', gap: 6 },
 
   proposeCta: {
@@ -349,7 +349,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
     borderWidth: Border,
     borderColor: c.primary,
   },
-  proposeCtaText: { color: c.primaryText, fontWeight: '800', fontSize: 13, letterSpacing: 0.2 },
+  proposeCtaText: { color: c.primaryText, fontWeight: '800', fontSize: FontSizes.xs, letterSpacing: 0.2 },
 
   actionPrimary: {
     width: 36, height: 36, borderRadius: 18,

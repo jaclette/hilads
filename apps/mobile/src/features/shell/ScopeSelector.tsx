@@ -129,7 +129,7 @@ function ScopeSheet({ visible, scope, cityName, cityCountry, hereName, hereCount
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
   scope:          { flex: 1, height: 44, flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 14,
                     borderRadius: Radius.full, borderWidth: 1.5, borderColor: c.line, backgroundColor: c.bg2 },
-  scopeText:      { flexShrink: 1, flexGrow: 1, fontSize: 15, fontWeight: '700', color: c.text },
+  scopeText:      { flexShrink: 1, flexGrow: 1, fontSize: FontSizes.body, fontWeight: '700', color: c.text },
   sheet:          { gap: 6 },
   sheetTitle:     { fontSize: FontSizes.md, fontWeight: '800', color: c.text, marginBottom: 4 },
   row:            { flexDirection: 'row', alignItems: 'center', gap: 12, minHeight: 56, paddingHorizontal: 12, paddingVertical: 10, borderRadius: 16 },

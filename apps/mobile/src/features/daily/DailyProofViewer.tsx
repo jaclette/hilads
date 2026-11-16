@@ -183,5 +183,5 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   caption:  { color: c.white, fontSize: FontSizes.sm, fontWeight: '400' },
   extraRow: { flexDirection: 'row', alignItems: 'center', gap: 4 },
   extra:    { color: c.onCaramelMuted, fontSize: FontSizes.xs, fontWeight: '500' },
-  original: { color: c.onCaramelMuted, fontSize: 11, fontWeight: '400' },
+  original: { color: c.onCaramelMuted, fontSize: FontSizes.xs, fontWeight: '400' },
 });

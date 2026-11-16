@@ -1,6 +1,6 @@
 import { Linking, Text, StyleSheet, type StyleProp, type TextStyle } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { type ThemeColors } from '@/constants';
+import { FontSizes, type ThemeColors } from '@/constants';
 import { useThemedStyles } from '@/context/ThemeContext';
 
 /**
@@ -33,7 +33,7 @@ export function creditAuthor(credit: string): string {
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
   overlay: { position: 'absolute', left: 6, bottom: 6, maxWidth: '90%', paddingHorizontal: 7, paddingVertical: 2, borderRadius: 9,
-             overflow: 'hidden', backgroundColor: 'rgba(0,0,0,0.58)', color: '#FFFFFF', fontSize: 11, fontWeight: '700' },
-  line:    { fontSize: 12, lineHeight: 17, fontWeight: '600', color: c.muted },
+             overflow: 'hidden', backgroundColor: 'rgba(0,0,0,0.58)', color: '#FFFFFF', fontSize: FontSizes.xs, fontWeight: '700' },
+  line:    { fontSize: FontSizes.xs, lineHeight: 17, fontWeight: '600', color: c.muted },
   link:    { color: c.text, textDecorationLine: 'underline' },
 });

@@ -353,7 +353,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   },
 
   pointsBlock: { alignItems: 'center', marginTop: Spacing.xs },
-  points:    { fontSize: 44, fontWeight: '900', color: c.gold, letterSpacing: -1 },
+  points:    { fontSize: FontSizes.hero, fontWeight: '800', color: c.gold, letterSpacing: -1 },
   breakdown: { fontSize: FontSizes.sm, fontWeight: '700', color: c.mutedDim, marginTop: 2 },
   breakdownIconGap: { marginLeft: 12 },
   popIcon:   { marginTop: 2 },

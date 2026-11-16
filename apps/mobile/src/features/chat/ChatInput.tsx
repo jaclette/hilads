@@ -20,7 +20,7 @@ import * as Haptics from 'expo-haptics';
 import * as ImagePicker from 'expo-image-picker';
 import * as Location from 'expo-location';
 import { requestFeatureLocation } from '@/lib/geoFeature';
-import { Border, Radius, Spacing, type ThemeColors } from '@/constants';
+import { FontSizes, Border, Radius, Spacing, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { useApp } from '@/context/AppContext';
 import { getOnlineUsers } from '@/lib/presenceStore';
@@ -627,7 +627,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical:   11,
     color:             c.text,
-    fontSize:          15,
+    fontSize:          FontSizes.body,
     fontWeight:        '400',
     lineHeight:        20,
   },
@@ -643,8 +643,8 @@ const makeReplyStyles = (c: ThemeColors) => StyleSheet.create({
   strip:   { flexDirection: 'row', alignItems: 'center', gap: 10, paddingLeft: Spacing.md, paddingRight: 6, paddingVertical: 4,
              backgroundColor: c.bg2, borderTopWidth: 1, borderTopColor: c.line, borderLeftWidth: 3, borderLeftColor: c.primary },
   body:    { flex: 1, minWidth: 0 },
-  name:    { fontSize: 12, fontWeight: '700', color: c.primaryText, marginBottom: 2 },
-  preview: { fontSize: 12, fontWeight: '400', color: c.muted },
+  name:    { fontSize: FontSizes.xs, fontWeight: '700', color: c.primaryText, marginBottom: 2 },
+  preview: { fontSize: FontSizes.xs, fontWeight: '400', color: c.muted },
   close:   { width: 44, height: 44, alignItems: 'center', justifyContent: 'center' },
 });
 
@@ -653,6 +653,6 @@ const makeEditStyles = (c: ThemeColors) => StyleSheet.create({
   strip:   { flexDirection: 'row', alignItems: 'center', gap: 10, paddingLeft: Spacing.md, paddingRight: 6, paddingVertical: 4,
              backgroundColor: c.primaryTint, borderTopWidth: 1, borderTopColor: c.line },
   body:    { flex: 1, minWidth: 0 },
-  name:    { fontSize: 12, fontWeight: '700', color: c.primaryOnTint, marginBottom: 2 },
-  preview: { fontSize: 12, fontWeight: '400', color: c.primaryOnTint },
+  name:    { fontSize: FontSizes.xs, fontWeight: '700', color: c.primaryOnTint, marginBottom: 2 },
+  preview: { fontSize: FontSizes.xs, fontWeight: '400', color: c.primaryOnTint },
 });

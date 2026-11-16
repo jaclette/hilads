@@ -65,7 +65,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   filterText:   { fontSize: FontSizes.sm, fontWeight: '600', color: c.text },
   filterTextOn: { fontWeight: '700', color: c.white },
   // iOS draws no Text at all with a radius over half its height and overflow hidden: a fixed radius.
-  badge:        { fontSize: 11, fontWeight: '700', color: c.primaryOnTint, backgroundColor: c.primaryTint, borderRadius: 9,
+  badge:        { fontSize: FontSizes.tiny, fontWeight: '700', color: c.primaryOnTint, backgroundColor: c.primaryTint, borderRadius: 9,
                   paddingHorizontal: 7, paddingVertical: 2, overflow: 'hidden' },
   badgeOn:      { color: c.primary, backgroundColor: c.white },
   outline:      { borderWidth: Border, borderColor: c.line, borderRadius: Radius.full, paddingHorizontal: 10, paddingVertical: 4 },

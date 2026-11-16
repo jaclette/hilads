@@ -282,9 +282,11 @@ export const FontSizes = {
   tiny: 11,  // badges + count pips ONLY (not visible body text)
   xs:   13,
   sm:   14,
+  body: 15,  // running text in cards and rows (between sm and md)
   md:   17,
   lg:   20,
   xl:   24,
+  title: 26, // a tab's / screen's large title (ScreenHeader tab)
   xxl:  32,
   hero: 40,  // city name hero, large screen titles
 } as const;

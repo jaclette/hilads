@@ -140,6 +140,6 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   divider:     { height: 1, backgroundColor: c.line },
   row:         { flexDirection: 'row', alignItems: 'center', gap: 12, minHeight: 64, paddingVertical: 10 },
   info:        { flex: 1, gap: 2 },
-  name:        { fontSize: 15, fontWeight: '700', color: c.text },
+  name:        { fontSize: FontSizes.body, fontWeight: '700', color: c.text },
   subtitle:    { fontSize: FontSizes.xs, fontWeight: '400', color: c.muted },
 });

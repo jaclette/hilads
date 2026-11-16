@@ -92,6 +92,6 @@ export function ReportModal({ visible, reporterGuestId, targetUserId, targetGues
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
   title:     { fontSize: FontSizes.lg, fontWeight: '800', color: c.text },
   subtitle:  { fontSize: FontSizes.xs, fontWeight: '400', color: c.muted, lineHeight: 18 },
-  charCount: { fontSize: 11, fontWeight: '400', color: c.mutedDim, textAlign: 'right', marginTop: -4 },
+  charCount: { fontSize: FontSizes.xs, fontWeight: '400', color: c.mutedDim, textAlign: 'right', marginTop: -4 },
   cancel:    { alignSelf: 'center' },
 });

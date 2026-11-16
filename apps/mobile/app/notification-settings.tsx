@@ -11,7 +11,7 @@ import Animated, { useAnimatedStyle, useSharedValue, withDelay, withSequence, wi
 import { useTranslation } from 'react-i18next';
 import * as Haptics from 'expo-haptics';
 import { fetchNotificationPreferences, updateNotificationPreferences, type NotifCategory, type NotificationPreferences } from '@/api/notifications';
-import { Radius, Spacing, type ThemeColors } from '@/constants';
+import { FontSizes, Radius, Spacing, type ThemeColors } from '@/constants';
 import { Button, Screen, ScreenHeader } from '@/ui';
 import { tint } from '@/ui/joy';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
@@ -196,17 +196,17 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   content:    { padding: Spacing.md, paddingBottom: Spacing.xl, gap: 14 },
   card:       { backgroundColor: c.bg2, borderRadius: Radius.card, borderWidth: 1.5, borderColor: c.line, padding: 14, gap: 4 },
   pushCard:   { flexDirection: 'row', alignItems: 'center', gap: 12 },
-  pushTitle:  { fontSize: 16, lineHeight: 21, fontWeight: '800', color: c.text },
+  pushTitle:  { fontSize: FontSizes.body, lineHeight: 21, fontWeight: '800', color: c.text },
   groupHead:  { flexDirection: 'row', alignItems: 'center', gap: 10, paddingBottom: 6 },
   groupEmoji: { width: 36, height: 36, borderRadius: 18, alignItems: 'center', justifyContent: 'center' },
   emoji:      { fontSize: 18, lineHeight: 23 },
-  groupTitle: { flex: 1, fontSize: 17, lineHeight: 22, fontWeight: '800', color: c.text },
+  groupTitle: { flex: 1, fontSize: FontSizes.md, lineHeight: 22, fontWeight: '800', color: c.text },
   row:        { flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 10, borderTopWidth: 1, borderTopColor: c.line },
-  label:      { fontSize: 15, lineHeight: 20, fontWeight: '700', color: c.text },
-  sub:        { fontSize: 13, lineHeight: 18, color: c.muted },
+  label:      { fontSize: FontSizes.body, lineHeight: 20, fontWeight: '700', color: c.text },
+  sub:        { fontSize: FontSizes.xs, lineHeight: 18, color: c.muted },
   quietTimes: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingTop: 8 },
   timeChip:   { paddingHorizontal: 16, height: 40, borderRadius: Radius.full, backgroundColor: c.primaryTint, alignItems: 'center', justifyContent: 'center' },
-  timeText:   { fontSize: 16, fontWeight: '800', color: c.primaryOnTint },
+  timeText:   { fontSize: FontSizes.body, fontWeight: '800', color: c.primaryOnTint },
   saved:      { paddingHorizontal: 10, height: 30, borderRadius: Radius.full, backgroundColor: c.primaryTint, alignItems: 'center', justifyContent: 'center' },
-  savedText:  { fontSize: 13, fontWeight: '800', color: c.primaryOnTint },
+  savedText:  { fontSize: FontSizes.xs, fontWeight: '800', color: c.primaryOnTint },
 });

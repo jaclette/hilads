@@ -68,5 +68,5 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   kind:   { alignSelf: 'flex-start' },
   title:  { fontSize: FontSizes.md, fontWeight: '800', color: c.text, lineHeight: 22 },
   byRow:  { flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 8 },
-  byText: { flex: 1, fontSize: 12, fontWeight: '600', color: c.muted },
+  byText: { flex: 1, fontSize: FontSizes.xs, fontWeight: '600', color: c.muted },
 });

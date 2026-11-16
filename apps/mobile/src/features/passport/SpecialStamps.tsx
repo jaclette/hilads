@@ -57,7 +57,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
            alignItems: 'center', justifyContent: 'center' },
   inner: { width: SIZE - 12, height: SIZE - 12, borderRadius: (SIZE - 12) / 2, borderWidth: 1.5, borderStyle: 'dashed', borderColor: c.gold,
            alignItems: 'center', justifyContent: 'center' },
-  label: { fontSize: 11, fontWeight: '700', color: c.text, textAlign: 'center', lineHeight: 14 },
-  date:  { fontSize: 10, fontWeight: '600', color: c.muted, textAlign: 'center' },
-  limited: { fontSize: 10, fontWeight: '800', color: c.primaryText, textAlign: 'center' },
+  label: { fontSize: FontSizes.xs, fontWeight: '700', color: c.text, textAlign: 'center', lineHeight: 16 },
+  date:  { fontSize: FontSizes.xs, fontWeight: '600', color: c.muted, textAlign: 'center' },
+  limited: { fontSize: FontSizes.xs, fontWeight: '800', color: c.primaryText, textAlign: 'center' },
 });

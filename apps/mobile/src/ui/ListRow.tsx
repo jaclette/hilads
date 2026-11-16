@@ -46,9 +46,9 @@ export function RowGroup({ children, style }: { children: ReactNode; style?: Sty
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
   row:       { flexDirection: 'row', alignItems: 'center', gap: 12, minHeight: 54, paddingHorizontal: 14 },
   divider:   { borderTopWidth: 1, borderTopColor: c.line },
-  title:     { flex: 1, fontSize: 15, fontWeight: '700', color: c.text },
+  title:     { flex: 1, fontSize: FontSizes.body, fontWeight: '700', color: c.text },
   value:     { flexShrink: 1, fontSize: FontSizes.sm, fontWeight: '600', color: c.muted },
   badge:     { minWidth: 22, height: 22, borderRadius: Radius.full, paddingHorizontal: 6, backgroundColor: c.primary, alignItems: 'center', justifyContent: 'center' },
-  badgeText: { color: c.white, fontSize: 12, fontWeight: '800' },
+  badgeText: { color: c.white, fontSize: FontSizes.tiny, fontWeight: '800' },
   group:     { overflow: 'hidden' },
 });

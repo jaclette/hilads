@@ -239,11 +239,11 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   roleBadgeChallenger: { backgroundColor: c.primaryTint, borderColor: c.primary },
   roleBadgeTaker:      { backgroundColor: c.localBg,     borderColor: c.localText },
   roleBadgeSpectator:  { backgroundColor: c.bg3,         borderColor: c.line },
-  roleBadgeText:       { fontSize: 10, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 0.3 },
+  roleBadgeText:       { fontSize: FontSizes.tiny, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 0.3 },
   roleBadgeTextChallenger: { color: c.primaryOnTint },
   roleBadgeTextTaker:      { color: c.localText },
   roleBadgeTextSpectator:  { color: c.muted },
 
   kickBtn:    { paddingHorizontal: 10, paddingVertical: 6, borderRadius: 8, borderWidth: Border, borderColor: c.line },
-  kickBtnText:{ fontSize: 12, fontWeight: '700', color: c.muted },
+  kickBtnText:{ fontSize: FontSizes.xs, fontWeight: '700', color: c.muted },
 });

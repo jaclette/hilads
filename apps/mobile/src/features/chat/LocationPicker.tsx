@@ -416,7 +416,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   searchWrap:  { position: 'absolute', top: 12, left: 12, right: 12 },
   searchBox:   { flexDirection: 'row', alignItems: 'center', gap: 10, height: 48, paddingHorizontal: 16, borderRadius: Radius.full,
                  borderWidth: Border, borderColor: c.line, backgroundColor: c.bg2 },
-  searchInput: { flex: 1, color: c.text, fontSize: 15, fontWeight: '500', padding: 0 },
+  searchInput: { flex: 1, color: c.text, fontSize: FontSizes.body, fontWeight: '500', padding: 0 },
   suggestions: { marginTop: 6, backgroundColor: c.bg2, borderWidth: Border, borderColor: c.line, borderRadius: Radius.card, overflow: 'hidden' },
   suggestionsScroll:   { maxHeight: 240 },
   suggestionRow:       { flexDirection: 'row', alignItems: 'flex-start', gap: 8, minHeight: 44, paddingHorizontal: 14, paddingVertical: 11 },
@@ -427,7 +427,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   // The pin's tip marks the map centre.
   pinWrap:  { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, alignItems: 'center', justifyContent: 'center', marginBottom: 44 },
   hintWrap: { position: 'absolute', bottom: 16, left: 0, right: 0, alignItems: 'center' },
-  hint:     { fontSize: 12, fontWeight: '600', color: c.text, backgroundColor: c.bg2, borderWidth: 1, borderColor: c.line,
+  hint:     { fontSize: FontSizes.xs, fontWeight: '600', color: c.text, backgroundColor: c.bg2, borderWidth: 1, borderColor: c.line,
               paddingHorizontal: 14, paddingVertical: 6, borderRadius: 14, overflow: 'hidden' },
   footer:       { paddingHorizontal: Spacing.md, paddingTop: 14, borderTopWidth: 1, borderTopColor: c.line, backgroundColor: c.bg, gap: 10 },
   addressCard:  { minHeight: 60, justifyContent: 'center', padding: 14, borderRadius: Radius.card, borderWidth: Border, borderColor: c.line, backgroundColor: c.bg2 },

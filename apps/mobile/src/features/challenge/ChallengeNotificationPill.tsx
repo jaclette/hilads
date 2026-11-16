@@ -96,6 +96,6 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
     backgroundColor: c.primaryTint,
     borderColor:     c.primary,
   },
-  label:   { fontSize: 11, fontWeight: '700', color: c.muted, letterSpacing: 0.2 },
+  label:   { fontSize: FontSizes.xs, fontWeight: '700', color: c.muted, letterSpacing: 0.2 },
   labelOn: { color: c.primaryOnTint },
 });

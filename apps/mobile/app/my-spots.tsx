@@ -69,7 +69,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   row:       { flexDirection: 'row', alignItems: 'center', gap: 12, padding: 10 },
   photo:     { width: 56, height: 56, borderRadius: 12, backgroundColor: c.primaryTint },
   info:      { flex: 1, gap: 2 },
-  name:      { fontSize: 15, fontWeight: '700', color: c.text },
+  name:      { fontSize: FontSizes.body, fontWeight: '700', color: c.text },
   meta:      { fontSize: FontSizes.xs, color: c.muted },
   metaRow:   { flexDirection: 'row', alignItems: 'center', gap: 4, minWidth: 0 },
   metaThemes: { flexShrink: 1 },

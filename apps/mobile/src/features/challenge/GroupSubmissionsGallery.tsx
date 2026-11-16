@@ -243,13 +243,13 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
     backgroundColor: c.gold,
     borderRadius: Radius.full, paddingHorizontal: 8, paddingVertical: 2,
   },
-  winBadgeText: { fontSize: 11, fontWeight: '800', color: c.onGold },
+  winBadgeText: { fontSize: FontSizes.tiny, fontWeight: '800', color: c.onGold },
   pickingOverlay: { ...StyleSheet.absoluteFillObject, alignItems: 'center', justifyContent: 'center', backgroundColor: c.scrim },
 
   tileFooter: { flexDirection: 'row', alignItems: 'center', gap: 6, padding: 8 },
   avatar: { width: 22, height: 22, borderRadius: 11, overflow: 'hidden', alignItems: 'center', justifyContent: 'center' },
-  avatarLetter: { color: c.white, fontWeight: '700', fontSize: 11 },
-  name: { flex: 1, fontSize: FontSizes.xs + 1, fontWeight: '700', color: c.text },
+  avatarLetter: { color: c.white, fontWeight: '700', fontSize: FontSizes.xs },
+  name: { flex: 1, fontSize: FontSizes.sm, fontWeight: '700', color: c.text },
 
   pickBtn: {
     // Solid fill (matches the fullscreen previewPick) so the challenger reads
@@ -258,7 +258,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
     flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 5,
     backgroundColor: c.gold,
   },
-  pickBtnText: { fontSize: FontSizes.xs + 1, fontWeight: '800', color: c.onGold },
+  pickBtnText: { fontSize: FontSizes.sm, fontWeight: '800', color: c.onGold },
 
   previewBackdrop: { flex: 1, backgroundColor: c.scrim, alignItems: 'center', justifyContent: 'center', gap: Spacing.md },
   previewImg:  { width: '92%', height: '70%' },

@@ -384,7 +384,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   dotEmojiIdle: { opacity: 0.45 },
 
   label: {
-    fontSize:   10,
+    fontSize:   FontSizes.xs,
     fontWeight: '600',
     color:      c.muted,
     marginTop:  4,
@@ -406,5 +406,5 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
     borderWidth:       Border,
     borderColor:       c.primaryTint,
   },
-  subCta: { color: c.primaryOnTint, fontWeight: '700', fontSize: FontSizes.xs + 1 },
+  subCta: { color: c.primaryOnTint, fontWeight: '700', fontSize: FontSizes.sm },
 });

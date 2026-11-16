@@ -346,7 +346,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
     marginTop: Spacing.xs,
   },
   ctaPrimaryText: { color: c.onCta, fontSize: FontSizes.md, fontWeight: '800' },
-  ctaPrimarySub:  { color: c.onCta, opacity: 0.75, fontSize: FontSizes.xs + 1, marginTop: 2 },
+  ctaPrimarySub:  { color: c.onCta, opacity: 0.75, fontSize: FontSizes.sm, marginTop: 2 },
 
   ctaSecondary: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10,

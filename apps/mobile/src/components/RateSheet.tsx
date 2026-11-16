@@ -168,7 +168,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
 
   headerRow:     { flexDirection: 'row', alignItems: 'center', gap: Spacing.md, marginBottom: Spacing.md },
   avatar:        { width: 48, height: 48, borderRadius: 24, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
-  avatarLetter:  { color: c.white, fontWeight: '700', fontSize: 18 },
+  avatarLetter:  { color: c.white, fontWeight: '700', fontSize: FontSizes.md },
   avatarStar:    { backgroundColor: c.goldTint },
   headerTextWrap:{ flex: 1, minWidth: 0 },
   title:         { fontSize: FontSizes.lg, fontWeight: '800', color: c.text, letterSpacing: -0.3 },

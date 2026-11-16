@@ -117,7 +117,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   statsRow:  { flexDirection: 'row', gap: 8 },
   stat:      { flex: 1, backgroundColor: c.bg3, borderRadius: 14, paddingVertical: 10, paddingHorizontal: 6, alignItems: 'center', gap: 2 },
   statValue: { fontSize: FontSizes.lg, fontWeight: '800', color: c.text },
-  statLabel: { fontSize: 12, fontWeight: '600', color: c.muted, textAlign: 'center' },
+  statLabel: { fontSize: FontSizes.xs, fontWeight: '600', color: c.muted, textAlign: 'center' },
   subTitle:  { fontSize: FontSizes.xs, fontWeight: '800', color: c.text },
   thumbs:    { gap: 8 },
   thumb:     { width: 72, height: 72, borderRadius: 12, backgroundColor: c.bg3 },
@@ -126,6 +126,6 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   pass:      { flexDirection: 'row', alignItems: 'center', gap: 4, height: 28, borderRadius: Radius.full, borderWidth: Border, borderColor: c.line,
                backgroundColor: c.bg2, paddingHorizontal: 10 },
   passEarned:    { borderColor: c.gold },
-  passText:      { fontSize: 12, fontWeight: '700', color: c.text },
+  passText:      { fontSize: FontSizes.xs, fontWeight: '700', color: c.text },
   passTextEarned:{ color: c.gold },
 });

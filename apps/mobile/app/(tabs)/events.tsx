@@ -590,7 +590,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
 
   emptyScroll:      { flexGrow: 1, paddingTop: Spacing.lg, paddingBottom: Spacing.xl },
   inspirationBlock: { paddingHorizontal: Spacing.md, gap: Spacing.sm, marginTop: Spacing.md },
-  inspirationSub:   { fontSize: 12, fontWeight: '600', color: c.muted, marginBottom: 2 },
+  inspirationSub:   { fontSize: FontSizes.xs, fontWeight: '600', color: c.muted, marginBottom: 2 },
 
   // Sticky bottom block, pinned above the tab bar: Hi now (primary) over Hi plan.
   bottomActions: {

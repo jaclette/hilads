@@ -158,7 +158,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   list:  { maxHeight: 360 },
   row:   { flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 8 },
   avatar: { width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
-  avatarLetter: { color: c.white, fontWeight: '700', fontSize: 15 },
+  avatarLetter: { color: c.white, fontWeight: '700', fontSize: FontSizes.body },
   name:  { flex: 1, fontSize: FontSizes.md, fontWeight: '600', color: c.text },
   check: { width: 26, height: 26, borderRadius: 13, borderWidth: 2, borderColor: c.line, alignItems: 'center', justifyContent: 'center' },
   checkOn: { backgroundColor: c.green, borderColor: c.green },
