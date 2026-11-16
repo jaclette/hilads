@@ -43,7 +43,6 @@
     "view": "👀 {{name}} 看了你的個人頁",
     "other": "🔔 有新動態",
     "dismiss": "關閉",
-    "more_one": "還有 {{count}} 則",
     "more_other": "還有 {{count}} 則"
   },
   "inbox": {

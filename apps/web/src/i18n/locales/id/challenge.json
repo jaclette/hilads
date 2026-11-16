@@ -773,7 +773,6 @@
         "top": "Kamu · #1 · Nggak ada di atasmu 👑",
         "player": "Kamu · #{{rank}} · {{gap}} poin lagi buat nyalip {{name}} ▲",
         "none": "Main hari ini biar masuk papan 🙋",
-        "photo_one": "Terbaikmu: #{{rank}} · {{count}} ❤️ ke #{{next}}",
         "photo_other": "Terbaikmu: #{{rank}} · {{count}} ❤️ ke #{{next}}",
         "photoTop": "Terbaikmu: #1 · tak ada yang di atasmu 👑",
         "photoNone": "Belum ada fotomu di peringkat ❤️"
@@ -793,7 +792,6 @@
         "world": "🏆 Fotomu peringkat #{{rank}} dunia kemarin",
         "city": "🏆 Fotomu peringkat #{{rank}} di {{city}} kemarin",
         "best": "🏆 Fotomu yang terbaik di {{city}} kemarin",
-        "votes_one": "🏆 Fotomu dapat {{count}} ❤️ kemarin",
         "votes_other": "🏆 Fotomu dapat {{count}} ❤️ kemarin",
         "generic": "🏆 Hasil kemarin sudah keluar",
         "see": "Lihat hasil →"

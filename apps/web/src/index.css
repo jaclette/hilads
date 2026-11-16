@@ -177,15 +177,12 @@
 
 /* ── Phase 3: light-only tuning for shadows / bright-accent text that don't map
    to a palette token (the base classes theme their bg/border/color via tokens).
-   Grows as the app-shell migration proceeds, surface by surface. ── */
-[data-theme="light"] .bottom-nav-tab.active { color: var(--accent); } /* #FF7A3C fails on white */
-[data-theme="light"] .back-button { box-shadow: var(--shadow-sm); }
+   Grows as the app-shell migration proceeds, surface by surface. ── */ /* #FF7A3C fails on white */
 [data-theme="light"] .msg-avatar { box-shadow: var(--shadow-sm); }
 [data-theme="light"] .msg-content { box-shadow: var(--shadow-sm); }
 [data-theme="light"] .action-bubble { box-shadow: var(--shadow-card); }
 [data-theme="light"] .reaction-pill.self .reaction-count { color: var(--accent); }
-[data-theme="light"] .send-error-toast { color: var(--accent); }
-[data-theme="light"] .topic-geohint { color: var(--accent); } /* #FF7A3C label fails on white */
+[data-theme="light"] .send-error-toast { color: var(--accent); } /* #FF7A3C label fails on white */
 [data-theme="light"] .modal-panel { box-shadow: 0 24px 64px rgba(28, 20, 14, 0.14), 0 0 0 1px var(--separator); }
 [data-theme="light"] .share-sheet { box-shadow: 0 -8px 32px rgba(28, 20, 14, 0.12); }
 [data-theme="light"] .me-card { box-shadow: var(--shadow-card); }
@@ -601,18 +598,6 @@ html, body, #root {
 
 /* ── Header ───────────────────────────────────────────── */
 
-/* Shared treatment for every screen that hosts the bell + Hi logo + chat-icon
-   trio: city chat, event detail, and the tab-level Now / Here / Me drawers
-   (which wrap the same `renderAppHeader()` in `.tab-app-header`).
-   Internal back-button pages keep `.page-header`'s flat surface - they don't
-   render the trio, so a logo halo there would be meaningless. */
-.chat-header,
-.tab-app-header {
-  background:
-          radial-gradient(ellipse 90% 55% at 50% -10%, rgba(194, 74, 56, 0.10) 0%, transparent 60%),
-          var(--surface);
-}
-
 .chat-header .logo svg,
 .tab-app-header .logo svg {
   filter:
@@ -770,26 +755,6 @@ html, body, #root {
   gap: var(--sp-8);
   padding: var(--sp-4) var(--sp-16) var(--sp-4);
 }
-.leaderboard-seg-item {
-  flex: 1;
-  border-radius: var(--r-chip);
-  border: none;
-  background: transparent;
-  cursor: pointer;
-  font-family: inherit;
-  transition: background 0.15s, color 0.15s;
-}
-.leaderboard-seg-item.is-active {
-  background: var(--overlay-strong);
-  color: var(--text, #fff);
-}
-
-/* Primary toggle (My city / World) uses the orange gradient on active. */
-.leaderboard-seg--primary .leaderboard-seg-item.is-active {
-  background: var(--primary);
-  color: #fff;
-  font-weight: 800;
-}
 
 /* PR41 - chevron next to the active city label hints "tap me again to
    open the city picker". Subtle so it doesn't dominate the pill. */
@@ -895,9 +860,6 @@ html, body, #root {
   font-weight: 800;
   color: var(--muted2);
 }
-.leaderboard-row.is-me .leaderboard-rank {
-  color: var(--hot-text);
-}
 .leaderboard-avatar {
   width: 40px;
   height: 40px;
@@ -921,13 +883,6 @@ html, body, #root {
   flex-direction: column;
   gap: var(--sp-2);
 }
-.leaderboard-name {
-  font-weight: 700;
-  color: var(--text, #fff);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
 .leaderboard-row.is-me .leaderboard-name {
   font-weight: 800;
 }
@@ -945,11 +900,7 @@ html, body, #root {
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.leaderboard-points {
-  font-weight: 700;
-}
 .leaderboard-row.is-me .leaderboard-points {
-  color: var(--hot-text);
   font-weight: 800;
 }
 
@@ -1237,9 +1188,7 @@ html, body, #root {
 
 /* ── Event mode meta info (time, counts) ──────────────────── */
 .event-meta-label {
-  font-size: var(--fs-xs);
   line-height: 1.4;
-  color: var(--muted2);
   font-weight: 500;
   letter-spacing: 0.01em;
   white-space: nowrap;
@@ -1304,15 +1253,6 @@ html, body, #root {
 }
 
 /* Location line - event header, Hot drawer rows, sidebar rows */
-.event-location {
-  font-size: var(--fs-xs);
-  line-height: 1.4;
-  text-decoration: none;
-  display: block;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
 .event-location:hover { text-decoration: underline; }
 .event-location--muted { color: var(--muted2); }
 
@@ -1451,10 +1391,6 @@ html, body, #root {
 
 /* ── Bottom Navigation (mobile only) ─────────────────── */
 
-.bottom-nav {
-  display: none;
-}
-
 @media all /* was (max-width: 767px): the web is always the phone layout */ {
   .chat-header {
     /* horizontal padding lives on .header-new children; only keep bottom pad */
@@ -1536,11 +1472,6 @@ html, body, #root {
   transition: transform 0.08s ease;
 }
 
-.bottom-nav-tab.active {
-  color: var(--hot-text);
-  background: rgba(255, 122, 60, 0.06);
-}
-
 .bottom-nav-tab.active::after {
   background: linear-gradient(180deg, rgba(255, 122, 60, 0.16), rgba(255, 122, 60, 0.06));
   box-shadow:
@@ -1555,11 +1486,6 @@ html, body, #root {
 /* Reduce-motion static indicator: a small orange dot on the NOW icon, shown
    briefly after a reminder is removed (no animation). */
 
-.bottom-nav-label {
-  position: relative;
-  white-space: nowrap;
-}
-
 /* ── Profile drawer ───────────────────────────────────── */
 
 .profile-avatar-row {
@@ -1570,10 +1496,11 @@ html, body, #root {
   padding: 0;
 }
 
-.profile-avatar-lg {             /* !important: beats .online-avatar's size, declared later */
-  width: 72px !important;
-  height: 72px !important;
-  font-size: 1.7rem !important;
+/* Two classes: beats .online-avatar's small size, declared later. */
+.online-avatar.profile-avatar-lg {
+  width: 72px;
+  height: 72px;
+  font-size: 1.7rem;
   border-radius: 50%;
 }
 
@@ -1607,13 +1534,6 @@ html, body, #root {
 
 /* ── Me screen (registered user) ─────────────────────── */
 .interest-chip {
-  background: rgba(255,122,60,0.12);
-  color: var(--hot-text);
-  border: 1px solid rgba(255,122,60,0.25);
-  border-radius: 20px;
-  padding: var(--sp-4) var(--sp-12);
-  font-size: var(--fs-tiny);
-  font-weight: 500;
   cursor: pointer;
   transition: background 0.12s, color 0.12s;
 }
@@ -1636,13 +1556,14 @@ html, body, #root {
   padding: var(--sp-16) var(--sp-16) var(--sp-12);
 }
 
-.profile-avatar-identity {       /* !important: beats .online-avatar's size, declared later */
-  width: 68px !important;
-  height: 68px !important;
+/* Two classes: beats .online-avatar's small size, declared later. */
+.online-avatar.profile-avatar-identity {
+  width: 68px;
+  height: 68px;
   border-radius: 50%;
   flex-shrink: 0;
   border: 2px solid var(--accent);
-  font-size: 1.5rem !important; /* initials scale with avatar size */
+  font-size: 1.5rem; /* initials scale with avatar size */
 }
 
 .profile-identity-info {
@@ -1687,14 +1608,12 @@ html, body, #root {
    and mode selector on /me, and between hero pill + about-me on the
    public profile. Same shape both surfaces so the visual reads
    identically. */
-.profile-rank-row {
-  display: flex;
-  flex-direction: column;
-}
 .profile-rank-row-line--tappable {
   cursor: pointer;
   padding: var(--sp-2) var(--sp-8);
   transition: background 0.12s;
+  margin: 0;
+  border-radius: 0;
 }
 .profile-rank-row-emoji {
   width: 22px;
@@ -1711,13 +1630,6 @@ html, body, #root {
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-}
-.profile-rank-row-text {
-  flex: 1;
-  color: var(--text);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 /* Filter pills - scrollable for 5 tabs */
@@ -1767,14 +1679,6 @@ html, body, #root {
   padding: 0 var(--sp-16) var(--sp-12);
 }
 
-.profile-mode-label {
-  font-size: var(--fs-xs);
-  font-weight: 800;
-  letter-spacing: 0.9px;
-  color: var(--accent2);
-  text-transform: uppercase;
-}
-
 .profile-mode-btns {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -1787,9 +1691,6 @@ html, body, #root {
   align-items: center;
   gap: var(--sp-4);
   padding: var(--sp-16) var(--sp-12) var(--sp-16);
-  border-radius: var(--r-button);
-  border: 1.5px solid var(--separator);
-  background: transparent;
   cursor: pointer;
   color: var(--muted);
   transition: border-color 0.15s, background 0.15s;
@@ -1798,11 +1699,6 @@ html, body, #root {
 .profile-mode-btn:hover {
   border-color: rgba(255,122,60,0.4);
   background: rgba(255,122,60,0.08);
-}
-
-.profile-mode-btn--on {
-  border-color: var(--accent);
-  background: rgba(255,122,60,0.14);
 }
 
 .profile-mode-btn-emoji {
@@ -1815,10 +1711,6 @@ html, body, #root {
   font-weight: 700;
   color: var(--muted);
   transition: color 0.15s;
-}
-
-.profile-mode-btn--on .profile-mode-btn-name {
-  color: var(--accent);
 }
 
 .profile-mode-btn-desc {
@@ -1905,12 +1797,6 @@ html, body, #root {
   gap: var(--sp-24);
 }
 
-.modal-label-muted {
-  font-size: var(--fs-xs);
-  text-transform: none;
-  letter-spacing: 0;
-}
-
 .interest-grid {
   display: flex;
   flex-wrap: wrap;
@@ -1925,28 +1811,8 @@ html, body, #root {
 
 .vibe-chip {
   cursor: pointer;
-  background: var(--overlay-weak);
-  color: var(--text-muted);
-  border: 1px solid var(--separator);
-  border-radius: 20px;
-  padding: var(--sp-8) var(--sp-16);
-  font-size: var(--fs-xs);
-  font-weight: 500;
   transition: background 0.12s, color 0.12s, border-color 0.12s;
   white-space: nowrap;
-}
-
-.vibe-chip--on {
-  background: rgba(255,122,60,0.18);
-  color: var(--text);
-  border-color: var(--hot-text);
-  font-weight: 700;
-}
-
-.interest-chip--on {
-  background: #FF7A3C;
-  color: #fff;
-  border-color: var(--hot-text);
 }
 
 .profile-error {
@@ -2011,13 +1877,6 @@ html, body, #root {
   margin-bottom: var(--sp-4);
   color: #C0392B;
 }
-.delete-account-title {
-  margin: 0;
-}
-.delete-account-body {
-  line-height: 1.55;
-  margin: 0;
-}
 .delete-account-error {
   font-size: var(--fs-xs);
   margin: 0;
@@ -2027,18 +1886,9 @@ html, body, #root {
   width: 100%;
   margin-top: var(--sp-8);
   padding: var(--sp-16);
-  border-radius: 12px;
-  background: rgba(239, 68, 68, 0.15);
-  border: 1px solid rgba(239, 68, 68, 0.35);
-  color: #fca5a5;
-  font-size: var(--fs-body);
   font-weight: 700;
   cursor: pointer;
   transition: background 0.15s, border-color 0.15s;
-}
-.delete-account-confirm:hover:not(:disabled) {
-  background: rgba(239, 68, 68, 0.25);
-  border-color: rgba(239, 68, 68, 0.5);
 }
 .delete-account-confirm:disabled {
   opacity: 0.5;
@@ -2047,14 +1897,11 @@ html, body, #root {
 .delete-account-cancel {
   background: none;
   border: none;
-  color: rgba(240, 236, 230, 0.4);
   font-size: var(--fs-sm);
-  font-weight: 500;
   padding: var(--sp-8);
   cursor: pointer;
   transition: color 0.15s;
 }
-.delete-account-cancel:hover:not(:disabled) { color: rgba(240, 236, 230, 0.65); }
 .delete-account-cancel:disabled { opacity: 0.5; cursor: default; }
 
 /* ── Guest upgrade CTA ─────────────────────────────────── */
@@ -2092,19 +1939,6 @@ html, body, #root {
   border-radius: var(--r-chip);
   border: 1.5px solid var(--line);
   background: var(--surface);
-}
-.auth-tab {
-  flex: 1;
-  padding: var(--sp-12);
-  background: transparent;
-  border: none;
-  font-size: var(--fs-sm);
-  cursor: pointer;
-}
-.auth-tab--active {
-  background: rgba(255,122,60,0.15);
-  color: var(--hot-text);
-  font-weight: 600;
 }
 .auth-form {
   width: 100%;
@@ -2154,15 +1988,6 @@ html, body, #root {
   color: var(--muted2);
   text-align: center;
   margin-bottom: var(--sp-16);
-}
-.auth-forgot-btn {
-  background: none;
-  border: none;
-  font-size: var(--fs-xs);
-  cursor: pointer;
-  padding: var(--sp-8) 0 0;
-  text-align: center;
-  width: 100%;
 }
 .auth-forgot-btn:hover { color: var(--text); }
 .auth-success {
@@ -2246,7 +2071,6 @@ html, body, #root {
 
 .empty-icon {
   font-size: 2.4rem;
-  margin-bottom: var(--sp-4);
 }
 
 .empty-title {
@@ -3981,19 +3805,13 @@ html, body, #root {
   backdrop-filter: blur(16px);
   z-index: 240;
   animation: fadeUp 0.22s ease-out both;
+  background: var(--surface);
+  border: 1.5px solid var(--line);
+  box-shadow: var(--shadow-card);
 }
 
 .install-banner--with-nav {
   bottom: calc(var(--mobile-tabbar-height) + env(safe-area-inset-bottom) + 12px);
-}
-
-.install-banner--compact {
-  position: static;
-  transform: none;
-  width: 100%;
-  padding: var(--sp-12) var(--sp-12);
-  border-radius: var(--r-card);
-  gap: var(--sp-12);
 }
 
 .chat-install-slot {
@@ -4009,7 +3827,6 @@ html, body, #root {
 .install-banner-compact-text {
   flex: 1;
   min-width: 0;
-  color: var(--text);
   font-size: var(--fs-xs);
   font-weight: 600;
   line-height: 1.25;
@@ -4017,7 +3834,6 @@ html, body, #root {
 
 .install-banner-title {
   margin: 0;
-  color: #fff;
   font-size: var(--fs-body);
   font-weight: 700;
   letter-spacing: 0.01em;
@@ -4052,10 +3868,7 @@ html, body, #root {
   padding: 0 var(--sp-16);
   border-radius: 14px;
   font-size: var(--fs-sm);
-  font-weight: 700;
   box-shadow: 0 10px 22px rgba(255, 122, 60, 0.22);
-  background: var(--primary);
-  color: #fff;
 }
 
 .install-banner-dismiss {
@@ -4065,6 +3878,9 @@ html, body, #root {
   font-size: var(--fs-lg);
   line-height: 1;
   border: 1px solid var(--separator);
+  color: var(--muted2);
+  border-color: var(--line);
+  background: transparent;
 }
 
 .install-banner-add--compact {
@@ -4238,40 +4054,15 @@ html, body, #root {
   flex-wrap: wrap;
 }
 
-.here-filter-label {
-  flex-shrink: 0;
-}
-
 .here-filter-chips {
   display: flex;
   flex-wrap: wrap;
   gap: var(--sp-8);
 }
 
-.here-chip {
-  border-radius: var(--r-chip);
-  cursor: pointer;
-  transition: background 0.12s, color 0.12s, border-color 0.12s;
-  white-space: nowrap;
-}
-
 .here-chip--on {
   background: color-mix(in srgb, var(--accent) 15%, transparent);
   border-color: color-mix(in srgb, var(--accent) 40%, transparent);
-  color: var(--accent);
-}
-
-/* Mode-specific active colors for Here filter chips */
-.here-chip--on-local {
-  background: rgba(255,122,60,0.14);
-  border-color: rgba(255,122,60,0.38);
-  color: var(--hot-text);
-}
-
-.here-chip--on-exploring {
-  background: rgba(96,165,250,0.14);
-  border-color: rgba(96,165,250,0.38);
-  color: #60a5fa;
 }
 
 /* Mode-specific color for vibe-badge (Here user rows) */
@@ -4284,15 +4075,17 @@ html, body, #root {
   align-items: center;
   gap: var(--sp-8);
   margin-bottom: var(--sp-12);
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: var(--fs-body);
+  font-weight: 800;
+  color: var(--text);
 }
 
 .here-section-header--legends {
   flex-direction: column;
   align-items: flex-start;
   gap: var(--sp-2);
-  text-transform: none;
-  letter-spacing: 0;
-  font-size: var(--fs-xs);
   color: var(--text);
 }
 
@@ -4414,12 +4207,6 @@ html, body, #root {
   padding: var(--sp-12) var(--sp-16) var(--sp-16);
 }
 
-.pub-profile-tab-empty {
-  text-align: center;
-  padding: var(--sp-24) 0;
-  margin: 0;
-}
-
 .pub-profile-error-inline {
   color: #f87171;
   font-size: var(--fs-sm);
@@ -4468,37 +4255,12 @@ img.pub-profile-avatar {
   cursor: zoom-in;
 }
 
-.pub-profile-name {
-  color: var(--text);
-  margin: 0;
-}
-
 /* ── Identity badge pills (ghost/fresh/regular/local/host) ───────────────── */
-
-.badge-pill {
-  display: inline-flex;
-  align-items: center;
-  align-self: flex-start;
-  font-weight: 700;
-  border-radius: var(--r-chip);
-  white-space: nowrap;
-  vertical-align: middle;
-}
-.badge-pill--ghost { border-color: var(--overlay-strong); }
-.badge-pill--fresh { background: rgba(74,222,128,0.12);  border-color: rgba(74,222,128,0.22);  color: #4ade80; }
-.badge-pill--regular {  border-color: rgba(96,165,250,0.22); }
-.badge-pill--local { background: rgba(52,211,153,0.12);  border-color: rgba(52,211,153,0.22);  color: #34d399; }
-.badge-pill--host  {  border-color: rgba(251,191,36,0.28); }
 
 .pub-profile-loading {
   color: var(--muted);
   font-size: var(--fs-sm);
   margin-top: 2.5rem;
-}
-
-.pub-profile-about {
-  text-align: left;
-  margin: 0;
 }
 
 .pub-profile-events {
@@ -4587,9 +4349,6 @@ img.pub-profile-avatar {
   align-items: flex-start;
   gap: var(--sp-4);
   padding: var(--sp-16) var(--sp-16);
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--r-card);
 }
 
 .pub-profile-identity-card-icon {
@@ -4599,8 +4358,6 @@ img.pub-profile-avatar {
 }
 
 .pub-profile-identity-card-sub {
-  font-size: var(--fs-xs);
-  color: var(--muted);
   line-height: 1.35;
 }
 
@@ -4619,8 +4376,6 @@ img.pub-profile-avatar {
 }
 
 .pub-profile-info-label {
-  font-size: var(--fs-xs);
-  color: var(--muted);
   font-weight: 500;
 }
 
@@ -4639,9 +4394,6 @@ img.pub-profile-avatar {
   flex-direction: column;
   gap: var(--sp-8);
   padding: var(--sp-16) var(--sp-16);
-  background: rgba(255, 193, 7, 0.05);
-  border: 1px solid rgba(255, 193, 7, 0.15);
-  border-radius: var(--r-card);
 }
 
 .pub-profile-pick-card-title {
@@ -4684,20 +4436,8 @@ img.pub-profile-avatar {
 
 .pub-profile-friend-btn {
   padding: var(--sp-12) var(--sp-24);
-  border-radius: var(--r-button);
-  background: transparent;
-  color: var(--text);
-  font-size: var(--fs-sm);
-  font-weight: 700;
-  border: 1px solid var(--border);
   cursor: pointer;
   transition: background 0.15s, border-color 0.15s, color 0.15s;
-}
-
-.pub-profile-friend-btn--active {
-  background: rgba(255,122,60,0.12);
-  border-color: var(--accent);
-  color: var(--accent);
 }
 
 .pub-profile-friend-btn:disabled {
@@ -4711,16 +4451,6 @@ img.pub-profile-avatar {
   gap: var(--sp-8);
 }
 
-.pub-profile-unfriend-btn {
-  flex: 1;
-  padding: var(--sp-12) var(--sp-12);
-  border-radius: var(--r-button);
-  font-size: var(--fs-sm);
-  font-weight: 700;
-  cursor: pointer;
-  transition: background 0.15s;
-}
-
 .pub-profile-unfriend-btn:hover {
   background: rgba(239,68,68,0.2);
 }
@@ -4732,12 +4462,6 @@ img.pub-profile-avatar {
 
 .pub-profile-unfriend-cancel {
   padding: var(--sp-12) var(--sp-16);
-  border-radius: 12px;
-  background: var(--surface2);
-  color: var(--muted);
-  font-size: var(--fs-sm);
-  font-weight: 600;
-  border: 1px solid var(--border);
   cursor: pointer;
   transition: opacity 0.15s;
 }
@@ -5069,30 +4793,11 @@ img.pub-profile-avatar {
   will-change: auto;
 }
 
-.page-header {
-  display: flex;
-  align-items: center;
-  flex-shrink: 0;
-  position: relative;
-}
-
 .back-button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: var(--sp-12);
-  min-width: 46px;
-  min-height: 46px;
-  padding: 0 var(--sp-12);
-  border-radius: 13px;
-  border: 1px solid var(--separator);
-  background: var(--overlay);
-  color: var(--text);
-  box-shadow:
-    0 10px 24px rgba(0, 0, 0, 0.24),
-    inset 0 1px 0 rgba(255, 255, 255, 0.06);
-  -webkit-backdrop-filter: blur(10px);
-  backdrop-filter: blur(10px);
   cursor: pointer;
   flex-shrink: 0;
   -webkit-tap-highlight-color: transparent;
@@ -5169,11 +4874,6 @@ img.pub-profile-avatar {
 
 .city-list-label {
   padding: var(--sp-12) var(--gutter) var(--sp-12);
-  font-size: var(--fs-xs);
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--muted);
 }
 
 /* ── Skeleton loading rows ────────────────────────────────────────────────── */
@@ -5287,13 +4987,6 @@ img.pub-profile-avatar {
 
 /* Aligned with .now-filter-pill (apps/web/src/index.css:6013) so Switch city
    chips read at the same density as the Now feed's All / Events / Pulses. */
-.city-filter-tab {
-  flex-shrink: 0;
-  border-radius: var(--r-chip);
-  cursor: pointer;
-  transition: background 0.15s, border-color 0.15s, color 0.15s;
-  white-space: nowrap;
-}
 .city-filter-tab:hover {
   background: var(--overlay);
   color: var(--text);
@@ -5317,25 +5010,12 @@ img.pub-profile-avatar {
   justify-content: flex-start;
   width: 100%;
   padding: var(--sp-12) var(--sp-12);
-  border-radius: 18px;
-  border: 1px solid var(--separator);
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.025), rgba(255, 255, 255, 0.015));
   color: var(--text);
   cursor: pointer;
   text-align: left;
   transition: background 0.12s, box-shadow 0.12s, border-color 0.12s, transform 0.12s;
   gap: var(--sp-4);
-  box-shadow: var(--shadow-card);
   margin-bottom: var(--sp-8);
-}
-
-.city-row:hover {
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.02));
-  border-color: rgba(194, 74, 56, 0.16);
-  box-shadow:
-    0 14px 28px rgba(0, 0, 0, 0.16),
-    inset 2px 0 0 rgba(194, 74, 56, 0.3);
 }
 
 .city-row.active {
@@ -5369,13 +5049,6 @@ img.pub-profile-avatar {
      line 3: location
    City rows (city list) are unaffected - they still use the base .city-row.
 */
-.event-row-card {
-  flex-direction: column;
-  align-items: stretch;
-  /* Compacted from default city-row padding so we fit ~6 cards per viewport
-     instead of 3. Min-height keeps the tap target ≥44px on touch devices. */
-  min-height: 44px;
-}
 
 /* Line 1: title (grows, truncates) + going count (right-aligned, shrinks) */
 .er-header {
@@ -5385,57 +5058,21 @@ img.pub-profile-avatar {
   gap: var(--sp-8);
   min-width: 0;
 }
-
-.er-title {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  flex: 1;
-  min-width: 0;
-  line-height: 1.2;
-  display: flex;
-  align-items: center;
-  gap: var(--sp-8);
-}
 /* Marquee clip window - takes the remaining row width inside .er-title. */
 .er-title-marquee { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
 .er-going {
-  font-size: var(--fs-xs);
-  color: var(--hot-text);
-  font-weight: 600;
   flex-shrink: 0;
   white-space: nowrap;
   text-shadow: 0 0 8px rgba(255, 122, 60, 0.35);
 }
 
-.er-going--public {
-  color: #ffb283;
-  font-weight: 700;
-}
-
-.er-going--event {
-  color: var(--accent);
-  font-weight: 700;
-}
-
 /* Hi Local temporality tags: Now = coral (flame), Later = neutral (calendar). */
-.er-going--now {
-  color: var(--hot-text);
-  font-weight: 700;
-}
 .er-going--later {
-  color: #9a958f;
-  font-weight: 700;
   text-shadow: none;
 }
 
 /* Hi Local bottom actions: two create CTAs side by side + secondary below. */
-.now-actions-bar--hilocal {
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-}
 .hilocal-cta {
   width: 100%;
   white-space: nowrap;
@@ -5446,24 +5083,7 @@ img.pub-profile-avatar {
 .topic-geohint {
   margin: var(--sp-16) 0 var(--sp-2);
   padding: var(--sp-12) var(--sp-16);
-  border: 1px solid rgba(255, 122, 60, 0.35);
-  border-radius: 12px;
-  background: rgba(255, 122, 60, 0.08);
-  color: var(--hot-text);
-  font-size: var(--fs-sm);
-  font-weight: 600;
   line-height: 1.4;
-  text-align: center;
-}
-
-.now-active-badge {
-  display: inline-block;
-  border: 1px solid rgba(34, 197, 94, 0.22);
-  border-radius: 10px;
-  padding: 0.0625rem var(--sp-8);
-  font-size: var(--fs-tiny);
-  font-weight: 700;
-  letter-spacing: 0.2px;
 }
 
 .event-row-card:active {
@@ -5485,10 +5105,6 @@ img.pub-profile-avatar {
 }
 
 /* ── Topic-specific header: back | title (wraps) | share ── */
-.topic-chat-header {
-  min-height: 0;
-  gap: var(--sp-12);
-}
 
 .topic-chat-header-center {
   flex: 1;
@@ -5515,9 +5131,6 @@ img.pub-profile-avatar {
 }
 
 /* ── Topic description band ── */
-.topic-chat-desc {
-  line-height: 1.5;
-}
 /* World: author line on own messages mirrors to the right (own bubbles are
    right-aligned); the home-country flag sits next to the nickname. */
 .msg-meta--mine { flex-direction: row-reverse; align-self: flex-end; }
@@ -5582,7 +5195,7 @@ img.pub-profile-avatar {
 .feed-daily-twist { background: var(--surface2); border-radius: 10px; padding: var(--sp-8) var(--sp-8); color: var(--text); font-size: var(--fs-sm); }
 .feed-daily-author { font-size: var(--fs-sm); color: var(--text); }
 .feed-daily-caption { color: var(--text); font-size: var(--fs-sm); }
-.feed-daily-cta { align-self: flex-start; margin-top: var(--sp-4); padding: var(--sp-8) var(--sp-16); border-radius: var(--r-chip); font-size: var(--fs-xs); font-weight: 800; text-decoration: none; background: var(--primary); color: #fff; }
+.feed-daily-cta { align-self: flex-start; margin-top: var(--sp-4); padding: var(--sp-8) var(--sp-16); border-radius: var(--r-chip); font-size: var(--fs-xs); text-decoration: none; }
 .feed-daily .feed-join-time { opacity: 0.6; font-size: var(--fs-xs); color: var(--muted2); }
 /* V2: theme chip, "Proposed by", Local Pass / Early badges, the hour's group card. */
 .feed-daily-theme { align-self: flex-start; padding: var(--sp-2) var(--sp-8); border-radius: var(--r-chip); background: var(--surface2); color: var(--text); font-size: var(--fs-xs); font-weight: 800; }
@@ -5753,7 +5366,6 @@ img.pub-profile-avatar {
 
 .topic-chat-empty-icon {
   font-size: 2rem;
-  margin-bottom: var(--sp-4);
 }
 
 .topic-chat-empty strong {
@@ -5788,7 +5400,6 @@ img.pub-profile-avatar {
   line-height: 1.3;
 }
 .er-host { margin-top: 0.0625rem; }
-.event-host { margin-top: var(--sp-4); }
 
 .activity-dot {
   width: 9px;
@@ -5817,13 +5428,6 @@ img.pub-profile-avatar {
 }
 
 .city-row-current {
-  font-size: var(--fs-xs);
-  color: var(--accent);
-  font-weight: 700;
-  background: rgba(194, 74, 56, 0.14);
-  border: 1px solid rgba(194, 74, 56, 0.18);
-  border-radius: var(--r-chip);
-  padding: var(--sp-4) var(--sp-8);
   flex-shrink: 0;
   align-self: center;
   white-space: nowrap;
@@ -5833,12 +5437,6 @@ img.pub-profile-avatar {
    the row, so let it shrink and marquee-scroll its text like the weather pill.
    Solid bg (≈ the translucent accent over the card) so the edge-fade blends, and
    overflow:hidden clips the scroll to the pill's rounded ends. */
-.city-row-current--reply {
-  flex-shrink: 1;
-  min-width: 0;
-  display: flex;
-  overflow: hidden;
-}
 .now-reply-marquee { flex: 1 1 auto; min-width: 0; }
 
 /* Stats run flush with the rest of the card - no 33 px indent under the flag.
@@ -5891,14 +5489,7 @@ img.pub-profile-avatar {
 .recur-badge {
   display: inline-flex;
   align-items: center;
-  padding: 0.0625rem var(--sp-4);
-  border-radius: 5px;
-  font-size: var(--fs-tiny);
-  font-weight: 600;
   letter-spacing: 0.01em;
-  color: #c97a2f;
-  background: rgba(201, 122, 47, 0.12);
-  border: 1px solid rgba(201, 122, 47, 0.25);
   vertical-align: middle;
   white-space: nowrap;
 }
@@ -5921,12 +5512,6 @@ img.pub-profile-avatar {
 
 /* ── Event subchannel header ──────────────────────────── */
 
-.event-header {
-  display: flex;
-  flex-direction: column;
-  transition: gap 0.18s ease, padding 0.18s ease;
-}
-
 /* Collapsed state - toggled by App.jsx scroll listener once messages scroll
    past ~30px. Hides the meta + address + host lines so only the title row
    (title + Join button) remains, freeing screen real estate for the chat. */
@@ -5946,48 +5531,12 @@ img.pub-profile-avatar {
   max-width: min(220px, 46vw);
 }
 
-/* Join / Going CTA - compact pill aligned to the title row */
-.event-join-btn {
-  flex-shrink: 0;
-  letter-spacing: 0.01em;
-  cursor: pointer;
-            /* enough for "Joined ✓" - prevents reflow on toggle */
-  -webkit-tap-highlight-color: transparent;
-  transition: background 0.15s, border-color 0.15s, color 0.15s, box-shadow 0.15s;
-}
-
 .event-join-btn:active {
   transform: scale(0.96);
 }
 
-.event-join-btn--active {
-  background: #FF7A3C;
-  border-color: var(--hot-text);
-  color: #fff;
-  box-shadow: 0 4px 16px rgba(255, 122, 60, 0.3);
-}
-
-.event-join-btn--active:hover {
-  background: rgba(255, 122, 60, 0.88);
-}
-
-/* Edit event CTA - replaces Join for event creators, same pill weight */
-.event-join-btn--edit {
-  border-color: rgba(167, 139, 250, 0.55);
-  color: #a78bfa;
-}
-.event-join-btn--edit:hover {
-  background: rgba(167, 139, 250, 0.1);
-  border-color: rgba(167, 139, 250, 0.8);
-}
-
 /* My events section in Me / Profile screen */
 .me-section-label {
-  font-size: var(--fs-xs);
-  text-transform: uppercase;
-  letter-spacing: 0.07em;
-  color: var(--muted);
-  font-weight: 600;
   margin: 0 0 var(--sp-12);
 }
 
@@ -6324,9 +5873,6 @@ img.pub-profile-avatar {
   align-items: center;
   gap: var(--sp-8);
   padding: var(--sp-16) var(--sp-4) var(--sp-12);
-  border-radius: var(--r-button);
-  border: 1px solid var(--separator);
-  background: var(--surface);
   color: var(--muted);
   cursor: pointer;
   transition: color 0.15s, border-color 0.15s, background 0.15s;
@@ -6337,15 +5883,7 @@ img.pub-profile-avatar {
   transform: scale(0.93);
 }
 
-.cef-cat-btn.selected {
-  border-color: rgba(255, 122, 60, 0.45);
-  background: rgba(255, 122, 60, 0.07);
-}
-
 .cef-input {
-  background: var(--surface);
-  border: 1px solid var(--separator);
-  border-radius: var(--r-button);
   padding: var(--sp-16) var(--sp-16);
   color: var(--text);
   font-size: var(--fs-body);
@@ -6370,11 +5908,7 @@ img.pub-profile-avatar {
   align-items: center;
   gap: var(--sp-12);
   width: 100%;
-  background: var(--surface);
-  border: 1px solid var(--separator);
-  border-radius: var(--r-button);
   padding: var(--sp-12) var(--sp-16);
-  min-height: 52px;
   color: var(--text);
   font-size: var(--fs-body);
   font-family: inherit;
@@ -6533,21 +6067,11 @@ img.pub-profile-avatar {
   align-items: center;
   gap: var(--sp-4);
   padding: var(--sp-16) var(--sp-8);
-  border-radius: var(--r-button);
-  border: 1.5px solid var(--separator);
-  background: var(--overlay-weak);
   cursor: pointer;
   transition: all 0.15s ease;
 }
 
-.cef-preset-btn.selected {
-  border-color: var(--hot-text);
-  background: rgba(255,122,60,0.10);
-}
-
 .cef-preset-emoji { font-size: 1.25rem; line-height: 1; }
-
-.cef-preset-btn.selected .cef-preset-label { color: var(--hot-text); }
 
 /* ── Date picker (chips + native date input) ────────────────────── */
 
@@ -6561,42 +6085,17 @@ img.pub-profile-avatar {
   flex: 1;
   min-width: 72px;
   padding: var(--sp-8) var(--sp-8);
-  border-radius: 10px;
-  border: 1.5px solid var(--separator);
-  background: var(--overlay-weak);
-  color: var(--muted2);
-  font-size: var(--fs-xs);
-  font-weight: 500;
   cursor: pointer;
   transition: all 0.15s ease;
-}
-
-.cef-date-chip.selected {
-  border-color: #ff7b00;
-  background: rgba(255,123,0,0.15);
-  color: var(--hot-text);
 }
 
 .cef-date-input {
   flex: 1.4;
   min-width: 130px;
   padding: var(--sp-8) var(--sp-12);
-  border-radius: var(--r-button);
-  border: 1.5px solid var(--separator);
-  background: var(--overlay-weak);
-  color: var(--text);
-  font-size: var(--fs-xs);
-  font-weight: 500;
   cursor: pointer;
   font-family: inherit;
-  color-scheme: dark;
   transition: all 0.15s ease;
-}
-
-.cef-date-input.selected {
-  border-color: #ff7b00;
-  background: rgba(255,123,0,0.15);
-  color: var(--hot-text);
 }
 
 .cef-date-hint {
@@ -6635,20 +6134,8 @@ img.pub-profile-avatar {
   flex: 1;
   min-width: 72px;
   padding: var(--sp-8) var(--sp-8);
-  border-radius: var(--r-button);
-  border: 1.5px solid var(--separator);
-  background: var(--overlay-weak);
-  color: var(--muted2);
-  font-size: var(--fs-xs);
-  font-weight: 500;
   cursor: pointer;
   transition: all 0.15s ease;
-}
-
-.cef-recur-btn.selected {
-  border-color: #ff7b00;
-  background: rgba(255,123,0,0.15);
-  color: var(--hot-text);
 }
 
 .cef-weekday-row {
@@ -6661,20 +6148,8 @@ img.pub-profile-avatar {
 .cef-day-btn {
   width: 42px;
   height: 42px;
-  border-radius: 50%;
-  border: 1.5px solid var(--separator);
-  background: var(--overlay-weak);
-  color: var(--muted2);
-  font-size: var(--fs-xs);
-  font-weight: 600;
   cursor: pointer;
   transition: all 0.15s ease;
-}
-
-.cef-day-btn.selected {
-  border-color: #ff7b00;
-  background: rgba(255,123,0,0.2);
-  color: var(--hot-text);
 }
 
 .cef-interval-row {
@@ -6780,21 +6255,9 @@ img.pub-profile-avatar {
   gap: var(--sp-8);
 }
 
-.modal-label {
-  font-size: var(--fs-xs);
-  color: var(--muted2);
-  text-transform: uppercase;
-  letter-spacing: 0.07em;
-  font-weight: 600;
-}
-
 .modal-input {
-  background: var(--bg);
-  border: 1px solid var(--border);
-  border-radius: var(--r-button);
   padding: var(--sp-12) var(--sp-16);
   color: var(--text);
-  font-size: var(--fs-body);
   outline: none;
   transition: border-color 0.15s;
   font-family: inherit;
@@ -6802,10 +6265,6 @@ img.pub-profile-avatar {
 
 .modal-input::placeholder {
   color: var(--muted);
-}
-
-.modal-input:focus {
-  border-color: var(--accent);
 }
 
 /* PR32 - Password field with reveal toggle. The input keeps its normal
@@ -6947,13 +6406,9 @@ img.pub-profile-avatar {
   display: flex;
   align-items: center;
   gap: var(--sp-8);
-  background: var(--bg);
-  border: 1px solid var(--border);
-  border-radius: var(--r-button);
   padding: 0 var(--sp-16);
   transition: border-color 0.15s;
 }
-.username-input-row:focus-within { border-color: var(--accent); }
 .username-at { color: var(--muted); font-weight: 600; font-size: var(--fs-body); }
 .username-input {
   flex: 1;
@@ -7142,11 +6597,6 @@ img.pub-profile-avatar {
   border: none;
   background: var(--primary-tint);
   color: var(--primary-on-tint);
-}
-
-.modal-textarea {
-  resize: none;
-  line-height: 1.45;
 }
 
 .modal-submit {
@@ -7393,7 +6843,6 @@ img.pub-profile-avatar {
 
 .conv-empty-icon {
   font-size: 2.5rem;
-  margin: 0 0 var(--sp-8);
 }
 
 .conv-empty-title {
@@ -7792,8 +7241,6 @@ img.dm-header-avatar {
   border-radius: 50%;
   border: none;
   cursor: pointer;
-  background: var(--cta);
-  color: var(--on-cta);
   font-size: var(--fs-md);
   line-height: 1;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
@@ -7801,12 +7248,10 @@ img.dm-header-avatar {
 
 .dm-vibe-btn:hover:not(:disabled) {
   transform: scale(1.06);
-  box-shadow: 0 0 22px rgba(194, 74, 56, 0.58), 0 5px 14px rgba(0, 0, 0, 0.38);
 }
 
 .dm-vibe-btn:active:not(:disabled) {
   transform: scale(1.1);
-  box-shadow: 0 0 30px rgba(194, 74, 56, 0.75), 0 7px 18px rgba(0, 0, 0, 0.42);
 }
 
 .dm-vibe-btn:disabled { opacity: 0.45; cursor: default; }
@@ -9021,7 +8466,6 @@ img.dm-header-avatar {
   z-index: 100;
   overflow-y: auto;
 }
-.friend-req-tab--active { border-color: var(--accent); }
 .friend-req-empty {
   flex: 1;
   display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -9030,7 +8474,7 @@ img.dm-header-avatar {
   gap: var(--sp-8);
 }
 .friend-req-empty-emoji { font-size: 2rem; }
-.friend-req-empty-sub   { color: var(--muted); font-size: var(--fs-sm); max-width: 320px; }
+.friend-req-empty-sub   { max-width: 320px; }
 
 .friend-req-list { list-style: none; padding: var(--sp-8) 0; }
 .friend-req-row-main {
@@ -9055,24 +8499,8 @@ img.dm-header-avatar {
 }
 .friend-req-avatar--fallback { background: #4ade80; }
 .friend-req-row-text { min-width: 0; }
-.friend-req-row-sub  { color: var(--muted); font-size: var(--fs-xs); margin-top: 0.0625rem; }
+.friend-req-row-sub  { margin-top: 0.0625rem; }
 .friend-req-actions { display: flex; gap: var(--sp-8); }
-.friend-req-decline, .friend-req-cancel {
-  padding: var(--sp-8) var(--sp-12);
-  border-radius: var(--r-chip);
-  font-weight: 600;
-  font-size: var(--fs-sm);
-  cursor: pointer;
-  font-family: inherit;
-}
-.friend-req-accept {
-  padding: var(--sp-8) var(--sp-16);
-  border-radius: var(--r-chip);
-  font-weight: 700;
-  font-size: var(--fs-sm);
-  cursor: pointer;
-  font-family: inherit;
-}
 
 /* ── Android Play Store promo banner ─────────────────────────────────────── */
 
@@ -9341,20 +8769,6 @@ body.has-app-promo-banner .page-header {
 /* Inline validate button - sized like .topic-owner-btn but tinted orange to
    signal the primary creator action. Used inside .topic-owner-row. */
 
-.challenge-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--sp-4);
-  padding: var(--sp-4) var(--sp-8);
-  font-size: var(--fs-tiny);
-}
-/* International mode - distinct from audience violet so Local/Intl read
-   apart at a glance. Cyan: feels "global" without competing with brand
-   orange or the green/red status pills. */
-.challenge-badge--international {
-  border-color: rgba(56, 189, 248, 0.36);
-}
-
 /* ── Rank badge (Top 10 + podium Top 3) ─────────────────────────────────
    Decorative disc that floats astride the top-edge of an avatar. Tier 1
    uses gold/silver/bronze gradients with a soft sheen; tier 2 is a sober
@@ -9515,10 +8929,11 @@ body.has-app-promo-banner .page-header {
  padding: var(--sp-2) var(--sp-8);
   font-size: var(--fs-tiny); font-weight: 800;
   border: 1px solid;
+  text-transform: none;
+  letter-spacing: 0;
+  border-radius: var(--r-chip);
 }
-.challenge-status-pill--live { background: rgba(255,201,60,0.14); border-color: rgba(255,201,60,0.34); color: #FFC93C; }
 .challenge-status-pill--restart {
-  background: linear-gradient(135deg, var(--accent), var(--accent2)); border-color: transparent; color: #fff;
   cursor: pointer; font-family: inherit;
 }
 .challenge-status-pill--restart:active { filter: brightness(1.1); }
@@ -9709,9 +9124,6 @@ body.has-app-promo-banner .page-header {
   height: 36px;
   padding: 0 var(--sp-12);
   border-radius: 18px;
-  background: rgba(255, 122, 60, 0.10);
-  border: 1px solid rgba(255, 122, 60, 0.30);
-  color: var(--hot-text);
   font-size: var(--fs-tiny);
   font-weight: 800;
   letter-spacing: 0.1px;
@@ -9720,7 +9132,6 @@ body.has-app-promo-banner .page-header {
   -webkit-tap-highlight-color: transparent;
   transition: background 0.12s ease, transform 0.1s ease;
 }
-.challenge-share-pill:hover  { background: rgba(255, 122, 60, 0.18); }
 .challenge-share-pill:active { transform: scale(0.98); }
 .challenge-share-pill-text { font-size: var(--fs-tiny); font-weight: 800; }
 
@@ -9736,17 +9147,6 @@ body.has-app-promo-banner .page-header {
   align-self: center;
 }
 .challenge-share-pill--inline .challenge-share-pill-text { font-size: var(--fs-tiny); }
-/* Share-specific tint - the only pill that surfaces a social/growth verb,
-   so it gets a distinct violet so it doesn't read as just another orange
-   action. The rest of the inline meta-row pills (Manage, Visibility,
-   Leave, Notif) keep the orange brand tint. */
-.challenge-share-pill--share {
-  background: rgba(167, 139, 250, 0.10);
-  border-color: rgba(167, 139, 250, 0.35);
-  color: #c4b5fd;
-}
-.challenge-share-pill--share:hover { background: rgba(167, 139, 250, 0.18); }
-.challenge-share-pill--share .challenge-share-pill-text { color: #c4b5fd; }
 
 /* Collapse chevron next to the share pill - toggles the channel-header
    details block (second pill row + pipeline + proof + members strip). */
@@ -10066,16 +9466,10 @@ body.has-app-promo-banner .page-header {
   align-items: center;
   gap: var(--sp-8);
   padding: var(--sp-8) var(--sp-16);
-  border-radius: var(--r-chip);
-  border: 1px solid rgba(56, 189, 248, 0.45);
-  background: rgba(56, 189, 248, 0.10);
-  color: #38bdf8;
   font: inherit;
   font-size: var(--fs-xs);
-  font-weight: 700;
   letter-spacing: -0.01em;
 }
-.challenge-owner-invite-cta:hover { background: rgba(56, 189, 248, 0.16); }
 
 /* CTA that replaces the raw deeplink in a shared feed message (a Hi plan,
    a challenge, a profile): the primary token like every other button, with a
@@ -10356,12 +9750,6 @@ body.has-app-promo-banner .page-header {
   color: var(--text);
   border-color: var(--separator);
 }
-.modal-btn--danger {
-  background: transparent;
-  color: #fca5a5;
-  border: 1px solid rgba(252, 165, 165, 0.28);
-}
-.modal-btn--danger:hover { border-color: rgba(252, 165, 165, 0.50); }
 
 /* Manage / proof-spec modals reuse the .modal-panel skeleton. Both want
    a real headline title (not the small uppercase eyebrow) - override. */
@@ -10377,16 +9765,6 @@ body.has-app-promo-banner .page-header {
 
 /* ── Inline visibility pill (Public / Friends / Private dropdown) ────── */
 /* Reuse the .challenge-share-pill skeleton, just retint per state. */
-.challenge-visibility-pill--friends {
-  background:   rgba(147, 197, 253, 0.08);
-  border-color: rgba(147, 197, 253, 0.32);
-}
-.challenge-visibility-pill--friends .challenge-share-pill-text { color: #93c5fd; }
-.challenge-visibility-pill--private {
-  background:   rgba(252, 165, 165, 0.08);
-  border-color: rgba(252, 165, 165, 0.32);
-}
-.challenge-visibility-pill--private .challenge-share-pill-text { color: #fca5a5; }
 .challenge-share-pill-chevron {
   margin-left: var(--sp-2);
   font-size: var(--fs-tiny);
@@ -10422,22 +9800,6 @@ body.has-app-promo-banner .page-header {
   text-transform: uppercase;
   border: 1px solid transparent;
   vertical-align: middle;
-}
-.challenge-role-badge--challenger {
-  background: rgba(255, 122, 60, 0.14);
-  color:      #FFB37A;
-  border-color: rgba(255, 122, 60, 0.30);
-}
-.challenge-role-badge--taker {
-  background: rgba(74, 222, 128, 0.12);
-  color:      #4ADE80;
-  border-color: rgba(74, 222, 128, 0.28);
-}
-/* PR23 - Spectator: neutral, low-key palette so the badge reads "just
-   watching" without competing with the brand-orange Challenger or the
-   green Taker. */
-.challenge-role-badge--spectator {
-  border-color: rgba(148, 163, 184, 0.24);
 }
 
 /* Members modal - keep the badge inline next to the name (the parent
@@ -10886,25 +10248,13 @@ body.has-app-promo-banner .page-header {
    shared page-/modal-/profile-mode-/back-button classes stay dark inside the app.
    Same scoped-token pattern as .sl; folds into the global tokens in phase 3. ── */
 .auth-page { color: var(--text); } /* the global V3 tokens apply here, in both themes */
-/* White form fields pop on the cream page (base sets them to var(--bg)). */
-.auth-page .modal-input,
-.auth-page .username-input-row { background: var(--surface); }
 /* Chrome that was white-on-dark → warm hairline / ink. */
 .auth-page .page-header { border-bottom-color: var(--border); }
-.auth-page .back-button {
-  background: rgba(28, 20, 14, 0.04);
-  border-color: var(--border);
-  color: var(--text);
-}
 .auth-page .password-field-toggle:hover { background: rgba(28, 20, 14, 0.05); }
 /* Mode selector: off-brand blue → brand orange, legible on cream. */
-.auth-page .profile-mode-btn { border-color: var(--border); }
 .auth-page .profile-mode-btn:hover { border-color: rgba(255, 122, 60, 0.40); background: rgba(255, 122, 60, 0.06); }
-.auth-page .profile-mode-btn--on { border-color: var(--accent); background: rgba(255, 122, 60, 0.12); }
-.auth-page .profile-mode-btn--on .profile-mode-btn-name { color: var(--text); }
 /* Accent tab + semantic text at readable contrast on cream (bright orange /
    neon green / pink all fail on white). */
-.auth-page .auth-tab--active { color: var(--accent); }
 .auth-page .auth-error { color: #C0264A; }
 .auth-page .username-hint--ok  { color: #17864C; }
 .auth-page .username-hint--bad { color: #C0264A; }
@@ -11040,7 +10390,7 @@ body.has-app-promo-banner .page-header {
 [data-theme="light"] .bottom-nav-tab.active { color: var(--primary-on-tint); background: var(--primary-tint); }
 .bottom-nav-tab.active .bottom-nav-icon { filter: none; }
 .bottom-nav-icon svg { width: 24px; height: 24px; }
-.bottom-nav-label { font-size: var(--fs-xs); font-weight: 600; line-height: 1.2; text-transform: none; letter-spacing: 0;
+.bottom-nav-label { position: relative; white-space: nowrap; font-size: var(--fs-xs); font-weight: 600; line-height: 1.2; text-transform: none; letter-spacing: 0;
   max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
 /* Five tabs on a narrow phone (320-360 px): tighter gaps and labels, so none is cut or wraps. */
 @media (max-width: 360px) {
@@ -11100,7 +10450,7 @@ body.has-app-promo-banner .page-header {
 .v3-scope > .v3-scope-away { width: 13px; height: 13px; color: var(--primary-text); }
 .v3-round { width: 44px; height: 44px; flex-shrink: 0; border-radius: 50%; border: 1.5px solid var(--line); background: var(--surface); color: var(--text); display: flex; align-items: center; justify-content: center; cursor: pointer; position: relative; }
 .v3-dot { position: absolute; top: 7px; right: 7px; width: 9px; height: 9px; border-radius: 50%; background: var(--primary); border: 2px solid var(--surface); }
-.v3-signup { height: 44px; flex-shrink: 0; padding: 0 var(--sp-16); border-radius: var(--r-chip); border: none; background: var(--primary); color: #fff; font: inherit; font-size: var(--fs-sm); font-weight: 700; cursor: pointer; }
+.v3-signup { height: 44px; flex-shrink: 0; padding: 0 var(--sp-16); border-radius: var(--r-chip); border: none; font: inherit; font-size: var(--fs-sm); cursor: pointer; }
 /* Narrow phones: the city's short name ("Saigon") must fit the pill whole. */
 @media (max-width: 400px) {
   .v3-header { gap: var(--sp-8); }
@@ -11177,7 +10527,6 @@ body.has-app-promo-banner .page-header {
 /* Content-sized chips, never cut; a soft fade at the edge while more tabs follow. */
 .dc-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--sp-12); }
 .dc-tile { background: var(--surface); border: 1.5px solid var(--line); border-radius: var(--r-card); overflow: hidden; cursor: pointer; display: flex; flex-direction: column; }
-.dc-tile-photo { position: relative; }
 .dc-tile-photo img { width: 100%; aspect-ratio: 1; object-fit: cover; display: block; background: var(--surface2); }
 .dc-tile-medal { position: absolute; top: 6px; left: 6px; font-size: var(--fs-xl); }
 .dc-medal { display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; border-radius: 50%; font-size: var(--fs-xs); font-weight: 800; line-height: 1; background: var(--primary-tint); color: var(--primary-on-tint); }
@@ -11193,7 +10542,8 @@ body.has-app-promo-banner .page-header {
 .dc-pass--dark { background: rgba(255,255,255,0.15); color: #fff; }
 .dc-early { font-size: var(--fs-tiny); font-weight: 800; color: var(--warning); border: 1px solid var(--warning); border-radius: var(--r-chip); padding: 0 var(--sp-8); }
 .dc-early--dark { color: #fff; border-color: rgba(255,255,255,0.4); }
-.dc-vote-wrap { display: inline-flex; flex-direction: column; gap: var(--sp-4); /* Vote button keeps its size in cards. */ align-self: flex-start; }
+/* Vote button keeps its size in cards. */
+.dc-vote-wrap { display: inline-flex; flex-direction: column; gap: var(--sp-4); align-self: flex-start; }
 .dc-vote { display: inline-flex; align-items: center; gap: var(--sp-8); min-height: 36px; padding: var(--sp-4) var(--sp-12); border-radius: var(--r-chip); border: 1.5px solid var(--line); background: var(--surface); font: inherit; font-size: var(--fs-sm); font-weight: 700; color: var(--text); cursor: pointer; }
 .dc-vote--tile { min-height: 30px; padding: var(--sp-2) var(--sp-8); font-size: var(--fs-xs); }
 .dc-vote--viewer { background: rgba(255,255,255,0.12); border-color: rgba(255,255,255,0.25); color: #fff; }
@@ -11259,7 +10609,6 @@ body.has-app-promo-banner .page-header {
 .week-dot { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: var(--fs-body); color: var(--text); }
 .week-dot--missed { background: var(--surface); border: 1.5px solid var(--line); color: var(--muted2); }
 .week-dot--later { border: 1.5px dashed var(--line); opacity: 0.7; }
-.week-dot--none { background: var(--surface); border: 1.5px solid var(--line); }
 .today-card { background: var(--surface); border: 1.5px solid var(--line); border-radius: var(--r-card); padding: var(--sp-12) var(--sp-16); display: flex; flex-direction: column; gap: var(--sp-8); }
 .today-card-head { display: flex; align-items: center; justify-content: space-between; gap: var(--sp-8); }
 .today-proofs-stats { font-size: var(--fs-xs); margin-top: -4px; }
@@ -11304,7 +10653,7 @@ html.kb-open .quick-row { display: none; }
 .pin-bar-body { flex: 1; min-width: 0; display: flex; flex-direction: column; }
 .pin-bar-kicker { font-size: var(--fs-xs); font-weight: 700; color: var(--primary-text); }
 .pin-bar-text { font-size: var(--fs-sm); font-weight: 700; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.pin-bar-take { flex-shrink: 0; min-height: 36px; display: flex; align-items: center; padding: 0 var(--sp-16); border-radius: var(--r-chip); background: var(--primary); color: #fff; font-size: var(--fs-xs); font-weight: 800; text-decoration: none; }
+.pin-bar-take { flex-shrink: 0; min-height: 36px; display: flex; align-items: center; padding: 0 var(--sp-16); border-radius: var(--r-chip); font-size: var(--fs-xs); text-decoration: none; }
 .feed-daily--clickable { cursor: pointer; }
 .feed-daily-photo { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: 12px; background: var(--surface2); cursor: pointer; }
 .feed-daily-chip { font-size: var(--fs-tiny); font-weight: 700; border-radius: var(--r-chip); padding: 1px var(--sp-8); margin-left: var(--sp-4); }
@@ -11317,11 +10666,9 @@ html.kb-open .quick-row { display: none; }
 .feed-daily .dc-vote-wrap { margin-top: var(--sp-4); }
 
 /* The install banner on the V3 colors (it kept a hard-coded dark card). */
-.install-banner { background: var(--surface); border: 1.5px solid var(--line); box-shadow: var(--shadow-card); }
-.install-banner--compact { box-shadow: none; }
+.install-banner--compact { position: static; transform: none; width: 100%; padding: var(--sp-12) var(--sp-12); border-radius: var(--r-card); gap: var(--sp-12); box-shadow: none; }
 .install-banner-title, .install-banner-compact-text { color: var(--text); }
 .install-banner-help { color: var(--muted2); }
-.install-banner-dismiss { color: var(--muted2); border-color: var(--line); background: transparent; }
 
 /* ── Passport (W4, like the app's Passport tab) ─────────────────────────── */
 .pp-header { display: flex; align-items: center; gap: var(--sp-12); padding: max(10px, env(safe-area-inset-top)) 16px 8px; background: var(--bg); flex-shrink: 0; }
@@ -11439,7 +10786,7 @@ html.kb-open .quick-row { display: none; }
    Screen header = the app's ScreenHeader: 44 round back button, title on the
    left, page background, no rule. Filter pills, grouped rows and switches
    follow the app's Chip / RowGroup / Switch. */
-.page-header { gap: var(--sp-12); min-height: 0; padding: max(10px, env(safe-area-inset-top)) 16px 8px; background: var(--bg); border-bottom: none; }
+.page-header { display: flex; align-items: center; flex-shrink: 0; position: relative; gap: var(--sp-12); min-height: 0; padding: max(10px, env(safe-area-inset-top)) 16px 8px; background: var(--bg); border-bottom: none; }
 .page-title { color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; pointer-events: none; position: static; left: auto; transform: none; flex: 1; min-width: 0; max-width: none; text-align: left; font-size: var(--fs-lg); font-weight: 800; letter-spacing: -0.3px; }
 /* Override the absolute-centered .page-title here: a long "mark all read" CTA
    (e.g. fr "Marquer comme lu") would otherwise overlap the centered title.
@@ -11471,7 +10818,7 @@ html.kb-open .quick-row { display: none; }
 
 /* Leaderboard: the app's segmented tabs (primary fill), plain rows. */
 .leaderboard-seg { display: flex; border-radius: var(--r-chip); gap: var(--sp-4); padding: var(--sp-4); border: 1.5px solid var(--line); background: var(--surface); }
-.leaderboard-seg-item { min-height: 40px; padding: 0 var(--sp-12); color: var(--text); font-size: var(--fs-sm); font-weight: 600; display: block; text-align: center; line-height: 40px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.leaderboard-seg-item { flex: 1; border-radius: var(--r-chip); border: none; background: transparent; cursor: pointer; font-family: inherit; transition: background 0.15s, color 0.15s; min-height: 40px; padding: 0 var(--sp-12); color: var(--text); font-size: var(--fs-sm); font-weight: 600; display: block; text-align: center; line-height: 40px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .leaderboard-seg-item.is-active,
 .leaderboard-seg--primary .leaderboard-seg-item.is-active { background: var(--primary); color: #fff; font-weight: 700; }
 .leaderboard-row { display: flex; align-items: center; gap: var(--sp-12); min-height: 60px; padding: var(--sp-8) var(--sp-16); border-bottom: 1px solid var(--line); }
@@ -11480,8 +10827,8 @@ html.kb-open .quick-row { display: none; }
 .leaderboard-row--tappable.is-me:hover { background: var(--primary-tint); }
 .leaderboard-row.is-me .leaderboard-rank,
 .leaderboard-row.is-me .leaderboard-points { color: var(--primary-on-tint); }
-.leaderboard-name { font-size: var(--fs-body); }
-.leaderboard-points { font-size: var(--fs-sm); color: var(--muted2); }
+.leaderboard-name { font-weight: 700; color: var(--text, #fff); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: var(--fs-body); }
+.leaderboard-points { font-weight: 700; font-size: var(--fs-sm); color: var(--muted2); }
 .leaderboard-pinned { border-top: 1px solid var(--line); background: var(--bg); }
 
 /* Secondary pill (Share my rank, Share in my city): the app's secondary Button, small. */
@@ -11492,22 +10839,21 @@ html.kb-open .quick-row { display: none; }
 
 /* ── People (web pass 2): profile, DM, friend requests, nearby, like the app's B4 ── */
 .pub-profile-avatar--initials { display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 800; }
-.pub-profile-name { font-size: var(--fs-xl); font-weight: 800; letter-spacing: -0.3px; }
+.pub-profile-name { color: var(--text); margin: 0; font-size: var(--fs-xl); font-weight: 800; letter-spacing: -0.3px; }
 .pub-profile-meta-city { white-space: nowrap; font-size: var(--fs-xs); color: var(--muted2); }
 .pub-profile-badge-micro { font-size: var(--fs-tiny); color: var(--muted2); }
-.badge-pill { font-size: var(--fs-tiny); padding: var(--sp-4) var(--sp-8); border: none; background: var(--primary-tint); color: var(--primary-on-tint); }
+.badge-pill { display: inline-flex; align-items: center; align-self: flex-start; font-weight: 700; border-radius: var(--r-chip); white-space: nowrap; vertical-align: middle; font-size: var(--fs-tiny); padding: var(--sp-4) var(--sp-8); border: none; background: var(--primary-tint); color: var(--primary-on-tint); }
 .badge-pill--ghost { background: var(--surface2); color: var(--muted2); }
 .badge-pill--local, .badge-pill--fresh { background: var(--local-bg); color: var(--local-text); }
 .badge-pill--regular { background: var(--primary-tint); color: var(--primary-on-tint); }
 .badge-pill--host { background: var(--primary-tint); color: var(--primary-on-tint); }
 /* Rank lines: one card of rows, like the app's RowGroup. */
-.profile-rank-row { margin: var(--sp-4) 0 0; padding: 0; gap: 0; background: var(--surface); border: 1.5px solid var(--line); border-radius: 20px; overflow: hidden; }
+.profile-rank-row { display: flex; flex-direction: column; margin: var(--sp-4) 0 0; padding: 0; gap: 0; background: var(--surface); border: 1.5px solid var(--line); border-radius: 20px; overflow: hidden; }
 .profile-rank-row-line { display: flex; align-items: center; gap: var(--sp-8); min-height: 50px; padding: 0 var(--sp-16); }
 .profile-rank-row-line + .profile-rank-row-line { border-top: 1px solid var(--line); }
-.profile-rank-row-line--tappable { margin: 0; border-radius: 0; }
 .profile-rank-row-line--tappable:hover { background: var(--surface2); }
-.profile-rank-row-text { font-size: var(--fs-sm); font-weight: 700; }
-.pub-profile-about { font-size: var(--fs-sm); line-height: 1.45; color: var(--text); }
+.profile-rank-row-text { flex: 1; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: var(--fs-sm); font-weight: 700; }
+.pub-profile-about { text-align: left; margin: 0; font-size: var(--fs-sm); line-height: 1.45; color: var(--text); }
 .pub-profile-identity-card, .pub-profile-info-rows, .pub-profile-pick-card { background: var(--surface); border: 1.5px solid var(--line); border-radius: 20px; box-shadow: none; }
 .pub-profile-identity-card-title { font-size: var(--fs-body); font-weight: 800; color: var(--text); }
 .pub-profile-identity-card-sub, .pub-profile-info-label { font-size: var(--fs-xs); color: var(--muted2); }
@@ -11518,12 +10864,12 @@ html.kb-open .quick-row { display: none; }
 .profile-tab-pill--active { border-color: var(--primary); background: var(--primary); color: #fff; }
 /* Override .profile-tabs padding when used inside pub-profile-sticky-identity */
 .pub-profile-tabs-bar { width: 100%; justify-content: flex-start; max-width: none; padding: var(--sp-12) 0 var(--sp-12); }
-.pub-profile-tab-empty { font-size: var(--fs-sm); color: var(--muted2); }
+.pub-profile-tab-empty { text-align: center; padding: var(--sp-24) 0; margin: 0; font-size: var(--fs-sm); color: var(--muted2); }
 .pub-profile-event-row, .pub-profile-friend-row, .pub-profile-vibe-row { border-color: var(--line); }
 /* Bottom bar: Message = primary Button, Friend = secondary, report = round icon button. */
 .pub-profile-friend-btn, .pub-profile-unfriend-btn, .pub-profile-unfriend-cancel { min-height: 48px; border-radius: 16px; font-size: var(--fs-body); font-weight: 700; display: inline-flex; align-items: center; justify-content: center; gap: var(--sp-8); box-shadow: none; }
 .pub-profile-friend-btn, .pub-profile-friend-btn--active, .pub-profile-unfriend-cancel { background: var(--surface); color: var(--text); border: 1.5px solid var(--line); }
-.pub-profile-unfriend-btn { background: var(--surface); color: #C0392B; border: 1.5px solid #C0392B; }
+.pub-profile-unfriend-btn { flex: 1; padding: var(--sp-12) var(--sp-12); cursor: pointer; transition: background 0.15s; background: var(--surface); color: #C0392B; border: 1.5px solid #C0392B; }
 .pub-profile-report-btn:hover { opacity: 1; background: var(--surface2); border-color: var(--line); color: #C0392B; }
 /* Friend requests: the app's Segmented tabs and small Buttons. */
 .friend-req-tabs { display: flex; gap: var(--sp-4); margin: var(--sp-4) var(--sp-16) var(--sp-4); padding: var(--sp-4); border-radius: var(--r-chip); border: 1.5px solid var(--line); background: var(--surface); }
@@ -11535,15 +10881,14 @@ html.kb-open .quick-row { display: none; }
 .friend-req-row-sub, .friend-req-empty-sub { color: var(--muted2); font-size: var(--fs-xs); }
 .friend-req-empty-title { color: var(--text); font-size: var(--fs-body); font-weight: 800; }
 .friend-req-decline, .friend-req-cancel, .friend-req-accept { min-height: 44px; padding: 0 var(--sp-16); border-radius: 14px; font-size: var(--fs-sm); font-weight: 700; }
-.friend-req-decline, .friend-req-cancel { border: 1.5px solid var(--line); background: var(--surface); color: var(--text); }
-.friend-req-accept { border: none; background: var(--primary); color: #fff; }
+.friend-req-decline, .friend-req-cancel { cursor: pointer; font-family: inherit; border: 1.5px solid var(--line); background: var(--surface); color: var(--text); }
+.friend-req-accept { cursor: pointer; font-family: inherit; border: none; }
 /* DM header: avatar + name + "Direct message", like the app. */
 .dm-header-name { color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: var(--fs-body); font-weight: 800; }
 /* People here: filter chips like the app's, rows as cards, sentence-case labels. */
-.here-filter-label { width: auto; min-width: 44px; text-transform: none; letter-spacing: 0; font-size: var(--fs-xs); font-weight: 700; color: var(--muted2); }
-.here-chip { min-height: 34px; padding: 0 var(--sp-12); border: 1.5px solid var(--line); background: var(--surface); color: var(--text); font-size: var(--fs-xs); font-weight: 600; display: inline-flex; align-items: center; gap: var(--sp-4); }
+.here-filter-label { flex-shrink: 0; width: auto; min-width: 44px; text-transform: none; letter-spacing: 0; font-size: var(--fs-xs); font-weight: 700; color: var(--muted2); }
+.here-chip { border-radius: var(--r-chip); cursor: pointer; transition: background 0.12s, color 0.12s, border-color 0.12s; white-space: nowrap; min-height: 34px; padding: 0 var(--sp-12); border: 1.5px solid var(--line); background: var(--surface); color: var(--text); font-size: var(--fs-xs); font-weight: 600; display: inline-flex; align-items: center; gap: var(--sp-4); }
 .here-chip--on, .here-chip--on-local, .here-chip--on-exploring { border-color: var(--primary); background: var(--primary); color: #fff; }
-.here-section-header { text-transform: none; letter-spacing: 0; font-size: var(--fs-body); font-weight: 800; color: var(--text); }
 .people-drawer-row { display: flex; align-items: center; gap: var(--sp-16); padding: var(--sp-12) var(--sp-16); background: var(--surface); border: 1.5px solid var(--line); border-radius: 20px; box-shadow: none; }
 .people-drawer-name { font-size: var(--fs-body); font-weight: 700; color: var(--text); }
 .vibe-badge--exploring { opacity: 1; color: var(--traveler-text); }
@@ -11551,25 +10896,26 @@ html.kb-open .quick-row { display: none; }
 .challenge-type-chip--active { border-color: var(--primary); background: var(--primary); color: #fff; }
 
 /* ── Plans and Hi now (web pass 3, like the app's B5) ─────────────────────── */
-.event-header { gap: var(--sp-12); padding-top: max(10px, env(safe-area-inset-top)); padding-bottom: var(--sp-12); }
+.event-header { display: flex; flex-direction: column; transition: gap 0.18s ease, padding 0.18s ease; gap: var(--sp-12); padding-top: max(10px, env(safe-area-inset-top)); padding-bottom: var(--sp-12); }
 .event-header-top { display: flex; justify-content: space-between; align-items: center; gap: var(--sp-12); }
 .event-header-city { flex: 1; min-width: 0; font-size: var(--fs-md); font-weight: 800; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .event-header-title-row { display: flex; justify-content: space-between; align-items: center; gap: var(--sp-12); }
-.event-join-btn { min-height: 44px; min-width: 0; padding: 0 var(--gutter); border-radius: var(--r-button); border: none; background: var(--primary); color: #fff; font-size: var(--fs-sm); font-weight: 700; box-shadow: none; display: inline-flex; align-items: center; gap: var(--sp-8); }
-.event-join-btn:hover { background: var(--primary); opacity: 0.92; }
+/* Join / Going CTA - compact pill aligned to the title row */
+.event-join-btn { flex-shrink: 0; letter-spacing: 0.01em; cursor: pointer; -webkit-tap-highlight-color: transparent; transition: background 0.15s, border-color 0.15s, color 0.15s, box-shadow 0.15s; min-height: 44px; min-width: 0; padding: 0 var(--gutter); border-radius: var(--r-button); border: none; font-size: var(--fs-sm); box-shadow: none; display: inline-flex; align-items: center; gap: var(--sp-8); }
+.event-join-btn:hover { opacity: 0.92; }
 .event-join-btn--active, .event-join-btn--active:hover, .event-join-btn--edit, .event-join-btn--edit:hover { background: var(--surface); border: 1.5px solid var(--line); color: var(--text); box-shadow: none; }
 .event-join-btn--pulse { animation: none; }
 .event-meta-label, .event-location, .event-host { display: flex; align-items: center; gap: var(--sp-8); flex-wrap: wrap; font-size: var(--fs-xs); color: var(--muted2); margin: 0; }
 .event-meta-label .icon, .event-host .icon { color: var(--muted2); }
-.event-location { color: var(--primary-text); font-weight: 600; }
+.event-location { line-height: 1.4; text-decoration: none; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--primary-text); font-weight: 600; }
 .going-count-btn { all: unset; cursor: pointer; border-bottom: 1px dashed var(--separator); transition: color 0.12s, border-color 0.12s; color: var(--text); font-weight: 700; text-decoration: underline; }
 /* Hangout: back + share header, then icon + title, expiry chip (the app's topic/[id]). */
-.topic-chat-header { align-items: center; padding-top: max(10px, env(safe-area-inset-top)); padding-bottom: var(--sp-8); }
+.topic-chat-header { min-height: 0; gap: var(--sp-12); align-items: center; padding-top: max(10px, env(safe-area-inset-top)); padding-bottom: var(--sp-8); }
 .topic-chat-header-spacer { flex: 1; }
 .topic-chat-title-row { display: flex; align-items: center; gap: var(--sp-12); padding: var(--sp-2) var(--sp-16) var(--sp-8); flex-shrink: 0; }
 .topic-chat-title-row .topic-chat-header-icon { width: 40px; height: 40px; flex-shrink: 0; border-radius: 50%; background: var(--primary-tint); color: var(--primary-on-tint); display: flex; align-items: center; justify-content: center; }
 .topic-chat-title-row .topic-chat-header-title { flex: 1; min-width: 0; font-size: var(--fs-lg); font-weight: 800; line-height: 1.25; letter-spacing: -0.3px; }
-.topic-chat-desc { padding: 0 var(--sp-16) var(--sp-8); font-size: var(--fs-sm); font-style: normal; color: var(--muted2); border-bottom: none; }
+.topic-chat-desc { line-height: 1.5; padding: 0 var(--sp-16) var(--sp-8); font-size: var(--fs-sm); font-style: normal; color: var(--muted2); border-bottom: none; }
 .topic-chat-expiry-row { padding: 0 var(--sp-16) var(--sp-12); flex-shrink: 0; border-bottom: 1px solid var(--line); }
 .topic-chat-expiry { display: inline-flex; align-items: center; gap: var(--sp-8); padding: var(--sp-4) var(--sp-12); border-radius: var(--r-chip); background: var(--primary-tint); color: var(--primary-on-tint); font-size: var(--fs-xs); font-weight: 700; }
 .topic-members-strip { display: flex; align-items: center; gap: var(--sp-12); width: 100%; background: none; border: none; cursor: pointer; font-family: inherit; text-align: left; padding: var(--sp-12) var(--sp-16); border-bottom: 1px solid var(--line); }
@@ -11597,10 +10943,12 @@ html.kb-open .quick-row { display: none; }
 /* Hi now list (the app's stripped events screen): cards, two create buttons. */
 .page-header-sub { flex-shrink: 0; max-width: 40%; font-size: var(--fs-xs); color: var(--muted2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .city-row, .city-row:hover { border: 1.5px solid var(--line); border-radius: 20px; background: var(--surface); box-shadow: none; }
-.event-row-card { padding: var(--sp-12) var(--sp-16); gap: var(--sp-4); margin-bottom: var(--sp-8); }
-.now-actions-bar--hilocal { gap: var(--sp-8); padding: var(--sp-12) var(--sp-16) var(--sp-16); background: var(--bg); border-top: 1px solid var(--line); }
+/* Compacted from default city-row padding so we fit ~6 cards per viewport
+   instead of 3. Min-height keeps the tap target ≥44px on touch devices. */
+.event-row-card { flex-direction: column; align-items: stretch; min-height: 44px; padding: var(--sp-12) var(--sp-16); gap: var(--sp-4); margin-bottom: var(--sp-8); }
+.now-actions-bar--hilocal { display: flex; flex-direction: column; gap: var(--sp-8); padding: var(--sp-12) var(--sp-16) var(--sp-16); background: var(--bg); border-top: 1px solid var(--line); }
 /* Empty states (the app's EmptyState): stroke icon, title, body, primary Button. */
-.events-empty-icon { color: var(--primary-text); display: flex; justify-content: center; }
+.events-empty-icon { color: var(--primary-text); }
 /* The icon in a soft bubble with the Hilads logo peeking at its corner (V3 polish 7). */
 .events-empty-icon, .empty-icon, .topic-chat-empty-icon, .conv-empty-icon {
   position: relative; flex-shrink: 0; width: 64px; height: 64px; margin: 0 auto var(--sp-4); border-radius: 50%;
@@ -11612,28 +10960,28 @@ html.kb-open .quick-row { display: none; }
 }
 .events-empty-title { font-size: var(--fs-body); font-weight: 800; color: var(--text); }
 /* Hi now / plan cards: V3 chips (tint), link-style reply, readable title. */
-.er-title { font-size: var(--fs-body); font-weight: 800; color: var(--text); }
+.er-title { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; min-width: 0; line-height: 1.2; display: flex; align-items: center; gap: var(--sp-8); font-size: var(--fs-body); font-weight: 800; color: var(--text); }
 .er-going, .er-going--now, .er-going--later, .er-going--public, .er-going--event { font-size: var(--fs-xs); font-weight: 700; color: var(--primary-on-tint); background: var(--primary-tint); border: none; border-radius: var(--r-chip); padding: var(--sp-2) var(--sp-8); }
 .city-row-current, .recur-badge, .now-active-badge { font-size: var(--fs-tiny); font-weight: 700; color: var(--primary-on-tint); background: var(--primary-tint); border: none; border-radius: var(--r-chip); padding: var(--sp-2) var(--sp-8); box-shadow: none; }
-.city-row-current--reply { color: var(--primary-text); background: none; padding: var(--sp-2) 0; }
-.now-active-badge { color: var(--local-text); background: var(--local-bg); }
+.city-row-current--reply { flex-shrink: 1; min-width: 0; display: flex; overflow: hidden; color: var(--primary-text); background: none; padding: var(--sp-2) 0; }
+.now-active-badge { display: inline-block; letter-spacing: 0.2px; color: var(--local-text); background: var(--local-bg); }
 /* Line 3: location - muted, ellipsis */
 .er-location { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.3; font-size: var(--fs-xs); color: var(--muted2); }
 
 /* ── Auth, account and settings (web pass 4, like the app's B2 / B6) ───── */
 .modal-label, .me-section-label, .profile-mode-label, .city-list-label { text-transform: none; letter-spacing: 0; font-size: var(--fs-sm); font-weight: 700; color: var(--text); }
-.modal-label-muted { font-weight: 500; color: var(--muted2); }
+.modal-label-muted { font-size: var(--fs-xs); text-transform: none; letter-spacing: 0; font-weight: 500; color: var(--muted2); }
 .modal-input, .username-input-row, .auth-page .modal-input, .auth-page .username-input-row { min-height: 48px; box-sizing: border-box; background: var(--surface); border: 1.5px solid var(--line); border-radius: var(--r-button); font-size: var(--fs-body); }
-.modal-textarea { min-height: 96px; }
+.modal-textarea { resize: none; line-height: 1.45; min-height: 96px; }
 .modal-input:focus, .username-input-row:focus-within { border-color: var(--primary); }
 .modal-input--muted { opacity: 0.5; cursor: default; user-select: none; color: var(--muted2); background: var(--surface2); }
-.auth-tab { min-height: 40px; border-radius: var(--r-chip); color: var(--text); font-weight: 600; }
+.auth-tab { flex: 1; padding: var(--sp-12); background: transparent; border: none; font-size: var(--fs-sm); cursor: pointer; min-height: 40px; border-radius: var(--r-chip); color: var(--text); font-weight: 600; }
 .auth-tab--active, .auth-page .auth-tab--active { background: var(--primary); color: #fff; font-weight: 700; }
 .profile-mode-btn, .auth-page .profile-mode-btn { border: 1.5px solid var(--line); border-radius: var(--r-button); background: var(--surface); }
 .profile-mode-btn--on, .auth-page .profile-mode-btn--on { border-color: var(--primary); background: var(--primary-tint); }
 .profile-mode-btn--on .profile-mode-btn-name, .auth-page .profile-mode-btn--on .profile-mode-btn-name { color: var(--primary-on-tint); }
 .auth-page .profile-mode-label { color: var(--text); }
-.auth-forgot-btn { color: var(--primary-text); font-weight: 700; }
+.auth-forgot-btn { background: none; border: none; font-size: var(--fs-xs); cursor: pointer; padding: var(--sp-8) 0 0; text-align: center; width: 100%; color: var(--primary-text); font-weight: 700; }
 /* Settings: fields straight on the page (no card), the app's chips. */
 .profile-card.profile-fields { background: transparent; border: none; box-shadow: none; padding: 0; }
 .vibe-chip, .interest-chip { min-height: 38px; padding: 0 var(--sp-16); display: inline-flex; align-items: center; gap: var(--sp-8); border-radius: var(--r-chip); border: 1.5px solid var(--line); background: var(--surface); color: var(--text); font-size: var(--fs-sm); font-weight: 600; }
@@ -11646,11 +10994,11 @@ html.kb-open .quick-row { display: none; }
 /* Switch city: search field, filter chips, row cards. */
 .city-search-input { width: 100%; background: var(--surface); padding: var(--sp-12) var(--sp-16); color: var(--text); outline: none; -webkit-appearance: none; transition: border-color 0.15s; min-height: 48px; border: 1.5px solid var(--line); border-radius: var(--r-chip); font-size: var(--fs-body); }
 .city-search-input:focus { border-color: var(--primary); }
-.city-filter-tab { min-height: 38px; padding: 0 var(--sp-16); border: 1.5px solid var(--line); background: var(--surface); color: var(--text); font-size: var(--fs-sm); font-weight: 600; }
+.city-filter-tab { flex-shrink: 0; border-radius: var(--r-chip); cursor: pointer; transition: background 0.15s, border-color 0.15s, color 0.15s; white-space: nowrap; min-height: 38px; padding: 0 var(--sp-16); border: 1.5px solid var(--line); background: var(--surface); color: var(--text); font-size: var(--fs-sm); font-weight: 600; }
 .city-filter-tab.active { font-weight: 600; border-color: var(--primary); background: var(--primary); color: #fff; }
 /* Delete account sheet: the app's Sheet (was a hard-coded dark panel). */
-.delete-account-title { color: var(--text); font-size: var(--fs-md); font-weight: 800; }
-.delete-account-body { color: var(--muted2); font-size: var(--fs-sm); }
+.delete-account-title { margin: 0; color: var(--text); font-size: var(--fs-md); font-weight: 800; }
+.delete-account-body { line-height: 1.55; margin: 0; color: var(--muted2); font-size: var(--fs-sm); }
 .delete-account-confirm, .delete-account-confirm:hover:not(:disabled) { min-height: 52px; border-radius: 16px; border: none; background: #C0392B; color: #fff; font-size: var(--fs-body); }
 .delete-account-cancel, .delete-account-cancel:hover:not(:disabled) { min-height: 44px; color: var(--text); font-weight: 700; }
 .username-input-row .modal-input, .auth-page .username-input-row .modal-input { min-height: 44px; border: none; background: transparent; border-radius: 0; padding-left: 0; }
@@ -11659,11 +11007,10 @@ html.kb-open .quick-row { display: none; }
 
 /* ── Legacy challenges (web pass 5): token pass only, like the app's B7.
    Kept for open challenges and history; no layout work. ───────────────── */
-.challenge-badge { text-transform: none; letter-spacing: 0; border: none; border-radius: var(--r-chip); background: var(--primary-tint); color: var(--primary-on-tint); font-weight: 700; }
+.challenge-badge { display: inline-flex; align-items: center; gap: var(--sp-4); padding: var(--sp-4) var(--sp-8); font-size: var(--fs-tiny); text-transform: none; letter-spacing: 0; border: none; border-radius: var(--r-chip); background: var(--primary-tint); color: var(--primary-on-tint); font-weight: 700; }
 .challenge-status-pill--done { border-color: rgba(34,197,94,0.34); background: var(--local-bg); color: var(--local-text); border: none; }
 .challenge-status-pill--ended { border-color: var(--separator); background: var(--surface2); color: var(--muted2); border: none; }
 .challenge-badge--international { background: var(--traveler-bg); color: var(--traveler-text); }
-.challenge-status-pill { text-transform: none; letter-spacing: 0; border-radius: var(--r-chip); }
 .challenge-status-pill--live, .challenge-status-pill--restart { background: var(--primary-tint); color: var(--primary-on-tint); border: none; }
 .challenge-share-pill, .challenge-share-pill--share, .challenge-share-pill:hover, .challenge-share-pill--share:hover,
 .challenge-visibility-pill--friends, .challenge-visibility-pill--private { min-height: 32px; border: 1.5px solid var(--line); background: var(--surface); color: var(--text); box-shadow: none; }
@@ -11673,9 +11020,9 @@ html.kb-open .quick-row { display: none; }
 .challenge-role-badge--challenger, .challenge-role-badge--taker { background: var(--primary-tint); color: var(--primary-on-tint); border: none; }
 .challenge-role-badge--spectator { background: var(--surface2); color: var(--muted2); border: none; }
 .challenge-visibility-opt.is-selected { border-color: var(--primary); background: var(--primary-tint); }
-.challenge-owner-invite-cta, .challenge-owner-invite-cta:hover { box-shadow: none; text-shadow: none; background: var(--surface); color: var(--traveler-text); border: 1.5px solid var(--traveler-text); border-radius: var(--r-chip); }
+.challenge-owner-invite-cta, .challenge-owner-invite-cta:hover { box-shadow: none; text-shadow: none; border: 1.5px solid var(--traveler-text); border-radius: var(--r-chip); }
 /* Composer "+": the app's flat primary circle (no glow). */
-.dm-vibe-btn, .dm-vibe-btn:hover:not(:disabled), .dm-vibe-btn:active:not(:disabled) { background: var(--primary); box-shadow: none; }
+.dm-vibe-btn, .dm-vibe-btn:hover:not(:disabled), .dm-vibe-btn:active:not(:disabled) { box-shadow: none; }
 .dm-header-text { display: flex; flex-direction: column; min-width: 0; text-align: left; }
 .dm-header-sub { font-size: var(--fs-xs); font-weight: 500; color: var(--muted2); }
 
@@ -12014,7 +11361,7 @@ button.today-cta { width: 100%; }
 .week-dot--pending { background: color-mix(in srgb, var(--c) 24%, transparent); color: var(--text); }
 .week-dot--today { border: 2.5px solid var(--cl, var(--c)); background: color-mix(in srgb, var(--c) 14%, var(--surface)); color: var(--ct); }
 .week-dot--tomorrow { border: 2px dashed var(--cl, var(--c)); opacity: 1; color: var(--ct); }
-.week-dot--none { color: var(--ct); }
+.week-dot--none { background: var(--surface); border: 1.5px solid var(--line); color: var(--ct); }
 [data-theme="dark"] .week-dot--today, [data-theme="dark"] .week-dot--tomorrow, [data-theme="dark"] .week-dot--none { color: var(--ctd); }
 .link-row-icon { flex-shrink: 0; width: 38px; height: 38px; border-radius: 50%; color: var(--text); display: flex; align-items: center; justify-content: center; background: color-mix(in srgb, var(--a, transparent) 22%, transparent); }
 .today-card-title { font-weight: 800; color: var(--text); font-size: var(--fs-md); line-height: 22px; letter-spacing: -.3px; }
@@ -12127,7 +11474,7 @@ body.dc-photos-open .app-promo-banner, body.dch-open .app-promo-banner { display
 .tc-dot { width: 5px; height: 5px; border-radius: 3px; background: rgba(255,255,255,0.35); }
 .tc-dot--on { background: #fff; }
 .tc-hint { text-align: center; font-weight: 600; }
-.tc-photo-box { position: relative; display: block; }
+.tc-photo-box { display: block; }
 /* Top-right, leaving the left 30 % to the selfie inset (.dp-mini, 24 %); a long count truncates. */
 .tc-corner { position: absolute; top: 6px; right: 6px; left: 30%; display: flex; justify-content: flex-end; align-items: center; gap: var(--sp-4); pointer-events: none; }
 .tc-pill { display: inline-flex; align-items: center; gap: var(--sp-4); padding: var(--sp-4) var(--sp-8); border-radius: 12px; min-width: 0;
@@ -12428,8 +11775,8 @@ html[data-event="halloween"] { --header-art: #FFA552; --header-art-opacity: 0.28
 
 /* ── V6 notifications (n6-*): the bell, "While you were away", the inbox, settings, tab badges ── */
 .n6-bell { position: relative; }
-/* !important: beats .header-icon-btn:hover (desktop bell) */
-.n6-bell--on { background: var(--cta) !important; border-color: var(--cta) !important; color: var(--on-cta) !important; }
+/* Two classes, declared later: beats .header-icon-btn:hover (desktop bell). */
+.n6-bell.n6-bell--on { background: var(--cta); border-color: var(--cta); color: var(--on-cta); }
 .n6-bell-icon { display: inline-flex; transform-origin: 50% 2px; }
 .n6-bell-icon--ring { animation: n6-ring 0.6s ease-in-out 0.3s; }
 @keyframes n6-ring { 0%, 100% { transform: rotate(0) } 15% { transform: rotate(16deg) } 30% { transform: rotate(-14deg) } 45% { transform: rotate(10deg) } 60% { transform: rotate(-8deg) } 75% { transform: rotate(4deg) } }
