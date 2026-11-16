@@ -43,7 +43,6 @@
     "view": "👀 {{name}} ดูโปรไฟล์ของคุณ",
     "other": "🔔 มีอะไรใหม่สำหรับคุณ",
     "dismiss": "ปิด",
-    "more_one": "อีก {{count}}",
     "more_other": "อีก {{count}}"
   },
   "inbox": {

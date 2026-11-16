@@ -773,7 +773,6 @@
         "top": "Bạn · #1 · Không ai trên bạn 👑",
         "player": "Bạn · #{{rank}} · thêm {{gap}} điểm để vượt {{name}} ▲",
         "none": "Chơi hôm nay để lên bảng nha 🙋",
-        "photo_one": "Ảnh tốt nhất của bạn: #{{rank}} · {{count}} ❤️ nữa lên #{{next}}",
         "photo_other": "Ảnh tốt nhất của bạn: #{{rank}} · {{count}} ❤️ nữa lên #{{next}}",
         "photoTop": "Ảnh tốt nhất của bạn: #1 · không ai trên bạn 👑",
         "photoNone": "Chưa có ảnh nào của bạn được xếp hạng ❤️"
@@ -793,7 +792,6 @@
         "world": "🏆 Ảnh của bạn đứng #{{rank}} thế giới hôm qua",
         "city": "🏆 Ảnh của bạn đứng #{{rank}} ở {{city}} hôm qua",
         "best": "🏆 Ảnh của bạn đẹp nhất {{city}} hôm qua",
-        "votes_one": "🏆 Ảnh của bạn nhận {{count}} ❤️ hôm qua",
         "votes_other": "🏆 Ảnh của bạn nhận {{count}} ❤️ hôm qua",
         "generic": "🏆 Đã có kết quả hôm qua",
         "see": "Xem kết quả →"

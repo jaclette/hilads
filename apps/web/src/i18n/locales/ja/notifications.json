@@ -43,7 +43,6 @@
     "view": "👀 {{name}}さんがプロフィールを見たよ",
     "other": "🔔 新しいお知らせ",
     "dismiss": "閉じる",
-    "more_one": "ほか{{count}}件",
     "more_other": "ほか{{count}}件"
   },
   "inbox": {
