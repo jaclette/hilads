@@ -1496,10 +1496,11 @@ html, body, #root {
   padding: 0;
 }
 
-.profile-avatar-lg {             /* !important: beats .online-avatar's size, declared later */
-  width: 72px !important;
-  height: 72px !important;
-  font-size: 1.7rem !important;
+/* Two classes: beats .online-avatar's small size, declared later. */
+.online-avatar.profile-avatar-lg {
+  width: 72px;
+  height: 72px;
+  font-size: 1.7rem;
   border-radius: 50%;
 }
 
@@ -1555,13 +1556,14 @@ html, body, #root {
   padding: var(--sp-16) var(--sp-16) var(--sp-12);
 }
 
-.profile-avatar-identity {       /* !important: beats .online-avatar's size, declared later */
-  width: 68px !important;
-  height: 68px !important;
+/* Two classes: beats .online-avatar's small size, declared later. */
+.online-avatar.profile-avatar-identity {
+  width: 68px;
+  height: 68px;
   border-radius: 50%;
   flex-shrink: 0;
   border: 2px solid var(--accent);
-  font-size: 1.5rem !important; /* initials scale with avatar size */
+  font-size: 1.5rem; /* initials scale with avatar size */
 }
 
 .profile-identity-info {
@@ -11773,8 +11775,8 @@ html[data-event="halloween"] { --header-art: #FFA552; --header-art-opacity: 0.28
 
 /* ── V6 notifications (n6-*): the bell, "While you were away", the inbox, settings, tab badges ── */
 .n6-bell { position: relative; }
-/* !important: beats .header-icon-btn:hover (desktop bell) */
-.n6-bell--on { background: var(--cta) !important; border-color: var(--cta) !important; color: var(--on-cta) !important; }
+/* Two classes, declared later: beats .header-icon-btn:hover (desktop bell). */
+.n6-bell.n6-bell--on { background: var(--cta); border-color: var(--cta); color: var(--on-cta); }
 .n6-bell-icon { display: inline-flex; transform-origin: 50% 2px; }
 .n6-bell-icon--ring { animation: n6-ring 0.6s ease-in-out 0.3s; }
 @keyframes n6-ring { 0%, 100% { transform: rotate(0) } 15% { transform: rotate(16deg) } 30% { transform: rotate(-14deg) } 45% { transform: rotate(10deg) } 60% { transform: rotate(-8deg) } 75% { transform: rotate(4deg) } }
