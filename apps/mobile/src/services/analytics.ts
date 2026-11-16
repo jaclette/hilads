@@ -190,7 +190,7 @@ const posthog = new PostHog('phc_zz4Q6VJETesgBUkeKe8a9asUwbra9qGXgw4ff6zPTxLM', 
 
 export function track(event: AnalyticsEvent, payload?: Payload): void {
   if (__DEV__) {
-    // eslint-disable-next-line no-console
+     
     console.log('[analytics]', event, { ..._ctx, ...payload });
     return;
   }
@@ -201,7 +201,7 @@ export function track(event: AnalyticsEvent, payload?: Payload): void {
  *  useScreenTracking on every route change; web sends the same event with its own screen names. */
 export function trackScreen(name: string, payload?: Payload): void {
   if (__DEV__) {
-    // eslint-disable-next-line no-console
+     
     console.log('[analytics] screen', name, payload ?? '');
     return;
   }
@@ -210,7 +210,7 @@ export function trackScreen(name: string, payload?: Payload): void {
 
 export function identifyUser(id: string, props?: Payload): void {
   if (__DEV__) {
-    // eslint-disable-next-line no-console
+     
     console.log('[analytics] identify', id, props ?? '');
     return;
   }

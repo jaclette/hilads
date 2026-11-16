@@ -471,7 +471,7 @@ export function NotificationHandler() {
     });
 
     return () => { receivedSub.remove(); sub.remove(); };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+   
   }, []);
 
   // Execute deferred navigation once boot completes

@@ -16,7 +16,7 @@ import { ThemeIcon } from './ThemeIcon';
  * surfaces stay cream and ink; every text here keeps 4.5:1.
  */
 
-const LOGO = require('../../assets/logo/hilads-icon.svg'); // eslint-disable-line @typescript-eslint/no-require-imports
+const LOGO = require('../../assets/logo/hilads-icon.svg');
 
 export const INK = '#2A1C13';
 export const TANGERINE = '#FF7A3D';

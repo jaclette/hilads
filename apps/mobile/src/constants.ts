@@ -2,6 +2,10 @@
 
 // In development, these come from .env (EXPO_PUBLIC_* prefix required).
 // In production, set via EAS environment variables.
+import { eventSlug } from '@/lib/eventSlug';
+import { challengeSlug } from '@/lib/challengeSlug';
+import i18n, { SUPPORTED, DEFAULT_LOCALE } from '@/i18n';
+
 export const API_URL =
   (process.env.EXPO_PUBLIC_API_URL ?? 'http://localhost:8080') + '/api/v1';
 
@@ -17,10 +21,6 @@ export const BASE_URL =
 export const HANGOUTS_ENABLED = true;
 
 // ── Link builders ─────────────────────────────────────────────────────────────
-
-import { eventSlug } from '@/lib/eventSlug';
-import { challengeSlug } from '@/lib/challengeSlug';
-import i18n, { SUPPORTED, DEFAULT_LOCALE } from '@/i18n';
 
 // Active-locale prefix for shared links: '' for English (default), '/fr' | '/vi'
 // otherwise - so a recipient lands on the localized (translated) page. The SSR

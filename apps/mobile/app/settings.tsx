@@ -21,7 +21,7 @@ import { uploadFile } from '@/api/uploads';
 import { setCurrentCity } from '@/api/channels';
 import { isLegend as accountIsLegend } from '@/lib/canCreateEvent';
 import { LeaderboardCityPickerSheet } from '@/features/challenge/LeaderboardCityPickerSheet';
-import { localizeCityName } from '@/i18n/cityName';
+import { localizeCityName , shortCityName } from '@/i18n/cityName';
 import { Space, Border, FontSizes, Spacing, Radius, APP_VERSION, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { Avatar, Button, Card, Chip, CityFlag, ListRow, RowGroup, Screen, ScreenHeader, SectionTitle, TextField } from '@/ui';
@@ -30,7 +30,6 @@ import { DirectionsRow } from '@/features/settings/DirectionsRow';
 import { ModePicker } from '@/features/profile/ModePicker';
 import { VIBE_ICONS } from '@/features/profile/vibes';
 import { HomeCityPicker } from '@/features/compare/HomeCityPicker';
-import { shortCityName } from '@/i18n/cityName';
 import type { HomeCityRef } from '@/types';
 import { KeyboardAwareScrollView, KeyboardStickyView, useKeyboardState } from 'react-native-keyboard-controller';
 

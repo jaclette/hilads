@@ -10,9 +10,9 @@
     "build:android": "eas build --platform android --profile preview",
     "build:ios": "eas build --platform ios --profile preview",
     "eas-build-pre-install": "node scripts/check-xcode.js",
-    "gen:notification-icon":"node scripts/gen-notification-icon.js",
+    "gen:notification-icon": "node scripts/gen-notification-icon.js",
     "typecheck": "tsc --noEmit",
-    "lint": "eslint . --ext .ts,.tsx"
+    "lint": "eslint ."
   },
   "dependencies": {
     "@bacons/apple-targets": "^4.0.7",
@@ -73,6 +73,8 @@
     "@babel/core": "^7.25.0",
     "@types/react": "~19.0.0",
     "babel-plugin-module-resolver": "^5.0.2",
+    "eslint": "^9.39.5",
+    "eslint-config-expo": "~9.2.0",
     "typescript": "~5.8.3"
   }
 }

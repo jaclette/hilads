@@ -55,7 +55,6 @@ interface CheckboxProps {
 export function EulaCheckbox({ checked, onToggle, disabled }: CheckboxProps) {
   const styles = useThemedStyles(makeStyles);
   const { colors } = useTheme();
-  const { t } = useTranslation('auth');
   return (
     <TouchableOpacity
       style={styles.checkboxRow}

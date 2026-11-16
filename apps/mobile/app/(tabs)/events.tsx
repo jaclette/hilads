@@ -366,11 +366,9 @@ export default function NowScreen() {
     });
   }, [items, blockedSet, distanceById]);
 
-  const listData = useMemo<Array<
-    FeedItem
+  const listData = useMemo<(FeedItem
     | { kind: 'section'; label: string }
-    | (HiladsEvent & { kind: 'public_event' })
-  >>(
+    | (HiladsEvent & { kind: 'public_event' }))[]>(
     () => {
       const showPublic = publicEvents.length > 0;
       // Public events are distance-sorted within their section too (nearest →

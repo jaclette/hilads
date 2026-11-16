@@ -426,7 +426,7 @@ export default function ChallengeChatScreen() {
       setValidateOpen(false);
       await loadChallenge();
       loadParticipants();
-    } catch (e) {
+    } catch {
       Alert.alert(t('group.validateFailed', { defaultValue: 'Could not validate - try again.' }));
     } finally {
       setValidating(false);

@@ -9,7 +9,7 @@
 
 import { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Alert } from 'react-native';
-import { useRouter, useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { useApp } from '@/context/AppContext';
 import { localizeCityName } from '@/i18n/cityName';
@@ -28,7 +28,6 @@ import { goBack } from '@/lib/nav';
 export default function GuestProfileScreen() {
   const styles = useThemedStyles(makeStyles);
 
-  const router = useRouter();
   const { t } = useTranslation('publicProfile');
   const { nickname, guestId } = useLocalSearchParams<{ nickname: string; guestId: string }>();
   const { city, identity, account, addBlocked, removeBlocked } = useApp();

@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { authForgotPassword } from '@/api/auth';
 import { FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
@@ -14,7 +13,6 @@ export default function ForgotPasswordScreen() {
   const styles = useThemedStyles(makeStyles);
   const { colors } = useTheme();
 
-  const router = useRouter();
   const { t } = useTranslation('auth');
 
   const [email,   setEmail]   = useState('');

@@ -18,7 +18,7 @@ export function useNotifications(): Result {
   const load = useCallback(async () => {
     setLoading(true);
     try {
-      const { notifications: data, unread_count } = await fetchNotifications();
+      const { notifications: data } = await fetchNotifications();
       setNotifications(data);
       // Sync DM unread count from notification response
       const dmUnread = data.filter(n => n.type === 'dm_message' && !n.is_read).length;

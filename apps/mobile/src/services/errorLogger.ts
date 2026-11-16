@@ -28,7 +28,7 @@ export function logError(error: unknown, context?: ErrorContext): void {
   const stack   = error instanceof Error ? error.stack   : undefined;
 
   if (__DEV__) {
-    // eslint-disable-next-line no-console
+     
     console.error('[error]', message, context ?? '', stack ?? '');
     return;
   }

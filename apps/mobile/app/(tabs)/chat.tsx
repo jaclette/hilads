@@ -17,7 +17,7 @@ import {
   TouchableOpacity, Animated, Alert, ScrollView,
 } from 'react-native';
 import { thumbUrl } from '@/lib/imageThumb';
-import { formatSmartTime } from '@/lib/messageTime';
+import { formatSmartTime , isSameDay, formatDateLabel, toMs } from '@/lib/messageTime';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useFocusEffect } from 'expo-router';
 import { consumeCityFeedRefresh } from '@/lib/cityFeedRefresh';
@@ -33,7 +33,7 @@ import { useMessages } from '@/hooks/useMessages';
 import { fetchMessages, sendMessage, sendImageMessage, toggleChannelReaction } from '@/api/channels';
 import { fetchWorldMessages, sendWorldMessage, toggleWorldReaction, fetchWorldArrivals, markChannelRead, fetchUnread, fetchQuietContext, type WorldArrival } from '@/api/world';
 import { fetchCityEvents, fetchCanCreateEvent } from '@/api/events';
-import type { HiladsEvent } from '@/types';
+import type { HiladsEvent , Message, ReplyRef, MentionRef } from '@/types';
 import { socket } from '@/lib/socket';
 import { track } from '@/services/analytics';
 import { reactionEmitter, EMOJI_TO_TYPE } from '@/lib/reactionEmitter';
@@ -49,9 +49,7 @@ import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { Space, Border, FontSizes, Spacing, Radius, buildCityUrl, type ThemeColors } from '@/constants';
 import { Avatar, Banner, Button, EmptyState, IconButton, ListRow, Screen, ScreenHeader, Segmented, Sheet, SheetFlatList, SheetTitle } from '@/ui';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
-import { isSameDay, formatDateLabel, toMs } from '@/lib/messageTime';
 import { shareLink } from '@/lib/shareLink';
-import type { Message, ReplyRef, MentionRef } from '@/types';
 import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 import { useEventFeature } from '@/features/event/seasonal';
 
@@ -122,7 +120,7 @@ export default function ChatTab() {
   //   onlineCountUpdated → sent to EXISTING members when someone else joins/leaves
   // We must listen to BOTH: snapshot alone never updates once we're in the room,
   // so the count would freeze at our join value until an app restart.
-  const [onlineCount, setOnlineCount] = useState<number | null>(null);
+  const [, setOnlineCount] = useState<number | null>(null);
 
   useEffect(() => {
     const cid = city?.channelId;
@@ -216,7 +214,7 @@ export default function ChatTab() {
 
   // ── Event feed synthesis state - declared before WS effect that uses it ─────
   const seenEventIds   = useRef(new Set<string>());
-  const [eventFeedItems, setEventFeedItems] = useState<Message[]>([]);
+  const [, setEventFeedItems] = useState<Message[]>([]);
 
   type BannerEntry = { id: string; title: string };
   const [eventBanners, setEventBanners] = useState<BannerEntry[]>([]);

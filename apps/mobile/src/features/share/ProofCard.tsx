@@ -12,7 +12,7 @@ import { INK, themeColor } from '@/ui/joy';
 import { EVENT_CARD, EventFrame } from '@/features/event/EventFrame';
 import type { ShareContent } from './content';
 
-const LOGO = require('../../../assets/logo/hilads-icon.svg'); // eslint-disable-line @typescript-eslint/no-require-imports
+const LOGO = require('../../../assets/logo/hilads-icon.svg');
 
 /**
  * My photo's share cards (share card redo, docs/share-card-audit.md): three

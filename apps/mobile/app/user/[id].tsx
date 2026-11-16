@@ -357,7 +357,7 @@ export default function PublicProfileScreen() {
                 guestId:        account ? undefined : identity?.guestId,
               });
               goBack();
-            } catch (err) {
+            } catch {
               // Roll back the optimistic patch on failure.
               if (user) removeBlocked({ userId: user.id });
               Alert.alert(t('blockFailTitle', { ns: 'dm' }), t('blockFailBody', { ns: 'dm' }));

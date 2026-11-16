@@ -76,7 +76,7 @@ function CustomTabBar({ state, navigation }: BottomTabBarProps) {
     if (!b || !badges[b.key]) return;
     patchNotifCounts(c => ({ ...c, badges: { ...c.badges, [b.key]: 0 } }));
     markNotificationTypesRead(b.types).then(refreshNotifCounts);
-  }, [activeTab, badges]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [activeTab, badges]);  
 
   if (keyboardUp) return null;
 

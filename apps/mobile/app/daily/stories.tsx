@@ -20,7 +20,7 @@ import { Avatar, DualPhoto, IconButton } from '@/ui';
 import { usePhotoZoom } from '@/ui/usePhotoZoom';
 import { selfieOf } from '@/features/daily/selfie';
 import { prefetchProof } from '@/lib/prefetch';
-import { FlagSticker } from '@/ui/joy';
+import { FlagSticker , themeColor } from '@/ui/joy';
 import { AnswerChip } from '@/features/compare/AnswerChip';
 import { captionRepeatsAnswer } from '@/features/compare/format';
 import { seedProofs } from '@/features/daily/votes';
@@ -34,7 +34,6 @@ import { COMMENT_BAR_H, StoryCommentBar } from '@/features/daily/StoryCommentBar
 import { lastCountries, todayCities } from '@/features/today/useTodayCountries';
 import { cachedPileProof } from '@/features/today/TodayCountries';
 import { SeasonalScope } from '@/features/event/SeasonalArt';
-import { themeColor } from '@/ui/joy';
 import { getLastToday } from '@/hooks/useDaily';
 import * as Haptics from 'expo-haptics';
 import type { DailyCityGroup, DailyProof } from '@/types';

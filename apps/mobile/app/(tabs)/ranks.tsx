@@ -54,7 +54,6 @@ export default function RanksScreen() {
 
 function RanksContent() {
   const styles = useThemedStyles(makeStyles);
-  const { colors } = useTheme();
   const { t } = useTranslation('daily');
   const router = useRouter();
   const { city, account } = useApp();

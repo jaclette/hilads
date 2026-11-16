@@ -1,6 +1,5 @@
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useRouter } from 'expo-router';
 import { DebugPanel } from '@/features/debug/DebugPanel';
 import { Space, FontSizes, Spacing, type ThemeColors } from '@/constants';
 import { useThemedStyles } from '@/context/ThemeContext';
@@ -9,7 +8,6 @@ import { goBack } from '@/lib/nav';
 export default function DebugScreen() {
   const styles = useThemedStyles(makeStyles);
 
-  const router = useRouter();
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>

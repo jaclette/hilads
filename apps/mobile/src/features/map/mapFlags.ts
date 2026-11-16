@@ -1,6 +1,6 @@
 // Generated from assets/flags (flag-icons, MIT): PNG flags for the map's native layers (Mapbox
 // can't draw SVG), 18×13.5 pt with round corners and a hairline, @2x and @3x.
-/* eslint-disable @typescript-eslint/no-require-imports */
+ 
 export const MAP_FLAGS: Record<string, number> = {
   AE: require('../../../assets/map/flags/ae.png'),
   AF: require('../../../assets/map/flags/af.png'),

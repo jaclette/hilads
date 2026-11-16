@@ -6,14 +6,13 @@ import Svg, { Defs, LinearGradient, Rect, Stop } from 'react-native-svg';
 import { useTranslation } from 'react-i18next';
 import { appFont } from '@/scaling';
 import { localizeCityName } from '@/i18n/cityName';
-import { themeName } from '@/features/daily/themes';
+import { themeName , THEME_KEYS } from '@/features/daily/themes';
 import { THEME_COVERS, themeCover } from '@/features/today/covers';
-import { THEME_KEYS } from '@/features/daily/themes';
 import { FLAGS } from '@/ui/flags';
 import { themeColor } from '@/ui/joy';
 import type { ShareContent } from './content';
 
-const LOGO = require('../../../assets/logo/hilads-icon.svg'); // eslint-disable-line @typescript-eslint/no-require-imports
+const LOGO = require('../../../assets/logo/hilads-icon.svg');
 
 const DAILY_CHALLENGE = 'Daily Challenge';
 const TAGLINE_EN = 'Same challenge. Different worlds.';
