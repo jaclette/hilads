@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Image, Linking, Pressable, StyleSheet, Text, View } from 'react-native';
 import { getLinkPreview, type LinkPreview } from '@/lib/linkPreviewCache';
-import { FontSizes, type ThemeColors } from '@/constants';
+import { Radius, FontSizes, type ThemeColors } from '@/constants';
 import { useThemedStyles } from '@/context/ThemeContext';
 
 interface Props {
@@ -61,7 +61,7 @@ export function LinkPreviewCard({ url, isMine = false }: Props) {
 }
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  card:     { marginTop: 6, flexDirection: 'row', borderRadius: 14, overflow: 'hidden', backgroundColor: c.bg2,
+  card:     { marginTop: 6, flexDirection: 'row', borderRadius: Radius.card, overflow: 'hidden', backgroundColor: c.bg2,
               borderWidth: 1, borderColor: c.line, maxWidth: 320, alignSelf: 'stretch' },
   // On the caramel bubble: a slightly darker inset, white text.
   cardMine: { backgroundColor: c.caramel, borderColor: c.onCaramelMuted },

@@ -132,7 +132,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   scopeText:      { flexShrink: 1, flexGrow: 1, fontSize: FontSizes.body, fontWeight: '700', color: c.text },
   sheet:          { gap: 6 },
   sheetTitle:     { fontSize: FontSizes.md, fontWeight: '800', color: c.text, marginBottom: 4 },
-  row:            { flexDirection: 'row', alignItems: 'center', gap: 12, minHeight: 56, paddingHorizontal: 12, paddingVertical: 10, borderRadius: 16 },
+  row:            { flexDirection: 'row', alignItems: 'center', gap: 12, minHeight: 56, paddingHorizontal: 12, paddingVertical: 10, borderRadius: Radius.card },
   rowActive:      { backgroundColor: c.primaryTint },
   rowBody:        { flex: 1 },
   rowTitleLine:   { flexDirection: 'row', alignItems: 'center', gap: 6 },

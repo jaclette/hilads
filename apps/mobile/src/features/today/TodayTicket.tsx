@@ -4,7 +4,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
-import { FontSizes, type ThemeColors } from '@/constants';
+import { Radius, FontSizes, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { useApp } from '@/context/AppContext';
 import { useScope } from '@/context/ScopeContext';
@@ -291,7 +291,7 @@ const HERO_CTA_TONE: PulseTone = 'white';
 const ON_PHOTO_SHADOW = { textShadowColor: 'rgba(0,0,0,0.6)', textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 6 };
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  hero:        { aspectRatio: 4 / 5, borderRadius: 24, overflow: 'hidden', backgroundColor: c.bg3, justifyContent: 'space-between' },
+  hero:        { aspectRatio: 4 / 5, borderRadius: Radius.ticket, overflow: 'hidden', backgroundColor: c.bg3, justifyContent: 'space-between' },
   heroTop:     { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8, padding: 14 },
   heroTopRight: { alignItems: 'flex-end', gap: 6, flexShrink: 1 },
   chip:        { flexDirection: 'row', alignItems: 'center', gap: 6, flexShrink: 1, paddingHorizontal: 10, paddingVertical: 6,
@@ -307,7 +307,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   step:        { flexDirection: 'row', alignItems: 'center', gap: 5, paddingHorizontal: 9, paddingVertical: 5, borderRadius: 999,
                  backgroundColor: 'rgba(255,255,255,0.18)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.35)' },
   stepText:    { fontSize: FontSizes.xs, fontWeight: '800', color: '#FFFFFF' },
-  ticket:      { backgroundColor: c.bg2, borderWidth: 1.5, borderColor: c.ticketLine, borderRadius: 22 },
+  ticket:      { backgroundColor: c.bg2, borderWidth: 1.5, borderColor: c.ticketLine, borderRadius: Radius.ticket },
   placeholder: { minHeight: 180, alignItems: 'center', justifyContent: 'center' },
   top:         { paddingHorizontal: 18, paddingTop: 14, paddingBottom: 12, gap: 8, zIndex: 2 },
   kicker:      { flexDirection: 'row', alignItems: 'center', gap: 6 },

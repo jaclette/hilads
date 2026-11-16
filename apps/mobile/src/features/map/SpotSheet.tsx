@@ -86,7 +86,7 @@ export function SpotSheet({ spot, distanceM, onOpen, onDirections, onShare, onCl
 }
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  sheet:        { backgroundColor: c.bg2, borderWidth: 1.5, borderColor: c.line, borderRadius: 24, paddingHorizontal: 16, paddingBottom: 16, gap: 10 },
+  sheet:        { backgroundColor: c.bg2, borderWidth: 1.5, borderColor: c.line, borderRadius: Radius.sheet, paddingHorizontal: 16, paddingBottom: 16, gap: 10 },
   grabZone:     { alignItems: 'center', paddingTop: 10, paddingBottom: 2 },
   grabber:      { width: 36, height: 4, borderRadius: Radius.full, backgroundColor: c.line },
   top:          { flexDirection: 'row', gap: 12 },

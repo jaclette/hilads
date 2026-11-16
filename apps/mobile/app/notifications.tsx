@@ -266,7 +266,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   chipCountText: { fontSize: FontSizes.tiny, lineHeight: 14, fontWeight: '800', color: c.text },
   list:          { paddingBottom: 32 },
   onlyBar:       { flexDirection: 'row', alignItems: 'center', gap: 10, marginHorizontal: 16, marginTop: 8, paddingVertical: 8, paddingLeft: 14, paddingRight: 8,
-                   borderRadius: 16, backgroundColor: c.primaryTint },
+                   borderRadius: Radius.card, backgroundColor: c.primaryTint },
   onlyText:      { flex: 1, fontSize: FontSizes.sm, fontWeight: '800', color: c.primaryOnTint },
   onlyAll:       { height: 30, paddingHorizontal: 12, borderRadius: 15, backgroundColor: c.bg2, justifyContent: 'center' },
   onlyAllText:   { fontSize: FontSizes.xs, fontWeight: '800', color: c.text },

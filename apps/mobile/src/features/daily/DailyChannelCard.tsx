@@ -359,7 +359,7 @@ function ProofCard({ message, reactions, time, longPress }: {
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
   wrap:          { paddingHorizontal: 12, marginVertical: 6, alignItems: 'stretch' },
   flex:          { flex: 1 },
-  card:          { backgroundColor: c.bg2, borderRadius: 20, borderWidth: 1.5, borderColor: c.line, padding: 12, gap: 8 },
+  card:          { backgroundColor: c.bg2, borderRadius: Radius.ticket, borderWidth: 1.5, borderColor: c.line, padding: 16, gap: 8 },
   challengeCard: { borderColor: c.ticketLine },
   from:          { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 4, marginLeft: 2 },
   fromName:      { fontSize: FontSizes.xs, fontWeight: '800', color: c.text },

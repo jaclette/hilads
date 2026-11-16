@@ -2271,7 +2271,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
     paddingVertical:   10,
     paddingHorizontal: 12,
     backgroundColor:   c.bg2,
-    borderRadius:      Radius.md,
+    borderRadius:      Radius.card,
     borderWidth:       Border,
     borderColor:       c.primary,
   },
@@ -2415,7 +2415,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   groupBlock:     { paddingHorizontal: Spacing.md, paddingTop: Spacing.xs, gap: 6 },
   groupMeetCard:  {
     flexDirection: 'row', alignItems: 'center', gap: 8,
-    backgroundColor: c.bg2, borderRadius: 10, borderWidth: Border, borderColor: c.line,
+    backgroundColor: c.bg2, borderRadius: Radius.card, borderWidth: Border, borderColor: c.line,
     paddingHorizontal: Spacing.md, paddingVertical: 6,
   },
   groupMeetLine:  { flex: 1, fontSize: FontSizes.sm, fontWeight: '600', color: c.muted },

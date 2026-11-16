@@ -322,7 +322,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   wrap:     { flex: 1, alignItems: 'center', justifyContent: 'center', padding: Spacing.lg },
   card: {
     width: '100%', maxWidth: 420, maxHeight: '88%',
-    backgroundColor: c.bg2, borderRadius: Radius.lg,
+    backgroundColor: c.bg2, borderRadius: Radius.card,
     borderWidth: Border, borderColor: c.gold, overflow: 'hidden',
   },
   scroll: { padding: Spacing.lg, alignItems: 'center', gap: Spacing.sm },

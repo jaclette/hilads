@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { ImageBackground, ScrollView, Text, View, StyleSheet } from 'react-native';
-import { FontSizes, type ThemeColors } from '@/constants';
+import { Radius, FontSizes, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { Screen, ScreenHeader } from '@/ui';
 import {
@@ -91,9 +91,9 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   onPhotoBtn: { alignSelf: 'stretch' },
   photoBubble: { position: 'absolute', top: 20, left: 16 },
   link:      { fontSize: FontSizes.body, fontWeight: '800' },
-  cmpRow:    { flexDirection: 'row', alignItems: 'center', gap: 12, padding: 12, borderRadius: 16, backgroundColor: c.bg2, borderWidth: 1.5, borderColor: c.line },
+  cmpRow:    { flexDirection: 'row', alignItems: 'center', gap: 12, padding: 14, borderRadius: Radius.card, backgroundColor: c.bg2, borderWidth: 1.5, borderColor: c.line },
   city:      { fontSize: FontSizes.xs, fontWeight: '700', color: c.muted },
   price:     { fontSize: FontSizes.xs, fontWeight: '700', color: c.text },
   header:    { height: 70, justifyContent: 'center', paddingHorizontal: 4 },
-  party:     { height: 220, alignItems: 'center', justifyContent: 'center', gap: 10, borderRadius: 20, backgroundColor: c.bg2, overflow: 'hidden' },
+  party:     { height: 220, alignItems: 'center', justifyContent: 'center', gap: 10, borderRadius: Radius.card, backgroundColor: c.bg2, overflow: 'hidden' },
 });

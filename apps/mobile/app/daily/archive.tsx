@@ -99,7 +99,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   header:  { gap: 14 },
   chips:   { gap: 8, paddingBottom: 4 },
   loading: { marginVertical: 24 },
-  card:    { gap: 8, padding: 14, borderRadius: 18, borderWidth: 1.5, borderColor: c.line, backgroundColor: c.bg2 },
+  card:    { gap: 8, padding: 14, borderRadius: Radius.card, borderWidth: 1.5, borderColor: c.line, backgroundColor: c.bg2 },
   head:    { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 8 },
   text:    { fontSize: FontSizes.md, lineHeight: 22, fontWeight: '800', color: c.text },
   mosaic:  { flexDirection: 'row', gap: 4, height: 120, borderRadius: Radius.md, overflow: 'hidden' },

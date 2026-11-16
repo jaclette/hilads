@@ -96,7 +96,7 @@ const SIZE = 168;
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
   scrim:      { flex: 1, backgroundColor: c.scrim, alignItems: 'center', justifyContent: 'center', padding: Spacing.lg },
-  card:       { alignSelf: 'stretch', backgroundColor: c.bg2, borderRadius: 24, padding: Spacing.lg, alignItems: 'center', gap: 10, overflow: 'hidden' },
+  card:       { alignSelf: 'stretch', backgroundColor: c.bg2, borderRadius: Radius.ticket, padding: Spacing.lg, alignItems: 'center', gap: 10, overflow: 'hidden' },
   stamp:      { width: SIZE, height: SIZE, borderRadius: SIZE / 2, borderWidth: 4, alignItems: 'center', justifyContent: 'center', marginBottom: 8 },
   inner:      { width: SIZE - 20, height: SIZE - 20, borderRadius: (SIZE - 20) / 2, borderWidth: 2,
                 borderStyle: 'dashed', alignItems: 'center', justifyContent: 'center', gap: 4, paddingHorizontal: 10 },

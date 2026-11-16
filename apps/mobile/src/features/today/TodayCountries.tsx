@@ -9,7 +9,7 @@ import * as Haptics from 'expo-haptics';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
-import { FontSizes, Spacing, type ThemeColors } from '@/constants';
+import { Radius, FontSizes, Spacing, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { useApp } from '@/context/AppContext';
 import { fetchDailyProofsByIds, fetchDailyTour } from '@/api/daily';
@@ -465,7 +465,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   cardWrap:  { width: '48.5%' },
   faded:     { opacity: 0.92 },   // yesterday's cards stay readable (V6: 0.55 read washed out)
   // The polaroid pile: theme-colored sheets peeking out behind the card.
-  layer:     { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, borderRadius: 16, opacity: 0.55 },
+  layer:     { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, borderRadius: Radius.card, opacity: 0.55 },
   layerBack: { transform: [{ rotate: '5deg' }, { translateX: 8 }, { translateY: -2 }] },
   layerBack2: { opacity: 0.3, transform: [{ rotate: '-5deg' }, { translateX: -7 }, { translateY: 3 }] },
   // A back sheet showing its photo: opaque, its edge in the theme color.
@@ -475,7 +475,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
                borderRadius: 8, backgroundColor: c.photoPill },
   dot:       { width: 5, height: 5, borderRadius: 3, backgroundColor: c.photoControl },
   dotOn:     { backgroundColor: c.white },
-  card:      { borderRadius: 16, overflow: 'hidden', backgroundColor: c.bg2, borderWidth: 1.5, borderColor: c.line },
+  card:      { borderRadius: Radius.card, overflow: 'hidden', backgroundColor: c.bg2, borderWidth: 1.5, borderColor: c.line },
   cardFill:  { flex: 1 },
   photo:     { width: '100%', aspectRatio: 1, backgroundColor: c.bg3 },
   // Leaves the left 30 % to the selfie inset (24 % + its margin); a long count truncates.
@@ -498,7 +498,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   votes:     { flexDirection: 'row', alignItems: 'center', gap: 4 },
   votesText: { fontSize: FontSizes.xs, fontWeight: '700', color: c.muted },
   commentsText: { marginRight: 6 },
-  slot:      { flexDirection: 'row', alignItems: 'center', gap: 12, minHeight: 64, paddingVertical: 10, paddingHorizontal: 12, borderRadius: 16,
+  slot:      { flexDirection: 'row', alignItems: 'center', gap: 12, minHeight: 64, paddingVertical: 10, paddingHorizontal: 12, borderRadius: Radius.card,
                borderStyle: 'dashed', borderColor: c.primaryText, borderWidth: 1.5, backgroundColor: c.primaryTint },
   camera:    { width: 42, height: 42, borderRadius: 21, backgroundColor: c.bg2, alignItems: 'center', justifyContent: 'center' },
   slotBody:  { flex: 1, gap: 2 },

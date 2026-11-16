@@ -337,7 +337,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   comparedText:   { fontSize: FontSizes.sm, fontWeight: '600', color: c.muted },
   pages:          { gap: 10 },
   center:         { alignSelf: 'center' },
-  guest:          { gap: 10, padding: 16, borderRadius: 20 },
+  guest:          { gap: 10, padding: 16, borderRadius: Radius.card },
   guestTitle:     { fontSize: FontSizes.lg, fontWeight: '800', color: c.text },
   guestBody:      { fontSize: FontSizes.sm, color: c.muted },
 });

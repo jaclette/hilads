@@ -215,7 +215,7 @@ const DOT = 40;
 const ACCENT_TEAL = '#1FB5A8';
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  wrap:         { gap: 10, padding: 14, borderRadius: 20, borderWidth: 1.5, borderColor: c.line, backgroundColor: c.bg2, overflow: 'hidden' },
+  wrap:         { gap: 10, padding: 14, borderRadius: Radius.card, borderWidth: 1.5, borderColor: c.line, backgroundColor: c.bg2, overflow: 'hidden' },
   links:        { marginTop: 6 },
   linkRow:      { flexDirection: 'row', alignItems: 'center', gap: 12, minHeight: 64, paddingHorizontal: 14, paddingVertical: 10 },
   rowDivider:   { borderTopWidth: 1, borderTopColor: c.line },

@@ -37,7 +37,7 @@ import { SharePanel, type SharePanelHandle } from '@/features/share/SharePanel';
 import { proofShare, representShare, type ShareContent } from '@/features/share/content';
 import { ShareSheet } from '@/features/share/ShareSheet';
 import { shortCityName } from '@/i18n/cityName';
-import { Button, CityFlag, DualPhoto, IconButton, TextField } from '@/ui';
+import { Button, Card, CityFlag, DualPhoto, IconButton, TextField } from '@/ui';
 import { AnswerInput } from '@/features/compare/AnswerInput';
 import { HomeCityPicker } from '@/features/compare/HomeCityPicker';
 import { answerValue, draftFrom, emptyDraft, hhmm, type AnswerDraft } from '@/features/compare/format';
@@ -692,7 +692,7 @@ function DailyProofScreenContent() {
           )}
 
           {tooFar && (
-            <View style={styles.tooFar} accessibilityRole="alert">
+            <Card variant="tint" style={styles.tooFar} accessibilityRole="alert">
               <Text style={styles.tooFarText}>
                 {t('place.tooFar', { distance: distance(tooFar.distanceM, i18n.language), name: placeName ?? '', radius: tooFar.radiusM })}
               </Text>
@@ -700,7 +700,7 @@ function DailyProofScreenContent() {
                 <Button size="sm" label={t('place.tryAgain')} onPress={() => submit(true)} style={styles.smallBtn} />
                 <Button size="sm" variant="secondary" label={t('place.pickAnother')} onPress={() => { setTooFar(null); setPlace(null); setStep('place'); }} style={styles.smallBtn} />
               </View>
-            </View>
+            </Card>
           )}
 
           <Text style={styles.label}>{t('proof.caption')}</Text>
@@ -789,9 +789,9 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   photo:       { width: '100%', aspectRatio: 1, borderRadius: 18, backgroundColor: c.bg3 },
   retake:      { alignSelf: 'center', flexDirection: 'row', alignItems: 'center', gap: 6, minHeight: 44, paddingHorizontal: 16, borderRadius: Radius.full, borderWidth: 1.5, borderColor: c.line, backgroundColor: c.bg2 },
   retakeText:  { fontSize: FontSizes.sm, fontWeight: '700', color: c.text },
-  placeRow:    { flexDirection: 'row', alignItems: 'center', gap: 10, minHeight: 52, paddingHorizontal: 14, borderRadius: 16, backgroundColor: c.bg2, borderWidth: 1.5, borderColor: c.line },
+  placeRow:    { flexDirection: 'row', alignItems: 'center', gap: 10, minHeight: 52, paddingHorizontal: 14, borderRadius: Radius.card, backgroundColor: c.bg2, borderWidth: 1.5, borderColor: c.line },
   placeName:   { flex: 1, fontSize: FontSizes.md, fontWeight: '700', color: c.text },
-  tooFar:      { gap: 10, padding: 14, borderRadius: 16, backgroundColor: c.primaryTint },
+  tooFar:      { gap: 10, padding: 14 },
   tooFarText:  { fontSize: FontSizes.sm, fontWeight: '600', color: c.primaryOnTint },
   tooFarActions: { flexDirection: 'row', gap: 8 },
   smallBtn:    { flex: 1, paddingHorizontal: 8 },
@@ -813,7 +813,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   kicker:      { fontSize: FontSizes.xs, fontWeight: '800', color: c.primaryText, textTransform: 'uppercase', letterSpacing: 0.6, marginTop: 8 },
   question:    { fontSize: FontSizes.xl, lineHeight: 30, fontWeight: '800', color: c.text, letterSpacing: -0.3 },
   questionSub: { fontSize: FontSizes.sm, color: c.muted, marginBottom: 10 },
-  qCard:       { aspectRatio: 4 / 5, maxHeight: 420, borderRadius: 20, overflow: 'hidden', backgroundColor: c.bg3, justifyContent: 'flex-end', marginBottom: 6 },
+  qCard:       { aspectRatio: 4 / 5, maxHeight: 420, borderRadius: Radius.ticket, overflow: 'hidden', backgroundColor: c.bg3, justifyContent: 'flex-end', marginBottom: 6 },
   qShade:      { position: 'absolute', left: 0, right: 0, bottom: 0, height: '60%' },
   qText:       { padding: 16, gap: 4 },
   qKicker:     { fontSize: FontSizes.xs, fontWeight: '800', color: '#FFFFFF', textTransform: 'uppercase', letterSpacing: 0.6, opacity: 0.9 },

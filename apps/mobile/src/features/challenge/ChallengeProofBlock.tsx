@@ -348,7 +348,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   card: {
     margin:           Spacing.md,
     padding:          Spacing.md,
-    borderRadius:     Radius.lg,
+    borderRadius:     Radius.card,
     backgroundColor:  c.bg2,
     borderWidth:      Border,
     borderColor:      c.line,
