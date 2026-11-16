@@ -19,7 +19,7 @@ import {
   fetchChallengeMessages, sendChallengeMessage, sendChallengeImageMessage,
   fetchMyChallengeParticipation, joinChallengeChannel, leaveChallengeChannel,
   setChallengeCloseToJoins, setChallengeVisibility, toggleChallengeReaction,
-  abandonAcceptance, restartChallenge, relaunchChallenge, validatePresence,
+  relaunchChallenge, validatePresence,
 } from '@/api/challenges';
 import { ValidatePresenceSheet } from '@/features/challenge/ValidatePresenceSheet';
 import { GroupSubmissionsGallery } from '@/features/challenge/GroupSubmissionsGallery';
@@ -30,16 +30,11 @@ import * as Haptics from 'expo-haptics';
 import { reactionEmitter, EMOJI_TO_TYPE } from '@/lib/reactionEmitter';
 import i18n from '@/i18n';
 import { AttendeeAvatars } from '@/components/AttendeeAvatars';
-import { ChallengePipeline } from '@/features/challenge/ChallengePipeline';
 import { CampaignCelebration } from '@/features/challenge/CampaignCelebration';
-import { ThreadScheduleBlock } from '@/features/challenge/ThreadScheduleBlock';
-import { DatePickerModal } from '@/features/challenge/DatePickerModal';
 import { ChallengeProofBlock } from '@/features/challenge/ChallengeProofBlock';
-import { ProofReviewModal } from '@/features/challenge/ProofReviewModal';
 import { ChallengeNotificationPill } from '@/features/challenge/ChallengeNotificationPill';
 import { ChallengeChannelMembersStrip } from '@/features/challenge/ChallengeChannelMembersStrip';
 import { countryToFlag } from '@/lib/countryFlag';
-import { proposeDate as proposeDateApi, approveTakeOn, rejectTakeOn } from '@/api/challenges';
 import { ChallengeChannelMembersSheet } from '@/features/challenge/ChallengeChannelMembersSheet';
 import { ChallengePostCreateSheet } from '@/components/ChallengePostCreateSheet';
 import { useMessages } from '@/hooks/useMessages';
@@ -99,26 +94,9 @@ export default function ChallengeChatScreen() {
   const [postCreateOpen, setPostCreateOpen] = useState(false);
   const [participants,     setParticipants]     = useState<UserDTO[]>([]);
   const [membersOpen,      setMembersOpen]      = useState(false);
-  const [acceptBusy,       setAcceptBusy]       = useState(false);
   const [validateBusy,     setValidateBusy]     = useState(false);
-  // PR2/3/4 - if I have an acceptance on this challenge, store the full
-  // summary so the lifecycle pipeline can render my current phase + the
-  // Accept button can morph into "Open thread →".
+  // My acceptance on this challenge (group: joined / present / absent), if any.
   const [myAcceptance, setMyAcceptance] = useState<ChallengeThreadSummary | null>(null);
-
-  // PR18 - once an acceptance is terminal (approved = both rated and the
-  // mutual debrief landed, rejected = creator turned the take-on down)
-  // the challenge has returned to "available" globally. From the user's
-  // POV we should unlock the detail screen: drop the locked "Mission
-  // accomplished" pipeline, re-show the Take-on CTA, allow them to
-  // re-engage. Chat history stays - they're still a channel participant
-  // (iAmParticipant gates on membership, not on acceptance state).
-  // Re-accepting creates a new acceptance row; score_events.UNIQUE
-  // prevents double-earning points on the same (user, challenge, role).
-  const activeAcceptance = (myAcceptance &&
-    (myAcceptance.phase === 'approved' || myAcceptance.phase === 'rejected'))
-    ? null
-    : myAcceptance;
 
   // Participation gate. null = still loading, false = visitor with no
   // explicit join row, true = creator / active taker / explicit joiner.
@@ -149,10 +127,6 @@ export default function ChallengeChatScreen() {
   // affordances on entry. Guests are by definition the audience for
   // the explicit "chat free / sign up to take it" message.
   const [showGuestWelcome, setShowGuestWelcome] = useState(true);
-  // Picker for the FIRST proposal (no existing proposal yet). Counter-propose
-  // has its own picker inside ThreadScheduleBlock; this one is reached from
-  // the pipeline's "Propose a date →" sub-CTA so we don't double up.
-  const [pickerOpen, setPickerOpen] = useState(false);
 
   // Owner check - two paths, mutually exclusive:
   //   1. Challenge has a registered creator → ownership is decided STRICTLY
@@ -169,29 +143,6 @@ export default function ChallengeChatScreen() {
       : (identity?.guestId && challenge?.guest_id && identity.guestId === challenge.guest_id)
   );
 
-  // The acceptance that drives the pipeline + proof review/block. For the
-  // TAKER it's their own (activeAcceptance). The CREATOR has none of their
-  // own, so fall back to a synthetic built from the active taker's snapshot
-  // on the challenge (id + phase) - this is what lets the creator see the
-  // pipeline advance to Proof and open the proof block / review modal (both
-  // fetch by acceptance id; the backend authorizes the creator).
-  const effectiveActiveAcceptance: ChallengeThreadSummary | null =
-    activeAcceptance
-    ?? ((isOwner && challenge?.acceptor_acceptance_id && challenge?.acceptor_phase)
-          ? ({
-              id: challenge.acceptor_acceptance_id,
-              phase: challenge.acceptor_phase,
-              effective_phase: challenge.acceptor_phase,
-              // ChallengePipeline.derive() reads acceptance.counterparty.displayName
-              // unconditionally - omitting it crashes the creator's view as soon as
-              // a taker exists. Fill it from the taker (the creator's counterparty).
-              counterparty: {
-                id:             challenge.acceptor_user_id ?? '',
-                displayName:    challenge.acceptor_display_name ?? '',
-                thumbAvatarUrl: challenge.acceptor_thumb_avatar_url ?? null,
-              },
-            } as unknown as ChallengeThreadSummary)
-          : null);
 
   // "Am I currently a participant?" - derived from the participant list.
   const isParticipant = !!(
@@ -207,15 +158,6 @@ export default function ChallengeChatScreen() {
   // fetch - much safer than the reverse.
   const challengeIsPublic = (challenge?.visibility ?? 'public') === 'public';
 
-  // Photo-proof verdict path. International is always photo-proof
-  // (locked server-side). Local challenges where the creator picked
-  // photo at creation also use the same submission UI + creator
-  // review modal. Older clients that never sent validation_method
-  // get 'meet' from the format() default, so this evaluates false
-  // for them - preserving the historical IRL flow.
-  const usesPhotoProof =
-    (challenge?.mode ?? 'local') === 'international'
-    || (challenge?.validation_method ?? 'meet') === 'photo_proof';
 
   // Target city - only meaningful for International challenges. For Local
   // challenges this stays null; the invite picker just uses the origin
@@ -316,26 +258,6 @@ export default function ChallengeChatScreen() {
     ]);
   }, [id, identity, router, t]);
 
-  // Creator restarts from zero: removes the current taker, wipes the chat,
-  // reopens the challenge. Confirm first - it can't be undone.
-  const handleRestart = useCallback(() => {
-    Alert.alert(t('restart.confirmTitle'), t('restart.confirmBody'), [
-      { text: t('cancel', { ns: 'common' }), style: 'cancel' },
-      {
-        text: t('restart.confirmCta'), style: 'destructive',
-        onPress: async () => {
-          try {
-            await restartChallenge(id);
-            loadChallenge();
-            loadParticipants();
-            loadMyAcceptance();
-          } catch {
-            Alert.alert(t('restart.failed'));
-          }
-        },
-      },
-    ]);
-  }, [id, t, loadChallenge, loadParticipants, loadMyAcceptance]);
 
   // Creator relaunches an ENDED challenge: reopens with the SAME countdown it was
   // originally given (server recomputes the deadline). One tap, confirm first.
@@ -381,16 +303,6 @@ export default function ChallengeChatScreen() {
   // Owner-only "Manage challenge" modal - opens from the inline pill in
   // the meta row. Bundles Close (lifecycle) / Delete.
   const [manageOpen, setManageOpen] = useState(false);
-  // International proof-spec popin - tapping the pipeline's "Waiting for
-  // the proof" pill opens this read-only sheet.
-  const [proofSpecOpen, setProofSpecOpen] = useState(false);
-  // PR62 - creator-side "Review the proof" modal. Opens from the pipeline
-  // sub-CTA on intl when phase='proof_submitted'. Shows the photo big +
-  // Approve / Reject buttons; reject swaps the same sheet into a reason
-  // prompt. Backend broadcasts the verdict on WS to both sides, so the
-  // pipeline + chat refresh elsewhere via the existing acceptance
-  // listener; the local screen also nudges loadMyAcceptance() on close.
-  const [proofReviewOpen, setProofReviewOpen] = useState(false);
   // Group-challenge UI state (Phase 4).
   const [joining,      setJoining]      = useState(false);
   const [validateOpen, setValidateOpen] = useState(false);
@@ -406,11 +318,10 @@ export default function ChallengeChatScreen() {
   const reviewProofFiredRef = useRef(false);
 
   // Proof-review deep-link: a "📸 new proof" push routes here with ?reviewProof=1.
-  // GROUP photo-proof → open the submissions gallery (pick-the-winner). Legacy
-  // 1-1 → the old ProofReviewModal once the proof has landed. Param is stripped
-  // after so a back-nav / refresh doesn't re-open it. MUST stay in the hooks
-  // section (before the loading early-return) - computing the group-photo flag
-  // inline avoids a rules-of-hooks violation.
+  // GROUP photo-proof → open the submissions gallery (pick-the-winner). Param is
+  // stripped after so a back-nav / refresh doesn't re-open it. MUST stay in the
+  // hooks section (before the loading early-return) - computing the group-photo
+  // flag inline avoids a rules-of-hooks violation.
   useEffect(() => {
     if (reviewProof !== '1' || reviewProofFiredRef.current || !isOwner || !challenge) return;
     const groupPhoto = (challenge.challenge_format ?? 'legacy') === 'group'
@@ -419,14 +330,8 @@ export default function ChallengeChatScreen() {
       reviewProofFiredRef.current = true;
       setGallerySignal(s => s + 1);
       router.setParams({ reviewProof: undefined } as never);
-      return;
     }
-    if (usesPhotoProof && effectiveActiveAcceptance?.phase === 'proof_submitted') {
-      reviewProofFiredRef.current = true;
-      setProofReviewOpen(true);
-      router.setParams({ reviewProof: undefined } as never);
-    }
-  }, [reviewProof, isOwner, challenge, usesPhotoProof, effectiveActiveAcceptance?.phase, router]);
+  }, [reviewProof, isOwner, challenge, router]);
 
   // Creator-only visibility flip (Public ↔ Friends). Private isn't
   // reachable here - that's the mutual go-private flow. International
@@ -574,65 +479,6 @@ export default function ChallengeChatScreen() {
     }
   }, [validating, id, t, loadChallenge, loadParticipants]);
 
-  /**
-   * PR2 - take-on flow.
-   *
-   * Three paths:
-   *   1. I already have a thread → just navigate to it.
-   *   2. I'm a registered user → call /accept; on success navigate to the
-   *      returned thread channel; on 403 show a tailored alert (mode prompt,
-   *      cap full, etc.).
-   *   3. I'm a guest → bounce to auth-gate (accept requires registration).
-   */
-  const handleAccept = useCallback(async () => {
-    if (acceptBusy) return;
-
-    // Already actively accepted? No-op - the inline chat is right here.
-    // A terminal myAcceptance (approved/rejected) does NOT block: the user
-    // is re-engaging with a completed challenge; the new row coexists with
-    // the old, and score_events.UNIQUE keeps points from re-firing.
-    if (activeAcceptance) return;
-
-    // Guest? Send them to register first. Carry the originating
-    // challenge id as ?returnTo so the user lands back on this exact
-    // screen post-signup, primed to tap Take-on again - instead of
-    // landing on the NOW feed and having to re-find the challenge.
-    if (!account?.id) {
-      const returnTo = encodeURIComponent(`/challenge/${id}`);
-      router.push(`/auth-gate?reason=accept_challenge&returnTo=${returnTo}` as never);
-      return;
-    }
-
-    setAcceptBusy(true);
-    try {
-      await acceptChallenge(id);
-      // Refresh the full summary - the pipeline flips to "Date" and the inline
-      // chat block mounts (both keyed off myAcceptance becoming non-null).
-      loadMyAcceptance();
-      track('challenge_take_on', { challengeId: id });
-    } catch (err) {
-      if (err instanceof AcceptChallengeError) {
-        // Localized per error code. mode_* codes also offer to open the
-        // settings screen so the user can switch mode in one tap.
-        if (err.code === 'mode_required' || err.code === 'mode_mismatch') {
-          Alert.alert(
-            t(`accept.err.${err.code}.title`),
-            t(`accept.err.${err.code}.body`),
-            [
-              { text: t('cancel', { ns: 'common' }), style: 'cancel' },
-              { text: t('accept.err.openSettings'), onPress: () => router.navigate('/(tabs)/me' as never) },
-            ],
-          );
-        } else {
-          Alert.alert(t(`accept.err.${err.code}.title`), err.message);
-        }
-      } else {
-        Alert.alert(t('accept.err.unknown.title'), t('accept.err.unknown.body'));
-      }
-    } finally {
-      setAcceptBusy(false);
-    }
-  }, [id, account?.id, acceptBusy, myAcceptance, loadMyAcceptance, router, t]);
 
   // Listen for WS status flips (validated ⇄ open) for this exact challenge
   // so the pill flips live when the creator toggles from another device.
@@ -649,8 +495,8 @@ export default function ChallengeChatScreen() {
     return () => { offV(); offU(); offE(); };
   }, [id]);
 
-  // PR2 - refresh acceptance state when someone takes on or cancels this
-  // challenge (server pushes to creator's user-room + acceptor's user-room).
+  // Refresh acceptance state when someone joins this challenge (server pushes
+  // to the creator's user-room + the joiner's user-room).
   useEffect(() => {
     const onAcceptanceChange = (data: Record<string, unknown>) => {
       const payload = data.payload as { challenge?: { id?: string }; challengeId?: string } | undefined;
@@ -658,37 +504,18 @@ export default function ChallengeChatScreen() {
       if (eventChallengeId === id) { loadMyAcceptance(); loadParticipants(); }
     };
     const offA = socket.on('challenge_accepted',              onAcceptanceChange);
-    const offC = socket.on('challenge_acceptance_cancelled',  onAcceptanceChange);
-    return () => { offA(); offC(); };
+    return () => { offA(); };
   }, [id, loadMyAcceptance, loadParticipants]);
 
-  // PR3/4/5 - refresh on date/verdict/take-on-review pushes. Schedule block
-  // + pipeline + locked-state branches all read off myAcceptance, so a
-  // single reload is enough.
+  // Photo proof submitted → refresh my acceptance and bump the group
+  // submissions gallery so a new photo appears for everyone live. Winner
+  // picked broadcasts 'challenge_validated' → refresh the gallery's crown too.
   useEffect(() => {
-    const onChange = () => loadMyAcceptance();
-    // Taker left → the creator's screen must reset the whole challenge (it's
-    // un-taken now), not just myAcceptance.
-    const onReset  = () => { loadMyAcceptance(); loadChallenge(); loadParticipants(); };
-    const off1 = socket.on('challenge_date_proposed',     onChange);
-    const off2 = socket.on('challenge_date_withdrawn',    onChange);
-    const off3 = socket.on('challenge_date_approved',     onChange);
-    const off4 = socket.on('challenge_verdict_approved',  onChange);
-    const off5 = socket.on('challenge_verdict_rejected',  onChange);
-    const off6 = socket.on('challenge_takeon_reviewed',   onChange);
-    const off7 = socket.on('challenge_acceptor_left',     onReset);
-    // Creator restarted → the removed taker's screen resets (their take-on is gone).
-    const off8 = socket.on('challenge_restarted',         onReset);
-    // Photo proof submitted → creator's pipeline flips to proof_submitted live
-    // and the "Review the proof" CTA appears without a reload. Also bumps the
-    // group submissions gallery so a new photo appears for everyone live.
-    const onProof = () => { onChange(); setGalleryTick(x => x + 1); };
-    const off9  = socket.on('challenge_proof_submitted',   onProof);
-    // Winner picked broadcasts 'challenge_validated' → refresh the gallery's
-    // crown highlight too.
-    const off10 = socket.on('challenge_validated',         () => setGalleryTick(x => x + 1));
-    return () => { off1(); off2(); off3(); off4(); off5(); off6(); off7(); off8(); off9(); off10(); };
-  }, [loadMyAcceptance, loadChallenge, loadParticipants]);
+    const onProof = () => { loadMyAcceptance(); setGalleryTick(x => x + 1); };
+    const off1 = socket.on('challenge_proof_submitted',   onProof);
+    const off2 = socket.on('challenge_validated',         () => setGalleryTick(x => x + 1));
+    return () => { off1(); off2(); };
+  }, [loadMyAcceptance]);
 
   // ── Unified challenge channel chat ───────────────────────────────────────
   // Replaces the per-acceptance THREAD chat. Reads + sends both gate on
@@ -831,33 +658,6 @@ export default function ChallengeChatScreen() {
     } catch { /* silent - re-probe on next visit */ }
   }
 
-  // The TAKER abandons their take-on: timeline resets, challenge reopens, chat
-  // is wiped, creator is notified. Confirm first - it can't be undone.
-  function handleLeaveTakeon() {
-    if (!myAcceptance) return;
-    const accId = myAcceptance.id;
-    Alert.alert(
-      t('leaveTakeon.confirmTitle'),
-      t('leaveTakeon.confirmBody'),
-      [
-        { text: t('cancel', { ns: 'common' }), style: 'cancel' },
-        {
-          text: t('leaveTakeon.confirmCta'),
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              await abandonAcceptance(accId);
-              setMyAcceptance(null);
-              loadChallenge();
-              loadParticipants();
-            } catch {
-              Alert.alert(t('leaveTakeon.failed'));
-            }
-          },
-        },
-      ],
-    );
-  }
   // Silence unused-var warnings when the channel-chat branch is hidden.
   void guestIdForChat;
 
@@ -924,18 +724,6 @@ export default function ChallengeChatScreen() {
     return ids;
   }, [activeTaker?.id, participants]);
 
-  // 1:1 gate - `inProgress` is true when the challenge has a non-terminal
-  // acceptance owned by someone else. Visitors don't see the Accept button
-  // (and see the in-progress locked state); the owner / current taker are
-  // unaffected because they already have their own acceptance row. Uses
-  // `activeAcceptance` (defined near the top - terminal acceptances treated
-  // as null) so a previously-finished take doesn't keep the user locked
-  // when the slot has actually freed.
-  const inProgress = !!(
-    challenge?.is_in_progress &&
-    !isOwner &&
-    !activeAcceptance
-  );
 
   // Collapse the badges / pipeline / participants block when the user starts
   // scrolling the chat OR taps the composer (keyboard open). Mirror the
@@ -1259,22 +1047,6 @@ export default function ChallengeChatScreen() {
               </TouchableOpacity>
             );
           })()}
-          {/* Leave the take-on - the TAKER (active acceptance) backs out:
-              timeline resets to zero, the challenge reopens, the creator is
-              pushed. Active phases only (matches the backend gate). */}
-          {myAcceptance && !isOwner
-            && ['pending', 'accepted', 'scheduled'].includes(myAcceptance.phase) && (
-            <TouchableOpacity
-              style={styles.sharePillInline}
-              onPress={handleLeaveTakeon}
-              activeOpacity={0.75}
-              accessibilityLabel={t('leaveTakeon.pill')}
-            >
-              <Text style={[styles.sharePillInlineText, { color: colors.red }]} numberOfLines={1}>
-                {t('leaveTakeon.pill')}
-              </Text>
-            </TouchableOpacity>
-          )}
           {/* Manage challenge - creator-only pill. Opens a modal with
               Close challenge / Delete to keep the meta row tight. */}
           {isOwner && challenge && (
@@ -1372,9 +1144,9 @@ export default function ChallengeChatScreen() {
           />
         )}
 
-        {/* GROUP: members strip sits ABOVE the submissions gallery (the photos
-            card reads as the call-to-action, with the roster as context). */}
-        {isGroup && iAmParticipant === true && (
+        {/* Members strip sits ABOVE the submissions gallery (the photos card
+            reads as the call-to-action, with the roster as context). */}
+        {iAmParticipant === true && (
           <ChallengeChannelMembersStrip
             challenge={challenge}
             activeTaker={activeTaker}
@@ -1397,92 +1169,6 @@ export default function ChallengeChatScreen() {
           />
         )}
 
-        {/* Lifecycle pipeline (replaces the old binary "in progress / done" pill).
-            Visualises all 4 steps + highlights the viewer's current one.
-            Tap behaviour depends on state:
-              - acceptance exists + no proposal → opens the date picker (the
-                pipeline's "Propose a date →" sub-CTA is the only one we
-                surface; the bottom ScheduleBlock empty state is hidden)
-              - otherwise → no-op (informational). The thread chat is right
-                below this, no navigation needed. */}
-        {!isGroup && (
-        <ChallengePipeline
-          // Creator has no acceptance of their own - effectiveActiveAcceptance
-          // falls back to the taker's snapshot so the timeline reflects real
-          // progress (e.g. an international challenge at the Proof step).
-          acceptance={effectiveActiveAcceptance}
-          iAmCreator={isOwner}
-          myUserId={account?.id ?? null}
-          // A 'global' campaign is a cross-city photo-proof contest; the pipeline
-          // only models local/international, so treat global like international.
-          mode={(challenge.mode === 'global' ? 'international' : challenge.mode) ?? 'local'}
-          validationMethod={challenge.validation_method ?? 'meet'}
-          onPress={(() => {
-            // Local + meet only: open date picker. Local + photo_proof has
-            // no date step, so don't intercept the tap to a picker that
-            // would never get acted on.
-            if ((challenge.mode ?? 'local') === 'local'
-                && (challenge.validation_method ?? 'meet') === 'meet'
-                && myAcceptance && !myAcceptance.proposed_starts_at && myAcceptance.phase === 'accepted') {
-              return () => setPickerOpen(true);
-            }
-            // NOTE: the acceptor's "Submit your proof" action is NOT wired to
-            // the pipeline tap anymore - the whole-timeline TouchableOpacity made
-            // it feel like you were pressing the entire step row, and the
-            // imperative submit could silently no-op. It's now a DEDICATED button
-            // inside ChallengeProofBlock below. The pipeline stays a pure status
-            // indicator for the acceptor at the proof step (falls through to the
-            // requirements popin if the creator set any, else non-interactive).
-            // Creator + photo-proof + acceptance is at proof_submitted ⇒ open
-            // the modal review sheet. This is the "Review the proof"
-            // sub-CTA path; it surfaces the photo and Approve / Reject in
-            // one place instead of forcing the creator to scroll the chat
-            // for the photo then hunt for the inline verdict row.
-            if (usesPhotoProof
-                && isOwner
-                && effectiveActiveAcceptance?.phase === 'proof_submitted') {
-              return () => setProofReviewOpen(true);
-            }
-            if (usesPhotoProof && challenge.proof_requirements) {
-              // Creator (no submit action) - still useful to surface the
-              // requirements popin so they can re-read what they asked for.
-              return () => setProofSpecOpen(true);
-            }
-            return undefined;
-          })()}
-        />
-        )}
-
-        {/* Photo-proof submission + verdict block. Renders for every
-            challenge that uses the photo flow (international + local
-            with validation_method='photo_proof') whenever there's an
-            ACTIVE acceptance; visitors and creators-without-acceptance
-            see no extra surface here (the pipeline educates them
-            passively). Uses activeAcceptance so a terminal approved
-            acceptance no longer keeps the "🎉 Challenge accomplished"
-            banner permanently locked on the detail page after the
-            challenge wrapped. Group photo-proof has its OWN submit block above
-            (keyed on the group acceptance), so the legacy block is gated off
-            for group to avoid a double submit surface. */}
-        {!isGroup && usesPhotoProof && effectiveActiveAcceptance && (
-          <ChallengeProofBlock
-            acceptanceId={effectiveActiveAcceptance.id}
-            iAmCreator={isOwner}
-            iAmAcceptor={!isOwner}
-            proofRequirements={challenge.proof_requirements ?? null}
-            acceptancePhase={effectiveActiveAcceptance.phase}
-          />
-        )}
-
-        {/* Channel members strip (legacy/non-group) - under the pipeline /
-            proof block. Group renders it above the gallery instead. */}
-        {!isGroup && iAmParticipant === true && (
-          <ChallengeChannelMembersStrip
-            challenge={challenge}
-            activeTaker={activeTaker}
-            onOpen={() => setMembersOpen(true)}
-          />
-        )}
         </View>
         )}{/* /detailsOpen */}
 
@@ -1535,77 +1221,6 @@ export default function ChallengeChatScreen() {
         </View>
       )}
 
-      {/* Participants row - three layouts:
-            A) acceptors exist → avatars + count on the left, accept button on
-               the right (icon + label when the viewer can still take on).
-            B) no acceptors, viewer can take on → full-width prominent labeled
-               button (replaces the old "Be the first to accept" + small + duo).
-            C) full → "Challenge full" label, no button.
-          Skipped entirely for owners on a validated challenge (nothing to do). */}
-      {/* Lifecycle-state row (was "Participants · N" + accept-pill row).
-          Legacy avatar strip dropped - the channel-members strip above
-          covers the "who's in" panel for everyone. Three passive states +
-          the Accept CTA remain. Group rows use the group block above instead. */}
-      {!isGroup && (() => {
-        // A completed challenge (isClosed) is permanently closed to new takers,
-        // same passive state as the manual 'validated' archive.
-        if ((isValidated || isClosed) && !isOwner) {
-          return (
-            <View style={styles.participantsRow}>
-              <Text style={styles.participantsEmpty}>{t('cta.closed')}</Text>
-            </View>
-          );
-        }
-        // PR18 - gate "Currently being taken by X" on challenge.is_in_progress
-        // (server-derived: a non-terminal acceptance EXISTS) rather than on
-        // otherParticipants.length, so a previously-completed challenge
-        // (terminal acceptance still in the participants list) no longer
-        // reads as "in progress" - the slot is genuinely free.
-        if (challenge?.is_in_progress && !isValidated && !isOwner && !activeAcceptance) {
-          return (
-            <View style={styles.participantsRow}>
-              <Text style={styles.participantsEmpty} numberOfLines={1}>
-                {t('cta.takenBy', { name: activeTaker?.displayName ?? '-' })}
-              </Text>
-            </View>
-          );
-        }
-        // PR18 - show the Take-on CTA whenever the slot is open + viewer is
-        // not the owner + challenge not closed. Replaces the
-        // "otherParticipants.length === 0" guard which kept a terminal user
-        // (whose row is still in participants) locked at "Mission
-        // accomplished" - the bug the user reported.
-        //
-        // !activeAcceptance: server-side `is_in_progress` (IS_IN_PROGRESS_SQL)
-        // intentionally excludes 'pending' so the city feed reads "Available"
-        // while the creator is reviewing. On the DETAIL page that signal is
-        // wrong for the requester themselves - they already have an active
-        // pending acceptance, so re-rendering the Accept CTA is misleading
-        // (and previously surfaced as a half-clipped orange pill stuck under
-        // the members strip while the screen was waiting on the creator's
-        // response). Guard on the local truth instead.
-        if (!isOwner && !isValidated && !isClosed && !challenge?.is_in_progress && !activeAcceptance) {
-          return (
-            <View style={styles.participantsRow}>
-              <TouchableOpacity
-                style={styles.acceptCtaFull}
-                onPress={handleAccept}
-                activeOpacity={0.85}
-                disabled={acceptBusy}
-                accessibilityLabel={t('acceptCta')}
-              >
-                {acceptBusy
-                  ? <ActivityIndicator color={colors.primary} size="small" />
-                  : <>
-                      <Ionicons name="add" size={20} color={colors.primaryText} />
-                      <Text style={styles.acceptCtaFullText}>{t('pipeline.subcta.tapToAccept')}</Text>
-                    </>}
-              </TouchableOpacity>
-            </View>
-          );
-        }
-        return null;
-      })()}
       </View>{/* /measuring wrapper */}
       </Animated.View>
 
@@ -1682,19 +1297,9 @@ export default function ChallengeChatScreen() {
         style={styles.flex}
         behavior="padding"
       >
-        {/* PR34 - show the chat for ALL participants once they're in the
-            channel, including acceptors with phase='pending'. The pipeline
-            above already conveys "waiting for the creator's review"; the
-            big "En attente" block was duplicative and worse, it hid the
-            very chat the acceptor needs to talk to the creator while
-            waiting. Two narrow exceptions still take over the surface:
-              - Creator with a pending acceptance - they need Accept/Reject
-                buttons, not the chat (those buttons live in the block).
-              - Acceptor whose take-on was rejected - terminal communication
-                that deserves its own surface so the user understands the
-                channel is closed for them.
-            Both branches are handled inside the non-chat IIFE below. */}
-        {(challengeIsPublic || iAmParticipant === true) && !(isOwner && myAcceptance?.phase === 'pending') && !(!isOwner && myAcceptance?.phase === 'rejected') ? (
+        {/* The chat shows for everyone on a public channel and for
+            participants of a friends / private one. */}
+        {(challengeIsPublic || iAmParticipant === true) ? (
           <>
             {/* Guest welcome - fires on entry for any unauthenticated
                 viewer of a public channel. Two-line: "chat free, no
@@ -1815,23 +1420,6 @@ export default function ChallengeChatScreen() {
               ) : null}
             />
 
-            {/* Schedule band - Local-MEET only (skip on photo-proof: no
-                date to schedule, the timeline goes straight from accept
-                to proof submission). Only for the creator + ACTIVE taker.
-                Uses activeAcceptance so a previously-completed user
-                doesn't see a stale "proposed at HH:MM" from their old
-                approved row - the slot is open again, the schedule
-                belongs to whoever takes it next. */}
-            {(challenge.mode ?? 'local') === 'local'
-              && (challenge.validation_method ?? 'meet') === 'meet'
-              && activeAcceptance && account?.id && (
-              <ThreadScheduleBlock
-                thread={activeAcceptance}
-                myUserId={account.id}
-                onChange={loadMyAcceptance}
-                hideEmptyCta
-              />
-            )}
 
             {(isValidated || isClosed) ? (
               <ComposerEndedNotice text={i18n.t('composer.closedChallenge', { ns: 'common' })} />
@@ -1868,13 +1456,9 @@ export default function ChallengeChatScreen() {
             )}
           </>
         ) : (
-          /* Non-chat surface. Branches (in priority order):
-             - non-public + iAmParticipant=false → private lock state
-             - Creator + pending acceptance → review banner with accept/reject
-             - Acceptor + pending           → "Waiting for review"
-             - Acceptor + rejected          → "Your take-on was declined"
-             Public channels never reach this branch when the viewer isn't
-             a participant - the chat above renders for them directly. */
+          /* Non-chat surface: non-public + iAmParticipant=false → private
+             lock state, else the default locked state. Public channels never
+             reach this branch - the chat above renders for them directly. */
           (() => {
             // Non-public + non-participant → conversation is locked. No
             // CTA, no join step (those channels are tied to creator +
@@ -1887,84 +1471,6 @@ export default function ChallengeChatScreen() {
                   <Ionicons name="lock-closed-outline" size={40} color={colors.muted} style={styles.lockedEmoji} />
                   <Text style={styles.lockedTitle}>{t('lock.private.title')}</Text>
                   <Text style={styles.lockedBody}>{t('lock.private.body')}</Text>
-                </View>
-              );
-            }
-
-            const isPending  = myAcceptance?.phase === 'pending';
-            const isRejected = myAcceptance?.phase === 'rejected';
-
-            // Creator side - a pending request awaiting their review. Inline
-            // Accept / Reject buttons. Tapping fires the API, the WS push
-            // refreshes loadMyAcceptance, and the panel morphs into the chat.
-            if (isOwner && isPending && myAcceptance) {
-              const acceptorName = myAcceptance.counterparty.displayName || '?';
-              return (
-                <View style={styles.lockedWrap}>
-                  <Ionicons name="people-outline" size={40} color={colors.muted} style={styles.lockedEmoji} />
-                  <Text style={styles.lockedTitle}>
-                    {t('takeon.creator.pendingTitle', { name: acceptorName })}
-                  </Text>
-                  <Text style={styles.lockedBody}>
-                    {t('takeon.creator.pendingBody', { name: acceptorName })}
-                  </Text>
-                  <View style={styles.takeonReviewActions}>
-                    <TouchableOpacity
-                      style={styles.takeonRejectBtn}
-                      onPress={async () => {
-                        try { await rejectTakeOn(myAcceptance.id); loadMyAcceptance(); }
-                        catch { Alert.alert(t('takeon.creator.rejectFailed')); }
-                      }}
-                      activeOpacity={0.85}
-                    >
-                      <Text style={styles.takeonRejectText}>{t('takeon.creator.reject')}</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                      style={styles.takeonAcceptBtn}
-                      onPress={async () => {
-                        try { await approveTakeOn(myAcceptance.id); loadMyAcceptance(); }
-                        catch { Alert.alert(t('takeon.creator.approveFailed')); }
-                      }}
-                      activeOpacity={0.85}
-                    >
-                      <Text style={styles.takeonAcceptText}>{t('takeon.creator.approve')}</Text>
-                    </TouchableOpacity>
-                  </View>
-                </View>
-              );
-            }
-
-            // Acceptor - pending / rejected states.
-            if (!isOwner && isPending) {
-              const creatorName = myAcceptance?.counterparty.displayName || '?';
-              return (
-                <View style={styles.lockedWrap}>
-                  <Ionicons name="hourglass-outline" size={40} color={colors.muted} style={styles.lockedEmoji} />
-                  <Text style={styles.lockedTitle}>{t('takeon.acceptor.waitingTitle')}</Text>
-                  <Text style={styles.lockedBody}>{t('takeon.acceptor.waitingBody', { name: creatorName })}</Text>
-                </View>
-              );
-            }
-            if (!isOwner && isRejected) {
-              const creatorName = myAcceptance?.counterparty.displayName || '?';
-              return (
-                <View style={styles.lockedWrap}>
-                  <Ionicons name="close" size={40} color={colors.muted} style={styles.lockedEmoji} />
-                  <Text style={styles.lockedTitle}>{t('takeon.acceptor.rejectedTitle')}</Text>
-                  <Text style={styles.lockedBody}>{t('takeon.acceptor.rejectedBody', { name: creatorName })}</Text>
-                </View>
-              );
-            }
-
-            // Visitor + challenge is in progress with someone else → show
-            // the "someone's on this one" state instead of the generic
-            // take-on nudge. Creator falls back to the regular branch.
-            if (!isOwner && inProgress) {
-              return (
-                <View style={styles.lockedWrap}>
-                  <Ionicons name="hourglass-outline" size={40} color={colors.muted} style={styles.lockedEmoji} />
-                  <Text style={styles.lockedTitle}>{t('locked.inProgress.title')}</Text>
-                  <Text style={styles.lockedBody}>{t('locked.inProgress.body')}</Text>
                 </View>
               );
             }
@@ -1985,23 +1491,6 @@ export default function ChallengeChatScreen() {
         )}
       </KeyboardAvoidingView>
 
-      {/* Date picker - opened by the pipeline's "Propose a date →" sub-CTA. */}
-      {myAcceptance && (
-        <DatePickerModal
-          visible={pickerOpen}
-          onClose={() => setPickerOpen(false)}
-          onSubmit={async (startsAtUnix, endsAtUnix, venue) => {
-            setPickerOpen(false);
-            try {
-              await proposeDateApi(myAcceptance.id, startsAtUnix, endsAtUnix, venue);
-              loadMyAcceptance();
-            } catch {
-              Alert.alert(t('schedule.err.proposeFailed'));
-            }
-          }}
-          submitLabel={t('schedule.proposeCta')}
-        />
-      )}
 
       {/* Channel members sheet - synthesizes Challenger + Taker rows
           at the head from the challenge/acceptance context, then lists
@@ -2055,17 +1544,6 @@ export default function ChallengeChatScreen() {
                 {isValidated ? t('reopenCta') : t('closeCta')}
               </Text>
             </TouchableOpacity>
-            {/* Restart - only when there's an active taker to remove. */}
-            {challenge?.is_in_progress && (
-              <TouchableOpacity
-                style={styles.manageRow}
-                onPress={() => { setManageOpen(false); handleRestart(); }}
-                activeOpacity={0.75}
-              >
-                <Ionicons name="refresh-outline" size={18} color={colors.primaryText} />
-                <Text style={[styles.manageRowText, { color: colors.primaryText }]}>{t('restart.cta')}</Text>
-              </TouchableOpacity>
-            )}
             <TouchableOpacity
               style={[styles.manageRow, styles.manageRowDanger]}
               onPress={() => { setManageOpen(false); handleDelete(); }}
@@ -2078,18 +1556,6 @@ export default function ChallengeChatScreen() {
         </Modal>
       )}
 
-      {/* Creator's proof-review modal. Big photo + Approve / Reject +
-          reject-reason face. Mounted for any photo-proof creator (intl
-          + local-with-photo) with an active acceptance - the modal
-          renders nothing if there's no pending proof. */}
-      {usesPhotoProof && isOwner && effectiveActiveAcceptance && (
-        <ProofReviewModal
-          visible={proofReviewOpen}
-          onClose={() => setProofReviewOpen(false)}
-          acceptanceId={effectiveActiveAcceptance.id}
-          onVerdict={() => { loadMyAcceptance(); loadChallenge(); }}
-        />
-      )}
 
       {/* Group MEET presence validation (challenger-only, multi-select). */}
       {isGroupMeet && (
@@ -2104,29 +1570,6 @@ export default function ChallengeChatScreen() {
       )}
 
 
-      {/* Proof-spec popin - read-only sheet showing what the creator asked
-          for. Opened by tapping the pipeline's "Waiting for the proof" pill. */}
-      {challenge?.proof_requirements && (
-        <Modal
-          visible={proofSpecOpen}
-          animationType="fade"
-          transparent
-          onRequestClose={() => setProofSpecOpen(false)}
-        >
-          <TouchableOpacity style={styles.modalBackdrop} activeOpacity={1} onPress={() => setProofSpecOpen(false)} />
-          <View style={styles.manageSheet}>
-            <Text style={styles.manageTitle}>{t('intl.proof.requirementsLabel')}</Text>
-            <Text style={styles.proofSpecBody}>{challenge.proof_requirements}</Text>
-            <TouchableOpacity
-              style={[styles.manageRow, { justifyContent: 'center' }]}
-              onPress={() => setProofSpecOpen(false)}
-              activeOpacity={0.75}
-            >
-              <Text style={[styles.manageRowText, { color: colors.primaryText }]}>OK</Text>
-            </TouchableOpacity>
-          </View>
-        </Modal>
-      )}
 
       {/* Visibility picker - Public / Friends / Private dropdown. */}
       {challenge && (

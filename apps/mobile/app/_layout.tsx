@@ -7,7 +7,6 @@ import { Linking } from 'react-native';
 import { acceptEula, updateProfile } from '@/api/auth';
 import { EulaPromptModal } from '@/features/auth/EulaPromptModal';
 import { AccountWelcome } from '@/features/onboarding/AccountWelcome';
-import { RatePromptLaunchGate } from '@/features/challenge/RatePromptLaunchGate';
 import { ScoreCelebrationLaunchGate } from '@/features/challenge/ScoreCelebrationLaunchGate';
 import { ChallengeResultLaunchGate } from '@/features/challenge/ChallengeResultLaunchGate';
 import { Stack, router, useRootNavigationState } from 'expo-router';
@@ -271,15 +270,8 @@ function RootLayoutInner() {
       <ChallengeResultLaunchGate />
 
       {/* PR17 - "+X points!" popin once per cold start when the user has
-          unacknowledged score_events. Sits above RatePromptLaunchGate so
-          the celebration lands first (it's the upbeat moment; the rate
-          sheet comes after). Both gates are independent. */}
+          unacknowledged score_events. */}
       <ScoreCelebrationLaunchGate />
-
-      {/* PR11 - auto-open the RateSheet once per cold start if the caller
-          has any rate-eligible meet-up (proposed_ends_at < now() and not
-          yet rated). Replaces the abandoned rate-ready push. */}
-      <RatePromptLaunchGate />
     </>
   );
 }

@@ -1,5 +1,7 @@
 /**
- * ChallengeProofBlock - proof flow surface for International challenges.
+ * ChallengeProofBlock - photo submission surface for a GROUP photo-proof
+ * challenge (the joined taker's side; the challenger picks the winner from
+ * the submissions gallery).
  *
  * Renders three faces depending on who's viewing + the latest proof state:
  *
@@ -12,10 +14,6 @@
  *   ACCEPTOR (latest proof rejected, attempts remaining)
  *      → "Try again" CTA + the creator's rejection reason inline.
  *
- *   CREATOR (latest proof pending)
- *      → Media preview + Approve / Reject buttons. Reject opens a reason
- *        prompt (mandatory, 1–200 chars).
- *
  *   CREATOR / ACCEPTOR (terminal)
  *      → A short status line ("Accomplished" or "Closed"). The pipeline above
  *        already carries the canonical state; this block stays compact.
@@ -24,21 +22,20 @@
 import { useCallback, useEffect, useState } from 'react';
 import {
   View, Text, TouchableOpacity, StyleSheet,
-  ActivityIndicator, Alert, Modal, TextInput, Pressable, Platform,
+  ActivityIndicator, Alert, Platform,
 } from 'react-native';
 import { Image } from 'expo-image';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import * as ImagePicker from 'expo-image-picker';
 import {
-  fetchProofs, submitProof, approveProof, rejectProof,
+  fetchProofs, submitProof,
   type ChallengeProof,
 } from '@/api/challenges';
 import { uploadFile } from '@/api/uploads';
 import { AndroidCameraCapture } from '@/features/chat/AndroidCameraCapture';
 import { Border, FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
-import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 
 type Props = {
   acceptanceId: string;
@@ -67,9 +64,7 @@ export function ChallengeProofBlock({
   const [attempts,    setAttempts]    = useState(0);
   const [maxAttempts, setMaxAttempts] = useState(3);
   const [loading,     setLoading]     = useState(true);
-  const [busy,        setBusy]        = useState<'submit' | 'approve' | 'reject' | null>(null);
-  const [rejectOpen,  setRejectOpen]  = useState(false);
-  const [rejectReason, setRejectReason] = useState('');
+  const [busy,        setBusy]        = useState<'submit' | null>(null);
   const [androidCamera, setAndroidCamera] = useState(false);
 
   const load = useCallback(async () => {
@@ -147,40 +142,6 @@ export function ChallengeProofBlock({
     }
   }, [busy, submitWithUri, t]);
 
-  // ── Creator: approve / reject ─────────────────────────────────────────────
-  const handleApprove = useCallback(async () => {
-    if (!latest || busy) return;
-    setBusy('approve');
-    try {
-      await approveProof(latest.id);
-      await load();
-    } catch (e) {
-      Alert.alert(t('intl.proof.reviewFailTitle'), e instanceof Error ? e.message : '');
-    } finally {
-      setBusy(null);
-    }
-  }, [latest, busy, load, t]);
-
-  const handleReject = useCallback(async () => {
-    if (!latest || busy) return;
-    const reason = rejectReason.trim();
-    if (reason.length === 0 || reason.length > 200) {
-      Alert.alert(t('intl.proof.reasonRequiredTitle'), t('intl.proof.reasonRequiredBody'));
-      return;
-    }
-    setBusy('reject');
-    try {
-      await rejectProof(latest.id, reason);
-      setRejectOpen(false);
-      setRejectReason('');
-      await load();
-    } catch (e) {
-      Alert.alert(t('intl.proof.reviewFailTitle'), e instanceof Error ? e.message : '');
-    } finally {
-      setBusy(null);
-    }
-  }, [latest, busy, rejectReason, load, t]);
-
   // ── Render ────────────────────────────────────────────────────────────────
   if (loading) {
     return (
@@ -214,83 +175,12 @@ export function ChallengeProofBlock({
     );
   }
 
-  // Pending - creator reviews; acceptor waits.
+  // Pending - the taker waits for the challenger's pick (nothing for the creator).
   if (latest?.status === 'pending') {
-    // PR62 - creator's verdict UI moved into ProofReviewModal (opened
-    // from the pipeline's "Review the proof" sub-CTA). The photo lives
-    // in the chat thread above already, so leaving an inline button
-    // pair here with no photo was confusing. Skip the card entirely
-    // for creators; render the acceptor's "Waiting for verdict" line
-    // unchanged.
     if (iAmCreator) return null;
     return (
       <View style={styles.card}>
-        {iAmCreator ? (
-          <View style={styles.verdictRow}>
-            <TouchableOpacity
-              style={[styles.verdictBtn, styles.verdictApprove, busy && { opacity: 0.5 }]}
-              onPress={handleApprove}
-              disabled={!!busy}
-              activeOpacity={0.85}
-            >
-              {busy === 'approve'
-                ? <ActivityIndicator color={colors.white} size="small" />
-                : (
-                  <View style={styles.iconRow}>
-                    <Ionicons name="checkmark" size={16} color={colors.white} />
-                    <Text style={styles.verdictApproveText}>{t('intl.proof.approveCta')}</Text>
-                  </View>
-                )}
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[styles.verdictBtn, styles.verdictReject, busy && { opacity: 0.5 }]}
-              onPress={() => setRejectOpen(true)}
-              disabled={!!busy}
-              activeOpacity={0.85}
-            >
-              <View style={styles.iconRow}>
-                <Ionicons name="close" size={16} color={colors.red} />
-                <Text style={styles.verdictRejectText}>{t('intl.proof.rejectCta')}</Text>
-              </View>
-            </TouchableOpacity>
-          </View>
-        ) : (
-          <Text style={styles.terminalLine}>{t('intl.proof.waitingVerdict')}</Text>
-        )}
-
-        {/* Reject reason modal - mandatory, 1–200 chars. */}
-        <Modal visible={rejectOpen} animationType="slide" transparent onRequestClose={() => setRejectOpen(false)}>
-          {/* Rises above the keyboard (react-native-keyboard-controller: Android edge-to-edge too). */}
-          <KeyboardAvoidingView behavior="padding" style={{ flex: 1 }}>
-            <Pressable style={styles.modalBackdrop} onPress={() => setRejectOpen(false)} />
-            <View style={styles.modalSheet}>
-              <View style={styles.modalHandle} />
-              <Text style={styles.modalTitle}>{t('intl.proof.rejectModalTitle')}</Text>
-              <Text style={styles.modalHint}>{t('intl.proof.rejectModalHint', { count: attemptsLeft })}</Text>
-              <TextInput
-                style={styles.reasonInput}
-                value={rejectReason}
-                onChangeText={setRejectReason}
-                placeholder={t('intl.proof.reasonPlaceholder')}
-                placeholderTextColor={colors.mutedDim}
-                maxLength={200}
-                multiline
-                autoFocus
-              />
-              <Text style={styles.charCount}>{rejectReason.length} / 200</Text>
-              <TouchableOpacity
-                style={[styles.modalSubmit, (!rejectReason.trim() || busy === 'reject') && { opacity: 0.5 }]}
-                onPress={handleReject}
-                disabled={!rejectReason.trim() || busy === 'reject'}
-                activeOpacity={0.85}
-              >
-                {busy === 'reject'
-                  ? <ActivityIndicator color={colors.white} />
-                  : <Text style={styles.modalSubmitText}>{t('intl.proof.rejectConfirm')}</Text>}
-              </TouchableOpacity>
-            </View>
-          </KeyboardAvoidingView>
-        </Modal>
+        <Text style={styles.terminalLine}>{t('intl.proof.waitingVerdict')}</Text>
       </View>
     );
   }
