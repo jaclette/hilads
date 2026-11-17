@@ -25,13 +25,13 @@ export function RankMedal({ rank, size = 26, style, podium = false }: { rank: nu
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
   center: { alignItems: 'center', justifyContent: 'center' },
   seal:   { borderRadius: Radius.full },
-  gold:   { backgroundColor: c.gold },
-  silver: { backgroundColor: c.silver },
-  bronze: { backgroundColor: c.bronze },
+  gold:   { backgroundColor: c.medalGold },
+  silver: { backgroundColor: c.medalSilver },
+  bronze: { backgroundColor: c.medalBronze },
   tint:   { backgroundColor: c.primaryTint },
   text:   { fontSize: FontSizes.sm, fontWeight: '800' },
-  onGold: { color: c.white },
+  onGold: { color: c.onMedal },
   onTint: { color: c.primaryOnTint },
-  onMetal: { color: c.bg2 },
+  onMetal: { color: c.onMedal },
   plain:  { fontSize: FontSizes.sm, fontWeight: '800', color: c.muted },
 });

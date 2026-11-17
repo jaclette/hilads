@@ -3,11 +3,12 @@ import {
   AccessibilityInfo, ActivityIndicator, Animated, Easing, Keyboard, PanResponder, Pressable, Text, TouchableOpacity, View, StyleSheet,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { GestureDetector } from 'react-native-gesture-handler';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import { FontSizes, type ThemeColors } from '@/constants';
+import { Space, FontSizes, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { useApp } from '@/context/AppContext';
 import { fetchDailyProofsByIds, fetchDailyTodayCountries } from '@/api/daily';
@@ -16,9 +17,10 @@ import { localizeCityName } from '@/i18n/cityName';
 import { canAccessProfile } from '@/lib/profileAccess';
 import { goBack } from '@/lib/nav';
 import { Avatar, DualPhoto, IconButton } from '@/ui';
+import { usePhotoZoom } from '@/ui/usePhotoZoom';
 import { selfieOf } from '@/features/daily/selfie';
 import { prefetchProof } from '@/lib/prefetch';
-import { FlagSticker } from '@/ui/joy';
+import { FlagSticker , themeColor } from '@/ui/joy';
 import { AnswerChip } from '@/features/compare/AnswerChip';
 import { captionRepeatsAnswer } from '@/features/compare/format';
 import { seedProofs } from '@/features/daily/votes';
@@ -32,7 +34,6 @@ import { COMMENT_BAR_H, StoryCommentBar } from '@/features/daily/StoryCommentBar
 import { lastCountries, todayCities } from '@/features/today/useTodayCountries';
 import { cachedPileProof } from '@/features/today/TodayCountries';
 import { SeasonalScope } from '@/features/event/SeasonalArt';
-import { themeColor } from '@/ui/joy';
 import { getLastToday } from '@/hooks/useDaily';
 import * as Haptics from 'expo-haptics';
 import type { DailyCityGroup, DailyProof } from '@/types';
@@ -52,6 +53,9 @@ const SHADE_BOTTOM = ['rgba(0,0,0,0)', 'rgba(0,0,0,0.55)', 'rgba(0,0,0,0.9)'] as
  * (Today's order), auto-advancing every 5 s (never with Reduce motion). Each
  * photo: its player (a tap opens the profile), the answer, the caption and a
  * heart (a double tap votes too). Each photo shown counts as seen (the rings).
+ * The photo shows whole over a blurred copy of itself (DualPhoto fit="screen");
+ * a pinch zooms it (up to 4×, springs back on release, Instagram style): the
+ * story waits, the taps and the swipe down rest and the overlays hide meanwhile.
  * `city` = the city to start with.
  */
 export default function StoriesScreen() {
@@ -113,6 +117,10 @@ function Stories() {
   const group = absent ? null : order[cityIndex] ?? null;
   const ids = (group?.ids ?? []).filter(id => !gone.has(id));
   const proof = ids[photoIndex] ? proofs[ids[photoIndex]] ?? null : null;
+  // Every photo of the city failed to load: say so instead of spinning forever.
+  const nothing = !!group && ids.length === 0;
+  // Photos dropped out (removed, failed): stay on the last one there is.
+  useEffect(() => { if (ids.length > 0 && photoIndex >= ids.length) setPhotoIndex(ids.length - 1); }, [ids.length, photoIndex]);
 
   // Opened from a mosaic pile: start at the photo that was on top of it.
   const startedAt = useRef(!!first);
@@ -173,19 +181,25 @@ function Stories() {
   const gesturesOff = useRef(false);
   gesturesOff.current = commentsOpen || composing;
   const [interacting, setInteracting] = useState(false);
+  // Pinch-to-zoom on the big picture (photo or selfie): not while typing or with the comments open.
+  const zoom = usePhotoZoom(!!proof && !composing && !commentsOpen);
+  const zooming = useRef(false);
+  zooming.current = zoom.zooming;
   useEffect(() => { progress.setValue(0); }, [proof?.id]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => {
-    if (!proof || paused || interacting || commentsOpen || composing || votersOf || reduceMotion) return;
+    if (!proof || paused || interacting || commentsOpen || composing || votersOf || reduceMotion || zoom.zooming) return;
     let anim: Animated.CompositeAnimation | null = null;
     progress.stopAnimation(at => {
       anim = Animated.timing(progress, { toValue: 1, duration: Math.max(0, (1 - at) * PHOTO_MS), easing: Easing.linear, useNativeDriver: false });
       anim.start(({ finished }) => { if (finished) next(); });
     });
     return () => { anim?.stop(); };
-  }, [proof?.id, paused, interacting, commentsOpen, composing, votersOf, reduceMotion]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [proof?.id, paused, interacting, commentsOpen, composing, votersOf, reduceMotion, zoom.zooming]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  // Swipe down closes; never with two fingers (a pinch) nor while zoomed.
   const pan = useRef(PanResponder.create({
-    onMoveShouldSetPanResponder: (_, g) => !gesturesOff.current && g.dy > 12 && Math.abs(g.dy) > Math.abs(g.dx),
+    onMoveShouldSetPanResponder: (_, g) => !gesturesOff.current && !zooming.current && g.numberActiveTouches < 2
+      && g.dy > 12 && Math.abs(g.dy) > Math.abs(g.dx),
     onPanResponderRelease: (_, g) => { if (g.dy > 80) goBack(); },
   })).current;
 
@@ -209,13 +223,18 @@ function Stories() {
   };
 
   return (
-    <View style={styles.wrap} {...pan.panHandlers} testID="today-stories">
+    <GestureDetector gesture={zoom.gesture}>
+    <View style={styles.wrap} {...pan.panHandlers} onLayout={zoom.onLayout} testID="today-stories">
       {/* The tap zones first: the photo over them lets touches through, its selfie inset catches its own (swap, drag to a corner). */}
       {proof && !composing && !commentsOpen && <TapZones proof={proof} onPrev={prev} onNext={next} onHold={setPaused} />}
       {proof
         ? <DualPhoto main={{ uri: proof.photoUrl, thumb: proof.thumbUrl, hash: proof.thumbHash }} selfie={selfieOf(proof)} style={StyleSheet.absoluteFill}
-                     draggable insetTop={insets.top + 76} onInteract={setInteracting} />
+                     draggable={!zoom.zooming} insetTop={insets.top + 76} onInteract={setInteracting}
+                     fit="screen" zoomStyle={zoom.style} sharp={zoom.zooming} />
+        : nothing ? <View style={[StyleSheet.absoluteFill, styles.center]}><Text style={styles.caption}>{t('loadFailed')}</Text></View>
         : <ActivityIndicator style={StyleSheet.absoluteFill} color={colors.white} />}
+      {/* The overlays (shades only at the top and the bottom): hidden while zoomed. */}
+      <View style={[StyleSheet.absoluteFill, zoom.zooming && styles.hidden]} pointerEvents={zoom.zooming ? 'none' : 'box-none'}>
       <LinearGradient colors={SHADE_TOP} style={styles.shadeTop} pointerEvents="none" />
       <LinearGradient colors={SHADE_BOTTOM} style={styles.shadeBottom} pointerEvents="none" />
 
@@ -250,12 +269,14 @@ function Stories() {
       {proof && <Bottom proof={proof} insetBottom={insets.bottom + (proof.status === 'approved' ? COMMENT_BAR_H : 0)} onProfile={() => openProfile(proof)} onVoters={() => setVotersOf(proof.id)} />}
       {/* The inline comment bar (on my own photo too: people reply there). */}
       {proof?.status === 'approved' && <StoryCommentBar proof={proof} onComposing={setComposing} />}
+      </View>
       <DailyVotersSheet proofId={votersOf} onClose={() => setVotersOf(null)}
                         onOpenUser={id => {
                           setVotersOf(null);
                           router.push((canAccessProfile(account) ? `/user/${id}` : '/auth-gate?reason=view_profile') as never);
                         }} />
     </View>
+    </GestureDetector>
   );
 }
 
@@ -347,25 +368,26 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   center:      { alignItems: 'center', justifyContent: 'center' },
   flex:        { flex: 1 },
   close:       { position: 'absolute', right: 12 },
+  hidden:      { opacity: 0 },
   shadeTop:    { position: 'absolute', top: 0, left: 0, right: 0, height: 170 },
   dim:         { backgroundColor: 'rgba(0,0,0,0.35)' },
   shadeBottom: { position: 'absolute', bottom: 0, left: 0, right: 0, height: '45%' },
-  top:         { position: 'absolute', top: 0, left: 0, right: 0, paddingHorizontal: 10, gap: 10 },
-  bars:        { flexDirection: 'row', gap: 4 },
+  top:         { position: 'absolute', top: 0, left: 0, right: 0, paddingHorizontal: Space.md, gap: Space.md },
+  bars:        { flexDirection: 'row', gap: Space.xs },
   // A dark edge keeps each segment (and the gap between them) visible on a bright photo.
   bar:         { flex: 1, height: 3, borderRadius: 2, backgroundColor: c.photoControl, overflow: 'hidden',
                  borderWidth: StyleSheet.hairlineWidth, borderColor: c.photoButton },
   barFill:     { height: 3, backgroundColor: c.white },
-  head:        { flexDirection: 'row', alignItems: 'center', gap: 10, paddingLeft: 4 },
+  head:        { flexDirection: 'row', alignItems: 'center', gap: Space.md, paddingLeft: Space.xs },
   cityName:    { fontSize: FontSizes.lg, fontWeight: '800', color: c.white },
   cityMeta:    { fontSize: FontSizes.xs, fontWeight: '700', color: c.onCaramelMuted },
-  bottom:      { position: 'absolute', left: 0, right: 0, bottom: 0, flexDirection: 'row', alignItems: 'flex-end', gap: 12, paddingHorizontal: 16 },
-  info:        { flex: 1, gap: 8 },
-  who:         { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  bottom:      { position: 'absolute', left: 0, right: 0, bottom: 0, flexDirection: 'row', alignItems: 'flex-end', gap: Space.md, paddingHorizontal: Space.lg },
+  info:        { flex: 1, gap: Space.sm },
+  who:         { flexDirection: 'row', alignItems: 'center', gap: Space.sm },
   name:        { flexShrink: 1, fontSize: FontSizes.md, fontWeight: '800', color: c.white },
   caption:     { fontSize: FontSizes.md, fontWeight: '500', color: c.white },
-  rail:        { alignItems: 'center', gap: 14 },
+  rail:        { alignItems: 'center', gap: Space.lg },
   heart:       { width: 54, height: 54, borderRadius: 27, alignItems: 'center', justifyContent: 'center', backgroundColor: c.photoControl },
   heartOn:     { backgroundColor: c.primary },
-  count:       { marginTop: 4, textAlign: 'center', fontSize: FontSizes.sm, fontWeight: '800', color: c.white },
+  count:       { marginTop: Space.xs, textAlign: 'center', fontSize: FontSizes.sm, fontWeight: '800', color: c.white },
 });

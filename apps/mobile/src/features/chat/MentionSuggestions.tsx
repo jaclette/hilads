@@ -2,7 +2,7 @@ import { thumbUrl } from '@/lib/imageThumb';
 import { View, Text, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
-import { FontSizes, Radius, type ThemeColors } from '@/constants';
+import { Space, FontSizes, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { Avatar } from '@/ui';
 import type { MentionSuggestion } from '@/api/mentions';
@@ -43,7 +43,7 @@ export function MentionSuggestions({
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
   panel:    { maxHeight: 220, backgroundColor: c.bg2, borderTopWidth: 1, borderTopColor: c.line },
-  row:      { flexDirection: 'row', alignItems: 'center', gap: 12, minHeight: 52, paddingHorizontal: 16, paddingVertical: 8 },
+  row:      { flexDirection: 'row', alignItems: 'center', gap: Space.md, minHeight: 52, paddingHorizontal: Space.lg, paddingVertical: Space.sm },
   here:     { width: 36, height: 36, borderRadius: Radius.full, backgroundColor: c.primaryTint, alignItems: 'center', justifyContent: 'center' },
   body:     { flex: 1, minWidth: 0 },
   username: { fontSize: FontSizes.sm, fontWeight: '700', color: c.text },

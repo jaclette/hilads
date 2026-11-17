@@ -9,7 +9,7 @@ import { BackgroundLayer, Camera, CircleLayer, FillLayer, Images, LineLayer, Map
 import Animated, { cancelAnimation, useAnimatedStyle, useSharedValue, withRepeat, withSequence, withSpring, withTiming } from 'react-native-reanimated';
 import { useIsFocused } from 'expo-router/react-navigation';
 import * as Haptics from 'expo-haptics';
-import { FontSizes, Radius, Spacing, type ThemeColors } from '@/constants';
+import { Space, FontSizes, Radius, Spacing, Gutter, Type, IconSize, Elevation, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { SeasonalMapSky } from '@/features/event/SeasonalArt';
 import { useEventFeature } from '@/features/event/seasonal';
@@ -36,7 +36,7 @@ import { MapSheet, SHEET_PEEK, type MapSheetHandle } from '@/features/map/MapShe
 import { ScopeSelector } from '@/features/shell/ScopeSelector';
 import { shortCityName } from '@/i18n/cityName';
 import type { DailyThemeKey } from '@/types';
-import { Avatar, Chip, CityFlag, IconButton, TextField } from '@/ui';
+import { Avatar, Chip, CityFlag, IconButton, ListRow, RowGroup, Tappable, TextField } from '@/ui';
 import { useBackClose } from '@/lib/useBackClose';
 
 const PLACE_THEMES = THEME_KEYS.filter(k => isPlaceTheme(k));
@@ -144,6 +144,8 @@ export default function MapScreen() {
   const router = useRouter();
   const params = useLocalSearchParams<{ spot?: string; source?: string; theme?: string }>();
   const { city, account } = useApp();
+  // The camera, or the sign-up sheet for a guest (like every other Play button).
+  const playToday = (reason: string) => router.push((account ? '/daily/proof' : `/auth-gate?reason=${reason}&returnTo=%2Fdaily%2Fproof`) as never);
   const { scope, setScope } = useScope();
   const today = useDailyToday(city?.channelId);
   const hasToken = useMemo(() => setupMapbox(), []);
@@ -161,6 +163,8 @@ export default function MapScreen() {
   useEffect(() => { if (!pumpkins && themeFilter === SPECIAL) setThemeFilter(null); }, [pumpkins, themeFilter]);
   // "Today": only the spots of today's challenge photos (a chip before the themes).
   const [todayOnly, setTodayOnly] = useState(false);
+  // Plans (UX audit option B: the Map is the plans' home): only the Hi plans, pinned and listed.
+  const [plansOnly, setPlansOnly] = useState(false);
   const reduceMotion = useReducedMotion();
   // The pins grow in once, when the first spots arrive.
   const [grown, setGrown] = useState(false);
@@ -390,6 +394,7 @@ export default function MapScreen() {
   const pickTheme = (k: DailyThemeKey | typeof SPECIAL | null) => {
     setThemeFilter(k);
     setTodayOnly(false);
+    setPlansOnly(false);
     setSelected(null);
     track('map_filter_used', { theme: k ?? 'all', is_today: k !== null && k === todayTheme });
   };
@@ -398,8 +403,17 @@ export default function MapScreen() {
   const pickToday = () => {
     setThemeFilter(null);
     setTodayOnly(true);
+    setPlansOnly(false);
     setSelected(null);
     track('map_filter_used', { theme: 'today', is_today: true });
+  };
+
+  const pickPlans = () => {
+    setThemeFilter(null);
+    setTodayOnly(false);
+    setPlansOnly(true);
+    setSelected(null);
+    track('map_filter_used', { theme: 'plans', is_today: false });
   };
 
   const locate = async () => {
@@ -433,8 +447,11 @@ export default function MapScreen() {
 
   // Today's spots: a photo of today's challenge (the spot's latest challenge is today's).
   const isToday = (s: Spot) => !!todayDate && s.lastProofDate === todayDate;
-  const shown = todayOnly ? spots.filter(isToday) : spots;
-  const showPlans = zoom >= PLAN_MIN_ZOOM;
+  const shown = useMemo(
+    () => (plansOnly ? [] : todayOnly ? spots.filter(s => !!todayDate && s.lastProofDate === todayDate) : spots),
+    [plansOnly, todayOnly, spots, todayDate],
+  );
+  const showPlans = plansOnly || zoom >= PLAN_MIN_ZOOM;
   // Zoom changes by fractions: the sides follow it in steps of a quarter level.
   const zoomStep = Math.round(zoom * 4) / 4;
   const planSides = useMemo(() => new Map(plans.slice(0, 30).map(p => [`${p.id}@${p.startsAt}`, planSide(p, shown, zoomStep)])), [plans, shown, zoomStep]);
@@ -474,13 +491,13 @@ export default function MapScreen() {
     return <View style={[styles.container, styles.center]}><Text style={styles.muted}>{t('map.noToken')}</Text></View>;
   }
 
-  const showEmpty = loaded && cityEmpty && scope === 'city' && !selected && spots.length === 0;
+  const showEmpty = loaded && cityEmpty && scope === 'city' && !selected && spots.length === 0 && !plansOnly;
   // The list shares the map's state: the search hits (in the theme) or the area's spots.
-  const listSpots = results !== null ? results.filter(s => themeFilter === null || themeFilter === SPECIAL || s.themes.includes(themeFilter)) : shown;
+  const listSpots = plansOnly ? [] : results !== null ? results.filter(s => themeFilter === null || themeFilter === SPECIAL || s.themes.includes(themeFilter)) : shown;
   const bboxCentre: [number, number] | null = lastBbox.current
     ? [(lastBbox.current[0] + lastBbox.current[2]) / 2, (lastBbox.current[1] + lastBbox.current[3]) / 2] : center;
   // Zoomed into a place with no spot (the city has some): "Nothing here yet. Be the pioneer 📍".
-  const emptyArea = loaded && scope === 'city' && !cityEmpty && !worldView && shown.length === 0 && results === null;
+  const emptyArea = loaded && scope === 'city' && !cityEmpty && !worldView && shown.length === 0 && results === null && !plansOnly;
 
   // 🎲 Surprise me: fly to a random good spot of the area (a photo and some likes first) and open its card.
   const surprise = () => {
@@ -655,7 +672,10 @@ export default function MapScreen() {
           </View>
         )}
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.chips} keyboardShouldPersistTaps="handled">
-          <Chip variant="filter" label={t('map.all')} selected={themeFilter === null && !todayOnly} onPress={() => pickTheme(null)} />
+          <Chip variant="filter" label={t('map.all')} selected={themeFilter === null && !todayOnly && !plansOnly} onPress={() => pickTheme(null)} />
+          {scope === 'city' && (plans.length > 0 || plansOnly) && (
+            <Chip variant="filter" label={t('inbox.cat.plans', { ns: 'notifications' })} selected={plansOnly} onPress={pickPlans} />
+          )}
           {!!todayDate && <Chip variant="filter" theme={todayTheme} label={t('map.todayChip')} selected={todayOnly} onPress={pickToday} />}
           {pumpkins && <Chip variant="filter" label={t('map.halloween')} selected={themeFilter === SPECIAL} onPress={() => pickTheme(SPECIAL)} />}
           {PLACE_THEMES.map(k => (
@@ -671,11 +691,12 @@ export default function MapScreen() {
         {notice && <Text style={styles.notice}>{notice}</Text>}
         <View style={styles.floatRow} pointerEvents="box-none">
           {!worldView && shown.length > 0 && (
-            <TouchableOpacity style={styles.surprise} onPress={surprise} activeOpacity={0.85} accessibilityRole="button" testID="map-surprise">
-              <Text style={styles.surpriseText}>🎲 {t('map.surprise')}</Text>
-            </TouchableOpacity>
+            <Tappable style={styles.surprise} onPress={surprise} accessibilityRole="button" testID="map-surprise">
+              <Ionicons name="dice-outline" size={IconSize.md} color={colors.primaryText} />
+              <Text style={styles.surpriseText}>{t('map.surprise')}</Text>
+            </Tappable>
           )}
-          <IconButton icon="locate-outline" label={t('map.locate')} onPress={locate} style={styles.locate} />
+          <IconButton icon="locate-outline" label={t('map.locate')} onPress={locate} style={styles.float} />
         </View>
       </View>
 
@@ -687,7 +708,7 @@ export default function MapScreen() {
         me={me}
         origin={bboxCentre}
         place={scope === 'city' && city?.name ? shortCityName(city.name) : null}
-        filterLabel={todayOnly ? t('map.todayChip') : themeFilter === SPECIAL ? t('map.halloween') : themeFilter ? themeName(themeFilter) : null}
+        filterLabel={plansOnly ? t('inbox.cat.plans', { ns: 'notifications' }) : todayOnly ? t('map.todayChip') : themeFilter === SPECIAL ? t('map.halloween') : themeFilter ? themeName(themeFilter) : null}
         emptyArea={emptyArea}
         onPick={s => select(s, 'map_list', true)}
         selectedCard={selected ? (
@@ -699,12 +720,12 @@ export default function MapScreen() {
             onShare={() => setShare(spotShare(selected))}
             onClose={() => setSelected(null)}
             onPlayToday={selected.themes.includes(todayTheme as DailyThemeKey) && today.data?.challenge?.isActive && !today.data?.myProof
-              ? () => { track('map_play_here', { spot: selected.id }); router.push('/daily/proof' as never); } : undefined}
+              ? () => { track('map_play_here', { spot: selected.id }); playToday('daily_proof'); } : undefined}
           />
         ) : null}
-        topNote={worldView && screenReader ? <WorldCityList bubbles={bubbles} onOpen={openBubble} />
+        topNote={plansOnly ? <PlanList plans={plans} /> : worldView && screenReader ? <WorldCityList bubbles={bubbles} onOpen={openBubble} />
           : showEmpty ? <EmptyCity today={today.data} /> : emptyArea ? (
-          <TouchableOpacity style={styles.pioneer} onPress={() => router.push('/daily/proof' as never)} accessibilityRole="button">
+          <TouchableOpacity style={styles.pioneer} onPress={() => playToday('first_spot')} accessibilityRole="button">
             <Text style={styles.pioneerText}>{t('map.sheet.pioneer')}</Text>
           </TouchableOpacity>
         ) : null}
@@ -714,11 +735,8 @@ export default function MapScreen() {
   );
 }
 
-/** A Hi plan as a dated pin: "Birdy, now · 10 going", "Birdy, in 2 hours". Caramel; opens the plan. */
-function PlanMarker({ plan, side }: { plan: PlanPin; side: PlanSide }) {
-  const styles = useThemedStyles(makeStyles);
-  const { i18n, t } = useTranslation('daily');
-  const router = useRouter();
+/** A plan's time and attendance: "now", "in 2 hours" soon, else the day and time; "10 going". */
+function planTime(plan: PlanPin, t: (k: string, o?: Record<string, unknown>) => string, lang: string) {
   const start = new Date(plan.startsAt * 1000);
   const now = Date.now();
   const ongoing = plan.startsAt * 1000 <= now && (plan.endsAt ? plan.endsAt * 1000 > now : true);
@@ -726,10 +744,37 @@ function PlanMarker({ plan, side }: { plan: PlanPin; side: PlanSide }) {
   // Soon: relative ("in 2 hours", localized); later: the day and time.
   // Hermes on Android has no Intl.RelativeTimeFormat (new undefined → crash): the time instead.
   const time = ongoing ? t('map.planNow')
-    : hours < 6 && typeof Intl.RelativeTimeFormat === 'function' ? new Intl.RelativeTimeFormat(i18n.language, { numeric: 'auto' }).format(Math.max(1, Math.round(hours * (hours < 1 ? 60 : 1))), hours < 1 ? 'minute' : 'hour')
-    : start.toLocaleString(i18n.language, start.toDateString() === new Date().toDateString()
+    : hours < 6 && typeof Intl.RelativeTimeFormat === 'function' ? new Intl.RelativeTimeFormat(lang, { numeric: 'auto' }).format(Math.max(1, Math.round(hours * (hours < 1 ? 60 : 1))), hours < 1 ? 'minute' : 'hour')
+    : start.toLocaleString(lang, start.toDateString() === new Date().toDateString()
         ? { hour: 'numeric', minute: '2-digit' } : { weekday: 'short', hour: 'numeric', minute: '2-digit' });
   const going = plan.participantCount > 1 ? t('map.planGoing', { count: plan.participantCount }) : null;
+  return { start, ongoing, time, going };
+}
+
+/** The Plans filter's list in the sheet: each plan with its time and who's going; a tap opens it. */
+function PlanList({ plans }: { plans: PlanPin[] }) {
+  const { i18n, t } = useTranslation('daily');
+  const router = useRouter();
+  return (
+    <RowGroup>
+      {plans.slice(0, 30).map((p, i) => {
+        const { time, going } = planTime(p, t, i18n.language);
+        return (
+          <ListRow key={`${p.id}@${p.startsAt}`} divider={i > 0} icon="calendar-outline" title={p.title}
+                   value={[time, going].filter(Boolean).join(' · ')}
+                   onPress={() => { track('plan_opened', { source: 'map_plans' }); router.push(`/event/${p.id}` as never); }} />
+        );
+      })}
+    </RowGroup>
+  );
+}
+
+/** A Hi plan as a dated pin: "Birdy, now · 10 going", "Birdy, in 2 hours". Caramel; opens the plan. */
+function PlanMarker({ plan, side }: { plan: PlanPin; side: PlanSide }) {
+  const styles = useThemedStyles(makeStyles);
+  const { i18n, t } = useTranslation('daily');
+  const router = useRouter();
+  const { start, ongoing, time, going } = planTime(plan, t, i18n.language);
   const day = start.toLocaleDateString(i18n.language, { day: 'numeric', month: 'short' });
   return (
     // A little calendar page on a stem: the day on top, then the title, the time and who's going.
@@ -850,49 +895,51 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   container:     { flex: 1, backgroundColor: c.bg },
   center:        { alignItems: 'center', justifyContent: 'center', padding: Spacing.lg },
   muted:         { fontSize: FontSizes.md, color: c.muted, textAlign: 'center' },
-  top:           { position: 'absolute', left: 0, right: 0, top: 0, paddingHorizontal: Spacing.md, gap: 10, paddingBottom: 10,
-                   backgroundColor: c.bg + 'E6', borderBottomLeftRadius: 22, borderBottomRightRadius: 22 },
-  results:       { backgroundColor: c.bg2, borderRadius: 18, borderWidth: 1.5, borderColor: c.line, paddingVertical: 4 },
-  result:        { flexDirection: 'row', alignItems: 'center', gap: 10, minHeight: 48, paddingHorizontal: 14 },
+  top:           { position: 'absolute', left: 0, right: 0, top: 0, paddingHorizontal: Gutter, gap: Space.md, paddingBottom: Space.md,
+                   backgroundColor: c.bg + 'E6', borderBottomLeftRadius: Radius.hero, borderBottomRightRadius: Radius.hero },
+  results:       { backgroundColor: c.bg2, borderRadius: Radius.card, borderWidth: 1, borderColor: c.line, paddingVertical: Space.xs, ...Elevation(c, 'float') },
+  result:        { flexDirection: 'row', alignItems: 'center', gap: Space.md, minHeight: 48, paddingHorizontal: Space.lg },
   resultBody:    { flex: 1 },
-  resultName:    { fontSize: FontSizes.sm, fontWeight: '700', color: c.text },
-  resultTags:    { fontSize: 12, color: c.muted },
-  resultEmpty:   { fontSize: FontSizes.sm, color: c.muted, padding: 14 },
-  chips:         { gap: 8, paddingRight: Spacing.md },
-  searchRow:     { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  resultName:    { ...Type.body, fontWeight: '700', color: c.text },
+  resultTags:    { ...Type.caption, fontWeight: '500', color: c.muted },
+  resultEmpty:   { ...Type.body, color: c.muted, padding: Space.lg },
+  chips:         { gap: Space.sm, paddingRight: Gutter },
+  searchRow:     { flexDirection: 'row', alignItems: 'center', gap: Space.sm },
   scope:         { flex: 0, maxWidth: 150, height: 48 },
   search:        { flex: 1 },
   loading:       { position: 'absolute', alignSelf: 'center' },
-  floating:      { position: 'absolute', left: 8, right: 8, gap: 10 },
-  floatRow:      { flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', gap: 10, marginRight: 8 },
-  locate:        {},
-  surprise:      { flexDirection: 'row', alignItems: 'center', minHeight: 44, paddingHorizontal: 16, borderRadius: Radius.full,
-                   backgroundColor: c.text },
-  surpriseText:  { fontSize: FontSizes.sm, fontWeight: '800', color: c.bg },
-  worldList:     { paddingHorizontal: Spacing.md, paddingBottom: 8 },
-  worldRow:      { flexDirection: 'row', alignItems: 'center', gap: 10, minHeight: 48, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: c.line },
-  worldName:     { flex: 1, fontSize: 16, fontWeight: '700', color: c.text },
-  worldCount:    { fontSize: 15, fontWeight: '800', color: c.muted },
-  pioneer:       { marginHorizontal: Spacing.md, marginVertical: 8, padding: 14, borderRadius: Radius.card, backgroundColor: c.primaryTint },
+  floating:      { position: 'absolute', left: Gutter, right: Gutter, gap: Space.md },
+  floatRow:      { flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', gap: Space.md },
+  // The floating buttons over the map (design pass): the surface, a hairline and the floating elevation,
+  // the same in both themes (no more ink pill turning light in dark mode).
+  float:         { ...Elevation(c, 'float') },
+  surprise:      { flexDirection: 'row', alignItems: 'center', gap: Space.sm, minHeight: 44, paddingHorizontal: Space.lg, borderRadius: Radius.control,
+                   backgroundColor: c.bg2, borderWidth: 1, borderColor: c.line, ...Elevation(c, 'float') },
+  surpriseText:  { ...Type.body, fontWeight: '800', color: c.text },
+  worldList:     { paddingHorizontal: Spacing.md, paddingBottom: Space.sm },
+  worldRow:      { flexDirection: 'row', alignItems: 'center', gap: Space.md, minHeight: 48, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: c.line },
+  worldName:     { flex: 1, fontSize: FontSizes.body, fontWeight: '700', color: c.text },
+  worldCount:    { fontSize: FontSizes.body, fontWeight: '800', color: c.muted },
+  pioneer:       { marginHorizontal: Spacing.md, marginVertical: Space.sm, padding: 14, borderRadius: Radius.card, backgroundColor: c.primaryTint },
   pioneerText:   { fontSize: FontSizes.sm, fontWeight: '800', color: c.primaryOnTint, textAlign: 'center' },
   me:            { width: 56, height: 56, alignItems: 'center', justifyContent: 'center' },
   meRing:        { position: 'absolute', width: 40, height: 40, borderRadius: 20, backgroundColor: c.primary },
   meAvatar:      { borderRadius: 19, borderWidth: 3, borderColor: '#FFFFFF', backgroundColor: c.bg2 },
-  notice:        { alignSelf: 'center', fontSize: FontSizes.xs, color: c.text, backgroundColor: c.bg2, borderRadius: 16,
-                   paddingHorizontal: 14, paddingVertical: 8, overflow: 'hidden', borderWidth: 1, borderColor: c.line },
-  selectedWrap:  { alignItems: 'center', gap: 6 },
-  selectedLabel: { maxWidth: 220, fontSize: FontSizes.xs, fontWeight: '700', color: c.text, backgroundColor: c.bg2, borderRadius: 12,
-                   borderWidth: 1.5, borderColor: c.line, paddingHorizontal: 12, paddingVertical: 6, overflow: 'hidden' },
+  notice:        { alignSelf: 'center', ...Type.caption, color: c.text, backgroundColor: c.bg2, borderRadius: Radius.control,
+                   paddingHorizontal: Space.lg, paddingVertical: Space.sm, overflow: 'hidden', borderWidth: 1, borderColor: c.line },
+  selectedWrap:  { alignItems: 'center', gap: Space.sm },
+  selectedLabel: { maxWidth: 220, ...Type.caption, fontWeight: '700', color: c.text, backgroundColor: c.bg2, borderRadius: Radius.control,
+                   borderWidth: 1, borderColor: c.line, paddingHorizontal: Space.md, paddingVertical: Space.sm, overflow: 'hidden' },
   selectedPin:   { width: 50, height: 50, borderRadius: Radius.full, backgroundColor: c.primary, borderWidth: 4, borderColor: c.primaryTint,
                    alignItems: 'center', justifyContent: 'center' },
   planWrap:      { alignItems: 'center' },
   plan:          { minWidth: 96, maxWidth: 170, borderRadius: 12, borderWidth: 2, borderColor: '#FFFFFF', backgroundColor: c.bg2, overflow: 'hidden' },
   planNow:       { borderColor: c.primary },
-  planTop:       { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 8, paddingVertical: 2, backgroundColor: c.caramel },
+  planTop:       { flexDirection: 'row', alignItems: 'center', gap: Space.xs, paddingHorizontal: Space.sm, paddingVertical: Space.xxs, backgroundColor: c.caramel },
   planTopNow:    { backgroundColor: c.primary },
-  planDay:       { fontSize: 11, fontWeight: '800', color: '#FFFFFF' },
-  planText:      { fontSize: FontSizes.xs, fontWeight: '800', color: c.text, paddingHorizontal: 8, paddingTop: 3 },
-  planMeta:      { fontSize: 11, fontWeight: '700', color: c.muted, paddingHorizontal: 8, paddingBottom: 4 },
+  planDay:       { fontSize: FontSizes.xs, fontWeight: '800', color: '#FFFFFF' },
+  planText:      { fontSize: FontSizes.xs, fontWeight: '800', color: c.text, paddingHorizontal: Space.sm, paddingTop: Space.xs },
+  planMeta:      { fontSize: FontSizes.xs, fontWeight: '700', color: c.muted, paddingHorizontal: Space.sm, paddingBottom: Space.xs },
   planStem:      { width: 2, height: 8, backgroundColor: c.caramel },
   planStemSide:  { width: 8, height: 2 },
   planStemNow:   { backgroundColor: c.primary },

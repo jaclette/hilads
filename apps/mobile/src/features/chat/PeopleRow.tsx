@@ -4,7 +4,7 @@ import { useFocusEffect, useRouter } from 'expo-router';
 import { Image } from 'expo-image';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
-import { FontSizes, Radius, type ThemeColors } from '@/constants';
+import { Space, FontSizes, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { fetchPeopleCounts, type PeopleCounts } from '@/api/people';
 
@@ -34,7 +34,7 @@ export function PeopleRow({ cityId, onArrivals }: { cityId: string; onArrivals: 
   const chips: ReactNode[] = [];
   if (counts.hiNow !== null) {
     chips.push(
-      <TouchableOpacity key="hinow" style={[styles.chip, styles.accent]} onPress={() => router.push('/(tabs)/events' as never)} accessibilityRole="button"
+      <TouchableOpacity key="hinow" style={[styles.chip, styles.accent]} onPress={() => router.navigate('/(tabs)/events' as never)} accessibilityRole="button"
                         accessibilityLabel={t('people.hiNowA11y', { count: counts.hiNow })}>
         <Ionicons name="hand-left-outline" size={17} color={colors.primaryOnTint} />
         <Text style={styles.accentText}>{t('people.hiNow')}</Text>
@@ -65,7 +65,7 @@ export function PeopleRow({ cityId, onArrivals }: { cityId: string; onArrivals: 
   }
   if (counts.nearby !== null) {
     chips.push(
-      <TouchableOpacity key="nearby" style={styles.chip} onPress={() => router.push('/(tabs)/here' as never)} accessibilityRole="button">
+      <TouchableOpacity key="nearby" style={styles.chip} onPress={() => router.navigate('/(tabs)/here' as never)} accessibilityRole="button">
         <View style={styles.dot} />
         <Text style={styles.text}>{t('people.nearby', { count: counts.nearby })}</Text>
       </TouchableOpacity>,
@@ -80,10 +80,10 @@ export function PeopleRow({ cityId, onArrivals }: { cityId: string; onArrivals: 
 }
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  row:        { gap: 8 },
-  chip:       { height: 44, flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 14, borderRadius: Radius.full,
+  row:        { gap: Space.sm },
+  chip:       { height: 44, flexDirection: 'row', alignItems: 'center', gap: Space.sm, paddingHorizontal: Space.lg, borderRadius: Radius.full,
                 borderWidth: 1.5, borderColor: c.line, backgroundColor: c.bg2, maxWidth: 260 },
-  accent:     { borderColor: c.primary, gap: 6 },
+  accent:     { borderColor: c.primary, gap: Space.sm },
   accentText: { fontSize: FontSizes.sm, fontWeight: '700', color: c.primaryOnTint },
   bold:       { flexShrink: 1, fontSize: FontSizes.sm, fontWeight: '700', color: c.text },
   text:       { fontSize: FontSizes.sm, fontWeight: '600', color: c.text },

@@ -2,23 +2,18 @@ import { useEffect, useRef, useState, useSyncExternalStore } from 'react'
 import { fetchDailyProofsByIds, fetchDailyTodayCountries, fetchDailyTour } from '../../api'
 import { shortCityName } from '../../i18n/cityName'
 import { track } from '../../lib/analytics'
-import { useBackLayer } from '../../lib/backLayers'
 import { thumbFallback } from '../../lib/thumbFallback'
-import { openAppModal } from '../AppModal'
 import AvatarWithFlag from '../AvatarWithFlag'
 import Icon from '../Icon'
 import { FlagSticker, themeColor } from '../joy/Joy'
 import { answerText } from '../daily/compareShared'
-import { compareCountryProofs, rememberCountries } from '../daily/countryOrder'
+import { rememberCountries } from '../daily/countryOrder'
 import { RankMedal, getLastToday, personName, seedProofs, useDaily, useDc, useHere, useVoteCount } from '../daily/dailyShared'
-import { hasUnseen, isSeen, useSeen } from '../daily/seen'
-import WorldTourViewer from '../daily/WorldTour'
-import { isEventDay, useSeasonal, useSeasonalLive } from '../event/seasonal'
+import { hasUnseen, useSeen } from '../daily/seen'
+import { useSeasonalLive } from '../event/seasonal'
 import { thumbUrl } from '../../lib/imageThumb'
 import { placeholderStyle } from '../../lib/thumbhash'
 
-const CIRCLE = 64
-const RING = 3
 const MAX_SEGMENTS = 8
 const MOSAIC_MAX = 6
 
@@ -103,10 +98,8 @@ export default function TodayCountries({ today, data }) {
   const challenge = today?.challenge ?? null
   const cities = todayCities(data)
   const swiped = useSwipedStack()
-  // Nobody played yet: yesterday's best cities teach the idea (the tour the recap card loads too).
+  // Nobody played yet: yesterday's best cities teach the idea.
   const [tour, setTour] = useState(null)
-  const [touring, setTouring] = useState(null)
-  useBackLayer(touring !== null, () => setTouring(null))
   const empty = !!data && cities.length === 0
   const tourCity = today?.city?.id ?? null
   useEffect(() => {
@@ -120,113 +113,48 @@ export default function TodayCountries({ today, data }) {
   const isMine = (g) => !!here && String(g.city.id) === String(here.id)
   const myProof = today?.myProof ?? null
   const canPlay = challenge.isActive && !myProof
-  const myCity = here?.name ? shortCityName(here.name) : null
-  const mineIn = cities.some(isMine)
-  // The server's order, kept fresh as photos get seen here: my city, then unseen, then the most recent.
-  const stories = [...cities].sort((a, b) =>
-    Number(isMine(b)) - Number(isMine(a)) || Number(hasUnseen(b)) - Number(hasUnseen(a)) || b.latestAt - a.latestAt)
   // The mosaic: my city first, then the most liked.
   const cards = [...cities].sort((a, b) =>
     Number(isMine(b)) - Number(isMine(a))
     || (b.totalLikes ?? b.top.voteCount) - (a.totalLikes ?? a.top.voteCount)
     || b.count - a.count).slice(0, MOSAIC_MAX)
   const theme = themeColor(challenge.special ? 'special' : challenge.theme?.key)
-  const ring = theme.line ?? theme.fill
-  const slot = canPlay && !mineIn
   // Yesterday's podium first, one card per city.
   const slides = tour?.slides ?? []
   const yesterday = slides.map((s, i) => ({ s, i })).sort((a, b) => (a.s.podium ?? 99) - (b.s.podium ?? 99))
     .filter((x, k, all) => all.findIndex(y => y.s.city.id === x.s.city.id) === k).slice(0, 3)
 
-  const play = () => { track('today_countries_play', { has_photos: cities.length > 0, platform_surface: 'web' }); openAppModal({ action: 'play', surface: 'today_countries' }) }
-  const openCity = (g, source, photo) => {
-    track(source === 'today_stories' ? 'today_countries_story' : 'today_countries_tile', { country: g.city.country, unseen: hasUnseen(g), platform_surface: 'web' })
-    openDaily('stories', { city: g.city.id, source, ...(photo ? { photo } : {}) })
+  const openCity = (g, photo) => {
+    track('today_countries_tile', { country: g.city.country, unseen: hasUnseen(g), platform_surface: 'web' })
+    openDaily('stories', { city: g.city.id, source: 'today_mosaic', ...(photo ? { photo } : {}) })
   }
 
   return (
     <div className="tc">
       {(cities.length > 0 || canPlay) && (
         <div className="tc-block">
-          {cities.length > 0 && <p className="tc-title">{t(copy?.played ?? 'stories.played', { count: cities.length })}</p>}
-          <div className="tc-stories">
-            {/* My city, before I play: "Saigon?" to the app's camera. */}
-            {slot && (
-              <button type="button" className="tc-story" onClick={play} aria-label={t(copy?.represent ?? 'countries.represent')}>
-                <span className="tc-ring tc-ring--mine"><Icon name="add" size={26} /></span>
-                <span className="tc-story-name">{myCity ? t('stories.yourCity', { city: myCity }) : t('countries.yourCity')}</span>
-              </button>
-            )}
-            {stories.map(g => (
-              <button key={g.city.id} type="button" className="tc-story" aria-label={t('countries.openCountry', { city: shortCityName(g.city.name) })}
-                      onClick={() => openCity(g, 'today_stories')}>
-                <span className="tc-ring-box">
-                  <SegmentRing ids={g.ids} color={ring} />
-                  <span className="tc-inner"><FlagSticker country={g.city.country} size={42} /></span>
-                  {g.count > 1 && <span className="tc-count" style={{ background: theme.fill, color: theme.onFill }}>{g.count}</span>}
-                </span>
-                <span className={`tc-story-name${hasUnseen(g) ? '' : ' tc-story-name--seen'}`}>{shortCityName(g.city.name)}</span>
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {(cities.length > 0 || canPlay) && (
-        <div className="tc-block">
           <div className="today-card-head">
-            <span className="tc-title">{t('worlds.tagline')}</span>
+            <span className="tc-title">{cities.length > 0 ? t(copy?.played ?? 'stories.played', { count: cities.length }) : t('worlds.tagline')}</span>
             {cities.length > 0 && <button type="button" className="dc-link" onClick={() => openDaily('countries', { source: 'today_mosaic' })}>{t('today.seeAll')}</button>}
           </div>
           {cities.length === 0 && yesterday.length > 0 && <p className="dc-muted">{t('mosaic.yesterday')}</p>}
-          {/* My city's slot (V6): a compact call above the grid, not a big empty card in it. */}
-          {slot && <SlotCard city={myCity} first={cities.length === 0} label={copy?.represent} onOpen={play} />}
           <div className="tc-grid">
             {cities.length > 0
-              ? cards.map(g => <CityCard key={g.city.id} group={g} pileColor={theme.fill} badge={seasonal?.theme.emoji} onOpen={photo => openCity(g, 'today_mosaic', photo)} />)
+              ? cards.map(g => <CityCard key={g.city.id} group={g} pileColor={theme.fill} badge={seasonal?.theme.emoji} onOpen={photo => openCity(g, photo)} />)
               : yesterday.map(({ s, i }) => <CityCard key={s.proof.id} faded pileColor={theme.fill} group={{
                   city: { id: s.city.id, name: s.city.name, country: s.city.country ?? '' }, count: s.count ?? 1, authorCount: null,
                   authors: [], totalLikes: null, latestAt: 0, unseen: false, ids: [s.proof.id], top: s.proof,
-                }} onOpen={() => setTouring(i)} />)}
+                }} onOpen={() => openDaily('photos', { list: slides.map(x => x.proof), proofId: slides[i].proof.id, source: 'today_empty' })} />)}
           </div>
           {/* Until the first swipe ever: the piles can be swiped. */}
           {cities.length > 0 && !swiped && cards.some(g => g.count > 1) && <p className="dc-muted tc-hint">{t('mosaic.swipeHint')}</p>}
-          {cities.length === 0 && yesterday.length === 0 && !slot && <p className="dc-muted">{t('countries.emptyBody')}</p>}
+          {cities.length === 0 && yesterday.length === 0 && <p className="dc-muted">{t('countries.emptyBody')}</p>}
         </div>
       )}
-      {touring !== null && tour && <WorldTourViewer tour={tour} start={touring} source="today_empty" onClose={() => setTouring(null)} />}
     </div>
   )
 }
 
-/** A story ring cut in one segment per photo: theme color while unseen, grey once seen. */
-function SegmentRing({ ids, color }) {
-  const n = Math.min(ids.length, MAX_SEGMENTS)
-  if (n <= 1) return <span className="tc-ring tc-ring--seg" style={{ borderColor: isSeen(ids[0] ?? '') ? 'var(--line)' : color }} />
-  const r = (CIRCLE - RING) / 2
-  const c = CIRCLE / 2
-  const gap = 10   // degrees between segments
-  const p = (deg) => {
-    const rad = ((deg - 90) * Math.PI) / 180
-    return `${c + r * Math.cos(rad)} ${c + r * Math.sin(rad)}`
-  }
-  const arc = (from, to) => `M ${p(from)} A ${r} ${r} 0 ${to - from > 180 ? 1 : 0} 1 ${p(to)}`
-  const step = 360 / n
-  return (
-    <svg className="tc-ring-svg" width={CIRCLE} height={CIRCLE} viewBox={`0 0 ${CIRCLE} ${CIRCLE}`} aria-hidden="true">
-      {ids.slice(0, n).map((id, i) => (
-        <path key={id} d={arc(i * step + gap / 2, (i + 1) * step - gap / 2)} stroke={isSeen(id) ? 'var(--line)' : color}
-              strokeWidth={RING} strokeLinecap="round" fill="none" />
-      ))}
-    </svg>
-  )
-}
-
-/** A small, steady lean per city (±1.5°), never changing between renders (the app's formula). */
-function lean(id) {
-  const x = Math.sin(Number(id) * 12.9898) * 43758.5453
-  return (x - Math.floor(x)) * 3 - 1.5
-}
 
 /**
  * A city's card: its most liked photo (a polaroid pile behind it when the city
@@ -334,7 +262,6 @@ function CityCard({ group, onOpen, pileColor, badge, faded = false }) {
 
   return (
     <button type="button" className={`tc-card${faded ? ' tc-card--faded' : ''}${swipeable ? ' tc-card--pile' : ''}`}
-            style={{ transform: `rotate(${lean(group.city.id)}deg)` }}
             onClick={e => { if (dragged.current) { e.preventDefault(); dragged.current = false; return } onOpen(p.id) }}
             onPointerDown={onPointerDown} onPointerMove={onPointerMove} onPointerUp={onPointerUp}
             onPointerCancel={() => { drag.current = null; setTop(0, 'transform 200ms ease') }}
@@ -440,88 +367,4 @@ function claimNudge() {
   if (nudged) return false
   nudged = true
   return true
-}
-
-/** My city's empty slot: "Saigon is missing! Represent your city" (or, first of all, "Represent Saigon"). */
-function SlotCard({ city, first, label, onOpen }) {
-  const { t } = useDc()
-  const title = first ? (city ? t('mosaic.slotCta', { city }) : t(label ?? 'countries.represent'))
-    : city ? t('mosaic.missing', { city }) : t(label ?? 'countries.represent')
-  // Under the title: the call when the title names the city, else nothing to repeat.
-  const sub = first ? t('mosaic.beFirstSub') : city ? t(label ?? 'countries.represent') : null
-  return (
-    <button type="button" className="tc-slot" onClick={onOpen} data-testid="represent-tile">
-      <span className="tc-slot-camera"><Icon name="camera" size={22} /></span>
-      <span className="tc-slot-body">
-        <span className="tc-slot-title">{title}</span>
-        {sub && <span className="tc-slot-sub">{sub}</span>}
-      </span>
-      <Icon name="chevron-forward" size={20} />
-    </button>
-  )
-}
-
-/**
- * Yesterday's recap, one card (the app's TodayTour): the winning photo
- * (yesterday's #1, else the best: compareCountryProofs), "Yesterday", the question, the
- * winner's flag, city and answer, how many cities played; "Watch" and the
- * card open yesterday's tour at the winner. Its footer opens every past
- * challenge (V3 polish 3.2); without a photo yesterday, that link stays on its own.
- */
-export function YesterdayRecap({ today }) {
-  const { t, i18n } = useDc()
-  const { openDaily } = useDaily()
-  // undefined while loading, null when it failed.
-  const [tour, setTour] = useState(undefined)
-  const [open, setOpen] = useState(null)
-  // Yesterday was a seasonal event's day (Halloween's recap): the label keeps its emoji.
-  const seasonal = useSeasonal()
-  useBackLayer(open !== null, () => setOpen(null))
-  const cityId = today?.city?.id ?? null
-  const loaded = !!today
-  const day = today?.challenge?.date ?? null
-  useEffect(() => {
-    if (!loaded) return
-    let alive = true
-    loadTour(cityId, i18n.language, day).then(r => { if (alive) setTour(r) }).catch(() => { if (alive) setTour(null) })
-    return () => { alive = false }
-  }, [loaded, cityId, i18n.language, day])
-  const archive = (
-    <button type="button" className="tc-archive" onClick={() => openDaily('archive', { source: 'today_yesterday' })}>
-      <Icon name="calendar-outline" size={16} /><span className="tc-archive-text">{t('today.allPast')}</span><Icon name="chevron-forward" size={15} />
-    </button>
-  )
-  const slides = tour?.slides ?? []
-  if (tour === undefined) return null
-  if (!tour || slides.length === 0) return <div className="today-card">{archive}</div>
-  const recap = seasonal?.event.phase === 'recap' || isEventDay(seasonal, tour.date)
-  // The winner: yesterday's #1, else the best photo (the shared rule: most liked, then the earliest posted).
-  let at = slides.findIndex(s => s.podium === 1)
-  if (at < 0) at = slides.reduce((best, s, i) => (compareCountryProofs(s.proof, slides[best].proof) < 0 ? i : best), 0)
-  const cities = new Set(slides.map(s => s.city.id)).size   // a slide per photo: several per city
-  const win = slides[at]
-  const answer = win.proof.answer && !win.proof.backHome ? answerText(win.proof.answer, i18n.language) : null
-  const question = tour.challenge.compare?.question ?? tour.challenge.text
-  const watch = () => setOpen(at)
-  return (
-    <div className="today-card">
-      <div className="today-card-head">
-        <span className="today-card-title">{recap ? `${t('recap.label')} ${seasonal.theme.emoji}` : t('recap.label')}</span>
-        <button type="button" className="dc-link" onClick={watch}>{t('tour.watch')}</button>
-      </div>
-      <button type="button" className="tc-recap" onClick={watch}>
-        <span className="tc-recap-photo">
-          <img src={thumbUrl(win.proof.thumbUrl || win.proof.photoUrl)} style={placeholderStyle(win.proof.thumbHash)} onError={thumbFallback(win.proof.photoUrl)} alt="" loading="lazy" />
-          {win.podium === 1 && <span className="tc-recap-medal"><RankMedal rank={1} size={22} /></span>}
-        </span>
-        <span className="tc-recap-body">
-          <span className="tc-recap-q">{question}</span>
-          <span className="tc-city"><FlagSticker country={win.city.country} size={16} />{shortCityName(win.city.name)}{answer && <span className="tc-recap-answer"> · {answer}</span>}</span>
-          <span className="dc-muted">{t('recap.cities', { count: cities })}</span>
-        </span>
-      </button>
-      <div className="tc-archive-footer">{archive}</div>
-      {open !== null && <WorldTourViewer tour={tour} start={open} onClose={() => setOpen(null)} />}
-    </div>
-  )
 }

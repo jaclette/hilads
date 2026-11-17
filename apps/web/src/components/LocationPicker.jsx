@@ -250,7 +250,7 @@ export default function LocationPicker({ initialLat, initialLng, nickname, onCon
           </div>
 
           <button
-            className="loc-picker-confirm"
+            className="loc-picker-confirm btn-primary"
             onClick={handleConfirm}
             disabled={geocoding}
           >

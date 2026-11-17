@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import type { ThemeColors } from '@/constants';
+import { FontSizes, type ThemeColors } from '@/constants';
 import { useThemedStyles } from '@/context/ThemeContext';
 
 /**
@@ -30,6 +30,6 @@ export function OriginalToggle({ translated, showingOriginal, onPress, ink = fal
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
   wrap: { alignSelf: 'flex-start' },
-  link: { fontSize: 12, fontWeight: '600', color: c.muted, textDecorationLine: 'underline' },
+  link: { fontSize: FontSizes.xs, fontWeight: '600', color: c.muted, textDecorationLine: 'underline' },
   ink:  { color: c.text },
 });

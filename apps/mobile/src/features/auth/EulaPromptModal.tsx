@@ -55,7 +55,6 @@ interface CheckboxProps {
 export function EulaCheckbox({ checked, onToggle, disabled }: CheckboxProps) {
   const styles = useThemedStyles(makeStyles);
   const { colors } = useTheme();
-  const { t } = useTranslation('auth');
   return (
     <TouchableOpacity
       style={styles.checkboxRow}
@@ -145,7 +144,7 @@ export function EulaPromptModal({ visible, loading, error, onAccept }: ModalProp
           accessibilityLabel={t('eula.accept')}
         >
           {loading
-            ? <ActivityIndicator color={colors.white} />
+            ? <ActivityIndicator color={colors.onCta} />
             : <Text style={styles.acceptBtnText}>{t('eula.accept')}</Text>
           }
         </Pressable>
@@ -253,7 +252,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
     lineHeight: 18,
   },
   acceptBtn: {
-    backgroundColor: c.primary,
+    backgroundColor: c.cta,
     borderRadius:    Radius.button,
     minHeight:       48,
     alignItems:      'center',
@@ -267,9 +266,9 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
     opacity: 0.85,
   },
   acceptBtnText: {
-    color:      c.white,
+    color:      c.onCta,
     fontSize:   FontSizes.md,
-    fontWeight: '700',
+    fontWeight: '800',
     lineHeight: FontSizes.md * 1.25,
   },
 });

@@ -440,6 +440,7 @@ function deviceLocale(): Locale {
   }
 }
 
+// eslint-disable-next-line import/no-named-as-default-member -- i18next's default export IS the instance; its methods are the documented API
 i18n.use(initReactI18next).init({
   resources,
   lng:           deviceLocale(),
@@ -465,6 +466,7 @@ export async function applyStoredLocale(): Promise<void> {
   try {
     const saved = await AsyncStorage.getItem(STORAGE_KEY);
     if (isSupported(saved) && saved !== i18n.language) {
+      // eslint-disable-next-line import/no-named-as-default-member -- same instance method, see i18n.use above
       await i18n.changeLanguage(saved);
     }
   } catch {
@@ -481,6 +483,7 @@ export async function setLocale(locale: Locale): Promise<void> {
   } catch {
     // Non-fatal - the change still applies for this session.
   }
+  // eslint-disable-next-line import/no-named-as-default-member -- same instance method, see i18n.use above
   await i18n.changeLanguage(next);
   syncRTL(next);
 }

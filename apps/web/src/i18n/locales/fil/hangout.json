@@ -2,20 +2,8 @@
   "create": {
     "startTitle": "Hi now",
     "editTitle": "I-edit ang tambayan",
-    "category": "Category",
-    "cat": {
-      "general": "General",
-      "tips": "Tips",
-      "food": "Pagkain",
-      "drinks": "Inuman",
-      "help": "Tulong",
-      "meetup": "Meetup"
-    },
     "titleLabel": "Ano'ng nasa isip mo?",
     "titlePlaceholder": "Gusto kong mag-kape",
-    "detailsLabel": "Magdagdag ng details",
-    "optional": "(optional)",
-    "detailsPlaceholder": "Bigyan ng konting context…",
     "expiry": "Kusang mag-e-expire in 8 h",
     "saving": "Sine-save…",
     "starting": "Sinisimulan…",
@@ -73,7 +61,6 @@
     "photo": "Photo",
     "unavailable": "Hindi available ang original na message"
   },
-  "composer": {},
   "errors": {
     "locFailed": "Hindi makuha ang location mo. I-on ang location access at subukan ulit.",
     "imageType": "Pumili ng JPEG, PNG, o WebP na image.",

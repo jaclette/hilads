@@ -42,7 +42,7 @@ const styles = {
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
-    padding: '24px 16px 48px',
+    padding: 'var(--sp-24) var(--sp-16) 48px',
     fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
   },
   card: {
@@ -60,7 +60,7 @@ const styles = {
   logo: {
     display: 'inline-flex',
     alignItems: 'center',
-    gap: '10px',
+    gap: 'var(--sp-12)',
     textDecoration: 'none',
     marginBottom: '28px',
   },
@@ -76,7 +76,7 @@ const styles = {
     color: '#f0ece6',
   },
   logoName: {
-    fontSize: '20px',
+    fontSize: 'var(--fs-lg)',
     fontWeight: '700',
     color: '#f0ece6',
   },
@@ -85,16 +85,16 @@ const styles = {
     fontWeight: '700',
     color: '#f0ece6',
     lineHeight: '1.2',
-    marginBottom: '16px',
+    marginBottom: 'var(--sp-16)',
   },
   body: {
-    fontSize: '16px',
+    fontSize: 'var(--fs-body)',
     color: 'rgba(240,236,230,0.75)',
     lineHeight: '1.6',
-    marginBottom: '16px',
+    marginBottom: 'var(--sp-16)',
   },
   email: {
-    fontSize: '17px',
+    fontSize: 'var(--fs-md)',
     fontWeight: '600',
     color: 'var(--primary-text)',
     textDecoration: 'none',
@@ -104,16 +104,16 @@ const styles = {
     width: '100%',
     height: '1px',
     backgroundColor: 'rgba(255,255,255,0.08)',
-    margin: '24px 0',
+    margin: 'var(--sp-24) 0',
   },
   note: {
-    fontSize: '14px',
+    fontSize: 'var(--fs-sm)',
     color: 'rgba(240,236,230,0.5)',
     lineHeight: '1.6',
   },
   footer: {
     marginTop: '32px',
-    fontSize: '14px',
+    fontSize: 'var(--fs-sm)',
   },
   footerLink: {
     color: 'rgba(240,236,230,0.4)',

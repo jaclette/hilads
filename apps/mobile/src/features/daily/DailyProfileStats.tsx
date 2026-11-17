@@ -3,14 +3,14 @@ import { ScrollView, Text, TouchableOpacity, View, StyleSheet } from 'react-nati
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
-import { Border, FontSizes, Radius, type ThemeColors } from '@/constants';
+import { Space, Border, FontSizes, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { Button, CityFlag, Photo } from '@/ui';
 import { fetchUserDaily } from '@/api/daily';
-import { DailyProofViewer } from './DailyProofViewer';
+import { openPhotoFeed } from './openFeed';
 import { RankMedal } from './RankMedal';
 import { shortCityName } from '@/i18n/cityName';
-import type { DailyProof, DailyUserStats } from '@/types';
+import type { DailyUserStats } from '@/types';
 
 /**
  * Daily Challenge stats on a profile (Challenges tab): current streak, best
@@ -24,7 +24,6 @@ export function DailyProfileStats({ userId, isMe }: { userId: string; isMe: bool
   const { t } = useTranslation('daily');
   const router = useRouter();
   const [stats, setStats] = useState<DailyUserStats | null>(null);
-  const [viewing, setViewing] = useState<DailyProof | null>(null);
 
   useEffect(() => {
     let alive = true;
@@ -83,7 +82,7 @@ export function DailyProfileStats({ userId, isMe }: { userId: string; isMe: bool
               <Text style={styles.subTitle}>{t('profile.bestProofs')}</Text>
               <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.thumbs}>
                 {stats.bestProofs.map(p => (
-                  <TouchableOpacity key={p.id} onPress={() => setViewing(p)} accessibilityRole="button" accessibilityLabel={p.caption ?? t('kicker')}>
+                  <TouchableOpacity key={p.id} onPress={() => openPhotoFeed(stats.bestProofs, p.id, 'profile')} accessibilityRole="button" accessibilityLabel={p.caption ?? t('kicker')}>
                     <Photo thumb={p.thumbUrl} full={p.photoUrl} hash={p.thumbHash} style={styles.thumb} contentFit="cover" />
                     {p.worldRank !== null && p.worldRank <= 3 && <RankMedal rank={p.worldRank} size={22} style={styles.medal} />}
                   </TouchableOpacity>
@@ -93,7 +92,6 @@ export function DailyProfileStats({ userId, isMe }: { userId: string; isMe: bool
           )}
         </>
       )}
-      <DailyProofViewer proof={viewing} onClose={() => setViewing(null)} />
     </View>
   );
 }
@@ -109,23 +107,23 @@ function Stat({ value, label }: { value: number; label: string }) {
 }
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  card:      { backgroundColor: c.bg2, borderRadius: Radius.ticket, borderWidth: Border, borderColor: c.ticketLine, padding: 14, gap: 10 },
-  kickerRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  card:      { backgroundColor: c.bg2, borderRadius: Radius.ticket, borderWidth: Border, borderColor: c.ticketLine, padding: 14, gap: Space.md },
+  kickerRow: { flexDirection: 'row', alignItems: 'center', gap: Space.sm },
   kicker:    { fontSize: FontSizes.sm, fontWeight: '700', color: c.primaryText },
   empty:     { fontSize: FontSizes.sm, fontWeight: '400', color: c.muted },
   cta:       { alignSelf: 'flex-start' },
-  statsRow:  { flexDirection: 'row', gap: 8 },
-  stat:      { flex: 1, backgroundColor: c.bg3, borderRadius: 14, paddingVertical: 10, paddingHorizontal: 6, alignItems: 'center', gap: 2 },
+  statsRow:  { flexDirection: 'row', gap: Space.sm },
+  stat:      { flex: 1, backgroundColor: c.bg3, borderRadius: 14, paddingVertical: Space.md, paddingHorizontal: Space.sm, alignItems: 'center', gap: Space.xxs },
   statValue: { fontSize: FontSizes.lg, fontWeight: '800', color: c.text },
-  statLabel: { fontSize: 12, fontWeight: '600', color: c.muted, textAlign: 'center' },
+  statLabel: { fontSize: FontSizes.xs, fontWeight: '600', color: c.muted, textAlign: 'center' },
   subTitle:  { fontSize: FontSizes.xs, fontWeight: '800', color: c.text },
-  thumbs:    { gap: 8 },
+  thumbs:    { gap: Space.sm },
   thumb:     { width: 72, height: 72, borderRadius: 12, backgroundColor: c.bg3 },
   medal:     { position: 'absolute', top: 4, left: 4 },
-  passes:    { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
-  pass:      { flexDirection: 'row', alignItems: 'center', gap: 4, height: 28, borderRadius: Radius.full, borderWidth: Border, borderColor: c.line,
-               backgroundColor: c.bg2, paddingHorizontal: 10 },
+  passes:    { flexDirection: 'row', flexWrap: 'wrap', gap: Space.sm },
+  pass:      { flexDirection: 'row', alignItems: 'center', gap: Space.xs, height: 28, borderRadius: Radius.full, borderWidth: Border, borderColor: c.line,
+               backgroundColor: c.bg2, paddingHorizontal: Space.md },
   passEarned:    { borderColor: c.gold },
-  passText:      { fontSize: 12, fontWeight: '700', color: c.text },
+  passText:      { fontSize: FontSizes.xs, fontWeight: '700', color: c.text },
   passTextEarned:{ color: c.gold },
 });

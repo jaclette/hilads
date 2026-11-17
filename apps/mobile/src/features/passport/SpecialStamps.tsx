@@ -2,7 +2,7 @@ import type { ComponentProps } from 'react';
 import { Text, View, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
-import { FontSizes, type ThemeColors } from '@/constants';
+import { Space, Radius, FontSizes, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import type { DailySpecialStamp } from '@/types';
 import { EventStamp, isEventStampId } from '@/features/event/EventStamp';
@@ -48,16 +48,16 @@ export function SpecialStamps({ stamps }: { stamps: DailySpecialStamp[] }) {
 const SIZE = 58;
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  page:  { padding: 16, gap: 8, borderRadius: 20, borderWidth: 1.5, borderColor: c.ticketLine, backgroundColor: c.bg2 },
+  page:  { padding: Space.lg, gap: Space.sm, borderRadius: Radius.ticket, borderWidth: 1.5, borderColor: c.ticketLine, backgroundColor: c.bg2 },
   title: { fontSize: FontSizes.lg, fontWeight: '800', color: c.text },
   sub:   { fontSize: FontSizes.xs, color: c.muted, lineHeight: 18 },
-  grid:  { flexDirection: 'row', flexWrap: 'wrap', rowGap: 10, marginTop: 4 },
-  cell:  { width: '25%', alignItems: 'center', gap: 4 },
+  grid:  { flexDirection: 'row', flexWrap: 'wrap', rowGap: Space.md, marginTop: Space.xs },
+  cell:  { width: '25%', alignItems: 'center', gap: Space.xs },
   stamp: { width: SIZE, height: SIZE, borderRadius: SIZE / 2, borderWidth: 2, borderColor: c.gold, backgroundColor: c.goldTint,
            alignItems: 'center', justifyContent: 'center' },
   inner: { width: SIZE - 12, height: SIZE - 12, borderRadius: (SIZE - 12) / 2, borderWidth: 1.5, borderStyle: 'dashed', borderColor: c.gold,
            alignItems: 'center', justifyContent: 'center' },
-  label: { fontSize: 11, fontWeight: '700', color: c.text, textAlign: 'center', lineHeight: 14 },
-  date:  { fontSize: 10, fontWeight: '600', color: c.muted, textAlign: 'center' },
-  limited: { fontSize: 10, fontWeight: '800', color: c.primaryText, textAlign: 'center' },
+  label: { fontSize: FontSizes.xs, fontWeight: '700', color: c.text, textAlign: 'center', lineHeight: 16 },
+  date:  { fontSize: FontSizes.xs, fontWeight: '600', color: c.muted, textAlign: 'center' },
+  limited: { fontSize: FontSizes.xs, fontWeight: '800', color: c.primaryText, textAlign: 'center' },
 });

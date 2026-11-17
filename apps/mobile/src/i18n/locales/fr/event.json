@@ -69,7 +69,6 @@
   "goingTitle": "Participants",
   "hostedBy": "Organisé par {{name}}",
   "bringPeople": "Inviter du monde",
-  "seeAll": "Tout voir",
   "oneGoing": "{{name}} y va",
   "manyGoing": "{{name}} + {{count}} y vont",
   "goingEmpty": "Personne pour l'instant, sois le premier à venir !",

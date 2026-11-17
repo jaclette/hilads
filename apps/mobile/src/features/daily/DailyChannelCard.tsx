@@ -4,14 +4,15 @@ import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
-import { FontSizes, Radius, type ThemeColors } from '@/constants';
+import { Space, FontSizes, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { useApp } from '@/context/AppContext';
 import { shortCityName } from '@/i18n/cityName';
 import { canAccessProfile } from '@/lib/profileAccess';
 import { formatSmartTime } from '@/lib/messageTime';
 import { track } from '@/services/analytics';
-import { dailyErrorCode, reportDailyProof, type DailyReportReason } from '@/api/daily';
+import { dailyErrorCode, fetchDailyProofsByIds, reportDailyProof, type DailyReportReason } from '@/api/daily';
+import { openPhotoFeed } from './openFeed';
 import { ReactionPills } from '@/features/chat/ReactionPills';
 import { DailyVoteButton } from './DailyVoteButton';
 import { LocalPassBadge } from './LocalPassBadge';
@@ -179,14 +180,14 @@ type GroupPayload = {
   proofs: { proofId: string; date: string; thumbUrl: string | null; city: { id: number; name: string } | null }[];
 };
 
-/** The hour's extra proofs of a busy channel (V2-08): a photo strip, the count and cities; opens their gallery. */
+/** The hour's extra proofs of a busy channel (V2-08): a photo strip, the count and cities; opens them in the photo feed. */
 function GroupCard({ message, reactions, time, longPress }: {
   message: Message; reactions: ReactNode; time: string | null; longPress?: () => void;
 }) {
   const styles = useThemedStyles(makeStyles);
   const { colors } = useTheme();
   const { t } = useTranslation('daily');
-  const router = useRouter();
+  const { account, identity } = useApp();
   const p = (message.payload ?? {}) as Partial<GroupPayload>;
   if (!p.proofIds?.length || !p.proofs?.length) return null;
   const count  = p.count ?? p.proofIds.length;
@@ -196,7 +197,12 @@ function GroupCard({ message, reactions, time, longPress }: {
   const more   = count - named.length;
   const where  = named.length === 0 ? '' : more > 0 ? t('group.citiesMore', { cities: named.join(', '), n: more }) : named.join(', ');
   const shown  = p.proofs.slice(0, 4);
-  const open = () => router.push(`/daily/gallery?ids=${p.proofIds!.join(',')}&date=${p.proofs![0].date}` as never);
+  // The hour's photos in the feed (the one viewer for a set of photos), from the first.
+  const open = () => {
+    fetchDailyProofsByIds(p.proofIds!, account ? null : identity?.guestId ?? null)
+      .then(proofs => openPhotoFeed(proofs, null, 'chat_group'))
+      .catch(() => {});
+  };
   return (
     <View style={styles.wrap}>
       <TouchableOpacity style={styles.card} onPress={open} onLongPress={longPress} activeOpacity={0.9} accessibilityRole="button"
@@ -319,7 +325,7 @@ function ProofCard({ message, reactions, time, longPress }: {
           : <Photo thumb={p.thumbUrl} full={p.photoUrl} hash={p.thumbHash} style={styles.photo} contentFit="cover" transition={150} />}
         {!!p.caption && <Text style={styles.caption}>{p.caption}</Text>}
         {!!p.spot && (
-          <TouchableOpacity style={styles.spot} onPress={() => router.push(`/(tabs)/map?spot=${p.spot!.id}&source=chat` as never)} accessibilityRole="button" hitSlop={{ top: 13, bottom: 13, left: 6, right: 6 }}>
+          <TouchableOpacity style={styles.spot} onPress={() => router.navigate(`/(tabs)/map?spot=${p.spot!.id}&source=chat` as never)} accessibilityRole="button" hitSlop={{ top: 13, bottom: 13, left: 6, right: 6 }}>
             <Ionicons name="location-outline" size={14} color={colors.primaryText} />
             <Text style={styles.spotText} numberOfLines={1}>{p.spot.name}</Text>
           </TouchableOpacity>
@@ -351,65 +357,65 @@ function ProofCard({ message, reactions, time, longPress }: {
 }
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  wrap:          { paddingHorizontal: 12, marginVertical: 6, alignItems: 'stretch' },
+  wrap:          { paddingHorizontal: Space.md, marginVertical: Space.sm, alignItems: 'stretch' },
   flex:          { flex: 1 },
-  card:          { backgroundColor: c.bg2, borderRadius: 20, borderWidth: 1.5, borderColor: c.line, padding: 12, gap: 8 },
+  card:          { backgroundColor: c.bg2, borderRadius: Radius.ticket, borderWidth: 1.5, borderColor: c.line, padding: Space.lg, gap: Space.sm },
   challengeCard: { borderColor: c.ticketLine },
-  from:          { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 4, marginLeft: 2 },
-  fromName:      { fontSize: 12, fontWeight: '800', color: c.text },
-  kickerRow:     { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  from:          { flexDirection: 'row', alignItems: 'center', gap: Space.sm, marginBottom: Space.xs, marginLeft: Space.xxs },
+  fromName:      { fontSize: FontSizes.xs, fontWeight: '800', color: c.text },
+  kickerRow:     { flexDirection: 'row', alignItems: 'center', gap: Space.sm },
   kicker:        { fontSize: FontSizes.xs, fontWeight: '700', color: c.primaryText },
   challengeText: { fontSize: FontSizes.md, fontWeight: '800', color: c.text, lineHeight: 22 },
   context:       { fontSize: FontSizes.xs, color: c.muted },
-  twist:         { backgroundColor: c.bg3, borderRadius: Radius.md, padding: 8, gap: 2 },
-  twistHead:     { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  twistLabel:    { fontSize: 12, fontWeight: '700', color: c.muted },
+  twist:         { backgroundColor: c.bg3, borderRadius: Radius.md, padding: Space.sm, gap: Space.xxs },
+  twistHead:     { flexDirection: 'row', alignItems: 'center', gap: Space.sm },
+  twistLabel:    { fontSize: FontSizes.xs, fontWeight: '700', color: c.muted },
   twistText:     { fontSize: FontSizes.sm, color: c.text },
-  cta:           { alignSelf: 'flex-start', minHeight: 44, justifyContent: 'center', backgroundColor: c.primary, borderRadius: 14, paddingHorizontal: 16 },
-  ctaText:       { color: c.white, fontSize: FontSizes.sm, fontWeight: '700' },
-  authorRow:     { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  author:        { flex: 1, flexDirection: 'row', alignItems: 'center', gap: 8 },
+  // Not a Button: the whole card is the touch target, this is its visible call to action (the primary button's look).
+  cta:           { alignSelf: 'flex-start', minHeight: 48, justifyContent: 'center', backgroundColor: c.cta, borderRadius: Radius.button, paddingHorizontal: Space.lg },
+  ctaText:       { color: c.onCta, fontSize: FontSizes.md, fontWeight: '800' },
+  authorRow:     { flexDirection: 'row', alignItems: 'center', gap: Space.sm },
+  author:        { flex: 1, flexDirection: 'row', alignItems: 'center', gap: Space.sm },
   avatar:        { width: 30, height: 30, borderRadius: 15 },
   avatarEmpty:   { backgroundColor: c.bg3, alignItems: 'center', justifyContent: 'center' },
   avatarLetter:  { fontSize: FontSizes.xs, fontWeight: '800', color: c.text },
-  nameRow:       { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  nameRow:       { flexDirection: 'row', alignItems: 'center', gap: Space.sm },
   name:          { flexShrink: 1, fontSize: FontSizes.sm, fontWeight: '700', color: c.text },
-  sub:           { fontSize: 11, color: c.muted },
+  sub:           { fontSize: FontSizes.xs, color: c.muted },
   photo:         { width: '100%', aspectRatio: 4 / 3, borderRadius: 14, backgroundColor: c.bg3 },
-  modeChip:      { paddingHorizontal: 8, paddingVertical: 2, borderRadius: Radius.full },
+  modeChip:      { paddingHorizontal: Space.sm, paddingVertical: Space.xxs, borderRadius: Radius.full },
   modeLocal:     { backgroundColor: c.primaryTint },
   modeTraveler:  { backgroundColor: c.travelerBg },
-  modeText:      { fontSize: 12, fontWeight: '700' },
+  modeText:      { fontSize: FontSizes.xs, fontWeight: '700' },
   modeLocalText: { color: c.primaryOnTint },
   modeTravelerText: { color: c.travelerText },
-  spot:          { alignSelf: 'flex-start', flexDirection: 'row', alignItems: 'center', gap: 4 },
+  spot:          { alignSelf: 'flex-start', flexDirection: 'row', alignItems: 'center', gap: Space.xs },
   spotText:      { fontSize: FontSizes.xs, fontWeight: '700', color: c.primaryText },
-  themeChip:     { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 9, paddingVertical: 3, borderRadius: Radius.full, backgroundColor: c.primaryTint },
-  themeText:     { fontSize: 12, fontWeight: '700', color: c.primaryOnTint },
-  voteRight:     { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  share:         { minHeight: 32, paddingHorizontal: 4, justifyContent: 'center' },
+  themeChip:     { flexDirection: 'row', alignItems: 'center', gap: Space.xs, paddingHorizontal: Space.sm, paddingVertical: Space.xs, borderRadius: Radius.full, backgroundColor: c.primaryTint },
+  themeText:     { fontSize: FontSizes.xs, fontWeight: '700', color: c.primaryOnTint },
+  voteRight:     { flexDirection: 'row', alignItems: 'center', gap: Space.sm },
+  share:         { minHeight: 32, paddingHorizontal: Space.xs, justifyContent: 'center' },
   caption:       { fontSize: FontSizes.sm, color: c.text },
-  proofOf:       { fontSize: 11, color: c.muted },
-  time:          { fontSize: 11, color: c.muted, marginTop: 4, alignSelf: 'flex-start' },
-  voteRow:       { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 10 },
-  badge:         { flexShrink: 1, fontSize: 12, fontWeight: '700', color: c.green },
-  strip:         { flexDirection: 'row', gap: 6 },
+  proofOf:       { fontSize: FontSizes.xs, color: c.muted },
+  time:          { fontSize: FontSizes.xs, color: c.muted, marginTop: Space.xs, alignSelf: 'flex-start' },
+  voteRow:       { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: Space.md },
+  strip:         { flexDirection: 'row', gap: Space.sm },
   stripCell:     { flex: 1, aspectRatio: 1 },
   stripPhoto:    { width: '100%', height: '100%', borderRadius: Radius.md, backgroundColor: c.bg3 },
   stripMore:     { ...StyleSheet.absoluteFill, borderRadius: Radius.md, backgroundColor: c.scrim, alignItems: 'center', justifyContent: 'center' },
-  stripMoreText: { color: c.white, fontSize: FontSizes.md, fontWeight: '900' },
-  proposedBy:    { alignSelf: 'flex-start', flexDirection: 'row', alignItems: 'center', gap: 4 },
-  proposedByText:{ flexShrink: 1, fontSize: 12, fontWeight: '700', color: c.primaryText },
-  top3:          { borderTopWidth: 1, borderTopColor: c.line, paddingTop: 8, gap: 6 },
-  top3Head:      { flexDirection: 'row', alignItems: 'center', gap: 5 },
-  topVotesRow:   { flexDirection: 'row', alignItems: 'center', gap: 3 },
+  stripMoreText: { color: c.white, fontSize: FontSizes.md, fontWeight: '800' },
+  proposedBy:    { alignSelf: 'flex-start', flexDirection: 'row', alignItems: 'center', gap: Space.xs },
+  proposedByText:{ flexShrink: 1, fontSize: FontSizes.xs, fontWeight: '700', color: c.primaryText },
+  top3:          { borderTopWidth: 1, borderTopColor: c.line, paddingTop: Space.sm, gap: Space.sm },
+  top3Head:      { flexDirection: 'row', alignItems: 'center', gap: Space.xs },
+  topVotesRow:   { flexDirection: 'row', alignItems: 'center', gap: Space.xs },
   more:          { width: 44, height: 44, marginRight: -10, marginTop: -10, alignItems: 'center', justifyContent: 'center' },
-  top3Title:     { fontSize: 11, fontWeight: '800', color: c.muted, textTransform: 'uppercase', letterSpacing: 0.4 },
-  topRow:        { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  top3Title:     { fontSize: FontSizes.xs, fontWeight: '800', color: c.muted, textTransform: 'uppercase', letterSpacing: 0.4 },
+  topRow:        { flexDirection: 'row', alignItems: 'center', gap: Space.sm },
   topThumb:      { width: 32, height: 32, borderRadius: Radius.sm, backgroundColor: c.bg3 },
-  topWho:        { flex: 1, flexDirection: 'row', alignItems: 'center', gap: 6, minWidth: 0 },
+  topWho:        { flex: 1, flexDirection: 'row', alignItems: 'center', gap: Space.sm, minWidth: 0 },
   topName:       { flexShrink: 1, fontSize: FontSizes.sm, fontWeight: '700', color: c.text },
-  whereRow:      { flexDirection: 'row', alignItems: 'center', gap: 4 },
+  whereRow:      { flexDirection: 'row', alignItems: 'center', gap: Space.xs },
   flexShrink:    { flexShrink: 1 },
   topVotes:      { fontSize: FontSizes.xs, fontWeight: '700', color: c.muted },
 });

@@ -25,14 +25,3 @@ export function eventSlug(event: EventLike | null | undefined): string {
   return titleSlug ? `${titleSlug}-${event.id}` : event.id;
 }
 
-/**
- * Extract the canonical 16-hex event ID from a slug or hex string.
- * Accepts:
- *   "cong-ca-phe-2e617620a3f3b6f7" → "2e617620a3f3b6f7"
- *   "2e617620a3f3b6f7"             → "2e617620a3f3b6f7"
- *   "garbage"                      → null
- */
-export function extractEventHex(input: string | null | undefined): string | null {
-  const m = String(input || '').match(/([a-f0-9]{16})$/i);
-  return m ? m[1].toLowerCase() : null;
-}

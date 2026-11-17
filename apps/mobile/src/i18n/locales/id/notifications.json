@@ -1,9 +1,7 @@
 {
-  "allTitle": "Semua notifikasi",
   "markAllRead": "Tandai semua dibaca",
   "emptyTitle": "Belum ada notifikasi",
   "emptySub": "Pesan dan kabar acara bakal muncul di sini.",
-  "seeAll": "Lihat semua notifikasi",
   "prefTitle": "Preferensi notifikasi",
   "pref": {
     "mentionLabel": "Mention @",
@@ -58,8 +56,6 @@
     "rankCity": "🏆 Kemarin #{{rank}} di {{city}}",
     "votes": "🏆 {{count}} ❤️ di foto kemarin",
     "localPass": "🎟️ Local Pass {{city}}!",
-    "comment": "💬 {{name}} komentar di fotomu",
-    "comments": "💬 Ada komentar baru di fotomu",
     "likes": "❤️ +{{count}}",
     "mention": "💬 {{name}} menyebut kamu",
     "friend": "👋 {{name}} mau berteman",
@@ -90,11 +86,8 @@
     "read": "Dibaca",
     "unread": "Belum dibaca",
     "delete": "Hapus",
-    "allRead": "Sudah kebaca semua ✨",
     "row": {
       "like": "{{names}} suka fotomu",
-      "comment": "{{names}} komentar di fotomu",
-      "photoMention": "{{names}} menyebut kamu di komentar",
       "mention": "{{names}} menyebut kamu",
       "friendRequest": "{{names}} mau berteman",
       "friendAccepted": "{{names}} menerima permintaan pertemananmu",
@@ -137,5 +130,16 @@
     "saved": "Tersimpan",
     "quiet": "Jam tenang",
     "quietSub": "Tanpa notifikasi dari {{from}} sampai {{to}}"
+  },
+  "photoComment": {
+    "author": "💬 {{name}} mengomentari fotomu",
+    "author_many": "💬 {{name}} dan {{n}} lainnya mengomentari fotomu",
+    "author_many_one": "💬 {{name}} dan 1 lainnya mengomentari fotomu",
+    "mention": "👋 {{name}} menyebutmu",
+    "reply": "↩️ {{name}} membalas komentarmu",
+    "previous": "💬 {{name}} juga mengomentari foto {{owner}}",
+    "previous_many": "💬 {{name}} dan {{n}} lainnya mengomentari foto {{owner}}",
+    "previous_many_one": "💬 {{name}} dan 1 lainnya mengomentari foto {{owner}}",
+    "previous_self": "💬 {{name}} membalas di fotonya sendiri"
   }
 }

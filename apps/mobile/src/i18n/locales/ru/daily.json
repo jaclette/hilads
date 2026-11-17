@@ -4,22 +4,14 @@
   "nextIn": "Следующий Daily Challenge через {{time}}",
   "nothingLive": "Следующий Daily Challenge уже в пути",
   "cta": "Принять челлендж",
-  "ctaIn": "Я в деле",
-  "ctaTaken": "Челлендж пройден · Моё фото",
-  "seeProofs": "Фото дня",
-  "localTwist": "Local Twist",
   "twistIn": "Local Twist: {{city}}",
   "twistBy": "от {{name}}",
   "count_one": "Сегодня это сделал {{count}} человек",
   "count_few": "Сегодня это сделали {{count}} человека",
   "count_many": "Сегодня это сделали {{count}} человек",
   "count_other": "Сегодня это сделали {{count}} человека",
-  "countCity": "{{city}}: {{count}}",
-  "countZero": "Пока никого. Будь первым",
   "beFirst": "Будь первым сегодня",
   "beFirstSub": "Фото пока нет. Будь первым, мир ждёт.",
-  "firstYours": "Твоё фото отправлено",
-  "firstYoursSub": "Оно появится здесь после проверки, рядом с фото других.",
   "yourProof": "Твоё фото",
   "status": {
     "pending": "На проверке",
@@ -49,14 +41,12 @@
   "places_many": "{{count}} мест на карте",
   "places_other": "{{count}} места на карте",
   "unnamedPlace": "Отмеченное место",
-  "tabWorld": "Мир",
   "local": "Местный",
   "traveler": "Путешественник",
   "validatedByLocal": "Подтверждено местным",
   "loadFailed": "Не удалось загрузить Daily Challenge.",
   "retry": "Повторить",
   "notFound": "Такого Daily Challenge нет.",
-  "cityRowEmpty": "Создай первый челлендж в городе {{city}}",
   "proof": {
     "titleNew": "Твоё фото",
     "titleEdit": "Изменить фото",
@@ -128,8 +118,6 @@
     "invalid_back_home": "Для «А у тебя дома?» нужен город и ответ, цена или строчка."
   },
   "push": {
-    "bannerTitle": "Daily Challenge каждое утро",
-    "bannerCta": "Включить",
     "askTitle": "Daily Challenge",
     "askBody": "Получай Daily Challenge каждое утро в удобное время.",
     "askBodyBlocked": "Уведомления Hilads выключены. Включи их в настройках, чтобы получать Daily Challenge каждое утро.",
@@ -316,12 +304,12 @@
       "countHere_many": "{{count}} мест рядом",
       "countHere_other": "{{count}} места рядом",
       "peekNearest": "Ближайшее в {{distance}}",
-      "peekSwipe": "смахни вверх 👆",
+      "peekSwipe": "смахни вверх",
       "peekEmpty": "Здесь пока нет мест, стань первым 📍",
-      "peekTitle_one": "📍 {{num}} место для открытий",
-      "peekTitle_few": "📍 {{num}} места для открытий",
-      "peekTitle_many": "📍 {{num}} мест для открытий",
-      "peekTitle_other": "📍 {{num}} мест для открытий"
+      "peekTitle_one": "{{num}} место для открытий",
+      "peekTitle_few": "{{num}} места для открытий",
+      "peekTitle_many": "{{num}} мест для открытий",
+      "peekTitle_other": "{{num}} мест для открытий"
     }
   },
   "leaderboard": {
@@ -360,23 +348,15 @@
     "prev": "Предыдущий месяц",
     "next": "Следующий месяц"
   },
-  "guide": {
-    "title": "Гид по городу",
-    "all": "Все",
-    "emptyCity": "В городе {{city}} пока нет челленджа «{{theme}}». Следующий: {{day}}.",
-    "emptyWorld": "Челленджа «{{theme}}» пока не было. Следующий: {{day}}."
-  },
   "localPass": {
     "name": "Local Pass",
     "progress": "Тем: {{done}}/{{total}}",
     "earned": "Получен",
-    "hint": "Пройди все 7 тем в городе {{city}}, чтобы получить его Local Pass.",
     "profileTitle": "Local Pass",
     "badgeA11y": "Есть Local Pass"
   },
   "propose": {
     "cta": "Предложить челлендж",
-    "short": "Предложить",
     "title": "Предложить челлендж",
     "textLabel": "Твой челлендж (на английском)",
     "textPlaceholder": "Find a…",
@@ -424,15 +404,7 @@
       "invalid_twist": "Local Twist: не больше 280 символов.",
       "twist_not_allowed": "Добавить Local Twist могут только местные из запущенного города.",
       "moderation_blocked": "Предложение не прошло модерацию. Перефразируй его."
-    },
-    "linkAsk": "Есть идея для челленджа?",
-    "linkCta": "Предложить",
-    "cardBody": "Твоя идея может стать завтрашним челленджем для всего мира 🌍",
-    "cardHide": "Скрыть на неделю",
-    "cardPlayed_one": "Твою идею «{{text}}» сыграли в {{count}} городе 🎉",
-    "cardPlayed_few": "Твою идею «{{text}}» сыграли в {{count}} городах 🎉",
-    "cardPlayed_many": "Твою идею «{{text}}» сыграли в {{count}} городах 🎉",
-    "cardPlayed_other": "Твою идею «{{text}}» сыграли в {{count}} городах 🎉"
+    }
   },
   "early": {
     "badge": "Ранний",
@@ -550,7 +522,6 @@
   },
   "takeIt": "Принять",
   "proofHint": {
-    "title": "Сделай фото",
     "place": "Фото с наибольшим числом голосов станет главным фото места.",
     "noPlace": "Фото с наибольшим числом голосов попадёт на пьедестал."
   },
@@ -718,26 +689,6 @@
     "clear": "Убрать родной город",
     "hereIn": "Здесь: {{city}}"
   },
-  "tour": {
-    "title": "*Вчера* по всему миру",
-    "watch": "Смотреть",
-    "openCity": "Открыть {{city}}",
-    "next": "Дальше",
-    "kicker": "Daily Challenge · {{theme}}",
-    "moment": {
-      "morning": "Утром",
-      "afternoon": "Днём",
-      "evening": "Вечером",
-      "night": "Ночью"
-    },
-    "yourTurn": "Твой ход.",
-    "todayIs": "Вопрос дня: {{question}}",
-    "close": "Закрыть",
-    "sub_one": "{{count}} город, один челлендж",
-    "sub_few": "{{count}} города, один челлендж",
-    "sub_many": "{{count}} городов, один челлендж",
-    "sub_other": "{{count}} города, один челлендж"
-  },
   "worlds": {
     "tagline": "Один челлендж. Разные миры."
   },
@@ -783,19 +734,11 @@
     "endTitle": "На этом пока всё!",
     "endBody": "Новые фото появляются весь день. Заглядывай ещё.",
     "endPlay": "Твой ход: покажи миру свой город.",
-    "backToday": "Назад к «Сегодня»",
-    "seeAll": "Все фото"
+    "backToday": "Назад к «Сегодня»"
   },
   "countries": {
-    "played_one": "Сегодня сыграла {{count}} страна",
-    "played_few": "Сегодня сыграли {{count}} страны",
-    "played_many": "Сегодня сыграли {{count}} стран",
-    "played_other": "Сегодня сыграли {{count}} страны",
-    "yourCity": "Твой город",
     "represent": "Представь свой город",
     "emptyBody": "Сегодня ещё никто не играл. Отметь свой город на карте первым!",
-    "openCountry": "{{city}}: смотреть фото",
-    "byCity": "По городам",
     "topPhoto": "Лучшее фото"
   },
   "recap": {
@@ -859,14 +802,6 @@
     "ctaNoCity": "Сними",
     "played": "Ты в игре · Смотреть мир",
     "firstCity": "Пусть твой город будет первым в мире сегодня",
-    "citiesIn_one": "{{count}} город уже в игре",
-    "citiesIn_few": "{{count}} города уже в игре",
-    "citiesIn_many": "{{count}} городов уже в игре",
-    "citiesIn_other": "{{count}} города уже в игре",
-    "citiesMissing_one": "{{count}} город уже в игре. {{city}} пока нет!",
-    "citiesMissing_few": "{{count}} города уже в игре. {{city}} пока нет!",
-    "citiesMissing_many": "{{count}} городов уже в игре. {{city}} пока нет!",
-    "citiesMissing_other": "{{count}} города уже в игре. {{city}} пока нет!",
     "steps": {
       "snap": "Сними",
       "name": "Назови",
@@ -894,7 +829,6 @@
     "players_other": "{{count}} игрока",
     "missing": "{{city}} пока нет!",
     "yesterday": "Вчера мир сказал…",
-    "beFirst": "Представь город {{city}}",
     "beFirstSub": "Пусть твой город будет первым сегодня",
     "swipeHint": "Листай, чтобы путешествовать 🌍",
     "slotCta": "📸 {{city}}? Будь первым сегодня"
@@ -972,9 +906,9 @@
   },
   "ranks": {
     "seg": {
-      "photos": "📸 Фото",
-      "players": "🙋 Игроки",
-      "cities": "🌍 Города"
+      "photos": "Фото",
+      "players": "Игроки",
+      "cities": "Города"
     },
     "period": {
       "today": "Сегодня",
@@ -986,7 +920,7 @@
       "city": "Мой город",
       "world": "Мир"
     },
-    "timeLeftMin": "⏳ До конца голосования меньше часа",
+    "timeLeftMin": "До конца голосования меньше часа",
     "bestPerCity": "Лучшее фото каждого города",
     "new": "новый",
     "you": {
@@ -1036,10 +970,10 @@
       "generic": "🏆 Итоги вчерашнего дня готовы",
       "see": "Смотреть итоги →"
     },
-    "timeLeft_one": "⏳ До конца голосования {{count}} час",
-    "timeLeft_few": "⏳ До конца голосования {{count}} часа",
-    "timeLeft_many": "⏳ До конца голосования {{count}} часов",
-    "timeLeft_other": "⏳ До конца голосования {{count}} часа",
+    "timeLeft_one": "До конца голосования {{count}} час",
+    "timeLeft_few": "До конца голосования {{count}} часа",
+    "timeLeft_many": "До конца голосования {{count}} часов",
+    "timeLeft_other": "До конца голосования {{count}} часа",
     "pts_one": "{{count}} очко",
     "pts_few": "{{count}} очка",
     "pts_many": "{{count}} очков",

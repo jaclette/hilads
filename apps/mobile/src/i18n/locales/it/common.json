@@ -10,10 +10,7 @@
     "special": "Speciale",
     "onlyIn": "Solo a {{city}}"
   },
-  "nowTitle": "Adesso",
   "filterEvents": "Eventi locali",
-  "hiLocalTitle": "👋 Hi Local",
-  "filterHangouts": "🗣️ Ritrovi",
   "publicEventsSection": "Eventi pubblici locali",
   "accountWelcome": {
     "title": "Complimenti, {{username}}!",
@@ -46,15 +43,12 @@
     "noResults": "Nessun luogo trovato",
     "loading": "Cerco la posizione…",
     "confirm": "Condividi questo posto",
-    "yourLocation": "La tua posizione",
-    "close": "Chiudi",
-    "clearSearch": "Cancella la ricerca"
+    "yourLocation": "La tua posizione"
   },
   "language": "Lingua",
   "cancel": "Annulla",
   "loading": "Caricamento…",
   "retry": "Riprova",
-  "save": "Salva",
   "done": "Fatto",
   "close": "Chiudi",
   "clear": "Cancella",
@@ -178,9 +172,7 @@
   "tabs": {
     "today": "Oggi",
     "map": "Mappa",
-    "chat": "Hi",
-    "passport": "Passaporto",
-    "ranks": "Classifica"
+    "passport": "Passaporto"
   },
   "scope": {
     "title": "Mostra",
@@ -204,7 +196,6 @@
     "requiredTitle": "Aggiorna Hilads",
     "requiredBody": "Questa versione non è più supportata. Aggiorna l'app per continuare a usare Hilads."
   },
-  "mapSoon": "La mappa dei posti arriva presto.",
   "firstLaunch": "Gioca locale. Confronta globale.",
   "signUp": "Registrati",
   "open": "Apri",
@@ -229,7 +220,6 @@
     "errorBody": "Impossibile inviare la segnalazione. Riprova."
   },
   "subtitles": {
-    "map": "I posti dalle foto di tutto il mondo.",
     "hi": "Saluta la tua città. Unisciti a un piano.",
     "passport": "Le tue città, le tue foto, i tuoi timbri."
   },
@@ -261,7 +251,7 @@
     "off": "Disattivo"
   },
   "wakingUp": {
-    "title": "Hilads si sta svegliando… 🌍",
-    "body": "Qualche secondo e ci siamo, intanto riproviamo."
+    "title": "Impossibile raggiungere Hilads",
+    "body": "Controlla la connessione. Intanto riproviamo."
   }
 }

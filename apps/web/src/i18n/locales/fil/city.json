@@ -1,25 +1,16 @@
 {
   "world": {
     "tab": "Mundo",
-    "banner_one": "{{count}} cross-city challenge na live",
-    "banner_other": "{{count}} cross-city challenges na live",
-    "online": "{{count}} online",
-    "cities_one": "{{count}} city",
-    "cities_other": "{{count}} cities",
     "sys": {
       "challengeCreated": "🔥 Nag-launch si {{nickname}} ng challenge {{cityA}} → {{cityB}}",
       "newUser": "🎉 Bagong sali sa Hilads si {{nickname}} mula {{city}}",
       "challengeWon": "🏆 Nanalo si {{nickname}} mula {{city}} sa challenge na {{challenge}}"
     },
     "quietCard": "Tahimik dito? {{count}} unread sa Mundo, i-tap para buksan",
-    "heroEmpty": "Mauna kang mag-challenge ng city",
-    "heroEmptySub": "Mag-launch ng cross-city challenge",
-    "leaderboard": "Leaderboard",
     "arrivals_one": "{{count}} bagong dating",
     "arrivals_other": "{{count}} bagong dating",
     "arrivalsTitle": "Mga bagong dating",
-    "arrivalsEmpty": "Walang bagong dating",
-    "seeAll": "Tingnan lahat"
+    "arrivalsEmpty": "Walang bagong dating"
   },
   "inspiration": {
     "heading": "Mga ideya para sa tambayan",
@@ -31,37 +22,7 @@
   },
   "guestGate": {
     "createAccount": "Gumawa ng account",
-    "signIn": "Mag-sign in",
-    "create_event": {
-      "pageTitle": "Gumawa ng event",
-      "title": "Pwedeng mag-browse ang mga Ghost, pero hindi mag-host.",
-      "sub": "Gumawa ng account para mag-host ng sarili mong event at ilagay sa mapa ang city mo."
-    },
-    "view_profile": {
-      "pageTitle": "Profile",
-      "title": "Pwedeng mag-browse ang mga Ghost, pero pang-members lang ang mga profile.",
-      "sub": "Gumawa ng account para makita ang mga profile, makakilala ng tao, at mabuo ang city crew mo."
-    },
-    "join_hangout": {
-      "pageTitle": "Sumali sa tambayan",
-      "title": "Pwedeng mag-browse ang mga Ghost, pero hindi sumali sa tambayan.",
-      "sub": "Mag-sign up para sumali sa tambayan, i-save ang pangalan mo, at ma-notify kapag may gustong makipagkita."
-    },
-    "create_hangout": {
-      "pageTitle": "Magsimula ng tambayan",
-      "title": "Pwedeng mag-browse ang mga Ghost, pero hindi mag-host.",
-      "sub": "Mag-sign up para magsimula ng tambayan, i-save ang pangalan mo, at mapasali ang iba."
-    },
-    "create_challenge": {
-      "pageTitle": "Mag-launch ng challenge",
-      "title": "Pwedeng mag-browse ang mga Ghost, pero hindi maka-challenge.",
-      "sub": "Mag-sign up para mag-launch ng challenge para sa locals o biyahero, at ikaw ang mag-validate."
-    },
-    "accept_challenge": {
-      "pageTitle": "Tanggapin ang challenge",
-      "title": "Mag-sign up para tanggapin ang challenge na 'to",
-      "sub": "3 segundo lang. Babalik ka agad sa challenge."
-    }
+    "signIn": "Mag-sign in"
   },
   "welcome": {
     "live": "Live na ang {{city}}",
@@ -107,15 +68,12 @@
   "joiningDefault": "Pumapasok sa chat…",
   "tryAgain": "Subukan ulit",
   "feed": {
-    "hangoutTag": "Tambayan",
-    "eventTag": "Event",
     "nowTag": "Ngayon",
     "laterTag": "Plan",
     "hiNow": "Hi now",
     "hiLater": "Hi plan",
     "public": "Public",
     "activeNow": "Active ngayon",
-    "repliesNew": "Wala pang reply, mauna ka",
     "sayHi": "Mag-hi kay {{name}}",
     "sayHiGeneric": "Mag-hi",
     "hostWaiting": "Hinihintay ang unang hi",
@@ -128,8 +86,6 @@
     "groupPublic": "Public Local Events",
     "groupPublicTicket": "Public Local Events",
     "createEvent": "Gumawa ng Local Event",
-    "startHangout": "Magsimula ng tambayan",
-    "openPlace": "Buksan ang spot mo",
     "loadError": "Hindi ma-load ang mga event",
     "loadErrorSub": "Subukan ulit mamaya o gumawa ng bago sa {{city}}.",
     "emptyLocalTitle": "I-host ang spot mo",
@@ -137,28 +93,16 @@
     "emptyLocalSub": "Buhayin ang {{city}}. Gumawa ng regular na event sa paborito mong lugar.",
     "emptySub": "Mauna kang magpasimula ng ganap sa {{city}}",
     "noEvents": "Walang Local Events ngayon",
-    "noHangouts": "Wala pang tambayan",
-    "noEventsSub": "Mauna kang gumawa sa {{city}}",
-    "noHangoutsSub": "Magsimula ng tambayan at pag-usapin ang city",
-    "filterAll": "Lahat",
-    "seeComing": "Tingnan ang paparating",
-    "seeHappened": "tingnan ang nangyari",
-    "createNew": "Gumawa ng bago",
-    "hiNowHint": "tumambay ngayon",
-    "hiLaterHint": "magplano ng event"
+    "noEventsSub": "Mauna kang gumawa sa {{city}}"
   },
   "header": {
     "online": "{{count}} malapit",
     "liveNow": "live ngayon",
     "seeWhosHere": "Tingnan kung sino'ng nandito",
-    "onlineAria_one": "{{count}} tao ang malapit, i-tap para makita kung sino",
-    "onlineAria_other": "{{count}} tao ang malapit, i-tap para makita kung sino",
     "notifications": "Mga notification",
     "messages": "Mga message",
     "shareCity": "I-share ang city",
-    "switchCity": "Magpalit ng city",
-    "changeCity": "Palitan ang city",
-    "currentWeather": "Panahon ngayon: {{label}}"
+    "switchCity": "Magpalit ng city"
   },
   "here": {
     "title": "Mga tao rito",
@@ -167,7 +111,6 @@
     "filterMode": "Mode",
     "you": "(ikaw)",
     "hereNow": "Nandito ngayon",
-    "noMatchLive": "Walang tugma sa mga filter na 'to ngayon.",
     "legends": "Hilads Legends",
     "legendsSub": "Sila ang nagpapabuhay sa city",
     "cityCrew": "City crew",
@@ -176,7 +119,6 @@
     "messageAria": "I-message si {{name}}"
   },
   "eventHeader": {
-    "yourEvent": "Event mo",
     "edit": "I-edit",
     "join": "Sumali",
     "joined": "Sumali na",
@@ -193,26 +135,7 @@
     "firstHi": "Mauna kang mag-hi"
   },
   "create": {
-    "title": "Anong ganap?",
-    "hangoutTitle": "Magsimula ng tambayan",
-    "hangoutSub": "Instant - pwede kang samahan ng iba ngayon din",
-    "eventTitle": "Gumawa ng event",
-    "eventSub": "Magplano ng pwedeng salihan ng iba",
-    "challengeTitle": "Mag-launch ng challenge",
-    "challengeSub": "Locals at biyahero - mag-connect sa isang challenge",
-    "challengePageTitle": "Gumawa ng challenge",
-    "challengeAudience": "Para kanino?",
-    "challengeAudLocals": "Locals",
-    "challengeAudExplorers": "Mga biyahero",
-    "challengeType": "Uri",
-    "challengeTypeFood": "Pagkain",
-    "challengeTypePlace": "Lugar",
-    "challengeTypeCulture": "Kultura",
-    "challengeTypeHelp": "Kalokohan",
-    "challengeTitleLabel": "Challenge mo",
-    "challengeTitlePlaceholder": "hal. Dalhin mo ako sa paborito mong tagong coffee spot",
-    "challengeCta": "I-launch ang challenge",
-    "challengeErrStart": "Hindi na-launch ang challenge"
+    "title": "Anong ganap?"
   },
   "goingModal": {
     "going": "pupunta",
@@ -286,9 +209,6 @@
     "challengeValidated": "Tapos na ang challenge! Na-validate ni {{name}} ang \"{{title}}\".",
     "challengeInternational": "{{fromFlag}} → {{toFlag}} International challenge: {{title}}"
   },
-  "replyPreview": {
-    "photo": "📷 Photo"
-  },
   "typing": {
     "one": "Nagta-type si {{name}}…",
     "two": "Nagta-type sina {{a}} at {{b}}…",
@@ -305,29 +225,11 @@
     "sheetTitle": "Mga dumating",
     "empty": "Wala pang bagong dating"
   },
-  "cityHero": {
-    "mainEmpty": "🌱 wala pang challenge sa {{city}}",
-    "subRanked": "I-tap para tanggapin ang susunod mong challenge →",
-    "subUnranked": "Tanggapin ang una mong challenge para umakyat →",
-    "subTop": "Ipagtanggol ang titulo mo →",
-    "subEmpty": "Gumawa ng una para tanggapin ng mga biyahero →",
-    "members_one": "{{count}} miyembro",
-    "members_other": "{{count}} miyembro",
-    "nearby": "{{count}} malapit",
-    "recent": "{{count}} bagong dating",
-    "mainUnranked_one": "🔥 {{count}} challenge sa {{city}}",
-    "mainUnranked_other": "🔥 {{count}} challenges sa {{city}}",
-    "mainRanked_one": "🔥 {{count}} challenge · 🏆 #{{rank}} sa {{city}}",
-    "mainRanked_other": "🔥 {{count}} challenges · 🏆 #{{rank}} sa {{city}}",
-    "mainTop_one": "🔥 {{count}} challenge · 🏆 #1 sa {{city}}",
-    "mainTop_other": "🔥 {{count}} challenges · 🏆 #1 sa {{city}}"
-  },
   "daily": {
     "kicker": "Daily Challenge",
     "localTwist": "Local Twist",
     "local": "Local",
     "traveler": "Biyahero",
-    "ctaApp": "Maglaro ng challenge sa app",
     "localPass": "Local Pass",
     "early": "Maaga",
     "proposedBy": "Suggestion ni {{name}}",

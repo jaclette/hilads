@@ -6,7 +6,7 @@ import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import * as Haptics from 'expo-haptics';
 import { Ionicons } from '@expo/vector-icons';
-import { Radius, type ThemeColors } from '@/constants';
+import { Space, FontSizes, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { useApp } from '@/context/AppContext';
 import { Avatar } from '@/ui';
@@ -15,8 +15,9 @@ import { fetchInbox, markNotificationsRead, markNotificationsSeen, type InboxAct
 import { canAccessProfile } from '@/lib/profileAccess';
 import { track } from '@/services/analytics';
 import { patchNotifCounts, refreshNotifCounts, useNotifCounts } from './counts';
-import { setAwayShowsResults } from './awayResults';
+import { setAwayCardShowing } from './awayResults';
 import { holdScreen } from '@/lib/celebrationQueue';
+import { commentLine } from './commentLine';
 
 type TFn = (key: string, opts?: Record<string, unknown>) => string;
 
@@ -30,7 +31,10 @@ export function byImportance(items: InboxItem[]): InboxItem[] {
   return [...items].sort((a, b) => rank(a) - rank(b) || b.created_at.localeCompare(a.created_at));
 }
 
-/** One item's fragment ("🏆 #2 in the world yesterday", "💬 Lan commented on your photo"); likes are summed. */
+/**
+ * One item's fragment ("🏆 #2 in the world yesterday", "💬 Lan also commented on Maxime's photo"); likes are summed.
+ * Comments and photo mentions: the same line as the Notifications rows and the push (commentLine).
+ */
 function fragment(i: InboxItem, items: InboxItem[], t: TFn): string | null {
   const d = i.data;
   const name = i.actors[0]?.name;
@@ -43,19 +47,16 @@ function fragment(i: InboxItem, items: InboxItem[], t: TFn): string | null {
         : t('away.votes', { count: d.votes ?? 0 });
     }
     case 'daily_local_pass': return t('away.localPass', { city: shortCityName(d.cityName ?? '') });
-    case 'photo_comment': {
-      const all = items.filter(x => x.type === 'photo_comment');
-      return all.length === 1 && i.count === 1 && name ? t('away.comment', { name }) : t('away.comments');
-    }
+    case 'photo_comment': case 'photo_mention': return commentLine(i, t);
     case 'daily_vote': return t('away.likes', { count: items.filter(x => x.type === 'daily_vote').reduce((n, x) => n + x.count, 0) });
-    case 'mention': case 'photo_mention': return name ? t('away.mention', { name }) : null;
+    case 'mention': return name ? t('away.mention', { name }) : null;
     case 'friend_request_received': return name ? t('away.friend', { name }) : null;
     case 'profile_view': return name ? t('away.view', { name }) : null;
     default: return null;
   }
 }
 
-/** The one-liner: the fragments, most important first, each kind once ("💬 New comments on your photo · ❤️ +3"). */
+/** The one-liner: the fragments, most important first, each kind once ("💬 Lan also commented on Maxime's photo · ❤️ +3"). */
 export function awayLine(items: InboxItem[], t: TFn, max = 3): string {
   const parts: string[] = [];
   for (const i of byImportance(items)) {
@@ -143,10 +144,11 @@ export function WhileAwayCard() {
       }
     });
   const move = useAnimatedStyle(() => ({ transform: [{ translateX: tx.value }], opacity: 1 - Math.min(0.6, Math.abs(tx.value) / 400) }));
-  // Yesterday's results among the items: this card carries them (the results card stays hidden).
+  // One card at a time above the hero: while this one shows, the results card waits (it can
+  // carry the results itself; once it's dismissed, unread results get their own card).
   useEffect(() => {
-    setAwayShowsResults(!!items?.some(i => i.type === 'daily_result'));
-    return () => setAwayShowsResults(false);
+    setAwayCardShowing(!!items?.length);
+    return () => setAwayCardShowing(false);
   }, [items]);
   // New items: the card comes back in place (a swipe left it off-screen).
   useEffect(() => { tx.value = 0; }, [items]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -227,15 +229,15 @@ function sameKey(a: InboxItem, b: InboxItem): boolean {
 }
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  card:   { flexDirection: 'row', alignItems: 'center', gap: 6, paddingLeft: 12, paddingRight: 8, paddingVertical: 10,
+  card:   { flexDirection: 'row', alignItems: 'center', gap: Space.sm, paddingLeft: Space.md, paddingRight: Space.sm, paddingVertical: Space.md,
             borderRadius: Radius.card, backgroundColor: c.primaryTint, borderWidth: 1.5, borderColor: c.primary },
-  row:    { flex: 1, flexDirection: 'row', alignItems: 'center', gap: 10 },
+  row:    { flex: 1, flexDirection: 'row', alignItems: 'center', gap: Space.md },
   stack:  { height: 34 },
   avatar: { position: 'absolute', top: 0, borderRadius: 17, borderWidth: 2, borderColor: c.primaryTint },
   body:   { flex: 1 },
-  title:  { fontSize: 12, lineHeight: 16, fontWeight: '800', color: c.primaryOnTint },
-  line:   { fontSize: 14, lineHeight: 19, fontWeight: '700', color: c.text, marginTop: 1 },
-  more:   { minWidth: 34, height: 26, paddingHorizontal: 8, borderRadius: 13, backgroundColor: c.primary, alignItems: 'center', justifyContent: 'center' },
-  moreText: { fontSize: 13, lineHeight: 17, fontWeight: '800', color: c.white },
+  title:  { fontSize: FontSizes.xs, lineHeight: 16, fontWeight: '800', color: c.primaryOnTint },
+  line:   { fontSize: FontSizes.sm, lineHeight: 19, fontWeight: '700', color: c.text, marginTop: 1 },
+  more:   { minWidth: 34, height: 26, paddingHorizontal: Space.sm, borderRadius: 13, backgroundColor: c.primary, alignItems: 'center', justifyContent: 'center' },
+  moreText: { fontSize: FontSizes.xs, lineHeight: 17, fontWeight: '800', color: c.white },
   close:  { width: 32, height: 32, borderRadius: 16, alignItems: 'center', justifyContent: 'center' },
 });

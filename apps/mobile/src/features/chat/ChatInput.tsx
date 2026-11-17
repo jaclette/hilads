@@ -18,9 +18,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import * as Haptics from 'expo-haptics';
 import * as ImagePicker from 'expo-image-picker';
-import * as Location from 'expo-location';
 import { requestFeatureLocation } from '@/lib/geoFeature';
-import { Border, Radius, Spacing, type ThemeColors } from '@/constants';
+import { Space, FontSizes, Border, Radius, Spacing, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { useApp } from '@/context/AppContext';
 import { getOnlineUsers } from '@/lib/presenceStore';
@@ -159,7 +158,7 @@ export function ChatInput({ sending, onSendText, onSendImage, placeholder, pulse
     );
     loop.start();
     return () => loop.stop();
-  }, [pulse, focused]);
+  }, [pulse, focused, vibGlow]);
   const lastSel         = useRef({ start: 0, end: 0 });
   const typingStopTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isTypingRef     = useRef(false); // true while typingStart has been emitted
@@ -222,7 +221,7 @@ export function ChatInput({ sending, onSendText, onSendImage, placeholder, pulse
       setSuggestions([...members, ...guests]);
     }, 250);
     return () => clearTimeout(t);
-  }, [mentionQuery, mentionsEnabled, mentionContext, mentionChannelId]);
+  }, [mentionQuery, mentionsEnabled, mentionContext, mentionChannelId, identity?.guestId]);
 
   function onSelectMention(s: MentionSuggestion) {
     const cursor = lastSel.current.end;
@@ -599,11 +598,11 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
     flexDirection:     'row',
     alignItems:        'center',
     paddingHorizontal: Spacing.md,
-    paddingVertical:   10,
+    paddingVertical:   Space.md,
     borderTopWidth:    1,
     borderTopColor:    c.line,
     backgroundColor:   c.bg,
-    gap:               8,
+    gap:               Space.sm,
   },
   // "+" (attach, plan, Hi now): round, primary.
   vibeBtnGlow: {
@@ -625,10 +624,10 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
     borderRadius:      22,
     borderWidth:       Border,
     borderColor:       c.line,
-    paddingHorizontal: 16,
-    paddingVertical:   11,
+    paddingHorizontal: Space.lg,
+    paddingVertical:   Space.md,
     color:             c.text,
-    fontSize:          15,
+    fontSize:          FontSizes.body,
     fontWeight:        '400',
     lineHeight:        20,
   },
@@ -641,19 +640,19 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
 });
 
 const makeReplyStyles = (c: ThemeColors) => StyleSheet.create({
-  strip:   { flexDirection: 'row', alignItems: 'center', gap: 10, paddingLeft: Spacing.md, paddingRight: 6, paddingVertical: 4,
+  strip:   { flexDirection: 'row', alignItems: 'center', gap: Space.md, paddingLeft: Spacing.md, paddingRight: Space.sm, paddingVertical: Space.xs,
              backgroundColor: c.bg2, borderTopWidth: 1, borderTopColor: c.line, borderLeftWidth: 3, borderLeftColor: c.primary },
   body:    { flex: 1, minWidth: 0 },
-  name:    { fontSize: 12, fontWeight: '700', color: c.primaryText, marginBottom: 2 },
-  preview: { fontSize: 12, fontWeight: '400', color: c.muted },
+  name:    { fontSize: FontSizes.xs, fontWeight: '700', color: c.primaryText, marginBottom: Space.xxs },
+  preview: { fontSize: FontSizes.xs, fontWeight: '400', color: c.muted },
   close:   { width: 44, height: 44, alignItems: 'center', justifyContent: 'center' },
 });
 
 // Editing: same strip, the label on the primary tint.
 const makeEditStyles = (c: ThemeColors) => StyleSheet.create({
-  strip:   { flexDirection: 'row', alignItems: 'center', gap: 10, paddingLeft: Spacing.md, paddingRight: 6, paddingVertical: 4,
+  strip:   { flexDirection: 'row', alignItems: 'center', gap: Space.md, paddingLeft: Spacing.md, paddingRight: Space.sm, paddingVertical: Space.xs,
              backgroundColor: c.primaryTint, borderTopWidth: 1, borderTopColor: c.line },
   body:    { flex: 1, minWidth: 0 },
-  name:    { fontSize: 12, fontWeight: '700', color: c.primaryOnTint, marginBottom: 2 },
-  preview: { fontSize: 12, fontWeight: '400', color: c.primaryOnTint },
+  name:    { fontSize: FontSizes.xs, fontWeight: '700', color: c.primaryOnTint, marginBottom: Space.xxs },
+  preview: { fontSize: FontSizes.xs, fontWeight: '400', color: c.primaryOnTint },
 });

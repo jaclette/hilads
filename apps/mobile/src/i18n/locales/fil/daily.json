@@ -4,20 +4,12 @@
   "nextIn": "Susunod na Daily Challenge in {{time}}",
   "nothingLive": "Parating na ang susunod na Daily Challenge",
   "cta": "Sali sa challenge",
-  "ctaIn": "G ako",
-  "ctaTaken": "Tapos na ang challenge · Tingnan ang photo ko",
-  "seeProofs": "Tingnan ang photos ngayon",
-  "localTwist": "Local Twist",
   "twistIn": "{{city}} Local Twist",
   "twistBy": "ni {{name}}",
   "count_one": "{{count}} na ang naglaro ngayon",
   "count_other": "{{count}} na ang naglaro ngayon",
-  "countCity": "{{count}} sa {{city}}",
-  "countZero": "Wala pa - ikaw na ang mauna",
   "beFirst": "Ikaw ang mauna ngayon",
   "beFirstSub": "Wala pang photo. Ikaw na ang mauna, naghihintay ang mundo.",
-  "firstYours": "Pasok na ang photo mo",
-  "firstYoursSub": "Lalabas ito rito kapag na-approve na, kasama ng photos ng iba.",
   "yourProof": "Photo mo",
   "status": {
     "pending": "Pending",
@@ -43,14 +35,12 @@
   "places_one": "{{count}} naka-pin na spot",
   "places_other": "{{count}} naka-pin na spots",
   "unnamedPlace": "Naka-pin na lugar",
-  "tabWorld": "Mundo",
   "local": "Local",
   "traveler": "Biyahero",
   "validatedByLocal": "Kumpirmado ng isang local",
   "loadFailed": "Hindi ma-load ang Daily Challenge.",
   "retry": "Subukan ulit",
   "notFound": "Walang ganitong Daily Challenge.",
-  "cityRowEmpty": "Ikaw na ang unang gumawa ng challenge sa {{city}}",
   "proof": {
     "titleNew": "Photo mo",
     "titleEdit": "I-edit ang photo mo",
@@ -120,8 +110,6 @@
     "invalid_back_home": "Kailangan ng \"E sa inyo?\" ng city at isang sagot, presyo o linya."
   },
   "push": {
-    "bannerTitle": "Matanggap ang Daily Challenge tuwing umaga",
-    "bannerCta": "I-on",
     "askTitle": "Daily Challenge",
     "askBody": "Matanggap ang Daily Challenge tuwing umaga, sa oras na swak sa'yo.",
     "askBodyBlocked": "Naka-off ang notifications ng Hilads. I-on sa settings mo para matanggap ang Daily Challenge tuwing umaga.",
@@ -294,10 +282,10 @@
       "countHere_one": "{{count}} spot dito",
       "countHere_other": "{{count}} spots dito",
       "peekNearest": "Pinakamalapit: {{distance}}",
-      "peekSwipe": "mag-swipe pataas 👆",
+      "peekSwipe": "mag-swipe pataas",
       "peekEmpty": "Wala pang spot dito, ikaw na ang mauna 📍",
-      "peekTitle_one": "📍 {{num}} spot na matutuklasan",
-      "peekTitle_other": "📍 {{num}} spot na matutuklasan"
+      "peekTitle_one": "{{num}} spot na matutuklasan",
+      "peekTitle_other": "{{num}} spot na matutuklasan"
     }
   },
   "leaderboard": {
@@ -336,23 +324,15 @@
     "prev": "Nakaraang buwan",
     "next": "Susunod na buwan"
   },
-  "guide": {
-    "title": "City guide",
-    "all": "Lahat",
-    "emptyCity": "Wala pang {{theme}} challenge sa {{city}}. Susunod: {{day}}.",
-    "emptyWorld": "Wala pang {{theme}} challenge. Susunod: {{day}}."
-  },
   "localPass": {
     "name": "Local Pass",
     "progress": "{{done}}/{{total}} themes",
     "earned": "Nakuha",
-    "hint": "Tapusin ang 7 themes sa {{city}} para makuha ang Local Pass nito.",
     "profileTitle": "Local Passes",
     "badgeA11y": "May Local Pass"
   },
   "propose": {
     "cta": "Mag-suggest ng challenge",
-    "short": "I-suggest",
     "title": "Mag-suggest ng challenge",
     "textLabel": "Ang challenge mo (in English)",
     "textPlaceholder": "Find a…",
@@ -400,13 +380,7 @@
       "invalid_twist": "Dapat less than 280 characters ang Local Twist.",
       "twist_not_allowed": "Locals lang ng live na city ang puwedeng mag-add ng Local Twist.",
       "moderation_blocked": "Na-flag ng moderation ang suggestion mo. Paki-rephrase."
-    },
-    "linkAsk": "May challenge idea ka?",
-    "linkCta": "I-suggest",
-    "cardBody": "Puwedeng maging challenge bukas ng buong mundo ang idea mo 🌍",
-    "cardHide": "Itago nang isang linggo",
-    "cardPlayed_one": "Nilaro ang idea mong “{{text}}” sa {{count}} lungsod 🎉",
-    "cardPlayed_other": "Nilaro ang idea mong “{{text}}” sa {{count}} lungsod 🎉"
+    }
   },
   "early": {
     "badge": "Maaga",
@@ -514,7 +488,6 @@
   },
   "takeIt": "Laruin",
   "proofHint": {
-    "title": "Kunan ang photo mo",
     "place": "Ang photo na may pinakamaraming votes ang magiging photo ng spot.",
     "noPlace": "Ang photo na may pinakamaraming votes ang aakyat sa podium."
   },
@@ -664,24 +637,6 @@
     "clear": "Alisin ang hometown ko",
     "hereIn": "Dito sa {{city}}"
   },
-  "tour": {
-    "title": "*Kahapon* sa buong mundo",
-    "watch": "Panoorin",
-    "openCity": "Buksan ang {{city}}",
-    "next": "Next",
-    "kicker": "Daily Challenge · {{theme}}",
-    "moment": {
-      "morning": "Sa umaga",
-      "afternoon": "Sa hapon",
-      "evening": "Sa gabi",
-      "night": "Sa hatinggabi"
-    },
-    "yourTurn": "Ikaw na.",
-    "todayIs": "Tanong ngayon: {{question}}",
-    "close": "Isara",
-    "sub_one": "{{count}} city, iisang challenge",
-    "sub_other": "{{count}} cities, iisang challenge"
-  },
   "worlds": {
     "tagline": "Iisang challenge. Iba-ibang mundo."
   },
@@ -725,17 +680,11 @@
     "endTitle": "Nakita mo na lahat sa ngayon!",
     "endBody": "Buong araw may bagong photos. Balik ka ulit mamaya.",
     "endPlay": "Ikaw na: ipakita mo sa mundo ang city mo.",
-    "backToday": "Balik sa Ngayon",
-    "seeAll": "Tingnan lahat ng photos"
+    "backToday": "Balik sa Ngayon"
   },
   "countries": {
-    "played_one": "{{count}} bansa ang naglaro ngayon",
-    "played_other": "{{count}} bansa ang naglaro ngayon",
-    "yourCity": "City mo",
     "represent": "I-represent ang city mo",
     "emptyBody": "Wala pang naglaro ngayon. Ikaw ang unang maglagay ng city mo sa mapa!",
-    "openCountry": "{{city}}: tingnan ang photos",
-    "byCity": "Per city",
     "topPhoto": "Top photo"
   },
   "recap": {
@@ -787,10 +736,6 @@
     "ctaNoCity": "I-snap",
     "played": "Nakapaglaro ka na · Tingnan ang mundo",
     "firstCity": "Ikaw ang unang city sa mundo ngayon",
-    "citiesIn_one": "{{count}} city na ang pasok",
-    "citiesIn_other": "{{count}} cities na ang pasok",
-    "citiesMissing_one": "{{count}} city na ang pasok. Wala pa ang {{city}}!",
-    "citiesMissing_other": "{{count}} cities na ang pasok. Wala pa ang {{city}}!",
     "steps": {
       "snap": "I-snap",
       "name": "Pangalanan",
@@ -814,7 +759,6 @@
     "players_other": "{{count}} players",
     "missing": "Wala pa ang {{city}}!",
     "yesterday": "Kahapon, sabi ng mundo…",
-    "beFirst": "I-represent ang {{city}}",
     "beFirstSub": "Ikaw ang unang city ngayon",
     "swipeHint": "I-swipe para maglakbay 🌍",
     "slotCta": "📸 {{city}}? Mauna ka na ngayon"
@@ -888,9 +832,9 @@
   },
   "ranks": {
     "seg": {
-      "photos": "📸 Photos",
-      "players": "🙋 Players",
-      "cities": "🌍 Cities"
+      "photos": "Photos",
+      "players": "Players",
+      "cities": "Cities"
     },
     "period": {
       "today": "Ngayon",
@@ -902,7 +846,7 @@
       "city": "City ko",
       "world": "Mundo"
     },
-    "timeLeftMin": "⏳ Wala nang isang oras para mag-vote",
+    "timeLeftMin": "Wala nang isang oras para mag-vote",
     "bestPerCity": "Best photo kada city",
     "new": "bago",
     "you": {
@@ -944,8 +888,8 @@
       "generic": "🏆 Lumabas na ang resulta kahapon",
       "see": "Tingnan ang resulta →"
     },
-    "timeLeft_one": "⏳ {{count}} oras na lang para mag-vote",
-    "timeLeft_other": "⏳ {{count}} oras na lang para mag-vote",
+    "timeLeft_one": "{{count}} oras na lang para mag-vote",
+    "timeLeft_other": "{{count}} oras na lang para mag-vote",
     "pts_one": "{{count}} pt",
     "pts_other": "{{count}} pts",
     "ghost": {

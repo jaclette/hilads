@@ -10,10 +10,7 @@
     "special": "Spesial",
     "onlyIn": "Cuma di {{city}}"
   },
-  "nowTitle": "Sekarang",
   "filterEvents": "Acara lokal",
-  "hiLocalTitle": "👋 Hi Local",
-  "filterHangouts": "🗣️ Nongkrong",
   "publicEventsSection": "Acara lokal publik",
   "accountWelcome": {
     "title": "Selamat, {{username}}!",
@@ -46,15 +43,12 @@
     "noResults": "Tempat nggak ditemukan",
     "loading": "Mengambil lokasi…",
     "confirm": "Bagikan lokasi ini",
-    "yourLocation": "Lokasimu",
-    "close": "Tutup",
-    "clearSearch": "Hapus pencarian"
+    "yourLocation": "Lokasimu"
   },
   "language": "Bahasa",
   "cancel": "Batal",
   "loading": "Memuat…",
   "retry": "Coba lagi",
-  "save": "Simpan",
   "done": "Selesai",
   "close": "Tutup",
   "clear": "Hapus",
@@ -176,9 +170,7 @@
   "tabs": {
     "today": "Hari ini",
     "map": "Peta",
-    "chat": "Hi",
-    "passport": "Paspor",
-    "ranks": "Peringkat"
+    "passport": "Paspor"
   },
   "scope": {
     "title": "Tampilkan",
@@ -200,7 +192,6 @@
     "requiredTitle": "Perbarui Hilads",
     "requiredBody": "Versi ini sudah nggak didukung. Perbarui aplikasinya biar tetap bisa pakai Hilads."
   },
-  "mapSoon": "Peta tempat segera hadir.",
   "firstLaunch": "Main lokal. Bandingkan global.",
   "signUp": "Daftar",
   "open": "Buka",
@@ -225,7 +216,6 @@
     "errorBody": "Laporan gagal dikirim. Coba lagi."
   },
   "subtitles": {
-    "map": "Tempat dari foto-foto seluruh dunia.",
     "hi": "Sapa kotamu. Ikut rencana.",
     "passport": "Kotamu, fotomu, stempelmu."
   },
@@ -257,7 +247,7 @@
     "off": "Nonaktif"
   },
   "wakingUp": {
-    "title": "Hilads lagi bangun… 🌍",
-    "body": "Balik lagi dalam beberapa detik, kami terus coba ya."
+    "title": "Hilads nggak bisa dijangkau",
+    "body": "Cek koneksimu ya. Kami terus coba."
   }
 }

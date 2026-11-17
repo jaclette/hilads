@@ -1,7 +1,7 @@
 import { View, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import { Spacing } from '@/constants';
+import { Space, Spacing } from '@/constants';
 import { useThemedStyles } from '@/context/ThemeContext';
 import { Button, EmptyState } from '@/ui';
 
@@ -30,5 +30,5 @@ export function UpgradePrompt({ title, subtitle }: { title: string; subtitle: st
 
 const makeStyles = () => StyleSheet.create({
   container: { flex: 1, justifyContent: 'center', paddingHorizontal: Spacing.lg },
-  actions:   { alignSelf: 'stretch', gap: 10, marginTop: Spacing.sm },
+  actions:   { alignSelf: 'stretch', gap: Space.md, marginTop: Spacing.sm },
 });

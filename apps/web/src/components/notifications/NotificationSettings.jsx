@@ -35,8 +35,13 @@ function Toggle({ checked, onChange, color, label }) {
  * push status, one group per category with a master toggle and its toggles
  * (each with a one-line description), quiet hours; saved at once, with a ✓.
  */
+/** Private, plan and city messages (dm:prefs.* strings): they lived on the Messages screen. */
+const MESSAGE_TOGGLES = [{ label: 'dm', key: 'dm_push' }, { label: 'event', key: 'event_message_push' }, { label: 'city', key: 'channel_message_push' }]
+const MESSAGE_KEYS = MESSAGE_TOGGLES.map(x => x.key)
+
 export default function NotificationSettings({ onBack }) {
   const { t } = useTranslation('notifications')
+  const { t: tdm } = useTranslation('dm')
   const [prefs, setPrefs] = useState(null)
   const [saved, setSaved] = useState(0)
   const supported = 'Notification' in window && 'serviceWorker' in navigator
@@ -98,6 +103,22 @@ export default function NotificationSettings({ onBack }) {
             </div>
           )
         })}
+        {/* Messages (moved here from the Messages screen: every push setting in one place). */}
+        {prefs && (
+          <div className="n6-card">
+            <div className="n6-group-head">
+              <span className="n6-group-emoji" style={{ background: 'var(--primary-tint)' }}>💬</span>
+              <span className="n6-group-title">{tdm('title')}</span>
+              <Toggle checked={on(MESSAGE_KEYS)} onChange={v => setAll(MESSAGE_KEYS, v)} label={tdm('title')} />
+            </div>
+            {MESSAGE_TOGGLES.map(x => (
+              <div key={x.label} className="n6-pref">
+                <span className="n6-pref-text"><span className="n6-pref-label">{tdm(`prefs.${x.label}Name`)}</span><span className="n6-sub">{tdm(`prefs.${x.label}Desc`)}</span></span>
+                <Toggle checked={on([x.key])} onChange={v => setAll([x.key], v)} label={tdm(`prefs.${x.label}Name`)} />
+              </div>
+            ))}
+          </div>
+        )}
         {prefs && (
           <div className="n6-card">
             <div className="n6-group-head">

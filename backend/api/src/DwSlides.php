@@ -26,10 +26,12 @@ final class DwSlides
     public const W = 1080;
     public const H = 1920;
 
-    private const BG     = '#16110D';
-    private const TEXT   = '#FFFFFF';
-    private const ACCENT = '#FF7A3D';
-    private const GOLD   = '#D9AE52';
+    // The light identity of the reaction format (since 2026-11-12): a cream text area under the picture's curved edge,
+    // dark text, the headline's accent words in terracotta, Baloo 2 headlines (tools/promo/src/Worlds.jsx, the same).
+    private const BG     = '#FFF6E9';
+    private const TEXT   = '#2B1A12';
+    private const MUTED  = '#6E5444';
+    private const ACCENT = '#C24E1C';
     private const LEFT   = 72;
     private const RIGHT  = 170;
     private const BOTTOM = 1560;
@@ -39,11 +41,14 @@ final class DwSlides
     private const CTA_TOP  = 1472;
     private const CTA_LOGO = 64;
     // The detail under a headline (the context, the twist, the hook's kicker): smaller, lighter, 1-2 lines.
-    public const DETAIL_MAX = 52;
-    public const DETAIL_MIN = 34;
+    public const DETAIL_MAX = 50;
+    public const DETAIL_MIN = 32;
     public const DETAIL_LINES = 2;
-    public const DETAIL_GAP = 30;
-    public const DETAIL_LEADING = 1.2;
+    public const DETAIL_GAP = 26;
+    public const DETAIL_LEADING = 1.22;
+    private const LEADING = 1.06;     // Baloo 2 headlines
+    private const ROW_TOP = 1100;     // the number, the flag and the country
+    private const HEAD_TOP = 1196;
 
     /** Background colours of an illustration that failed (a plain slide, still on brand). */
     private const FALLBACK = ['hook' => ['#FF7A3D', '#D9622A'], 'country' => ['#D9AE52', '#C98A45'], 'outro' => ['#D9622A', '#3A2216']];
@@ -51,6 +56,12 @@ final class DwSlides
     public static function font(string $weight = 'ExtraBold'): string
     {
         return __DIR__ . '/../assets/fonts/BeVietnamPro-' . $weight . '.ttf';
+    }
+
+    /** Baloo 2 ExtraBold (the headlines; a static instance of the variable font, for GD and rsvg). */
+    public static function headFont(): string
+    {
+        return __DIR__ . '/../assets/fonts/Baloo2-ExtraBold.ttf';
     }
 
     /**
@@ -237,10 +248,8 @@ final class DwSlides
         $o     = [];
 
         $o[] = '<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1920" viewBox="0 0 1080 1920">';
-        $o[] = '<defs><linearGradient id="dwFade" x1="0" y1="0" x2="0" y2="1">'
-             . '<stop offset="0" stop-color="' . self::BG . '" stop-opacity="0"/><stop offset="1" stop-color="' . self::BG . '" stop-opacity="1"/></linearGradient>';
         [$c1, $c2] = self::FALLBACK[$kind] ?? self::FALLBACK['country'];
-        $o[] = '<linearGradient id="dwPlain" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="' . $c1 . '"/><stop offset="1" stop-color="' . $c2 . '"/></linearGradient></defs>';
+        $o[] = '<defs><linearGradient id="dwPlain" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="' . $c1 . '"/><stop offset="1" stop-color="' . $c2 . '"/></linearGradient></defs>';
         $o[] = '<rect width="1080" height="1920" fill="' . self::BG . '"/>';
 
         if ($photo !== null) {
@@ -252,51 +261,58 @@ final class DwSlides
                  . '<circle cx="840" cy="260" r="190" fill="#FFFFFF" fill-opacity="0.14"/>'
                  . '<circle cx="230" cy="760" r="270" fill="#FFFFFF" fill-opacity="0.10"/>';
         }
-        $o[] = '<rect y="930" width="1080" height="152" fill="url(#dwFade)"/>';
+        // The curved edge into the text area (as the reaction format).
+        $o[] = '<svg x="0" y="992" width="1080" height="90" viewBox="0 0 400 34" preserveAspectRatio="none"><path d="M0 22 C70 34 120 4 200 10 C270 15 320 30 400 14 L400 35 L0 35Z" fill="' . self::BG . '"/></svg>';
 
-        // The series mark, on every slide.
+        // The series mark, on the picture (top left), and the picture's credit (top right).
         $bold = self::font('ExtraBold');
         $semi = self::font('SemiBold');
         $a = 'DIFFERENT WORLDS';
         $b = 'by Hilads';
-        $wa = self::measure($a, 24, $bold) + strlen($a) * 2;    // + letter-spacing 2
-        $wb = self::measure($b, 24, $semi);
-        $pill = 28 + $wa + 12 + $wb + 28;
-        $o[] = '<rect x="' . $x . '" y="996" width="' . round($pill) . '" height="56" rx="28" fill="' . self::BG . '" fill-opacity="0.9"/>';
-        $o[] = '<text x="' . ($x + 28) . '" y="1033" font-family="Be Vietnam Pro" font-weight="800" font-size="24" letter-spacing="2" fill="' . self::ACCENT . '">' . self::esc($a) . '</text>';
-        $o[] = '<text x="' . round($x + 28 + $wa + 12) . '" y="1033" font-family="Be Vietnam Pro" font-weight="600" font-size="24" fill="' . self::TEXT . '">' . self::esc($b) . '</text>';
-
+        $wa = self::measure($a, 21, $bold) + strlen($a) * 2;
+        $wb = self::measure($b, 21, $semi);
+        $o[] = '<rect x="32" y="150" width="' . round(18 + $wa + 10 + $wb + 18) . '" height="44" rx="22" fill="' . self::BG . '" fill-opacity="0.92"/>';
+        $o[] = '<text x="50" y="179" font-family="Be Vietnam Pro" font-weight="800" font-size="21" letter-spacing="2" fill="' . self::ACCENT . '">' . self::esc($a) . '</text>';
+        $o[] = '<text x="' . round(50 + $wa + 10) . '" y="179" font-family="Be Vietnam Pro" font-weight="600" font-size="21" fill="' . self::TEXT . '">' . self::esc($b) . '</text>';
         $credit = self::plain((string) ($slide['credit'] ?? ''));
         if ($credit !== '' && ($photo !== null || $illustration !== null)) {
-            [, $cl] = self::fit($credit, 18, 14, $width, 1, $semi);
-            $o[] = '<text x="' . $x . '" y="1090" font-family="Be Vietnam Pro" font-weight="600" font-size="' . (self::measure($credit, 18, $semi) <= $width ? 18 : 14)
-                 . '" fill="#FFFFFF" fill-opacity="0.55">' . self::esc($cl[0] ?? $credit) . '</text>';
+            [, $cl] = self::fit($credit, 18, 14, 600, 1, $semi);
+            $line = $cl[0] ?? $credit;
+            $cw = self::measure($line, 18, $semi) + 24;
+            $o[] = '<rect x="' . round(1056 - $cw) . '" y="210" width="' . round($cw) . '" height="30" rx="14" fill="#000000" fill-opacity="0.4"/>';
+            $o[] = '<text x="' . round(1056 - $cw + 12) . '" y="231" font-family="Be Vietnam Pro" font-weight="600" font-size="18" fill="#FFFFFF" fill-opacity="0.9">' . self::esc($line) . '</text>';
         }
-        $o[] = '<rect x="' . $x . '" y="1120" width="88" height="8" rx="4" fill="' . self::ACCENT . '"/>';
 
-        if ($kind === 'country') {
-            $top = 1160;
+        $accent = self::plain((string) ($slide['accent'] ?? ''));
+        $country = self::plain((string) ($slide['country'] ?? ''));
+        if (($kind === 'country' || $kind === 'hook') && $country !== '') {
+            $rowX = $x;
+            if (isset($slide['number'])) {
+                $num = '#' . (int) $slide['number'];
+                $o[] = '<text x="' . $x . '" y="' . (self::ROW_TOP + 54) . '" font-family="Baloo 2" font-weight="800" font-size="52" fill="' . self::ACCENT . '">' . self::esc($num) . '</text>';
+                $rowX += (int) round(self::measure($num, 52, self::headFont()) + 18);
+            }
             $flagFile = self::flagFile((string) ($slide['flag'] ?? ''));
-            $nameX = $x;
             if ($flagFile !== null) {
                 $flag = (string) file_get_contents($flagFile);
-                $o[] = preg_replace('/^<svg\b/', '<svg x="' . $x . '" y="' . $top . '" width="76" height="76"', trim($flag), 1);
-                $nameX = $x + 96;
+                $o[] = preg_replace('/^<svg\b/', '<svg x="' . $rowX . '" y="' . (self::ROW_TOP + 4) . '" width="64" height="64"', trim($flag), 1);
+                $rowX += 80;
             }
-            $name = self::plain((string) ($slide['country'] ?? ''));
-            [$npx, $nlines] = self::fit($name, 56, 36, $width - ($nameX - $x), 1, self::font('Bold'));
-            $o[] = '<text x="' . $nameX . '" y="' . ($top + 38 + round($npx * 0.36)) . '" font-family="Be Vietnam Pro" font-weight="700" font-size="' . $npx . '" fill="' . self::GOLD . '">' . self::esc($nlines[0] ?? $name) . '</text>';
-            array_push($o, ...self::twoLevel($text, self::plain((string) ($slide['detail'] ?? '')), $x, 1276, $width, 96, 48));
+            [$npx, $nlines] = self::fit($country, 44, 30, $width - ($rowX - $x), 1, self::font('Bold'));
+            $o[] = '<text x="' . $rowX . '" y="' . (self::ROW_TOP + 36 + round($npx * 0.36)) . '" font-family="Be Vietnam Pro" font-weight="700" font-size="' . $npx . '" fill="' . self::TEXT . '">' . self::esc($nlines[0] ?? $country) . '</text>';
+        }
+        if ($kind === 'country') {
+            array_push($o, ...self::twoLevel($text, self::plain((string) ($slide['detail'] ?? '')), $x, self::HEAD_TOP, $width, 96, 52, $accent));
         } elseif ($kind === 'outro') {
-            $o[] = '<text x="' . $x . '" y="1196" font-family="Be Vietnam Pro" font-weight="800" font-size="34" letter-spacing="3" fill="' . self::ACCENT . '">YOUR TURN</text>';
+            $o[] = '<text x="' . $x . '" y="1142" font-family="Be Vietnam Pro" font-weight="800" font-size="34" letter-spacing="3" fill="' . self::ACCENT . '">YOUR TURN</text>';
             $cta = self::plain((string) ($slide['cta'] ?? ''));
-            // The question stays the main element; the hilads.live line sits under it, much smaller.
-            $o[] = self::block($text, $x, 1226, $width, 104, 56, $cta !== '' ? self::OUTRO_QUESTION_BOTTOM : self::BOTTOM, $qpx);
+            // The question stays the main element (YOU / YOUR in terracotta); the hilads.live line sits under it, much smaller.
+            $o[] = self::block($text, $x, 1170, $width, 104, 56, $cta !== '' ? self::OUTRO_QUESTION_BOTTOM : self::BOTTOM, $qpx, $end, '', true);
             if ($cta !== '') {
                 $o[] = self::cta($cta, $x, $width, intdiv($qpx, 2));
             }
         } else {
-            array_push($o, ...self::twoLevel($text, self::plain((string) ($slide['detail'] ?? '')), $x, 1164, $width, 112, 56));
+            array_push($o, ...self::twoLevel($text, self::plain((string) ($slide['detail'] ?? '')), $x, $country !== '' ? self::HEAD_TOP : 1130, $width, 112, 56, $accent));
         }
 
         $o[] = '</svg>';
@@ -319,7 +335,7 @@ final class DwSlides
         $spans = '';
         foreach ($parts as $part) {
             $hi = strcasecmp($part, 'hilads.live') === 0;
-            $spans .= '<tspan font-weight="' . ($hi ? 800 : 600) . '" fill="' . ($hi ? self::ACCENT : self::TEXT) . '"' . ($hi ? '' : ' fill-opacity="0.9"') . '>' . self::esc($part) . '</tspan>';
+            $spans .= '<tspan font-weight="' . ($hi ? 800 : 600) . '" fill="' . ($hi ? self::ACCENT : self::TEXT) . '">' . self::esc($part) . '</tspan>';
         }
         $baseline = self::CTA_TOP + (int) round(self::CTA_LOGO / 2 + $px * 0.36);
         // xml:space keeps the space before "hilads.live" (SVG collapses it at a tspan boundary).
@@ -331,16 +347,16 @@ final class DwSlides
      * size is chosen first (DETAIL_MAX down, at most DETAIL_LINES lines) so the headline keeps
      * room above it. No detail: the headline alone, down to the safe line.
      */
-    private static function twoLevel(string $headline, string $detail, int $x, int $top, int $width, int $max, int $min): array
+    private static function twoLevel(string $headline, string $detail, int $x, int $top, int $width, int $max, int $min, string $accent = ''): array
     {
         if ($detail === '') {
-            return [self::block($headline, $x, $top, $width, $max, $min)];
+            return [self::block($headline, $x, $top, $width, $max, $min, self::BOTTOM, $used, $end, $accent)];
         }
         [$dpx, $dlines] = self::detailFit($detail, $width);
         $dHeight = (int) round($dpx * 0.95 + (count($dlines) - 1) * $dpx * self::DETAIL_LEADING);
-        $out = [self::block($headline, $x, $top, $width, $max, $min, self::BOTTOM - self::DETAIL_GAP - $dHeight, $used, $end)];
+        $out = [self::block($headline, $x, $top, $width, $max, $min, self::BOTTOM - self::DETAIL_GAP - $dHeight, $used, $end, $accent)];
         $dTop = $end + self::DETAIL_GAP;
-        $t = '<text font-family="Be Vietnam Pro" font-weight="600" font-size="' . $dpx . '" fill="' . self::TEXT . '" fill-opacity="0.78">';
+        $t = '<text font-family="Be Vietnam Pro" font-weight="600" font-size="' . $dpx . '" fill="' . self::MUTED . '">';
         foreach ($dlines as $i => $line) {
             $t .= '<tspan x="' . $x . '" y="' . round($dTop + $dpx * 0.95 + $i * $dpx * self::DETAIL_LEADING) . '">' . self::esc($line) . '</tspan>';
         }
@@ -351,20 +367,34 @@ final class DwSlides
     /** The detail's size and lines: the biggest from DETAIL_MAX that fits in DETAIL_LINES lines of $width. */
     public static function detailFit(string $detail, int $width): array
     {
-        return self::fit($detail, self::DETAIL_MAX, self::DETAIL_MIN, $width, self::DETAIL_LINES, self::font('SemiBold'));
+        $font = self::font('SemiBold');
+        [$px, $lines] = self::fit($detail, self::DETAIL_MAX, self::DETAIL_MIN, $width, self::DETAIL_LINES, $font);
+        if (count($lines) === 2) {
+            // Balanced: no word alone on the second line.
+            $words = preg_split('/\s+/', trim($detail));
+            $w = static fn(string $t) => self::measure($t, $px, $font);
+            for ($k = 1; $k < count($words); $k++) {
+                $l1 = implode(' ', array_slice($words, 0, $k));
+                $l2 = implode(' ', array_slice($words, $k));
+                if ($w($l1) <= $width && $w($l2) <= $width && max($w($l1), $w($l2)) < max($w($lines[0]), $w($lines[1]))) {
+                    $lines = [$l1, $l2];
+                }
+            }
+        }
+        return [$px, $lines];
     }
 
     /**
      * A wrapped text block whose first line's top is $top: the biggest size that fits above $bottom.
      * $used = that size, $end = the bottom of its last line.
      */
-    private static function block(string $text, int $x, int $top, int $width, int $max, int $min, int $bottom = self::BOTTOM, ?int &$used = null, ?int &$end = null): string
+    private static function block(string $text, int $x, int $top, int $width, int $max, int $min, int $bottom = self::BOTTOM, ?int &$used = null, ?int &$end = null, string $accent = '', bool $you = false): string
     {
-        $font = self::font('ExtraBold');
+        $font = self::headFont();
         $lines = [];
         for ($px = $max; $px >= $min; $px -= 4) {
             $lines = self::wrap($text, $px, $width, $font);
-            $height = $px * 0.95 + (count($lines) - 1) * $px * 1.16;
+            $height = $px * 0.95 + (count($lines) - 1) * $px * self::LEADING;
             $widest = max(array_map(static fn($l) => self::measure($l, $px, $font), $lines ?: ['']));
             if ($top + $height <= $bottom && $widest <= $width) {
                 break;
@@ -372,10 +402,22 @@ final class DwSlides
         }
         $px = max($px, $min);
         $used = $px;
-        $end = (int) round($top + $px * 0.95 + (count($lines) - 1) * $px * 1.16);
-        $out = '<text font-family="Be Vietnam Pro" font-weight="800" font-size="' . $px . '" fill="' . self::TEXT . '">';
+        $end = (int) round($top + $px * 0.95 + (count($lines) - 1) * $px * self::LEADING);
+        // The accent words (as written in the headline) in terracotta; the outro's YOU / YOUR too.
+        $a = mb_strtolower(trim($accent));
+        $at = $a !== '' ? mb_strpos(mb_strtolower($text), $a) : false;
+        $out = '<text font-family="Baloo 2" font-weight="800" font-size="' . $px . '" fill="' . self::TEXT . '" xml:space="preserve">';
+        $pos = 0;
         foreach ($lines as $i => $line) {
-            $out .= '<tspan x="' . $x . '" y="' . round($top + $px * 0.95 + $i * $px * 1.16) . '">' . self::esc($line) . '</tspan>';
+            $out .= '<tspan x="' . $x . '" y="' . round($top + $px * 0.95 + $i * $px * self::LEADING) . '">';
+            foreach (preg_split('/ /', $line) as $k => $word) {
+                $start = mb_strpos($text, $word, $pos);
+                $start = $start === false ? $pos : $start;
+                $pos = $start + mb_strlen($word);
+                $hot = ($at !== false && $start >= $at && $pos <= $at + mb_strlen($a)) || ($you && preg_match('/^YOU(R)?\b/', $word));
+                $out .= ($k ? ' ' : '') . ($hot ? '<tspan fill="' . self::ACCENT . '">' . self::esc($word) . '</tspan>' : self::esc($word));
+            }
+            $out .= '</tspan>';
         }
         return $out . '</text>';
     }

@@ -1,8 +1,5 @@
 {
   "emptyTitle": "Nada rolando ainda",
-  "emptyBeFirst": "Saia na frente em {{city}}",
-  "emptyStartNow": "Comece algo agora",
-  "emptyCreateLine": "Crie um evento ou comece um rolê.",
   "hostSpotTitle": "Anime seu lugar",
   "hostSpotCity": "Deixe {{city}} mais viva.",
   "hostSpotNoCity": "Deixe sua cidade mais viva.",
@@ -11,8 +8,6 @@
   "noHangouts": "Nenhum rolê ainda",
   "beFirstEventCity": "Crie o primeiro em {{city}}",
   "beFirstEvent": "Crie o primeiro",
-  "hangoutTalk": "Comece um rolê e bote a cidade pra conversar",
-  "startHangout": "Começar um rolê 🗣️",
   "inspiration": {
     "heading": "Ideias de rolês",
     "sub": "Ideias de moradores de outras cidades pra você se inspirar",
@@ -31,26 +26,7 @@
   "browseCities": "Explorar cidades",
   "filterAll": "Tudo",
   "filterChallenges": "Desafios",
-  "challengesSection": "Desafios",
-  "seeAllChallenges": "Ver todos →",
   "noChallenges": "Nenhum desafio ainda",
-  "noChallengesCity": "Lance o primeiro em {{city}}",
-  "noChallengesGeneric": "Lance o primeiro desafio.",
-  "seeComing": "Veja o que vem por aí",
-  "createNew": "Criar",
-  "seeHappened": "veja o que rolou →",
   "going": "vão",
-  "inThisHangout": "neste rolê",
-  "create": {
-    "title": "Qual é a boa?",
-    "challengeLabel": "Lançar um desafio",
-    "challengeSub": "Moradores e viajantes, conectados por um desafio",
-    "hangoutLabel": "Começar um rolê",
-    "hangoutSub": "Na hora - a galera entra com você agora",
-    "eventLabel": "Criar um evento",
-    "eventSub": "Planeje algo pra galera participar",
-    "cancel": "Cancelar"
-  },
-  "hiNowHint": "rolê agora",
-  "hiLaterHint": "planejar um evento"
+  "inThisHangout": "neste rolê"
 }

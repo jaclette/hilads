@@ -5,7 +5,7 @@
 // One set of parts for the story video (1080×1920) and the carousel (1080×1350).
 
 import { AbsoluteFill, Img, OffthreadVideo, Sequence, interpolate, spring, staticFile, useCurrentFrame, useVideoConfig } from 'remotion';
-import { loadFont } from '@remotion/fonts';
+import { loadFont } from './fonts.jsx';
 import { COPY, answerText, flagEmoji } from './copy.js';
 
 const CREAM = '#FBF5EE';

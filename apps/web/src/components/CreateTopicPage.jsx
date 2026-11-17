@@ -60,7 +60,7 @@ export default function CreateTopicPage({ channelId, guest, onCreated, onUpdated
           <span className="topic-gated-sub">
             {t('create.limitSub', { title: limitTopic.title })}
           </span>
-          <button className="topic-join-btn" onClick={() => onGoToHangout?.(limitTopic.id)}>{t('create.limitGo')}</button>
+          <button className="topic-join-btn btn-primary" onClick={() => onGoToHangout?.(limitTopic.id)}>{t('create.limitGo')}</button>
         </div>
       </div>
     )
@@ -92,7 +92,7 @@ export default function CreateTopicPage({ channelId, guest, onCreated, onUpdated
 
           {/* Expiry note */}
           {!isEdit && (
-            <p style={{ fontSize: 13, color: '#888', margin: '4px 0 0', textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
+            <p style={{ fontSize: 'var(--fs-xs)', color: '#888', margin: 'var(--sp-4) 0 0', textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 'var(--sp-8)' }}>
               <Icon name="time-outline" size={14} />{t('create.expiry')}
             </p>
           )}
@@ -100,7 +100,7 @@ export default function CreateTopicPage({ channelId, guest, onCreated, onUpdated
           {/* Geo explainer - why turning on location matters (parity with native). */}
           {!isEdit && (
             <div className="topic-geohint">
-              <Icon name="location-outline" size={16} style={{ marginRight: 6 }} />{t('create.geoHint')}
+              <Icon name="location-outline" size={16} style={{ marginRight: 'var(--sp-8)' }} />{t('create.geoHint')}
             </div>
           )}
 
@@ -108,7 +108,7 @@ export default function CreateTopicPage({ channelId, guest, onCreated, onUpdated
 
           <button
             type="submit"
-            className="cef-submit"
+            className="cef-submit btn-primary"
             disabled={submitting || !title.trim()}
           >
             {submitting ? (isEdit ? t('create.saving') : t('create.starting')) : (isEdit ? t('create.saveChanges') : t('create.startCta'))}

@@ -46,19 +46,6 @@ export function defaultThemeFor(date: string): DailyThemeKey {
   return THEME_KEYS.find(k => THEME_WEEKDAY[k] === iso) ?? 'hidden_gem';
 }
 
-/** The next date (after `today`, Y-m-d) on the theme's weekday, as a localized weekday name. */
-export function nextThemeDay(key: DailyThemeKey, today: string, locale: string): string {
-  const d = new Date(`${today}T12:00:00Z`);
-  const iso = d.getUTCDay() || 7;
-  const ahead = ((THEME_WEEKDAY[key] - iso + 7) % 7) || 7;
-  d.setUTCDate(d.getUTCDate() + ahead);
-  try {
-    return d.toLocaleDateString(locale, { weekday: 'long', timeZone: 'UTC' });
-  } catch {
-    return d.toISOString().slice(0, 10);
-  }
-}
-
 /** Y-m-d of a Date in UTC (challenge dates are UTC dates). */
 export function ymd(d: Date): string {
   return d.toISOString().slice(0, 10);

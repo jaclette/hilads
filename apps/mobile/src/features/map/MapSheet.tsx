@@ -1,5 +1,5 @@
 import { createContext, forwardRef, useCallback, useContext, useEffect, useImperativeHandle, useMemo, useRef, useState, type ReactNode } from 'react';
-import { Platform, Pressable, Text, View, StyleSheet, type LayoutChangeEvent } from 'react-native';
+import { Pressable, Text, View, StyleSheet, type LayoutChangeEvent } from 'react-native';
 import BottomSheet, { BottomSheetFlatList, type BottomSheetBackgroundProps } from '@gorhom/bottom-sheet';
 import Animated, { cancelAnimation, Easing, Extrapolation, interpolate, useAnimatedProps, useAnimatedStyle, useReducedMotion, useSharedValue, withDelay, withRepeat, withSequence, withTiming } from 'react-native-reanimated';
 import Svg, { Defs, LinearGradient, Path, Stop } from 'react-native-svg';
@@ -9,7 +9,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useTranslation } from 'react-i18next';
 import { useIsFocused } from 'expo-router/react-navigation';
 import { Ionicons } from '@expo/vector-icons';
-import { type ThemeColors } from '@/constants';
+import { Space, Radius, Type, IconSize, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { track } from '@/services/analytics';
 import type { Spot } from '@/api/spots';
@@ -39,10 +39,10 @@ export type MapSheetHandle = { snapTo: (index: 0 | 1 | 2) => void };
  * The peek (V6.3) is an orange wave: one smooth asymmetric swell across the
  * width (the white handle on its higher hump), a gradient from the brand orange
  * to terracotta with a soft shadow above it; on it, a mini stack of the three
- * nearest spots' photos as tilted polaroids, "📍 [6] spots to explore" in white
+ * nearest spots' photos as tilted polaroids, "[6] spots to explore" in white
  * on one line (shrinking when a language needs it; the number in a white pill,
  * rolling to its new value when the area or the filters change), "Nearest 120 m
- * away · swipe up 👆" ("No spots here yet, be the pioneer 📍" when empty) and a
+ * away · swipe up" ("No spots here yet, be the pioneer 📍" when empty) and a
  * white chevron. The wave undulates and the chevron bounces until the sheet is
  * opened once (remembered), neither with reduced motion. A tap opens it to half;
  * open, the wave header stays on top and the list keeps the light ground.
@@ -99,7 +99,7 @@ export const MapSheet = forwardRef<MapSheetHandle, {
     if (i > 0 && hint) { setHint(false); AsyncStorage.setItem(HINT_KEY, '1').catch(() => {}); }
   }, [hint]);
 
-  // The title: "📍 [6] spots to explore", the number in its pill (§ marks where it goes in each language).
+  // The title: "[6] spots to explore", the number in its pill (§ marks where it goes in each language).
   const count = spots.length;
   const [before, after = ''] = t('map.sheet.peekTitle', { count, num: '§' }).split('§');
   const nearest = me && data.length && !emptyArea ? meters(me, [data[0].lng, data[0].lat]) : null;
@@ -120,6 +120,9 @@ export const MapSheet = forwardRef<MapSheetHandle, {
       backgroundComponent={WaveBackground}
       handleComponent={WaveHandle}
       enableDynamicSizing={false}
+      // The library makes the whole sheet ONE accessibility element by default: VoiceOver (and the
+      // UI tests) could reach its head but not the spot rows. Its children are reachable one by one.
+      accessible={false}
     >
       <Pressable onLayout={onHead} onPress={atPeek ? openHalf : undefined} disabled={!atPeek} style={styles.head} testID="map-sheet"
                  accessibilityRole="button" accessibilityLabel={`${before}${emptyArea ? 0 : count}${after}${place ? ` (${place})` : ''}. ${sub}`} accessibilityHint={t('map.sheet.hint')}>
@@ -233,7 +236,8 @@ function WaveHandle() {
 /** The three nearest spots' photos as a mini stack of tilted polaroids (crossfading when they change). */
 function Polaroids({ spots }: { spots: Spot[] }) {
   const styles = useThemedStyles(makeStyles);
-  if (!spots.length) return <View style={styles.pinTile}><Text style={styles.pinEmoji}>📍</Text></View>;
+  const { colors } = useTheme();
+  if (!spots.length) return <View style={styles.pinTile}><Ionicons name="location" size={26} color={colors.peekInk} /></View>;
   return (
     <View style={[styles.stack, { width: 40 + POL_LEFT[spots.length - 1] }]} accessible={false}>
       {spots.map((s, i) => (
@@ -286,7 +290,7 @@ function Bounce({ active, reduced }: { active: boolean; reduced: boolean }) {
   const st = useAnimatedStyle(() => ({ transform: [{ translateY: y.value }] }));
   return (
     <Animated.View style={[styles.chevron, st]}>
-      <Ionicons name="chevron-up" size={20} color={colors.peekInk} />
+      <Ionicons name="chevron-up" size={IconSize.md} color={colors.peekInk} />
     </Animated.View>
   );
 }
@@ -296,22 +300,21 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   ground:      { position: 'absolute', left: 0, right: 0, bottom: 0, backgroundColor: c.bg },
   handleBox:   { height: WAVE },
   handle:      { position: 'absolute', top: 11, width: HANDLE_W, height: 5, borderRadius: 3, backgroundColor: c.onPeek },
-  head:        { flexDirection: 'row', alignItems: 'center', gap: 12, paddingLeft: 16, paddingRight: 12, paddingTop: 2, paddingBottom: 14 },
-  headText:    { flex: 1, minWidth: 0, gap: 3 },
-  titleRow:    { flexDirection: 'row', alignItems: 'center', columnGap: 6 },
-  title:       { fontSize: 19, lineHeight: 24, fontWeight: '900', color: c.onPeek },
+  head:        { flexDirection: 'row', alignItems: 'center', gap: Space.md, paddingLeft: Space.lg, paddingRight: Space.md, paddingTop: Space.xxs, paddingBottom: Space.lg },
+  headText:    { flex: 1, minWidth: 0, gap: Space.xs },
+  titleRow:    { flexDirection: 'row', alignItems: 'center', columnGap: Space.sm },
+  title:       { ...Type.title, color: c.onPeek },
   titlePart:   { flexShrink: 1 },
-  sub:         { fontSize: 13, lineHeight: 18, fontWeight: '700', color: c.onPeekMuted },
-  pill:        { flexShrink: 0, minWidth: 30, height: 26, paddingHorizontal: 9, borderRadius: 13, backgroundColor: c.onPeek, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
-  pillText:    { fontSize: 16, lineHeight: 20, fontWeight: '900', color: c.peekInk, textAlign: 'center' },
+  sub:         { ...Type.caption, fontWeight: '700', color: c.onPeekMuted },
+  pill:        { flexShrink: 0, minWidth: 30, height: 26, paddingHorizontal: Space.sm, borderRadius: Radius.control, backgroundColor: c.onPeek, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
+  pillText:    { ...Type.body, fontWeight: '800', lineHeight: 20, color: c.peekInk, textAlign: 'center' },
   pillSizer:   { opacity: 0 },
   pillNum:     { position: 'absolute', left: 0, right: 0, top: 3 },
   stack:       { height: 56 },
   polaroid:    { position: 'absolute', width: 40, padding: 3, paddingBottom: 8, borderRadius: 3, backgroundColor: c.onPeek,
                  shadowColor: '#000000', shadowOpacity: 0.25, shadowRadius: 4, shadowOffset: { width: 0, height: 3 }, elevation: 4 },
   polaroidImg: { width: 34, height: 35, borderRadius: 2, backgroundColor: c.bg3 },
-  pinTile:     { width: 48, height: 48, borderRadius: 14, backgroundColor: c.onPeek, alignItems: 'center', justifyContent: 'center' },
-  pinEmoji:    { fontSize: 24 },
+  pinTile:     { width: 48, height: 48, borderRadius: Radius.inner, backgroundColor: c.onPeek, alignItems: 'center', justifyContent: 'center' },
   chevron:     { width: 36, height: 36, borderRadius: 18, backgroundColor: c.onPeek, alignItems: 'center', justifyContent: 'center' },
   list:        { paddingBottom: 40 },
 });

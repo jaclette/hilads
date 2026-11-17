@@ -94,7 +94,7 @@ type NotifData = {
   actorId?:         string;
   actorName?:       string;
   vibeId?:          number;
-  challengeId?:     string; // challenge_invitation / takeon_request
+  challengeId?:     string; // challenge_invitation / group_join / …
   invitationId?:    string; // challenge_invitation - id of the invitation row
   inviterName?:     string;
   deepLink?:        string; // admin push broadcast - a raw in-app path to open on tap
@@ -169,8 +169,8 @@ function handleNotificationAction(data: NotifData, action: string): string | nul
     return action === 'accept' ? `/topic/${data.topicId}` : null;
   }
 
-  // New-challenge offer (cross-city target / your-city new). Accept takes it
-  // on server-side, then deep-links to the challenge so the user lands on it.
+  // New-challenge offer (cross-city target / your-city new). Accept joins it
+  // server-side, then deep-links to the challenge so the user lands on it.
   if (action === 'accept'
       && (data.type === 'challenge_international_target' || data.type === 'new_challenge')
       && data.challengeId) {
@@ -179,8 +179,8 @@ function handleNotificationAction(data: NotifData, action: string): string | nul
     return `/challenge/${data.challengeId}`;
   }
 
-  // Personal challenge invitation. Accept runs the take-on path server-side
-  // and we deep-link to the challenge so the invitee sees their pending review.
+  // Personal challenge invitation. Accept joins the group challenge server-side
+  // and we deep-link to the challenge so the invitee lands in it.
   // Ignore is silent.
   if (data.type === 'challenge_invitation' && data.invitationId) {
     if (action === 'accept') {
@@ -314,31 +314,13 @@ function resolvePushRoute(data: NotifData): string | null {
 
     case 'challenge_proof_submitted':
       // Creator tapped "new proof to review" → open the challenge AND auto-open
-      // the ProofReviewModal (reviewProof=1), so they land straight on the photo
-      // review instead of having to find the pipeline CTA.
+      // the submissions gallery (reviewProof=1), so they land straight on the
+      // photos to pick the winner from.
       if (data.challengeId) return `/challenge/${data.challengeId}?reviewProof=1`;
       return null;
 
-    case 'rating_received':
-      // FIRST rating from the counterparty just landed. The
-      // RatePromptLaunchGate, mounted globally, refetches its prompts on
-      // app foreground (AppState 'active'), and surfaces the RateSheet
-      // automatically. Tap deep-links to the challenge as the visible
-      // context - the sheet appears over whatever screen renders.
-      if (data.challengeId) return `/challenge/${data.challengeId}`;
-      return null;
-
-    case 'challenge_rated_complete':
-      // SECOND rating landed → ScoreCelebrationLaunchGate surfaces the
-      // "+points" popin via the mutual_rating_complete WS event /
-      // /me/score-celebration refetch on foreground. Tap deep-links to
-      // the challenge so the popin renders on a coherent context.
-      if (data.challengeId) return `/challenge/${data.challengeId}`;
-      return null;
-
-    case 'challenge_takeon_request':
     case 'challenge_group_join':
-      // Someone took on / joined the creator's challenge → open it.
+      // Someone joined the creator's challenge → open it.
       if (data.challengeId) return `/challenge/${data.challengeId}`;
       return null;
 
@@ -489,7 +471,7 @@ export function NotificationHandler() {
     });
 
     return () => { receivedSub.remove(); sub.remove(); };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+   
   }, []);
 
   // Execute deferred navigation once boot completes

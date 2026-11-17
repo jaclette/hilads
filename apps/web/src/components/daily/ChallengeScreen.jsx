@@ -15,7 +15,7 @@ import { compareCountryGroups, compareCountryProofs } from './countryOrder'
 import WorldBubbles from './WorldBubbles'
 import {
   useDaily, useDc, useCountdown, formatCountdown, isFinalHours, formatAmount, personName, seedProofs, seedVotesLeft,
-  StatusChip, OriginalToggle, useOriginal, ProposedBy, ProofViewer, useHere, getLastToday, SheetSkeleton, challengeCover,
+  StatusChip, OriginalToggle, useOriginal, ProposedBy, useHere, getLastToday, SheetSkeleton, challengeCover,
 } from './dailyShared'
 import { SeasonalZone } from '../event/seasonal'
 import { placeholderStyle } from '../../lib/thumbhash'
@@ -68,7 +68,11 @@ function Challenge({ date, proofId = null, source = null, onBack }) {
     return { ...today, scope: 'world', proofs: [], hasMore: false, nextBefore: null, practical: { priceRanges: [], places: [] }, results: null }
   }, [loaded, date])
   const [error, setError] = useState(null)
-  const [viewing, setViewing] = useState(null)
+  // A photo of this day opens in the feed (the one photo viewer), the day's photos around it.
+  const openProof = (p, from) => {
+    const all = sheet?.proofs ?? []
+    openDaily('photos', { list: all.some(x => x.id === p.id) ? all : [p, ...all], proofId: p.id, source: from })
+  }
   const [showOriginal, toggleOriginal] = useOriginal()
   const challenge = sheet?.challenge ?? null
   const myProof = sheet?.myProof ?? null
@@ -121,8 +125,8 @@ function Challenge({ date, proofId = null, source = null, onBack }) {
     if (!proofId || opened.current || !sheet) return
     opened.current = true
     const known = [...sheet.proofs, sheet.myProof].find(p => p?.id === proofId)
-    if (known) { setViewing(known); return }
-    fetchDailyProof(proofId, i18n.language).then(p => { seedProofs([p], !!sheet.challenge?.isActive); setViewing(p) }).catch(() => {})
+    if (known) { openProof(known, 'challenge_link'); return }
+    fetchDailyProof(proofId, i18n.language).then(p => { seedProofs([p], !!sheet.challenge?.isActive); openProof(p, 'challenge_link') }).catch(() => {})
   }, [proofId, sheet]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const seeAll = (country) => {
@@ -131,7 +135,7 @@ function Challenge({ date, proofId = null, source = null, onBack }) {
   }
   const play = () => {
     track('challenge_cta_tapped', { played: !!myProof, platform_surface: 'web' })
-    if (myProof) { setViewing(myProof); return }
+    if (myProof) { openProof(myProof, 'challenge_mine'); return }
     track('web_today_take_clicked', { store: deviceStore() ?? 'ios', surface: 'challenge' })
     openAppModal({ action: 'play', city: here?.name ? shortCityName(here.name) : null, cityId: here?.id ?? null, surface: 'challenge_sheet' })
   }
@@ -175,7 +179,7 @@ function Challenge({ date, proofId = null, source = null, onBack }) {
         {/* 1. The hero: the cover, the theme, the question and the instruction. */}
         <div className="dch-hero">
           {cover && <img className="dch-hero-photo" {...coverImage(cover)} onError={thumbFallback(cover)} alt="" fetchPriority="high" decoding="async" />}
-          <div className="dch-hero-bottom">
+          <div className="dch-hero-bottom cover-scrim">
             {challenge.theme && (
               <span className="today-hero-chip today-hero-chip--theme" style={{ '--c': hue.fill, '--on': hue.onFill }}>
                 <Icon name={themeIcon(challenge.theme.key, challenge.special)} size={15} />{themeName(challenge.theme.key, { special: challenge.special })}
@@ -245,7 +249,7 @@ function Challenge({ date, proofId = null, source = null, onBack }) {
 
           {/* My photo (posted from the app): its status. */}
           {myProof && (
-            <button type="button" className="dch-row" onClick={() => setViewing(myProof)}>
+            <button type="button" className="dch-row" onClick={() => openProof(myProof, 'challenge_mine')}>
               <img className="dch-thumb" src={thumbUrl(myProof.thumbUrl || myProof.photoUrl)} style={placeholderStyle(myProof.thumbHash)} onError={thumbFallback(myProof.photoUrl)} alt="" loading="lazy" />
               <span className="dch-row-body">
                 <span className="dch-row-title">{t('yourProof')} <StatusChip status={myProof.status} /></span>
@@ -289,13 +293,12 @@ function Challenge({ date, proofId = null, source = null, onBack }) {
       {showBar && (
         <div className="dch-bar">
           {!myProof && <p className="dch-rule">{isPlaceTheme(challenge.theme?.key) ? t('proofHint.place') : t('proofHint.noPlace')}</p>}
-          <button type="button" className={`today-cta${myProof ? ' today-cta--taken' : ''}`} onClick={play}>
+          <button type="button" className={`today-cta ${myProof ? 'today-cta--taken btn-secondary' : 'btn-primary'}`} onClick={play}>
             <Icon name="camera-outline" size={20} />
             {myProof ? t('myCity.seeMine') : here?.name ? t('ctaAnswer', { city: shortCityName(here.name) }) : t('ctaAnswerNoCity')}
           </button>
         </div>
       )}
-      <ProofViewer proof={viewing} onClose={() => setViewing(null)} />
     </div>
   )
 }

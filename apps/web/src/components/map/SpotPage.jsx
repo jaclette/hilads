@@ -16,7 +16,7 @@ import { PickBadge, GoodToKnow } from './Pick'
 import { thumbUrl } from '../../lib/imageThumb'
 import { placeholderStyle } from '../../lib/thumbhash'
 
-const ROW = { display: 'inline-flex', alignItems: 'center', gap: 6 }
+const ROW = { display: 'inline-flex', alignItems: 'center', gap: 'var(--sp-8)' }
 
 /** The ranking line ("Top voted this week in Saigon"), week first. */
 function rankingLine(t, ranking) {
@@ -109,7 +109,7 @@ export default function SpotPage({ spotId, onBack }) {
                 <span key={k} style={ROW}>{(i > 0 || spot.city?.name) && ' · '}<Icon name={themeIcon(k)} size={14} />{themeName(k)}</span>
               ))}
             </p>
-            {rank && <p className="wm-spot-rank" style={{ display: 'flex', alignItems: 'center', gap: 6 }}><Icon name="trophy-outline" size={16} />{rank}</p>}
+            {rank && <p className="wm-spot-rank" style={{ display: 'flex', alignItems: 'center', gap: 'var(--sp-8)' }}><Icon name="trophy-outline" size={16} />{rank}</p>}
             {spot.pick && <PickBadge />}
             {/* A pick alone has no answers to count. */}
             {(spot.proofCount > 0 || price) && (
@@ -131,15 +131,15 @@ export default function SpotPage({ spotId, onBack }) {
             )}
 
             <div className="wm-spot-actions">
-              <a className="wm-btn wm-btn--ghost" href={directionsLink(getMapsApp() ?? 'google', spot.lat, spot.lng, mode)} target="_blank" rel="noopener noreferrer"
+              <a className="wm-btn btn-secondary" href={directionsLink(getMapsApp() ?? 'google', spot.lat, spot.lng, mode)} target="_blank" rel="noopener noreferrer"
                  onClick={directions}>
                 <Icon name="navigate-outline" size={18} />{t('map.directions')}
               </a>
-              <button type="button" className="wm-btn"
+              <button type="button" className="wm-btn btn-primary"
                  onClick={() => { track('web_app_map_card_clicked', { store: store ?? 'ios', placement: 'spot' }); openAppModal({ action: 'play', surface: 'spot' }) }}>
                 <Icon name="camera-outline" size={18} />{t('spot.proofInApp')}
               </button>
-              <button type="button" className="wm-btn wm-btn--ghost wm-spot-share" onClick={share}>
+              <button type="button" className="wm-btn btn-secondary wm-spot-share" onClick={share}>
                 <Icon name="share-social-outline" size={18} />{copied ? tc('shareLink.copied') : tc('shareLink.share')}
               </button>
             </div>
@@ -163,7 +163,7 @@ export default function SpotPage({ spotId, onBack }) {
                     </figure>
                   ))}
                 </div>
-                {next !== null && <button type="button" className="wm-btn wm-btn--ghost wm-more" onClick={more}>{t('spot.morePhotos')}</button>}
+                {next !== null && <button type="button" className="wm-btn btn-secondary wm-more" onClick={more}>{t('spot.morePhotos')}</button>}
               </>
             )}
 

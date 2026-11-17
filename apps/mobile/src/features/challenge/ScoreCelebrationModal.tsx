@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Dimensions, Modal, Pressable, Text, View, StyleSheet, type LayoutChangeEvent } from 'react-native';
+import { Modal, Pressable, Text, View, StyleSheet, type LayoutChangeEvent } from 'react-native';
 import Animated, {
   Easing, cancelAnimation, interpolate, type SharedValue, useAnimatedStyle, useReducedMotion, useSharedValue,
   withDelay, withRepeat, withSequence, withTiming,
@@ -16,6 +16,7 @@ import { themeName } from '@/features/daily/themes';
 import { ThemeIcon } from '@/ui/ThemeIcon';
 import { themeColor } from '@/ui/joy';
 import type { ScoreCelebration, ScoreWin, ScoreWinMedal } from '@/api/challenges';
+import { FontSizes } from '@/constants';
 
 /** Where a medal or the main button leads: the Ranks tab, segment, scope and period. */
 export type RanksTarget = { tab: 'players' | 'cities'; scope: 'city' | 'world'; period: 'today' | 'week' | 'alltime' };
@@ -36,7 +37,7 @@ type Props = {
  */
 const W = {
   ink: '#2B1A12', muted: '#7A6558', orange: '#F2783A', terra: '#C24E1C', terraShadow: '#8A330F',
-  green: '#1A9E6B', dim: 'rgba(30,15,5,0.55)', card3d: 'rgba(160,90,0,0.25)', track: '#F3E3C3',
+  green: '#1A9E6B', scrim: 'rgba(0,0,0,0.6)', card3d: 'rgba(160,90,0,0.25)', track: '#F3E3C3',
   coin: '#F2B200', coinEdge: '#D08E00', coinText: '#8A5A00', coinLight: '#FFE680',
   glass: 'rgba(255,255,255,0.75)', closeBg: 'rgba(255,255,255,0.6)',
   medal: {
@@ -53,7 +54,6 @@ const T = {
   coins: 850, coinGap: 90, coinDur: 650, odo: 1150, odoDur: 1100, chip: 1600, medals: [2000, 2250, 2500], medalDur: 450,
   goal: 2900, bar: 3100, barDur: 1000, ctas: 3300, fade: 400, end: 4100,
 };
-const COINS = 5;
 const OVERSHOOT = Easing.bezier(0.2, 1.8, 0.4, 1);
 
 function mix(a: string, b: string, t: number): string {
@@ -108,7 +108,9 @@ export function ScoreCelebrationModal({ data, visible, onClose, onOpenRanks, onS
   const [odoInstant, setOdoInstant] = useState(true);
   const [done, setDone] = useState(false);
   const [pill, setPill] = useState<{ x: number; y: number } | null>(null);
-  const [cardW, setCardW] = useState(0);
+  const [card, setCard] = useState({ w: 0, h: 0 });
+  const scrim = useSharedValue(0);
+  const cardW = card.w;
   const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
   const pop = useStep(), trophy = useStep(), wobble = useSharedValue(0), plus = useStep(), chip = useStep();
   const medalA = useStep(), medalB = useStep(), medalC = useStep(), goal = useStep(), bar = useStep(), ctas = useStep(), rays = useSharedValue(0);
@@ -144,7 +146,9 @@ export function ScoreCelebrationModal({ data, visible, onClose, onOpenRanks, onS
   };
 
   useEffect(() => {
-    if (!visible || !win) return;
+    if (!visible || !win) { scrim.value = 0; return; }
+    // Only the scrim fades in; the card is opaque from its first frame and pops (scale) above it.
+    scrim.value = reduced ? 1 : withTiming(1, { duration: 250, easing: Easing.out(Easing.ease) });
     clear();
     setDone(false); setOdoInstant(true); setOdoValue(from);
     [...all, ...coins, bar, wobble].forEach(v => { cancelAnimation(v); v.value = 0; });
@@ -175,7 +179,9 @@ export function ScoreCelebrationModal({ data, visible, onClose, onOpenRanks, onS
     return () => { clear(); cancelAnimation(rays); cancelAnimation(wobble); };
   }, [visible, win]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const popStyle = useAnimatedStyle(() => ({ opacity: Math.min(1, pop.value * 1.6), transform: [{ scale: 0.6 + 0.4 * pop.value }] }));
+  // Scale only: the card is opaque from its first frame (a fading card let Today show through it).
+  const scrimStyle = useAnimatedStyle(() => ({ opacity: scrim.value }));
+  const popStyle = useAnimatedStyle(() => ({ transform: [{ scale: 0.6 + 0.4 * pop.value }] }));
   const raysStyle = useAnimatedStyle(() => ({ transform: [{ rotate: `${rays.value * 360}deg` }] }));
   const trophyStyle = useAnimatedStyle(() => ({ transform: [{ scale: trophy.value }, { rotate: `${-20 * (1 - trophy.value) + wobble.value}deg` }] }));
   const plusStyle = useAnimatedStyle(() => ({ transform: [{ scale: plus.value }] }));
@@ -208,9 +214,12 @@ export function ScoreCelebrationModal({ data, visible, onClose, onOpenRanks, onS
     : win.goal.type === 'stamp' ? `${win.goal.done} / ${win.goal.total}` : null;
 
   return (
-    <Modal visible={visible} transparent statusBarTranslucent animationType="fade" onRequestClose={close}>
-      <Pressable style={styles.dim} onPress={done ? close : skip} accessibilityLabel={t('scoreWin.close')}>
-        <Animated.View style={[styles.card, popStyle]} onLayout={(e: LayoutChangeEvent) => setCardW(e.nativeEvent.layout.width)}>
+    <Modal visible={visible} transparent statusBarTranslucent animationType="none" onRequestClose={close}>
+      {/* Two layers: an opaque dark scrim over the whole screen, then the card on top of it. */}
+      <Animated.View style={[styles.scrim, scrimStyle]} pointerEvents="none" />
+      <Pressable style={styles.stage} onPress={done ? close : skip} accessibilityLabel={t('scoreWin.close')}>
+        <Animated.View style={[styles.card, { backgroundColor: tc.fill }, popStyle]}
+                       onLayout={(e: LayoutChangeEvent) => setCard({ w: e.nativeEvent.layout.width, h: e.nativeEvent.layout.height })}>
           {/* The day's color, light rays turning slowly, doodles. */}
           <Svg style={StyleSheet.absoluteFill} width="100%" height="100%">
             <Defs>
@@ -223,6 +232,8 @@ export function ScoreCelebrationModal({ data, visible, onClose, onOpenRanks, onS
             <Rect width="100%" height="100%" fill="url(#winBg)" />
           </Svg>
           <Animated.View style={[styles.rays, raysStyle]} pointerEvents="none"><Rays /></Animated.View>
+          {/* Confetti inside the card, over its background, clipped by its corners. */}
+          {!reduced && visible && card.h > 0 && <ConfettiRain width={card.w} height={card.h} />}
           <Text style={[styles.doodle, { left: 16, top: 120, color: tagColor }]}>✦</Text>
           <View style={[styles.doodle, { right: 20, top: 170 }]}><ThemeIcon theme={themeKey} size={22} color={tagColor} /></View>
           <Text style={[styles.doodle, { left: 24, top: 200, color: tagColor }]}>〰</Text>
@@ -313,7 +324,6 @@ export function ScoreCelebrationModal({ data, visible, onClose, onOpenRanks, onS
             <FlyingCoin key={i} p={c} sx={cardW / 2 - 11 + (i - 2) * 26} sy={150} ex={pill.x + 10} ey={pill.y + 2} />
           ))}
         </Animated.View>
-        {!reduced && visible && <ConfettiRain />}
       </Pressable>
     </Modal>
   );
@@ -442,10 +452,9 @@ function Rays() {
   );
 }
 
-/** 70 confetti pieces over the whole screen, as in the mockup. */
-function ConfettiRain() {
-  const { width, height } = Dimensions.get('window');
-  const pieces = useMemo(() => Array.from({ length: 70 }, (_, i) => ({
+/** 50 confetti pieces falling through the card (kept inside it, never over the screen behind). */
+function ConfettiRain({ width, height }: { width: number; height: number }) {
+  const pieces = useMemo(() => Array.from({ length: 50 }, (_, i) => ({
     x: Math.random() * width, color: W.confetti[i % W.confetti.length], dx: Math.random() * 120 - 60,
     r: Math.random() * 720 - 360, dur: 1600 + Math.random() * 1400, delay: 200 + Math.random() * 600,
   })), [width]);
@@ -466,41 +475,42 @@ function Piece({ x, color, dx, r, dur, delay, fall }: { x: number; color: string
 }
 
 const styles = StyleSheet.create({
-  dim:        { flex: 1, backgroundColor: W.dim, justifyContent: 'center', paddingHorizontal: 14, paddingVertical: 22 },
+  scrim:      { ...StyleSheet.absoluteFill, backgroundColor: W.scrim },
+  stage:      { flex: 1, justifyContent: 'center', paddingHorizontal: 14, paddingVertical: 22 },
   card:       { alignSelf: 'center', width: '100%', maxWidth: 400, borderRadius: 30, overflow: 'hidden',
                 shadowColor: '#000', shadowOpacity: 0.35, shadowRadius: 25, shadowOffset: { width: 0, height: 20 }, elevation: 18 },
   rays:       { position: 'absolute', top: -60, alignSelf: 'center', width: 420, height: 420 },
-  doodle:     { position: 'absolute', opacity: 0.35, fontSize: 22 },
+  doodle:     { position: 'absolute', opacity: 0.35, fontSize: FontSizes.xl },
   close:      { position: 'absolute', top: 14, right: 14, width: 30, height: 30, borderRadius: 15, backgroundColor: W.closeBg,
                 alignItems: 'center', justifyContent: 'center', zIndex: 3 },
-  closeText:  { fontSize: 14, fontWeight: '900', color: W.ink },
+  closeText:  { fontSize: FontSizes.sm, fontWeight: '800', color: W.ink },
   column:     { alignItems: 'center', paddingTop: 22, paddingHorizontal: 18, paddingBottom: 18 },
   trophy:     { fontSize: 60, lineHeight: 70, textShadowColor: 'rgba(160,90,0,0.35)', textShadowOffset: { width: 0, height: 6 }, textShadowRadius: 0 },
   plusRow:    { flexDirection: 'row', alignItems: 'flex-end', marginTop: 6 },
-  plus:       { fontSize: 54, lineHeight: 60, fontWeight: '900', color: '#FFFFFF', letterSpacing: -2 },
+  plus:       { fontSize: 54, lineHeight: 60, fontWeight: '800', color: '#FFFFFF', letterSpacing: -2 },
   plusStroke: { color: W.terra },
   plusShadow: { color: W.terra },
-  plusUnit:   { fontSize: 22, fontWeight: '900', color: W.terra, marginLeft: 4, marginBottom: 6 },
+  plusUnit:   { fontSize: FontSizes.xl, fontWeight: '800', color: W.terra, marginLeft: 4, marginBottom: 6 },
   total:      { marginTop: 6, flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: '#FFFFFF', borderRadius: 16,
                 paddingVertical: 5, paddingLeft: 8, paddingRight: 12,
                 shadowColor: 'rgb(160,90,0)', shadowOpacity: 0.25, shadowRadius: 0, shadowOffset: { width: 0, height: 3 }, elevation: 2 },
-  totalUnit:  { fontSize: 13, fontWeight: '900', color: W.muted },
+  totalUnit:  { fontSize: FontSizes.xs, fontWeight: '800', color: W.muted },
   coin:       { backgroundColor: W.coin, borderWidth: 2, borderColor: W.coinEdge, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
   coinLight:  { position: 'absolute', top: 2, left: 2, backgroundColor: W.coinLight, opacity: 0.8 },
-  coinText:   { fontSize: 11, fontWeight: '900', color: W.coinText },
+  coinText:   { fontSize: FontSizes.tiny, fontWeight: '800', color: W.coinText },
   odo:        { flexDirection: 'row', height: DIGIT_H, overflow: 'hidden' },
   digitCell:  { height: DIGIT_H, overflow: 'hidden' },
-  digit:      { height: DIGIT_H, lineHeight: DIGIT_H, fontSize: 18, fontWeight: '900', color: W.ink, fontVariant: ['tabular-nums'] },
-  tag:        { marginTop: 12, fontSize: 14, fontWeight: '800', textAlign: 'center' },
+  digit:      { height: DIGIT_H, lineHeight: DIGIT_H, fontSize: FontSizes.md, fontWeight: '800', color: W.ink, fontVariant: ['tabular-nums'] },
+  tag:        { marginTop: 12, fontSize: FontSizes.sm, fontWeight: '800', textAlign: 'center' },
   chip:       { marginTop: 10, flexDirection: 'row', alignItems: 'center', gap: 8, alignSelf: 'stretch', backgroundColor: W.glass, borderRadius: 16,
                 paddingVertical: 6, paddingLeft: 6, paddingRight: 10 },
   thumb:      { width: 34, height: 34, borderRadius: 8, borderWidth: 2, borderColor: '#FFFFFF', transform: [{ rotate: '-5deg' }] },
   chipBody:   { flex: 1, minWidth: 0 },
   chipTitleRow: { flexDirection: 'row', alignItems: 'center', gap: 4 },
-  chipTitle:  { flexShrink: 1, fontSize: 13, fontWeight: '800', color: W.ink },
-  chipSub:    { fontSize: 11, color: W.muted, lineHeight: 14 },
+  chipTitle:  { flexShrink: 1, fontSize: FontSizes.xs, fontWeight: '800', color: W.ink },
+  chipSub:    { fontSize: FontSizes.xs, color: W.muted, lineHeight: 16 },
   pills:      { alignItems: 'flex-end', gap: 3 },
-  pts:        { overflow: 'hidden', backgroundColor: W.orange, color: '#FFFFFF', fontWeight: '900', fontSize: 12, borderRadius: 10,
+  pts:        { overflow: 'hidden', backgroundColor: W.orange, color: '#FFFFFF', fontWeight: '800', fontSize: FontSizes.xs, borderRadius: 10,
                 paddingHorizontal: 7, paddingVertical: 3 },
   medals:     { flexDirection: 'row', gap: 7, marginTop: 12, alignSelf: 'stretch' },
   medalWrap:  { flex: 1, minWidth: 0 },
@@ -509,21 +519,21 @@ const styles = StyleSheet.create({
   disc:       { width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center', marginBottom: 4 },
   ring:       { position: 'absolute', top: -3, left: -3, right: -3, bottom: -3, borderRadius: 23, borderWidth: 3, borderStyle: 'dashed', opacity: 0.5 },
   discIcon:   { fontSize: 20 },
-  rank:       { fontSize: 17, fontWeight: '900', color: W.ink },
-  medalLabel: { fontSize: 10.5, fontWeight: '700', color: W.muted, lineHeight: 12, textAlign: 'center' },
-  up:         { fontSize: 10, fontWeight: '900', color: W.green, marginTop: 1 },
+  rank:       { fontSize: FontSizes.md, fontWeight: '800', color: W.ink },
+  medalLabel: { fontSize: FontSizes.tiny, fontWeight: '700', color: W.muted, lineHeight: 14, textAlign: 'center' },
+  up:         { fontSize: FontSizes.xs, fontWeight: '800', color: W.green, marginTop: 1 },
   goal:       { alignSelf: 'stretch', marginTop: 12, backgroundColor: W.glass, borderRadius: 16, paddingVertical: 9, paddingHorizontal: 12 },
   goalRow:    { flexDirection: 'row', justifyContent: 'space-between', gap: 8 },
-  goalText:   { flex: 1, fontSize: 12, fontWeight: '800', color: W.ink },
-  goalCount:  { fontSize: 12, fontWeight: '800', color: W.ink },
+  goalText:   { flex: 1, fontSize: FontSizes.xs, fontWeight: '800', color: W.ink },
+  goalCount:  { fontSize: FontSizes.xs, fontWeight: '800', color: W.ink },
   bar:        { height: 10, borderRadius: 6, backgroundColor: W.track, marginTop: 6, overflow: 'hidden' },
   barFill:    { height: '100%', borderRadius: 6, overflow: 'hidden' },
   ctas:       { alignSelf: 'stretch', marginTop: 12, gap: 8 },
   primaryShadow: { borderRadius: 18, backgroundColor: W.terraShadow, paddingBottom: 4 },
   primary:    { borderRadius: 18, backgroundColor: W.terra, paddingVertical: 11, alignItems: 'center' },
-  primaryText:{ fontSize: 15, fontWeight: '900', color: '#FFFFFF' },
+  primaryText:{ fontSize: FontSizes.body, fontWeight: '800', color: '#FFFFFF' },
   secondary:  { borderRadius: 18, backgroundColor: '#FFFFFF', paddingVertical: 11, alignItems: 'center' },
-  secondaryText: { fontSize: 15, fontWeight: '900', color: W.terra },
+  secondaryText: { fontSize: FontSizes.body, fontWeight: '800', color: W.terra },
   pressed:    { opacity: 0.9, transform: [{ scale: 0.98 }] },
   piece:      { position: 'absolute', top: 0, width: 8, height: 12, borderRadius: 2 },
 });

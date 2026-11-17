@@ -1,5 +1,4 @@
 {
-  "pageTitle": "Meu perfil",
   "changePhoto": "Trocar foto de perfil",
   "yourProfile": "Seu perfil",
   "mode": "Modo",
@@ -77,33 +76,12 @@
     "story": "História da cidade",
     "storyPlaceholder": "Algo que você ama nesta cidade"
   },
-  "hangouts": {
-    "empty": "Nenhum rolê ainda - comece um 🗣️",
-    "host": "Anfitrião"
-  },
-  "events": {
-    "going": "Vou",
-    "goingEmpty": "Nenhum rolê ainda - encontre algo 🔥",
-    "hosting": "Organizando",
-    "hostingEmpty": "Nada organizado ainda - comece algo ✨",
-    "live": "Ao vivo",
-    "recurring": "↻ Recorrente",
-    "upcoming": "Próximos",
-    "deleteEvent": "Excluir evento"
-  },
-  "friends": {
-    "requests": "Pedidos de amizade",
-    "empty": "Nenhum amigo ainda. Adicione pelos perfis.",
-    "mine": "Meus amigos"
-  },
   "vibesTab": {
-    "received": "Vibes recebidas",
     "score": "Pontuação de vibe: {{score}}",
     "basedOn_one": "baseado em {{count}} vibe",
     "basedOn_many": "baseado em {{count}} de vibes",
     "basedOn_other": "baseado em {{count}} vibes",
-    "empty": "Nenhuma vibe ainda",
-    "emptyHint": "Sua pontuação aparece aqui quando alguém te deixar uma nota ✨"
+    "empty": "Nenhuma vibe ainda"
   },
   "save": {
     "uploading": "Enviando…",
@@ -128,10 +106,6 @@
     "usernameInvalid": "Nome de usuário inválido",
     "saveFailed": "Não deu pra salvar. Tente de novo.",
     "generic": "Algo deu errado. Tente de novo."
-  },
-  "challenges": {
-    "empty": "Nenhum desafio ainda - lance um 🔥",
-    "challenger": "Desafiante"
   },
   "appearance": "Aparência",
   "themeLight": "Claro",
@@ -174,9 +148,6 @@
       "inReview_other": "{{count}} em análise",
       "specialTitle": "Carimbos especiais",
       "specialSub": "Edição limitada, um por dia especial. Não conta para o Local Pass.",
-      "compared_one": "Comparado com {{count}} país",
-      "compared_many": "Comparado com {{count}} de países",
-      "compared_other": "Comparado com {{count}} países",
       "stampsOf_one": "{{count}} de {{total}} carimbos",
       "stampsOf_many": "{{count}} de {{total}} carimbos",
       "stampsOf_other": "{{count}} de {{total}} carimbos",
@@ -184,9 +155,6 @@
       "passToGo_one": "Falta {{count}} carimbo",
       "passToGo_many": "Faltam {{count}} de carimbos",
       "passToGo_other": "Faltam {{count}} carimbos",
-      "comparedCities_one": "Comparado com {{count}} cidade",
-      "comparedCities_many": "Comparado com {{count}} de cidades",
-      "comparedCities_other": "Comparado com {{count}} cidades",
       "myPhotos": "Minhas fotos",
       "noPhotos": "Suas fotos do Daily Challenge vão aparecer aqui.",
       "share": "Compartilhar meu passaporte",

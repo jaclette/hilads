@@ -2,20 +2,8 @@
   "create": {
     "startTitle": "Hi now",
     "editTitle": "Изменить тусовку",
-    "category": "Категория",
-    "cat": {
-      "general": "Общее",
-      "tips": "Советы",
-      "food": "Еда",
-      "drinks": "Напитки",
-      "help": "Помощь",
-      "meetup": "Встреча"
-    },
     "titleLabel": "О чём думаешь?",
     "titlePlaceholder": "Хочу выпить кофе",
-    "detailsLabel": "Детали",
-    "optional": "(необязательно)",
-    "detailsPlaceholder": "Добавь немного контекста…",
     "expiry": "Исчезнет через 8 ч",
     "saving": "Сохраняем…",
     "starting": "Запускаем…",
@@ -73,7 +61,6 @@
     "photo": "Фото",
     "unavailable": "Исходное сообщение недоступно"
   },
-  "composer": {},
   "errors": {
     "locFailed": "Не удалось определить твоё местоположение. Разреши доступ к геолокации и попробуй ещё раз.",
     "imageType": "Выбери изображение JPEG, PNG или WebP.",

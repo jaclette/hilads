@@ -1,7 +1,7 @@
 import { thumbUrl } from '@/lib/imageThumb';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import type { ParticipantPreview } from '@/types';
-import { type ThemeColors } from '@/constants';
+import { Space, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { Avatar } from '@/ui';
 
@@ -56,7 +56,7 @@ export function AttendeeAvatars({ preview, total, size = DEFAULT_SIZE, borderCol
 }
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  row:       { flexDirection: 'row', alignItems: 'center', marginTop: 2 },
+  row:       { flexDirection: 'row', alignItems: 'center', marginTop: Space.xxs },
   ring:      { borderWidth: 2, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
   extra:     { backgroundColor: c.bg3 },
   extraText: { color: c.text, fontWeight: '800' },

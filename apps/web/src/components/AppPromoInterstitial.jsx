@@ -7,7 +7,7 @@ import Icon from './Icon'
  * The banner remains the primary surface; this is a louder variant we'll A/B
  * later. Mounted at App root behind the same hook.
  */
-const PITCH_ROW = { display: 'flex', alignItems: 'center', gap: 10 }
+const PITCH_ROW = { display: 'flex', alignItems: 'center', gap: 'var(--sp-12)' }
 const PITCH_ICON = { color: 'var(--primary-text)' }
 
 export default function AppPromoInterstitial() {
@@ -38,7 +38,7 @@ export default function AppPromoInterstitial() {
 
         <button
           type="button"
-          className="app-promo-interstitial-cta"
+          className="app-promo-interstitial-cta btn-primary"
           onClick={() => trackCtaClick('interstitial')}
         >
           {t('appPromo.ctaPlay')}

@@ -1,5 +1,4 @@
 {
-  "pageTitle": "Il mio profilo",
   "changePhoto": "Cambia la foto del profilo",
   "yourProfile": "Il tuo profilo",
   "mode": "Modalità",
@@ -77,33 +76,12 @@
     "story": "Storia della città",
     "storyPlaceholder": "Qualcosa che ami di questa città"
   },
-  "hangouts": {
-    "empty": "Ancora nessun ritrovo: lanciane uno 🗣️",
-    "host": "Organizza"
-  },
-  "events": {
-    "going": "Ci vado",
-    "goingEmpty": "Ancora nessun piano: trova qualcosa 🔥",
-    "hosting": "Organizzo",
-    "hostingEmpty": "Non organizzi ancora niente: lancia qualcosa ✨",
-    "live": "In corso",
-    "recurring": "↻ Ricorrente",
-    "upcoming": "In arrivo",
-    "deleteEvent": "Elimina evento"
-  },
-  "friends": {
-    "requests": "Richieste di amicizia",
-    "empty": "Ancora nessun amico. Aggiungine dai profili.",
-    "mine": "I miei amici"
-  },
   "vibesTab": {
-    "received": "Vibes ricevute",
     "score": "Punteggio vibe: {{score}}",
     "basedOn_one": "basato su {{count}} vibe",
     "basedOn_many": "basato su {{count}} vibes",
     "basedOn_other": "basato su {{count}} vibes",
-    "empty": "Ancora nessuna vibe",
-    "emptyHint": "Il tuo punteggio comparirà qui quando qualcuno ti lascerà una nota ✨"
+    "empty": "Ancora nessuna vibe"
   },
   "save": {
     "uploading": "Caricamento…",
@@ -128,10 +106,6 @@
     "usernameInvalid": "Nome utente non valido",
     "saveFailed": "Salvataggio non riuscito. Riprova.",
     "generic": "Qualcosa è andato storto. Riprova."
-  },
-  "challenges": {
-    "empty": "Ancora nessuna sfida: lanciane una 🔥",
-    "challenger": "Challenger"
   },
   "appearance": "Aspetto",
   "themeLight": "Chiaro",
@@ -174,9 +148,6 @@
       "inReview_other": "{{count}} in revisione",
       "specialTitle": "Timbri speciali",
       "specialSub": "Edizione limitata, uno per ogni giorno speciale. Non conta per il Local Pass.",
-      "compared_one": "Confrontato con {{count}} paese",
-      "compared_many": "Confrontato con {{count}} paesi",
-      "compared_other": "Confrontato con {{count}} paesi",
       "stampsOf_one": "{{count}} timbro su {{total}}",
       "stampsOf_many": "{{count}} timbri su {{total}}",
       "stampsOf_other": "{{count}} timbri su {{total}}",
@@ -184,9 +155,6 @@
       "passToGo_one": "Manca {{count}} timbro",
       "passToGo_many": "Mancano {{count}} timbri",
       "passToGo_other": "Mancano {{count}} timbri",
-      "comparedCities_one": "Confrontato con {{count}} città",
-      "comparedCities_many": "Confrontato con {{count}} città",
-      "comparedCities_other": "Confrontato con {{count}} città",
       "myPhotos": "Le mie foto",
       "noPhotos": "Le tue foto della Daily Challenge compariranno qui.",
       "share": "Condividi il mio passaporto",

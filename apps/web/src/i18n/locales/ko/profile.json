@@ -1,5 +1,4 @@
 {
-  "pageTitle": "내 프로필",
   "changePhoto": "프로필 사진 변경",
   "yourProfile": "내 프로필",
   "mode": "모드",
@@ -77,31 +76,10 @@
     "story": "도시 이야기",
     "storyPlaceholder": "이 도시에서 좋아하는 것"
   },
-  "hangouts": {
-    "empty": "아직 모임이 없어요. 하나 시작해 보세요 🗣️",
-    "host": "호스트"
-  },
-  "events": {
-    "going": "참여 예정",
-    "goingEmpty": "아직 약속이 없어요. 재밌는 걸 찾아보세요 🔥",
-    "hosting": "주최 중",
-    "hostingEmpty": "아직 주최한 게 없어요. 뭔가 시작해 보세요 ✨",
-    "live": "진행 중",
-    "recurring": "↻ 반복",
-    "upcoming": "다가오는 일정",
-    "deleteEvent": "이벤트 삭제"
-  },
-  "friends": {
-    "requests": "친구 요청",
-    "empty": "아직 친구가 없어요. 프로필에서 친구를 추가해 보세요.",
-    "mine": "내 친구"
-  },
   "vibesTab": {
-    "received": "받은 vibes",
     "score": "vibe 점수 {{score}}",
     "basedOn_other": "vibe {{count}}개 기준",
-    "empty": "아직 vibe가 없어요",
-    "emptyHint": "사람들이 노트를 남기면 여기에 점수가 보여요 ✨"
+    "empty": "아직 vibe가 없어요"
   },
   "save": {
     "uploading": "업로드하는 중…",
@@ -126,10 +104,6 @@
     "usernameInvalid": "사용자 이름이 올바르지 않아요",
     "saveFailed": "저장에 실패했어요. 다시 시도해 주세요.",
     "generic": "문제가 생겼어요. 다시 시도해 주세요."
-  },
-  "challenges": {
-    "empty": "아직 챌린지가 없어요. 하나 시작해 보세요 🔥",
-    "challenger": "출제자"
   },
   "appearance": "화면 모드",
   "themeLight": "라이트",
@@ -164,11 +138,9 @@
       "inReview_other": "{{count}}개 검토 중",
       "specialTitle": "스페셜 스탬프",
       "specialSub": "한정판, 특별한 날마다 하나씩. Local Pass에는 포함되지 않아요.",
-      "compared_other": "{{count}}개국과 비교했어요",
       "stampsOf_other": "스탬프 {{count}}/{{total}}",
       "passEarned": "{{city}}에서 획득",
       "passToGo_other": "스탬프 {{count}}개 남음",
-      "comparedCities_other": "{{count}}개 도시와 비교",
       "myPhotos": "내 사진",
       "noPhotos": "Daily Challenge 사진이 여기에 모여요.",
       "share": "내 여권 공유하기",

@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { RankBadge } from './RankBadge';
 import { countryToFlag } from '../lib/countryFlag';
 import { Ionicons } from '@expo/vector-icons';
-import { Border, FontSizes, Radius, type ThemeColors } from '@/constants';
+import { Space, Border, FontSizes, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import type { MonthlyRank } from '@/types';
 
@@ -104,8 +104,8 @@ export function ProfileRankRow({
 }
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  wrap:      { borderRadius: Radius.card, borderWidth: Border, borderColor: c.line, backgroundColor: c.bg2, paddingHorizontal: 14 },
-  row:       { flexDirection: 'row', alignItems: 'center', gap: 8, minHeight: 48 },
+  wrap:      { borderRadius: Radius.card, borderWidth: Border, borderColor: c.line, backgroundColor: c.bg2, paddingHorizontal: Space.lg },
+  row:       { flexDirection: 'row', alignItems: 'center', gap: Space.sm, minHeight: 48 },
   divider:   { borderTopWidth: 1, borderTopColor: c.line },
   emoji:     { fontSize: 18, width: 22, textAlign: 'center' },
   icon:      { width: 22, textAlign: 'center' },

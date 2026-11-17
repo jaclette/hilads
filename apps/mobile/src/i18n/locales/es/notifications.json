@@ -1,9 +1,7 @@
 {
-  "allTitle": "Todas las notificaciones",
   "markAllRead": "Marcar todo como leído",
   "emptyTitle": "Aún no hay notificaciones",
   "emptySub": "Aquí verás tus mensajes y las novedades de los eventos.",
-  "seeAll": "Ver todas las notificaciones",
   "prefTitle": "Preferencias de notificación",
   "pref": {
     "mentionLabel": "Menciones @",
@@ -58,8 +56,6 @@
     "rankCity": "🏆 #{{rank}} en {{city}} ayer",
     "votes": "🏆 {{count}} ❤️ en tu foto de ayer",
     "localPass": "🎟️ ¡Local Pass de {{city}}!",
-    "comment": "💬 {{name}} comentó tu foto",
-    "comments": "💬 Nuevos comentarios en tu foto",
     "likes": "❤️ +{{count}}",
     "mention": "💬 {{name}} te mencionó",
     "friend": "👋 {{name}} quiere ser tu amigo",
@@ -90,11 +86,8 @@
     "read": "Leído",
     "unread": "No leído",
     "delete": "Borrar",
-    "allRead": "Todo al día ✨",
     "row": {
       "like": "A {{names}} le gustó tu foto",
-      "comment": "{{names}} comentó tu foto",
-      "photoMention": "{{names}} te mencionó en un comentario",
       "mention": "{{names}} te mencionó",
       "friendRequest": "{{names}} quiere ser tu amigo",
       "friendAccepted": "{{names}} aceptó tu solicitud de amistad",
@@ -141,5 +134,16 @@
     "saved": "Guardado",
     "quiet": "Horas tranquilas",
     "quietSub": "Sin notificaciones de {{from}} a {{to}}"
+  },
+  "photoComment": {
+    "author": "💬 {{name}} comentó tu foto",
+    "author_many": "💬 {{name}} y {{n}} más comentaron tu foto",
+    "author_many_one": "💬 {{name}} y 1 persona más comentaron tu foto",
+    "mention": "👋 {{name}} te mencionó",
+    "reply": "↩️ {{name}} respondió a tu comentario",
+    "previous": "💬 {{name}} también comentó la foto de {{owner}}",
+    "previous_many": "💬 {{name}} y {{n}} más comentaron la foto de {{owner}}",
+    "previous_many_one": "💬 {{name}} y 1 persona más comentaron la foto de {{owner}}",
+    "previous_self": "💬 {{name}} respondió en su foto"
   }
 }

@@ -22,7 +22,7 @@ import { WebView, WebViewMessageEvent } from 'react-native-webview';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
-import { Border, FontSizes, Radius, Spacing, type ThemeColors } from '@/constants';
+import { Space, Border, FontSizes, Radius, Spacing, type ThemeColors } from '@/constants';
 import { Button, IconButton } from '@/ui';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 
@@ -407,7 +407,7 @@ export function LocationPicker({ visible, initialLat, initialLng, onConfirm, onC
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
   container:    { flex: 1, backgroundColor: c.bg },
-  header:       { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: Spacing.md, paddingVertical: 8 },
+  header:       { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: Spacing.md, paddingVertical: Space.sm },
   title:        { flex: 1, fontSize: FontSizes.md, fontWeight: '800', color: c.text, textAlign: 'center' },
   headerSpacer: { width: 44 },
   mapWrap:      { flex: 1, position: 'relative' },
@@ -415,25 +415,25 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
 
   // ── Address search overlay ──
   searchWrap:  { position: 'absolute', top: 12, left: 12, right: 12 },
-  searchBox:   { flexDirection: 'row', alignItems: 'center', gap: 10, height: 48, paddingHorizontal: 16, borderRadius: Radius.full,
+  searchBox:   { flexDirection: 'row', alignItems: 'center', gap: Space.md, height: 48, paddingHorizontal: Space.lg, borderRadius: Radius.full,
                  borderWidth: Border, borderColor: c.line, backgroundColor: c.bg2 },
-  searchInput: { flex: 1, color: c.text, fontSize: 15, fontWeight: '500', padding: 0 },
-  suggestions: { marginTop: 6, backgroundColor: c.bg2, borderWidth: Border, borderColor: c.line, borderRadius: Radius.card, overflow: 'hidden' },
+  searchInput: { flex: 1, color: c.text, fontSize: FontSizes.body, fontWeight: '500', padding: 0 },
+  suggestions: { marginTop: Space.sm, backgroundColor: c.bg2, borderWidth: Border, borderColor: c.line, borderRadius: Radius.card, overflow: 'hidden' },
   suggestionsScroll:   { maxHeight: 240 },
-  suggestionRow:       { flexDirection: 'row', alignItems: 'flex-start', gap: 8, minHeight: 44, paddingHorizontal: 14, paddingVertical: 11 },
+  suggestionRow:       { flexDirection: 'row', alignItems: 'flex-start', gap: Space.sm, minHeight: 44, paddingHorizontal: Space.lg, paddingVertical: Space.md },
   suggestionRowBorder: { borderTopWidth: 1, borderTopColor: c.line },
   suggestionIcon:      { marginTop: 1 },
   suggestionText:      { flex: 1, color: c.text, fontSize: FontSizes.xs, fontWeight: '500', lineHeight: 17 },
-  noResults:           { color: c.muted, fontSize: FontSizes.xs, fontWeight: '400', paddingHorizontal: 14, paddingVertical: 12 },
+  noResults:           { color: c.muted, fontSize: FontSizes.xs, fontWeight: '400', paddingHorizontal: Space.lg, paddingVertical: Space.md },
   // The pin's tip marks the map centre.
   pinWrap:  { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, alignItems: 'center', justifyContent: 'center', marginBottom: 44 },
   hintWrap: { position: 'absolute', bottom: 16, left: 0, right: 0, alignItems: 'center' },
-  hint:     { fontSize: 12, fontWeight: '600', color: c.text, backgroundColor: c.bg2, borderWidth: 1, borderColor: c.line,
-              paddingHorizontal: 14, paddingVertical: 6, borderRadius: 14, overflow: 'hidden' },
-  footer:       { paddingHorizontal: Spacing.md, paddingTop: 14, borderTopWidth: 1, borderTopColor: c.line, backgroundColor: c.bg, gap: 10 },
+  hint:     { fontSize: FontSizes.xs, fontWeight: '600', color: c.text, backgroundColor: c.bg2, borderWidth: 1, borderColor: c.line,
+              paddingHorizontal: Space.lg, paddingVertical: Space.sm, borderRadius: Radius.card, overflow: 'hidden' },
+  footer:       { paddingHorizontal: Spacing.md, paddingTop: Space.lg, borderTopWidth: 1, borderTopColor: c.line, backgroundColor: c.bg, gap: Space.md },
   addressCard:  { minHeight: 60, justifyContent: 'center', padding: 14, borderRadius: Radius.card, borderWidth: Border, borderColor: c.line, backgroundColor: c.bg2 },
-  geocodingRow:  { flexDirection: 'row', alignItems: 'center', gap: 10 },
+  geocodingRow:  { flexDirection: 'row', alignItems: 'center', gap: Space.md },
   geocodingText: { fontSize: FontSizes.sm, fontWeight: '400', color: c.muted },
   placeName:     { fontSize: FontSizes.md, fontWeight: '700', color: c.text },
-  addressText:   { fontSize: FontSizes.xs, fontWeight: '400', color: c.muted, marginTop: 3, lineHeight: 16 },
+  addressText:   { fontSize: FontSizes.xs, fontWeight: '400', color: c.muted, marginTop: Space.xs, lineHeight: 16 },
 });

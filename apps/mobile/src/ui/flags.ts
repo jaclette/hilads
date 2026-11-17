@@ -1,6 +1,6 @@
 // Generated: one SVG per country of a Hilads city (assets/flags, flag-icons, MIT).
 // Add a country: drop its 4x3 SVG in assets/flags and add a line here.
-/* eslint-disable @typescript-eslint/no-require-imports */
+ 
 export const FLAGS: Record<string, number> = {
   AE: require('../../assets/flags/ae.svg'),
   AF: require('../../assets/flags/af.svg'),

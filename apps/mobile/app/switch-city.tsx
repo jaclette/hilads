@@ -40,7 +40,7 @@ import { socket } from '@/lib/socket';
 import { saveIdentity } from '@/lib/identity';
 import { track } from '@/services/analytics';
 import type { City } from '@/types';
-import { FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
+import { Space, FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { Card, Chip, CityFlag, ListRow, RowGroup, Screen, ScreenHeader, TextField, WakingUp } from '@/ui';
 import { readOffline, writeOffline } from '@/lib/offlineCache';
@@ -62,7 +62,7 @@ function ActivityDot({ live }: { live: boolean }) {
     );
     loop.start();
     return () => loop.stop();
-  }, [live]);
+  }, [live, scale]);
 
   return (
     <Animated.View style={[
@@ -271,11 +271,12 @@ export default function SwitchCityScreen() {
       setJoined(true);
       track('first_launch_city_selected', { chosen_city: item.name, method: 'manual_picker' });
     }
-    // mode=here: back to Today, which reloads for the new city.
-    if (isHere && router.canGoBack()) { router.back(); return; }
-    // replace (not push) - back shouldn't return here. First launch lands
-    // on Today, the home (V3-11); a later switch returns to the city chat.
-    router.replace((isFirstTime ? '/(tabs)/today' : '/(tabs)/chat') as never);
+    // A later switch returns to the screen it was opened from (Today, Map,
+    // Ranks, Hi...), which shows the new city: the scope is now 'city'.
+    if (!isFirstTime && router.canGoBack()) { router.back(); return; }
+    // Opened with replace (first launch, sign-in, boot with no city): land on
+    // Today, the home (V3-11). replace - back shouldn't return here.
+    router.replace('/(tabs)/today' as never);
   }
 
   // Section label - "Top cities right now" when any city has activity, else "Cities"
@@ -293,14 +294,10 @@ export default function SwitchCityScreen() {
 
   const goBack = () => {
     // Often opened with router.replace (no history to pop). Fall back:
-    // history → back; no city yet → Today; already in a city → the city chat.
+    // history → back; else Today (no city yet: back to the city question).
     if (router.canGoBack()) { router.back(); return; }
-    if (!activeCity) {
-      setJoined(false);
-      router.replace('/(tabs)/today' as never);
-    } else {
-      router.replace('/(tabs)/chat');
-    }
+    if (!activeCity) setJoined(false);
+    router.replace('/(tabs)/today' as never);
   };
 
   return (
@@ -419,24 +416,24 @@ export default function SwitchCityScreen() {
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
   flex1:          { flex: 1 },
-  search:         { paddingHorizontal: Spacing.md, paddingTop: 4 },
+  search:         { paddingHorizontal: Spacing.md, paddingTop: Space.xs },
   filtersWrap:    { flexGrow: 0 },
-  filters:        { gap: 8, paddingHorizontal: Spacing.md, paddingVertical: 10 },
-  backToLocation: { marginHorizontal: Spacing.md, marginBottom: 4 },
+  filters:        { gap: Space.sm, paddingHorizontal: Spacing.md, paddingVertical: Space.md },
+  backToLocation: { marginHorizontal: Spacing.md, marginBottom: Space.xs },
   center:         { flex: 1, alignItems: 'center', justifyContent: 'center', padding: Spacing.lg, gap: Spacing.md },
   emptyText:      { fontSize: FontSizes.sm, fontWeight: '400', color: c.muted, textAlign: 'center' },
-  sectionLabel:   { fontSize: FontSizes.md, fontWeight: '800', color: c.text, paddingTop: 6, paddingBottom: 8 },
+  sectionLabel:   { fontSize: FontSizes.md, fontWeight: '800', color: c.text, paddingTop: Space.sm, paddingBottom: Space.sm },
   listContent:    { paddingHorizontal: Spacing.md, paddingBottom: Spacing.xl },
-  cardTouch:      { marginBottom: 10 },
-  card:           { paddingHorizontal: 14, paddingVertical: 12, gap: 6 },
+  cardTouch:      { marginBottom: Space.md },
+  card:           { paddingHorizontal: Space.lg, paddingVertical: Space.md, gap: Space.sm },
   cardActive:     { borderColor: c.primary },
-  cardTop:        { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  cityName:       { flex: 1, fontSize: 15, fontWeight: '700', color: c.text },
-  statsRow:       { flexDirection: 'row', flexWrap: 'wrap', columnGap: 12, rowGap: 2, paddingLeft: 16 },
+  cardTop:        { flexDirection: 'row', alignItems: 'center', gap: Space.sm },
+  cityName:       { flex: 1, fontSize: FontSizes.body, fontWeight: '700', color: c.text },
+  statsRow:       { flexDirection: 'row', flexWrap: 'wrap', columnGap: Space.md, rowGap: Space.xxs, paddingLeft: Space.lg },
   stat:           { fontSize: FontSizes.xs, fontWeight: '600', color: c.muted },
   statStrong:     { fontSize: FontSizes.xs, fontWeight: '700', color: c.primaryText },
   statOnline:     { fontSize: FontSizes.xs, fontWeight: '700', color: c.green },
-  playsIn:        { paddingLeft: 26 },
+  playsIn:        { paddingLeft: Space.xl },
   activityDot:    { width: 8, height: 8, borderRadius: Radius.full, backgroundColor: c.line },
   activityDotLive:{ backgroundColor: c.green },
 });

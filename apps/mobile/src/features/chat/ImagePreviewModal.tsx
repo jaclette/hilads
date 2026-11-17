@@ -5,11 +5,11 @@ import {
 } from 'react-native';
 import * as FileSystem from 'expo-file-system/legacy';
 import * as Sharing from 'expo-sharing';
-import * as MediaLibrary from 'expo-media-library';
+import * as MediaLibrary from 'expo-media-library/legacy';   // SDK 58: the root's saveToLibraryAsync throws at runtime
 import { useTranslation } from 'react-i18next';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import { Radius, type ThemeColors } from '@/constants';
+import { Space, Spacing, FontSizes, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { IconButton } from '@/ui';
 import { Image } from 'expo-image';
@@ -62,7 +62,7 @@ export function ImagePreviewModal({ uri, onClose }: Props) {
       translateY.setValue(0);
       bgOpacity.setValue(1);
     }
-  }, [uri]);
+  }, [uri, translateY, bgOpacity]);
 
   const panResponder = useRef(
     PanResponder.create({
@@ -251,9 +251,9 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   imageWrap:     { width: SW, height: SH, justifyContent: 'center', alignItems: 'center' },
   image:         { width: SW, height: SH },
   closeBtn:      { position: 'absolute', right: 16 },
-  actionBar:     { position: 'absolute', left: 0, right: 0, flexDirection: 'row', justifyContent: 'center', gap: 12 },
-  actionBtn:     { flexDirection: 'row', alignItems: 'center', gap: 8, minHeight: 44, paddingHorizontal: 18, borderRadius: Radius.full,
+  actionBar:     { position: 'absolute', left: 0, right: 0, flexDirection: 'row', justifyContent: 'center', gap: Space.md },
+  actionBtn:     { flexDirection: 'row', alignItems: 'center', gap: Space.sm, minHeight: 44, paddingHorizontal: Spacing.md, borderRadius: Radius.full,
                    backgroundColor: c.photoControl },
   actionBtnBusy: { opacity: 0.5 },
-  actionLabel:   { color: c.white, fontSize: 15, fontWeight: '700' },
+  actionLabel:   { color: c.white, fontSize: FontSizes.body, fontWeight: '700' },
 });

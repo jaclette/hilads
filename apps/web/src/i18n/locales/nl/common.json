@@ -16,11 +16,7 @@
     "eventTitle": "Lokaal evenement: {{title}} | Hilads",
     "eventDesc": "Doe mee met {{title}} op Hilads, een lokaal evenement dat nu bezig is. Kijk wie er komen en chat live met wie online is."
   },
-  "nowTitle": "Nu",
   "filterEvents": "🎉 Lokale evenementen",
-  "hiLocalTitle": "Hi Local",
-  "filterHangouts": "🗣️ Meetups",
-  "publicEventsSection": "🎫 Openbare evenementen",
   "accountWelcome": {
     "title": "Gefeliciteerd, {{username}}!",
     "subtitle": "Je account is klaar. Dit kun je nu doen",
@@ -32,68 +28,6 @@
     "fc1": "Daag de locals in jouw stad uit",
     "fc2": "Daag een stad aan de andere kant van de wereld uit",
     "cta": "Aan de slag"
-  },
-  "onboarding": {
-    "skip": "Overslaan ✕",
-    "next": "Volgende",
-    "fallbackCity": "je stad",
-    "slide1": {
-      "title": "Speel lokaal. Vergelijk wereldwijd.",
-      "body": "Hilads is de app die van reizigers locals maakt, en locals laat delen waar hun stad van leeft."
-    },
-    "slide2": {
-      "title": "Drie manieren om de stad te beleven",
-      "itemChallenges": "🤝 Challenges - daag uit of laat je uitdagen: verborgen plekken ontdekken, echt eten proeven, cultuur delen of een handje helpen.",
-      "itemHangouts": "🗣️ Hi now - ontmoet iemand spontaan",
-      "itemEvents": "🎉 Hi plan - spreek een moment af"
-    },
-    "slide3": {
-      "title": "Verdien je plek in de stad",
-      "body": "Elke challenge die je voltooit, elke meet, elke plek die je ontdekt levert je punten op. Je punten laten zien hoe local je al bent in {{city}}. Kom bovenaan in Most Local en verdien je plek tussen de mensen die de stad laten leven."
-    },
-    "slide4": {
-      "title": "Klaar om te beginnen?",
-      "ctaChallenge": "📍 Ga je eerste challenge aan in {{city}}",
-      "ctaMostLocal": "🤝 Ontdek de Most Local van {{city}}",
-      "ctaLookAround": "👀 Eerst even rondkijken",
-      "ctaHiNow": "🗣️ Hi now",
-      "ctaHiLater": "🎉 Hi plan"
-    }
-  },
-  "challengeIntro": {
-    "title": "Zo werken challenges",
-    "slide1": {
-      "title": "Challenges maken van reizen verhalen",
-      "body": "Locals en reizigers dagen elkaar uit om te laten zien wat een stad echt maakt: eten, plekken, cultuur, hulp. De beloning? Elkaar in het echt ontmoeten, of bewijs sturen van ver weg."
-    },
-    "slide2": {
-      "title": "Start je challenge",
-      "body": "Eten, plek, cultuur of hulp. Kies voor wie, hoeveel plaatsen en hoe je afsluit: in het echt afspreken of een fotobewijs."
-    },
-    "slide3": {
-      "title": "Iemand gaat 'm aan",
-      "body": "Iemand stuurt een verzoek. Jij bekijkt het en accepteert, en dan opent jullie privéchat om te kletsen en te plannen."
-    },
-    "slide4": {
-      "title": "Afspreken of fotobewijs",
-      "body": "Spreek in het echt af of stuur een foto van ver weg, jij kiest. Hoe dan ook wordt elke stap bijgehouden."
-    },
-    "slide5": {
-      "title": "Sluit 'm af",
-      "body": "Na de meet (of zodra de foto binnen is) zet je hem op voltooid. Jouw stad, echt beleefd, challenge na challenge."
-    },
-    "next": "Volgende",
-    "done": "Duidelijk!",
-    "skip": "Overslaan ✕",
-    "slide6": {
-      "title": "Buiten je stad",
-      "body": "Daag iedereen uit, waar ook ter wereld. Zij sturen bewijs (een foto met geotag) en jij keurt het goed van ver weg. Lokaal werkt het precies zo. Lokaal of wereldwijd, elke challenge telt."
-    },
-    "slide7": {
-      "title": "Word de Most Local",
-      "body": "Elke challenge levert punten op, in je stad ÉN wereldwijd. Spreek in het echt af voor +50 bonus erbovenop. Local of reiziger, het gaat om wat je hier opbouwt. Elke maand een nieuwe ranglijst."
-    },
-    "createCta": "🔥 Maak een challenge"
   },
   "share": {
     "title": "Deel iets",
@@ -211,7 +145,6 @@
   "settings": "Instellingen",
   "firstLaunch": "Speel lokaal. Vergelijk wereldwijd.",
   "subtitles": {
-    "map": "Plekken uit de foto's van de hele wereld.",
     "hi": "Zeg hoi tegen je stad. Doe mee met een plan.",
     "passport": "Je steden, je foto's, je stempels."
   },
@@ -233,20 +166,9 @@
     "textPassportNoCity": "Mijn Hilads-paspoort. Zelfde challenge. Andere werelden."
   },
   "represent": {
-    "empty": "{{city}} heeft vandaag nog niet gespeeld. Speel als eerste.",
-    "beFirst": "Speel als eerste voor {{city}}",
-    "emptyThere": "{{city}} heeft vandaag nog niet gespeeld.",
-    "notIn": "Niet in {{city}}?",
-    "change": "Wijzigen",
     "locationNeeded": "Sta locatie toe om te spelen voor de plek waar je bent.",
-    "button": "Speel voor {{city}}",
-    "firstPosted": "Jij hebt {{city}} vandaag op de wereldkaart gezet.",
     "pioneer": "Pionier van {{city}}",
     "spotOne": "Plek #1 in {{city}}",
-    "streak_one": "{{city}} speelt al {{count}} dag op rij",
-    "streak_other": "{{city}} speelt al {{count}} dagen op rij",
-    "board_one": "{{count}} stad doet vandaag mee. {{city}} nog niet.",
-    "board_other": "{{count}} steden doen vandaag mee. {{city}} nog niet.",
     "mapEmpty": "{{city}} staat nog niet op de wereldkaart. Zet hem erop.",
     "invite": "Nodig een vriend uit",
     "share": "Speel met mij voor {{city}} op Hilads.",
@@ -288,8 +210,7 @@
     "mainNav": "Hoofdmenu",
     "emojiPicker": "Emoji kiezen",
     "cancelReply": "Antwoord annuleren",
-    "welcome": "Welkom",
-    "approve": "Goedkeuren"
+    "welcome": "Welkom"
   },
   "tapToOpenMaps": "Tik om in je kaartenapp te openen",
   "openInApp": {

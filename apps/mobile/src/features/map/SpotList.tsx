@@ -1,16 +1,17 @@
-import { Text, TouchableOpacity, View, StyleSheet } from 'react-native';
+import { Text, View, StyleSheet } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import { Image } from 'expo-image';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
-import { FontSizes, Radius, Spacing, type ThemeColors } from '@/constants';
+import { Space, Radius, Gutter, Type, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { themeName } from '@/features/daily/themes';
 import { compactPrice, distance, meters } from '@/features/today/format';
 import { ThemeIcon } from '@/ui/ThemeIcon';
 import type { Spot } from '@/api/spots';
 import { PickBadge } from './PickBadge';
-import { Chip } from '@/ui';
+import { Chip, Tappable } from '@/ui';
+import { themeColor, tint } from '@/ui/joy';
 import { thumbUrl } from '@/lib/imageThumb';
 
 export type SpotSort = 'near' | 'liked' | 'new';
@@ -48,16 +49,19 @@ export function SortChips({ sort, onSort }: { sort: SpotSort; onSort: (s: SpotSo
  */
 export function SpotRow({ spot: s, me, onPick }: { spot: Spot; me: [number, number] | null; onPick: (s: Spot) => void }) {
   const styles = useThemedStyles(makeStyles);
-  const { colors } = useTheme();
+  const { colors, theme: mode } = useTheme();
   const { t, i18n } = useTranslation('daily');
   const theme = s.themes[0] ?? null;
+  // The theme's own pair (design pass): its text color on its soft tint, like the pins and filters.
+  const tc = theme ? themeColor(theme) : null;
+  const ink = tc ? (mode === 'dark' ? tc.textDark : tc.textLight) : colors.primaryOnTint;
   const median = s.priceRange ? (s.priceRange.median ?? (s.priceRange.min === s.priceRange.max ? s.priceRange.min : null)) : null;
   const meta = [
     me ? distance(meters(me, [s.lng, s.lat]), i18n.language) : null,
     median !== null && s.priceRange ? compactPrice(median, s.priceRange.currency, i18n.language) : null,
   ].filter(Boolean).join(' · ');
   return (
-    <TouchableOpacity style={styles.row} onPress={() => onPick(s)} activeOpacity={0.8} accessibilityRole="button" accessibilityLabel={s.name} testID="spot-row">
+    <Tappable style={styles.row} onPress={() => onPick(s)} accessibilityRole="button" accessibilityLabel={s.name} testID="spot-row">
       {s.cover.thumbUrl || s.cover.photoUrl
         ? <Image source={{ uri: thumbUrl(s.cover.thumbUrl ?? s.cover.photoUrl) }} style={styles.photo} contentFit="cover" />
         : <View style={[styles.photo, styles.photoEmpty]}><ThemeIcon theme={theme ?? 'only_here'} size={22} color={colors.primaryText} /></View>}
@@ -66,14 +70,14 @@ export function SpotRow({ spot: s, me, onPick }: { spot: Spot; me: [number, numb
         <View style={styles.chips}>
           {!!s.pick && <PickBadge />}
           {theme && (
-            <View style={styles.theme}>
-              <ThemeIcon theme={theme} size={12} color={colors.primaryOnTint} />
-              <Text style={styles.themeText} numberOfLines={1}>{themeName(theme)}</Text>
+            <View style={[styles.theme, tc && { backgroundColor: tint(tc.fill, mode === 'dark' ? 0.2 : 0.22) }]}>
+              <ThemeIcon theme={theme} size={14} color={ink} />
+              <Text style={[styles.themeText, { color: ink }]} numberOfLines={1}>{themeName(theme)}</Text>
             </View>
           )}
           {s.validatedByLocal && (
             <View style={styles.local}>
-              <Ionicons name="checkmark" size={12} color={colors.localText} />
+              <Ionicons name="checkmark" size={14} color={colors.localText} />
               <Text style={styles.localText} numberOfLines={1}>{t('map.validated')}</Text>
             </View>
           )}
@@ -81,29 +85,29 @@ export function SpotRow({ spot: s, me, onPick }: { spot: Spot; me: [number, numb
         <View style={styles.metaRow}>
           {!!meta && <Text style={styles.meta} numberOfLines={1}>{meta}</Text>}
           <View style={styles.votes}>
-            <Ionicons name="heart" size={12} color={colors.muted} />
+            <Ionicons name="heart" size={14} color={colors.primary} />
             <Text style={styles.meta}>{s.votes}</Text>
           </View>
           {!!s.cover.by && <Text style={styles.meta} numberOfLines={1}>@{s.cover.by}</Text>}
         </View>
       </View>
-    </TouchableOpacity>
+    </Tappable>
   );
 }
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  sorts:      { flexDirection: 'row', gap: 8, paddingHorizontal: Spacing.md, paddingVertical: 8 },
-  row:        { flexDirection: 'row', alignItems: 'center', gap: 12, minHeight: 76, paddingHorizontal: Spacing.md, paddingVertical: 10 },
-  photo:      { width: 64, height: 64, borderRadius: Radius.md, backgroundColor: c.bg3 },
+  sorts:      { flexDirection: 'row', gap: Space.sm, paddingHorizontal: Gutter, paddingVertical: Space.sm },
+  row:        { flexDirection: 'row', alignItems: 'center', gap: Space.md, minHeight: 76, paddingHorizontal: Gutter, paddingVertical: Space.md },
+  photo:      { width: 64, height: 64, borderRadius: Radius.inner, backgroundColor: c.bg3 },
   photoEmpty: { alignItems: 'center', justifyContent: 'center' },
-  body:       { flex: 1, minWidth: 0, gap: 4 },
-  name:       { fontSize: FontSizes.sm, fontWeight: '800', color: c.text },
-  chips:      { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
-  theme:      { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 8, paddingVertical: 2, borderRadius: Radius.full, backgroundColor: c.primaryTint },
-  themeText:  { fontSize: 12, fontWeight: '700', color: c.primaryOnTint },
-  local:      { flexDirection: 'row', alignItems: 'center', gap: 3, paddingHorizontal: 8, paddingVertical: 2, borderRadius: Radius.full, backgroundColor: c.localBg },
-  localText:  { fontSize: 12, fontWeight: '700', color: c.localText },
-  metaRow:    { flexDirection: 'row', alignItems: 'center', gap: 10 },
-  meta:       { fontSize: 12, fontWeight: '600', color: c.muted },
-  votes:      { flexDirection: 'row', alignItems: 'center', gap: 3 },
+  body:       { flex: 1, minWidth: 0, gap: Space.xs },
+  name:       { ...Type.body, fontWeight: '800', color: c.text },
+  chips:      { flexDirection: 'row', flexWrap: 'wrap', gap: Space.sm },
+  theme:      { flexDirection: 'row', alignItems: 'center', gap: Space.xs, paddingHorizontal: Space.sm, paddingVertical: Space.xxs, borderRadius: Radius.control, backgroundColor: c.primaryTint },
+  themeText:  { ...Type.caption, fontWeight: '700' },
+  local:      { flexDirection: 'row', alignItems: 'center', gap: Space.xs, paddingHorizontal: Space.sm, paddingVertical: Space.xxs, borderRadius: Radius.control, backgroundColor: c.localBg },
+  localText:  { ...Type.caption, fontWeight: '700', color: c.localText },
+  metaRow:    { flexDirection: 'row', alignItems: 'center', gap: Space.md },
+  meta:       { ...Type.caption, fontWeight: '500', color: c.muted },
+  votes:      { flexDirection: 'row', alignItems: 'center', gap: Space.xs },
 });

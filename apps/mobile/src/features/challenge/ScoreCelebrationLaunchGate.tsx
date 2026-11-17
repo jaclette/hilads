@@ -63,7 +63,7 @@ export function ScoreCelebrationLaunchGate() {
     const offs = [
       onScoreCelebrationRequest(() => { setTimeout(() => void refetch(), 1500); }),
       onDailyDropped(() => { setTimeout(() => void refetch(), 4000); }),
-      ...['mutual_rating_complete', 'challenge_date_approved', 'challenge_accepted', 'challenge_proof_approved', 'challenge_created_self', 'notification']
+      ...['challenge_accepted', 'challenge_created_self', 'notification']
         .map(ev => socket.on(ev, () => { void refetch(); })),
     ];
     const sub = AppState.addEventListener('change', s => { if (s === 'active') void refetch(); });
@@ -89,7 +89,7 @@ export function ScoreCelebrationLaunchGate() {
   const openRanks = useCallback((to: RanksTarget) => {
     track('score_win_ranks', { tab: to.tab, scope: to.scope, period: to.period });
     close();
-    router.push(`/ranks?tab=${to.tab}&period=${to.period}&scope=${to.scope}` as never);
+    router.navigate(`/ranks?tab=${to.tab}&period=${to.period}&scope=${to.scope}` as never);
   }, [close, router]);
 
   const openShare = useCallback((win: ScoreWin, medal: ScoreWinMedal | null) => {

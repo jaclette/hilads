@@ -8,7 +8,7 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import type { Reaction } from '@/types';
-import { Border, Radius, type ThemeColors } from '@/constants';
+import { Space, FontSizes, Border, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles } from '@/context/ThemeContext';
 
 interface Props {
@@ -43,13 +43,13 @@ export function ReactionPills({ reactions, onReact, isMine }: Props) {
 }
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  row:         { flexDirection: 'row', flexWrap: 'wrap', gap: 4, marginTop: 4, paddingLeft: 4 },
-  rowRight:    { justifyContent: 'flex-end', paddingLeft: 0, paddingRight: 4 },
+  row:         { flexDirection: 'row', flexWrap: 'wrap', gap: Space.xs, marginTop: Space.xs, paddingLeft: Space.xs },
+  rowRight:    { justifyContent: 'flex-end', paddingLeft: 0, paddingRight: Space.xs },
   // 32 high; hitSlop brings the touch area to 44.
-  pill:        { flexDirection: 'row', alignItems: 'center', gap: 4, height: 32, paddingHorizontal: 10, borderRadius: Radius.full,
+  pill:        { flexDirection: 'row', alignItems: 'center', gap: Space.xs, height: 32, paddingHorizontal: Space.md, borderRadius: Radius.full,
                  borderWidth: Border, borderColor: c.line, backgroundColor: c.bg2 },
   pillActive:  { backgroundColor: c.primaryTint, borderColor: c.primary },
   emoji:       { fontSize: 14 },
-  count:       { fontSize: 12, fontWeight: '700', color: c.muted },
+  count:       { fontSize: FontSizes.tiny, fontWeight: '700', color: c.muted },
   countActive: { color: c.primaryOnTint },
 });

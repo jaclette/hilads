@@ -5,12 +5,13 @@ import { Image } from 'expo-image';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import * as Haptics from 'expo-haptics';
-import { Radius, Spacing, type ThemeColors } from '@/constants';
+import { Space, Radius, Type, Gutter, IconSize, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { useApp } from '@/context/AppContext';
 import { AppHeader } from '@/features/shell/AppHeader';
 import { SeasonalScope } from '@/features/event/SeasonalArt';
-import { Avatar, Segmented, ThemeIcon } from '@/ui';
+import { Ionicons } from '@expo/vector-icons';
+import { Avatar, Segmented, Tappable, ThemeIcon } from '@/ui';
 import { useDailyToday } from '@/hooks/useDaily';
 import { ShareSheet } from '@/features/share/ShareSheet';
 import { proofShare, todayShare, type ShareContent } from '@/features/share/content';
@@ -24,7 +25,10 @@ import {
   fetchRanks, type CitiesRanks, type PhotosRanks, type PlayersRanks, type RanksPeriod, type RanksScope, type RanksTab,
 } from '@/api/ranks';
 import type { DailyProof } from '@/types';
-import { MEDAL, Movement, Podium, RaceBar, RankRow, ScopeToggle, YouBar, type PodiumGhost, type PodiumItem } from '@/features/ranks/parts';
+import { medalColor, Movement, Podium, RaceBar, RankRow, YouBar, type PodiumGhost, type PodiumItem } from '@/features/ranks/parts';
+import { useScope } from '@/context/ScopeContext';
+import { IndexCarousel } from '@/features/index/IndexCarousel';
+import { RivalsBlock } from '@/features/ranks/RivalsBlock';
 
 // The last answer of each view (segment, period, scope, city), in memory.
 const ranksCache = new Map<string, PlayersRanks | CitiesRanks | PhotosRanks>();
@@ -61,8 +65,9 @@ function RanksContent() {
   useEffect(() => { if (params.focus === 'me') setFocusMe(true); }, [params.focus]);
   const [tab, setTab] = useState<RanksTab>('photos');
   const [period, setPeriod] = useState<RanksPeriod>('today');
-  // The scope follows the city chosen in the header (World without one).
-  const [scope, setScope] = useState<RanksScope>('city');
+  // One scope control: the header's pill (my city or World), app-wide; a link's scope (a push, Passport) sets it too,
+  // so the pill always says what the ranking shows.
+  const { scope, setScope } = useScope();
   // Each response is kept with what it was asked for: a view only ever gets its own shape (switching
   // tabs, or a slow answer for the previous tab, used to hand Cities rows to the Players view).
   const [resp, setResp] = useState<{ key: string; data: PlayersRanks | CitiesRanks | PhotosRanks } | null>(null);
@@ -84,7 +89,7 @@ function RanksContent() {
     const pd = (['today', 'yesterday', 'week', 'alltime'] as RanksPeriod[]).find(x => x === params.period);
     if (pd) setPeriod(pd);
     if (params.scope === 'city' || params.scope === 'world') setScope(params.scope);
-  }, [params.tab, params.period, params.scope]);
+  }, [params.tab, params.period, params.scope, setScope]);
   useEffect(() => { if (!PERIODS[tab].includes(period)) setPeriod('today'); }, [tab]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const load = useCallback(async () => {
@@ -108,7 +113,6 @@ function RanksContent() {
   const endsAt = tab === 'photos' && period === 'today' ? (data as PhotosRanks | null)?.endsAt ?? null : null;
   const hours = endsAt ? Math.max(0, Math.floor((endsAt * 1000 - Date.now()) / 3_600_000)) : null;
   const info = hours === null ? '' : hours > 0 ? t('ranks.timeLeft', { count: hours }) : t('ranks.timeLeftMin');
-  const showToggle = tab !== 'cities' && !!cityId;
   // An empty podium place sends to the camera (today's photos) or to Today.
   // An empty podium place depends on where I stand: a past period has nobody to call ("Nobody
   // took this spot"); today, before I've played: play (the camera, never the edit of a photo I
@@ -142,7 +146,9 @@ function RanksContent() {
   const header = (
     <View style={styles.controls}>
       <Segmented<RanksTab> value={tab} onChange={v => pick(setTab, v)} options={[
-        { key: 'photos', label: t('ranks.seg.photos') }, { key: 'players', label: t('ranks.seg.players') }, { key: 'cities', label: t('ranks.seg.cities') },
+        // Icons, not emoji in the labels (one icon system: UX audit visual review).
+        { key: 'photos', label: t('ranks.seg.photos'), icon: 'camera-outline' }, { key: 'players', label: t('ranks.seg.players'), icon: 'person-outline' },
+        { key: 'cities', label: t('ranks.seg.cities'), icon: 'flag-outline' },
       ]} />
       {/* The periods: equal chips across the width, no scrolling (nothing hidden off screen). */}
       <View style={styles.periods} accessibilityRole="tablist">
@@ -150,13 +156,10 @@ function RanksContent() {
           <Chip key={p} on={period === p} label={t(`ranks.period.${p}`)} onPress={() => pick(setPeriod, p)} />
         ))}
       </View>
-      {(showToggle || !!info) && (
+      {!!info && (
         <View style={styles.infoRow}>
+          <Ionicons name="hourglass-outline" size={IconSize.sm} color={colors.muted} />
           <Text style={styles.info} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.75}>{info}</Text>
-          {showToggle && (
-            <ScopeToggle value={scope} onChange={v => pick(setScope, v)} worldLabel={t('ranks.scope.world')}
-                         city={city?.name ? shortCityName(city.name) : t('ranks.scope.city')} country={city?.country} />
-          )}
         </View>
       )}
     </View>
@@ -181,18 +184,21 @@ function RanksContent() {
 function Chip({ on, label, onPress }: { on: boolean; label: string; onPress: () => void }) {
   const styles = useThemedStyles(makeStyles);
   return (
-    <Pressable onPress={onPress} style={[styles.chip, on && styles.chipOn]} accessibilityRole="tab" accessibilityState={{ selected: on }} accessibilityLabel={label}>
+    <Tappable onPress={onPress} style={[styles.chip, on && styles.chipOn]} accessibilityRole="tab" accessibilityState={{ selected: on }} accessibilityLabel={label}>
       <Text style={[styles.chipText, on && styles.chipTextOn]} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7}>{label}</Text>
-    </Pressable>
+    </Tappable>
   );
 }
 
 function Empty({ text, failed }: { text: string; failed: boolean }) {
   const styles = useThemedStyles(makeStyles);
+  const { colors } = useTheme();
   const { t } = useTranslation('daily');
   return (
     <View style={styles.empty}>
-      <Text style={styles.emptyEmoji}>{failed ? '📡' : '🏆'}</Text>
+      <View style={[styles.emptyDisc, { backgroundColor: failed ? colors.bg3 : tint(colors.medalGold, 0.28) }]}>
+        <Ionicons name={failed ? 'cloud-offline-outline' : 'trophy'} size={34} color={failed ? colors.muted : colors.medalGold} />
+      </View>
       <Text style={styles.emptyText}>{failed ? t('loadFailed') : text}</Text>
     </View>
   );
@@ -241,8 +247,8 @@ function PhotosView({ data, header, failed, refreshing, onRefresh, period, ghost
   const rest = items.filter(i => i.rank > 3);
   const podium: PodiumItem[] = top.map(i => ({
     key: i.proof.id, rank: i.rank, label: i.proof.user.username ? `@${i.proof.user.username}` : i.proof.user.displayName ?? '',
-    lead: <Image source={{ uri: thumbUrl(i.proof.thumbUrl ?? i.proof.photoUrl) ?? undefined }} style={[styles.podiumPhoto, { borderColor: MEDAL[i.rank - 1] }]} contentFit="cover" />,
-    value: i.proof.voteCount, format: n => `${n} ❤️`, onPress: () => open(proofs, i.proof),
+    lead: <Image source={{ uri: thumbUrl(i.proof.thumbUrl ?? i.proof.photoUrl) ?? undefined }} style={[styles.podiumPhoto, { borderColor: medalColor(colors, i.rank) }]} contentFit="cover" />,
+    value: i.proof.voteCount, format: n => String(n), heart: true, onPress: () => open(proofs, i.proof),
   }));
 
   // The "You" bar: my best photo of the period and the likes it needs to pass the one above.
@@ -278,7 +284,7 @@ function PhotosView({ data, header, failed, refreshing, onRefresh, period, ghost
       {period === 'yesterday' && !!data?.cityBest?.length && (
         <View style={styles.cityBest}>
           <Text style={styles.sectionTitle}>{t('ranks.bestPerCity')}</Text>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 10 }}>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: Space.md }}>
             {data.cityBest.map(({ proof }) => (
               <Pressable key={proof.id} onPress={() => open(data.cityBest!.map(x => x.proof), proof)} style={styles.bestCard} accessibilityRole="button"
                          accessibilityLabel={shortCityName(proof.city?.name ?? '')}>
@@ -305,27 +311,32 @@ function PhotosView({ data, header, failed, refreshing, onRefresh, period, ghost
         contentContainerStyle={[styles.listPad, { paddingBottom: 96 }]}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.primary} colors={[colors.primary]} />}
         ListEmptyComponent={items.length === 0 && (data || failed) ? <Empty text={t('ranks.empty.photos')} failed={failed} /> : undefined}
-        ListFooterComponent={loading ? <ActivityIndicator style={{ marginVertical: 16 }} color={colors.primary} /> : undefined}
+        ListFooterComponent={loading ? <ActivityIndicator style={{ marginVertical: Space.lg }} color={colors.primary} /> : undefined}
         onEndReached={onEnd}
         onEndReachedThreshold={0.6}
         onScrollToIndexFailed={() => {}}
         initialNumToRender={12}
         windowSize={9}
-        renderItem={({ item }) => <PhotoRankRow item={item} mine={me?.proofId === item.proof.id} week={period === 'week'} onPress={() => open(proofs, item.proof)} />}
+        renderItem={({ item }) => <PhotoRankRow item={item} mine={me?.proofId === item.proof.id} week={period === 'week'}
+                                                single={period === 'today' || period === 'yesterday'} onPress={() => open(proofs, item.proof)} />}
       />
-      {data && <YouBar text={youText} onPress={onYou} />}
+      {data && <YouBar text={youText} onPress={me ? onYou : undefined} />}
       <View pointerEvents="none" style={StyleSheet.absoluteFill}><Confetti run={burst} count={36} /></View>
     </>
   );
 }
 
 /**
- * A photo from #4: the big rank, the thumbnail, the challenge (its text and theme), the author
- * (avatar, @handle, flag), and "4 ❤️ · 2 💬" (ties are ranked by comments, then the earliest posted).
+ * A photo from #4: the big rank, the thumbnail, the author (avatar, @handle, city), and the likes and
+ * comments as icons (ties are ranked by comments, then the earliest posted). On a board of several
+ * challenges (Week, All time) the challenge's text and theme too; on a one-challenge board (`single`:
+ * Today, Yesterday) every row would say the same challenge again, so the player leads (design pass).
  */
-const PhotoRankRow = memo(function PhotoRankRow({ item, mine, week, onPress }: { item: PhotosRanks['items'][number]; mine: boolean; week: boolean; onPress: () => void }) {
+const PhotoRankRow = memo(function PhotoRankRow({ item, mine, week, single, onPress }: {
+  item: PhotosRanks['items'][number]; mine: boolean; week: boolean; single: boolean; onPress: () => void;
+}) {
   const styles = useThemedStyles(makeStyles);
-  const { theme: mode } = useTheme();
+  const { theme: mode, colors } = useTheme();
   const p = item.proof;
   const theme = p.context?.theme?.key ?? null;
   // The theme's text color, not its fill: the peach ones (Taste, Only here, and the retired themes of
@@ -333,8 +344,8 @@ const PhotoRankRow = memo(function PhotoRankRow({ item, mine, week, onPress }: {
   const ink = theme ? (mode === 'dark' ? themeColor(theme).textDark : themeColor(theme).textLight) : null;
   const who = p.user.username ? `@${p.user.username}` : p.user.displayName ?? '';
   return (
-    <Pressable onPress={onPress} style={[styles.pRow, mine && styles.pRowMine]} accessibilityRole="button"
-               accessibilityLabel={`#${item.rank}, ${who}, ${p.voteCount} ❤️, ${p.commentCount ?? 0} 💬`}>
+    <Tappable onPress={onPress} style={[styles.pRow, mine && styles.pRowMine]} accessibilityRole="button"
+              accessibilityLabel={`#${item.rank}, ${who}, ${p.voteCount} ❤️, ${p.commentCount ?? 0} 💬`}>
       <View style={styles.pRankBox}>
         <Text style={styles.pRank} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.6}>{item.rank}</Text>
         {/* Week: since yesterday (▲2, ▼1, new), when the server sends it. */}
@@ -342,25 +353,53 @@ const PhotoRankRow = memo(function PhotoRankRow({ item, mine, week, onPress }: {
       </View>
       <Image source={{ uri: thumbUrl(p.thumbUrl ?? p.photoUrl) ?? undefined }} style={styles.pThumb} contentFit="cover" />
       <View style={styles.pBody}>
-        {!!p.context?.text && <Text style={styles.pTitle} numberOfLines={1}>{p.context.text}</Text>}
-        <View style={styles.pMeta}>
-          {!!theme && ink && (
-            <View style={[styles.pChip, { backgroundColor: tint(ink, 0.14) }]}>
-              <ThemeIcon theme={theme} size={11} color={ink} />
-              <Text style={styles.pChipText} numberOfLines={1}>{p.context?.theme?.name}</Text>
+        {single ? (
+          <>
+            <View style={styles.pMeta}>
+              <Avatar uri={p.user.photoUrl} name={p.user.displayName ?? p.user.username ?? ''} size={AVATAR_ROW} />
+              <Text style={styles.pTitle} numberOfLines={1}>{who}</Text>
             </View>
-          )}
-        </View>
-        <View style={styles.pMeta}>
-          <Avatar uri={p.user.photoUrl} name={p.user.displayName ?? p.user.username ?? ''} size={18} />
-          <Text style={styles.sub} numberOfLines={1}>{who}</Text>
-          <FlagSticker country={p.city?.country} size={14} />
-        </View>
+            {!!p.city && (
+              <View style={styles.pMeta}>
+                <FlagSticker country={p.city.country} size={14} />
+                <Text style={styles.sub} numberOfLines={1}>{shortCityName(p.city.name ?? '')}</Text>
+              </View>
+            )}
+          </>
+        ) : (
+          <>
+            {!!p.context?.text && <Text style={styles.pTitle} numberOfLines={1}>{p.context.text}</Text>}
+            {!!theme && ink && (
+              <View style={styles.pMeta}>
+                <View style={[styles.pChip, { backgroundColor: tint(ink, 0.14) }]}>
+                  <ThemeIcon theme={theme} size={12} color={ink} />
+                  <Text style={styles.pChipText} numberOfLines={1}>{p.context?.theme?.name}</Text>
+                </View>
+              </View>
+            )}
+            <View style={styles.pMeta}>
+              <Avatar uri={p.user.photoUrl} name={p.user.displayName ?? p.user.username ?? ''} size={AVATAR_ROW} />
+              <Text style={styles.sub} numberOfLines={1}>{who}</Text>
+              <FlagSticker country={p.city?.country} size={14} />
+            </View>
+          </>
+        )}
       </View>
-      <View style={styles.pill}><Text style={styles.pillText} numberOfLines={1}>{p.voteCount} ❤️ · {p.commentCount ?? 0} 💬</Text></View>
-    </Pressable>
+      <View style={styles.pill}>
+        <Ionicons name="heart" size={IconSize.sm} color={colors.primary} />
+        <Text style={styles.pillText} numberOfLines={1}>{p.voteCount}</Text>
+        {(p.commentCount ?? 0) > 0 && (
+          <>
+            <Ionicons name="chatbubble" size={14} color={colors.muted} style={styles.pillGap} />
+            <Text style={styles.pillText} numberOfLines={1}>{p.commentCount}</Text>
+          </>
+        )}
+      </View>
+    </Tappable>
   );
 });
+
+const AVATAR_ROW = 24;
 
 // ── Players ─────────────────────────────────────────────────────────────────
 
@@ -376,7 +415,7 @@ function PlayersView({ data, header, failed, refreshing, onRefresh, period, list
   const pts = (n: number) => t('ranks.pts', { count: n });
   const podium: PodiumItem[] = entries.slice(0, 3).map(e => ({
     key: e.user.id, rank: e.rank, label: nameOf(e.user), value: e.points, format: pts, onPress: () => onOpen(e.user.id),
-    lead: <View style={[styles.podiumAvatar, { borderColor: MEDAL[e.rank - 1] }]}><Avatar uri={e.user.photoUrl} name={e.user.displayName ?? e.user.username ?? ''} size={56} /></View>,
+    lead: <View style={[styles.podiumAvatar, { borderColor: medalColor(colors, e.rank) }]}><Avatar uri={e.user.photoUrl} name={e.user.displayName ?? e.user.username ?? ''} size={56} /></View>,
   }));
   const me = data?.me ?? null;
   const youText = me
@@ -407,9 +446,8 @@ function PlayersView({ data, header, failed, refreshing, onRefresh, period, list
           </View>
         )}
       />
-      {data && <YouBar text={youText} onPress={() => {
-        if (me && me.rank > 3 && me.rank - 4 < rest.length) list.current?.scrollToIndex({ index: me.rank - 4, viewPosition: 0.5 });
-      }} />}
+      {data && <YouBar text={youText} onPress={me && me.rank > 3 && me.rank - 4 < rest.length
+        ? () => list.current?.scrollToIndex({ index: me.rank - 4, viewPosition: 0.5 }) : undefined} />}
     </>
   );
 }
@@ -463,6 +501,8 @@ function CitiesView({ data, header, failed, refreshing, onRefresh, period, list,
         contentContainerStyle={[styles.listPad, { paddingBottom: 96 }]}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.primary} colors={[colors.primary]} />}
         ListEmptyComponent={data || failed ? <Empty text={t('ranks.empty.cities')} failed={failed} /> : undefined}
+        // Under the city ranking: my rivals (moved from Passport), then how the cities answered (the Hilads Index).
+        ListFooterComponent={<View style={styles.indexFoot}><RivalsBlock /><IndexCarousel /></View>}
         onScrollToIndexFailed={() => {}}
         renderItem={({ item: e, index }) => (
           <View style={styles.rowPad}>
@@ -470,12 +510,17 @@ function CitiesView({ data, header, failed, refreshing, onRefresh, period, list,
                      onPress={() => openCity(e.city)}
                      movement={<Movement rank={e.rank} prevRank={e.prevRank} show={period !== 'today'} />}
                      lead={<FlagSticker country={e.city.country} size={34} />}
-                     sub={<Text style={styles.sub}>{t('mosaic.players', { count: e.players })} · {e.likes} ❤️</Text>}
+                     sub={<>
+                       <Text style={styles.sub}>{t('mosaic.players', { count: e.players })}</Text>
+                       <Ionicons name="heart" size={13} color={colors.primary} />
+                       <Text style={styles.sub}>{e.likes}</Text>
+                     </>}
                      extra={<RaceBar ratio={e.photos / Math.max(1, leader)} color={e.city.id === myCityId ? colors.cta : color} delay={Math.min(index, 8) * 60} />} />
           </View>
         )}
       />
-      {mine && (
+      {/* #1: the line at the top already says so (the bar would repeat it, over the Index). */}
+      {mine && mine.rank !== 1 && (
         <YouBar text={mine.rank === 1 ? t('ranks.city.lineTop', { city: name(mine.city) })
           : t('ranks.city.youBar', { city: name(mine.city), rank: mine.rank, count: mine.gap ?? 1, next: mine.next ? shortCityName(mine.next.name) : '' })}
                 onPress={() => list.current?.scrollToIndex({ index: Math.max(0, mine.rank - 1), viewPosition: 0.5 })} />
@@ -486,46 +531,50 @@ function CitiesView({ data, header, failed, refreshing, onRefresh, period, list,
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
   container:    { flex: 1, backgroundColor: c.bg },
-  header:       { paddingHorizontal: Spacing.md, backgroundColor: c.bg },
+  header:       { paddingHorizontal: Gutter, backgroundColor: c.bg },
   flex:         { flex: 1 },
-  controls:     { paddingHorizontal: Spacing.md, paddingTop: 6, gap: 10 },
-  periods:      { flexDirection: 'row', gap: 6 },
-  infoRow:      { flexDirection: 'row', alignItems: 'center', gap: 10, minHeight: 34, paddingBottom: 4 },
-  info:         { flex: 1, minWidth: 0, fontSize: 14, lineHeight: 18, fontWeight: '800', color: c.text },
-  chip:         { flex: 1, minWidth: 0, alignItems: 'center', height: 36, paddingHorizontal: 6, borderRadius: Radius.full, borderWidth: 1.5, borderColor: c.line, backgroundColor: c.bg2, justifyContent: 'center' },
-  chipOn:       { backgroundColor: themeColor('sip').fill, borderColor: themeColor('sip').fill },
-  chipText:     { fontSize: 14, lineHeight: 18, fontWeight: '800', color: c.text },
-  chipTextOn:   { color: themeColor('sip').onFill },
+  controls:     { paddingHorizontal: Gutter, paddingTop: Space.sm, gap: Space.md },
+  periods:      { flexDirection: 'row', gap: Space.sm },
+  infoRow:      { flexDirection: 'row', alignItems: 'center', gap: Space.xs, minHeight: 28 },
+  info:         { flex: 1, minWidth: 0, ...Type.caption, color: c.muted },
+  // The periods wear the shared selected state (design pass): peach, like the segments above them.
+  chip:         { flex: 1, minWidth: 0, alignItems: 'center', height: 36, paddingHorizontal: Space.sm, borderRadius: Radius.control, borderWidth: 1, borderColor: c.line, backgroundColor: c.bg2, justifyContent: 'center' },
+  chipOn:       { backgroundColor: c.selected, borderColor: c.selected },
+  chipText:     { ...Type.caption, fontWeight: '700', color: c.muted },
+  chipTextOn:   { fontWeight: '800', color: c.onSelected },
   listPad:      { paddingBottom: 32 },
-  rowPad:       { paddingHorizontal: Spacing.md - 4 },
-  podiumPhoto:  { width: 72, height: 72, borderRadius: 16, borderWidth: 3, backgroundColor: c.bg3 },
+  indexFoot:    { marginTop: Space.xl, paddingHorizontal: Gutter, gap: Space.xl },
+  // Rows sit Space.sm in, with Space.sm inside: their content lines up on the gutter.
+  rowPad:       { paddingHorizontal: Space.sm },
+  podiumPhoto:  { width: 72, height: 72, borderRadius: Radius.inner, borderWidth: 3, backgroundColor: c.bg3 },
   podiumAvatar: { borderRadius: 32, borderWidth: 3, padding: 1 },
-  sub:          { fontSize: 13, lineHeight: 17, color: c.muted, flexShrink: 1 },
-  badge:        { fontSize: 11, fontWeight: '800', paddingHorizontal: 6, paddingVertical: 1, borderRadius: 8, overflow: 'hidden' },
-  badgeLocal:   { backgroundColor: tint('#1FB5A8', 0.2), color: c.localText },
-  badgeTraveler: { backgroundColor: tint('#3D9BF0', 0.2), color: c.text },
-  sectionTitle: { fontSize: 16, fontWeight: '800', color: c.text, marginBottom: 8 },
-  cityBest:     { paddingHorizontal: Spacing.md, paddingTop: 12 },
-  bestCard:     { width: 112, borderRadius: Radius.card, overflow: 'hidden', backgroundColor: c.bg2, borderWidth: 1.5, borderColor: c.line },
+  sub:          { ...Type.caption, fontWeight: '500', color: c.muted, flexShrink: 1 },
+  badge:        { ...Type.caption, fontSize: 11, fontWeight: '800', paddingHorizontal: Space.sm, paddingVertical: 1, borderRadius: Radius.control, overflow: 'hidden' },
+  badgeLocal:   { backgroundColor: c.localBg, color: c.localText },
+  badgeTraveler: { backgroundColor: c.travelerBg, color: c.travelerText },
+  sectionTitle: { ...Type.label, color: c.text, marginBottom: Space.sm },
+  cityBest:     { paddingHorizontal: Gutter, paddingTop: Space.md },
+  bestCard:     { width: 112, borderRadius: Radius.card, overflow: 'hidden', backgroundColor: c.bg2, borderWidth: 1, borderColor: c.line },
   bestPhoto:    { width: 112, height: 112, backgroundColor: c.bg3 },
-  bestFoot:     { flexDirection: 'row', alignItems: 'center', gap: 6, padding: 6 },
-  bestCity:     { flex: 1, fontSize: 12, fontWeight: '800', color: c.text },
-  pRow:         { flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 8, paddingHorizontal: 12, borderRadius: Radius.card },
-  pRowMine:     { backgroundColor: c.primaryTint },
-  pRankBox:     { width: 40, alignItems: 'center', gap: 1 },
-  pRank:        { width: 40, fontSize: 24, lineHeight: 30, fontWeight: '900', color: c.text, textAlign: 'center' },
-  pThumb:       { width: 52, height: 52, borderRadius: 12, backgroundColor: c.bg3 },
-  pBody:        { flex: 1, minWidth: 0, gap: 3 },
-  pTitle:       { fontSize: 14, lineHeight: 18, fontWeight: '800', color: c.text },
-  pMeta:        { flexDirection: 'row', alignItems: 'center', gap: 5, minWidth: 0 },
-  pChip:        { flexDirection: 'row', alignItems: 'center', gap: 3, paddingHorizontal: 6, height: 18, borderRadius: 9, maxWidth: '100%' },
-  pChipText:    { fontSize: 11, lineHeight: 14, fontWeight: '800', color: c.text, flexShrink: 1 },
-  pill:         { paddingHorizontal: 8, height: 26, borderRadius: 13, backgroundColor: tint('#FFC93C', 0.25), alignItems: 'center', justifyContent: 'center' },
-  pillText:     { fontSize: 12, fontWeight: '800', color: c.text },
-  funLine:      { flexDirection: 'row', alignItems: 'center', gap: 8, marginHorizontal: Spacing.md, marginTop: 10, padding: 12,
-                  borderRadius: Radius.card, backgroundColor: tint(themeColor('sip').fill, 0.2) },
-  funText:      { flex: 1, fontSize: 15, lineHeight: 20, fontWeight: '800', color: c.text },
-  empty:        { alignItems: 'center', paddingVertical: 60, paddingHorizontal: 40, gap: 12 },
-  emptyEmoji:   { fontSize: 44 },
-  emptyText:    { fontSize: 16, lineHeight: 22, fontWeight: '700', color: c.text, textAlign: 'center' },
+  bestFoot:     { flexDirection: 'row', alignItems: 'center', gap: Space.sm, padding: Space.sm },
+  bestCity:     { flex: 1, ...Type.caption, fontWeight: '800', color: c.text },
+  pRow:         { flexDirection: 'row', alignItems: 'center', gap: Space.md, paddingVertical: Space.sm, paddingHorizontal: Space.sm, marginHorizontal: Space.sm, borderRadius: Radius.card },
+  pRowMine:     { backgroundColor: c.selected },
+  pRankBox:     { width: 32, alignItems: 'center', gap: 1 },
+  pRank:        { width: 32, ...Type.title, color: c.text, textAlign: 'center' },
+  pThumb:       { width: 56, height: 56, borderRadius: Radius.inner, backgroundColor: c.bg3 },
+  pBody:        { flex: 1, minWidth: 0, gap: Space.xs },
+  pTitle:       { flexShrink: 1, ...Type.body, fontWeight: '800', color: c.text },
+  pMeta:        { flexDirection: 'row', alignItems: 'center', gap: Space.xs, minWidth: 0 },
+  pChip:        { flexDirection: 'row', alignItems: 'center', gap: Space.xs, paddingHorizontal: Space.sm, height: 20, borderRadius: Radius.control, maxWidth: '100%' },
+  pChipText:    { ...Type.caption, fontWeight: '800', color: c.text, flexShrink: 1 },
+  pill:         { flexDirection: 'row', alignItems: 'center', gap: Space.xs, paddingHorizontal: Space.md, height: 28, borderRadius: Radius.control, backgroundColor: c.bg3 },
+  pillGap:      { marginLeft: Space.xs },
+  pillText:     { ...Type.caption, fontWeight: '800', color: c.text },
+  funLine:      { flexDirection: 'row', alignItems: 'center', gap: Space.sm, marginHorizontal: Gutter, marginTop: Space.md, paddingVertical: Space.md, paddingHorizontal: Space.lg,
+                  borderRadius: Radius.card, backgroundColor: tint(c.medalGold, 0.22) },
+  funText:      { flex: 1, ...Type.body, fontWeight: '800', color: c.text },
+  empty:        { alignItems: 'center', paddingVertical: Space.xxl * 1.5, paddingHorizontal: Space.xxl, gap: Space.lg },
+  emptyDisc:    { width: 76, height: 76, borderRadius: 38, alignItems: 'center', justifyContent: 'center' },
+  emptyText:    { ...Type.label, color: c.text, textAlign: 'center' },
 });

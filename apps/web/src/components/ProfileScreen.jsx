@@ -54,8 +54,8 @@ const AMBASSADOR_PICKS = [
  * appearance and language, save, sign out, delete account. Friends and vibes
  * live in Passport → Friends now.
  */
-export default function ProfileScreen({ account, onSave, onBack, onSignOut, onDeleteAccount, tabMode = false, renderAppHeader, city, cityChannelId, onCityChange }) {
-  const { t } = useTranslation(['profile', 'common'])
+export default function ProfileScreen({ account, onSave, onBack, onSignOut, onDeleteAccount, tabMode = false, renderAppHeader, city, cityChannelId, onCityChange, onOpenNotifSettings }) {
+  const { t } = useTranslation(['profile', 'common', 'notifications'])
   const [photoUrl,        setPhotoUrl]        = useState(account.profile_photo_url ?? null)
   const [thumbPhotoUrl,   setThumbPhotoUrl]   = useState(account.thumbAvatarUrl ?? account.profile_photo_url ?? null)
   const [username,        setUsername]        = useState(account.username ?? '')
@@ -261,11 +261,11 @@ export default function ProfileScreen({ account, onSave, onBack, onSignOut, onDe
                   <span className={`badge-pill badge-pill--${account.primaryBadge.key}`}>{badgeLabel(account.primaryBadge.key)}</span>
                 )}
                 {homeCity && (
-                  <span className="profile-identity-city" style={{ display: 'inline-flex', alignItems: 'center', gap: 3 }}><Icon name="location-outline" size={12} />{homeCity}</span>
+                  <span className="profile-identity-city" style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--sp-4)' }}><Icon name="location-outline" size={12} />{homeCity}</span>
                 )}
               </div>
               {vibe && VIBES.find(v => v.key === vibe) && (
-                <p className="profile-identity-vibe" style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                <p className="profile-identity-vibe" style={{ display: 'flex', alignItems: 'center', gap: 'var(--sp-4)' }}>
                   <Icon name={VIBES.find(v => v.key === vibe).icon} size={13} />{t(`vibes.${vibe}`)}
                 </p>
               )}
@@ -294,6 +294,18 @@ export default function ProfileScreen({ account, onSave, onBack, onSignOut, onDe
           {/* Appearance (theme) + Language — shared with the guest Me view
               so members and guests get the identical pickers. */}
           <AppearanceLanguageCard account={account} onSave={onSave} />
+
+          {/* Every push setting (was only behind the ⚙️ of Notifications). */}
+          {onOpenNotifSettings && (
+            <div className="pp-rows">
+              <button type="button" className="pp-row" onClick={onOpenNotifSettings}>
+                <Icon name="notifications-outline" size={20} style={{ color: 'var(--primary-text)' }} />
+                <span className="pp-row-label">{t('notifications:settings.title')}</span>
+                <span className="pp-row-value" />
+                <Icon name="chevron-forward" size={18} style={{ color: 'var(--muted2)' }} />
+              </button>
+            </div>
+          )}
 
         </div>
 
@@ -356,7 +368,7 @@ export default function ProfileScreen({ account, onSave, onBack, onSignOut, onDe
                     type="button"
                     className="modal-input modal-input--tappable"
                     onClick={() => setCityPickerOpen(true)}
-                    style={{ textAlign: 'left', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}
+                    style={{ textAlign: 'left', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 'var(--sp-8)' }}
                   >
                     <span>{currentCityName ? localizeCityName(currentCityName) : t('fields.homeCityPlaceholder')}</span>
                     <span aria-hidden="true" style={{ color: 'var(--muted2)' }}>▾</span>
@@ -395,7 +407,7 @@ export default function ProfileScreen({ account, onSave, onBack, onSignOut, onDe
                       type="button"
                       className={`vibe-chip${vibe === v.key ? ' vibe-chip--on' : ''}`}
                       onClick={() => setVibe(v.key)}
-                      style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}
+                      style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--sp-8)' }}
                     >
                       <Icon name={v.icon} size={15} />{t(`vibes.${v.key}`)}
                     </button>
@@ -426,14 +438,14 @@ export default function ProfileScreen({ account, onSave, onBack, onSignOut, onDe
             {account.isAmbassador && (
               <div className="profile-card profile-fields">
                 <p className="me-section-label">{t('ambassador.title')}</p>
-                <p style={{ fontSize: '0.8rem', color: 'var(--muted)', margin: '-4px 0 8px' }}>
+                <p style={{ fontSize: 'var(--fs-xs)', color: 'var(--muted)', margin: '-4px 0 var(--sp-8)' }}>
                   {t('ambassador.subtitle')}
                 </p>
                 {AMBASSADOR_PICKS.map(({ key, icon, maxLen }) => {
                   const [val, set] = pickState[key]
                   return (
                     <div key={key} className="modal-field">
-                      <label className="modal-label" style={{ display: 'flex', alignItems: 'center', gap: 6 }}><Icon name={icon} size={15} />{t(`ambassador.${key}`)}</label>
+                      <label className="modal-label" style={{ display: 'flex', alignItems: 'center', gap: 'var(--sp-8)' }}><Icon name={icon} size={15} />{t(`ambassador.${key}`)}</label>
                       <textarea
                         className="modal-input"
                         value={val}
@@ -459,7 +471,7 @@ export default function ProfileScreen({ account, onSave, onBack, onSignOut, onDe
       <div className="profile-sticky-cta">
         {error && <p className="profile-sticky-error">{error}</p>}
         <button
-          className="modal-submit profile-sticky-save"
+          className="modal-submit btn-primary"
           onClick={handleSave}
           disabled={saving || uploading || !username.trim()}
         >

@@ -1,0 +1,13 @@
+# Opens the city's chat (Hi) from Today: since the 4-tab bar (UX audit option B)
+# Hi is a screen of the city, a row on Today under the cities that played.
+appId: com.hilads.app
+---
+- tapOn:
+    id: "tab-today"
+- scrollUntilVisible:
+    element:
+      id: "today-city-chat"
+    direction: DOWN
+    timeout: 20000
+- tapOn:
+    id: "today-city-chat"

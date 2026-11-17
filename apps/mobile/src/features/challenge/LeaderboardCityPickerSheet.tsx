@@ -1,10 +1,10 @@
 import { useEffect, useMemo, useState } from 'react';
-import { View, Text, FlatList, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { fetchChannels } from '@/api/channels';
 import { localizeCityName } from '@/i18n/cityName';
-import { FontSizes, Spacing, type ThemeColors } from '@/constants';
+import { Space, FontSizes, Spacing, type ThemeColors } from '@/constants';
 import { CityFlag, EmptyState, Sheet, SheetFlatList, TextField } from '@/ui';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import type { City } from '@/types';
@@ -119,7 +119,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   sheet:            { maxHeight: '75%' },
   list:             { flexGrow: 0 },
   empty:            { padding: Spacing.lg, alignItems: 'center' },
-  row:              { flexDirection: 'row', alignItems: 'center', gap: 12, minHeight: 52 },
+  row:              { flexDirection: 'row', alignItems: 'center', gap: Space.md, minHeight: 52 },
   cityName:         { flex: 1, fontSize: FontSizes.md, fontWeight: '700', color: c.text },
   cityNameSelected: { color: c.primaryText },
   sep:              { height: 1, backgroundColor: c.line, marginLeft: 34 },

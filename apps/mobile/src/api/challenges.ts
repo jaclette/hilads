@@ -7,7 +7,6 @@ import type {
   AcceptFailureCode,
   Message,
   UserDTO,
-  RatePrompt,
   DailyChallenge,
   DailyProof,
 } from '@/types';
@@ -58,42 +57,6 @@ export async function fetchShowcaseItem(challengeId: string): Promise<ShowcaseIt
   }
 }
 
-export interface ChallengeExampleLine {
-  kind:   'created' | 'winner' | 'present' | 'submission' | 'host';
-  name?:  string;
-  count?: number;
-  points: number;
-  per?:   boolean;
-}
-export interface ChallengeExample {
-  id:          string;
-  title:       string;
-  type:        string;
-  format:      'photo' | 'meet';
-  creatorName: string;
-  lines:       ChallengeExampleLine[];
-}
-
-/** One inert example for the zero-challenge empty state. No challenge id by
- *  design - these are read-only inspiration, never takeable. */
-export interface InspirationExample {
-  id:                       string;
-  title:                    string;
-  challenge_type:           ChallengeType;
-  mode:                     'local' | 'international';
-  country:                  string | null;   // origin (the inspiration city)
-  target_country:           string | null;   // only on international challenges
-  creator_username:         string | null;
-  creator_display_name:     string | null;
-  creator_thumb_avatar_url: string | null;
-}
-
-export interface ChallengeInspiration {
-  city:     string | null;   // source city name (for the small "by … · city" line)
-  cityId:   string | null;
-  examples: InspirationExample[];
-}
-
 export async function fetchChallengeById(challengeId: string): Promise<{
   challenge: Challenge;
   channelId: number;
@@ -125,31 +88,6 @@ export async function fetchUserChallenges(userId: string): Promise<ProfileChalle
 }
 
 // ── Writes ────────────────────────────────────────────────────────────────────
-
-/** Optional fields for International mode + visibility (privacy layer).
- *  Mode/target/proof fields are ignored by the server when `mode='local'`.
- *  `targetCityChannelId` null = "anywhere". `visibility` is 'public' or
- *  'friends' at input - 'private' is reachable only via the mutual privacy
- *  flow once the challenge has an acceptor. Server forces 'public' on
- *  International rows regardless of what we send. */
-export interface InternationalChallengeFields {
-  mode?:                 'local' | 'international';
-  targetCityChannelId?:  string | number | null;
-  proofRequirements?:    string | null;
-  /** Validation method per challenge. International is locked to
-   *  'photo_proof' by the server regardless of input; local creators
-   *  pick. Default 'meet' preserves the historical IRL flow. */
-  validationMethod?:     'meet' | 'photo_proof' | null;
-  visibility?:           'public' | 'friends' | null;
-  // Group model (Phase 4): a local MEET challenge created with format='group'
-  // carries a meet date + location set at creation.
-  format?:               'legacy' | 'group';
-  meetAt?:               number | null;   // unix seconds
-  meetEndsAt?:           number | null;   // unix seconds (optional)
-  venue?:                string | null;
-  venueLat?:             number | null;
-  venueLng?:             number | null;
-}
 
 /** GROUP challenges: the challenger validates who was present at the meet.
  *  Returns the count + ids now marked present. Present takers earn the big
@@ -238,20 +176,6 @@ export async function unvalidateChallenge(challengeId: string, guestId: string):
   return api.post<Challenge>(`/challenges/${challengeId}/unvalidate`, { guestId });
 }
 
-/** Accept / leave a challenge. Returns the new count + whether the caller is in.
- *  LEGACY (PR1 pooled-acceptance model). Kept for backward-compat with the
- *  live mobile build until the next app release. New code uses acceptChallenge(). */
-export async function toggleChallengeParticipation(
-  challengeId: string,
-  guestId: string,
-  nickname?: string | null,
-): Promise<{ count: number; isIn: boolean }> {
-  return api.post<{ count: number; isIn: boolean }>(
-    `/challenges/${challengeId}/participants/toggle`,
-    { guestId, nickname },
-  );
-}
-
 // ── PR2: per-acceptance thread model ─────────────────────────────────────────
 
 /** A 403 from /accept carries a `code` + (sometimes) `required_mode`. */
@@ -267,12 +191,10 @@ export class AcceptChallengeError extends Error {
 }
 
 /**
- * Take on a challenge - creates a thread channel + acceptance row.
- * Idempotent: re-accepting returns the existing acceptance.
- *
- * Throws AcceptChallengeError on 403 with a typed `code` (not_creator /
- * mode_required / mode_mismatch / cap_reached) so the UI can show a tailored
- * message + (for mode_required/mode_mismatch) offer a quick mode-switch.
+ * Join a GROUP challenge (no approval). Idempotent: re-joining returns the
+ * existing acceptance. Throws AcceptChallengeError on a 4xx with a typed
+ * `code` (not_creator / closed_to_new_joins / legacy_retired) so the UI can
+ * show a tailored message.
  */
 export async function acceptChallenge(challengeId: string): Promise<ChallengeAcceptance> {
   try {
@@ -285,82 +207,6 @@ export async function acceptChallenge(challengeId: string): Promise<ChallengeAcc
   }
 }
 
-/** Cancel an acceptance (acceptor OR creator). Hard-deletes the thread.
- *  Only allowed in phase='accepted' - PR3+ phases lock cancel (server 409). */
-export async function cancelAcceptance(acceptanceId: string): Promise<void> {
-  await api.post(`/acceptances/${acceptanceId}/cancel`, {});
-}
-
-// ── PR3: date concertation ──────────────────────────────────────────────────
-
-/** Either party proposes a meetup date. Counter-proposals overwrite the
- *  previous proposal. `startsAt`/`endsAt` are unix timestamps (seconds). */
-export async function proposeDate(
-  acceptanceId: string,
-  startsAt: number,
-  endsAt: number | null,
-  venue: string | null,
-): Promise<ChallengeAcceptance> {
-  return api.post<ChallengeAcceptance>(`/acceptances/${acceptanceId}/propose-date`, {
-    startsAt,
-    endsAt,
-    venue,
-  });
-}
-
-/** Proposer-only - clears the current proposal. Phase stays 'accepted'. */
-export async function withdrawProposal(acceptanceId: string): Promise<ChallengeAcceptance> {
-  return api.post<ChallengeAcceptance>(`/acceptances/${acceptanceId}/withdraw-proposal`, {});
-}
-
-/** Creator-only - approves the current proposal. Flips phase to 'scheduled';
- *  the thread chat IS the meet-up surface, no separate event row is created. */
-export async function approveDate(acceptanceId: string): Promise<{ acceptance: ChallengeAcceptance }> {
-  return api.post<{ acceptance: ChallengeAcceptance }>(
-    `/acceptances/${acceptanceId}/approve-date`,
-    {},
-  );
-}
-
-// ── PR5: pending take-on review (creator only) ──────────────────────────────
-
-/** Creator approves a pending take-on request → phase 'pending' → 'accepted'.
- *  Unlocks the thread chat for the acceptor + pushes them. */
-export async function approveTakeOn(acceptanceId: string): Promise<{ acceptance: ChallengeAcceptance }> {
-  return api.post<{ acceptance: ChallengeAcceptance }>(
-    `/acceptances/${acceptanceId}/approve-takeon`,
-    {},
-  );
-}
-
-/** Creator declines a pending take-on request → phase 'pending' → 'rejected'.
- *  Acceptor is notified. The slot reopens (rejected rows don't count). */
-export async function rejectTakeOn(acceptanceId: string): Promise<{ acceptance: ChallengeAcceptance }> {
-  return api.post<{ acceptance: ChallengeAcceptance }>(
-    `/acceptances/${acceptanceId}/reject-takeon`,
-    {},
-  );
-}
-
-/** Taker leaves an active take-on: deletes the acceptance (challenge reopens
- *  from zero), wipes the challenge chat, pushes + WS-resets the creator. */
-export async function abandonAcceptance(acceptanceId: string): Promise<{ ok: boolean; challengeId: string }> {
-  return api.post<{ ok: boolean; challengeId: string }>(
-    `/acceptances/${acceptanceId}/abandon`,
-    {},
-  );
-}
-
-/** Creator restarts from zero: removes the active taker (deletes their
- *  acceptance), wipes the chat, reopens the challenge, pushes + WS-resets the
- *  removed taker. */
-export async function restartChallenge(challengeId: string): Promise<{ ok: boolean; challengeId: string }> {
-  return api.post<{ ok: boolean; challengeId: string }>(
-    `/challenges/${challengeId}/restart`,
-    {},
-  );
-}
-
 /** Relaunch an ENDED challenge: reopens with the SAME countdown originally set
  *  (server recomputes the deadline). Returns the updated challenge. */
 export async function relaunchChallenge(challengeId: string): Promise<{ ok: boolean; challenge: Challenge }> {
@@ -370,36 +216,10 @@ export async function relaunchChallenge(challengeId: string): Promise<{ ok: bool
   );
 }
 
-// ── PR4: debrief verdict (creator only, after meetup ends) ──────────────────
-
-/** Creator approves the take-on as accomplished (post-debrief). Final state. */
-export async function approveChallenge(acceptanceId: string): Promise<ChallengeAcceptance> {
-  return api.post<ChallengeAcceptance>(`/acceptances/${acceptanceId}/approve-challenge`, {});
-}
-
-/** Creator rejects (no-show / didn't really happen). Final state. */
-export async function rejectChallenge(acceptanceId: string): Promise<ChallengeAcceptance> {
-  return api.post<ChallengeAcceptance>(`/acceptances/${acceptanceId}/reject-challenge`, {});
-}
-
 /** "My threads" - every relationship I'm in (as creator or acceptor). */
 export async function fetchMyAcceptances(): Promise<ChallengeThreadSummary[]> {
   const data = await api.get<{ threads: ChallengeThreadSummary[] }>('/me/acceptances');
   return data.threads ?? [];
-}
-
-// ── PR6: rate-prompts + ratings ─────────────────────────────────────────────
-
-/** Caller's currently rate-eligible meet-ups. Sorted oldest-first. Returns
- *  [] on network error (banner just doesn't render - non-blocking surface). */
-export async function fetchRatePrompts(): Promise<RatePrompt[]> {
-  try {
-    const data = await api.get<{ prompts: RatePrompt[] }>('/me/rate-prompts');
-    return data.prompts ?? [];
-  } catch (err) {
-    console.warn('[fetchRatePrompts] failed:', err);
-    return [];
-  }
 }
 
 // PR17 - Score celebration popin (the "+X points!" launch surface).
@@ -540,52 +360,6 @@ export async function toggleChallengeReaction(
   return data.reactions;
 }
 
-/** Submit a rating for a challenge. Throws ApiError on 4xx so the sheet can
- *  branch - in particular code='already_rated' (409) and code='not_rate_eligible'
- *  (403) are recoverable by dismissing + refetching the prompts list. */
-export async function submitRating(
-  challengeId: string,
-  stars: number,
-  comment: string | null,
-): Promise<{ revealed: boolean }> {
-  const body: Record<string, unknown> = { stars };
-  if (comment !== null && comment.length > 0) body.comment = comment;
-  const data = await api.post<{ rating: unknown; revealed: boolean }>(
-    `/challenges/${challengeId}/ratings`,
-    body,
-  );
-  return { revealed: !!data?.revealed };
-}
-
-/** Creator's view of who took on a specific challenge. */
-export async function fetchChallengeAcceptances(challengeId: string): Promise<ChallengeAcceptance[]> {
-  const data = await api.get<{ acceptances: ChallengeAcceptance[] }>(`/challenges/${challengeId}/acceptances`);
-  return data.acceptances ?? [];
-}
-
-// ── Thread chat (per-acceptance 1:1 channel) ────────────────────────────────
-
-/** Paginated thread chat messages. Members-only (acceptor + creator). */
-export async function fetchThreadMessages(
-  threadChannelId: string,
-  opts: { beforeId?: string; limit?: number } = {},
-): Promise<{ messages: Message[]; hasMore: boolean }> {
-  const q = new URLSearchParams({ limit: String(opts.limit ?? 50) });
-  if (opts.beforeId) q.set('before_id', opts.beforeId);
-  const data = await api.get<{ messages: Message[]; hasMore?: boolean }>(
-    `/threads/${threadChannelId}/messages?${q}`,
-  );
-  return { messages: data.messages ?? [], hasMore: data.hasMore ?? false };
-}
-
-export async function sendThreadMessage(threadChannelId: string, content: string): Promise<Message> {
-  return api.post<Message>(`/threads/${threadChannelId}/messages`, { type: 'text', content });
-}
-
-export async function sendThreadImageMessage(threadChannelId: string, imageUrl: string): Promise<Message> {
-  return api.post<Message>(`/threads/${threadChannelId}/messages`, { type: 'image', imageUrl });
-}
-
 // ── International - proof submission ────────────────────────────────────────
 
 export interface ChallengeProof {
@@ -623,24 +397,6 @@ export async function submitProof(
   return api.post<{ proof: ChallengeProof; attempt: number; maxAttempts: number }>(
     `/acceptances/${acceptanceId}/submit-proof`,
     body,
-  );
-}
-
-/** Creator approves the proof - terminal success. */
-export async function approveProof(proofId: string): Promise<{ proof: ChallengeProof }> {
-  return api.post<{ proof: ChallengeProof }>(`/proofs/${proofId}/approve`, {});
-}
-
-/** Creator rejects with a mandatory reason (1–200 chars). Returns whether
- *  this was the acceptor's last attempt (`isFinal`) so the UI can switch
- *  copy from "they can try again" to "challenge closed". */
-export async function rejectProof(
-  proofId: string,
-  reason: string,
-): Promise<{ proof: ChallengeProof; isFinal: boolean; attemptsLeft: number }> {
-  return api.post<{ proof: ChallengeProof; isFinal: boolean; attemptsLeft: number }>(
-    `/proofs/${proofId}/reject`,
-    { reason },
   );
 }
 
@@ -765,10 +521,6 @@ export async function fetchMyChallengeParticipation(challengeId: string): Promis
   }
 }
 
-export async function joinChallengeChannel(challengeId: string): Promise<{ count: number; isIn: boolean }> {
-  return api.post<{ count: number; isIn: boolean }>(`/challenges/${challengeId}/join`, {});
-}
-
 export async function leaveChallengeChannel(challengeId: string): Promise<{ ok: boolean; isIn: false; count: number }> {
   return api.delete<{ ok: boolean; isIn: false; count: number }>(`/challenges/${challengeId}/participants/me`);
 }
@@ -787,13 +539,6 @@ export async function setChallengeVisibility(
   return api.post<{ ok: boolean; visibility: 'public' | 'friends' | 'private'; closed_to_new_joins?: boolean }>(
     `/challenges/${challengeId}/visibility`,
     { visibility },
-  );
-}
-
-export async function setChallengeCloseToJoins(challengeId: string, closed: boolean): Promise<{ ok: boolean; closed_to_new_joins: boolean }> {
-  return api.post<{ ok: boolean; closed_to_new_joins: boolean }>(
-    `/challenges/${challengeId}/close-to-new-joins`,
-    { closed },
   );
 }
 

@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 import { Keyboard, Pressable, Text, View, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { FontSizes, Spacing, type ThemeColors } from '@/constants';
+import { Space, FontSizes, Spacing, type ThemeColors } from '@/constants';
 import { useThemedStyles } from '@/context/ThemeContext';
 import { IconButton } from './IconButton';
 import { HeaderArt, type HeaderArtKind } from './HeaderArt';
@@ -54,13 +54,13 @@ export function ScreenHeader({ title, subtitle, art, variant = 'back', right, on
 }
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  back:         { flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: Spacing.md, paddingVertical: 8 },
+  back:         { flexDirection: 'row', alignItems: 'center', gap: Space.md, paddingHorizontal: Spacing.md, paddingVertical: Space.sm },
   title:        { flex: 1, fontSize: FontSizes.lg, fontWeight: '800', color: c.text },
   titleCompact: { fontSize: FontSizes.md, fontWeight: '800' },
   spacer:       { flex: 1 },
-  tab:          { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: Spacing.md, paddingTop: 10, paddingBottom: 6, overflow: 'hidden' },
-  tabText:      { flexShrink: 1, gap: 2, zIndex: 1 },
+  tab:          { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: Spacing.md, paddingTop: Space.md, paddingBottom: Space.sm, overflow: 'hidden' },
+  tabText:      { flexShrink: 1, gap: Space.xxs, zIndex: 1 },
   artSlot:      { alignSelf: 'stretch', flexGrow: 1, flexShrink: 0, minWidth: 0, marginVertical: -10 },
-  tabTitle:     { fontSize: 26, fontWeight: '800', color: c.text, letterSpacing: -0.3 },
-  subtitle:     { fontSize: 14, lineHeight: 19, fontWeight: '500', color: c.muted },
+  tabTitle:     { fontSize: FontSizes.title, fontWeight: '800', color: c.text, letterSpacing: -0.3 },
+  subtitle:     { fontSize: FontSizes.sm, lineHeight: 19, fontWeight: '500', color: c.muted },
 });

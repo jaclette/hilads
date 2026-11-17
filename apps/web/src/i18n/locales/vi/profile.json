@@ -1,5 +1,4 @@
 {
-  "pageTitle": "Hồ sơ của tôi",
   "changePhoto": "Đổi ảnh đại diện",
   "yourProfile": "Hồ sơ của bạn",
   "mode": "Chế độ",
@@ -77,31 +76,10 @@
     "story": "Chuyện thành phố",
     "storyPlaceholder": "Điều bạn mê ở thành phố này"
   },
-  "hangouts": {
-    "empty": "Chưa có buổi tụ tập nào - mở một buổi đi 🗣️",
-    "host": "Chủ xị"
-  },
-  "events": {
-    "going": "Sẽ đi",
-    "goingEmpty": "Chưa có kèo nào - tìm gì đó đi 🔥",
-    "hosting": "Đang tổ chức",
-    "hostingEmpty": "Chưa tổ chức gì - bắt đầu đi ✨",
-    "live": "Đang diễn ra",
-    "recurring": "↻ Định kỳ",
-    "upcoming": "Sắp tới",
-    "deleteEvent": "Xóa sự kiện"
-  },
-  "friends": {
-    "requests": "Lời mời kết bạn",
-    "empty": "Chưa có bạn bè. Kết bạn từ hồ sơ của mọi người nhé.",
-    "mine": "Bạn bè của tôi"
-  },
   "vibesTab": {
-    "received": "Vibe nhận được",
     "score": "{{score}} điểm vibe",
     "basedOn_other": "dựa trên {{count}} vibe",
-    "empty": "Chưa có vibe nào",
-    "emptyHint": "Điểm của bạn sẽ hiện ở đây khi có người để lại ghi chú ✨"
+    "empty": "Chưa có vibe nào"
   },
   "save": {
     "uploading": "Đang tải lên…",
@@ -126,10 +104,6 @@
     "usernameInvalid": "Tên người dùng không hợp lệ",
     "saveFailed": "Không lưu được. Thử lại nhé.",
     "generic": "Có lỗi rồi. Thử lại nhé."
-  },
-  "challenges": {
-    "empty": "Chưa có thử thách nào - tung một cái đi 🔥",
-    "challenger": "Challenger"
   },
   "appearance": "Giao diện",
   "themeLight": "Sáng",
@@ -164,11 +138,9 @@
       "inReview_other": "{{count}} đang duyệt",
       "specialTitle": "Con dấu đặc biệt",
       "specialSub": "Phiên bản giới hạn, mỗi ngày đặc biệt một con dấu. Không tính vào Local Pass.",
-      "compared_other": "Đã so với {{count}} quốc gia",
       "stampsOf_other": "{{count}}/{{total}} con dấu",
       "passEarned": "Đã nhận ở {{city}}",
       "passToGo_other": "Còn {{count}} con dấu",
-      "comparedCities_other": "Đã so với {{count}} thành phố",
       "myPhotos": "Ảnh của tôi",
       "noPhotos": "Ảnh Daily Challenge của bạn sẽ hiện ở đây.",
       "share": "Chia sẻ hộ chiếu",

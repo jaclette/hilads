@@ -1,32 +1,11 @@
 {
   "showcase": {
-    "cta": "Défis réussis",
-    "title": "Défis réussis",
-    "allCities": "Toutes les villes",
-    "clearCity": "Effacer",
     "localTag": "Local",
-    "by": "par {{name}}",
-    "loadMore": "Voir plus",
-    "empty": {
-      "title": "Pas encore de défi réussi",
-      "body": "Les défis réussis et bien notés s'affichent ici. Sois le premier à en réussir un !"
-    },
     "tryCta": "Créer un nouveau défi",
     "note": "Ce qu'ils en ont dit"
   },
-  "myChallenges": {
-    "cta": "Mes défis"
-  },
-  "tabIntro": "Des défis entre locaux et voyageurs, dans une ville ou d'une ville à l'autre.",
-  "howItWorks": "Comment ça marche",
   "mostLocal": "Most Local",
   "seeAll": "Tout voir",
-  "leaderboardCta": {
-    "title": "Classement de la ville",
-    "view": "Voir",
-    "sub": "Sois le premier au classement : lance et termine un défi"
-  },
-  "createTitle": "Lance un défi",
   "editTitle": "Modifier le défi",
   "audience": "Pour qui ?",
   "aud": {
@@ -35,74 +14,19 @@
     "members": "Membres"
   },
   "type": "Type",
-  "tp": {
-    "food": "Bouffe",
-    "place": "Lieu",
-    "culture": "Culture",
-    "help": "Délire"
-  },
   "titleLabel": "Ton défi",
   "titlePlaceholder": "Ex. : emmène-moi dans ton petit café secret préféré",
-  "maxParticipantsLabel": {
-    "locals": "Combien de locaux max ?",
-    "explorers": "Combien de voyageurs max ?"
-  },
-  "returnClauseLabel": "Et après ?",
-  "returnClauseTemplates": {
-    "food": "...et viens me la faire goûter 🍜",
-    "place": "...et emmène-moi y faire un tour 🗺️",
-    "culture": "...et on se retrouve pour en parler 🎭",
-    "help": "...et on fait un truc de fou ensemble 🤪"
-  },
-  "createCta": "Lancer le défi",
   "saveChanges": "Enregistrer",
   "errSave": "Impossible d'enregistrer",
-  "errStart": "Impossible de lancer le défi",
   "deleteTitle": "Supprimer le défi ?",
   "deleteBody": "Le défi sera supprimé pour tout le monde. C'est définitif.",
   "deleteConfirm": "Supprimer",
-  "acceptCta": "Relever le défi",
-  "acceptedCta": "Relevé ✓",
   "validatedBadge": "Validé",
   "card": {
-    "open": "Ouvert",
-    "full": "Complet",
-    "available": "Disponible",
-    "inProgress": "En cours",
-    "takeIt": "Je le relève",
-    "takerLabel": "Preneur",
-    "rankBadge": "Rang {{rank}}",
-    "photoBadge": "Preuve photo",
-    "meetBadge": "Rencontre",
-    "photosCount_one": "{{count}} photo",
-    "photosCount_many": "{{count}} de photos",
-    "photosCount_other": "{{count}} photos",
-    "noOneJoined": "Personne n'est encore inscrit",
-    "beFirst": "Sois le premier · +2",
-    "daysLeft": "J-{{count}}",
-    "lastDay": "Dernier jour",
-    "joinGroup": "Rejoindre le défi",
-    "whoJoined": "Inscrits ({{count}})",
-    "ended": "Terminé",
-    "awaitingResults": "En attente des résultats"
+    "takerLabel": "Preneur"
   },
-  "statusInProgress": "Défi en cours",
-  "statusAccomplished": "Défi relevé",
-  "openBadge": "Ouvert",
   "forLocals": "Pour les locaux",
   "forExplorers": "Pour les voyageurs",
-  "validation": {
-    "label": "Comment valider ?",
-    "meet": {
-      "label": "Rencontre",
-      "hint": "À vivre ensemble, en vrai",
-      "bonusChip": "+50 bonus Rencontre si tout le monde vient"
-    },
-    "photo_proof": {
-      "label": "Preuve photo",
-      "hint": "Valider à distance, en photo"
-    }
-  },
   "notFound": "Défi introuvable",
   "typeBadge": {
     "food": "Défi bouffe",
@@ -111,104 +35,22 @@
     "help": "Défi délire"
   },
   "challengerTag": "Challenger",
-  "participantsLabel": "Participants",
   "editBtn": "Modifier",
   "deleteBtn": "Supprimer",
   "shareCta": "Partager",
-  "shareInvite": "Relève ce défi avec moi !",
   "shareCopied": "Lien copié",
   "noun": "Défi",
   "byCreator": "par {{name}}",
   "inspiration": {
     "heading": "Idées de défis",
     "sub": "Ce que les locaux lancent ailleurs, pour t'inspirer",
-    "firstLocal": "Sois le premier local de {{city}}",
-    "firstLocalSub": "Lance un défi · les voyageurs qui arrivent le relèveront",
-    "reward": "Premier défi · +10",
-    "launchFirst": "Lancer le premier défi",
-    "createYours": "Crée le tien à {{city}}",
     "by": "par {{name}} · {{city}}"
   },
-  "examples": {
-    "label": "Besoin d'idées ? Touches-en une",
-    "food": [
-      "Le meilleur café de la ville",
-      "Où les locaux mangent vraiment le midi",
-      "Le meilleur spot street food du coin"
-    ],
-    "place": [
-      "Le meilleur spot pour le coucher de soleil",
-      "Un endroit que les touristes ne trouvent jamais",
-      "Où tu vas pour décompresser"
-    ],
-    "culture": [
-      "Une vraie soirée musicale locale ce week-end",
-      "Du street art qui vaut le détour",
-      "Un spectacle local dont je me souviendrai"
-    ],
-    "help": [
-      "Un coiffeur qui ne va pas me gâcher la semaine",
-      "Un médecin qui parle anglais",
-      "Où réparer un écran de téléphone"
-    ]
-  },
-  "beFirstToAccept": "Sois le premier à le relever",
-  "openThreadCta": "Ouvrir le fil",
-  "accept": {
-    "err": {
-      "openSettings": "Ouvrir les réglages",
-      "unknown": {
-        "title": "Impossible de relever le défi",
-        "body": "Ça n'a pas marché. Réessaie."
-      },
-      "not_creator": {
-        "title": "C'est ton défi",
-        "body": "Tu as créé ce défi - attends que quelqu'un d'autre le relève."
-      },
-      "mode_required": {
-        "title": "Choisis d'abord : local ou voyageur",
-        "body": "Définis ton mode dans ton profil avant de relever des défis."
-      },
-      "mode_mismatch": {
-        "title": "Pas pour toi celui-là",
-        "body": "Change ton mode dans ton profil si tu veux relever ce défi."
-      },
-      "cap_reached": {
-        "title": "Défi complet"
-      },
-      "in_progress": {
-        "title": "Quelqu'un est déjà dessus",
-        "body": "Un autre voyageur est dessus en ce moment. Reviens quand il aura fini, le défi se libérera."
-      },
-      "completed": {
-        "title": "Défi déjà terminé",
-        "body": "Ce défi est terminé, il n'accepte plus personne."
-      }
-    }
-  },
-  "messageCreator": "Écrire en privé à {{name}}",
   "join": {
-    "gateTitle": "Deviens spectateur",
-    "gateBody": "Entre en spectateur pour suivre la conversation et encourager celui qui relève le défi.",
-    "cta": "Entrer comme spectateur",
     "leaveCta": "Quitter le canal",
     "errKicked": "Tu as été retiré de ce défi, tu ne peux plus le rejoindre.",
     "errClosed": "Ce défi n'accepte plus de nouveaux participants.",
     "errGeneric": "Impossible d'entrer - réessaie."
-  },
-  "leaveTakeon": {
-    "pill": "🚪 Quitter",
-    "confirmTitle": "Quitter ce défi ?",
-    "confirmBody": "La progression repart de zéro et le défi se rouvre aux autres. C'est définitif.",
-    "confirmCta": "Quitter",
-    "failed": "Impossible de quitter - réessaie."
-  },
-  "restart": {
-    "cta": "Relancer le défi",
-    "confirmTitle": "Relancer le défi ?",
-    "confirmBody": "Ça retire le preneur actuel, efface le chat et relance le défi de zéro. C'est définitif.",
-    "confirmCta": "Relancer",
-    "failed": "Impossible de relancer - réessaie."
   },
   "lock": {
     "private": {
@@ -217,83 +59,8 @@
     }
   },
   "thread": {
-    "notFound": "Fil introuvable",
     "empty": "Dis bonjour 👋 et propose une date pour vous voir.",
-    "emptyIntl": "Dis salut - envoie une photo quand c'est dans la boîte.",
-    "cancel": {
-      "creatorTitle": "Annuler cette participation ?",
-      "acceptorTitle": "Laisser tomber ce défi ?",
-      "body": "Le fil et le chat seront supprimés. Tu pourras relever le défi plus tard si tu changes d'avis.",
-      "confirm": "Annuler",
-      "failed": "Annulation impossible. Réessaie."
-    },
-    "cancelledByOther": {
-      "title": "Fil annulé",
-      "body": "L'autre personne a tout annulé."
-    }
-  },
-  "threads": {
-    "title": "Mes fils de défis",
-    "noMessagesYet": "Pas encore de messages",
-    "empty": {
-      "title": "Aucun fil actif",
-      "body": "Quand tu relèves un défi ou que quelqu'un relève le tien, la conversation apparaît ici."
-    },
-    "guestGate": {
-      "title": "Connecte-toi pour voir les fils",
-      "body": "Les fils sont des conversations en tête-à-tête entre toi et le créateur du défi. Il te faut un compte pour en lancer un."
-    }
-  },
-  "ratePrompts": {
-    "banner": {
-      "title": "Note ce défi : ça s'est passé comment ?",
-      "titleUrgent": "À toi de noter ce défi"
-    },
-    "sheet": {
-      "title": "Ça s'est passé comment, ce défi ?",
-      "subtitle": "Note le défi, pas la personne.",
-      "starsAria": "{{n}} étoile",
-      "commentPlaceholder": "Laisse un mot sur le défi (facultatif)",
-      "submit": "Envoyer la note",
-      "later": "Plus tard"
-    },
-    "errSubmit": "Impossible d'envoyer la note. Réessaie."
-  },
-  "scoringInfo": {
-    "aria": "Comment marchent les points",
-    "helpLabel": "Comment gagner des points",
-    "title": "Comment marchent les défis",
-    "intro": "Rejoindre rapporte un peu ; les gros points, c'est pour venir pour de vrai ou gagner. Rejoindre en masse ne sert à rien.",
-    "colStep": "Étape",
-    "steps": {
-      "created": "Défi créé",
-      "accepted": "Participation acceptée",
-      "date": "Date fixée",
-      "meet": "Rencontre",
-      "rate": "Les deux notent"
-    },
-    "noPoints": "-",
-    "totalLabel": "Total par défi",
-    "footnote": "Les chiffres peuvent changer pendant qu'on ajuste le jeu.",
-    "types": {
-      "heading": "Deux types de défis",
-      "local": "Rendez-vous - réunis un groupe en vrai, à une heure et un lieu fixés. Tous ceux qui viennent gagnent gros.",
-      "international": "Défi photo - chacun envoie une photo avant la date limite, et le créateur choisit le gagnant."
-    },
-    "lifecycle": {
-      "heading": "Comment ça se termine",
-      "body": "Le créateur pose le défi, les gens rejoignent, et à la fin il valide : qui était là, ou quelle photo gagne."
-    },
-    "pointsHeading": "Comment gagner des points",
-    "ways": {
-      "join": "Rejoindre un défi",
-      "create": "Créer un défi",
-      "present": "Venir - présence validée",
-      "host": "Organiser une rencontre",
-      "submit": "Envoyer une photo pour un défi",
-      "win": "Gagner le défi photo"
-    },
-    "seeExamples": "Voir 3 vrais exemples"
+    "emptyIntl": "Dis salut - envoie une photo quand c'est dans la boîte."
   },
   "leaderboard": {
     "title": "Most Local",
@@ -313,7 +80,6 @@
     },
     "points": "{{points}} pts",
     "me": {
-      "ranked": "Toi · #{{rank}} · {{points}} pts",
       "unranked": "Relève un défi pour entrer au classement"
     },
     "empty": {
@@ -321,7 +87,6 @@
       "body": "Sois le premier à relever un défi et à marquer des points."
     },
     "errLoad": "Impossible de charger le classement. Tire pour réessayer.",
-    "neutral": "🏆 Most Local",
     "titleCity": "Most {{demonym}}",
     "share": {
       "cta": "Partager mon rang",
@@ -335,115 +100,8 @@
       "cityTop": "👑 {{place}} est #1 des villes {{period}} : {{pts}} pts ! {{below1}} ({{b1Pts}} pts) et {{below2}} ({{b2Pts}} pts) nous talonnent. Les locaux, on reste au top 🔥"
     }
   },
-  "schedule": {
-    "proposeCta": "Proposer une date",
-    "counterCta": "Contre-proposer",
-    "editCta": "Changer la date",
-    "you": "toi",
-    "iProposedTitle": "On attend sa validation",
-    "theyProposedTitle": "{{name}} propose",
-    "scheduled": {
-      "title": "Rencontre prévue"
-    },
-    "withdraw": {
-      "title": "Retirer la proposition ?",
-      "body": "Ta proposition de date sera retirée. L'autre personne sera prévenue.",
-      "confirm": "Retirer"
-    },
-    "today": "Aujourd'hui",
-    "tomorrow": "Demain",
-    "picker": {
-      "title": "Vous vous voyez quand ?",
-      "whenLabel": "Quand",
-      "timeLabel": "Heure",
-      "whereLabel": "Où (facultatif)",
-      "wherePlaceholder": "Ex. : Le Comptoir, 17 rue de la Paix"
-    },
-    "err": {
-      "proposeFailed": "Impossible de proposer la date. Réessaie.",
-      "approveFailed": "Impossible d'approuver. Réessaie.",
-      "withdrawFailed": "Impossible de retirer. Réessaie."
-    }
-  },
-  "debrief": {
-    "creatorPrompt": {
-      "title": "Ça s'est passé comment ?",
-      "body": "{{name}} a réussi ?"
-    },
-    "acceptorWaiting": {
-      "title": "En attente du verdict",
-      "body": "{{name}} va dire comment ça s'est passé."
-    },
-    "approved": {
-      "title": "Défi relevé"
-    },
-    "rejected": {
-      "title": "Défi clôturé"
-    },
-    "confirm": {
-      "approve": {
-        "title": "Marquer comme réussi ?",
-        "body": "C'est définitif - tu ne pourras pas revenir en arrière.",
-        "confirm": "Marquer comme réussi"
-      },
-      "reject": {
-        "title": "Clôturer sans valider ?",
-        "body": "À utiliser si la rencontre n'a pas vraiment eu lieu. C'est définitif.",
-        "confirm": "Clôturer"
-      }
-    },
-    "err": {
-      "approveFailed": "Impossible de valider. Réessaie.",
-      "rejectFailed": "Impossible de clôturer. Réessaie."
-    }
-  },
   "closeCta": "Clôturer le défi",
   "reopenCta": "Rouvrir",
-  "pipeline": {
-    "step": {
-      "accept": "Relever",
-      "date": "Date",
-      "meet": "Se voir",
-      "wrap": "Bilan",
-      "proof": "Preuve",
-      "verdict": "Verdict"
-    },
-    "subcta": {
-      "tapToAccept": "Relève le défi",
-      "creatorWaiting": "Personne ne l'a encore relevé",
-      "creatorReviewPending": "Réponds à la demande de {{name}}",
-      "acceptorAwaitingReview": "En attente de la réponse de {{name}}",
-      "proposeDate": "Propose une date",
-      "dateAwaiting": "En attente de la validation du créateur",
-      "approveDate": "Une date a été proposée",
-      "meetSoon": "Rendez-vous le {{date}}",
-      "creatorVerdict": "Comment ça s'est passé avec {{name}} ?",
-      "acceptorWaitingVerdict": "En attente de la validation de {{name}}",
-      "rateMeetup": "Note ta rencontre avec {{name}}",
-      "accomplished": "Défi relevé",
-      "closed": "Défi clôturé",
-      "submitProof": "Envoie ta preuve",
-      "waitingForProof": "En attente de la preuve",
-      "reviewProof": "Vérifie la preuve",
-      "waitingForVerdict": "En attente du verdict"
-    }
-  },
-  "takeon": {
-    "creator": {
-      "pendingTitle": "{{name}} veut relever ton défi",
-      "pendingBody": "Accepte pour discuter et organiser la rencontre, ou refuse pour libérer la place.",
-      "approve": "Accepter",
-      "reject": "Refuser",
-      "approveFailed": "Impossible d'accepter. Réessaie.",
-      "rejectFailed": "Impossible de refuser. Réessaie."
-    },
-    "acceptor": {
-      "waitingTitle": "En attente de la réponse",
-      "waitingBody": "{{name}} va accepter ou refuser ta demande. Tu recevras une notif dès que c'est décidé.",
-      "rejectedTitle": "Demande refusée",
-      "rejectedBody": "{{name}} a refusé cette fois. Tu peux relever un autre défi."
-    }
-  },
   "postCreate": {
     "title": "Ton défi est lancé",
     "subtitle": "Maintenant, fais-le tourner : trouve quelqu'un pour le relever dans l'heure.",
@@ -461,34 +119,6 @@
     "sentSubtitle": "Ils vont recevoir une notification.",
     "pickerSubtitleAll": "Aucun profil exact, on te montre tout le monde à {{city}}."
   },
-  "invitation": {
-    "accept": "Accepter",
-    "ignore": "Ignorer"
-  },
-  "locked": {
-    "visitor": {
-      "title": "Relève le défi pour débloquer le chat",
-      "body": "Dès que tu acceptes, toi et le créateur avez un fil privé pour organiser la rencontre."
-    },
-    "creator": {
-      "title": "Personne ne l'a encore relevé",
-      "body": "Quand un voyageur relève ton défi, vous discutez ici pour organiser la rencontre."
-    },
-    "full": {
-      "title": "Défi complet",
-      "body": "Toutes les places sont prises. Reviens si quelqu'un se désiste."
-    },
-    "inProgress": {
-      "title": "Quelqu'un est dessus en ce moment",
-      "body": "Un voyageur relève ce défi en ce moment. Quand il aura fini, il sera de nouveau libre - repasse bientôt."
-    }
-  },
-  "typeFilter": {
-    "label": "Filtrer par type",
-    "all": "Toutes",
-    "empty": "Rien dans cette catégorie pour l'instant."
-  },
-  "seeAllChallenges": "Voir tous les défis →",
   "mode": {
     "label": "Mode",
     "local": "Local",
@@ -503,56 +133,17 @@
     "friends": "Amis",
     "publicHint": "Tout le monde dans la ville peut le voir et le relever.",
     "friendsHint": "Seuls tes amis et les personnes que tu invites peuvent le voir.",
-    "intlLocked": "Les défis internationaux sont toujours publics.",
-    "moderationBlocked": "Ton texte a été bloqué - reformule-le.",
     "badge": {
       "public": "Public",
       "friends": "Amis",
       "private": "Privé"
-    },
-    "optin": {
-      "title": "Attention, c'est public",
-      "body": "Les défis publics s'affichent dans le fil de la ville et sur le web. Ton nom et le texte de ton défi seront visibles par tout le monde, y compris les non-membres et les moteurs de recherche. Passe en Amis ci-dessous si tu préfères rester plus discret.",
-      "cta": "Compris, publier",
-      "switchToFriends": "Plutôt en Amis",
-      "dontShowAgain": "Ne plus afficher"
     }
   },
   "privacy": {
-    "panelTitle": "Confidentialité",
-    "currentPublic": "Ce défi est public, tout le monde peut le voir.",
-    "currentFriends": "Ce défi n'est partagé qu'avec tes amis.",
-    "currentPrivate": "Ce défi est privé : vous seuls pouvez le voir.",
-    "intlNote": "Les défis internationaux sont toujours publics.",
-    "goPrivateCta": "Passer en privé (les deux doivent accepter)",
-    "myVoteAgreed": "Tu as voté oui, on attend l'autre personne.",
-    "myVoteDenied": "Tu as refusé. Touche ci-dessous pour changer d'avis.",
-    "otherVoteAgreed": "L'autre a voté oui, à toi de décider.",
-    "otherVoteDenied": "L'autre a refusé.",
-    "voteAgreedCta": "Accepter et passer en privé",
-    "voteDeniedCta": "Refuser",
-    "withdrawCta": "Retirer mon vote",
-    "needCounterparty": "Disponible quand quelqu'un relève ce défi.",
-    "errVote": "Impossible d'enregistrer ton vote, réessaie.",
     "errSave": "Impossible d'enregistrer, réessaie.",
-    "notifTitle": "Notifications pour ce défi",
-    "notif": {
-      "milestones": "Étapes clés",
-      "all": "Chaque message",
-      "off": "Désactivées"
-    },
-    "notifHint": {
-      "milestones": "Acceptation du preneur, envoi de la preuve, validation finale.",
-      "all": "Préviens-moi à chaque nouveau message du canal.",
-      "off": "Silence, je regarderai le canal moi-même."
-    },
-    "closedTitle": "Fermer aux nouveaux",
-    "closedBody": "Les participants actuels restent. Le bouton Rejoindre n'accepte plus personne tant que tu ne rouvres pas.",
-    "closedCloseCta": "Fermer aux nouveaux",
-    "closedReopenCta": "Rouvrir aux nouveaux"
+    "closedBody": "Les participants actuels restent. Le bouton Rejoindre n'accepte plus personne tant que tu ne rouvres pas."
   },
   "members": {
-    "title": "Dans le canal",
     "countIn": "{{count}} dans le canal",
     "seeAll": "Tout voir",
     "empty": "Personne n'est encore là - sois le premier.",
@@ -577,52 +168,15 @@
     "taker": "Preneur",
     "spectator": "Spectateur"
   },
-  "cta": {
-    "takenBy": "{{name}} est dessus en ce moment",
-    "closed": "Ce défi est fermé"
-  },
   "intl": {
-    "targetCityLabel": "Ville cible",
-    "targetCityAnywhere": "N'importe où dans le monde",
-    "targetCityHint": "Laisse « N'importe où » pour toucher des voyageurs partout, ou choisis une ville pour cibler.",
-    "proofRequirementsLabel": "Que doit montrer la photo ?",
-    "proofRequirementsPlaceholder": "Ex. : le plat à la lumière du jour, avec toi dans le cadre",
-    "proofRequirementsHint": "La preuve est une photo. Le participant la voit avant d'envoyer, alors sois précis.",
-    "cityPicker": {
-      "title": "Choisis une ville cible",
-      "searchPlaceholder": "Cherche une ville…",
-      "anywhere": "N'importe où dans le monde"
-    },
     "proof": {
-      "requirementsLabel": "Ce que demande le créateur",
       "submitCta": "Envoyer ta preuve",
       "tryAgainCta": "Réessayer (encore {{count}})",
-      "waitingProof": "En attente de la preuve",
       "waitingVerdict": "En attente du verdict",
       "approvedLine": "Défi relevé",
       "closedLine": "Défi clôturé",
       "lastReason": "Raison : {{reason}}",
-      "geotagOk": "Géoloc vérifiée",
-      "geotagWarn": "Géoloc hors zone",
-      "approveCta": "Valider",
-      "rejectCta": "Refuser",
-      "rejectModalTitle": "Refuser cette preuve",
-      "rejectModalHint_one": "Il lui reste {{count}} tentative. Dis-lui quoi corriger.",
-      "rejectModalHint_many": "Il lui reste {{count}} de tentatives. Dis-lui quoi corriger.",
-      "rejectModalHint_other": "Il lui reste {{count}} tentatives. Dis-lui quoi corriger.",
-      "reasonPlaceholder": "Ex. : photo floue, on ne voit pas le plat",
-      "rejectConfirm": "Envoyer le refus",
-      "reasonRequiredTitle": "Raison obligatoire",
-      "reasonRequiredBody": "Une courte raison (1 à 200 caractères) aide le participant.",
-      "permPhotoTitle": "Accès aux photos nécessaire",
-      "permPhotoBody": "Active l'accès aux photos dans les Réglages pour choisir une preuve.",
-      "permGpsTitle": "Localisation nécessaire",
-      "permGpsBody": "La géolocalisation est obligatoire. Active la localisation dans Réglages.",
-      "gpsFailTitle": "GPS indisponible",
-      "gpsFailBody": "Réessaie en extérieur ou avec la localisation activée.",
-      "submitFailTitle": "Envoi impossible",
-      "submitFailBody": "Vérifie ta connexion et réessaie.",
-      "reviewFailTitle": "Impossible d'enregistrer le verdict"
+      "submitFailBody": "Vérifie ta connexion et réessaie."
     }
   },
   "modeFilter": {
@@ -630,55 +184,20 @@
     "all": "Tous"
   },
   "scoreCelebration": {
-    "unit": "points",
-    "subtitle": {
-      "accepted": "Ton défi a été accepté",
-      "date_locked": "Date fixée, c'est parti",
-      "meetup": "Mission accomplie",
-      "debrief": "Mission accomplie",
-      "ghost": "Ce sera pour la prochaine fois",
-      "default": "Tu grimpes au classement",
-      "meet_bonus": "Bonus Rencontre débloqué",
-      "challenge_created": "Tu as lancé un défi"
-    },
     "rank": {
       "city": "#{{rank}} à {{city}}",
       "cityBeyond": "En dehors du top {{topN}} de ta ville",
       "world": "#{{rank}} dans le monde",
       "worldBeyond": "En dehors du top {{topN}} mondial",
       "cityUnranked": "Pas encore classé ce mois-ci à {{city}}",
-      "worldUnranked": "Pas encore classé ce mois-ci dans le monde",
-      "cities": "{{city}} est #{{rank}} des villes",
-      "citiesBeyond": "{{city}} hors du top {{topN}} des villes"
-    },
-    "cta": "C'est parti",
-    "kindShort": {
-      "accepted": "Accepté",
-      "date_locked": "Date fixée",
-      "meetup": "Rencontre faite",
-      "debrief": "Les deux ont noté",
-      "ghost": "Ghosté",
-      "default": "Gagnés",
-      "meet_bonus": "Bonus Rencontre",
-      "challenge_created": "Défi créé"
-    },
-    "event": {
-      "deletedChallenge": "Défi supprimé",
-      "andMore": "et {{count}} de plus"
-    },
-    "total": "Total : {{total}} pts"
+      "worldUnranked": "Pas encore classé ce mois-ci dans le monde"
+    }
   },
   "welcomeGuest": {
     "title": "Bienvenue ! Discute librement ici, pas besoin de t'inscrire.",
     "cta": "Tu veux relever ce défi ? Inscris-toi en 3 secondes"
   },
   "group": {
-    "meetLabel": "Quand et où",
-    "meetCta": "Fixe la date du rendez-vous",
-    "meetHint": "Tous ceux qui rejoignent se retrouvent ici. Après, tu valides qui est venu.",
-    "meetRequired": "Choisis une date pour le rendez-vous.",
-    "meetSet": "Fixe le rendez-vous",
-    "done": "Ce rendez-vous est terminé.",
     "validateCta": "Valide qui est venu",
     "validateAfter": "Tu pourras valider après le rendez-vous · {{time}}",
     "youreIn": "Tu es inscrit - on se voit là-bas !",
@@ -692,20 +211,9 @@
     "validateConfirm": "Valider les présents ({{count}})",
     "noParticipants": "Personne n'est encore inscrit.",
     "join": "Rejoindre",
-    "joinedCount": "Inscrits : {{count}}",
-    "deadlineLabel": "Date limite",
-    "deadline24h": "24h",
-    "deadline3d": "3 jours",
-    "deadline1w": "1 semaine",
-    "deadlineHint": "Tous ceux qui rejoignent envoient une photo avant la date limite. Après, tu choisis le gagnant.",
-    "deadlineRequiredTitle": "Choisis une date limite",
-    "deadlineRequired": "Choisis la durée du défi.",
     "deadlinePrefix": "Avant le",
-    "contestDone": "Ce défi est terminé.",
     "youreInPhoto": "Tu es dans la partie - envoie ta photo ci-dessous.",
-    "pickWinnerCta": "Choisir le gagnant",
     "joinContestCta": "Rejoindre le défi (+2 pts)",
-    "winnerTitle": "Choisis le gagnant",
     "winnerSub": "Choisis la meilleure photo. Le gagnant remporte la grosse récompense.",
     "winnerConfirm": "Couronner le gagnant",
     "winnerNoSubmission": "Cette personne n'a pas envoyé de photo.",
@@ -716,43 +224,10 @@
     "tapToPick": "choisis la meilleure",
     "winnerTag": "Gagnant",
     "pickThis": "Choisir",
-    "winnerConfirmTitle": "Couronner le gagnant ?",
     "winnerConfirmBody": "{{name}} remporte la grosse récompense.",
-    "pickHint": "Choisis le gagnant parmi les photos ci-dessous.",
-    "awaitingPhotos": "Pas encore de photos - le défi chauffe 🔥",
     "checkPhotos_one": "Découvre la photo",
     "checkPhotos_many": "Découvre les {{count}} de photos",
     "checkPhotos_other": "Découvre les {{count}} photos"
-  },
-  "challengeIntro": {
-    "slide1": {
-      "title": "Ressens la ville, là",
-      "body": "Les défis, ce sont de petits paris dans la vraie vie, entre gens d'une même ville et d'une ville à l'autre."
-    },
-    "slide2": {
-      "title": "Pose ton défi",
-      "body": "Organise un rendez-vous (une date + un lieu) ou un défi photo avec une date limite. C'est toi l'hôte."
-    },
-    "slide3": {
-      "title": "Tout le monde peut rejoindre",
-      "body": "Pas de demande, pas d'attente : qui veut, rejoint. Tu gagnes +2 tout de suite."
-    },
-    "slide4": {
-      "title": "Passe à l'action",
-      "body": "Tout le monde se retrouve à ton rendez-vous, ou envoie sa meilleure photo avant la date limite."
-    },
-    "slide5": {
-      "title": "Tu valides",
-      "body": "Ensuite, tu confirmes qui était là, ou tu choisis la photo gagnante. C'est là que tombent les gros points."
-    },
-    "slide6": {
-      "title": "Entre villes",
-      "body": "Les défis photo marchent à distance : défie toute une autre ville de t'envoyer son meilleur cliché."
-    },
-    "slide7": {
-      "title": "Grimpe dans le Most Local",
-      "body": "Viens et gagne pour monter au classement. Rejoindre rapporte peu : ce qui compte, c'est de le faire pour de vrai."
-    }
   },
   "result": {
     "winner": {
@@ -774,8 +249,7 @@
     "host": {
       "titlePhoto": "{{name}} a gagné ton défi !",
       "titleMeet": "Ton rendez-vous est terminé !",
-      "body": "Merci de l'avoir organisé.",
-      "breakdown": "{{people}} = +{{headTotal}}   🏠 +{{base}}"
+      "body": "Merci de l'avoir organisé."
     },
     "cta": "Super !",
     "total": "Tu as maintenant {{total}} points",
@@ -787,25 +261,6 @@
     "live": "En cours",
     "done": "Terminé",
     "ended": "Terminé"
-  },
-  "pointExamples": {
-    "title": "3 vrais exemples",
-    "intro": "Ce que de vrais défis ont rapporté, et à qui.",
-    "empty": "Pas encore d'exemples - sois le premier à lancer un défi !",
-    "each": "chacun",
-    "line": {
-      "created": "{{name}} l'a créé",
-      "winner": "{{name}} a gagné",
-      "present": "Présents : {{count}}",
-      "submission": "Photos envoyées : {{count}}",
-      "host": "{{name}} a organisé"
-    }
-  },
-  "titlePh": {
-    "food": "Ex. : trouve-moi le meilleur pho 🍜",
-    "place": "Ex. : emmène-moi dans ton coin secret préféré 📍",
-    "culture": "Ex. : montre-moi un truc que seuls les locaux connaissent 🎭",
-    "help": "Ex. : mets-moi au défi de faire un truc de fou 🤪"
   },
   "relaunch": {
     "cta": "Relancer",
@@ -819,7 +274,6 @@
     "titleCity": "Voir les spots de {{city}} sur la carte",
     "body": "Là où les locaux postent leurs photos du Daily Challenge. Poste la tienne depuis l'app Hilads."
   },
-  "creationClosed": "La création de défis est fermée. Joue au Daily Challenge dans l'app Hilads.",
   "map": {
     "see": "Voir la carte",
     "button": "Carte",
@@ -834,10 +288,7 @@
     "pricePaid": "Prix payé {{price}}",
     "closeSpot": "Fermer",
     "emptyTitle": "Sois le premier à ajouter un spot ici",
-    "list": "Liste",
-    "mapView": "Carte",
     "sortNearest": "Les plus proches",
-    "sortWeek": "Les plus votés cette semaine",
     "spotsTomorrow": "Les spots arrivent avec le défi de demain : {{theme}}",
     "proofs_one": "{{count}} photo",
     "proofs_many": "{{count}} de photos",
@@ -880,7 +331,6 @@
     "nothingLive": "Le prochain Daily Challenge arrive bientôt",
     "cta": "Relever le challenge",
     "ctaIn": "Je relève le challenge",
-    "ctaTaken": "Challenge relevé · Voir ma photo",
     "seeProofs": "Voir les photos du jour",
     "localTwist": "Local Twist",
     "twistIn": "Local Twist de {{city}}",
@@ -888,12 +338,8 @@
     "count_one": "{{count}} personne l'a fait aujourd'hui",
     "count_many": "{{count}} de personnes l'ont fait aujourd'hui",
     "count_other": "{{count}} personnes l'ont fait aujourd'hui",
-    "countCity": "{{count}} à {{city}}",
-    "countZero": "Personne pour l'instant - sois le premier",
     "beFirst": "Sois le premier aujourd'hui",
     "beFirstSub": "Pas encore de photo. Sois le premier, le monde t'attend.",
-    "firstYours": "Ta photo est partie",
-    "firstYoursSub": "Elle apparaît ici une fois validée, avec les photos des autres.",
     "yourProof": "Ta photo",
     "status": {
       "pending": "En attente",
@@ -903,7 +349,6 @@
     },
     "pendingHint": "Cette photo a été signalée, on est en train de la vérifier.",
     "reasonLabel": "Pourquoi : {{reason}}",
-    "fixIt": "Corriger",
     "edit": "Modifier",
     "delete": "Supprimer",
     "deleteTitle": "Supprimer ta photo ?",
@@ -921,84 +366,20 @@
     "places_many": "{{count}} de spots épinglés",
     "places_other": "{{count}} spots épinglés",
     "unnamedPlace": "Lieu épinglé",
-    "tabWorld": "Monde",
     "local": "Local",
     "traveler": "Voyageur",
     "validatedByLocal": "Validé par un local",
     "loadFailed": "Impossible de charger le Daily Challenge.",
     "retry": "Réessayer",
     "notFound": "Ce Daily Challenge n'existe pas.",
-    "cityRowEmpty": "Sois le premier à créer un défi à {{city}}",
     "proof": {
-      "titleNew": "Ta photo",
-      "titleEdit": "Modifier ta photo",
-      "camera": "Appareil photo",
-      "gallery": "Galerie",
-      "changePhoto": "Changer de photo",
-      "addPhoto": "Ajoute une photo de ton défi",
       "caption": "Légende",
-      "captionPlaceholder": "Une phrase pour raconter (facultatif)",
       "price": "Prix payé",
-      "pricePlaceholder": "Montant (facultatif)",
-      "pin": "Épingler ce lieu",
-      "pinHint": "Seulement si tu veux que d'autres le trouvent.",
-      "pinChange": "Modifier",
-      "pinRemove": "Retirer",
       "submit": "Publier ma photo",
-      "save": "Enregistrer",
-      "sending": "Envoi…",
-      "sentTitle": "{{city}} a joué !",
-      "sentBody": "Ta photo est en ligne. Va voir ce que le reste du monde a posté.",
-      "ok": "OK",
-      "permPhotoTitle": "Accès aux photos nécessaire",
-      "permPhotoBody": "Autorise l'accès dans tes réglages pour ajouter une photo.",
-      "permCameraTitle": "Accès à l'appareil photo nécessaire",
-      "permCameraBody": "Autorise l'appareil photo dans tes réglages pour prendre une photo.",
-      "photoRequired": "Ajoute d'abord une photo.",
-      "locationOff": "La localisation est coupée, impossible d'épingler ce lieu.",
-      "editOnlyActive": "Tu peux modifier ta photo jusqu'à la fin du défi.",
-      "takeTitle": "Prends ta photo",
-      "retake": "Reprendre"
+      "save": "Enregistrer"
     },
     "errors": {
-      "already_posted": "Tu as déjà joué au défi du jour.",
-      "challenge_closed": "Ce défi est terminé.",
-      "no_active_challenge": "Pas de Daily Challenge en ce moment.",
-      "moderation_blocked": "Ta légende a été signalée, reformule-la.",
-      "banned": "Tu ne peux plus publier ici.",
-      "invalid_photo": "Impossible d'utiliser cette photo. Essaie-en une autre.",
-      "invalid_caption": "La légende est trop longue.",
-      "invalid_price": "Vérifie le montant et la devise.",
-      "invalid_place": "Choisis un seul lieu.",
-      "rate_limited": "Trop d'essais, attends un peu.",
-      "image_processing_failed": "Impossible de traiter cette photo. Essaie-en une autre.",
-      "generic": "Ça n'a pas marché. Réessaie.",
-      "place_required": "Choisis le lieu de ta photo.",
-      "place_not_allowed": "Ce défi n'a pas de lieu.",
-      "place_not_found": "Ce lieu n'est plus disponible. Choisis-en un autre.",
-      "invalid_place_name": "Le nom du lieu doit faire entre 1 et 80 caractères.",
-      "place_name_blocked": "Ce nom de lieu a été signalé. Reformule-le.",
-      "invalid_position": "Il nous faut ta position pour publier cette photo.",
-      "too_far": "Tu es trop loin de ce lieu."
-    },
-    "push": {
-      "bannerTitle": "Reçois le Daily Challenge chaque matin",
-      "bannerCta": "Activer",
-      "askTitle": "Daily Challenge",
-      "askBody": "Reçois le Daily Challenge chaque matin, à une heure qui te va.",
-      "askBodyBlocked": "Les notifications de Hilads sont coupées. Active-les dans tes réglages pour recevoir le Daily Challenge chaque matin.",
-      "yes": "Oui, préviens-moi",
-      "notNow": "Plus tard",
-      "openSettings": "Ouvrir les réglages"
-    },
-    "archive": {
-      "title": "Déjà relevés",
-      "pickCity": "Choisir une ville",
-      "worldSelection": "Sélection Monde : cette ville n'est pas encore active",
-      "empty": "Les premiers Daily Challenges arrivent bientôt.",
-      "proofs_one": "{{count}} photo",
-      "proofs_many": "{{count}} de photos",
-      "proofs_other": "{{count}} photos"
+      "generic": "Ça n'a pas marché. Réessaie."
     },
     "report": {
       "title": "Signaler cette photo",
@@ -1027,25 +408,10 @@
         "generic": "Ça n'a pas marché. Réessaie."
       },
       "voteFor": "Vote pour {{city}}",
-      "prompt": "Vote pour les photos que tu aimes",
-      "tourNote": "La photo la plus votée de chaque ville part dans le tour du monde de demain.",
-      "afterPost": "Vote pour les photos que tu aimes",
       "validatedHint": "Validé par un local : quelqu'un qui vit ici a voté pour cette photo."
     },
     "results": {
-      "title": "Résultats",
-      "yesterdayTop3": "Le top 3 d'hier",
-      "worldRank": "#{{rank}} dans le monde",
-      "bestInCities": "Le meilleur de chaque ville live",
-      "bestIn": "Meilleure à {{city}}",
-      "none": "Aucun vote sur ce défi, donc pas de podium."
-    },
-    "profile": {
-      "streak": "Série en cours",
-      "bestStreak": "Meilleure série",
-      "completed": "Réalisés",
-      "bestProofs": "Meilleures photos",
-      "emptyMine": "Ta série commence avec le défi du jour."
+      "worldRank": "#{{rank}} dans le monde"
     },
     "streak_one": "{{count}} jour de suite",
     "streak_many": "{{count}} de jours de suite",
@@ -1062,7 +428,6 @@
       "hint": "Une astuce que seuls les locaux connaissent, en anglais. Elle est vérifiée avant publication.",
       "submit": "Proposer mon twist",
       "withdraw": "Retirer",
-      "withdrawTitle": "Retirer ta proposition ?",
       "withdrawBody": "Tu pourras en proposer une autre jusqu'à la clôture.",
       "status": {
         "pending": "En relecture",
@@ -1074,7 +439,6 @@
         "picked": "Il sera publié avec le défi de demain à {{city}}, avec ton nom.",
         "not_picked": "Un autre twist a été choisi cette fois. Retente demain !"
       },
-      "heroCta": "Propose le Local Twist de demain · jusqu'à {{time}}",
       "heroStatus": "Ton Local Twist pour demain : {{status}}",
       "reasons": {
         "no_city": "Choisis ta ville pour proposer un Local Twist.",
@@ -1105,11 +469,6 @@
       "see": "Voir la carte",
       "button": "Carte",
       "empty": "Aucun spot épinglé pour l'instant.",
-      "titleChallenge": "Spots épinglés",
-      "titleCity": "Spots épinglés à {{city}}",
-      "titleWorld": "Spots épinglés dans le monde",
-      "seeProof": "Voir la photo",
-      "openChallenge": "Ouvrir le défi",
       "search": "Cherche un plat, un café, une rue",
       "searchA11y": "Chercher des spots",
       "clearSearch": "Effacer la recherche",
@@ -1119,65 +478,32 @@
       "locate": "Centrer la carte sur moi",
       "locationDenied": "Autorise la localisation dans tes réglages pour centrer la carte sur toi.",
       "locationFailed": "Ta position n'est pas disponible pour le moment.",
-      "noToken": "La carte n'est pas disponible dans cette version.",
       "openSpot": "Voir le spot",
       "directions": "Itinéraire",
       "validated": "Validé par un local",
       "pricePaid": "Prix payé {{price}}",
-      "selected": "Sélectionné : {{name}}",
       "closeSpot": "Fermer",
       "emptyTitle": "Sois le premier à ajouter un spot ici",
-      "planA11y": "Plan : {{title}}, {{time}}",
       "proofs_one": "{{count}} photo",
       "proofs_many": "{{count}} de photos",
       "proofs_other": "{{count}} photos",
       "sheet": {
-        "byNear": "les plus proches d'abord",
-        "byLiked": "les plus aimés d'abord",
-        "byNew": "les plus récents d'abord",
         "sortLiked": "Les plus aimés",
         "sortNew": "Les plus récents",
-        "hint": "Glisse vers le haut pour la liste",
-        "emptyArea": "Rien ici pour l'instant",
         "pioneer": "Sois le pionnier : joue ici aujourd'hui 📍",
-        "count_one": "{{count}} spot à {{city}}",
-        "count_other": "{{count}} spots à {{city}}",
-        "count_many": "{{count}} spots à {{city}}",
-        "countHere_one": "{{count}} spot ici",
-        "countHere_other": "{{count}} spots ici",
-        "countHere_many": "{{count}} spots ici",
         "peekNearest": "Le plus proche à {{distance}}",
-        "peekSwipe": "glisse vers le haut 👆",
+        "peekSwipe": "glisse vers le haut",
         "peekEmpty": "Aucun spot ici pour l’instant, sois le pionnier 📍",
-        "peekTitle_one": "📍 {{num}} spot à explorer",
-        "peekTitle_other": "📍 {{num}} spots à explorer"
+        "peekTitle_one": "{{num}} spot à explorer",
+        "peekTitle_other": "{{num}} spots à explorer"
       },
       "surprise": "Surprends-moi"
     },
     "leaderboard": {
-      "tab": "Top 10",
-      "provisional": "Provisoire jusqu'aux résultats",
-      "finalIn": "Définitif dans {{time}}",
-      "official": "Podium officiel",
-      "minProofs": "Le Top 10 s'ouvre à {{min}} photos. Pour l'instant : {{n}}.",
-      "noVotes": "Pas encore de votes. Vote pour tes photos préférées !",
-      "me": "Toi : #{{rank}} · ♥ {{votes}}",
-      "meCity": "#{{rank}} à {{city}}",
-      "noProof": "Joue pour être classé.",
-      "pending": "Ta photo est classée une fois validée.",
-      "cityTop": "Top 3 à {{city}}",
-      "compactTitle": "Top 3 en ce moment",
-      "seeAll": "Top 10 ›"
+      "me": "Toi : #{{rank}} · ♥ {{votes}}"
     },
     "week": {
       "title": "Cette semaine",
-      "calendar": "Calendrier",
-      "today": "Aujourd'hui",
-      "tomorrow": "Demain",
-      "done": "Réussi",
-      "pending": "En attente de validation",
-      "missed": "Pas fait",
-      "none": "Pas de défi",
       "keep": "Joue aujourd'hui pour garder ta série"
     },
     "calendar": {
@@ -1190,23 +516,12 @@
       "prev": "Mois précédent",
       "next": "Mois suivant"
     },
-    "guide": {
-      "title": "Guide de la ville",
-      "all": "Tous",
-      "emptyCity": "Pas encore de défi {{theme}} à {{city}}. Le prochain : {{day}}.",
-      "emptyWorld": "Pas encore de défi {{theme}}. Le prochain : {{day}}."
-    },
     "localPass": {
       "name": "Local Pass",
-      "progress": "{{done}}/{{total}} thèmes",
-      "earned": "Obtenu",
-      "hint": "Complète les 7 thèmes à {{city}} pour obtenir son Local Pass.",
-      "profileTitle": "Local Passes",
       "badgeA11y": "Titulaire du Local Pass"
     },
     "propose": {
       "cta": "Proposer un défi",
-      "short": "Proposer",
       "title": "Proposer un défi",
       "textLabel": "Ton défi (en anglais)",
       "textPlaceholder": "Find a…",
@@ -1243,7 +558,6 @@
       },
       "reason": "Raison : {{reason}}",
       "withdraw": "Retirer",
-      "withdrawTitle": "Retirer cette proposition ?",
       "withdrawBody": "Tu pourras en envoyer une autre juste après.",
       "proposedBy": "Proposé par {{name}}",
       "proposedByCity": "Proposé par {{name}} · {{city}}",
@@ -1254,28 +568,13 @@
         "invalid_twist": "Le Local Twist doit faire moins de 280 caractères.",
         "twist_not_allowed": "Seuls les locaux d'une ville live peuvent ajouter un Local Twist.",
         "moderation_blocked": "Ta proposition a été bloquée par la modération. Reformule-la."
-      },
-      "linkAsk": "Une idée de défi ?",
-      "linkCta": "Propose-la",
-      "cardBody": "Ton idée pourrait devenir le défi de demain pour le monde entier 🌍",
-      "cardHide": "Masquer une semaine",
-      "cardPlayed_one": "Ton idée « {{text}} » a été jouée dans {{count}} ville 🎉",
-      "cardPlayed_other": "Ton idée « {{text}} » a été jouée dans {{count}} villes 🎉"
+      }
     },
     "early": {
-      "badge": "En avance",
-      "hint": "Bonus rapidité : publie avant {{time}}"
-    },
-    "group": {
-      "title": "Nouvelles photos : {{n}}",
-      "citiesMore": "{{cities}} et {{n}} autres",
-      "galleryTitle": "Nouvelles photos"
+      "badge": "En avance"
     },
     "today": {
-      "early": "Bonus rapidité jusqu'à {{time}}",
       "tomorrow": "Demain : {{theme}}",
-      "aroundWorld": "Aujourd'hui dans le *monde*",
-      "inCity": "Aujourd'hui à *{{city}}*",
       "proofs_one": "{{count}} photo",
       "proofs_many": "{{count}} de photos",
       "proofs_other": "{{count}} photos",
@@ -1283,18 +582,12 @@
       "countries_many": "{{count}} de pays",
       "countries_other": "{{count}} pays",
       "proofsIn": "{{proofs}} de {{countries}}",
-      "podiumTitle": "Le podium d'hier",
       "allPast": "Tous les défis passés",
       "archiveTitle": "Défis passés",
       "archiveAll": "Tous les thèmes",
       "archiveEmpty": "Pas encore de défi passé ici.",
       "archiveMore": "Voir plus",
       "seeAll": "Tout voir",
-      "openMap": "Ouvrir la carte",
-      "seeMine": "Voir ta photo",
-      "votes_one": "{{count}} vote",
-      "votes_many": "{{count}} de votes",
-      "votes_other": "{{count}} votes",
       "day": {
         "done": "fait",
         "pending": "en cours de validation",
@@ -1307,13 +600,7 @@
       "links": {
         "twistTitle": "Proposer le Local Twist de demain",
         "twistSub": "Pour les locaux, jusqu'à {{time}}"
-      },
-      "spotsTeaser_one": "{{count}} spot près de toi",
-      "spotsTeaser_many": "{{count}} de spots près de toi",
-      "spotsTeaser_other": "{{count}} spots près de toi",
-      "spotsTeaserIn_one": "{{count}} spot à {{city}}",
-      "spotsTeaserIn_many": "{{count}} de spots à {{city}}",
-      "spotsTeaserIn_other": "{{count}} spots à {{city}}"
+      }
     },
     "spot": {
       "rankWeekFirst": "Le plus voté cette semaine à {{city}}",
@@ -1322,107 +609,23 @@
       "rankAlltime": "N°{{rank}} de tous les temps à {{city}}",
       "photos": "Photos",
       "captions": "Ce que les gens en disent",
-      "seeOnMap": "Voir sur la carte",
       "notFound": "Ce spot n'est pas disponible.",
       "local": "Local"
     },
     "place": {
-      "title": "Tu es où ?",
-      "why": "Ta position sert une fois à lister les lieux autour de toi et à vérifier que tu y es. Elle n'est jamais enregistrée.",
-      "find": "Trouver les lieux autour de moi",
-      "locating": "On cherche où tu es…",
-      "deniedTitle": "La localisation est désactivée",
-      "deniedBody": "Ce défi se passe dans un lieu précis : il nous faut ta position pour vérifier que tu y es.",
-      "failedTitle": "Ta position n'est pas disponible",
-      "failedBody": "Vérifie que la localisation est activée et réessaie, si possible dehors.",
-      "openSettings": "Ouvrir les réglages",
-      "retry": "Réessayer",
-      "approximate": "Ta position est approximative (±{{m}} m). Sors ou patiente un instant, puis actualise.",
-      "refresh": "Actualiser ma position",
-      "search": "Chercher parmi les lieux",
-      "inReview": "en validation",
-      "newTitle": "Nouveau lieu",
-      "notListed": "Pas dans la liste ? Ajoute-le.",
-      "noneNearby": "Pas encore de lieu Hilads ici : ajoute celui-ci.",
-      "nameLabel": "Nom du lieu",
-      "namePlaceholder": "ex. Café de Flore",
-      "newHint": "Il est placé là où tu te trouves. Il apparaîtra sur la carte une fois vérifié.",
-      "useNew": "Choisir ce lieu",
-      "backToList": "Revenir aux lieux proches",
-      "at": "À {{name}}",
-      "none": "Pas encore de lieu",
-      "change": "Changer",
-      "tooFar": "Tu es à {{distance}} de {{name}}. Rapproche-toi à moins de {{radius}} m et réessaie.",
-      "tryAgain": "J'y suis, réessayer",
-      "pickAnother": "Choisir un autre lieu",
-      "newOnMapLater": "Ton nouveau lieu apparaîtra sur la carte une fois validé."
-    },
-    "stamp": {
-      "title": "Nouveau tampon : {{theme}}",
-      "body": "Ton passeport de {{city}} a un nouveau tampon.",
-      "ok": "Super",
-      "close": "Fermer"
+      "retry": "Réessayer"
     },
     "takeIt": "Je le relève",
     "proofHint": {
-      "title": "Prends ta photo",
       "place": "La photo la plus votée devient celle du spot.",
       "noPlace": "La photo la plus votée monte sur le podium."
     },
     "compare": {
-      "tab": "Comparer",
-      "allCities": "Toutes les villes",
-      "boardCount": "Villes : {{count}} · Pays : {{countries}}",
-      "earliest": "Le plus tôt : {{city}} {{answer}}",
-      "latest": "Le plus tard : {{city}} {{answer}}",
-      "lowest": "Le plus bas : {{city}} {{answer}}",
-      "highest": "Le plus haut : {{city}} {{answer}}",
-      "emptyTitle": "Pas encore de photo",
-      "emptyBody": "Sois la première ville du tableau.",
-      "noAnswer": "Pas encore de réponse",
-      "median": "Prix habituel {{price}}",
-      "proofs_one": "{{count}} photo",
-      "proofs_many": "{{count}} de photos",
-      "proofs_other": "{{count}} photos",
-      "boardTitle": "Ce que le monde a répondu",
-      "cheapest": "Le moins cher : {{city}} {{price}}",
-      "priciest": "Le plus cher : {{city}} {{price}}",
-      "funFact": "{{ratio}} fois plus cher à {{city}} qu'à {{other}}.",
-      "worldAnswers": "La question du jour",
-      "seeAnswers": "Comparer",
-      "firstIn": "Les premières photos arrivent",
-      "picksTitle": "La sélection Hilads",
-      "answeredRow_one": "Déjà {{count}} pays a joué",
-      "answeredRow_many": "Déjà {{count}} de pays ont joué",
-      "answeredRow_other": "Déjà {{count}} pays ont joué",
-      "tip": "Touche pour comparer ta ville avec le monde.",
-      "nCountries_one": "{{count}} pays",
-      "nCountries_many": "{{count}} de pays",
-      "nCountries_other": "{{count}} pays",
-      "youAnswered": "Ta photo est partie. Compare avec le reste du monde."
+      "funFact": "{{ratio}} fois plus cher à {{city}} qu'à {{other}}."
     },
     "backHome": {
       "hereIn": "Ici à {{city}}",
       "homeIn": "Chez moi à {{city}}"
-    },
-    "tour": {
-      "title": "Le tour du monde d'*hier*",
-      "watch": "Regarder",
-      "openCity": "Ouvrir {{city}}",
-      "next": "Suivant",
-      "kicker": "Daily Challenge · {{theme}}",
-      "moment": {
-        "morning": "Le matin",
-        "afternoon": "L'après-midi",
-        "evening": "Le soir",
-        "night": "La nuit"
-      },
-      "yourTurn": "À toi de jouer.",
-      "todayIs": "La question du jour : {{question}}",
-      "close": "Fermer",
-      "sub_one": "{{count}} ville, le même défi",
-      "sub_many": "{{count}} de villes, le même défi",
-      "sub_other": "{{count}} villes, le même défi"
     },
     "worlds": {
       "tagline": "Même défi. Des mondes différents."
@@ -1455,9 +658,6 @@
     },
     "ctaAnswer": "Joue pour {{city}}",
     "ctaAnswerNoCity": "Je joue",
-    "represent": {
-      "button": "Joue pour {{city}}"
-    },
     "countdown": {
       "hm": "{{h}} h {{m}}",
       "ms": "{{m}} min {{s}} s"
@@ -1472,25 +672,17 @@
       "endTitle": "Tu as tout vu pour l'instant !",
       "endBody": "De nouvelles photos arrivent toute la journée. Reviens vite.",
       "endPlay": "À toi de jouer : montre ta ville au monde.",
-      "backToday": "Retour à Aujourd'hui",
-      "seeAll": "Voir toutes les photos"
+      "backToday": "Retour à Aujourd'hui"
     },
     "countries": {
-      "played_one": "{{count}} pays a joué aujourd'hui",
-      "played_many": "{{count}} de pays ont joué aujourd'hui",
-      "played_other": "{{count}} pays ont joué aujourd'hui",
-      "yourCity": "Ta ville",
       "represent": "Représente ta ville",
       "emptyBody": "Personne n'a encore joué aujourd'hui. Mets ta ville sur la carte en premier !",
-      "openCountry": "{{city}} : voir les photos",
-      "byCity": "Par ville",
       "topPhoto": "Top photo"
     },
     "stories": {
       "played_one": "{{count}} ville a joué aujourd'hui",
       "played_many": "{{count}} de villes ont joué aujourd'hui",
       "played_other": "{{count}} villes ont joué aujourd'hui",
-      "yourCity": "{{city}} ?",
       "of": "Photo {{index}} sur {{total}}",
       "cityOf": "Ville {{index}} sur {{total}}",
       "next": "Photo suivante"
@@ -1505,12 +697,6 @@
       "beFirstSub": "Sois la première ville aujourd'hui",
       "swipeHint": "Fais glisser pour voyager 🌍",
       "slotCta": "📸 {{city}} ? Sois le premier aujourd'hui"
-    },
-    "recap": {
-      "label": "Hier",
-      "cities_one": "{{count}} ville a joué",
-      "cities_many": "{{count}} de villes ont joué",
-      "cities_other": "{{count}} villes ont joué"
     },
     "worldSays": {
       "title": "Le monde répond",
@@ -1536,23 +722,13 @@
         "played_one": "{{count}} ville est hantée 🎃",
         "played_many": "{{count}} de villes sont hantées 🎃",
         "played_other": "{{count}} villes sont hantées 🎃",
-        "represent": "Hante ta ville 👻",
-        "onBoard": "{{city}} hante le tableau du jour ! 👻"
-      },
-      "limited": "Édition limitée",
-      "stampEarned": "Tampon édition limitée gagné !"
+        "represent": "Hante ta ville 👻"
+      }
     },
     "hero": {
       "cta": "Prends la photo pour {{city}}",
       "ctaNoCity": "Prends la photo",
       "played": "Tu as joué · Voir le monde",
-      "firstCity": "Sois la première ville du monde aujourd'hui",
-      "citiesIn_one": "{{count}} ville a joué",
-      "citiesIn_many": "{{count}} de villes ont joué",
-      "citiesIn_other": "{{count}} villes ont joué",
-      "citiesMissing_one": "{{count}} ville a joué. Pas encore {{city}} !",
-      "citiesMissing_many": "{{count}} de villes ont joué. Pas encore {{city}} !",
-      "citiesMissing_other": "{{count}} villes ont joué. Pas encore {{city}} !",
       "steps": {
         "snap": "Photographie",
         "name": "Nomme",
@@ -1620,23 +796,14 @@
       "send": "Envoyer"
     },
     "dual": {
-      "toggle": "Double",
-      "on": "Photo double activée",
-      "off": "Photo double désactivée",
-      "nowYou": "À toi ! 😄",
-      "frontFailed": "Impossible d'ouvrir la caméra frontale. Ta photo partira sans selfie.",
       "swapHint": "Touche la petite photo pour inverser 👆",
-      "retakeSelfie": "Refaire le selfie",
-      "removeSelfie": "Retirer le selfie",
-      "retakeAll": "Tout refaire",
-      "addFace": "Ajoute ta tête 🤳",
       "swapA11y": "Inverser les photos"
     },
     "ranks": {
       "seg": {
-        "photos": "📸 Photos",
-        "players": "🙋 Joueurs",
-        "cities": "🌍 Villes"
+        "photos": "Photos",
+        "players": "Joueurs",
+        "cities": "Villes"
       },
       "period": {
         "today": "Aujourd'hui",
@@ -1644,20 +811,16 @@
         "week": "Semaine",
         "alltime": "Depuis toujours"
       },
-      "scope": {
-        "city": "Ma ville",
-        "world": "Monde"
-      },
-      "timeLeftMin": "⏳ Moins d'une heure pour voter",
+      "timeLeftMin": "Moins d'une heure pour voter",
       "bestPerCity": "Meilleure photo par ville",
       "new": "nouveau",
       "you": {
         "top": "Toi · #1 · Personne devant toi 👑",
         "player": "Toi · #{{rank}} · {{gap}} pts pour dépasser {{name}} ▲",
         "none": "Joue aujourd'hui pour entrer au classement 🙋",
-        "photo_one": "Ta meilleure : #{{rank}} · {{count}} ❤️ pour la #{{next}}",
-        "photo_other": "Ta meilleure : #{{rank}} · {{count}} ❤️ pour la #{{next}}",
-        "photoTop": "Ta meilleure : #1 · personne au-dessus 👑",
+        "photo_one": "Ta meilleure : #{{rank}} · {{count}} ❤️ pour la #{{next}}",
+        "photo_other": "Ta meilleure : #{{rank}} · {{count}} ❤️ pour la #{{next}}",
+        "photoTop": "Ta meilleure : #1 · personne au-dessus 👑",
         "photoNone": "Aucune de tes photos n’est classée ❤️"
       },
       "city": {
@@ -1674,15 +837,7 @@
         "players": "Personne n'a encore marqué. Joue et prends la 1re place 🙋",
         "cities": "Aucune ville au classement. Mets la tienne en premier 🌍"
       },
-      "race": {
-        "title": "🏁 La course du jour",
-        "you": "{{city}} est #{{rank}}",
-        "youNone": "{{city}} n'est pas encore dans la course",
-        "see": "Voir le classement"
-      },
       "results": {
-        "title": "🏆 Les résultats sont là !",
-        "sub": "Découvre comment ta photo s'en est sortie hier",
         "dismiss": "Fermer",
         "world": "🏆 Ta photo a fini #{{rank}} dans le monde hier",
         "city": "🏆 Ta photo a fini #{{rank}} à {{city}} hier",
@@ -1692,17 +847,17 @@
         "generic": "🏆 Les résultats d’hier sont là",
         "see": "Voir les résultats →"
       },
-      "timeLeft_one": "⏳ Encore {{count}} heure pour voter",
-      "timeLeft_other": "⏳ Encore {{count}} heures pour voter",
-      "timeLeft_many": "⏳ Encore {{count}} heures pour voter",
+      "timeLeft_one": "Encore {{count}} heure pour voter",
+      "timeLeft_other": "Encore {{count}} heures pour voter",
+      "timeLeft_many": "Encore {{count}} heures pour voter",
       "pts_one": "{{count}} pt",
       "pts_other": "{{count}} pts",
       "pts_many": "{{count}} pts",
       "ghost": {
-        "photo": "Ta photo ici ? 📸",
+        "photo": "Ta photo ici ? 📸",
         "player": "Prends cette place 🙋",
-        "city": "Ta ville ici ? 🌍",
-        "invite": "🎯 Qui prend la #{{rank}} ? Invite un ami",
+        "city": "Ta ville ici ? 🌍",
+        "invite": "🎯 Qui prend la #{{rank}} ? Invite un ami",
         "empty": "Personne n’a pris cette place"
       }
     },

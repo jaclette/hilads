@@ -7,7 +7,7 @@ const FIRST_MS = 3000;
 const MAX_MS = 30_000;
 
 /**
- * The API can't be reached (a deploy, no network): "Hilads is waking up… 🌍" instead of a raw
+ * The API can't be reached (a deploy, no network): "Can't reach Hilads. Check your connection. We'll keep trying." instead of a raw
  * error, retrying on its own (3 s, 6 s, 12 s… at most 30 s apart) while it's shown, and a
  * "Try again" for the impatient. Show it only when there's nothing cached to show instead.
  */

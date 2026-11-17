@@ -1,0 +1,37 @@
+# World → a photo of the podium (the photo feed) → back (World) → back (Today).
+# Replaces the yesterday-tour flow: the tour was folded into the feed (UX audit).
+appId: com.hilads.app
+tags: [navigation]
+---
+- runFlow: ../subflows/start.yaml
+- tapOn:
+    id: "tab-ranks"
+- extendedWaitUntil:
+    visible:
+      id: "ranks-podium"
+    timeout: 30000
+# The podium's middle step is #1: its photo opens the feed, playing the ranking.
+- tapOn:
+    id: "ranks-podium"
+- extendedWaitUntil:
+    visible:
+      id: "daily-photos"
+    timeout: 30000
+# The feed scrolls vertically: iOS closes it with its own button.
+- runFlow:
+    file: ../subflows/back.yaml
+    env: { KIND: "tap", TAP: "photos-close" }
+- extendedWaitUntil:
+    visible:
+      id: "ranks-screen"
+    timeout: 20000
+- assertNotVisible:
+    id: "daily-photos"
+# Another tab's root: back goes to Today.
+- runFlow:
+    file: ../subflows/back.yaml
+    env: { KIND: "tap", TAP: "tab-today" }
+- extendedWaitUntil:
+    visible:
+      id: "today-screen"
+    timeout: 30000

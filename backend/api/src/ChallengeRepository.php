@@ -1267,11 +1267,11 @@ class ChallengeRepository
             $visibility = 'public';
         }
 
-        // Group model: a LOCAL MEET challenge created with a meet date becomes a
-        // 'group' challenge (date + location set at creation, multiple joiners,
-        // challenger validates presence). Everything else stays 'legacy' for now
-        // (international + the photo-proof group track land later).
-        $format     = 'legacy';
+        // Group model: every new challenge is 'group' (the legacy 1-to-1 format
+        // was retired in Phase 5). A LOCAL MEET carries a meet date (+ optional
+        // place, multiple joiners, challenger validates presence); a PHOTO-PROOF
+        // contest a submission deadline.
+        $format     = 'group';
         $meetAt     = null; $meetEndsAt = null; $venue = null; $venueLat = null; $venueLng = null;
         $wantsGroup = is_array($group) && ($group['format'] ?? null) === 'group';
         // MEET group: local + meet → date + place. PHOTO-PROOF group: photo_proof
@@ -1279,15 +1279,15 @@ class ChallengeRepository
         // no venue (it's at a distance).
         $isGroupMeet  = $wantsGroup && $mode === 'local' && $validationMethod === 'meet';
         $isGroupPhoto = $wantsGroup && $validationMethod === 'photo_proof';
-        if ($isGroupMeet || $isGroupPhoto) {
-            $format     = 'group';
-            $meetAt     = isset($group['meet_at'])      ? (int) $group['meet_at']      : null;
-            $meetEndsAt = isset($group['meet_ends_at']) ? (int) $group['meet_ends_at'] : null;
-            if ($isGroupMeet) {
-                $venue    = isset($group['venue'])     ? (trim((string) $group['venue']) ?: null) : null;
-                $venueLat = isset($group['venue_lat']) && $group['venue_lat'] !== null ? (float) $group['venue_lat'] : null;
-                $venueLng = isset($group['venue_lng']) && $group['venue_lng'] !== null ? (float) $group['venue_lng'] : null;
-            }
+        if (!$isGroupMeet && !$isGroupPhoto) {
+            throw new \InvalidArgumentException('Only group challenges can be created (legacy format retired)');
+        }
+        $meetAt     = isset($group['meet_at'])      ? (int) $group['meet_at']      : null;
+        $meetEndsAt = isset($group['meet_ends_at']) ? (int) $group['meet_ends_at'] : null;
+        if ($isGroupMeet) {
+            $venue    = isset($group['venue'])     ? (trim((string) $group['venue']) ?: null) : null;
+            $venueLat = isset($group['venue_lat']) && $group['venue_lat'] !== null ? (float) $group['venue_lat'] : null;
+            $venueLng = isset($group['venue_lng']) && $group['venue_lng'] !== null ? (float) $group['venue_lng'] : null;
         }
 
         $pdo = Database::pdo();

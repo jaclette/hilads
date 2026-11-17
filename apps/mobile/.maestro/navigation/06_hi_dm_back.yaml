@@ -1,11 +1,10 @@
-# Hi → Messages → a private conversation → back → back → back (Today).
+# Today → Hi (its row) → Messages → a private conversation → back → back → back (Today).
 # Needs a signed-in account with at least one conversation.
 appId: com.hilads.app
 tags: [navigation]
 ---
 - runFlow: ../subflows/start.yaml
-- tapOn:
-    id: "tab-chat"
+- runFlow: ../subflows/open_hi.yaml
 - extendedWaitUntil:
     visible:
       id: "hi-messages"
@@ -42,7 +41,7 @@ tags: [navigation]
     timeout: 30000
 - runFlow:
     file: ../subflows/back.yaml
-    env: { KIND: "tap", TAP: "tab-today" }
+    env: { KIND: "tap", TAP: "header-back" }   # Hi is a screen now: its back returns to Today
 - extendedWaitUntil:
     visible:
       id: "today-screen"

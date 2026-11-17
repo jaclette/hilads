@@ -10,7 +10,7 @@ import { View, Text, TouchableOpacity, Pressable, StyleSheet } from 'react-nativ
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import { FontSizes, Radius, Spacing, type ThemeColors } from '@/constants';
+import { Space, FontSizes, Radius, Spacing, type ThemeColors } from '@/constants';
 import { useThemedStyles } from '@/context/ThemeContext';
 import { track } from '@/services/analytics';
 import { authQuery } from '@/lib/authReturn';
@@ -66,12 +66,12 @@ export default function AuthGateScreen() {
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
   root:          { flex: 1, justifyContent: 'flex-end' },
   scrim:         { ...StyleSheet.absoluteFill, backgroundColor: c.scrim },
-  sheet:         { backgroundColor: c.bg, borderTopLeftRadius: Radius.sheet, borderTopRightRadius: Radius.sheet, paddingHorizontal: Spacing.lg, paddingTop: 10, paddingBottom: Spacing.md, alignItems: 'center', gap: 12 },
-  handle:        { width: 40, height: 5, borderRadius: Radius.full, backgroundColor: c.line, marginBottom: 6 },
+  sheet:         { backgroundColor: c.bg, borderTopLeftRadius: Radius.sheet, borderTopRightRadius: Radius.sheet, paddingHorizontal: Spacing.lg, paddingTop: Space.md, paddingBottom: Spacing.md, alignItems: 'center', gap: Space.md },
+  handle:        { width: 40, height: 5, borderRadius: Radius.full, backgroundColor: c.line, marginBottom: Space.sm },
   title:         { fontSize: FontSizes.xl, fontWeight: '800', color: c.text, textAlign: 'center', letterSpacing: -0.3 },
   tagline:       { fontSize: FontSizes.sm, fontWeight: '700', color: c.muted, textAlign: 'center', marginTop: -4 },
-  subtitle:      { fontSize: FontSizes.sm, color: c.muted, textAlign: 'center', marginBottom: 4 },
+  subtitle:      { fontSize: FontSizes.sm, color: c.muted, textAlign: 'center', marginBottom: Space.xs },
   stretch:       { alignSelf: 'stretch' },
-  notNow:        { minHeight: 44, justifyContent: 'center', paddingHorizontal: 16 },
+  notNow:        { minHeight: 44, justifyContent: 'center', paddingHorizontal: Space.lg },
   notNowText:    { color: c.muted, fontSize: FontSizes.sm, fontWeight: '600' },
 });

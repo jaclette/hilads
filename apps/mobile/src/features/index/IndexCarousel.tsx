@@ -3,7 +3,7 @@ import { ScrollView, Text, TouchableOpacity, View, StyleSheet } from 'react-nati
 import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import { Border, FontSizes, Radius, type ThemeColors } from '@/constants';
+import { Space, Border, FontSizes, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { fetchCompared } from '@/api/daily';
 import { track } from '@/services/analytics';
@@ -18,12 +18,12 @@ const CARD_W = 272;
 const CARD_ROWS = 5;
 
 /**
- * "The world, compared" on Today (SPEC 10.9): last week's comparisons, one
- * card per shared key with at least 2 cities of 3 answers or more, then "See
- * all comparisons". A card opens the Index screen on it. Readable without an
- * account; nothing when no card qualifies.
+ * "The world, compared" (SPEC 10.9), at the foot of Ranks › Cities: last week's comparisons, one
+ * card per shared key with at least 2 cities of 3 answers or more, then "See all comparisons". A
+ * card opens the Index screen on it. Readable without an account; when no card qualifies, the
+ * title and the "See all comparisons" link alone (the Index always has a way in).
  */
-export function IndexCarousel({ refreshKey = 0 }: { refreshKey?: number }) {
+export function IndexCarousel({ refreshKey = 0, source = 'ranks' }: { refreshKey?: number; source?: string }) {
   const styles = useThemedStyles(makeStyles);
   const { colors, theme } = useTheme();
   const { t } = useTranslation('daily');
@@ -39,11 +39,18 @@ export function IndexCarousel({ refreshKey = 0 }: { refreshKey?: number }) {
   useFocusEffect(useCallback(() => { load(); }, [load]));
   useEffect(() => { if (refreshKey > 0) load(); }, [refreshKey]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  if (!data || data.cards.length === 0) return null;
-  const open = (focus: string | null, source: string) => {
-    track('index_opened', { source, focus });
-    router.push(`/daily/compared?source=${source}${focus ? `&focus=${encodeURIComponent(focus)}` : ''}` as never);
+  const open = (focus: string | null, how: string) => {
+    track('index_opened', { source: `${source}_${how}`, focus });
+    router.push(`/daily/compared?source=${source}_${how}${focus ? `&focus=${encodeURIComponent(focus)}` : ''}` as never);
   };
+  if (!data || data.cards.length === 0) {
+    return (
+      <View style={styles.wrap}>
+        <SectionTitle small title={t('index.carouselTitle')} action={{ label: t('index.seeAllComparisons'), onPress: () => open(null, 'link') }} />
+        <Text style={styles.sub}>{t('index.carouselSub')}</Text>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.wrap}>
@@ -76,11 +83,11 @@ export function IndexCarousel({ refreshKey = 0 }: { refreshKey?: number }) {
 }
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  wrap:    { gap: 4 },
-  sub:     { fontSize: 13, fontWeight: '500', color: c.muted, marginBottom: 4 },
-  row:     { gap: 10, paddingRight: 4 },
+  wrap:    { gap: Space.xs },
+  sub:     { fontSize: FontSizes.xs, fontWeight: '500', color: c.muted, marginBottom: Space.xs },
+  row:     { gap: Space.md, paddingRight: Space.xs },
   card:    { width: CARD_W },
-  all:     { alignItems: 'center', justifyContent: 'center', gap: 10, padding: 14, borderRadius: Radius.card, borderWidth: Border,
+  all:     { alignItems: 'center', justifyContent: 'center', gap: Space.md, padding: 14, borderRadius: Radius.card, borderWidth: Border,
              borderColor: c.line, backgroundColor: c.bg2, minHeight: 180 },
   allText: { fontSize: FontSizes.md, fontWeight: '800', color: c.text, textAlign: 'center' },
 });

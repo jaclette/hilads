@@ -4,10 +4,10 @@ import { Image } from 'expo-image';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import * as Haptics from 'expo-haptics';
-import { Radius, Spacing, type ThemeColors } from '@/constants';
+import { Space, FontSizes, Radius, Spacing, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { useApp } from '@/context/AppContext';
-import { Screen, ScreenHeader, Avatar } from '@/ui';
+import { Button, Screen, ScreenHeader, Avatar } from '@/ui';
 import { Confetti, FlagSticker, themeColor, tint } from '@/ui/joy';
 import { shortCityName } from '@/i18n/cityName';
 import { thumbUrl } from '@/lib/imageThumb';
@@ -95,13 +95,11 @@ export default function RivalScreen() {
       {!data.playedToday && today?.challenge?.isActive && (
         <View style={[styles.nudge, { backgroundColor: tint(themeColor('get_around').fill, 0.18) }]}>
           <Text style={styles.nudgeText}>{t('rivals.notToday', { city: rival })}</Text>
-          <Pressable style={styles.nudgeBtn} accessibilityRole="button" testID="rival-send"
-                     onPress={() => {
-                       track('rival_challenge_shared', { city: data.city.name });
-                       setShare(representShare(today.challenge!, { name: data.city.name, country: data.city.country }));
-                     }}>
-            <Text style={styles.nudgeBtnText}>📣 {t('rivals.send')}</Text>
-          </Pressable>
+          <Button size="sm" label={`📣 ${t('rivals.send')}`} style={styles.nudgeBtn} testID="rival-send"
+                  onPress={() => {
+                    track('rival_challenge_shared', { city: data.city.name });
+                    setShare(representShare(today.challenge!, { name: data.city.name, country: data.city.country }));
+                  }} />
         </View>
       )}
       {data.duels.length > 0 && <Text style={styles.section}>{t('rivals.duels', { count: data.duels.length })}</Text>}
@@ -162,35 +160,34 @@ function DuelPhoto({ proof, label, win, onPress }: { proof: DailyProof; label: s
 const GOLD = themeColor('sip').fill;
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
   center:       { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  list:         { padding: Spacing.md, paddingBottom: Spacing.xl, gap: 14 },
-  versus:       { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: 12 },
-  side:         { flex: 1, alignItems: 'center', gap: 6 },
-  sideName:     { fontSize: 16, fontWeight: '800', color: c.text, maxWidth: '100%' },
+  list:         { padding: Spacing.md, paddingBottom: Spacing.xl, gap: Space.lg },
+  versus:       { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: Space.md },
+  side:         { flex: 1, alignItems: 'center', gap: Space.sm },
+  sideName:     { fontSize: FontSizes.body, fontWeight: '800', color: c.text, maxWidth: '100%' },
   trophy:       { fontSize: 20 },
-  vsCol:        { alignItems: 'center', gap: 8 },
+  vsCol:        { alignItems: 'center', gap: Space.sm },
   vs:           { width: 48, height: 48, borderRadius: 24, backgroundColor: c.cta, alignItems: 'center', justifyContent: 'center', transform: [{ rotate: '-8deg' }] },
-  vsText:       { fontSize: 18, fontWeight: '900', color: c.onCta },
-  score:        { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  scoreNum:     { fontSize: 30, lineHeight: 36, fontWeight: '900', color: c.text },
-  scoreDash:    { fontSize: 24, fontWeight: '800', color: c.muted },
-  mood:         { fontSize: 15, lineHeight: 20, fontWeight: '700', color: c.text, textAlign: 'center', marginBottom: 12 },
-  nudge:        { borderRadius: Radius.card, padding: 14, gap: 10, marginBottom: 14 },
-  nudgeText:    { fontSize: 15, lineHeight: 20, fontWeight: '700', color: c.text },
-  nudgeBtn:     { alignSelf: 'flex-start', paddingHorizontal: 16, height: 40, borderRadius: Radius.full, backgroundColor: c.cta, justifyContent: 'center' },
-  nudgeBtnText: { fontSize: 14, fontWeight: '800', color: c.onCta },
-  section:      { fontSize: 13, fontWeight: '800', color: c.muted, marginBottom: 4 },
-  empty:        { fontSize: 15, color: c.muted, textAlign: 'center', paddingVertical: 32 },
-  duel:         { borderRadius: Radius.card, backgroundColor: c.bg2, borderWidth: 1.5, borderColor: c.line, padding: 12, gap: 10 },
-  duelHead:     { gap: 6 },
-  duelText:     { fontSize: 15, lineHeight: 20, fontWeight: '800', color: c.text },
-  themeChip:    { alignSelf: 'flex-start', paddingHorizontal: 8, paddingVertical: 2, borderRadius: Radius.full },
-  themeText:    { fontSize: 12, fontWeight: '700', color: c.text },
-  pair:         { flexDirection: 'row', gap: 10 },
+  vsText:       { fontSize: FontSizes.md, fontWeight: '800', color: c.onCta },
+  score:        { flexDirection: 'row', alignItems: 'center', gap: Space.sm },
+  scoreNum:     { fontSize: FontSizes.xxl, lineHeight: 39, fontWeight: '800', color: c.text },
+  scoreDash:    { fontSize: FontSizes.xl, fontWeight: '800', color: c.muted },
+  mood:         { fontSize: FontSizes.body, lineHeight: 20, fontWeight: '700', color: c.text, textAlign: 'center', marginBottom: Space.md },
+  nudge:        { borderRadius: Radius.card, padding: 14, gap: Space.md, marginBottom: Space.lg },
+  nudgeText:    { fontSize: FontSizes.body, lineHeight: 20, fontWeight: '700', color: c.text },
+  nudgeBtn:     { alignSelf: 'flex-start' },
+  section:      { fontSize: FontSizes.xs, fontWeight: '800', color: c.muted, marginBottom: Space.xs },
+  empty:        { fontSize: FontSizes.body, color: c.muted, textAlign: 'center', paddingVertical: 32 },
+  duel:         { borderRadius: Radius.card, backgroundColor: c.bg2, borderWidth: 1.5, borderColor: c.line, padding: Space.md, gap: Space.md },
+  duelHead:     { gap: Space.sm },
+  duelText:     { fontSize: FontSizes.body, lineHeight: 20, fontWeight: '800', color: c.text },
+  themeChip:    { alignSelf: 'flex-start', paddingHorizontal: Space.sm, paddingVertical: Space.xxs, borderRadius: Radius.full },
+  themeText:    { fontSize: FontSizes.xs, fontWeight: '700', color: c.text },
+  pair:         { flexDirection: 'row', gap: Space.md },
   photoBox:     { flex: 1, borderRadius: 14, overflow: 'hidden', borderWidth: 3, borderColor: 'transparent', backgroundColor: c.bg3 },
   photoWin:     { borderColor: GOLD },
   photo:        { width: '100%', aspectRatio: 1 },
   crown:        { position: 'absolute', top: 6, right: 8, fontSize: 22 },
-  photoFoot:    { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 8, paddingVertical: 6, backgroundColor: c.bg2 },
-  photoLabel:   { flex: 1, fontSize: 12, fontWeight: '700', color: c.muted },
-  photoLikes:   { fontSize: 13, fontWeight: '800', color: c.text },
+  photoFoot:    { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: Space.sm, paddingVertical: Space.sm, backgroundColor: c.bg2 },
+  photoLabel:   { flex: 1, fontSize: FontSizes.xs, fontWeight: '700', color: c.muted },
+  photoLikes:   { fontSize: FontSizes.xs, fontWeight: '800', color: c.text },
 });

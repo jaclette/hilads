@@ -10,10 +10,7 @@
     "special": "مميز",
     "onlyIn": "في {{city}} فقط"
   },
-  "nowTitle": "الآن",
   "filterEvents": "فعاليات محلية",
-  "hiLocalTitle": "👋 Hi Local",
-  "filterHangouts": "🗣️ لقاءات",
   "publicEventsSection": "فعاليات محلية عامة",
   "accountWelcome": {
     "title": "مبروك يا {{username}}!",
@@ -46,15 +43,12 @@
     "noResults": "لا أماكن مطابقة",
     "loading": "جارٍ تحديد الموقع…",
     "confirm": "شارك هذا المكان",
-    "yourLocation": "موقعك",
-    "close": "إغلاق",
-    "clearSearch": "مسح البحث"
+    "yourLocation": "موقعك"
   },
   "language": "اللغة",
   "cancel": "إلغاء",
   "loading": "جارٍ التحميل…",
   "retry": "حاول مرة أخرى",
-  "save": "حفظ",
   "done": "تم",
   "close": "إغلاق",
   "clear": "مسح",
@@ -181,9 +175,7 @@
   "tabs": {
     "today": "اليوم",
     "map": "الخريطة",
-    "chat": "Hi",
-    "passport": "جواز السفر",
-    "ranks": "الترتيب"
+    "passport": "جواز السفر"
   },
   "scope": {
     "title": "عرض",
@@ -210,7 +202,6 @@
     "requiredTitle": "حدّث Hilads",
     "requiredBody": "لم يعد هذا الإصدار مدعومًا. حدّث التطبيق لتواصل استخدام Hilads."
   },
-  "mapSoon": "خريطة الأماكن قادمة قريبًا.",
   "firstLaunch": "العب محليًا. قارن عالميًا.",
   "signUp": "إنشاء حساب",
   "open": "فتح",
@@ -235,7 +226,6 @@
     "errorBody": "تعذّر إرسال البلاغ. حاول مرة أخرى."
   },
   "subtitles": {
-    "map": "أماكن من صور العالم.",
     "hi": "قل مرحبًا لمدينتك، وانضم إلى خطة.",
     "passport": "مدنك وصورك وأختامك."
   },
@@ -267,7 +257,7 @@
     "off": "متوقف"
   },
   "wakingUp": {
-    "title": "Hilads يستيقظ… 🌍",
-    "body": "نعود خلال ثوانٍ، ونواصل المحاولة."
+    "title": "تعذّر الوصول إلى Hilads",
+    "body": "تحقّق من اتصالك. سنواصل المحاولة."
   }
 }

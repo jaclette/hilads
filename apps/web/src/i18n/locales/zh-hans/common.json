@@ -16,11 +16,7 @@
     "eventTitle": "本地活动：{{title}} | Hilads",
     "eventDesc": "在 Hilads 加入 {{title}}，一场正在进行的本地活动。看看谁会去，和在线的人实时聊天。"
   },
-  "nowTitle": "现在",
   "filterEvents": "🎉 本地活动",
-  "hiLocalTitle": "Hi Local",
-  "filterHangouts": "🗣️ 聚会",
-  "publicEventsSection": "🎫 公开本地活动",
   "accountWelcome": {
     "title": "恭喜你，{{username}}！",
     "subtitle": "账号准备好了，现在你可以这样玩",
@@ -32,68 +28,6 @@
     "fc1": "向同城的本地人发起挑战",
     "fc2": "向世界另一头的城市发起挑战",
     "cta": "出发吧"
-  },
-  "onboarding": {
-    "skip": "跳过 ✕",
-    "next": "下一步",
-    "fallbackCity": "你的城市",
-    "slide1": {
-      "title": "本地玩，全球比。",
-      "body": "Hilads 让旅行者变成本地人，也让本地人分享自己城市的精彩。"
-    },
-    "slide2": {
-      "title": "玩转城市的三种方式",
-      "itemChallenges": "🤝 挑战：互相发起挑战，去发现隐藏的地点、尝尝地道美食、分享文化，或者帮个忙。",
-      "itemHangouts": "🗣️ Hi now：说走就走，认识新朋友",
-      "itemEvents": "🎉 Hi plan：约个时间见面"
-    },
-    "slide3": {
-      "title": "在城市里赢得你的位置",
-      "body": "每完成一个挑战、每见一次面、每发现一个地点，都能赚积分。积分代表你在 {{city}} 有多本地。冲上 Most Local 榜首，和那些让城市热闹起来的人站在一起。"
-    },
-    "slide4": {
-      "title": "准备好出发了吗？",
-      "ctaChallenge": "📍 在 {{city}} 接受你的第一个挑战",
-      "ctaMostLocal": "🤝 看看 {{city}} 的 Most Local",
-      "ctaLookAround": "👀 先随便看看",
-      "ctaHiNow": "🗣️ Hi now",
-      "ctaHiLater": "🎉 Hi plan"
-    }
-  },
-  "challengeIntro": {
-    "title": "挑战怎么玩",
-    "slide1": {
-      "title": "挑战让旅行变成故事",
-      "body": "本地人和旅行者互相发起挑战，分享城市最真实的一面：美食、地点、文化、互助。奖励是什么？线下见面，或者远程发张照片作为证明。"
-    },
-    "slide2": {
-      "title": "发起你的挑战",
-      "body": "美食、地点、文化或互助都行。选好发给谁、有几个名额、怎么收尾：线下见面，还是照片证明。"
-    },
-    "slide3": {
-      "title": "有人接招了",
-      "body": "对方发来请求，你看过后接受，你们的私聊就解锁了，可以聊聊、约个时间。"
-    },
-    "slide4": {
-      "title": "见面，或发照片证明",
-      "body": "线下见面，或者远程发张照片，你来定。不管哪种，每一步都有记录。"
-    },
-    "slide5": {
-      "title": "收尾",
-      "body": "见完面（或照片到手）后，标记为已完成。一次一个挑战，真正活出你的城市。"
-    },
-    "next": "下一步",
-    "done": "明白啦！",
-    "skip": "跳过 ✕",
-    "slide6": {
-      "title": "走出你的城市",
-      "body": "向任何地方的任何人发起挑战。对方发来证明（一张带定位的照片），你远程确认。本地挑战也能用同样的照片流程。不管本地还是全球，每个挑战都算数。"
-    },
-    "slide7": {
-      "title": "成为 Most Local",
-      "body": "每个挑战都能赚积分，城市榜和全球榜都算。线下见面再额外加 +50。不管是本地人还是旅行者，重要的是你在这里留下了什么。榜单每月刷新。"
-    },
-    "createCta": "🔥 发起挑战"
   },
   "share": {
     "title": "分享点什么",
@@ -211,7 +145,6 @@
   "settings": "设置",
   "firstLaunch": "本地玩，全球比。",
   "subtitles": {
-    "map": "全世界照片里的地点。",
     "hi": "和你的城市打个招呼，加入一个计划。",
     "passport": "你的城市、你的照片、你的印章。"
   },
@@ -233,18 +166,9 @@
     "textPassportNoCity": "我的 Hilads 护照。同一个挑战，不同的世界。"
   },
   "represent": {
-    "empty": "{{city}} 今天还没人出战，来当第一个吧。",
-    "beFirst": "第一个为 {{city}} 出战",
-    "emptyThere": "{{city}} 今天还没人出战。",
-    "notIn": "不在 {{city}}？",
-    "change": "更改",
     "locationNeeded": "打开定位，为你所在的城市出战。",
-    "button": "为 {{city}} 出战",
-    "firstPosted": "你把 {{city}} 放上了今天的世界地图。",
     "pioneer": "{{city}} 先锋",
     "spotOne": "{{city}} 第 1 号地点",
-    "streak_other": "{{city}} 已连续 {{count}} 天出战",
-    "board_other": "今天已有 {{count}} 座城市上榜，{{city}} 还没有。",
     "mapEmpty": "{{city}} 还没上世界地图，快把它放上去。",
     "invite": "邀请朋友",
     "share": "来 Hilads 和我一起为 {{city}} 出战。",
@@ -286,8 +210,7 @@
     "mainNav": "主导航",
     "emojiPicker": "表情选择",
     "cancelReply": "取消回复",
-    "welcome": "欢迎",
-    "approve": "通过"
+    "welcome": "欢迎"
   },
   "tapToOpenMaps": "点一下在地图中打开",
   "openInApp": {

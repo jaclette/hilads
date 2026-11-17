@@ -1,6 +1,8 @@
 // V3 shared UI (docs/daily-challenge/RESTYLE.md section 2): build screens from
 // these instead of re-implementing headers, buttons, chips, cards and sheets.
-export { Avatar } from './Avatar';
+export { Avatar, AvatarSize } from './Avatar';
+export { Badge } from './Badge';
+export { BottomBar, BOTTOM_BAR_SPACE } from './BottomBar';
 export { Banner } from './Banner';
 export { BrandMark } from './BrandMark';
 export { Button } from './Button';
@@ -19,7 +21,10 @@ export { SectionTitle } from './SectionTitle';
 export { Segmented } from './Segmented';
 export { ChipTabs } from './ChipTabs';
 export { CoverPhoto, Photo } from './Photo';
-export { Sheet, SheetFlatList, SheetScrollView, useSheetScroll } from './Sheet';
+export { CoverScrim, COVER_SCRIM_RAMP } from './CoverScrim';
+export { Sheet, SheetFlatList, SheetScrollView, SheetTitle, useSheetScroll } from './Sheet';
 export { TextField } from './TextField';
 export { ThemeIcon, THEME_ICON } from './ThemeIcon';
 export { DualPhoto, type PhotoSource } from './DualPhoto';
+export { Tappable } from './Tappable';
+export { Crown } from './Crown';

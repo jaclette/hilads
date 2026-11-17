@@ -4,19 +4,11 @@
   "nextIn": "다음 Daily Challenge까지 {{time}}",
   "nothingLive": "다음 Daily Challenge가 곧 와요",
   "cta": "챌린지 도전하기",
-  "ctaIn": "나도 할래요",
-  "ctaTaken": "챌린지 완료 · 내 사진 보기",
-  "seeProofs": "오늘의 사진 보기",
-  "localTwist": "Local Twist",
   "twistIn": "{{city}} Local Twist",
   "twistBy": "{{name}}님",
   "count_other": "오늘 {{count}}명이 해냈어요",
-  "countCity": "{{city}}에서 {{count}}명",
-  "countZero": "아직 아무도 없어요. 첫 번째로 도전해 보세요",
   "beFirst": "오늘 첫 번째로 도전해 보세요",
   "beFirstSub": "아직 사진이 없어요. 첫 사진을 올려 보세요, 전 세계가 기다려요.",
-  "firstYours": "사진이 등록됐어요",
-  "firstYoursSub": "승인되면 다른 사람들의 사진과 함께 여기에 표시돼요.",
   "yourProof": "내 사진",
   "status": {
     "pending": "대기 중",
@@ -40,14 +32,12 @@
   "priceFrom_other": "사진 {{count}}장 기준",
   "places_other": "지도에 표시한 장소 {{count}}곳",
   "unnamedPlace": "지도에 표시한 장소",
-  "tabWorld": "세계",
   "local": "현지인",
   "traveler": "여행자",
   "validatedByLocal": "현지인 인증",
   "loadFailed": "Daily Challenge를 불러오지 못했어요.",
   "retry": "다시 시도",
   "notFound": "이 Daily Challenge는 존재하지 않아요.",
-  "cityRowEmpty": "{{city}}에서 첫 챌린지를 만들어 보세요",
   "proof": {
     "titleNew": "내 사진",
     "titleEdit": "사진 수정",
@@ -116,8 +106,6 @@
     "invalid_back_home": "\"고향에서는요?\"에는 도시와 함께 답, 가격 또는 한 줄이 필요해요."
   },
   "push": {
-    "bannerTitle": "매일 아침 Daily Challenge 받기",
-    "bannerCta": "켜기",
     "askTitle": "Daily Challenge",
     "askBody": "매일 아침, 편한 시간에 Daily Challenge를 받아보세요.",
     "askBodyBlocked": "Hilads 알림이 꺼져 있어요. 매일 아침 Daily Challenge를 받으려면 설정에서 켜 주세요.",
@@ -283,9 +271,9 @@
       "count_other": "{{city}}의 장소 {{count}}곳",
       "countHere_other": "이 근처 장소 {{count}}곳",
       "peekNearest": "가장 가까운 곳 {{distance}}",
-      "peekSwipe": "위로 스와이프 👆",
+      "peekSwipe": "위로 스와이프",
       "peekEmpty": "아직 스팟이 없어요. 첫 번째가 되어 보세요 📍",
-      "peekTitle_other": "📍 탐험할 스팟 {{num}}곳"
+      "peekTitle_other": "탐험할 스팟 {{num}}곳"
     }
   },
   "leaderboard": {
@@ -324,23 +312,15 @@
     "prev": "이전 달",
     "next": "다음 달"
   },
-  "guide": {
-    "title": "도시 가이드",
-    "all": "전체",
-    "emptyCity": "{{city}}에는 아직 {{theme}} 챌린지가 없어요. 다음: {{day}}.",
-    "emptyWorld": "아직 {{theme}} 챌린지가 없어요. 다음: {{day}}."
-  },
   "localPass": {
     "name": "Local Pass",
     "progress": "{{done}}/{{total}} 테마",
     "earned": "획득",
-    "hint": "{{city}}에서 7개 테마를 모두 완료하면 Local Pass를 받아요.",
     "profileTitle": "Local Pass",
     "badgeA11y": "Local Pass 보유자"
   },
   "propose": {
     "cta": "챌린지 제안하기",
-    "short": "제안",
     "title": "챌린지 제안하기",
     "textLabel": "내 챌린지 (영어로)",
     "textPlaceholder": "Find a…",
@@ -388,12 +368,7 @@
       "invalid_twist": "Local Twist는 280자 이내로 써 주세요.",
       "twist_not_allowed": "오픈한 도시의 현지인만 Local Twist를 추가할 수 있어요.",
       "moderation_blocked": "제안이 필터에 걸렸어요. 다르게 써 주세요."
-    },
-    "linkAsk": "챌린지 아이디어 있어요?",
-    "linkCta": "제안하기",
-    "cardBody": "당신의 아이디어가 내일 전 세계의 챌린지가 될 수 있어요 🌍",
-    "cardHide": "일주일 동안 숨기기",
-    "cardPlayed_other": "당신의 아이디어 “{{text}}”가 {{count}}개 도시에서 플레이됐어요 🎉"
+    }
   },
   "early": {
     "badge": "얼리버드",
@@ -496,7 +471,6 @@
   },
   "takeIt": "도전하기",
   "proofHint": {
-    "title": "사진을 찍어 보세요",
     "place": "가장 많은 표를 받은 사진이 이 장소의 대표 사진이 돼요.",
     "noPlace": "가장 많은 표를 받은 사진이 시상대에 올라요."
   },
@@ -637,23 +611,6 @@
     "clear": "고향 삭제",
     "hereIn": "여기, {{city}}"
   },
-  "tour": {
-    "title": "*어제*의 세계 일주",
-    "watch": "보기",
-    "openCity": "{{city}} 열기",
-    "next": "다음",
-    "kicker": "Daily Challenge · {{theme}}",
-    "moment": {
-      "morning": "아침",
-      "afternoon": "오후",
-      "evening": "저녁",
-      "night": "밤"
-    },
-    "yourTurn": "이제 차례예요.",
-    "todayIs": "오늘의 질문: {{question}}",
-    "close": "닫기",
-    "sub_other": "{{count}}개 도시, 같은 챌린지"
-  },
   "worlds": {
     "tagline": "같은 챌린지, 다른 세상."
   },
@@ -696,16 +653,11 @@
     "endTitle": "지금까지 올라온 사진을 다 봤어요!",
     "endBody": "새 사진이 하루 종일 올라와요. 나중에 또 와 주세요.",
     "endPlay": "이제 차례예요. 세계에 내 도시를 보여 주세요.",
-    "backToday": "오늘로 돌아가기",
-    "seeAll": "모든 사진 보기"
+    "backToday": "오늘로 돌아가기"
   },
   "countries": {
-    "played_other": "오늘 {{count}}개국이 참여했어요",
-    "yourCity": "내 도시",
     "represent": "우리 도시를 대표해요",
     "emptyBody": "오늘은 아직 아무도 참여하지 않았어요. 가장 먼저 내 도시를 지도에 올려 보세요!",
-    "openCountry": "{{city}}: 사진 보기",
-    "byCity": "도시별",
     "topPhoto": "베스트 사진"
   },
   "recap": {
@@ -751,8 +703,6 @@
     "ctaNoCity": "사진 찍기",
     "played": "참여 완료 · 세계 보기",
     "firstCity": "오늘 세계 첫 번째 도시가 되어 보세요",
-    "citiesIn_other": "{{count}}개 도시 참여",
-    "citiesMissing_other": "{{count}}개 도시 참여. {{city}}, 아직이에요!",
     "steps": {
       "snap": "찍기",
       "name": "이름 쓰기",
@@ -774,7 +724,6 @@
     "players_other": "{{count}}명",
     "missing": "{{city}}, 아직 없어요!",
     "yesterday": "어제 세계는 이렇게 말했어요…",
-    "beFirst": "{{city}} 대표하기",
     "beFirstSub": "오늘 첫 번째 도시가 되어 보세요",
     "swipeHint": "스와이프해서 여행해 봐 🌍",
     "slotCta": "📸 {{city}}? 오늘 첫 번째로 참여하세요"
@@ -846,9 +795,9 @@
   },
   "ranks": {
     "seg": {
-      "photos": "📸 사진",
-      "players": "🙋 참가자",
-      "cities": "🌍 도시"
+      "photos": "사진",
+      "players": "참가자",
+      "cities": "도시"
     },
     "period": {
       "today": "오늘",
@@ -860,7 +809,7 @@
       "city": "우리 도시",
       "world": "전 세계"
     },
-    "timeLeftMin": "⏳ 투표 마감까지 1시간도 안 남았어요",
+    "timeLeftMin": "투표 마감까지 1시간도 안 남았어요",
     "bestPerCity": "도시별 베스트 사진",
     "new": "NEW",
     "you": {
@@ -900,7 +849,7 @@
       "generic": "🏆 어제 결과가 나왔어요",
       "see": "결과 보기 →"
     },
-    "timeLeft_other": "⏳ 투표 마감까지 {{count}}시간",
+    "timeLeft_other": "투표 마감까지 {{count}}시간",
     "pts_other": "{{count}}점",
     "ghost": {
       "photo": "여기에 네 사진을? 📸",

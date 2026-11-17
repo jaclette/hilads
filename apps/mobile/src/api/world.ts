@@ -4,12 +4,6 @@ import type { MentionInput } from './mentions';
 
 // ── World channel (global companion channel) ────────────────────────────────
 
-export interface WorldActivity {
-  online: number;
-  cities: number;
-  crossCity: { count: number; cities: string[] };
-}
-
 export async function fetchWorldMessages(
   opts: { beforeId?: string; limit?: number } = {},
 ): Promise<{ messages: Message[]; hasMore: boolean }> {
@@ -44,44 +38,6 @@ export async function toggleWorldReaction(
     { emoji, guestId },
   );
   return data.reactions ?? [];
-}
-
-export async function fetchWorldActivity(): Promise<WorldActivity> {
-  return api.get<WorldActivity>('/world/activity');
-}
-
-export interface WorldChallenge {
-  id: string;
-  title: string;
-  challenge_type: string;
-  mode: string;
-  country: string | null;
-  target_country: string | null;
-  city: string | null;
-  target_city: string | null;
-  creator_username: string | null;
-  creator_display_name: string | null;
-  creator_thumb_avatar_url: string | null;
-}
-
-// Recent international (cross-city) challenges for the World hero carousel.
-export async function fetchWorldChallenges(): Promise<WorldChallenge[]> {
-  try {
-    const data = await api.get<{ challenges?: WorldChallenge[] }>('/world/challenges');
-    return data.challenges ?? [];
-  } catch {
-    return [];
-  }
-}
-
-// ALL international challenges worldwide (full card DTOs) for the "See all" screen.
-export async function fetchWorldChallengesAll<T = unknown>(limit = 60): Promise<T[]> {
-  try {
-    const data = await api.get<{ challenges?: T[] }>(`/world/challenges/all?limit=${limit}`);
-    return data.challenges ?? [];
-  } catch {
-    return [];
-  }
 }
 
 export interface WorldArrival {

@@ -1,13 +1,12 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Alert, ScrollView, Text, TouchableOpacity, View, StyleSheet, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { LinearGradient } from 'expo-linear-gradient';
 import { setStatusBarStyle } from 'expo-status-bar';
 import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import { useTranslation } from 'react-i18next';
-import { Border, FontSizes, Radius, Spacing, type ThemeColors } from '@/constants';
+import { Space, Border, FontSizes, Radius, Spacing, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { useApp } from '@/context/AppContext';
 import { shortCityName } from '@/i18n/cityName';
@@ -17,8 +16,7 @@ import { track } from '@/services/analytics';
 import { deleteDailyProof, fetchDailyProof, fetchDailySheet, fetchDailyToday, fetchDailyTodayCountries } from '@/api/daily';
 import { formatCountdown, isFinalHours, useCountdown, useDailySheet, useHere, getLastToday } from '@/hooks/useDaily';
 import { SheetSkeleton } from '@/features/daily/SheetSkeleton';
-import { DailyProofViewer } from '@/features/daily/DailyProofViewer';
-import { commentsTargetOf, openPhotoComments } from '@/features/daily/PhotoCommentsSheet';
+import { openPhotoFeed } from '@/features/daily/openFeed';
 import { DailyStatusChip } from '@/features/daily/DailyStatusChip';
 import { formatAmount } from '@/features/daily/currency';
 import { compareCountryGroups, compareCountryProofs } from '@/features/daily/countryOrder';
@@ -31,17 +29,16 @@ import { WorldBubbles } from '@/features/challenge/WorldBubbles';
 import { themeCover } from '@/features/today/covers';
 import { ShareSheet } from '@/features/share/ShareSheet';
 import { todayShare, type ShareContent } from '@/features/share/content';
-import { Avatar, Button, Chip, CityFlag, CoverPhoto, EmptyState, IconButton, Photo, Screen, ScreenHeader } from '@/ui';
+import { Avatar, Button, Chip, CityFlag, CoverPhoto, CoverScrim, EmptyState, IconButton, Photo, Screen, ScreenHeader } from '@/ui';
 import type { DailyProof, DailySheet, DailyTodayCountries } from '@/types';
 import { SeasonalScope } from '@/features/event/SeasonalArt';
 
 /** The hero takes this share of the screen height. */
 const HERO_SHARE = 0.4;
-// The hero is always a photo: dark shades in both themes (fixed photo tokens).
-const SHADE_TOP = ['rgba(0,0,0,0.6)', 'rgba(0,0,0,0)'] as const;
 /** Back and the timer on the photo: dark enough to read on any cover. */
 const ON_PHOTO = 'rgba(0,0,0,0.5)';
-const SHADE_BOTTOM = ['rgba(0,0,0,0)', 'rgba(0,0,0,0.55)', 'rgba(0,0,0,0.88)'] as const;
+/** A safety net on bright covers, on top of the scrim (CoverScrim). */
+const ON_PHOTO_SHADOW = { textShadowColor: 'rgba(0,0,0,0.6)', textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 6 };
 
 /**
  * The Daily Challenge screen (/daily/today or /daily/YYYY-MM-DD), made to
@@ -111,8 +108,6 @@ function Challenge({ date, openProofId, source, pushType, shareProof, commentPar
   const { city, account, identity } = useApp();
   const guestId = account ? null : identity?.guestId ?? null;
   const here = useHere();   // "Play for [city]", my city block: where I am, not the browsed city
-  const [viewing, setViewing] = useState<DailyProof | null>(null);
-  const [autoShare, setAutoShare] = useState(shareProof);
   const [inviteShare, setInviteShare] = useState<ShareContent | null>(null);
   const [showOriginal, toggleOriginal] = useOriginal();
   // The sticky bar's measured height (safe area included): the scroll ends right above it.
@@ -163,13 +158,18 @@ function Challenge({ date, openProofId, source, pushType, shareProof, commentPar
     opened.current = true;
     const local = sheet.proofs.find(p => p.id === openProofId) ?? (sheet.myProof?.id === openProofId ? sheet.myProof : null);
     // ?comment=<id> (a comment push or bell row): its comments open over the photo, on that comment.
-    const show = (p: DailyProof) => {
-      setViewing(p);
-      if (commentParam !== undefined) setTimeout(() => openPhotoComments(commentsTargetOf(p, Number(commentParam) || null)), 450);
-    };
+    const show = (p: DailyProof) => openProof(p, source ?? 'challenge_link', {
+      share: shareProof, comment: commentParam !== undefined ? Number(commentParam) || null : undefined,
+    });
     if (local) { show(local); return; }
     fetchDailyProof(openProofId).then(show).catch(() => {});
   }, [openProofId, sheet]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // A photo of this day opens in the feed (the one photo viewer), the day's photos around it.
+  const openProof = (p: DailyProof, from: string, opts: { share?: boolean; comment?: number | null } = {}) => {
+    const all = sheet?.proofs ?? [];
+    openPhotoFeed(all.some(x => x.id === p.id) ? all : [p, ...all], p.id, from, { challenge, ...opts });
+  };
 
   const goProfile = useCallback((userId: string) => {
     if (!canAccessProfile(account)) { router.push('/auth-gate?reason=view_profile' as never); return; }
@@ -179,7 +179,7 @@ function Challenge({ date, openProofId, source, pushType, shareProof, commentPar
   const play = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
     track('challenge_cta_tapped', { played: !!myProof });
-    if (myProof) { setViewing(myProof); return; }
+    if (myProof) { openProof(myProof, 'challenge_mine'); return; }
     if (!account) { router.push('/auth-gate?reason=daily_proof&returnTo=%2Fdaily%2Fproof' as never); return; }
     router.push('/daily/proof' as never);
   };
@@ -243,9 +243,9 @@ function Challenge({ date, openProofId, source, pushType, shareProof, commentPar
         {/* 1. The hero: the cover, back and timer on top, the theme, question and instruction at the bottom. */}
         <View style={[styles.hero, { height: Math.max(300, height * HERO_SHARE) }]}>
           <CoverPhoto url={challenge.coverUrl} fallback={fallbackCover} style={StyleSheet.absoluteFill} contentFit="cover" transition={150} />
-          <LinearGradient colors={SHADE_TOP} style={styles.shadeTop} pointerEvents="none" />
-          <LinearGradient colors={SHADE_BOTTOM} style={styles.shadeBottom} pointerEvents="none" />
           <View style={styles.heroBottom}>
+            {/* The shade behind the text only: the photo keeps its real brightness; back and the timer carry their own pills. */}
+            <CoverScrim />
             {!!challenge.theme && <Chip theme={challenge.theme.key} special={challenge.special?.icon} label={themeName(challenge.theme.key, { special: challenge.special })} style={styles.theme} />}
             <Text style={styles.question}>{question ?? text}</Text>
             {/* Under the question: its subtitle (set in the back office), else the challenge text. */}
@@ -305,7 +305,7 @@ function Challenge({ date, openProofId, source, pushType, shareProof, commentPar
                 )}
                 {placesCount > 0 && (
                   <TouchableOpacity style={styles.tile} accessibilityRole="button" testID="challenge-places"
-                                    onPress={() => router.push(`/(tabs)/map?source=challenge${challenge.theme && isPlaceTheme(challenge.theme.key) ? `&theme=${challenge.theme.key}` : ''}` as never)}>
+                                    onPress={() => router.navigate(`/(tabs)/map?source=challenge${challenge.theme && isPlaceTheme(challenge.theme.key) ? `&theme=${challenge.theme.key}` : ''}` as never)}>
                     <Ionicons name="location-outline" size={18} color={colors.primaryText} />
                     <Text style={styles.tileValue}>{t('places', { count: placesCount })}</Text>
                     <Text style={styles.tileLink}>{t('map.see')} ›</Text>
@@ -318,7 +318,7 @@ function Challenge({ date, openProofId, source, pushType, shareProof, commentPar
           {/* My photo: its status, edit and delete. */}
           {myProof && (
             <View style={styles.cardRow}>
-              <TouchableOpacity onPress={() => setViewing(myProof)} accessibilityRole="button">
+              <TouchableOpacity onPress={() => openProof(myProof, 'challenge_mine')} accessibilityRole="button">
                 <Photo thumb={myProof.thumbUrl} full={myProof.photoUrl} hash={myProof.thumbHash} style={styles.thumb} contentFit="cover" />
               </TouchableOpacity>
               <View style={styles.flex}>
@@ -393,8 +393,6 @@ function Challenge({ date, openProofId, source, pushType, shareProof, commentPar
       )}
 
       <ShareSheet content={inviteShare} source="sheet_after_answer" onClose={() => setInviteShare(null)} />
-      <DailyProofViewer proof={viewing} challenge={challenge} autoShare={autoShare && viewing?.id === openProofId}
-                        onClose={() => { setViewing(null); setAutoShare(false); }} />
     </View>
   );
 }
@@ -405,43 +403,41 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   center:      { flex: 1, alignItems: 'center', justifyContent: 'center', padding: Spacing.md },
   flex:        { flex: 1 },
   hero:        { backgroundColor: c.photoScrim, justifyContent: 'flex-end', overflow: 'hidden' },
-  shadeTop:    { position: 'absolute', top: 0, left: 0, right: 0, height: 130 },
-  shadeBottom: { position: 'absolute', bottom: 0, left: 0, right: 0, height: '70%' },
-  heroTop:     { position: 'absolute', top: 0, left: 0, right: 0, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 12 },
-  heroTopRight:{ flexDirection: 'row', alignItems: 'center', gap: 8 },
+  heroTop:     { position: 'absolute', top: 0, left: 0, right: 0, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: Space.md },
+  heroTopRight:{ flexDirection: 'row', alignItems: 'center', gap: Space.sm },
   onPhoto:     { backgroundColor: ON_PHOTO },
-  timer:       { flexDirection: 'row', alignItems: 'center', gap: 5, height: 36, paddingHorizontal: 12, borderRadius: 18, backgroundColor: ON_PHOTO },
-  timerText:   { fontSize: 13, fontWeight: '800', color: c.white },
+  timer:       { flexDirection: 'row', alignItems: 'center', gap: Space.xs, height: 36, paddingHorizontal: Space.md, borderRadius: 18, backgroundColor: ON_PHOTO },
+  timerText:   { fontSize: FontSizes.xs, fontWeight: '800', color: c.white },
   timerWarn:   { color: c.warning },
-  heroBottom:  { padding: Spacing.md, paddingBottom: 18, gap: 8 },
+  heroBottom:  { padding: Spacing.md, paddingBottom: 18, gap: Space.sm },
   theme:       { alignSelf: 'flex-start' },
-  question:    { fontSize: FontSizes.xxl, lineHeight: 34, fontWeight: '800', color: c.white },
-  instruction: { fontSize: FontSizes.sm, lineHeight: 20, fontWeight: '600', color: 'rgba(255,255,255,0.88)' },
+  question:    { fontSize: FontSizes.xxl, lineHeight: 39, fontWeight: '800', color: c.white, ...ON_PHOTO_SHADOW },
+  instruction: { fontSize: FontSizes.sm, lineHeight: 20, fontWeight: '600', color: 'rgba(255,255,255,0.92)', ...ON_PHOTO_SHADOW },
   body:        { padding: Spacing.md, gap: 18 },
-  meta:        { gap: 4, marginTop: -6 },
-  block:       { gap: 10 },
+  meta:        { gap: Space.xs, marginTop: -6 },
+  block:       { gap: Space.md },
   title:       { fontSize: FontSizes.lg, fontWeight: '800', color: c.text },
-  row:         { flexDirection: 'row', alignItems: 'center', gap: 8, flexWrap: 'wrap' },
-  twist:       { backgroundColor: c.primaryTint, borderRadius: Radius.button, padding: 12, gap: 6 },
-  twistLabel:  { fontSize: 12, fontWeight: '800', color: c.primaryOnTint },
+  row:         { flexDirection: 'row', alignItems: 'center', gap: Space.sm, flexWrap: 'wrap' },
+  twist:       { backgroundColor: c.primaryTint, borderRadius: Radius.card, padding: 14, gap: Space.sm },
+  twistLabel:  { fontSize: FontSizes.xs, fontWeight: '800', color: c.primaryOnTint },
   twistText:   { fontSize: FontSizes.sm, fontWeight: '500', color: c.text },
-  tiles:       { flexDirection: 'row', gap: 10 },
-  tile:        { flex: 1, gap: 4, padding: 12, borderRadius: 16, backgroundColor: c.bg2, borderWidth: Border, borderColor: c.line },
+  tiles:       { flexDirection: 'row', gap: Space.md },
+  tile:        { flex: 1, gap: Space.xs, padding: 14, borderRadius: Radius.card, backgroundColor: c.bg2, borderWidth: Border, borderColor: c.line },
   tileValue:   { fontSize: FontSizes.md, fontWeight: '800', color: c.text },
-  tileSub:     { fontSize: 12, fontWeight: '600', color: c.muted },
-  tileLink:    { fontSize: 12, fontWeight: '800', color: c.primaryText },
-  cardRow:     { flexDirection: 'row', alignItems: 'center', gap: 12, padding: 10, borderRadius: 16, backgroundColor: c.bg2, borderWidth: Border, borderColor: c.line },
+  tileSub:     { fontSize: FontSizes.xs, fontWeight: '600', color: c.muted },
+  tileLink:    { fontSize: FontSizes.xs, fontWeight: '800', color: c.primaryText },
+  cardRow:     { flexDirection: 'row', alignItems: 'center', gap: Space.md, padding: 14, borderRadius: Radius.card, backgroundColor: c.bg2, borderWidth: Border, borderColor: c.line },
   firstRow:    { borderStyle: 'dashed', borderColor: c.primaryText, borderWidth: 2, backgroundColor: c.primaryTint },
   thumb:       { width: 64, height: 64, borderRadius: 12, backgroundColor: c.bg3 },
   camera:      { width: 48, height: 48, borderRadius: 24, backgroundColor: c.bg2, alignItems: 'center', justifyContent: 'center' },
   rowTitle:    { fontSize: FontSizes.md, fontWeight: '800', color: c.text },
-  rowAnswer:   { fontSize: FontSizes.sm, fontWeight: '800', color: c.primaryText, marginTop: 2 },
-  muted:       { fontSize: 12, fontWeight: '600', color: c.muted },
-  reason:      { fontSize: 12, fontWeight: '600', color: c.red },
-  linkHit:     { minHeight: 36, justifyContent: 'center', marginRight: 14 },
+  rowAnswer:   { fontSize: FontSizes.sm, fontWeight: '800', color: c.primaryText, marginTop: Space.xxs },
+  muted:       { fontSize: FontSizes.xs, fontWeight: '600', color: c.muted },
+  reason:      { fontSize: FontSizes.xs, fontWeight: '600', color: c.red },
+  linkHit:     { minHeight: 36, justifyContent: 'center', marginRight: Space.lg },
   link:        { fontSize: FontSizes.sm, fontWeight: '700', color: c.primaryText },
   linkDanger:  { fontSize: FontSizes.sm, fontWeight: '700', color: c.red },
-  bar:         { position: 'absolute', left: 0, right: 0, bottom: 0, paddingHorizontal: Spacing.md, paddingTop: 10, gap: 8,
+  bar:         { position: 'absolute', left: 0, right: 0, bottom: 0, paddingHorizontal: Spacing.md, paddingTop: Space.md, gap: Space.sm,
                  backgroundColor: c.bg, borderTopWidth: Border, borderTopColor: c.line },
-  rule:        { fontSize: 12, lineHeight: 16, fontWeight: '600', color: c.muted, textAlign: 'center' },
+  rule:        { fontSize: FontSizes.xs, lineHeight: 16, fontWeight: '600', color: c.muted, textAlign: 'center' },
 });

@@ -18,6 +18,9 @@ class AuthService
 
     // ── Signup ────────────────────────────────────────────────────────────────
 
+    /** The store review account's sign-in (App Store / Google Play reviewers); its flags are users.is_review. */
+    public const REVIEW_EMAIL = 'review@hilads.live';
+
     public static function signup(
         string $email,
         string $password,

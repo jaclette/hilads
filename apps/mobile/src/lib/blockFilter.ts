@@ -53,7 +53,7 @@ export function filterBlocked<T>(
  * Each row has blocked_user_id and/or blocked_guest_id (one or the other).
  */
 export function blockedSetFromApiRows(
-  rows: Array<{ blocked_user_id?: string | null; blocked_guest_id?: string | null }>,
+  rows: { blocked_user_id?: string | null; blocked_guest_id?: string | null }[],
 ): BlockedSet {
   const set: BlockedSet = {
     userIds:  new Set<string>(),

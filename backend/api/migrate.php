@@ -2112,192 +2112,15 @@ run($pdo, "
     FOR EACH ROW EXECUTE FUNCTION on_challenge_create_award()
 ", 'trg_chchal_created_award');
 
-// ── PR12: date-locked points trigger ──────────────────────────────────────
-// Fires when challenge_acceptances.date_approved_at flips from NULL to a
-// real timestamp - i.e. the moment the creator approves the taker's date
-// proposal. Writes two score_events (challenger +5, taker +5). The trigger
-// re-evaluates only on UPDATE OF date_approved_at, so the rest of the
-// acceptance lifecycle (proposals, withdrawals, rate-push stamps) doesn't
-// re-fire it.
-//
-// Idempotency: the UNIQUE (user_id, challenge_id, role, kind) constraint
-// on score_events + ON CONFLICT DO NOTHING means even if a date gets
-// approved, withdrawn, re-proposed, and re-approved on the same
-// acceptance, the points are awarded exactly once.
-run($pdo, "
-    CREATE OR REPLACE FUNCTION on_challenge_date_approved() RETURNS TRIGGER AS \$\$
-    DECLARE
-        challenger_id  TEXT;
-        origin_city    TEXT;
-        challenge_mode TEXT;
-        taker_city     TEXT;
-        pts_c          INT;
-        pts_t          INT;
-        current_month  TEXT := to_char(now() AT TIME ZONE 'UTC', 'YYYY-MM');
-    BEGIN
-        -- Only fire on the NULL → set transition. A reschedule that clears
-        -- date_approved_at back to NULL (proposeDate sets it null again) and
-        -- then re-approves won't double-credit because of ON CONFLICT below,
-        -- but the guard here keeps us from re-entering the function body on
-        -- unrelated UPDATEs.
-        IF OLD.date_approved_at IS NOT NULL OR NEW.date_approved_at IS NULL THEN
-            RETURN NEW;
-        END IF;
+// ── PR12: date-locked points trigger: RETIRED (Phase 5, 2026-11-16) ────────
+// The legacy date approval is gone, nothing sets date_approved_at any more, so
+// on_challenge_date_approved / trg_chacc_date_locked can't fire. No longer created
+// here; dropped by scripts/drop_legacy_challenge_triggers.php (run manually).
 
-        SELECT cc.created_by, cc.city_id, cc.mode
-        INTO challenger_id, origin_city, challenge_mode
-        FROM channel_challenges cc
-        WHERE cc.channel_id = NEW.challenge_id;
-
-        IF challenger_id IS NULL OR NEW.acceptor_user_id IS NULL THEN
-            RETURN NEW;
-        END IF;
-
-        -- International challenges: taker plays from their own city, so their
-        -- points belong on THEIR city's leaderboard, not the creator's. Local
-        -- challenges (the default) keep both rows in origin_city - the meetup
-        -- happened there, both participants are local to it.
-        IF challenge_mode = 'international' THEN
-            SELECT u.current_city_id INTO taker_city
-            FROM users u WHERE u.id = NEW.acceptor_user_id;
-            taker_city := COALESCE(taker_city, origin_city);
-        ELSE
-            taker_city := origin_city;
-        END IF;
-
-        SELECT points INTO pts_c FROM score_rules WHERE kind = 'date_locked' AND role = 'challenger';
-        SELECT points INTO pts_t FROM score_rules WHERE kind = 'date_locked' AND role = 'taker';
-
-        INSERT INTO score_events (id, user_id, challenge_id, role, kind, points, city_id, month_ref, acceptance_id)
-        VALUES
-          (encode(gen_random_bytes(8),'hex'), challenger_id,        NEW.challenge_id, 'challenger', 'date_locked', COALESCE(pts_c, 0), origin_city, current_month, NEW.id),
-          (encode(gen_random_bytes(8),'hex'), NEW.acceptor_user_id, NEW.challenge_id, 'taker',      'date_locked', COALESCE(pts_t, 0), taker_city,  current_month, NEW.id)
-        ON CONFLICT (user_id, challenge_id, role, kind, acceptance_id) DO NOTHING;
-
-        RETURN NEW;
-    END;
-    \$\$ LANGUAGE plpgsql;
-", 'fn on_challenge_date_approved');
-
-run($pdo, "DROP TRIGGER IF EXISTS trg_chacc_date_locked ON challenge_acceptances", 'drop trg_chacc_date_locked');
-run($pdo, "
-    CREATE TRIGGER trg_chacc_date_locked
-    AFTER UPDATE OF date_approved_at ON challenge_acceptances
-    FOR EACH ROW EXECUTE FUNCTION on_challenge_date_approved()
-", 'trg_chacc_date_locked');
-
-// ── Trigger: mutual-rating → meetup + debrief + phase flip ────────────────
-//
-// STRICT mutual-rating model: debrief fires ONLY when BOTH parties have
-// rated. If one person never rates, NEITHER earns debrief points - not
-// even the one who did rate. This is intentional. The double-rating is
-// a stronger meetup proof than a one-sided claim. PR10 folded the old
-// 'meetup' event into 'debrief'; same totals at the user level.
-//
-// TODO: time-based fallback. If only one party has rated after N days,
-// consider awarding partial points (reveal + award the lone rater) and
-// separately flagging the no-show via the 'ghost' kind. Requires a
-// scheduled job - out of scope for this migration. score_rules.ghost.taker
-// is already seeded at 0 so the column exists when we wire that up.
-run($pdo, "
-    CREATE OR REPLACE FUNCTION on_challenge_rating_insert() RETURNS TRIGGER AS \$\$
-    DECLARE
-        cnt              INT;
-        challenger_id    TEXT;
-        taker_id         TEXT;
-        v_acceptance_id  TEXT;
-        origin_city      TEXT;
-        challenge_mode   TEXT;
-        v_method         TEXT;
-        taker_city       TEXT;
-        pts_debrief_c    INT;
-        pts_debrief_t    INT;
-        pts_meet_bonus_c INT;
-        pts_meet_bonus_t INT;
-        current_month    TEXT := to_char(now() AT TIME ZONE 'UTC', 'YYYY-MM');
-    BEGIN
-        SELECT COUNT(DISTINCT rater_id) INTO cnt
-        FROM challenge_ratings
-        WHERE challenge_id = NEW.challenge_id;
-
-        IF cnt < 2 THEN RETURN NEW; END IF;
-
-        SELECT cc.created_by, cc.city_id, cc.mode, cc.validation_method
-        INTO challenger_id, origin_city, challenge_mode, v_method
-        FROM channel_challenges cc
-        WHERE cc.channel_id = NEW.challenge_id;
-
-        -- Capture the active acceptance id so per-round score_events stay
-        -- distinct (the user could have taken this challenge in an earlier
-        -- round; ON CONFLICT key includes acceptance_id). Prefix with v_ so
-        -- it doesn't collide with score_events.acceptance_id in the
-        -- ON CONFLICT clause (Postgres 42702 ambiguous column otherwise).
-        SELECT ca.acceptor_user_id, ca.id
-        INTO taker_id, v_acceptance_id
-        FROM challenge_acceptances ca
-        WHERE ca.challenge_id = NEW.challenge_id
-          AND ca.phase <> 'rejected'
-        ORDER BY ca.created_at DESC
-        LIMIT 1;
-
-        IF challenger_id IS NULL OR taker_id IS NULL THEN RETURN NEW; END IF;
-
-        -- International challenges: taker plays from their own city, so their
-        -- points belong on THEIR city's leaderboard, not the creator's. Local
-        -- challenges (the default) keep both rows in origin_city - the meetup
-        -- happened there, both participants are local to it.
-        IF challenge_mode = 'international' THEN
-            SELECT u.current_city_id INTO taker_city
-            FROM users u WHERE u.id = taker_id;
-            taker_city := COALESCE(taker_city, origin_city);
-        ELSE
-            taker_city := origin_city;
-        END IF;
-
-        -- Base debrief points (always fire on mutual rating). PR10 folded the
-        -- old 'meetup' kind into debrief; the 'meetup' value stays allowed in
-        -- the score_events kind CHECK so historical rows keep validating.
-        SELECT points INTO pts_debrief_c FROM score_rules WHERE kind = 'debrief' AND role = 'challenger';
-        SELECT points INTO pts_debrief_t FROM score_rules WHERE kind = 'debrief' AND role = 'taker';
-
-        INSERT INTO score_events (id, user_id, challenge_id, role, kind, points, city_id, month_ref, acceptance_id)
-        VALUES
-          (encode(gen_random_bytes(8),'hex'), challenger_id, NEW.challenge_id, 'challenger', 'debrief', COALESCE(pts_debrief_c, 0), origin_city, current_month, v_acceptance_id),
-          (encode(gen_random_bytes(8),'hex'), taker_id,      NEW.challenge_id, 'taker',      'debrief', COALESCE(pts_debrief_t, 0), taker_city,  current_month, v_acceptance_id)
-        ON CONFLICT (user_id, challenge_id, role, kind, acceptance_id) DO NOTHING;
-
-        -- Meet bonus: only when the creator chose Meet at creation. Fires once
-        -- per (user, challenge, role, kind, acceptance) round, so a re-take
-        -- earns it again as long as a new acceptance row was created.
-        IF COALESCE(v_method, 'meet') = 'meet' THEN
-            SELECT points INTO pts_meet_bonus_c FROM score_rules WHERE kind = 'meet_bonus' AND role = 'challenger';
-            SELECT points INTO pts_meet_bonus_t FROM score_rules WHERE kind = 'meet_bonus' AND role = 'taker';
-
-            INSERT INTO score_events (id, user_id, challenge_id, role, kind, points, city_id, month_ref, acceptance_id)
-            VALUES
-              (encode(gen_random_bytes(8),'hex'), challenger_id, NEW.challenge_id, 'challenger', 'meet_bonus', COALESCE(pts_meet_bonus_c, 0), origin_city, current_month, v_acceptance_id),
-              (encode(gen_random_bytes(8),'hex'), taker_id,      NEW.challenge_id, 'taker',      'meet_bonus', COALESCE(pts_meet_bonus_t, 0), taker_city,  current_month, v_acceptance_id)
-            ON CONFLICT (user_id, challenge_id, role, kind, acceptance_id) DO NOTHING;
-        END IF;
-
-        UPDATE challenge_acceptances
-        SET phase       = 'approved',
-            approved_at = COALESCE(approved_at, now()),
-            updated_at  = now()
-        WHERE challenge_id = NEW.challenge_id
-          AND phase NOT IN ('approved', 'rejected');
-
-        RETURN NEW;
-    END;
-    \$\$ LANGUAGE plpgsql;
-", 'fn on_challenge_rating_insert');
-
-run($pdo, "DROP TRIGGER IF EXISTS trg_chrate_mutual_complete ON challenge_ratings", 'drop trg_chrate_mutual_complete');
-run($pdo, "
-    CREATE TRIGGER trg_chrate_mutual_complete
-    AFTER INSERT ON challenge_ratings
-    FOR EACH ROW EXECUTE FUNCTION on_challenge_rating_insert()
-", 'trg_chrate_mutual_complete');
+// ── Trigger: mutual-rating → meetup + debrief: RETIRED (Phase 5, 2026-11-16) ──
+// The legacy meet-up rating is gone, nothing inserts into challenge_ratings any
+// more, so on_challenge_rating_insert / trg_chrate_mutual_complete can't fire. No
+// longer created here; dropped by scripts/drop_legacy_challenge_triggers.php.
 
 // ── Trigger: international proof approval → debrief ────────────────────────
 //
@@ -3977,6 +3800,1015 @@ foreach (['like_push', 'results_push', 'rank_push', 'stamp_push', 'reminder_push
 }
 run($pdo, "ALTER TABLE notification_preferences ADD COLUMN IF NOT EXISTS quiet_start SMALLINT CHECK (quiet_start BETWEEN 0 AND 1439)", 'notification_preferences.quiet_start');
 run($pdo, "ALTER TABLE notification_preferences ADD COLUMN IF NOT EXISTS quiet_end SMALLINT CHECK (quiet_end BETWEEN 0 AND 1439)", 'notification_preferences.quiet_end');
+
+// ── Different Worlds: the reaction + ranking format (2026-11-07) ──────────
+// dw_topics.format: 'slides' (the slides video) or 'reaction' (one 8 s screen:
+// a Pixabay reaction clip on top, a ranking of up to 20 countries under it,
+// DwReaction). dw_packages.still_url: the screen as a PNG (tools/promo).
+// Reversal: ALTER TABLE dw_topics DROP COLUMN format; ALTER TABLE dw_packages DROP COLUMN still_url.
+run($pdo, "ALTER TABLE dw_topics ADD COLUMN IF NOT EXISTS format TEXT NOT NULL DEFAULT 'slides' CHECK (format IN ('slides', 'reaction'))", 'dw_topics.format');
+run($pdo, "ALTER TABLE dw_packages ADD COLUMN IF NOT EXISTS still_url TEXT", 'dw_packages.still_url');
+// The first reaction topic, once: "The 20 biggest beer drinkers in the world" on Nov 8; "Hangover
+// cures around the world" moves from Nov 8 to Nov 9, "Foods locals love and tourists fear" from
+// Nov 9 to the next free date. A topic not where it is expected stays put (the step says so).
+try {
+    $beer = 'The 20 biggest beer drinkers in the world';
+    $has = $pdo->prepare("SELECT 1 FROM dw_topics WHERE title = ?");
+    $has->execute([$beer]);
+    if ($has->fetchColumn() === false) {
+        $pdo->beginTransaction();
+        $at = static function (string $date, string $prefix) use ($pdo): ?array {
+            $q = $pdo->prepare("SELECT id, title, status FROM dw_topics WHERE date = ?::date");
+            $q->execute([$date]);
+            $row = $q->fetch(PDO::FETCH_ASSOC);
+            return $row !== false && stripos($row['title'], $prefix) === 0 ? $row : null;
+        };
+        $taken = static function (string $date) use ($pdo): bool {
+            $q = $pdo->prepare("SELECT 1 FROM dw_topics WHERE date = ?::date");
+            $q->execute([$date]);
+            return $q->fetchColumn() !== false;
+        };
+        $move = $pdo->prepare("UPDATE dw_topics SET date = ?::date, updated_at = now() WHERE id = ?");
+        if ($foods = $at('2026-11-09', 'Foods locals love')) {
+            $free = (string) $pdo->query("
+                SELECT d::date::text FROM generate_series('2026-11-10'::date, '2027-12-31'::date, '1 day') d
+                WHERE NOT EXISTS (SELECT 1 FROM dw_topics t WHERE t.date = d::date) ORDER BY d LIMIT 1
+            ")->fetchColumn();
+            $move->execute([$free, $foods['id']]);
+            echo "  OK  dw: \"{$foods['title']}\" moved from 2026-11-09 to {$free}\n";
+        }
+        if (($hang = $at('2026-11-08', 'Hangover cures')) && !$taken('2026-11-09')) {
+            $move->execute(['2026-11-09', $hang['id']]);
+            echo "  OK  dw: \"{$hang['title']}\" moved from 2026-11-08 to 2026-11-09\n";
+        }
+        if (!$taken('2026-11-08')) {
+            $pdo->prepare("INSERT INTO dw_topics (date, title, notes, type, needs_date_check, format) VALUES ('2026-11-08', ?, ?, 'evergreen', false, 'reaction')")
+                ->execute([$beer, 'Kirin Global Beer Consumption Report 2024 (Dec 2025), liters per person, top 20. Keep it light: never encourage excessive drinking.']);
+            echo "  OK  dw: \"{$beer}\" on 2026-11-08 (reaction)\n";
+        } else {
+            echo "  --  dw: 2026-11-08 is still taken: \"{$beer}\" not created (Admin › Worlds)\n";
+        }
+        $pdo->commit();
+    }
+} catch (PDOException $e) {
+    if ($pdo->inTransaction()) $pdo->rollBack();
+    echo "  ERR dw reaction topic: " . $e->getMessage() . "\n";
+}
+
+// Once: the hangover topic leaves Nov 9 (to the next free date) for "The countries with the most singles"
+// (reaction format). A Nov 9 topic without "hangover" in its title stays put (the step says so).
+try {
+    $singles = 'The countries with the most singles';
+    $has = $pdo->prepare("SELECT 1 FROM dw_topics WHERE title = ?");
+    $has->execute([$singles]);
+    if ($has->fetchColumn() === false) {
+        $pdo->beginTransaction();
+        $nov9 = $pdo->query("SELECT id, title FROM dw_topics WHERE date = '2026-11-09'")->fetch(PDO::FETCH_ASSOC);
+        if ($nov9 !== false && stripos($nov9['title'], 'hangover') !== false) {
+            $free = (string) $pdo->query("
+                SELECT d::date::text FROM generate_series('2026-11-10'::date, '2027-12-31'::date, '1 day') d
+                WHERE NOT EXISTS (SELECT 1 FROM dw_topics t WHERE t.date = d::date) ORDER BY d LIMIT 1
+            ")->fetchColumn();
+            $pdo->prepare("UPDATE dw_topics SET date = ?::date, updated_at = now() WHERE id = ?")->execute([$free, $nov9['id']]);
+            echo "  OK  dw: \"{$nov9['title']}\" moved from 2026-11-09 to {$free}\n";
+            $nov9 = false;
+        }
+        if ($nov9 === false) {
+            $pdo->prepare("INSERT INTO dw_topics (date, title, notes, type, needs_date_check, format) VALUES ('2026-11-09', ?, ?, 'evergreen', false, 'reaction')")
+                ->execute([$singles, 'UN World Marriage Data 2019: % of women aged 30-34 never married, latest value per country (2010s). Never mock singles.']);
+            echo "  OK  dw: \"{$singles}\" on 2026-11-09 (reaction)\n";
+        } else {
+            echo "  --  dw: 2026-11-09 is taken by \"{$nov9['title']}\": \"{$singles}\" not created (Admin › Worlds)\n";
+        }
+        $pdo->commit();
+    }
+} catch (PDOException $e) {
+    if ($pdo->inTransaction()) $pdo->rollBack();
+    echo "  ERR dw singles topic: " . $e->getMessage() . "\n";
+}
+
+// Once: "The most cat-obsessed countries in Europe 🐱" (reaction) takes Nov 10 and "What people shout when they
+// get hurt" (slides) Nov 11; the McDonald's topic (Nov 10) and the singles / dating one (Nov 11, right after the
+// Nov 9 singles video) move to the next free dates. A topic not matching stays put (the step says so).
+try {
+    $cats = 'The most cat-obsessed countries in Europe 🐱';
+    $hurt = 'What people shout when they get hurt';
+    $has = $pdo->prepare("SELECT 1 FROM dw_topics WHERE title IN (?, ?)");
+    $has->execute([$cats, $hurt]);
+    if ($has->fetchColumn() === false) {
+        $pdo->beginTransaction();
+        $nextFree = static fn() => (string) $pdo->query("
+            SELECT d::date::text FROM generate_series('2026-11-12'::date, '2027-12-31'::date, '1 day') d
+            WHERE NOT EXISTS (SELECT 1 FROM dw_topics t WHERE t.date = d::date) ORDER BY d LIMIT 1
+        ")->fetchColumn();
+        $move = $pdo->prepare("UPDATE dw_topics SET date = ?::date, updated_at = now() WHERE id = ?");
+        $plan = [
+            ['2026-11-10', static fn($t) => stripos($t, 'mcdonald') !== false, $cats, 'evergreen', 'reaction',
+             'FEDIAF Facts & Figures 2026: % of households owning at least one cat (2024), the 15 countries with national association data. Europe only.'],
+            ['2026-11-11', static fn($t) => stripos($t, 'single') !== false || stripos($t, 'dating') !== false, $hurt, 'evergreen', 'slides',
+             "Angle: what people shout when they get hurt in each language (ouch, aïe, ui da in Vietnam, itai in Japan...). Pick the funniest and most surprising ones. Hook: 'Stub your toe in Japan and you'll shout… 🦶💥'. Outro question: 'What do YOU shout when you get hurt?'"],
+        ];
+        foreach ($plan as [$date, $matches, $title, $type, $format, $notes]) {
+            $q = $pdo->prepare("SELECT id, title FROM dw_topics WHERE date = ?::date");
+            $q->execute([$date]);
+            $old = $q->fetch(PDO::FETCH_ASSOC);
+            if ($old !== false && $matches($old['title'])) {
+                $free = $nextFree();
+                $move->execute([$free, $old['id']]);
+                echo "  OK  dw: \"{$old['title']}\" moved from {$date} to {$free}\n";
+                $old = false;
+            }
+            if ($old === false) {
+                $pdo->prepare("INSERT INTO dw_topics (date, title, notes, type, needs_date_check, format) VALUES (?::date, ?, ?, ?, false, ?)")
+                    ->execute([$date, $title, $notes, $type, $format]);
+                echo "  OK  dw: \"{$title}\" on {$date} ({$format})\n";
+            } else {
+                echo "  --  dw: {$date} is taken by \"{$old['title']}\": \"{$title}\" not created (Admin › Worlds)\n";
+            }
+        }
+        $pdo->commit();
+    }
+} catch (PDOException $e) {
+    if ($pdo->inTransaction()) $pdo->rollBack();
+    echo "  ERR dw Nov 10-11 topics: " . $e->getMessage() . "\n";
+}
+
+// Once: "The countries that eat the most instant noodles" (reaction) takes Nov 11; the Nov 11 topic with
+// "shout" in its title moves to the next free date. Another Nov 11 topic stays put (the step says so).
+try {
+    $noodles = 'The countries that eat the most instant noodles';
+    $has = $pdo->prepare("SELECT 1 FROM dw_topics WHERE title = ?");
+    $has->execute([$noodles]);
+    if ($has->fetchColumn() === false) {
+        $pdo->beginTransaction();
+        $nov11 = $pdo->query("SELECT id, title FROM dw_topics WHERE date = '2026-11-11'")->fetch(PDO::FETCH_ASSOC);
+        if ($nov11 !== false && stripos($nov11['title'], 'shout') !== false) {
+            $free = (string) $pdo->query("
+                SELECT d::date::text FROM generate_series('2026-11-12'::date, '2027-12-31'::date, '1 day') d
+                WHERE NOT EXISTS (SELECT 1 FROM dw_topics t WHERE t.date = d::date) ORDER BY d LIMIT 1
+            ")->fetchColumn();
+            $pdo->prepare("UPDATE dw_topics SET date = ?::date, updated_at = now() WHERE id = ?")->execute([$free, $nov11['id']]);
+            echo "  OK  dw: \"{$nov11['title']}\" moved from 2026-11-11 to {$free}\n";
+            $nov11 = false;
+        }
+        if ($nov11 === false) {
+            $pdo->prepare("INSERT INTO dw_topics (date, title, notes, type, needs_date_check, format) VALUES ('2026-11-11', ?, ?, 'evergreen', false, 'reaction')")
+                ->execute([$noodles, "WINA per capita servings, 2024 top 10 (WINA's 2025 data confirms Vietnam #1). Vietnam vs South Korea duel."]);
+            echo "  OK  dw: \"{$noodles}\" on 2026-11-11 (reaction)\n";
+        } else {
+            echo "  --  dw: 2026-11-11 is taken by \"{$nov11['title']}\": \"{$noodles}\" not created (Admin › Worlds)\n";
+        }
+        $pdo->commit();
+    }
+} catch (PDOException $e) {
+    if ($pdo->inTransaction()) $pdo->rollBack();
+    echo "  ERR dw noodles topic: " . $e->getMessage() . "\n";
+}
+
+// Once: "The price of a Big Mac around the world" (reaction) takes Nov 12; the Nov 12 topic with "sneeze" in its
+// title moves to the next free date. Another Nov 12 topic stays put (the step says so).
+try {
+    $bigmac = 'The price of a Big Mac around the world';
+    $has = $pdo->prepare("SELECT 1 FROM dw_topics WHERE title = ?");
+    $has->execute([$bigmac]);
+    if ($has->fetchColumn() === false) {
+        $pdo->beginTransaction();
+        $nov12 = $pdo->query("SELECT id, title FROM dw_topics WHERE date = '2026-11-12'")->fetch(PDO::FETCH_ASSOC);
+        if ($nov12 !== false && stripos($nov12['title'], 'sneeze') !== false) {
+            $free = (string) $pdo->query("
+                SELECT d::date::text FROM generate_series('2026-11-13'::date, '2027-12-31'::date, '1 day') d
+                WHERE NOT EXISTS (SELECT 1 FROM dw_topics t WHERE t.date = d::date) ORDER BY d LIMIT 1
+            ")->fetchColumn();
+            $pdo->prepare("UPDATE dw_topics SET date = ?::date, updated_at = now() WHERE id = ?")->execute([$free, $nov12['id']]);
+            echo "  OK  dw: \"{$nov12['title']}\" moved from 2026-11-12 to {$free}\n";
+            $nov12 = false;
+        }
+        if ($nov12 === false) {
+            $pdo->prepare("INSERT INTO dw_topics (date, title, notes, type, needs_date_check, format) VALUES ('2026-11-12', ?, ?, 'evergreen', false, 'reaction')")
+                ->execute([$bigmac, 'The Economist Big Mac Index, July 2026, dollar prices: the 12 dearest, the US (reference), a separator, Vietnam and the 5 cheapest.']);
+            echo "  OK  dw: \"{$bigmac}\" on 2026-11-12 (reaction)\n";
+        } else {
+            echo "  --  dw: 2026-11-12 is taken by \"{$nov12['title']}\": \"{$bigmac}\" not created (Admin › Worlds)\n";
+        }
+        $pdo->commit();
+    }
+} catch (PDOException $e) {
+    if ($pdo->inTransaction()) $pdo->rollBack();
+    echo "  ERR dw Big Mac topic: " . $e->getMessage() . "\n";
+}
+
+// Once: "The countries where people laugh the most" (reaction) takes Nov 13 (Friday the 13th); the Nov 13 topic
+// with "Friday the 13th" in its title moves to the next free date. Another Nov 13 topic stays put (the step says so).
+try {
+    $laugh = 'The countries where people laugh the most';
+    $has = $pdo->prepare("SELECT 1 FROM dw_topics WHERE title = ?");
+    $has->execute([$laugh]);
+    if ($has->fetchColumn() === false) {
+        $pdo->beginTransaction();
+        $nov13 = $pdo->query("SELECT id, title FROM dw_topics WHERE date = '2026-11-13'")->fetch(PDO::FETCH_ASSOC);
+        if ($nov13 !== false && stripos($nov13['title'], 'friday the 13th') !== false) {
+            $free = (string) $pdo->query("
+                SELECT d::date::text FROM generate_series('2026-11-14'::date, '2027-12-31'::date, '1 day') d
+                WHERE NOT EXISTS (SELECT 1 FROM dw_topics t WHERE t.date = d::date) ORDER BY d LIMIT 1
+            ")->fetchColumn();
+            $pdo->prepare("UPDATE dw_topics SET date = ?::date, updated_at = now() WHERE id = ?")->execute([$free, $nov13['id']]);
+            echo "  OK  dw: \"{$nov13['title']}\" moved from 2026-11-13 to {$free}\n";
+            $nov13 = false;
+        }
+        if ($nov13 === false) {
+            $pdo->prepare("INSERT INTO dw_topics (date, title, notes, type, needs_date_check, format) VALUES ('2026-11-13', ?, ?, 'dated', false, 'reaction')")
+                ->execute([$laugh, "Friday the 13th. Gallup Global Emotions 2026: % who smiled or laughed a lot yesterday (2025, 140 countries), top 20."]);
+            echo "  OK  dw: \"{$laugh}\" on 2026-11-13 (reaction)\n";
+        } else {
+            echo "  --  dw: 2026-11-13 is taken by \"{$nov13['title']}\": \"{$laugh}\" not created (Admin › Worlds)\n";
+        }
+        $pdo->commit();
+    }
+} catch (PDOException $e) {
+    if ($pdo->inTransaction()) $pdo->rollBack();
+    echo "  ERR dw laughing topic: " . $e->getMessage() . "\n";
+}
+
+// Once: "Places with more tourists than locals" (reaction) takes Nov 14; the topic there (not published) moves
+// to the next free date.
+try {
+    $tourists = 'Places with more tourists than locals';
+    $has = $pdo->prepare("SELECT 1 FROM dw_topics WHERE title = ?");
+    $has->execute([$tourists]);
+    if ($has->fetchColumn() === false) {
+        $pdo->beginTransaction();
+        $nov14 = $pdo->query("SELECT id, title, status FROM dw_topics WHERE date = '2026-11-14'")->fetch(PDO::FETCH_ASSOC);
+        if ($nov14 !== false && $nov14['status'] !== 'published') {
+            $free = (string) $pdo->query("
+                SELECT d::date::text FROM generate_series('2026-11-15'::date, '2027-12-31'::date, '1 day') d
+                WHERE NOT EXISTS (SELECT 1 FROM dw_topics t WHERE t.date = d::date) ORDER BY d LIMIT 1
+            ")->fetchColumn();
+            $pdo->prepare("UPDATE dw_topics SET date = ?::date, updated_at = now() WHERE id = ?")->execute([$free, $nov14['id']]);
+            echo "  OK  dw: \"{$nov14['title']}\" moved from 2026-11-14 to {$free}\n";
+            $nov14 = false;
+        }
+        if ($nov14 === false) {
+            $pdo->prepare("INSERT INTO dw_topics (date, title, notes, type, needs_date_check, format) VALUES ('2026-11-14', ?, ?, 'evergreen', false, 'reaction')")
+                ->execute([$tourists, 'UN Tourism overnight visitors / UN WPP 2024 population, 2019 (last year before the pandemic), countries & territories, top 20. Approved two-source exception.']);
+            echo "  OK  dw: \"{$tourists}\" on 2026-11-14 (reaction)\n";
+        } else {
+            echo "  --  dw: 2026-11-14 is taken by a published topic, \"{$nov14['title']}\": \"{$tourists}\" not created (Admin › Worlds)\n";
+        }
+        $pdo->commit();
+    }
+} catch (PDOException $e) {
+    if ($pdo->inTransaction()) $pdo->rollBack();
+    echo "  ERR dw tourists topic: " . $e->getMessage() . "\n";
+}
+
+// Once: "Sunday couch champions: where adults move the least" (reaction) takes Nov 15 (a Sunday); the Nov 15
+// topic with "breakfast" in its title moves to the next free date (its date only: title, notes and packages kept).
+// Another Nov 15 topic stays put (the step says so).
+try {
+    $couch = 'Sunday couch champions: where adults move the least';
+    $has = $pdo->prepare("SELECT 1 FROM dw_topics WHERE title = ?");
+    $has->execute([$couch]);
+    if ($has->fetchColumn() === false) {
+        $pdo->beginTransaction();
+        $nov15 = $pdo->query("SELECT id, title FROM dw_topics WHERE date = '2026-11-15'")->fetch(PDO::FETCH_ASSOC);
+        if ($nov15 !== false && stripos($nov15['title'], 'breakfast') !== false) {
+            $free = (string) $pdo->query("
+                SELECT d::date::text FROM generate_series('2026-11-16'::date, '2027-12-31'::date, '1 day') d
+                WHERE NOT EXISTS (SELECT 1 FROM dw_topics t WHERE t.date = d::date) ORDER BY d LIMIT 1
+            ")->fetchColumn();
+            $pdo->prepare("UPDATE dw_topics SET date = ?::date, updated_at = now() WHERE id = ?")->execute([$free, $nov15['id']]);
+            echo "  OK  dw: \"{$nov15['title']}\" moved from 2026-11-15 to {$free}\n";
+            $nov15 = false;
+        }
+        if ($nov15 === false) {
+            $pdo->prepare("INSERT INTO dw_topics (date, title, notes, type, needs_date_check, format) VALUES ('2026-11-15', ?, ?, 'evergreen', false, 'reaction')")
+                ->execute([$couch, 'WHO GHO NCD_PAA: % of adults 18+ insufficiently physically active, age-standardized, 2022, top 20 + Vietnam (#73). Light, never shaming.']);
+            echo "  OK  dw: \"{$couch}\" on 2026-11-15 (reaction)\n";
+        } else {
+            echo "  --  dw: 2026-11-15 is taken by \"{$nov15['title']}\": \"{$couch}\" not created (Admin › Worlds)\n";
+        }
+        $pdo->commit();
+    }
+} catch (PDOException $e) {
+    if ($pdo->inTransaction()) $pdo->rollBack();
+    echo "  ERR dw couch topic: " . $e->getMessage() . "\n";
+}
+
+// Once: the singles topic (Nov 9) and the noodles topic (Nov 11) swap dates, so the singles one lands on Singles'
+// Day (11/11); their packages are kept as they are. The singles package's caption gets a first line "Happy Singles'
+// Day 🎉 11/11" and #SinglesDay is added to its hashtags (once each). Nothing moves unless both are where expected
+// and not published.
+try {
+    $q = $pdo->prepare("SELECT id, date::text AS date, status FROM dw_topics WHERE title = ?");
+    $q->execute(['The countries with the most singles']);
+    $singles = $q->fetch(PDO::FETCH_ASSOC);
+    $q->execute(['The countries that eat the most instant noodles']);
+    $noodles = $q->fetch(PDO::FETCH_ASSOC);
+    if ($singles && $noodles && $singles['date'] === '2026-11-09' && $noodles['date'] === '2026-11-11') {
+        if ($singles['status'] === 'published' || $noodles['status'] === 'published') {
+            echo "  --  dw: singles / noodles not swapped: one of them is published (Admin › Worlds)\n";
+        } else {
+            $pdo->beginTransaction();
+            $move = $pdo->prepare("UPDATE dw_topics SET date = ?::date, updated_at = now() WHERE id = ?");
+            $move->execute(['1900-01-01', $singles['id']]);   // dw_topics.date is unique: park it while the other moves
+            $move->execute(['2026-11-09', $noodles['id']]);
+            $move->execute(['2026-11-11', $singles['id']]);
+            $pdo->prepare("
+                UPDATE dw_packages SET content = jsonb_set(content, '{caption}', to_jsonb(? || E'\n\n' || (content->>'caption')))
+                WHERE topic_id = ? AND position('Happy Singles'' Day' IN content->>'caption') = 0
+            ")->execute(["Happy Singles' Day 🎉 11/11", $singles['id']]);
+            $pdo->prepare("
+                UPDATE dw_packages SET content = jsonb_set(content, '{hashtags}', COALESCE(content->'hashtags', '[]'::jsonb) || '[\"#SinglesDay\"]'::jsonb)
+                WHERE topic_id = ? AND NOT (COALESCE(content->'hashtags', '[]'::jsonb) @> '[\"#SinglesDay\"]'::jsonb)
+            ")->execute([$singles['id']]);
+            $pdo->commit();
+            echo "  OK  dw: \"The countries with the most singles\" on 2026-11-11, \"The countries that eat the most instant noodles\" on 2026-11-09 (packages kept; Singles' Day line + #SinglesDay)\n";
+        }
+    }
+} catch (PDOException $e) {
+    if ($pdo->inTransaction()) $pdo->rollBack();
+    echo "  ERR dw singles / noodles swap: " . $e->getMessage() . "\n";
+}
+
+// Once: today's challenge (2026-11-09, live) "Look up and find a year written on a facade." was too hard: replaced
+// by "Snap a building facade that looks typical of your city." through the admin's own service functions
+// (DailyAdminService: the English, its 18 translations, the headline, the comparison question, the Saigon Local
+// Twist and its translations). Theme, cover, status and posted photos untouched. Runs only while the old text is there.
+try {
+    $nov9 = $pdo->query("SELECT id, text_i18n->>'en' AS en FROM daily_challenges WHERE challenge_date = '2026-11-09'")->fetch(PDO::FETCH_ASSOC);
+    if ($nov9 && $nov9['en'] === 'Look up and find a year written on a facade.') {
+        spl_autoload_register(static function (string $class): void {
+            $file = __DIR__ . '/src/' . $class . '.php';
+            if (preg_match('/^[A-Za-z0-9_]+$/', $class) && is_file($file)) require_once $file;
+        });
+        $new = json_decode(<<<'JSON'
+{"headline": {"en": "Find your city's signature facade.", "fr": "Trouve la façade typique de ta ville.", "vi": "Tìm mặt tiền đậm chất thành phố bạn.", "es": "Encuentra la fachada típica de tu ciudad.", "it": "Trova la facciata tipica della tua città.", "pt-br": "Encontre a fachada típica da sua cidade.", "pt-pt": "Encontra a fachada típica da tua cidade.", "de": "Finde die typische Fassade deiner Stadt.", "nl": "Vind de typische gevel van jouw stad.", "zh-hans": "找到你所在城市的标志性立面。", "zh-hant": "找到你所在城市的代表性立面。", "ja": "あなたの街らしい外観を探しましょう。", "ko": "우리 도시다운 건물을 찾아보세요.", "fil": "Hanapin ang tipikal na harapan sa city mo.", "th": "หาหน้าตึกที่เป็นเอกลักษณ์ของเมืองคุณ", "id": "Temukan fasad khas kotamu.", "hi": "अपने शहर की खास इमारत ढूँढें।", "ru": "Найди фасад, типичный для твоего города.", "ar": "ابحث عن الواجهة التي تميّز مدينتك."}, "text": {"en": "Snap a building facade that looks typical of your city.", "fr": "Prends en photo une façade typique de ta ville.", "vi": "Chụp một mặt tiền nhà mang đậm chất thành phố của bạn.", "es": "Haz una foto de una fachada típica de tu ciudad.", "it": "Fotografa una facciata tipica della tua città.", "pt-br": "Fotografe uma fachada típica da sua cidade.", "pt-pt": "Fotografa uma fachada típica da tua cidade.", "de": "Fotografiere eine Fassade, die typisch für deine Stadt ist.", "nl": "Fotografeer een gevel die typisch is voor jouw stad.", "zh-hans": "拍一栋最能代表你所在城市的建筑立面。", "zh-hant": "拍一棟最能代表你所在城市的建築立面。", "ja": "あなたの街らしい建物の外観を撮ってみましょう。", "ko": "우리 도시다운 건물 외관을 사진으로 찍어 보세요.", "fil": "Kunan ng photo ang harapan ng gusaling tipikal sa city mo.", "th": "ถ่ายรูปหน้าตึกที่เป็นเอกลักษณ์ของเมืองคุณ", "id": "Foto fasad bangunan yang khas kotamu.", "hi": "अपने शहर की पहचान वाली किसी इमारत के सामने वाले हिस्से की फ़ोटो लें।", "ru": "Сфотографируй фасад, типичный для твоего города.", "ar": "صوّر واجهة مبنى تعبّر عن طابع مدينتك."}, "context": {"en": "Tube houses, Haussmann, brownstones: every city has its own look.", "fr": "Maisons-tubes, haussmannien, brownstones : chaque ville a son style.", "vi": "Nhà ống, kiểu Haussmann, brownstone: thành phố nào cũng có nét riêng.", "es": "Casas tubo, edificios Haussmann, brownstones: cada ciudad tiene su estilo.", "it": "Case tubo, palazzi Haussmann, brownstone: ogni città ha il suo stile.", "pt-br": "Casas-tubo, prédios Haussmann, brownstones: cada cidade tem seu estilo.", "pt-pt": "Casas-tubo, prédios Haussmann, brownstones: cada cidade tem o seu estilo.", "de": "Röhrenhäuser, Haussmann-Bauten, Brownstones: Jede Stadt hat ihren eigenen Look.", "nl": "Buishuizen, Haussmann-gevels, brownstones: elke stad heeft zijn eigen look.", "zh-hans": "竹筒屋、奥斯曼式建筑、褐石屋：每座城市都有自己的模样。", "zh-hant": "竹筒屋、奧斯曼式建築、褐石屋：每座城市都有自己的模樣。", "ja": "チューブハウス、オスマン様式、ブラウンストーン。どの街にも、その街らしい顔があります。", "ko": "튜브하우스, 오스만 양식, 브라운스톤까지. 도시마다 고유의 모습이 있어요.", "fil": "Tube house, Haussmann, brownstone: bawat city ay may sariling itsura.", "th": "บ้านทรงหลอด ตึกแบบโอสมานน์ บราวน์สโตน ทุกเมืองมีหน้าตาเป็นของตัวเอง", "id": "Rumah tabung, gaya Haussmann, brownstone: setiap kota punya wajahnya sendiri.", "hi": "ट्यूब हाउस, हॉसमैन इमारतें, ब्राउनस्टोन: हर शहर का अपना अलग रूप होता है।", "ru": "Дома-трубки, османовские фасады, браунстоуны: у каждого города свой облик.", "ar": "بيوت أنبوبية، وعمارة هوسمان، ومنازل البراونستون: لكل مدينة طابعها الخاص."}, "compare": {"en": "What year was it built? A guess is fine.", "fr": "Elle date de quelle année ? Une estimation suffit.", "vi": "Nhà này xây năm nào? Đoán thôi cũng được.", "es": "¿De qué año es? Basta con adivinar.", "it": "Di che anno è? Va bene anche a occhio.", "pt-br": "De que ano é? Pode chutar.", "pt-pt": "De que ano é? Um palpite chega.", "de": "Aus welchem Jahr ist es? Schätzen ist erlaubt.", "nl": "Uit welk jaar is het? Gokken mag.", "zh-hans": "它是哪一年建的？猜一猜也行。", "zh-hant": "它是哪一年建的？猜一猜也行。", "ja": "何年に建てられたと思いますか？予想でOKです。", "ko": "몇 년에 지어졌을까요? 짐작해도 괜찮아요.", "fil": "Anong taon ito itinayo? Puwede ang hula.", "th": "ตึกนี้สร้างปีไหน เดาก็ได้", "id": "Dibangun tahun berapa? Tebak saja boleh.", "hi": "यह किस साल बनी थी? अंदाज़ा भी चलेगा।", "ru": "В каком году его построили? Можно наугад.", "ar": "في أي عام بُني؟ يكفي التخمين."}, "twist": {"en": "Look for a narrow nhà ống with colorful balconies, plants and tangled wires.", "fr": "Cherche une nhà ống étroite avec des balcons colorés, des plantes et des fils emmêlés.", "vi": "Tìm một căn nhà ống hẹp với ban công nhiều màu, cây xanh và dây điện chằng chịt.", "es": "Busca una nhà ống estrecha con balcones de colores, plantas y cables enredados.", "it": "Cerca una nhà ống stretta con balconi colorati, piante e fili aggrovigliati.", "pt-br": "Procure uma nhà ống estreita com varandas coloridas, plantas e fios emaranhados.", "pt-pt": "Procura uma nhà ống estreita com varandas coloridas, plantas e fios emaranhados.", "de": "Such ein schmales nhà ống mit bunten Balkonen, Pflanzen und Kabelsalat.", "nl": "Zoek een smal nhà ống met kleurrijke balkons, planten en kluwens kabels.", "zh-hans": "找一栋窄窄的 nhà ống，阳台五颜六色，摆满绿植，电线缠成一团。", "zh-hant": "找一棟窄窄的 nhà ống，陽台五顏六色，擺滿綠植，電線纏成一團。", "ja": "カラフルなバルコニーに植物、絡まった電線のある細長い nhà ống を探してみましょう。", "ko": "알록달록한 발코니와 화분, 엉킨 전선이 있는 좁은 nhà ống을 찾아보세요.", "fil": "Maghanap ng makitid na nhà ống na may makukulay na balkonahe, mga halaman at gusot na kable.", "th": "มองหา nhà ống แคบๆ ที่มีระเบียงสีสดใส ต้นไม้ และสายไฟพันกันยุ่ง", "id": "Cari nhà ống sempit dengan balkon warna-warni, tanaman, dan kabel yang kusut.", "hi": "रंग-बिरंगी बालकनियों, पौधों और उलझे तारों वाला कोई पतला nhà ống खोजें।", "ru": "Найди узкий nhà ống с разноцветными балконами, растениями и спутанными проводами.", "ar": "ابحث عن بيت nhà ống ضيّق بشرفات ملوّنة ونباتات وأسلاك متشابكة."}}
+JSON, true, 512, JSON_THROW_ON_ERROR);
+        $tr = static fn(array $m): array => array_diff_key($m, ['en' => 1]);
+        $id = (string) $nov9['id'];
+        DailyAdminService::updateChallenge($id, ['text' => $new['text']['en'], 'context' => $new['context']['en']]);
+        DailyAdminService::setChallengeTranslations($id, $tr($new['text']), $tr($new['context']));
+        DailyAdminService::setChallengeHeadline($id, $new['headline']['en'], $tr($new['headline']));
+        // The comparison question: the same type, key, title, unit and price, a new question (no one had answered).
+        $row = $pdo->query("SELECT compare_type, compare_key, compare_title_i18n, compare_unit_i18n, price_key, price_label_i18n FROM daily_challenges WHERE id = " . $pdo->quote($id))->fetch(PDO::FETCH_ASSOC);
+        $j = static fn(?string $v): ?array => $v !== null ? array_diff_key(json_decode($v, true) ?: [], ['_src' => 1]) : null;
+        DailyAdminService::setChallengeCompare($id, [
+            'type' => $row['compare_type'] ?: 'word', 'question' => $new['compare'], 'key' => $row['compare_key'],
+            'title' => $j($row['compare_title_i18n']), 'unit' => $j($row['compare_unit_i18n']),
+            'price' => $row['price_key'] !== null ? ['key' => $row['price_key'], 'label' => $j($row['price_label_i18n'])] : null,
+        ]);
+        // The Saigon Local Twist: its author and credit kept.
+        $saigon = DailyAdminService::cityIdForSlug('ho-chi-minh-city');
+        $tw = $pdo->prepare("SELECT id, city_id, author_user_id, author_credit FROM daily_twists WHERE challenge_id = ? AND city_id = ? AND status = 'selected'");
+        $tw->execute([$id, (string) $saigon]);
+        $twist = $tw->fetch(PDO::FETCH_ASSOC);
+        if ($twist) {
+            $saved = DailyAdminService::setTwist($id, (string) $twist['city_id'], $new['twist']['en'], $twist['author_user_id'], $twist['author_credit']);
+            DailyAdminService::setTwistTranslations((string) $saved['id'], $tr($new['twist']));
+        }
+        echo "  OK  daily: 2026-11-09 replaced by \"{$new['text']['en']}\" (19 locales: text, context, headline, comparison question" . ($twist ? ', Saigon Local Twist' : ', no Saigon Local Twist found') . ")\n";
+    }
+} catch (Throwable $e) {
+    echo "  ERR daily 2026-11-09 replacement: " . $e->getMessage() . "\n";
+}
+
+// Once: two reaction questions shortened to fit the on-screen question (max 7 words), through DwStudio::updateField
+// (as the admin's field: the caption's last line follows). Only while each still has its old text.
+try {
+    spl_autoload_register(static function (string $class): void {
+        $file = __DIR__ . '/src/' . $class . '.php';
+        if (preg_match('/^[A-Za-z0-9_]+$/', $class) && is_file($file)) require_once $file;
+    });
+    $short = [
+        '2026-11-09' => ['How many packs did YOU eat this week? 🍜', 'How many packs this week? 🍜'],
+        '2026-11-12' => ['How much is a Big Mac where you live? 🍔', 'Big Mac price where you live? 🍔'],
+    ];
+    foreach ($short as $date => [$old, $new]) {
+        $topic = DwStudio::topicByDate($date);
+        $pkg = $topic !== null ? DwStudio::package($topic['id']) : null;
+        if ($pkg !== null && ($pkg['content']['outro_question'] ?? null) === $old) {
+            DwStudio::updateField($pkg['id'], 'outro_question', $new);
+            echo "  OK  dw: {$date} question \"{$new}\"\n";
+        }
+    }
+} catch (Throwable $e) {
+    echo "  ERR dw short questions: " . $e->getMessage() . "\n";
+}
+
+// The reaction format's second PNG (its closing slide, the question), for carousels.
+// Reversal: ALTER TABLE dw_packages DROP COLUMN still2_url.
+run($pdo, "ALTER TABLE dw_packages ADD COLUMN IF NOT EXISTS still2_url TEXT", 'dw_packages.still2_url');
+// Once: Nov 9 (noodles) question and detail, through DwStudio::updateField (as the admin's fields: the caption follows).
+try {
+    $topic = DwStudio::topicByDate('2026-11-09');
+    $pkg = $topic !== null ? DwStudio::package($topic['id']) : null;
+    if ($pkg !== null && ($pkg['content']['outro_question'] ?? null) === 'How many packs this week? 🍜') {
+        DwStudio::updateField($pkg['id'], 'outro_question', 'How many did YOU eat this week? 🍜');
+        DwStudio::updateField($pkg['id'], 'detail', 'Vietnam 🇻🇳 beats Korea 🇰🇷. Again. 🍜');
+        echo "  OK  dw: 2026-11-09 question \"How many did YOU eat this week? 🍜\", detail \"Vietnam 🇻🇳 beats Korea 🇰🇷. Again. 🍜\"\n";
+    }
+} catch (Throwable $e) {
+    echo "  ERR dw Nov 9 question: " . $e->getMessage() . "\n";
+}
+
+// The store review account (App Store / Google Play "App access"): created through the normal signup,
+// flagged here: is_review (no push, no analytics, kept when "deleted", login not rate limited) and
+// hidden_from_rankings (out of every ranking). It never posts photos of its own to real users.
+// Reversal: UPDATE users SET is_review = false; ALTER TABLE users DROP COLUMN is_review.
+run($pdo, "ALTER TABLE users ADD COLUMN IF NOT EXISTS is_review BOOLEAN NOT NULL DEFAULT false", 'users.is_review');
+try {
+    $n = $pdo->exec("UPDATE users SET is_review = true, hidden_from_rankings = true
+                     WHERE lower(email) = 'review@hilads.live' AND username = 'hilads_review' AND deleted_at IS NULL
+                       AND (NOT is_review OR NOT hidden_from_rankings)");
+    if ($n > 0) {
+        $pdo->exec("DELETE FROM mobile_push_tokens WHERE user_id IN (SELECT id FROM users WHERE is_review)");
+        echo "  OK  users: hilads_review flagged as the store review account\n";
+    }
+} catch (PDOException $e) {
+    echo "  ERR review account: " . $e->getMessage() . "\n";
+}
+
+// Once: the light ranking card's color and orange headline words for the reaction packages of Nov 9 to 15,
+// through DwStudio::updateField (as the admin's fields); only where no color is set yet and the words are in the headline.
+try {
+    $cards = [
+        '2026-11-09' => ['yellow', 'instant noodle'], '2026-11-10' => ['pink', 'cat-obsessed'],
+        '2026-11-11' => ['pink', 'full of singles'], '2026-11-12' => ['yellow', 'Very different price'],
+        '2026-11-13' => ['blue', 'still laughing'], '2026-11-14' => ['blue', 'more tourists than locals'],
+        '2026-11-15' => ['green', 'couch champions'],
+    ];
+    foreach ($cards as $date => [$bg, $accent]) {
+        $topic = DwStudio::topicByDate($date);
+        $pkg = $topic !== null ? DwStudio::package($topic['id']) : null;
+        if ($pkg === null || !DwReaction::isReaction($pkg['content']) || isset($pkg['content']['card_bg'])) {
+            continue;
+        }
+        DwStudio::updateField($pkg['id'], 'card_bg', $bg);
+        if (mb_stripos((string) ($pkg['content']['headline'] ?? ''), $accent) !== false) {
+            DwStudio::updateField($pkg['id'], 'headline_accent', $accent);
+        }
+        echo "  OK  dw: {$date} card {$bg}, \"{$accent}\" in orange\n";
+    }
+} catch (Throwable $e) {
+    echo "  ERR dw card colors: " . $e->getMessage() . "\n";
+}
+
+// Once: Nov 10 (cats) headline, orange words, banner and question, through DwStudio::updateField (as the admin's
+// fields: the caption's last line follows the question); only while the old headline is there.
+try {
+    $topic = DwStudio::topicByDate('2026-11-10');
+    $pkg = $topic !== null ? DwStudio::package($topic['id']) : null;
+    if ($pkg !== null && ($pkg['content']['headline'] ?? null) === "Europe's most cat-obsessed countries 🐱") {
+        DwStudio::updateField($pkg['id'], 'headline', "Europe's most cat-addicted countries 🐱");
+        DwStudio::updateField($pkg['id'], 'headline_accent', 'cat-addicted');
+        DwStudio::updateField($pkg['id'], 'detail', '🇪🇸 Spain: cats rule over half the homes 🐈');
+        DwStudio::updateField($pkg['id'], 'outro_question', 'Asia, Americas, Africa: are YOU cat people too? 🐱');
+        echo "  OK  dw: 2026-11-10 headline \"Europe's most cat-addicted countries 🐱\", banner and question updated\n";
+    }
+} catch (Throwable $e) {
+    echo "  ERR dw Nov 10 texts: " . $e->getMessage() . "\n";
+}
+
+// Once: the reaction video now shows the top 10: two headlines that promised 20, through DwStudio::updateField
+// (as the admin's field); only while the old headline is there.
+try {
+    foreach (['2026-11-11' => ['20 countries full of singles 😎', '10 countries full of singles 😎'],
+              '2026-11-15' => ['The 20 Sunday couch champions 🛋️', 'The 10 Sunday couch champions 🛋️']] as $date => [$old, $new]) {
+        $topic = DwStudio::topicByDate($date);
+        $pkg = $topic !== null ? DwStudio::package($topic['id']) : null;
+        if ($pkg !== null && ($pkg['content']['headline'] ?? null) === $old) {
+            DwStudio::updateField($pkg['id'], 'headline', $new);
+            echo "  OK  dw: {$date} headline \"{$new}\" (the video shows the top 10)\n";
+        }
+    }
+} catch (Throwable $e) {
+    echo "  ERR dw top 10 headlines: " . $e->getMessage() . "\n";
+}
+
+// Once: the reaction format's closing slide (7 to 10 s) shows the topic's own question and its invitation to Hilads
+// (cta_line, with hilads.live): one per unpublished reaction package, through DwStudio::updateField (as the admin's
+// field), only where none is set; and Nov 8's headline says 10 (the video shows the top 10).
+try {
+    $ctas = [
+        '2026-11-08' => 'Snap your local beer on hilads.live 🍻',
+        '2026-11-09' => 'Show the world your bowl on hilads.live 🍜',
+        '2026-11-10' => 'Show us your cat on hilads.live 🐱',
+        '2026-11-11' => "Snap your city's best date spot on hilads.live 💘",
+        '2026-11-12' => 'Show us your local burger on hilads.live 🍔',
+        '2026-11-13' => 'Share what made you laugh on hilads.live 😂',
+        '2026-11-14' => 'Show us your tourist hotspot on hilads.live 📸',
+        '2026-11-15' => 'Show us your Sunday couch on hilads.live 🛋️',
+    ];
+    foreach ($ctas as $date => $cta) {
+        $topic = DwStudio::topicByDate($date);
+        $pkg = $topic !== null ? DwStudio::package($topic['id']) : null;
+        if ($pkg === null || $topic['status'] === 'published' || !DwReaction::isReaction($pkg['content'])) {
+            continue;
+        }
+        if (trim((string) ($pkg['content']['cta_line'] ?? '')) === '') {
+            DwStudio::updateField($pkg['id'], 'cta_line', $cta);
+            echo "  OK  dw: {$date} invitation \"{$cta}\"\n";
+        }
+        if ($date === '2026-11-08' && ($pkg['content']['headline'] ?? null) === 'The 20 biggest beer drinkers 🍺') {
+            DwStudio::updateField($pkg['id'], 'headline', 'The 10 biggest beer drinkers 🍺');
+            echo "  OK  dw: 2026-11-08 headline \"The 10 biggest beer drinkers 🍺\"\n";
+        }
+    }
+} catch (Throwable $e) {
+    echo "  ERR dw invitations: " . $e->getMessage() . "\n";
+}
+
+// The reaction format's quiz mode: a third PNG (quiz: 01 the quiz question, 02 the ranking, 03 the closing slide).
+// Reversal: ALTER TABLE dw_packages DROP COLUMN still3_url.
+run($pdo, "ALTER TABLE dw_packages ADD COLUMN IF NOT EXISTS still3_url TEXT", 'dw_packages.still3_url');
+// Once: Nov 11 (singles) and Nov 14 (tourists) in quiz mode, through DwStudio::updateField (as the admin's fields: the
+// caption's last line follows the question); only while they have no mode and are not published.
+try {
+    $quizzes = [
+        '2026-11-11' => ['Where have most women 30–34 never married? 💍', 'Did YOU guess right? 💍'],
+        '2026-11-14' => ['Where do tourists outnumber locals the most? ✈️', 'Did YOU guess right? ✈️'],
+    ];
+    foreach ($quizzes as $date => [$quiz, $question]) {
+        $topic = DwStudio::topicByDate($date);
+        $pkg = $topic !== null ? DwStudio::package($topic['id']) : null;
+        if ($pkg === null || $topic['status'] === 'published' || !DwReaction::isReaction($pkg['content']) || isset($pkg['content']['mode'])) {
+            continue;
+        }
+        DwStudio::updateField($pkg['id'], 'quiz_question', $quiz);
+        DwStudio::updateField($pkg['id'], 'outro_question', $question);
+        DwStudio::updateField($pkg['id'], 'mode', 'quiz');
+        echo "  OK  dw: {$date} quiz \"{$quiz}\", closing \"{$question}\"\n";
+    }
+} catch (Throwable $e) {
+    echo "  ERR dw quizzes: " . $e->getMessage() . "\n";
+}
+
+// Once: Nov 10 (cats) gets real footage instead of our AI kitten: Pixabay 131919 (a ginger kitten walking toward the
+// camera in a sunny garden, by Marsel_beijing), through DwStudio::setReactionClip (as "Use this clip": copied to R2,
+// author, license, source page, not AI; the AI copy is deleted); its warning about the AI label is replaced. Only
+// while the AI clip is there and the topic is not published. The copy to R2 needs the Composer libraries (AWS SDK),
+// which migrate.php doesn't load otherwise.
+try {
+    require_once __DIR__ . '/vendor/autoload.php';
+    $topic = DwStudio::topicByDate('2026-11-10');
+    $pkg = $topic !== null ? DwStudio::package($topic['id']) : null;
+    if ($pkg !== null && $topic['status'] !== 'published' && ($pkg['content']['clip']['source'] ?? null) === 'upload'
+        && !empty($pkg['content']['clip']['ai_generated'])) {
+        $clip = DwStudio::setReactionClip($pkg['id'], 131919);
+        $warnings = array_map(static fn($w) => str_starts_with($w, 'Clip: our own AI video')
+            ? 'Clip: Pixabay 131919 by Marsel_beijing (real footage, not AI), replacing our AI kitten.' : $w, $pkg['content']['warnings'] ?? []);
+        DwStudio::updateField($pkg['id'], 'warnings', implode("\n", $warnings));
+        echo "  OK  dw: 2026-11-10 clip Pixabay 131919 by " . ($clip['author'] ?? '?') . " (not AI)\n";
+    }
+} catch (Throwable $e) {
+    echo "  ERR dw Nov 10 clip: " . $e->getMessage() . "\n";
+}
+
+// Once: Nov 10's kitten clip (Pixabay 131919) is slow-motion footage: played 1.5× faster (it then covers the main
+// screen, 8.3 s, without looping), through DwStudio::updateField (as the admin's field). Only while no speed is set.
+try {
+    $topic = DwStudio::topicByDate('2026-11-10');
+    $pkg = $topic !== null ? DwStudio::package($topic['id']) : null;
+    if ($pkg !== null && $topic['status'] !== 'published' && (int) ($pkg['content']['clip']['pixabay_id'] ?? 0) === 131919
+        && !isset($pkg['content']['clip_speed'])) {
+        DwStudio::updateField($pkg['id'], 'clip_speed', '1.5');
+        echo "  OK  dw: 2026-11-10 clip at 1.5×\n";
+    }
+} catch (Throwable $e) {
+    echo "  ERR dw Nov 10 clip speed: " . $e->getMessage() . "\n";
+}
+
+// Once: Nov 12 (Big Mac) shows Vietnam (#49, $2.89, the same July 2026 edition) after the top 10, under "• • •", highlighted;
+// the banner gets its flags (Indonesia kept: 9.0419 / 2.3803 = 3.80, "almost 4", beats Vietnam's 9.0419 / 2.8946 = 3.12).
+// Through DwStudio::updateField (as the admin's fields), only while the old banner is there.
+try {
+    $topic = DwStudio::topicByDate('2026-11-12');
+    $pkg = $topic !== null ? DwStudio::package($topic['id']) : null;
+    if ($pkg !== null && $topic['status'] !== 'published' && ($pkg['content']['detail'] ?? null) === '1 Big Mac in Switzerland = almost 4 in Indonesia 😳') {
+        DwStudio::updateField($pkg['id'], 'extra_row', 'Vietnam');
+        DwStudio::updateField($pkg['id'], 'detail', '🇨🇭 1 Big Mac in Switzerland = almost 4 in Indonesia 🇮🇩');
+        echo "  OK  dw: 2026-11-12 Vietnam after the top 10, banner with flags\n";
+    }
+} catch (Throwable $e) {
+    echo "  ERR dw Nov 12: " . $e->getMessage() . "\n";
+}
+
+// Once: Nov 11's quiz question in the banner's words, through DwStudio::updateField; only while the old one is there.
+try {
+    $topic = DwStudio::topicByDate('2026-11-11');
+    $pkg = $topic !== null ? DwStudio::package($topic['id']) : null;
+    if ($pkg !== null && $topic['status'] !== 'published' && ($pkg['content']['quiz_question'] ?? null) === 'Where have most women 30–34 never married? 💍') {
+        DwStudio::updateField($pkg['id'], 'quiz_question', 'Where are most women unmarried at 30? 💍');
+        echo "  OK  dw: 2026-11-11 quiz \"Where are most women unmarried at 30? 💍\"\n";
+    }
+} catch (Throwable $e) {
+    echo "  ERR dw Nov 11 quiz: " . $e->getMessage() . "\n";
+}
+
+// The race format (DwRace): a bar chart race over the years, no clip. dw_topics.format accepts 'race'.
+// Reversal: the same constraint without 'race' (after moving race topics back to another format).
+run($pdo, "ALTER TABLE dw_topics DROP CONSTRAINT IF EXISTS dw_topics_format_check", 'dw_topics.format check (drop)');
+run($pdo, "ALTER TABLE dw_topics ADD CONSTRAINT dw_topics_format_check CHECK (format IN ('slides', 'reaction', 'race'))", 'dw_topics.format check (slides, reaction, race)');
+// Once: Nov 16 becomes the first race, "The world's most visited countries, 2000 to 2020" (UN Tourism, overnight
+// visitors, the same dataset as Nov 14); "Beer customs around the world" moves to the first date with no topic.
+// Separate statements (DwStudio writes through its own connection): each part runs again until it is done.
+try {
+    spl_autoload_register(static function (string $class): void {
+        $file = __DIR__ . '/src/' . $class . '.php';
+        if (preg_match('/^[A-Za-z0-9_]+$/', $class) && is_file($file)) require_once $file;
+    });
+    $beer = $pdo->query("SELECT id, status FROM dw_topics WHERE date = '2026-11-16' AND title = 'Beer customs around the world'")->fetch(PDO::FETCH_ASSOC);
+    if ($beer && $beer['status'] !== 'published') {
+        $free = $pdo->query("SELECT d::date::text FROM generate_series('2026-11-17'::date, '2027-12-31'::date, '1 day') d
+                             WHERE NOT EXISTS (SELECT 1 FROM dw_topics t WHERE t.date = d::date) ORDER BY d LIMIT 1")->fetchColumn();
+        $pdo->prepare("UPDATE dw_topics SET date = ?::date, updated_at = now() WHERE id = ?")->execute([$free, $beer['id']]);
+        echo "  OK  dw: \"Beer customs around the world\" moved from 2026-11-16 to {$free}\n";
+    }
+    $title = "The world's most visited countries, 2000 to 2020";
+    if (!$pdo->query("SELECT 1 FROM dw_topics WHERE date = '2026-11-16'")->fetchColumn()) {
+        $pdo->prepare("INSERT INTO dw_topics (date, title, notes, type, needs_date_check, format) VALUES ('2026-11-16', ?, ?, 'evergreen', false, 'race')")
+            ->execute([$title, 'Race: international tourist arrivals (overnight visitors), UN Tourism, the top 10 of each year from 2000 to 2020. France #1 every year, Spain and the US swap #2, China climbs, the 2020 collapse.']);
+        echo "  OK  dw: 2026-11-16 race topic\n";
+    }
+    $topic = DwStudio::topicByDate('2026-11-16');
+    if ($topic !== null && $topic['format'] === 'race' && $topic['title'] === $title && DwStudio::package($topic['id']) === null) {
+        $content = json_decode(<<<'JSON'
+{"format":"race","topic":"The world's most visited countries, 2000 to 2020","headline":"The world's most visited countries, 2000 → 2020 ✈️","headline_accent":"most visited","detail":"2020: the world stops ✈️❌","banner_year":2020,"value_label":"International tourist arrivals (overnight visitors), millions","unit":"M","source":"UN Tourism","source_url":"https://www.untourism.int/tourism-statistics/key-tourism-statistics","data_years":"2000–2020","series":[{"country":"Hong Kong","flag":"🇭🇰","values":{"2000":8.8,"2001":8.9,"2002":10.7,"2003":9.7,"2004":13.7,"2005":14.8,"2006":15.8,"2007":17.2,"2008":17.3,"2009":16.9,"2010":20.1,"2011":22.3,"2012":23.8,"2013":25.7,"2014":27.8,"2015":26.7,"2016":26.6,"2017":27.9,"2018":29.3,"2019":23.8,"2020":1.4}},{"country":"United Kingdom","flag":"🇬🇧","values":{"2000":23.2,"2001":21.0,"2002":22.3,"2003":22.8,"2004":25.7,"2005":28.0,"2006":30.7,"2007":30.9,"2008":30.1,"2009":29.4,"2010":28.9,"2011":30.4,"2012":30.4,"2013":31.9,"2014":33.6,"2015":35.1,"2016":37.4,"2017":39.5,"2018":38.7,"2019":39.4,"2020":10.7}},{"country":"United States","flag":"🇺🇸","values":{"2000":51.2,"2001":46.9,"2002":43.6,"2003":41.2,"2004":46.1,"2005":49.2,"2006":51.0,"2007":56.1,"2008":58.0,"2009":55.1,"2010":60.0,"2011":63.5,"2012":67.0,"2013":71.6,"2014":75.4,"2015":77.8,"2016":76.4,"2017":77.2,"2018":79.7,"2019":79.4,"2020":19.2}},{"country":"Austria","flag":"🇦🇹","values":{"2000":18.0,"2001":18.2,"2002":18.6,"2003":19.1,"2004":19.4,"2005":20.0,"2006":20.3,"2007":20.8,"2008":21.9,"2009":21.4,"2010":22.0,"2011":23.0,"2012":24.2,"2013":24.8,"2014":25.3,"2015":26.7,"2016":28.1,"2017":29.5,"2018":30.8,"2019":31.9,"2020":15.1}},{"country":"Canada","flag":"🇨🇦","values":{"2000":19.6,"2001":19.7,"2002":20.1,"2003":17.5,"2004":19.1,"2005":18.8,"2006":18.3,"2007":17.9,"2008":17.1,"2009":15.7,"2010":16.2,"2011":16.0,"2012":16.3,"2013":16.1,"2014":16.5,"2015":18.0,"2016":20.0,"2017":20.9,"2018":21.1,"2019":22.1,"2020":3.0}},{"country":"China","flag":"🇨🇳","values":{"2000":31.2,"2001":33.2,"2002":36.8,"2003":33.0,"2004":41.8,"2005":46.8,"2006":49.9,"2007":54.7,"2008":53.0,"2009":50.9,"2010":55.7,"2011":57.6,"2012":57.7,"2013":55.7,"2014":55.6,"2015":56.9,"2016":59.3,"2017":60.7,"2018":62.9,"2019":65.7,"2020":8.0}},{"country":"France","flag":"🇫🇷","values":{"2000":77.2,"2001":75.2,"2002":77.0,"2003":75.0,"2004":74.4,"2005":75.0,"2006":77.9,"2007":80.9,"2008":79.2,"2009":76.8,"2010":76.6,"2011":80.5,"2012":82.0,"2013":83.6,"2014":83.7,"2015":84.5,"2016":82.7,"2017":86.8,"2018":89.3,"2019":90.9,"2020":41.7}},{"country":"Germany","flag":"🇩🇪","values":{"2000":19.0,"2001":17.9,"2002":18.0,"2003":18.4,"2004":20.1,"2005":21.5,"2006":23.6,"2007":24.4,"2008":24.9,"2009":24.2,"2010":26.9,"2011":28.4,"2012":30.4,"2013":31.5,"2014":33.0,"2015":35.0,"2016":35.6,"2017":37.5,"2018":38.9,"2019":39.6,"2020":12.4}},{"country":"Greece","flag":"🇬🇷","values":{"2000":13.1,"2001":14.1,"2002":14.2,"2003":14.0,"2004":13.3,"2005":14.8,"2006":16.0,"2007":16.2,"2008":15.9,"2009":14.9,"2010":15.0,"2011":16.4,"2012":15.5,"2013":17.9,"2014":22.0,"2015":23.6,"2016":24.8,"2017":27.2,"2018":30.1,"2019":31.3,"2020":7.4}},{"country":"Italy","flag":"🇮🇹","values":{"2000":41.2,"2001":39.6,"2002":39.8,"2003":39.6,"2004":37.1,"2005":36.5,"2006":41.1,"2007":43.7,"2008":42.7,"2009":43.2,"2010":43.6,"2011":46.1,"2012":46.4,"2013":47.7,"2014":48.6,"2015":50.7,"2016":52.4,"2017":58.3,"2018":61.6,"2019":64.5,"2020":25.2}},{"country":"Malaysia","flag":"🇲🇾","values":{"2000":10.2,"2001":12.8,"2002":13.3,"2003":10.6,"2004":15.7,"2005":16.4,"2006":17.5,"2007":21.0,"2008":22.1,"2009":23.6,"2010":24.6,"2011":24.7,"2012":25.0,"2013":25.7,"2014":27.4,"2015":25.7,"2016":26.8,"2017":25.9,"2018":25.8,"2019":26.1,"2020":4.3}},{"country":"Mexico","flag":"🇲🇽","values":{"2000":20.6,"2001":19.8,"2002":19.7,"2003":18.7,"2004":20.6,"2005":21.9,"2006":21.4,"2007":21.6,"2008":22.9,"2009":22.3,"2010":23.3,"2011":23.4,"2012":23.4,"2013":24.2,"2014":29.3,"2015":32.1,"2016":35.1,"2017":39.3,"2018":41.3,"2019":45.0,"2020":24.3}},{"country":"Poland","flag":"🇵🇱","values":{"2000":17.4,"2001":15.0,"2002":14.0,"2003":13.7,"2004":14.3,"2005":15.2,"2006":15.7,"2007":15.0,"2008":13.0,"2009":11.9,"2010":12.5,"2011":13.3,"2012":14.8,"2013":15.8,"2014":16.0,"2015":16.7,"2016":17.5,"2017":18.3,"2018":19.6,"2019":21.2,"2020":8.4}},{"country":"Spain","flag":"🇪🇸","values":{"2000":46.4,"2001":48.6,"2002":50.3,"2003":50.9,"2004":52.4,"2005":55.9,"2006":58.0,"2007":58.7,"2008":57.2,"2009":52.2,"2010":52.7,"2011":56.2,"2012":57.5,"2013":60.7,"2014":64.9,"2015":68.2,"2016":75.3,"2017":81.9,"2018":82.8,"2019":83.5,"2020":18.9}},{"country":"Thailand","flag":"🇹🇭","values":{"2000":9.6,"2001":10.1,"2002":10.9,"2003":10.1,"2004":11.7,"2005":11.6,"2006":13.8,"2007":14.5,"2008":14.6,"2009":14.2,"2010":15.9,"2011":19.2,"2012":22.4,"2013":26.5,"2014":24.8,"2015":29.9,"2016":32.5,"2017":35.6,"2018":38.2,"2019":39.9,"2020":6.7}},{"country":"Türkiye","flag":"🇹🇷","values":{"2000":9.6,"2001":10.8,"2002":12.8,"2003":13.3,"2004":16.8,"2005":20.3,"2006":18.9,"2007":26.1,"2008":29.8,"2009":30.2,"2010":31.4,"2011":34.7,"2012":35.7,"2013":37.8,"2014":39.8,"2015":39.5,"2016":30.3,"2017":37.6,"2018":45.8,"2019":51.2,"2020":15.9}},{"country":"Ukraine","flag":"🇺🇦","values":{"2000":6.4,"2001":9.2,"2002":10.5,"2003":12.5,"2004":15.6,"2005":17.6,"2006":18.9,"2007":23.1,"2008":25.4,"2009":20.8,"2010":21.2,"2011":21.4,"2012":23.0,"2013":24.7,"2014":12.7,"2015":12.4,"2016":13.3,"2017":14.2,"2018":14.1,"2019":13.4,"2020":3.1}}],"outro_question":"Which country did YOU visit last? ✈️","cta_line":"Show us your favorite trip spot on hilads.live 📸","card_bg":"blue","caption":"France has been the world's most visited country every single year since 2000 🇫🇷 Spain and the US kept swapping second place, China climbed as high as #3, and Türkiye rose from #16 to #6. Then 2020 came: Spain lost 77% of its visitors in a single year, France more than half. UN Tourism counts international overnight visitors, so day trips don't count. Different Worlds by Hilads.","hashtags":["#DifferentWorlds","#Travel","#Tourism","#TravelStats","#France","#Spain"],"warnings":["UN Tourism bulk download (05/2026), inbound_arrivals, INBD_TRIP_TOTL_TOTL_TOUR (overnight visitors), thousand trips shown in millions (one decimal).","2000-2020: the last year where France (#1), China and Thailand all report (France and Thailand have no 2022, China no 2021-2022). No gaps to interpolate among the 17 countries shown.","Countries reporting only total visitors (overnight + same-day) are not in this indicator (Russia after 2005, the UAE 2006-2013, Vietnam)."]}
+JSON, true, 512, JSON_THROW_ON_ERROR);
+        $r = DwStudio::importRace($topic, $content, 'Claude Code');
+        echo $r['ok'] ? "  OK  dw: 2026-11-16 race package v{$r['version']}\n" : "  ERR dw Nov 16 race: " . implode(' ', $r['errors']) . "\n";
+    }
+} catch (Throwable $e) {
+    echo "  ERR dw Nov 16 race: " . $e->getMessage() . "\n";
+}
+
+// Once: Nov 17 becomes the race "The world's most powerful passports, 2010 to 2026" (Henley Passport Index, January
+// editions; 2007 and 2009 have no scores in Henley's history), Vietnam as the extra row with its real rank;
+// '"Raining cats and dogs" in other languages' moves to the first date with no topic. Separate statements, as Nov 16.
+try {
+    $old = $pdo->query("SELECT id, status FROM dw_topics WHERE date = '2026-11-17' AND title = '\"Raining cats and dogs\" in other languages'")->fetch(PDO::FETCH_ASSOC);
+    if ($old && $old['status'] !== 'published') {
+        $free = $pdo->query("SELECT d::date::text FROM generate_series('2026-11-18'::date, '2027-12-31'::date, '1 day') d
+                             WHERE NOT EXISTS (SELECT 1 FROM dw_topics t WHERE t.date = d::date) ORDER BY d LIMIT 1")->fetchColumn();
+        $pdo->prepare("UPDATE dw_topics SET date = ?::date, updated_at = now() WHERE id = ?")->execute([$free, $old['id']]);
+        echo "  OK  dw: \"Raining cats and dogs\" moved from 2026-11-17 to {$free}\n";
+    }
+    $title = "The world's most powerful passports, 2010 to 2026";
+    if (!$pdo->query("SELECT 1 FROM dw_topics WHERE date = '2026-11-17'")->fetchColumn()) {
+        $pdo->prepare("INSERT INTO dw_topics (date, title, notes, type, needs_date_check, format) VALUES ('2026-11-17', ?, ?, 'evergreen', false, 'race')")
+            ->execute([$title, 'Race: visa-free destinations per passport (Henley Passport Index, January editions), the top 10 of each year from 2010 to 2026, Vietnam as the extra row. Europe leads until 2017, Japan takes #1 in 2018, Singapore alone at #1 in 2025-2026, the UAE from #65 to #2.']);
+        echo "  OK  dw: 2026-11-17 race topic\n";
+    }
+    $topic = DwStudio::topicByDate('2026-11-17');
+    if ($topic !== null && $topic['format'] === 'race' && $topic['title'] === $title && DwStudio::package($topic['id']) === null) {
+        $content = json_decode(<<<'JSON'
+{"format":"race","topic":"The world's most powerful passports, 2010 to 2026","headline":"The world's most powerful passports, 2010 → 2026 🛂","headline_accent":"most powerful","detail":"2018: Japan takes the crown 🇯🇵","banner_year":2018,"extra_row":"Vietnam","value_label":"Visa-free destinations per passport","data_years":"2010–2026","unit":"","decimals":0,"source":"Henley Passport Index","source_url":"https://www.henleyglobal.com/passport-index/ranking","series":[{"country":"Austria","flag":"🇦🇹","values":{"2010":158,"2011":168,"2012":163,"2013":168,"2014":171,"2015":169,"2016":173,"2017":173,"2018":186,"2019":185,"2020":187,"2021":188,"2022":188,"2023":188,"2024":192,"2025":191,"2026":185},"ranks":{"2010":8,"2011":6,"2012":6,"2013":5,"2014":4,"2015":5,"2016":5,"2017":4,"2018":5,"2019":5,"2020":5,"2021":4,"2022":4,"2023":5,"2024":3,"2025":4,"2026":5}},{"country":"Belgium","flag":"🇧🇪","values":{"2010":160,"2011":171,"2012":167,"2013":171,"2014":172,"2015":170,"2016":174,"2017":173,"2018":185,"2019":184,"2020":185,"2021":186,"2022":186,"2023":186,"2024":191,"2025":190,"2026":186},"ranks":{"2010":6,"2011":3,"2012":3,"2013":3,"2014":3,"2015":4,"2016":4,"2017":4,"2018":6,"2019":6,"2020":7,"2021":6,"2022":6,"2023":7,"2024":4,"2025":5,"2026":4}},{"country":"Canada","flag":"🇨🇦","values":{"2010":157,"2011":164,"2012":163,"2013":170,"2014":173,"2015":170,"2016":172,"2017":171,"2018":185,"2019":184,"2020":183,"2021":184,"2022":185,"2023":185,"2024":188,"2025":188,"2026":183},"ranks":{"2010":9,"2011":9,"2012":6,"2013":4,"2014":2,"2015":4,"2016":6,"2017":6,"2018":6,"2019":6,"2020":9,"2021":8,"2022":7,"2023":8,"2024":7,"2025":7,"2026":7}},{"country":"Denmark","flag":"🇩🇰","values":{"2010":164,"2011":173,"2012":169,"2013":172,"2014":173,"2015":171,"2016":174,"2017":174,"2018":187,"2019":187,"2020":187,"2021":188,"2022":188,"2023":188,"2024":192,"2025":191,"2026":186},"ranks":{"2010":2,"2011":1,"2012":1,"2013":2,"2014":2,"2015":3,"2016":4,"2017":3,"2018":4,"2019":3,"2020":5,"2021":4,"2022":4,"2023":5,"2024":3,"2025":4,"2026":4}},{"country":"Finland","flag":"🇫🇮","values":{"2010":162,"2011":173,"2012":168,"2013":173,"2014":174,"2015":172,"2016":175,"2017":174,"2018":187,"2019":188,"2020":188,"2021":189,"2022":189,"2023":189,"2024":193,"2025":192,"2026":186},"ranks":{"2010":4,"2011":1,"2012":2,"2013":1,"2014":1,"2015":2,"2016":3,"2017":3,"2018":4,"2019":2,"2020":4,"2021":3,"2022":3,"2023":4,"2024":2,"2025":3,"2026":4}},{"country":"France","flag":"🇫🇷","values":{"2010":161,"2011":171,"2012":167,"2013":170,"2014":172,"2015":171,"2016":175,"2017":173,"2018":188,"2019":186,"2020":186,"2021":187,"2022":188,"2023":187,"2024":194,"2025":192,"2026":186},"ranks":{"2010":5,"2011":3,"2012":3,"2013":4,"2014":3,"2015":3,"2016":3,"2017":4,"2018":3,"2019":4,"2020":6,"2021":5,"2022":4,"2023":6,"2024":1,"2025":3,"2026":4}},{"country":"Germany","flag":"🇩🇪","values":{"2010":161,"2011":172,"2012":168,"2013":172,"2014":174,"2015":173,"2016":177,"2017":176,"2018":188,"2019":188,"2020":189,"2021":190,"2022":190,"2023":190,"2024":194,"2025":192,"2026":186},"ranks":{"2010":5,"2011":2,"2012":2,"2013":2,"2014":1,"2015":1,"2016":1,"2017":1,"2018":3,"2019":2,"2020":3,"2021":2,"2022":2,"2023":3,"2024":1,"2025":3,"2026":4}},{"country":"Ireland","flag":"🇮🇪","values":{"2010":159,"2011":169,"2012":165,"2013":170,"2014":171,"2015":169,"2016":172,"2017":172,"2018":185,"2019":184,"2020":186,"2021":187,"2022":187,"2023":187,"2024":192,"2025":191,"2026":186},"ranks":{"2010":7,"2011":5,"2012":5,"2013":4,"2014":4,"2015":5,"2016":6,"2017":5,"2018":6,"2019":6,"2020":6,"2021":5,"2022":5,"2023":6,"2024":3,"2025":4,"2026":4}},{"country":"Italy","flag":"🇮🇹","values":{"2010":161,"2011":171,"2012":166,"2013":171,"2014":172,"2015":171,"2016":175,"2017":174,"2018":187,"2019":187,"2020":188,"2021":189,"2022":189,"2023":189,"2024":194,"2025":192,"2026":186},"ranks":{"2010":5,"2011":3,"2012":4,"2013":3,"2014":3,"2015":3,"2016":3,"2017":3,"2018":4,"2019":3,"2020":4,"2021":3,"2022":3,"2023":4,"2024":1,"2025":3,"2026":4}},{"country":"Japan","flag":"🇯🇵","values":{"2010":160,"2011":170,"2012":165,"2013":170,"2014":172,"2015":171,"2016":173,"2017":172,"2018":190,"2019":190,"2020":191,"2021":192,"2022":192,"2023":193,"2024":194,"2025":193,"2026":188},"ranks":{"2010":6,"2011":4,"2012":5,"2013":4,"2014":3,"2015":3,"2016":5,"2017":5,"2018":1,"2019":1,"2020":1,"2021":1,"2022":1,"2023":1,"2024":1,"2025":2,"2026":2}},{"country":"Luxembourg","flag":"🇱🇺","values":{"2010":162,"2011":171,"2012":166,"2013":172,"2014":172,"2015":171,"2016":172,"2017":173,"2018":186,"2019":187,"2020":188,"2021":189,"2022":189,"2023":189,"2024":191,"2025":191,"2026":186},"ranks":{"2010":4,"2011":3,"2012":4,"2013":2,"2014":3,"2015":3,"2016":6,"2017":4,"2018":5,"2019":3,"2020":4,"2021":3,"2022":3,"2023":4,"2024":4,"2025":4,"2026":4}},{"country":"Netherlands","flag":"🇳🇱","values":{"2010":161,"2011":171,"2012":167,"2013":171,"2014":172,"2015":171,"2016":174,"2017":173,"2018":186,"2019":185,"2020":186,"2021":187,"2022":188,"2023":188,"2024":192,"2025":191,"2026":186},"ranks":{"2010":5,"2011":3,"2012":3,"2013":3,"2014":3,"2015":3,"2016":4,"2017":4,"2018":5,"2019":5,"2020":6,"2021":5,"2022":4,"2023":5,"2024":3,"2025":4,"2026":4}},{"country":"New Zealand","flag":"🇳🇿","values":{"2010":157,"2011":166,"2012":165,"2013":168,"2014":170,"2015":170,"2016":171,"2017":172,"2018":182,"2019":182,"2020":185,"2021":186,"2022":186,"2023":186,"2024":189,"2025":190,"2026":183},"ranks":{"2010":9,"2011":8,"2012":5,"2013":5,"2014":5,"2015":4,"2016":7,"2017":5,"2018":8,"2019":8,"2020":7,"2021":6,"2022":6,"2023":7,"2024":6,"2025":5,"2026":7}},{"country":"Norway","flag":"🇳🇴","values":{"2010":159,"2011":170,"2012":165,"2013":170,"2014":171,"2015":171,"2016":172,"2017":173,"2018":186,"2019":184,"2020":185,"2021":185,"2022":186,"2023":186,"2024":191,"2025":191,"2026":186},"ranks":{"2010":7,"2011":4,"2012":5,"2013":4,"2014":4,"2015":3,"2016":6,"2017":4,"2018":5,"2019":6,"2020":7,"2021":7,"2022":6,"2023":7,"2024":4,"2025":4,"2026":4}},{"country":"Portugal","flag":"🇵🇹","values":{"2010":158,"2011":170,"2012":165,"2013":170,"2014":172,"2015":170,"2016":172,"2017":171,"2018":186,"2019":185,"2020":186,"2021":187,"2022":187,"2023":187,"2024":191,"2025":190,"2026":185},"ranks":{"2010":8,"2011":4,"2012":5,"2013":4,"2014":3,"2015":4,"2016":6,"2017":6,"2018":5,"2019":5,"2020":6,"2021":5,"2022":5,"2023":6,"2024":4,"2025":5,"2026":5}},{"country":"Singapore","flag":"🇸🇬","values":{"2010":155,"2011":164,"2012":161,"2013":167,"2014":170,"2015":169,"2016":173,"2017":173,"2018":189,"2019":190,"2020":190,"2021":192,"2022":192,"2023":192,"2024":194,"2025":195,"2026":193},"ranks":{"2010":11,"2011":9,"2012":8,"2013":6,"2014":5,"2015":5,"2016":5,"2017":4,"2018":2,"2019":1,"2020":2,"2021":1,"2022":1,"2023":2,"2024":1,"2025":1,"2026":1}},{"country":"South Korea","flag":"🇰🇷","values":{"2010":151,"2011":163,"2012":160,"2013":166,"2014":172,"2015":171,"2016":172,"2017":170,"2018":188,"2019":188,"2020":189,"2021":190,"2022":190,"2023":192,"2024":193,"2025":192,"2026":188},"ranks":{"2010":13,"2011":10,"2012":9,"2013":7,"2014":3,"2015":3,"2016":6,"2017":7,"2018":3,"2019":2,"2020":3,"2021":2,"2022":2,"2023":2,"2024":2,"2025":3,"2026":2}},{"country":"Spain","flag":"🇪🇸","values":{"2010":160,"2011":170,"2012":165,"2013":170,"2014":172,"2015":170,"2016":175,"2017":174,"2018":187,"2019":186,"2020":188,"2021":189,"2022":189,"2023":190,"2024":194,"2025":192,"2026":186},"ranks":{"2010":6,"2011":4,"2012":5,"2013":4,"2014":3,"2015":4,"2016":3,"2017":3,"2018":4,"2019":4,"2020":4,"2021":3,"2022":3,"2023":3,"2024":1,"2025":3,"2026":4}},{"country":"Sweden","flag":"🇸🇪","values":{"2010":163,"2011":173,"2012":168,"2013":173,"2014":174,"2015":172,"2016":176,"2017":175,"2018":187,"2019":186,"2020":186,"2021":187,"2022":188,"2023":188,"2024":193,"2025":191,"2026":187},"ranks":{"2010":3,"2011":1,"2012":2,"2013":1,"2014":1,"2015":2,"2016":2,"2017":2,"2018":4,"2019":4,"2020":6,"2021":5,"2022":4,"2023":5,"2024":2,"2025":4,"2026":3}},{"country":"United Arab Emirates","flag":"🇦🇪","values":{"2010":64,"2011":67,"2012":70,"2013":72,"2014":77,"2015":113,"2016":122,"2017":121,"2018":161,"2019":172,"2020":170,"2021":174,"2022":175,"2023":178,"2024":183,"2025":185,"2026":188},"ranks":{"2010":65,"2011":65,"2012":64,"2013":56,"2014":55,"2015":42,"2016":38,"2017":38,"2018":21,"2019":15,"2020":18,"2021":16,"2022":15,"2023":15,"2024":11,"2025":10,"2026":2}},{"country":"United Kingdom","flag":"🇬🇧","values":{"2010":166,"2011":171,"2012":167,"2013":173,"2014":174,"2015":173,"2016":175,"2017":173,"2018":186,"2019":184,"2020":185,"2021":185,"2022":186,"2023":187,"2024":191,"2025":190,"2026":184},"ranks":{"2010":1,"2011":3,"2012":3,"2013":1,"2014":1,"2015":1,"2016":3,"2017":4,"2018":5,"2019":6,"2020":7,"2021":7,"2022":6,"2023":6,"2024":4,"2025":5,"2026":6}},{"country":"United States","flag":"🇺🇸","values":{"2010":159,"2011":169,"2012":166,"2013":172,"2014":174,"2015":172,"2016":174,"2017":172,"2018":186,"2019":184,"2020":185,"2021":185,"2022":186,"2023":186,"2024":188,"2025":186,"2026":180},"ranks":{"2010":7,"2011":5,"2012":4,"2013":2,"2014":1,"2015":2,"2016":4,"2017":5,"2018":5,"2019":6,"2020":7,"2021":7,"2022":6,"2023":7,"2024":7,"2025":9,"2026":10}},{"country":"Vietnam","flag":"🇻🇳","values":{"2010":43,"2011":42,"2012":44,"2013":45,"2014":47,"2015":45,"2016":47,"2017":45,"2018":51,"2019":51,"2020":54,"2021":53,"2022":54,"2023":55,"2024":55,"2025":51,"2026":49},"ranks":{"2010":84,"2011":88,"2012":89,"2013":81,"2014":81,"2015":94,"2016":90,"2017":90,"2018":90,"2019":90,"2020":86,"2021":95,"2022":89,"2023":88,"2024":87,"2025":91,"2026":89}}],"card_bg":"cream","outro_question":"How many countries can YOU visit visa-free? 🛂","cta_line":"Show us your last trip on hilads.live ✈️","caption":"The UK had the world's most powerful passport in 2010. Then the Nordics, then Germany… until 2018, when Japan took the crown and Asia never really gave it back. Today Singapore stands alone at #1, and the UAE rocketed from #65 to #2. Vietnam? Somewhere around #90, with about 50 visa-free destinations. Different Worlds by Hilads.","hashtags":["#DifferentWorlds","#Passport","#Travel","#VisaFree","#Singapore","#Vietnam"],"warnings":["Henley Passport Index, its own yearly history (api.henleypassportindex.com v3, the data of each country): one value per year, the January edition (2025: Singapore 195 = the January 2025 index).","2010-2026: Henley's history has no scores for 2007 and 2009 (0 for every country); 2006 and 2008 are left out so the years follow each other.","Ranks are Henley's (dense: tied passports share a rank, the next one is +1). The scores jump about +14 in 2018 for everyone (Henley counts more destinations from then).","Vietnam's row: its real rank and score each year (#89 with 49 in 2026)."]}
+JSON, true, 512, JSON_THROW_ON_ERROR);
+        $r = DwStudio::importRace($topic, $content, 'Claude Code');
+        echo $r['ok'] ? "  OK  dw: 2026-11-17 race package v{$r['version']}\n" : "  ERR dw Nov 17 race: " . implode(' ', $r['errors']) . "\n";
+    }
+} catch (Throwable $e) {
+    echo "  ERR dw Nov 17 race: " . $e->getMessage() . "\n";
+}
+
+// Once: Nov 18 becomes the race "The world's best cuisines" (TasteAtlas Awards, editions 2022/23 to 2025/26, user ratings;
+// Greece dethrones Italy in 2024/25), Vietnam as the extra row; "Cute nicknames for your partner" moves to the first date
+// with no topic; the unpublished birth rate topic is dropped (DwStudio::deleteTopic, its files on R2 too). As Nov 16.
+try {
+    require_once __DIR__ . '/vendor/autoload.php';
+    $old = $pdo->query("SELECT id, status FROM dw_topics WHERE date = '2026-11-18' AND title = 'Cute nicknames for your partner'")->fetch(PDO::FETCH_ASSOC);
+    if ($old && $old['status'] !== 'published') {
+        $free = $pdo->query("SELECT d::date::text FROM generate_series('2026-11-19'::date, '2027-12-31'::date, '1 day') d
+                             WHERE NOT EXISTS (SELECT 1 FROM dw_topics t WHERE t.date = d::date) ORDER BY d LIMIT 1")->fetchColumn();
+        $pdo->prepare("UPDATE dw_topics SET date = ?::date, updated_at = now() WHERE id = ?")->execute([$free, $old['id']]);
+        echo "  OK  dw: \"Cute nicknames for your partner\" moved from 2026-11-18 to {$free}\n";
+    }
+    foreach ($pdo->query("SELECT id, date::text AS date, title FROM dw_topics WHERE status <> 'published'
+                          AND (title ILIKE '%birth rate%' OR title ILIKE '%birthrate%' OR title ILIKE '%fertility%' OR title ILIKE '%births per%' OR title ILIKE '%babies per%')")
+             ->fetchAll(PDO::FETCH_ASSOC) as $t) {
+        DwStudio::deleteTopic((int) $t['id']);
+        echo "  OK  dw: dropped {$t['date']} \"{$t['title']}\"\n";
+    }
+    $title = "The world's best cuisines, 2022/23 to 2025/26";
+    if (!$pdo->query("SELECT 1 FROM dw_topics WHERE date = '2026-11-18'")->fetchColumn()) {
+        $pdo->prepare("INSERT INTO dw_topics (date, title, notes, type, needs_date_check, format) VALUES ('2026-11-18', ?, ?, 'evergreen', false, 'race')")
+            ->execute([$title, 'Race: TasteAtlas Awards Best Cuisines, the top 10 of each edition from 2022/23 to 2025/26 (average user ratings out of 5), Vietnam as the extra row. Italy #1, Greece takes the crown in 2024/25, Italy back in 2025/26, Peru to #3.']);
+        echo "  OK  dw: 2026-11-18 race topic\n";
+    }
+    $topic = DwStudio::topicByDate('2026-11-18');
+    if ($topic !== null && $topic['format'] === 'race' && $topic['title'] === $title && DwStudio::package($topic['id']) === null) {
+        $content = json_decode(<<<'JSON'
+{"format":"race","topic":"The world's best cuisines, TasteAtlas Awards 2022/23 to 2025/26","headline":"The world's best cuisines, 2022/23 → 2025/26 🍝","headline_accent":"best cuisines","detail":"Greece dethrones Italy 🇬🇷","banner_year":2024,"extra_row":"Vietnam","year_labels":{"2022":"2022/23","2023":"2023/24","2024":"2024/25","2025":"2025/26"},"step_seconds":2.5,"start_seconds":1.5,"hold":0.55,"value_label":"Average user rating out of 5","data_years":"2022/23–2025/26","unit":"","decimals":2,"source":"TasteAtlas Awards","source_url":"https://www.tasteatlas.com/best/cuisines","series":[{"country":"United States","flag":"🇺🇸","values":{"2022":4.51,"2023":4.48,"2024":4.42,"2025":4.42},"ranks":{"2022":8,"2023":16,"2024":13,"2025":15}},{"country":"China","flag":"🇨🇳","values":{"2022":4.49,"2023":4.59,"2024":4.45,"2025":4.48},"ranks":{"2022":11,"2023":5,"2024":10,"2025":8}},{"country":"France","flag":"🇫🇷","values":{"2022":4.51,"2023":4.55,"2024":4.48,"2025":4.48},"ranks":{"2022":9,"2023":8,"2024":8,"2025":9}},{"country":"Greece","flag":"🇬🇷","values":{"2022":4.69,"2023":4.64,"2024":4.6,"2025":4.6},"ranks":{"2022":2,"2023":3,"2024":1,"2025":2}},{"country":"India","flag":"🇮🇳","values":{"2022":4.54,"2023":4.52,"2024":4.42,"2025":4.43},"ranks":{"2022":5,"2023":11,"2024":12,"2025":13}},{"country":"Indonesia","flag":"🇮🇩","values":{"2022":4.37,"2023":4.57,"2024":4.48,"2025":4.48},"ranks":{"2022":16,"2023":6,"2024":7,"2025":10}},{"country":"Italy","flag":"🇮🇹","values":{"2022":4.72,"2023":4.65,"2024":4.59,"2025":4.64},"ranks":{"2022":1,"2023":1,"2024":2,"2025":1}},{"country":"Japan","flag":"🇯🇵","values":{"2022":4.59,"2023":4.65,"2024":4.47,"2025":4.49},"ranks":{"2022":4,"2023":2,"2024":9,"2025":6}},{"country":"Mexico","flag":"🇲🇽","values":{"2022":4.53,"2023":4.56,"2024":4.52,"2025":4.46},"ranks":{"2022":6,"2023":7,"2024":3,"2025":11}},{"country":"Peru","flag":"🇵🇪","values":{"2022":4.51,"2023":4.54,"2024":4.4,"2025":4.54},"ranks":{"2022":10,"2023":10,"2024":14,"2025":3}},{"country":"Poland","flag":"🇵🇱","values":{"2022":4.44,"2023":4.5,"2024":4.42,"2025":4.42},"ranks":{"2022":14,"2023":13,"2024":11,"2025":14}},{"country":"Portugal","flag":"🇵🇹","values":{"2022":4.47,"2023":4.61,"2024":4.5,"2025":4.53},"ranks":{"2022":13,"2023":4,"2024":5,"2025":4}},{"country":"Spain","flag":"🇪🇸","values":{"2022":4.59,"2023":4.55,"2024":4.5,"2025":4.53},"ranks":{"2022":3,"2023":9,"2024":4,"2025":5}},{"country":"Türkiye","flag":"🇹🇷","values":{"2022":4.52,"2023":4.49,"2024":4.5,"2025":4.49},"ranks":{"2022":7,"2023":15,"2024":6,"2025":7}},{"country":"Vietnam","flag":"🇻🇳","values":{"2022":4.31,"2023":4.44,"2024":4.34,"2025":4.36},"ranks":{"2022":20,"2023":22,"2024":19,"2025":16}}],"card_bg":"yellow","outro_question":"Is YOUR country's food ranked too low? 😤","cta_line":"Show us your favorite local dish on hilads.live 🍜","caption":"Italy topped TasteAtlas's world cuisine ranking in 2022/23 and 2023/24, then Greece took the crown in 2024/25 by 0.01 point… before Italy won it back in 2025/26, with Peru jumping to #3. Vietnam keeps climbing: #16 this year, its best ever. These are average user ratings of each country's dishes on TasteAtlas. Different Worlds by Hilads.","hashtags":["#DifferentWorlds","#Food","#TasteAtlas","#Foodie","#Italy","#Greece","#VietnameseFood"],"warnings":["TasteAtlas Awards 'Best Cuisines in the World', from TasteAtlas's own ranking page (archived copies: Dec 2022, Jan 2024 + its ranks 16-100, Dec 2024, Jan 2026): 2022 (shown 2022/23), 23/24, 24/25, 25/26. The 2021 edition is left out: its archived page has only #36-50.","Scores are average user ratings out of 5 (TasteAtlas's method: ratings of each country's dishes and products); the ratings counted grow each edition, so scores move a little between editions.","Ranks are TasteAtlas's own (2023/24: Italy #1 and Japan #2 both at 4.65, ordered by more decimals).","Vietnam: #20 (4.31), #22 (4.44), #19 (4.34), #16 (4.36)."]}
+JSON, true, 512, JSON_THROW_ON_ERROR);
+        $r = DwStudio::importRace($topic, $content, 'Claude Code');
+        echo $r['ok'] ? "  OK  dw: 2026-11-18 race package v{$r['version']}\n" : "  ERR dw Nov 18 race: " . implode(' ', $r['errors']) . "\n";
+    }
+} catch (Throwable $e) {
+    echo "  ERR dw Nov 18 race: " . $e->getMessage() . "\n";
+}
+
+// Once: Nov 19 becomes the race "The countries with the most Miss Universe crowns, 1952 to 2025"; the old topic moves to the first date with no topic from Nov 22. As Nov 16.
+try {
+    require_once __DIR__ . '/vendor/autoload.php';
+    $old = $pdo->query("SELECT id, title, status FROM dw_topics WHERE date = '2026-11-19' AND title ILIKE 'World Toilet Day%'")->fetch(PDO::FETCH_ASSOC);
+    if ($old && $old['status'] !== 'published') {
+        $free = $pdo->query("SELECT d::date::text FROM generate_series('2026-11-22'::date, '2027-12-31'::date, '1 day') d
+                             WHERE NOT EXISTS (SELECT 1 FROM dw_topics t WHERE t.date = d::date) ORDER BY d LIMIT 1")->fetchColumn();
+        $pdo->prepare("UPDATE dw_topics SET date = ?::date, updated_at = now() WHERE id = ?")->execute([$free, $old['id']]);
+        echo "  OK  dw: \"{$old['title']}\" moved from 2026-11-19 to {$free}\n";
+    }
+    $title = 'The countries with the most Miss Universe crowns, 1952 to 2025';
+    if (!$pdo->query("SELECT 1 FROM dw_topics WHERE date = '2026-11-19'")->fetchColumn()) {
+        $pdo->prepare("INSERT INTO dw_topics (date, title, notes, type, needs_date_check, format) VALUES ('2026-11-19', ?, ?, 'evergreen', false, 'race')")
+            ->execute([$title, 'Race: Miss Universe crowns by country, cumulative, every edition 1952-2025 (2002 counted for Panama, the official replacement; 2026 held on Nov 24, not included). The US leads alone since 1956 (9), Venezuela 7, Puerto Rico 5, Mexico and the Philippines 4. Banner 2009: Venezuela\'s back-to-back. Fast early decades (0.25 s a year), 0.6 s a year from 2011.']);
+        echo "  OK  dw: 2026-11-19 race topic\n";
+    }
+    $topic = DwStudio::topicByDate('2026-11-19');
+    if ($topic !== null && $topic['format'] === 'race' && $topic['title'] === $title && DwStudio::package($topic['id']) === null) {
+        $content = json_decode(<<<'JSON'
+{"format":"race","topic":"The countries with the most Miss Universe crowns, 1952 to 2025","headline":"Miss Universe crowns by country, 1952 → 2025 👑","headline_accent":"Miss Universe crowns","detail":"2009: Venezuela wins twice in a row 🇻🇪","banner_year":2009,"value_label":"Miss Universe titles by country","data_years":"1952–2025","unit":"","decimals":0,"value_prefix":"👑 x","step_seconds":0.25,"slow_from":2011,"slow_step":0.6,"source":"official Miss Universe results","source_url":"https://en.wikipedia.org/wiki/List_of_Miss_Universe_titleholders","series":[{"country":"Argentina","flag":"🇦🇷","values":{"1952":0,"1953":0,"1954":0,"1955":0,"1956":0,"1957":0,"1958":0,"1959":0,"1960":0,"1961":0,"1962":1,"1963":1,"1964":1,"1965":1,"1966":1,"1967":1,"1968":1,"1969":1,"1970":1,"1971":1,"1972":1,"1973":1,"1974":1,"1975":1,"1976":1,"1977":1,"1978":1,"1979":1,"1980":1,"1981":1,"1982":1,"1983":1,"1984":1,"1985":1,"1986":1,"1987":1,"1988":1,"1989":1,"1990":1,"1991":1,"1992":1,"1993":1,"1994":1,"1995":1,"1996":1,"1997":1,"1998":1,"1999":1,"2000":1,"2001":1,"2002":1,"2003":1,"2004":1,"2005":1,"2006":1,"2007":1,"2008":1,"2009":1,"2010":1,"2011":1,"2012":1,"2013":1,"2014":1,"2015":1,"2016":1,"2017":1,"2018":1,"2019":1,"2020":1,"2021":1,"2022":1,"2023":1,"2024":1,"2025":1},"ranks":{"1952":2,"1953":2,"1954":2,"1955":2,"1956":3,"1957":3,"1958":3,"1959":3,"1960":3,"1961":3,"1962":2,"1963":2,"1964":2,"1965":2,"1966":3,"1967":3,"1968":3,"1969":3,"1970":3,"1971":3,"1972":3,"1973":3,"1974":3,"1975":3,"1976":3,"1977":3,"1978":3,"1979":3,"1980":3,"1981":3,"1982":3,"1983":3,"1984":4,"1985":4,"1986":4,"1987":4,"1988":4,"1989":4,"1990":4,"1991":4,"1992":4,"1993":4,"1994":4,"1995":4,"1996":5,"1997":5,"1998":5,"1999":5,"2000":5,"2001":5,"2002":5,"2003":5,"2004":5,"2005":5,"2006":6,"2007":6,"2008":5,"2009":6,"2010":6,"2011":6,"2012":6,"2013":6,"2014":6,"2015":6,"2016":6,"2017":6,"2018":7,"2019":7,"2020":7,"2021":7,"2022":7,"2023":7,"2024":7,"2025":7},"order":{"1952":2,"1953":3,"1954":4,"1955":5,"1956":5,"1957":6,"1958":7,"1959":8,"1960":8,"1961":9,"1962":8,"1963":8,"1964":8,"1965":8,"1966":8,"1967":8,"1968":9,"1969":9,"1970":9,"1971":9,"1972":9,"1973":10,"1974":10,"1975":10,"1976":10,"1977":10,"1978":10,"1979":10,"1980":10,"1981":11,"1982":11,"1983":11,"1984":11,"1985":12,"1986":12,"1987":12,"1988":13,"1989":13,"1990":13,"1991":13,"1992":13,"1993":13,"1994":13,"1995":13,"1996":13,"1997":13,"1998":14,"1999":14,"2000":15,"2001":15,"2002":15,"2003":15,"2004":16,"2005":17,"2006":17,"2007":17,"2008":17,"2009":17,"2010":18,"2011":18,"2012":18,"2013":18,"2014":18,"2015":18,"2016":18,"2017":19,"2018":19,"2019":19,"2020":19,"2021":19,"2022":19,"2023":19,"2024":19,"2025":19}},{"country":"Brazil","flag":"🇧🇷","values":{"1952":0,"1953":0,"1954":0,"1955":0,"1956":0,"1957":0,"1958":0,"1959":0,"1960":0,"1961":0,"1962":0,"1963":1,"1964":1,"1965":1,"1966":1,"1967":1,"1968":2,"1969":2,"1970":2,"1971":2,"1972":2,"1973":2,"1974":2,"1975":2,"1976":2,"1977":2,"1978":2,"1979":2,"1980":2,"1981":2,"1982":2,"1983":2,"1984":2,"1985":2,"1986":2,"1987":2,"1988":2,"1989":2,"1990":2,"1991":2,"1992":2,"1993":2,"1994":2,"1995":2,"1996":2,"1997":2,"1998":2,"1999":2,"2000":2,"2001":2,"2002":2,"2003":2,"2004":2,"2005":2,"2006":2,"2007":2,"2008":2,"2009":2,"2010":2,"2011":2,"2012":2,"2013":2,"2014":2,"2015":2,"2016":2,"2017":2,"2018":2,"2019":2,"2020":2,"2021":2,"2022":2,"2023":2,"2024":2,"2025":2},"ranks":{"1952":2,"1953":2,"1954":2,"1955":2,"1956":3,"1957":3,"1958":3,"1959":3,"1960":3,"1961":3,"1962":3,"1963":2,"1964":2,"1965":2,"1966":3,"1967":3,"1968":2,"1969":2,"1970":2,"1971":2,"1972":2,"1973":2,"1974":2,"1975":2,"1976":2,"1977":2,"1978":2,"1979":2,"1980":2,"1981":2,"1982":2,"1983":2,"1984":3,"1985":3,"1986":3,"1987":3,"1988":3,"1989":3,"1990":3,"1991":3,"1992":3,"1993":3,"1994":3,"1995":3,"1996":4,"1997":4,"1998":4,"1999":4,"2000":4,"2001":4,"2002":4,"2003":4,"2004":4,"2005":4,"2006":5,"2007":5,"2008":4,"2009":5,"2010":5,"2011":5,"2012":5,"2013":5,"2014":5,"2015":5,"2016":5,"2017":5,"2018":6,"2019":6,"2020":6,"2021":6,"2022":6,"2023":6,"2024":6,"2025":6},"order":{"1952":5,"1953":6,"1954":7,"1955":8,"1956":8,"1957":9,"1958":10,"1959":11,"1960":11,"1961":12,"1962":12,"1963":9,"1964":9,"1965":9,"1966":9,"1967":9,"1968":2,"1969":2,"1970":2,"1971":2,"1972":2,"1973":2,"1974":2,"1975":2,"1976":2,"1977":2,"1978":2,"1979":2,"1980":2,"1981":2,"1982":2,"1983":2,"1984":2,"1985":2,"1986":3,"1987":3,"1988":3,"1989":3,"1990":3,"1991":3,"1992":3,"1993":4,"1994":4,"1995":4,"1996":4,"1997":4,"1998":4,"1999":4,"2000":4,"2001":4,"2002":4,"2003":4,"2004":4,"2005":4,"2006":4,"2007":4,"2008":4,"2009":4,"2010":4,"2011":4,"2012":4,"2013":4,"2014":4,"2015":5,"2016":5,"2017":5,"2018":5,"2019":6,"2020":7,"2021":8,"2022":8,"2023":8,"2024":8,"2025":8}},{"country":"Colombia","flag":"🇨🇴","values":{"1952":0,"1953":0,"1954":0,"1955":0,"1956":0,"1957":0,"1958":1,"1959":1,"1960":1,"1961":1,"1962":1,"1963":1,"1964":1,"1965":1,"1966":1,"1967":1,"1968":1,"1969":1,"1970":1,"1971":1,"1972":1,"1973":1,"1974":1,"1975":1,"1976":1,"1977":1,"1978":1,"1979":1,"1980":1,"1981":1,"1982":1,"1983":1,"1984":1,"1985":1,"1986":1,"1987":1,"1988":1,"1989":1,"1990":1,"1991":1,"1992":1,"1993":1,"1994":1,"1995":1,"1996":1,"1997":1,"1998":1,"1999":1,"2000":1,"2001":1,"2002":1,"2003":1,"2004":1,"2005":1,"2006":1,"2007":1,"2008":1,"2009":1,"2010":1,"2011":1,"2012":1,"2013":1,"2014":2,"2015":2,"2016":2,"2017":2,"2018":2,"2019":2,"2020":2,"2021":2,"2022":2,"2023":2,"2024":2,"2025":2},"ranks":{"1952":2,"1953":2,"1954":2,"1955":2,"1956":3,"1957":3,"1958":2,"1959":2,"1960":2,"1961":2,"1962":2,"1963":2,"1964":2,"1965":2,"1966":3,"1967":3,"1968":3,"1969":3,"1970":3,"1971":3,"1972":3,"1973":3,"1974":3,"1975":3,"1976":3,"1977":3,"1978":3,"1979":3,"1980":3,"1981":3,"1982":3,"1983":3,"1984":4,"1985":4,"1986":4,"1987":4,"1988":4,"1989":4,"1990":4,"1991":4,"1992":4,"1993":4,"1994":4,"1995":4,"1996":5,"1997":5,"1998":5,"1999":5,"2000":5,"2001":5,"2002":5,"2003":5,"2004":5,"2005":5,"2006":6,"2007":6,"2008":5,"2009":6,"2010":6,"2011":6,"2012":6,"2013":6,"2014":5,"2015":5,"2016":5,"2017":5,"2018":6,"2019":6,"2020":6,"2021":6,"2022":6,"2023":6,"2024":6,"2025":6},"order":{"1952":8,"1953":9,"1954":10,"1955":11,"1956":11,"1957":12,"1958":5,"1959":5,"1960":5,"1961":5,"1962":5,"1963":5,"1964":5,"1965":5,"1966":5,"1967":5,"1968":6,"1969":6,"1970":6,"1971":6,"1972":6,"1973":7,"1974":7,"1975":7,"1976":7,"1977":7,"1978":7,"1979":7,"1980":7,"1981":8,"1982":8,"1983":8,"1984":8,"1985":9,"1986":9,"1987":9,"1988":10,"1989":10,"1990":10,"1991":10,"1992":10,"1993":10,"1994":10,"1995":10,"1996":10,"1997":10,"1998":11,"1999":11,"2000":12,"2001":12,"2002":12,"2003":12,"2004":13,"2005":14,"2006":14,"2007":15,"2008":15,"2009":15,"2010":16,"2011":16,"2012":16,"2013":16,"2014":14,"2015":14,"2016":14,"2017":14,"2018":14,"2019":15,"2020":15,"2021":15,"2022":15,"2023":15,"2024":15,"2025":15}},{"country":"Finland","flag":"🇫🇮","values":{"1952":1,"1953":1,"1954":1,"1955":1,"1956":1,"1957":1,"1958":1,"1959":1,"1960":1,"1961":1,"1962":1,"1963":1,"1964":1,"1965":1,"1966":1,"1967":1,"1968":1,"1969":1,"1970":1,"1971":1,"1972":1,"1973":1,"1974":1,"1975":2,"1976":2,"1977":2,"1978":2,"1979":2,"1980":2,"1981":2,"1982":2,"1983":2,"1984":2,"1985":2,"1986":2,"1987":2,"1988":2,"1989":2,"1990":2,"1991":2,"1992":2,"1993":2,"1994":2,"1995":2,"1996":2,"1997":2,"1998":2,"1999":2,"2000":2,"2001":2,"2002":2,"2003":2,"2004":2,"2005":2,"2006":2,"2007":2,"2008":2,"2009":2,"2010":2,"2011":2,"2012":2,"2013":2,"2014":2,"2015":2,"2016":2,"2017":2,"2018":2,"2019":2,"2020":2,"2021":2,"2022":2,"2023":2,"2024":2,"2025":2},"ranks":{"1952":1,"1953":1,"1954":1,"1955":1,"1956":2,"1957":2,"1958":2,"1959":2,"1960":2,"1961":2,"1962":2,"1963":2,"1964":2,"1965":2,"1966":3,"1967":3,"1968":3,"1969":3,"1970":3,"1971":3,"1972":3,"1973":3,"1974":3,"1975":2,"1976":2,"1977":2,"1978":2,"1979":2,"1980":2,"1981":2,"1982":2,"1983":2,"1984":3,"1985":3,"1986":3,"1987":3,"1988":3,"1989":3,"1990":3,"1991":3,"1992":3,"1993":3,"1994":3,"1995":3,"1996":4,"1997":4,"1998":4,"1999":4,"2000":4,"2001":4,"2002":4,"2003":4,"2004":4,"2005":4,"2006":5,"2007":5,"2008":4,"2009":5,"2010":5,"2011":5,"2012":5,"2013":5,"2014":5,"2015":5,"2016":5,"2017":5,"2018":6,"2019":6,"2020":6,"2021":6,"2022":6,"2023":6,"2024":6,"2025":6},"order":{"1952":0,"1953":0,"1954":0,"1955":0,"1956":1,"1957":1,"1958":1,"1959":1,"1960":1,"1961":1,"1962":1,"1963":1,"1964":1,"1965":1,"1966":2,"1967":2,"1968":3,"1969":3,"1970":3,"1971":3,"1972":3,"1973":4,"1974":4,"1975":4,"1976":4,"1977":4,"1978":4,"1979":4,"1980":4,"1981":4,"1982":4,"1983":4,"1984":4,"1985":4,"1986":5,"1987":5,"1988":5,"1989":5,"1990":5,"1991":5,"1992":5,"1993":6,"1994":6,"1995":6,"1996":6,"1997":6,"1998":6,"1999":6,"2000":6,"2001":6,"2002":6,"2003":6,"2004":6,"2005":6,"2006":6,"2007":6,"2008":6,"2009":6,"2010":6,"2011":6,"2012":6,"2013":6,"2014":6,"2015":6,"2016":6,"2017":6,"2018":6,"2019":7,"2020":8,"2021":9,"2022":9,"2023":9,"2024":9,"2025":9}},{"country":"France","flag":"🇫🇷","values":{"1952":0,"1953":1,"1954":1,"1955":1,"1956":1,"1957":1,"1958":1,"1959":1,"1960":1,"1961":1,"1962":1,"1963":1,"1964":1,"1965":1,"1966":1,"1967":1,"1968":1,"1969":1,"1970":1,"1971":1,"1972":1,"1973":1,"1974":1,"1975":1,"1976":1,"1977":1,"1978":1,"1979":1,"1980":1,"1981":1,"1982":1,"1983":1,"1984":1,"1985":1,"1986":1,"1987":1,"1988":1,"1989":1,"1990":1,"1991":1,"1992":1,"1993":1,"1994":1,"1995":1,"1996":1,"1997":1,"1998":1,"1999":1,"2000":1,"2001":1,"2002":1,"2003":1,"2004":1,"2005":1,"2006":1,"2007":1,"2008":1,"2009":1,"2010":1,"2011":1,"2012":1,"2013":1,"2014":1,"2015":1,"2016":2,"2017":2,"2018":2,"2019":2,"2020":2,"2021":2,"2022":2,"2023":2,"2024":2,"2025":2},"ranks":{"1952":2,"1953":1,"1954":1,"1955":1,"1956":2,"1957":2,"1958":2,"1959":2,"1960":2,"1961":2,"1962":2,"1963":2,"1964":2,"1965":2,"1966":3,"1967":3,"1968":3,"1969":3,"1970":3,"1971":3,"1972":3,"1973":3,"1974":3,"1975":3,"1976":3,"1977":3,"1978":3,"1979":3,"1980":3,"1981":3,"1982":3,"1983":3,"1984":4,"1985":4,"1986":4,"1987":4,"1988":4,"1989":4,"1990":4,"1991":4,"1992":4,"1993":4,"1994":4,"1995":4,"1996":5,"1997":5,"1998":5,"1999":5,"2000":5,"2001":5,"2002":5,"2003":5,"2004":5,"2005":5,"2006":6,"2007":6,"2008":5,"2009":6,"2010":6,"2011":6,"2012":6,"2013":6,"2014":6,"2015":6,"2016":5,"2017":5,"2018":6,"2019":6,"2020":6,"2021":6,"2022":6,"2023":6,"2024":6,"2025":6},"order":{"1952":11,"1953":1,"1954":1,"1955":1,"1956":2,"1957":2,"1958":2,"1959":2,"1960":2,"1961":2,"1962":2,"1963":2,"1964":2,"1965":2,"1966":3,"1967":3,"1968":4,"1969":4,"1970":4,"1971":4,"1972":4,"1973":5,"1974":5,"1975":5,"1976":5,"1977":5,"1978":5,"1979":5,"1980":5,"1981":6,"1982":6,"1983":6,"1984":6,"1985":7,"1986":7,"1987":7,"1988":8,"1989":8,"1990":8,"1991":8,"1992":8,"1993":8,"1994":8,"1995":8,"1996":8,"1997":8,"1998":9,"1999":9,"2000":10,"2001":10,"2002":10,"2003":10,"2004":11,"2005":12,"2006":12,"2007":13,"2008":13,"2009":13,"2010":14,"2011":14,"2012":14,"2013":14,"2014":15,"2015":15,"2016":15,"2017":15,"2018":15,"2019":16,"2020":16,"2021":16,"2022":16,"2023":16,"2024":16,"2025":16}},{"country":"Germany","flag":"🇩🇪","values":{"1952":0,"1953":0,"1954":0,"1955":0,"1956":0,"1957":0,"1958":0,"1959":0,"1960":0,"1961":1,"1962":1,"1963":1,"1964":1,"1965":1,"1966":1,"1967":1,"1968":1,"1969":1,"1970":1,"1971":1,"1972":1,"1973":1,"1974":1,"1975":1,"1976":1,"1977":1,"1978":1,"1979":1,"1980":1,"1981":1,"1982":1,"1983":1,"1984":1,"1985":1,"1986":1,"1987":1,"1988":1,"1989":1,"1990":1,"1991":1,"1992":1,"1993":1,"1994":1,"1995":1,"1996":1,"1997":1,"1998":1,"1999":1,"2000":1,"2001":1,"2002":1,"2003":1,"2004":1,"2005":1,"2006":1,"2007":1,"2008":1,"2009":1,"2010":1,"2011":1,"2012":1,"2013":1,"2014":1,"2015":1,"2016":1,"2017":1,"2018":1,"2019":1,"2020":1,"2021":1,"2022":1,"2023":1,"2024":1,"2025":1},"ranks":{"1952":2,"1953":2,"1954":2,"1955":2,"1956":3,"1957":3,"1958":3,"1959":3,"1960":3,"1961":2,"1962":2,"1963":2,"1964":2,"1965":2,"1966":3,"1967":3,"1968":3,"1969":3,"1970":3,"1971":3,"1972":3,"1973":3,"1974":3,"1975":3,"1976":3,"1977":3,"1978":3,"1979":3,"1980":3,"1981":3,"1982":3,"1983":3,"1984":4,"1985":4,"1986":4,"1987":4,"1988":4,"1989":4,"1990":4,"1991":4,"1992":4,"1993":4,"1994":4,"1995":4,"1996":5,"1997":5,"1998":5,"1999":5,"2000":5,"2001":5,"2002":5,"2003":5,"2004":5,"2005":5,"2006":6,"2007":6,"2008":5,"2009":6,"2010":6,"2011":6,"2012":6,"2013":6,"2014":6,"2015":6,"2016":6,"2017":6,"2018":7,"2019":7,"2020":7,"2021":7,"2022":7,"2023":7,"2024":7,"2025":7},"order":{"1952":12,"1953":12,"1954":13,"1955":14,"1956":14,"1957":15,"1958":15,"1959":16,"1960":16,"1961":7,"1962":7,"1963":7,"1964":7,"1965":7,"1966":7,"1967":7,"1968":8,"1969":8,"1970":8,"1971":8,"1972":8,"1973":9,"1974":9,"1975":9,"1976":9,"1977":9,"1978":9,"1979":9,"1980":9,"1981":10,"1982":10,"1983":10,"1984":10,"1985":11,"1986":11,"1987":11,"1988":12,"1989":12,"1990":12,"1991":12,"1992":12,"1993":12,"1994":12,"1995":12,"1996":12,"1997":12,"1998":13,"1999":13,"2000":14,"2001":14,"2002":14,"2003":14,"2004":15,"2005":16,"2006":16,"2007":16,"2008":16,"2009":16,"2010":17,"2011":17,"2012":17,"2013":17,"2014":17,"2015":17,"2016":17,"2017":18,"2018":18,"2019":18,"2020":18,"2021":18,"2022":18,"2023":18,"2024":18,"2025":18}},{"country":"India","flag":"🇮🇳","values":{"1952":0,"1953":0,"1954":0,"1955":0,"1956":0,"1957":0,"1958":0,"1959":0,"1960":0,"1961":0,"1962":0,"1963":0,"1964":0,"1965":0,"1966":0,"1967":0,"1968":0,"1969":0,"1970":0,"1971":0,"1972":0,"1973":0,"1974":0,"1975":0,"1976":0,"1977":0,"1978":0,"1979":0,"1980":0,"1981":0,"1982":0,"1983":0,"1984":0,"1985":0,"1986":0,"1987":0,"1988":0,"1989":0,"1990":0,"1991":0,"1992":0,"1993":0,"1994":1,"1995":1,"1996":1,"1997":1,"1998":1,"1999":1,"2000":2,"2001":2,"2002":2,"2003":2,"2004":2,"2005":2,"2006":2,"2007":2,"2008":2,"2009":2,"2010":2,"2011":2,"2012":2,"2013":2,"2014":2,"2015":2,"2016":2,"2017":2,"2018":2,"2019":2,"2020":2,"2021":3,"2022":3,"2023":3,"2024":3,"2025":3},"ranks":{"1952":2,"1953":2,"1954":2,"1955":2,"1956":3,"1957":3,"1958":3,"1959":3,"1960":3,"1961":3,"1962":3,"1963":3,"1964":3,"1965":3,"1966":4,"1967":4,"1968":4,"1969":4,"1970":4,"1971":4,"1972":4,"1973":4,"1974":4,"1975":4,"1976":4,"1977":4,"1978":4,"1979":4,"1980":4,"1981":4,"1982":4,"1983":4,"1984":5,"1985":5,"1986":5,"1987":5,"1988":5,"1989":5,"1990":5,"1991":5,"1992":5,"1993":5,"1994":4,"1995":4,"1996":5,"1997":5,"1998":5,"1999":5,"2000":4,"2001":4,"2002":4,"2003":4,"2004":4,"2005":4,"2006":5,"2007":5,"2008":4,"2009":5,"2010":5,"2011":5,"2012":5,"2013":5,"2014":5,"2015":5,"2016":5,"2017":5,"2018":6,"2019":6,"2020":6,"2021":5,"2022":5,"2023":5,"2024":5,"2025":5},"order":{"1952":14,"1953":14,"1954":15,"1955":16,"1956":16,"1957":17,"1958":17,"1959":18,"1960":18,"1961":18,"1962":18,"1963":18,"1964":18,"1965":19,"1966":19,"1967":19,"1968":19,"1969":20,"1970":21,"1971":22,"1972":22,"1973":22,"1974":23,"1975":23,"1976":24,"1977":25,"1978":26,"1979":27,"1980":27,"1981":27,"1982":27,"1983":28,"1984":28,"1985":28,"1986":28,"1987":28,"1988":28,"1989":29,"1990":30,"1991":31,"1992":32,"1993":32,"1994":28,"1995":28,"1996":28,"1997":28,"1998":28,"1999":28,"2000":9,"2001":9,"2002":9,"2003":9,"2004":9,"2005":9,"2006":9,"2007":9,"2008":9,"2009":9,"2010":9,"2011":9,"2012":9,"2013":9,"2014":9,"2015":9,"2016":9,"2017":9,"2018":9,"2019":10,"2020":11,"2021":7,"2022":7,"2023":7,"2024":7,"2025":7}},{"country":"Japan","flag":"🇯🇵","values":{"1952":0,"1953":0,"1954":0,"1955":0,"1956":0,"1957":0,"1958":0,"1959":1,"1960":1,"1961":1,"1962":1,"1963":1,"1964":1,"1965":1,"1966":1,"1967":1,"1968":1,"1969":1,"1970":1,"1971":1,"1972":1,"1973":1,"1974":1,"1975":1,"1976":1,"1977":1,"1978":1,"1979":1,"1980":1,"1981":1,"1982":1,"1983":1,"1984":1,"1985":1,"1986":1,"1987":1,"1988":1,"1989":1,"1990":1,"1991":1,"1992":1,"1993":1,"1994":1,"1995":1,"1996":1,"1997":1,"1998":1,"1999":1,"2000":1,"2001":1,"2002":1,"2003":1,"2004":1,"2005":1,"2006":1,"2007":2,"2008":2,"2009":2,"2010":2,"2011":2,"2012":2,"2013":2,"2014":2,"2015":2,"2016":2,"2017":2,"2018":2,"2019":2,"2020":2,"2021":2,"2022":2,"2023":2,"2024":2,"2025":2},"ranks":{"1952":2,"1953":2,"1954":2,"1955":2,"1956":3,"1957":3,"1958":3,"1959":2,"1960":2,"1961":2,"1962":2,"1963":2,"1964":2,"1965":2,"1966":3,"1967":3,"1968":3,"1969":3,"1970":3,"1971":3,"1972":3,"1973":3,"1974":3,"1975":3,"1976":3,"1977":3,"1978":3,"1979":3,"1980":3,"1981":3,"1982":3,"1983":3,"1984":4,"1985":4,"1986":4,"1987":4,"1988":4,"1989":4,"1990":4,"1991":4,"1992":4,"1993":4,"1994":4,"1995":4,"1996":5,"1997":5,"1998":5,"1999":5,"2000":5,"2001":5,"2002":5,"2003":5,"2004":5,"2005":5,"2006":6,"2007":5,"2008":4,"2009":5,"2010":5,"2011":5,"2012":5,"2013":5,"2014":5,"2015":5,"2016":5,"2017":5,"2018":6,"2019":6,"2020":6,"2021":6,"2022":6,"2023":6,"2024":6,"2025":6},"order":{"1952":16,"1953":16,"1954":17,"1955":18,"1956":18,"1957":19,"1958":19,"1959":6,"1960":6,"1961":6,"1962":6,"1963":6,"1964":6,"1965":6,"1966":6,"1967":6,"1968":7,"1969":7,"1970":7,"1971":7,"1972":7,"1973":8,"1974":8,"1975":8,"1976":8,"1977":8,"1978":8,"1979":8,"1980":8,"1981":9,"1982":9,"1983":9,"1984":9,"1985":10,"1986":10,"1987":10,"1988":11,"1989":11,"1990":11,"1991":11,"1992":11,"1993":11,"1994":11,"1995":11,"1996":11,"1997":11,"1998":12,"1999":12,"2000":13,"2001":13,"2002":13,"2003":13,"2004":14,"2005":15,"2006":15,"2007":12,"2008":12,"2009":12,"2010":12,"2011":12,"2012":12,"2013":12,"2014":12,"2015":12,"2016":12,"2017":12,"2018":12,"2019":13,"2020":14,"2021":14,"2022":14,"2023":14,"2024":14,"2025":14}},{"country":"Mexico","flag":"🇲🇽","values":{"1952":0,"1953":0,"1954":0,"1955":0,"1956":0,"1957":0,"1958":0,"1959":0,"1960":0,"1961":0,"1962":0,"1963":0,"1964":0,"1965":0,"1966":0,"1967":0,"1968":0,"1969":0,"1970":0,"1971":0,"1972":0,"1973":0,"1974":0,"1975":0,"1976":0,"1977":0,"1978":0,"1979":0,"1980":0,"1981":0,"1982":0,"1983":0,"1984":0,"1985":0,"1986":0,"1987":0,"1988":0,"1989":0,"1990":0,"1991":1,"1992":1,"1993":1,"1994":1,"1995":1,"1996":1,"1997":1,"1998":1,"1999":1,"2000":1,"2001":1,"2002":1,"2003":1,"2004":1,"2005":1,"2006":1,"2007":1,"2008":1,"2009":1,"2010":2,"2011":2,"2012":2,"2013":2,"2014":2,"2015":2,"2016":2,"2017":2,"2018":2,"2019":2,"2020":3,"2021":3,"2022":3,"2023":3,"2024":3,"2025":4},"ranks":{"1952":2,"1953":2,"1954":2,"1955":2,"1956":3,"1957":3,"1958":3,"1959":3,"1960":3,"1961":3,"1962":3,"1963":3,"1964":3,"1965":3,"1966":4,"1967":4,"1968":4,"1969":4,"1970":4,"1971":4,"1972":4,"1973":4,"1974":4,"1975":4,"1976":4,"1977":4,"1978":4,"1979":4,"1980":4,"1981":4,"1982":4,"1983":4,"1984":5,"1985":5,"1986":5,"1987":5,"1988":5,"1989":5,"1990":5,"1991":4,"1992":4,"1993":4,"1994":4,"1995":4,"1996":5,"1997":5,"1998":5,"1999":5,"2000":5,"2001":5,"2002":5,"2003":5,"2004":5,"2005":5,"2006":6,"2007":6,"2008":5,"2009":6,"2010":5,"2011":5,"2012":5,"2013":5,"2014":5,"2015":5,"2016":5,"2017":5,"2018":6,"2019":6,"2020":5,"2021":5,"2022":5,"2023":5,"2024":5,"2025":4},"order":{"1952":18,"1953":18,"1954":19,"1955":20,"1956":20,"1957":21,"1958":21,"1959":21,"1960":21,"1961":21,"1962":21,"1963":21,"1964":21,"1965":22,"1966":22,"1967":22,"1968":22,"1969":23,"1970":24,"1971":24,"1972":24,"1973":24,"1974":25,"1975":25,"1976":25,"1977":26,"1978":27,"1979":28,"1980":28,"1981":28,"1982":28,"1983":29,"1984":29,"1985":29,"1986":29,"1987":29,"1988":29,"1989":30,"1990":31,"1991":26,"1992":26,"1993":26,"1994":26,"1995":26,"1996":26,"1997":26,"1998":26,"1999":26,"2000":27,"2001":27,"2002":27,"2003":27,"2004":27,"2005":27,"2006":27,"2007":27,"2008":27,"2009":27,"2010":13,"2011":13,"2012":13,"2013":13,"2014":13,"2015":13,"2016":13,"2017":13,"2018":13,"2019":14,"2020":6,"2021":6,"2022":6,"2023":6,"2024":6,"2025":4}},{"country":"Peru","flag":"🇵🇪","values":{"1952":0,"1953":0,"1954":0,"1955":0,"1956":0,"1957":1,"1958":1,"1959":1,"1960":1,"1961":1,"1962":1,"1963":1,"1964":1,"1965":1,"1966":1,"1967":1,"1968":1,"1969":1,"1970":1,"1971":1,"1972":1,"1973":1,"1974":1,"1975":1,"1976":1,"1977":1,"1978":1,"1979":1,"1980":1,"1981":1,"1982":1,"1983":1,"1984":1,"1985":1,"1986":1,"1987":1,"1988":1,"1989":1,"1990":1,"1991":1,"1992":1,"1993":1,"1994":1,"1995":1,"1996":1,"1997":1,"1998":1,"1999":1,"2000":1,"2001":1,"2002":1,"2003":1,"2004":1,"2005":1,"2006":1,"2007":1,"2008":1,"2009":1,"2010":1,"2011":1,"2012":1,"2013":1,"2014":1,"2015":1,"2016":1,"2017":1,"2018":1,"2019":1,"2020":1,"2021":1,"2022":1,"2023":1,"2024":1,"2025":1},"ranks":{"1952":2,"1953":2,"1954":2,"1955":2,"1956":3,"1957":2,"1958":2,"1959":2,"1960":2,"1961":2,"1962":2,"1963":2,"1964":2,"1965":2,"1966":3,"1967":3,"1968":3,"1969":3,"1970":3,"1971":3,"1972":3,"1973":3,"1974":3,"1975":3,"1976":3,"1977":3,"1978":3,"1979":3,"1980":3,"1981":3,"1982":3,"1983":3,"1984":4,"1985":4,"1986":4,"1987":4,"1988":4,"1989":4,"1990":4,"1991":4,"1992":4,"1993":4,"1994":4,"1995":4,"1996":5,"1997":5,"1998":5,"1999":5,"2000":5,"2001":5,"2002":5,"2003":5,"2004":5,"2005":5,"2006":6,"2007":6,"2008":5,"2009":6,"2010":6,"2011":6,"2012":6,"2013":6,"2014":6,"2015":6,"2016":6,"2017":6,"2018":7,"2019":7,"2020":7,"2021":7,"2022":7,"2023":7,"2024":7,"2025":7},"order":{"1952":25,"1953":25,"1954":26,"1955":27,"1956":27,"1957":4,"1958":4,"1959":4,"1960":4,"1961":4,"1962":4,"1963":4,"1964":4,"1965":4,"1966":4,"1967":4,"1968":5,"1969":5,"1970":5,"1971":5,"1972":5,"1973":6,"1974":6,"1975":6,"1976":6,"1977":6,"1978":6,"1979":6,"1980":6,"1981":7,"1982":7,"1983":7,"1984":7,"1985":8,"1986":8,"1987":8,"1988":9,"1989":9,"1990":9,"1991":9,"1992":9,"1993":9,"1994":9,"1995":9,"1996":9,"1997":9,"1998":10,"1999":10,"2000":11,"2001":11,"2002":11,"2003":11,"2004":12,"2005":13,"2006":13,"2007":14,"2008":14,"2009":14,"2010":15,"2011":15,"2012":15,"2013":15,"2014":16,"2015":16,"2016":16,"2017":17,"2018":17,"2019":17,"2020":17,"2021":17,"2022":17,"2023":17,"2024":17,"2025":17}},{"country":"Philippines","flag":"🇵🇭","values":{"1952":0,"1953":0,"1954":0,"1955":0,"1956":0,"1957":0,"1958":0,"1959":0,"1960":0,"1961":0,"1962":0,"1963":0,"1964":0,"1965":0,"1966":0,"1967":0,"1968":0,"1969":1,"1970":1,"1971":1,"1972":1,"1973":2,"1974":2,"1975":2,"1976":2,"1977":2,"1978":2,"1979":2,"1980":2,"1981":2,"1982":2,"1983":2,"1984":2,"1985":2,"1986":2,"1987":2,"1988":2,"1989":2,"1990":2,"1991":2,"1992":2,"1993":2,"1994":2,"1995":2,"1996":2,"1997":2,"1998":2,"1999":2,"2000":2,"2001":2,"2002":2,"2003":2,"2004":2,"2005":2,"2006":2,"2007":2,"2008":2,"2009":2,"2010":2,"2011":2,"2012":2,"2013":2,"2014":2,"2015":3,"2016":3,"2017":3,"2018":4,"2019":4,"2020":4,"2021":4,"2022":4,"2023":4,"2024":4,"2025":4},"ranks":{"1952":2,"1953":2,"1954":2,"1955":2,"1956":3,"1957":3,"1958":3,"1959":3,"1960":3,"1961":3,"1962":3,"1963":3,"1964":3,"1965":3,"1966":4,"1967":4,"1968":4,"1969":3,"1970":3,"1971":3,"1972":3,"1973":2,"1974":2,"1975":2,"1976":2,"1977":2,"1978":2,"1979":2,"1980":2,"1981":2,"1982":2,"1983":2,"1984":3,"1985":3,"1986":3,"1987":3,"1988":3,"1989":3,"1990":3,"1991":3,"1992":3,"1993":3,"1994":3,"1995":3,"1996":4,"1997":4,"1998":4,"1999":4,"2000":4,"2001":4,"2002":4,"2003":4,"2004":4,"2005":4,"2006":5,"2007":5,"2008":4,"2009":5,"2010":5,"2011":5,"2012":5,"2013":5,"2014":5,"2015":4,"2016":4,"2017":4,"2018":4,"2019":4,"2020":4,"2021":4,"2022":4,"2023":4,"2024":4,"2025":4},"order":{"1952":26,"1953":26,"1954":27,"1955":28,"1956":28,"1957":28,"1958":28,"1959":28,"1960":28,"1961":28,"1962":28,"1963":28,"1964":28,"1965":29,"1966":29,"1967":29,"1968":29,"1969":12,"1970":12,"1971":12,"1972":12,"1973":3,"1974":3,"1975":3,"1976":3,"1977":3,"1978":3,"1979":3,"1980":3,"1981":3,"1982":3,"1983":3,"1984":3,"1985":3,"1986":4,"1987":4,"1988":4,"1989":4,"1990":4,"1991":4,"1992":4,"1993":5,"1994":5,"1995":5,"1996":5,"1997":5,"1998":5,"1999":5,"2000":5,"2001":5,"2002":5,"2003":5,"2004":5,"2005":5,"2006":5,"2007":5,"2008":5,"2009":5,"2010":5,"2011":5,"2012":5,"2013":5,"2014":5,"2015":4,"2016":4,"2017":4,"2018":3,"2019":3,"2020":3,"2021":3,"2022":3,"2023":3,"2024":3,"2025":3}},{"country":"Puerto Rico","flag":"🇵🇷","values":{"1952":0,"1953":0,"1954":0,"1955":0,"1956":0,"1957":0,"1958":0,"1959":0,"1960":0,"1961":0,"1962":0,"1963":0,"1964":0,"1965":0,"1966":0,"1967":0,"1968":0,"1969":0,"1970":1,"1971":1,"1972":1,"1973":1,"1974":1,"1975":1,"1976":1,"1977":1,"1978":1,"1979":1,"1980":1,"1981":1,"1982":1,"1983":1,"1984":1,"1985":2,"1986":2,"1987":2,"1988":2,"1989":2,"1990":2,"1991":2,"1992":2,"1993":3,"1994":3,"1995":3,"1996":3,"1997":3,"1998":3,"1999":3,"2000":3,"2001":4,"2002":4,"2003":4,"2004":4,"2005":4,"2006":5,"2007":5,"2008":5,"2009":5,"2010":5,"2011":5,"2012":5,"2013":5,"2014":5,"2015":5,"2016":5,"2017":5,"2018":5,"2019":5,"2020":5,"2021":5,"2022":5,"2023":5,"2024":5,"2025":5},"ranks":{"1952":2,"1953":2,"1954":2,"1955":2,"1956":3,"1957":3,"1958":3,"1959":3,"1960":3,"1961":3,"1962":3,"1963":3,"1964":3,"1965":3,"1966":4,"1967":4,"1968":4,"1969":4,"1970":3,"1971":3,"1972":3,"1973":3,"1974":3,"1975":3,"1976":3,"1977":3,"1978":3,"1979":3,"1980":3,"1981":3,"1982":3,"1983":3,"1984":4,"1985":3,"1986":3,"1987":3,"1988":3,"1989":3,"1990":3,"1991":3,"1992":3,"1993":2,"1994":2,"1995":2,"1996":3,"1997":3,"1998":3,"1999":3,"2000":3,"2001":2,"2002":2,"2003":2,"2004":2,"2005":2,"2006":2,"2007":2,"2008":2,"2009":3,"2010":3,"2011":3,"2012":3,"2013":3,"2014":3,"2015":3,"2016":3,"2017":3,"2018":3,"2019":3,"2020":3,"2021":3,"2022":3,"2023":3,"2024":3,"2025":3},"order":{"1952":27,"1953":27,"1954":28,"1955":29,"1956":29,"1957":29,"1958":29,"1959":29,"1960":29,"1961":29,"1962":29,"1963":29,"1964":29,"1965":30,"1966":30,"1967":30,"1968":30,"1969":30,"1970":13,"1971":13,"1972":13,"1973":13,"1974":13,"1975":13,"1976":13,"1977":13,"1978":13,"1979":13,"1980":13,"1981":14,"1982":14,"1983":14,"1984":14,"1985":6,"1986":6,"1987":6,"1988":6,"1989":6,"1990":6,"1991":6,"1992":6,"1993":3,"1994":3,"1995":3,"1996":3,"1997":3,"1998":3,"1999":3,"2000":3,"2001":2,"2002":2,"2003":2,"2004":2,"2005":2,"2006":1,"2007":1,"2008":1,"2009":2,"2010":2,"2011":2,"2012":2,"2013":2,"2014":2,"2015":2,"2016":2,"2017":2,"2018":2,"2019":2,"2020":2,"2021":2,"2022":2,"2023":2,"2024":2,"2025":2}},{"country":"South Africa","flag":"🇿🇦","values":{"1952":0,"1953":0,"1954":0,"1955":0,"1956":0,"1957":0,"1958":0,"1959":0,"1960":0,"1961":0,"1962":0,"1963":0,"1964":0,"1965":0,"1966":0,"1967":0,"1968":0,"1969":0,"1970":0,"1971":0,"1972":0,"1973":0,"1974":0,"1975":0,"1976":0,"1977":0,"1978":1,"1979":1,"1980":1,"1981":1,"1982":1,"1983":1,"1984":1,"1985":1,"1986":1,"1987":1,"1988":1,"1989":1,"1990":1,"1991":1,"1992":1,"1993":1,"1994":1,"1995":1,"1996":1,"1997":1,"1998":1,"1999":1,"2000":1,"2001":1,"2002":1,"2003":1,"2004":1,"2005":1,"2006":1,"2007":1,"2008":1,"2009":1,"2010":1,"2011":1,"2012":1,"2013":1,"2014":1,"2015":1,"2016":1,"2017":2,"2018":2,"2019":3,"2020":3,"2021":3,"2022":3,"2023":3,"2024":3,"2025":3},"ranks":{"1952":2,"1953":2,"1954":2,"1955":2,"1956":3,"1957":3,"1958":3,"1959":3,"1960":3,"1961":3,"1962":3,"1963":3,"1964":3,"1965":3,"1966":4,"1967":4,"1968":4,"1969":4,"1970":4,"1971":4,"1972":4,"1973":4,"1974":4,"1975":4,"1976":4,"1977":4,"1978":3,"1979":3,"1980":3,"1981":3,"1982":3,"1983":3,"1984":4,"1985":4,"1986":4,"1987":4,"1988":4,"1989":4,"1990":4,"1991":4,"1992":4,"1993":4,"1994":4,"1995":4,"1996":5,"1997":5,"1998":5,"1999":5,"2000":5,"2001":5,"2002":5,"2003":5,"2004":5,"2005":5,"2006":6,"2007":6,"2008":5,"2009":6,"2010":6,"2011":6,"2012":6,"2013":6,"2014":6,"2015":6,"2016":6,"2017":5,"2018":6,"2019":5,"2020":5,"2021":5,"2022":5,"2023":5,"2024":5,"2025":5},"order":{"1952":28,"1953":28,"1954":29,"1955":30,"1956":30,"1957":30,"1958":30,"1959":30,"1960":30,"1961":30,"1962":30,"1963":30,"1964":30,"1965":31,"1966":31,"1967":31,"1968":31,"1969":31,"1970":31,"1971":31,"1972":31,"1973":31,"1974":32,"1975":32,"1976":32,"1977":33,"1978":19,"1979":19,"1980":19,"1981":20,"1982":20,"1983":20,"1984":20,"1985":20,"1986":20,"1987":20,"1988":20,"1989":20,"1990":20,"1991":20,"1992":20,"1993":20,"1994":20,"1995":20,"1996":20,"1997":20,"1998":20,"1999":20,"2000":21,"2001":21,"2002":21,"2003":21,"2004":21,"2005":22,"2006":22,"2007":22,"2008":22,"2009":22,"2010":23,"2011":23,"2012":23,"2013":23,"2014":23,"2015":23,"2016":23,"2017":16,"2018":16,"2019":5,"2020":5,"2021":5,"2022":5,"2023":5,"2024":5,"2025":6}},{"country":"Sweden","flag":"🇸🇪","values":{"1952":0,"1953":0,"1954":0,"1955":1,"1956":1,"1957":1,"1958":1,"1959":1,"1960":1,"1961":1,"1962":1,"1963":1,"1964":1,"1965":1,"1966":2,"1967":2,"1968":2,"1969":2,"1970":2,"1971":2,"1972":2,"1973":2,"1974":2,"1975":2,"1976":2,"1977":2,"1978":2,"1979":2,"1980":2,"1981":2,"1982":2,"1983":2,"1984":3,"1985":3,"1986":3,"1987":3,"1988":3,"1989":3,"1990":3,"1991":3,"1992":3,"1993":3,"1994":3,"1995":3,"1996":3,"1997":3,"1998":3,"1999":3,"2000":3,"2001":3,"2002":3,"2003":3,"2004":3,"2005":3,"2006":3,"2007":3,"2008":3,"2009":3,"2010":3,"2011":3,"2012":3,"2013":3,"2014":3,"2015":3,"2016":3,"2017":3,"2018":3,"2019":3,"2020":3,"2021":3,"2022":3,"2023":3,"2024":3,"2025":3},"ranks":{"1952":2,"1953":2,"1954":2,"1955":1,"1956":2,"1957":2,"1958":2,"1959":2,"1960":2,"1961":2,"1962":2,"1963":2,"1964":2,"1965":2,"1966":2,"1967":2,"1968":2,"1969":2,"1970":2,"1971":2,"1972":2,"1973":2,"1974":2,"1975":2,"1976":2,"1977":2,"1978":2,"1979":2,"1980":2,"1981":2,"1982":2,"1983":2,"1984":2,"1985":2,"1986":2,"1987":2,"1988":2,"1989":2,"1990":2,"1991":2,"1992":2,"1993":2,"1994":2,"1995":2,"1996":3,"1997":3,"1998":3,"1999":3,"2000":3,"2001":3,"2002":3,"2003":3,"2004":3,"2005":3,"2006":4,"2007":4,"2008":3,"2009":4,"2010":4,"2011":4,"2012":4,"2013":4,"2014":4,"2015":4,"2016":4,"2017":4,"2018":5,"2019":5,"2020":5,"2021":5,"2022":5,"2023":5,"2024":5,"2025":5},"order":{"1952":30,"1953":30,"1954":31,"1955":3,"1956":3,"1957":3,"1958":3,"1959":3,"1960":3,"1961":3,"1962":3,"1963":3,"1964":3,"1965":3,"1966":1,"1967":1,"1968":1,"1969":1,"1970":1,"1971":1,"1972":1,"1973":1,"1974":1,"1975":1,"1976":1,"1977":1,"1978":1,"1979":1,"1980":1,"1981":1,"1982":1,"1983":1,"1984":1,"1985":1,"1986":1,"1987":1,"1988":1,"1989":1,"1990":1,"1991":1,"1992":1,"1993":1,"1994":1,"1995":1,"1996":2,"1997":2,"1998":2,"1999":2,"2000":2,"2001":3,"2002":3,"2003":3,"2004":3,"2005":3,"2006":3,"2007":3,"2008":3,"2009":3,"2010":3,"2011":3,"2012":3,"2013":3,"2014":3,"2015":3,"2016":3,"2017":3,"2018":4,"2019":4,"2020":4,"2021":4,"2022":4,"2023":4,"2024":4,"2025":5}},{"country":"Thailand","flag":"🇹🇭","values":{"1952":0,"1953":0,"1954":0,"1955":0,"1956":0,"1957":0,"1958":0,"1959":0,"1960":0,"1961":0,"1962":0,"1963":0,"1964":0,"1965":1,"1966":1,"1967":1,"1968":1,"1969":1,"1970":1,"1971":1,"1972":1,"1973":1,"1974":1,"1975":1,"1976":1,"1977":1,"1978":1,"1979":1,"1980":1,"1981":1,"1982":1,"1983":1,"1984":1,"1985":1,"1986":1,"1987":1,"1988":2,"1989":2,"1990":2,"1991":2,"1992":2,"1993":2,"1994":2,"1995":2,"1996":2,"1997":2,"1998":2,"1999":2,"2000":2,"2001":2,"2002":2,"2003":2,"2004":2,"2005":2,"2006":2,"2007":2,"2008":2,"2009":2,"2010":2,"2011":2,"2012":2,"2013":2,"2014":2,"2015":2,"2016":2,"2017":2,"2018":2,"2019":2,"2020":2,"2021":2,"2022":2,"2023":2,"2024":2,"2025":2},"ranks":{"1952":2,"1953":2,"1954":2,"1955":2,"1956":3,"1957":3,"1958":3,"1959":3,"1960":3,"1961":3,"1962":3,"1963":3,"1964":3,"1965":2,"1966":3,"1967":3,"1968":3,"1969":3,"1970":3,"1971":3,"1972":3,"1973":3,"1974":3,"1975":3,"1976":3,"1977":3,"1978":3,"1979":3,"1980":3,"1981":3,"1982":3,"1983":3,"1984":4,"1985":4,"1986":4,"1987":4,"1988":3,"1989":3,"1990":3,"1991":3,"1992":3,"1993":3,"1994":3,"1995":3,"1996":4,"1997":4,"1998":4,"1999":4,"2000":4,"2001":4,"2002":4,"2003":4,"2004":4,"2005":4,"2006":5,"2007":5,"2008":4,"2009":5,"2010":5,"2011":5,"2012":5,"2013":5,"2014":5,"2015":5,"2016":5,"2017":5,"2018":6,"2019":6,"2020":6,"2021":6,"2022":6,"2023":6,"2024":6,"2025":6},"order":{"1952":31,"1953":31,"1954":32,"1955":32,"1956":32,"1957":32,"1958":32,"1959":32,"1960":32,"1961":32,"1962":32,"1963":32,"1964":32,"1965":11,"1966":11,"1967":11,"1968":11,"1969":11,"1970":11,"1971":11,"1972":11,"1973":12,"1974":12,"1975":12,"1976":12,"1977":12,"1978":12,"1979":12,"1980":12,"1981":13,"1982":13,"1983":13,"1984":13,"1985":14,"1986":14,"1987":14,"1988":7,"1989":7,"1990":7,"1991":7,"1992":7,"1993":7,"1994":7,"1995":7,"1996":7,"1997":7,"1998":7,"1999":7,"2000":7,"2001":7,"2002":7,"2003":7,"2004":7,"2005":7,"2006":7,"2007":7,"2008":7,"2009":7,"2010":7,"2011":7,"2012":7,"2013":7,"2014":7,"2015":7,"2016":7,"2017":7,"2018":7,"2019":8,"2020":9,"2021":10,"2022":10,"2023":10,"2024":10,"2025":10}},{"country":"Trinidad and Tobago","flag":"🇹🇹","values":{"1952":0,"1953":0,"1954":0,"1955":0,"1956":0,"1957":0,"1958":0,"1959":0,"1960":0,"1961":0,"1962":0,"1963":0,"1964":0,"1965":0,"1966":0,"1967":0,"1968":0,"1969":0,"1970":0,"1971":0,"1972":0,"1973":0,"1974":0,"1975":0,"1976":0,"1977":1,"1978":1,"1979":1,"1980":1,"1981":1,"1982":1,"1983":1,"1984":1,"1985":1,"1986":1,"1987":1,"1988":1,"1989":1,"1990":1,"1991":1,"1992":1,"1993":1,"1994":1,"1995":1,"1996":1,"1997":1,"1998":2,"1999":2,"2000":2,"2001":2,"2002":2,"2003":2,"2004":2,"2005":2,"2006":2,"2007":2,"2008":2,"2009":2,"2010":2,"2011":2,"2012":2,"2013":2,"2014":2,"2015":2,"2016":2,"2017":2,"2018":2,"2019":2,"2020":2,"2021":2,"2022":2,"2023":2,"2024":2,"2025":2},"ranks":{"1952":2,"1953":2,"1954":2,"1955":2,"1956":3,"1957":3,"1958":3,"1959":3,"1960":3,"1961":3,"1962":3,"1963":3,"1964":3,"1965":3,"1966":4,"1967":4,"1968":4,"1969":4,"1970":4,"1971":4,"1972":4,"1973":4,"1974":4,"1975":4,"1976":4,"1977":3,"1978":3,"1979":3,"1980":3,"1981":3,"1982":3,"1983":3,"1984":4,"1985":4,"1986":4,"1987":4,"1988":4,"1989":4,"1990":4,"1991":4,"1992":4,"1993":4,"1994":4,"1995":4,"1996":5,"1997":5,"1998":4,"1999":4,"2000":4,"2001":4,"2002":4,"2003":4,"2004":4,"2005":4,"2006":5,"2007":5,"2008":4,"2009":5,"2010":5,"2011":5,"2012":5,"2013":5,"2014":5,"2015":5,"2016":5,"2017":5,"2018":6,"2019":6,"2020":6,"2021":6,"2022":6,"2023":6,"2024":6,"2025":6},"order":{"1952":32,"1953":32,"1954":33,"1955":33,"1956":33,"1957":33,"1958":33,"1959":33,"1960":33,"1961":33,"1962":33,"1963":33,"1964":33,"1965":33,"1966":33,"1967":33,"1968":33,"1969":33,"1970":33,"1971":33,"1972":33,"1973":33,"1974":33,"1975":33,"1976":33,"1977":18,"1978":18,"1979":18,"1980":18,"1981":19,"1982":19,"1983":19,"1984":19,"1985":19,"1986":19,"1987":19,"1988":19,"1989":19,"1990":19,"1991":19,"1992":19,"1993":19,"1994":19,"1995":19,"1996":19,"1997":19,"1998":8,"1999":8,"2000":8,"2001":8,"2002":8,"2003":8,"2004":8,"2005":8,"2006":8,"2007":8,"2008":8,"2009":8,"2010":8,"2011":8,"2012":8,"2013":8,"2014":8,"2015":8,"2016":8,"2017":8,"2018":8,"2019":9,"2020":10,"2021":11,"2022":11,"2023":11,"2024":11,"2025":11}},{"country":"United States","flag":"🇺🇸","values":{"1952":0,"1953":0,"1954":1,"1955":1,"1956":2,"1957":2,"1958":2,"1959":2,"1960":3,"1961":3,"1962":3,"1963":3,"1964":3,"1965":3,"1966":3,"1967":4,"1968":4,"1969":4,"1970":4,"1971":4,"1972":4,"1973":4,"1974":4,"1975":4,"1976":4,"1977":4,"1978":4,"1979":4,"1980":5,"1981":5,"1982":5,"1983":5,"1984":5,"1985":5,"1986":5,"1987":5,"1988":5,"1989":5,"1990":5,"1991":5,"1992":5,"1993":5,"1994":5,"1995":6,"1996":6,"1997":7,"1998":7,"1999":7,"2000":7,"2001":7,"2002":7,"2003":7,"2004":7,"2005":7,"2006":7,"2007":7,"2008":7,"2009":7,"2010":7,"2011":7,"2012":8,"2013":8,"2014":8,"2015":8,"2016":8,"2017":8,"2018":8,"2019":8,"2020":8,"2021":8,"2022":9,"2023":9,"2024":9,"2025":9},"ranks":{"1952":2,"1953":2,"1954":1,"1955":1,"1956":1,"1957":1,"1958":1,"1959":1,"1960":1,"1961":1,"1962":1,"1963":1,"1964":1,"1965":1,"1966":1,"1967":1,"1968":1,"1969":1,"1970":1,"1971":1,"1972":1,"1973":1,"1974":1,"1975":1,"1976":1,"1977":1,"1978":1,"1979":1,"1980":1,"1981":1,"1982":1,"1983":1,"1984":1,"1985":1,"1986":1,"1987":1,"1988":1,"1989":1,"1990":1,"1991":1,"1992":1,"1993":1,"1994":1,"1995":1,"1996":1,"1997":1,"1998":1,"1999":1,"2000":1,"2001":1,"2002":1,"2003":1,"2004":1,"2005":1,"2006":1,"2007":1,"2008":1,"2009":1,"2010":1,"2011":1,"2012":1,"2013":1,"2014":1,"2015":1,"2016":1,"2017":1,"2018":1,"2019":1,"2020":1,"2021":1,"2022":1,"2023":1,"2024":1,"2025":1},"order":{"1952":33,"1953":33,"1954":2,"1955":2,"1956":0,"1957":0,"1958":0,"1959":0,"1960":0,"1961":0,"1962":0,"1963":0,"1964":0,"1965":0,"1966":0,"1967":0,"1968":0,"1969":0,"1970":0,"1971":0,"1972":0,"1973":0,"1974":0,"1975":0,"1976":0,"1977":0,"1978":0,"1979":0,"1980":0,"1981":0,"1982":0,"1983":0,"1984":0,"1985":0,"1986":0,"1987":0,"1988":0,"1989":0,"1990":0,"1991":0,"1992":0,"1993":0,"1994":0,"1995":0,"1996":0,"1997":0,"1998":0,"1999":0,"2000":0,"2001":0,"2002":0,"2003":0,"2004":0,"2005":0,"2006":0,"2007":0,"2008":0,"2009":0,"2010":0,"2011":0,"2012":0,"2013":0,"2014":0,"2015":0,"2016":0,"2017":0,"2018":0,"2019":0,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0}},{"country":"Venezuela","flag":"🇻🇪","values":{"1952":0,"1953":0,"1954":0,"1955":0,"1956":0,"1957":0,"1958":0,"1959":0,"1960":0,"1961":0,"1962":0,"1963":0,"1964":0,"1965":0,"1966":0,"1967":0,"1968":0,"1969":0,"1970":0,"1971":0,"1972":0,"1973":0,"1974":0,"1975":0,"1976":0,"1977":0,"1978":0,"1979":1,"1980":1,"1981":2,"1982":2,"1983":2,"1984":2,"1985":2,"1986":3,"1987":3,"1988":3,"1989":3,"1990":3,"1991":3,"1992":3,"1993":3,"1994":3,"1995":3,"1996":4,"1997":4,"1998":4,"1999":4,"2000":4,"2001":4,"2002":4,"2003":4,"2004":4,"2005":4,"2006":4,"2007":4,"2008":5,"2009":6,"2010":6,"2011":6,"2012":6,"2013":7,"2014":7,"2015":7,"2016":7,"2017":7,"2018":7,"2019":7,"2020":7,"2021":7,"2022":7,"2023":7,"2024":7,"2025":7},"ranks":{"1952":2,"1953":2,"1954":2,"1955":2,"1956":3,"1957":3,"1958":3,"1959":3,"1960":3,"1961":3,"1962":3,"1963":3,"1964":3,"1965":3,"1966":4,"1967":4,"1968":4,"1969":4,"1970":4,"1971":4,"1972":4,"1973":4,"1974":4,"1975":4,"1976":4,"1977":4,"1978":4,"1979":3,"1980":3,"1981":2,"1982":2,"1983":2,"1984":3,"1985":3,"1986":2,"1987":2,"1988":2,"1989":2,"1990":2,"1991":2,"1992":2,"1993":2,"1994":2,"1995":2,"1996":2,"1997":2,"1998":2,"1999":2,"2000":2,"2001":2,"2002":2,"2003":2,"2004":2,"2005":2,"2006":3,"2007":3,"2008":2,"2009":2,"2010":2,"2011":2,"2012":2,"2013":2,"2014":2,"2015":2,"2016":2,"2017":2,"2018":2,"2019":2,"2020":2,"2021":2,"2022":2,"2023":2,"2024":2,"2025":2},"order":{"1952":34,"1953":34,"1954":34,"1955":34,"1956":34,"1957":34,"1958":34,"1959":34,"1960":34,"1961":34,"1962":34,"1963":34,"1964":34,"1965":34,"1966":34,"1967":34,"1968":34,"1969":34,"1970":34,"1971":34,"1972":34,"1973":34,"1974":34,"1975":34,"1976":34,"1977":34,"1978":34,"1979":20,"1980":20,"1981":5,"1982":5,"1983":5,"1984":5,"1985":5,"1986":2,"1987":2,"1988":2,"1989":2,"1990":2,"1991":2,"1992":2,"1993":2,"1994":2,"1995":2,"1996":1,"1997":1,"1998":1,"1999":1,"2000":1,"2001":1,"2002":1,"2003":1,"2004":1,"2005":1,"2006":2,"2007":2,"2008":2,"2009":1,"2010":1,"2011":1,"2012":1,"2013":1,"2014":1,"2015":1,"2016":1,"2017":1,"2018":1,"2019":1,"2020":1,"2021":1,"2022":1,"2023":1,"2024":1,"2025":1}}],"card_bg":"pink","outro_question":"Who's YOUR pick for the next Miss Universe? 👑","cta_line":"Show us your city's most beautiful spot on hilads.live ✨","caption":"The United States took its 2nd crown in 1956 and has led ever since: 9 crowns today. Venezuela came closest, one crown away in 2009 and 2013, and its 2008–2009 double is still the only back-to-back win in the pageant's history 👑 Mexico's 2025 crown lifts it level with the Philippines at 4. And Vietnam? Its best ever is H'Hen Niê's Top 5 in 2018. Different Worlds by Hilads.","hashtags":["#DifferentWorlds","#MissUniverse","#Pageant","#Venezuela","#Philippines","#Vietnam"],"warnings":["Winners 1952-2025 as in the official results (list of titleholders, cross-checked with its by-country table: every count matches). The 2026 edition is on 24 November 2026, after this video: not included.","2002: Oxana Fedorova (Russia) was dethroned and Justine Pasek (Panama) became Miss Universe 2002: counted for Panama, as the official list does.","Ties share a rank; among tied countries, the first to reach that count stays above. The US has led alone every year since 1956; Venezuela never overtook it.","Vietnam: no crown; best result H'Hen Niê, Top 5 in 2018 (2025: Hương Giang unplaced)."]}
+JSON, true, 512, JSON_THROW_ON_ERROR);
+        $r = DwStudio::importRace($topic, $content, 'Claude Code');
+        echo $r['ok'] ? "  OK  dw: 2026-11-19 race package v{$r['version']}\n" : "  ERR dw Nov 19 race: " . implode(' ', $r['errors']) . "\n";
+    }
+} catch (Throwable $e) {
+    echo "  ERR dw Nov 19 race: " . $e->getMessage() . "\n";
+}
+
+// Once: Nov 20 becomes the race "The countries with the world's best universities, 2003 to 2026"; the old Teachers' Day topic is replaced (dropped, unpublished). As Nov 16.
+try {
+    require_once __DIR__ . '/vendor/autoload.php';
+    $old = $pdo->query("SELECT id, title, status FROM dw_topics WHERE date = '2026-11-20' AND title ILIKE 'Vietnamese Teachers'' Day%'")->fetch(PDO::FETCH_ASSOC);
+    if ($old && $old['status'] !== 'published') {
+        DwStudio::deleteTopic((int) $old['id']);
+        echo "  OK  dw: dropped 2026-11-20 \"{$old['title']}\" (replaced by the race, same day, same theme)\n";
+    }
+    $title = 'The countries with the world\'s best universities, 2003 to 2026';
+    if (!$pdo->query("SELECT 1 FROM dw_topics WHERE date = '2026-11-20'")->fetchColumn()) {
+        $pdo->prepare("INSERT INTO dw_topics (date, title, notes, type, needs_date_check, format) VALUES ('2026-11-20', ?, ?, 'evergreen', false, 'race')")
+            ->execute([$title, 'Race for Vietnamese Teachers\' Day: universities in the ARWU top 100 per country, every edition 2003-2026 (ShanghaiRanking). The US 58 -> 37, mainland China 0 until 2016, passes the UK in 2023 (banner), 16 in 2026.']);
+        echo "  OK  dw: 2026-11-20 race topic\n";
+    }
+    $topic = DwStudio::topicByDate('2026-11-20');
+    if ($topic !== null && $topic['format'] === 'race' && $topic['title'] === $title && DwStudio::package($topic['id']) === null) {
+        $content = json_decode(<<<'JSON'
+{"format":"race","topic":"The countries with the world's best universities, 2003 to 2026","headline":"The countries with the world's best universities, 2003 → 2026 🎓","headline_accent":"best universities","detail":"2023: China passes the UK 🇨🇳","banner_year":2023,"value_label":"Universities in the ARWU top 100","data_years":"2003–2026","unit":"","decimals":0,"value_prefix":"🎓 x","source":"ShanghaiRanking (ARWU)","source_url":"https://www.shanghairanking.com/rankings/arwu/2026","series":[{"country":"Australia","flag":"🇦🇺","values":{"2003":2,"2004":2,"2005":2,"2006":2,"2007":2,"2008":3,"2009":3,"2010":3,"2011":4,"2012":5,"2013":5,"2014":4,"2015":4,"2016":6,"2017":6,"2018":6,"2019":7,"2020":7,"2021":7,"2022":7,"2023":6,"2024":5,"2025":5,"2026":5},"ranks":{"2003":6,"2004":7,"2005":6,"2006":7,"2007":6,"2008":5,"2009":5,"2010":5,"2011":5,"2012":3,"2013":3,"2014":4,"2015":3,"2016":3,"2017":3,"2018":3,"2019":3,"2020":3,"2021":3,"2022":3,"2023":4,"2024":4,"2025":4,"2026":4},"order":{"2003":8,"2004":8,"2005":8,"2006":8,"2007":8,"2008":7,"2009":6,"2010":6,"2011":5,"2012":2,"2013":2,"2014":6,"2015":5,"2016":2,"2017":2,"2018":2,"2019":2,"2020":2,"2021":2,"2022":3,"2023":3,"2024":4,"2025":4,"2026":4}},{"country":"Belgium","flag":"🇧🇪","values":{"2003":1,"2004":0,"2005":0,"2006":0,"2007":0,"2008":0,"2009":0,"2010":1,"2011":1,"2012":1,"2013":1,"2014":2,"2015":2,"2016":2,"2017":2,"2018":2,"2019":2,"2020":2,"2021":2,"2022":2,"2023":2,"2024":2,"2025":2,"2026":2},"ranks":{"2003":7,"2004":9,"2005":8,"2006":9,"2007":8,"2008":8,"2009":8,"2010":7,"2011":8,"2012":7,"2013":7,"2014":6,"2015":5,"2016":6,"2017":7,"2018":7,"2019":7,"2020":8,"2021":7,"2022":7,"2023":8,"2024":7,"2025":7,"2026":7},"order":{"2003":11,"2004":22,"2005":22,"2006":21,"2007":20,"2008":20,"2009":20,"2010":15,"2011":15,"2012":15,"2013":15,"2014":11,"2015":11,"2016":11,"2017":11,"2018":12,"2019":12,"2020":12,"2021":13,"2022":12,"2023":12,"2024":10,"2025":11,"2026":9}},{"country":"Canada","flag":"🇨🇦","values":{"2003":4,"2004":4,"2005":4,"2006":4,"2007":4,"2008":4,"2009":4,"2010":4,"2011":4,"2012":4,"2013":4,"2014":4,"2015":4,"2016":4,"2017":4,"2018":4,"2019":4,"2020":4,"2021":4,"2022":5,"2023":5,"2024":3,"2025":3,"2026":3},"ranks":{"2003":4,"2004":5,"2005":4,"2006":5,"2007":4,"2008":4,"2009":4,"2010":4,"2011":5,"2012":4,"2013":4,"2014":4,"2015":3,"2016":4,"2017":5,"2018":5,"2019":5,"2020":6,"2021":5,"2022":4,"2023":5,"2024":6,"2025":6,"2026":6},"order":{"2003":4,"2004":4,"2005":4,"2006":4,"2007":4,"2008":3,"2009":4,"2010":4,"2011":4,"2012":3,"2013":3,"2014":3,"2015":2,"2016":3,"2017":4,"2018":4,"2019":4,"2020":6,"2021":5,"2022":4,"2023":4,"2024":8,"2025":8,"2026":7}},{"country":"China","flag":"🇨🇳","values":{"2003":0,"2004":0,"2005":0,"2006":0,"2007":0,"2008":0,"2009":0,"2010":0,"2011":0,"2012":0,"2013":0,"2014":0,"2015":0,"2016":2,"2017":2,"2018":3,"2019":4,"2020":6,"2021":7,"2022":8,"2023":10,"2024":13,"2025":13,"2026":16},"ranks":{"2003":8,"2004":9,"2005":8,"2006":9,"2007":8,"2008":8,"2009":8,"2010":8,"2011":9,"2012":8,"2013":8,"2014":8,"2015":7,"2016":6,"2017":7,"2018":6,"2019":5,"2020":4,"2021":3,"2022":2,"2023":2,"2024":2,"2025":2,"2026":2},"order":{"2003":17,"2004":17,"2005":17,"2006":16,"2007":15,"2008":15,"2009":15,"2010":16,"2011":16,"2012":16,"2013":16,"2014":16,"2015":16,"2016":13,"2017":12,"2018":10,"2019":7,"2020":3,"2021":3,"2022":2,"2023":1,"2024":1,"2025":1,"2026":1}},{"country":"Denmark","flag":"🇩🇰","values":{"2003":1,"2004":1,"2005":1,"2006":1,"2007":1,"2008":2,"2009":2,"2010":2,"2011":2,"2012":2,"2013":2,"2014":2,"2015":2,"2016":2,"2017":2,"2018":2,"2019":2,"2020":2,"2021":2,"2022":2,"2023":2,"2024":2,"2025":2,"2026":2},"ranks":{"2003":7,"2004":8,"2005":7,"2006":8,"2007":7,"2008":6,"2009":6,"2010":6,"2011":7,"2012":6,"2013":6,"2014":6,"2015":5,"2016":6,"2017":7,"2018":7,"2019":7,"2020":8,"2021":7,"2022":7,"2023":8,"2024":7,"2025":7,"2026":7},"order":{"2003":12,"2004":11,"2005":11,"2006":10,"2007":10,"2008":10,"2009":10,"2010":10,"2011":10,"2012":11,"2013":11,"2014":10,"2015":10,"2016":10,"2017":10,"2018":11,"2019":11,"2020":11,"2021":12,"2022":11,"2023":11,"2024":9,"2025":10,"2026":8}},{"country":"France","flag":"🇫🇷","values":{"2003":2,"2004":4,"2005":4,"2006":4,"2007":4,"2008":3,"2009":3,"2010":3,"2011":3,"2012":3,"2013":4,"2014":4,"2015":4,"2016":3,"2017":3,"2018":3,"2019":3,"2020":5,"2021":4,"2022":4,"2023":4,"2024":4,"2025":4,"2026":4},"ranks":{"2003":6,"2004":5,"2005":4,"2006":5,"2007":4,"2008":5,"2009":5,"2010":5,"2011":6,"2012":5,"2013":4,"2014":4,"2015":3,"2016":5,"2017":6,"2018":6,"2019":6,"2020":5,"2021":5,"2022":5,"2023":6,"2024":5,"2025":5,"2026":5},"order":{"2003":9,"2004":5,"2005":5,"2006":5,"2007":5,"2008":8,"2009":7,"2010":7,"2011":7,"2012":7,"2013":6,"2014":5,"2015":4,"2016":7,"2017":8,"2018":8,"2019":9,"2020":5,"2021":7,"2022":6,"2023":7,"2024":6,"2025":6,"2026":6}},{"country":"Germany","flag":"🇩🇪","values":{"2003":5,"2004":7,"2005":5,"2006":5,"2007":6,"2008":6,"2009":5,"2010":5,"2011":6,"2012":4,"2013":4,"2014":4,"2015":4,"2016":3,"2017":4,"2018":4,"2019":4,"2020":4,"2021":4,"2022":4,"2023":4,"2024":4,"2025":4,"2026":4},"ranks":{"2003":3,"2004":3,"2005":3,"2006":4,"2007":3,"2008":3,"2009":3,"2010":3,"2011":3,"2012":4,"2013":4,"2014":4,"2015":3,"2016":5,"2017":5,"2018":5,"2019":5,"2020":6,"2021":5,"2022":5,"2023":6,"2024":5,"2025":5,"2026":5},"order":{"2003":2,"2004":2,"2005":3,"2006":3,"2007":3,"2008":2,"2009":2,"2010":2,"2011":2,"2012":5,"2013":5,"2014":4,"2015":3,"2016":8,"2017":5,"2018":5,"2019":5,"2020":7,"2021":6,"2022":5,"2023":6,"2024":5,"2025":5,"2026":5}},{"country":"Israel","flag":"🇮🇱","values":{"2003":1,"2004":1,"2005":1,"2006":1,"2007":1,"2008":1,"2009":1,"2010":1,"2011":1,"2012":3,"2013":3,"2014":2,"2015":2,"2016":2,"2017":1,"2018":2,"2019":1,"2020":1,"2021":3,"2022":3,"2023":3,"2024":3,"2025":3,"2026":2},"ranks":{"2003":7,"2004":8,"2005":7,"2006":8,"2007":7,"2008":7,"2009":7,"2010":7,"2011":8,"2012":5,"2013":5,"2014":6,"2015":5,"2016":6,"2017":8,"2018":7,"2019":8,"2020":9,"2021":6,"2022":6,"2023":7,"2024":6,"2025":6,"2026":7},"order":{"2003":14,"2004":13,"2005":13,"2006":12,"2007":12,"2008":12,"2009":12,"2010":12,"2011":12,"2012":9,"2013":8,"2014":12,"2015":12,"2016":12,"2017":17,"2018":13,"2019":17,"2020":17,"2021":10,"2022":9,"2023":9,"2024":7,"2025":7,"2026":14}},{"country":"Japan","flag":"🇯🇵","values":{"2003":5,"2004":5,"2005":5,"2006":6,"2007":6,"2008":4,"2009":5,"2010":5,"2011":5,"2012":4,"2013":3,"2014":3,"2015":4,"2016":4,"2017":3,"2018":3,"2019":3,"2020":3,"2021":3,"2022":2,"2023":2,"2024":2,"2025":2,"2026":2},"ranks":{"2003":3,"2004":4,"2005":3,"2006":3,"2007":3,"2008":4,"2009":3,"2010":3,"2011":4,"2012":4,"2013":5,"2014":5,"2015":3,"2016":4,"2017":6,"2018":6,"2019":6,"2020":7,"2021":6,"2022":7,"2023":8,"2024":7,"2025":7,"2026":7},"order":{"2003":3,"2004":3,"2005":2,"2006":2,"2007":2,"2008":5,"2009":3,"2010":3,"2011":3,"2012":6,"2013":9,"2014":9,"2015":7,"2016":4,"2017":9,"2018":9,"2019":10,"2020":10,"2021":9,"2022":14,"2023":14,"2024":12,"2025":13,"2026":11}},{"country":"Netherlands","flag":"🇳🇱","values":{"2003":3,"2004":2,"2005":2,"2006":2,"2007":2,"2008":2,"2009":2,"2010":2,"2011":2,"2012":2,"2013":3,"2014":4,"2015":4,"2016":3,"2017":4,"2018":4,"2019":4,"2020":4,"2021":3,"2022":3,"2023":3,"2024":2,"2025":2,"2026":2},"ranks":{"2003":5,"2004":7,"2005":6,"2006":7,"2007":6,"2008":6,"2009":6,"2010":6,"2011":7,"2012":6,"2013":5,"2014":4,"2015":3,"2016":5,"2017":5,"2018":5,"2019":5,"2020":6,"2021":6,"2022":6,"2023":7,"2024":7,"2025":7,"2026":7},"order":{"2003":5,"2004":9,"2005":9,"2006":9,"2007":9,"2008":9,"2009":9,"2010":9,"2011":9,"2012":10,"2013":10,"2014":7,"2015":6,"2016":9,"2017":6,"2018":6,"2019":6,"2020":8,"2021":11,"2022":10,"2023":10,"2024":13,"2025":14,"2026":12}},{"country":"Sweden","flag":"🇸🇪","values":{"2003":3,"2004":4,"2005":4,"2006":4,"2007":4,"2008":4,"2009":3,"2010":3,"2011":3,"2012":3,"2013":3,"2014":3,"2015":3,"2016":3,"2017":3,"2018":3,"2019":3,"2020":3,"2021":3,"2022":3,"2023":3,"2024":2,"2025":3,"2026":2},"ranks":{"2003":5,"2004":5,"2005":4,"2006":5,"2007":4,"2008":4,"2009":5,"2010":5,"2011":6,"2012":5,"2013":5,"2014":5,"2015":4,"2016":5,"2017":6,"2018":6,"2019":6,"2020":7,"2021":6,"2022":6,"2023":7,"2024":7,"2025":6,"2026":7},"order":{"2003":6,"2004":6,"2005":6,"2006":6,"2007":6,"2008":4,"2009":8,"2010":8,"2011":8,"2012":8,"2013":7,"2014":8,"2015":9,"2016":6,"2017":7,"2018":7,"2019":8,"2020":9,"2021":8,"2022":8,"2023":8,"2024":14,"2025":9,"2026":15}},{"country":"Switzerland","flag":"🇨🇭","values":{"2003":3,"2004":3,"2005":3,"2006":3,"2007":3,"2008":3,"2009":3,"2010":3,"2011":4,"2012":4,"2013":4,"2014":5,"2015":4,"2016":4,"2017":5,"2018":5,"2019":5,"2020":5,"2021":5,"2022":4,"2023":5,"2024":5,"2025":5,"2026":5},"ranks":{"2003":5,"2004":6,"2005":5,"2006":6,"2007":5,"2008":5,"2009":5,"2010":5,"2011":5,"2012":4,"2013":4,"2014":3,"2015":3,"2016":4,"2017":4,"2018":4,"2019":4,"2020":5,"2021":4,"2022":5,"2023":5,"2024":4,"2025":4,"2026":4},"order":{"2003":7,"2004":7,"2005":7,"2006":7,"2007":7,"2008":6,"2009":5,"2010":5,"2011":6,"2012":4,"2013":4,"2014":2,"2015":8,"2016":5,"2017":3,"2018":3,"2019":3,"2020":4,"2021":4,"2022":7,"2023":5,"2024":3,"2025":3,"2026":3}},{"country":"United Kingdom","flag":"🇬🇧","values":{"2003":9,"2004":11,"2005":11,"2006":11,"2007":11,"2008":11,"2009":11,"2010":11,"2011":10,"2012":9,"2013":9,"2014":8,"2015":9,"2016":8,"2017":9,"2018":8,"2019":8,"2020":8,"2021":8,"2022":8,"2023":8,"2024":8,"2025":8,"2026":8},"ranks":{"2003":2,"2004":2,"2005":2,"2006":2,"2007":2,"2008":2,"2009":2,"2010":2,"2011":2,"2012":2,"2013":2,"2014":2,"2015":2,"2016":2,"2017":2,"2018":2,"2019":2,"2020":2,"2021":2,"2022":2,"2023":3,"2024":3,"2025":3,"2026":3},"order":{"2003":1,"2004":1,"2005":1,"2006":1,"2007":1,"2008":1,"2009":1,"2010":1,"2011":1,"2012":1,"2013":1,"2014":1,"2015":1,"2016":1,"2017":1,"2018":1,"2019":1,"2020":1,"2021":1,"2022":1,"2023":2,"2024":2,"2025":2,"2026":2}},{"country":"United States","flag":"🇺🇸","values":{"2003":58,"2004":51,"2005":53,"2006":54,"2007":54,"2008":54,"2009":55,"2010":54,"2011":53,"2012":53,"2013":52,"2014":52,"2015":51,"2016":50,"2017":48,"2018":46,"2019":45,"2020":41,"2021":40,"2022":39,"2023":38,"2024":38,"2025":37,"2026":37},"ranks":{"2003":1,"2004":1,"2005":1,"2006":1,"2007":1,"2008":1,"2009":1,"2010":1,"2011":1,"2012":1,"2013":1,"2014":1,"2015":1,"2016":1,"2017":1,"2018":1,"2019":1,"2020":1,"2021":1,"2022":1,"2023":1,"2024":1,"2025":1,"2026":1},"order":{"2003":0,"2004":0,"2005":0,"2006":0,"2007":0,"2008":0,"2009":0,"2010":0,"2011":0,"2012":0,"2013":0,"2014":0,"2015":0,"2016":0,"2017":0,"2018":0,"2019":0,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0,"2026":0}}],"card_bg":"blue","outro_question":"Which teacher changed YOUR life? 🍎","cta_line":"Show us your old school on hilads.live 🎓","caption":"Happy Vietnamese Teachers' Day 🍎 (Nov 20)\n\nIn 2003, 58 of the world's top 100 universities were American. Today: 37. Mainland China had none until 2016, caught the UK in 2022 and passed it in 2023: 16 universities in the top 100 this year. Behind every one of them: teachers. Different Worlds by Hilads.","hashtags":["#DifferentWorlds","#TeachersDay","#NgayNhaGiaoVietNam","#University","#ShanghaiRanking","#Education"],"warnings":["ShanghaiRanking's Academic Ranking of World Universities (ARWU), every edition 2003-2026 (shanghairanking.com, its rankings data): the universities with an exact rank of 100 or better (some years 101 with a tie at #100; past #100 ARWU publishes ranges only).","Countries as ARWU labels them: mainland China and Hong Kong ('China-Hong Kong') are separate.","Ties share a rank; among tied countries, the one at that count first (since that year) stays above. 2022: China ties the UK at 8 (the UK stays above), 2023: China 10, the UK 8.","No Vietnamese university in the top 100."]}
+JSON, true, 512, JSON_THROW_ON_ERROR);
+        $r = DwStudio::importRace($topic, $content, 'Claude Code');
+        echo $r['ok'] ? "  OK  dw: 2026-11-20 race package v{$r['version']}\n" : "  ERR dw Nov 20 race: " . implode(' ', $r['errors']) . "\n";
+    }
+} catch (Throwable $e) {
+    echo "  ERR dw Nov 20 race: " . $e->getMessage() . "\n";
+}
+
+// Once: Nov 21 becomes the race "The countries with the world's best bars, 2009 to 2026"; the old topic moves to the first date with no topic from Nov 22. As Nov 16.
+try {
+    require_once __DIR__ . '/vendor/autoload.php';
+    $old = $pdo->query("SELECT id, title, status FROM dw_topics WHERE date = '2026-11-21' AND title ILIKE 'World Hello Day%'")->fetch(PDO::FETCH_ASSOC);
+    if ($old && $old['status'] !== 'published') {
+        $free = $pdo->query("SELECT d::date::text FROM generate_series('2026-11-22'::date, '2027-12-31'::date, '1 day') d
+                             WHERE NOT EXISTS (SELECT 1 FROM dw_topics t WHERE t.date = d::date) ORDER BY d LIMIT 1")->fetchColumn();
+        $pdo->prepare("UPDATE dw_topics SET date = ?::date, updated_at = now() WHERE id = ?")->execute([$free, $old['id']]);
+        echo "  OK  dw: \"{$old['title']}\" moved from 2026-11-21 to {$free}\n";
+    }
+    $title = 'The countries with the world\'s best bars, 2009 to 2026';
+    if (!$pdo->query("SELECT 1 FROM dw_topics WHERE date = '2026-11-21'")->fetchColumn()) {
+        $pdo->prepare("INSERT INTO dw_topics (date, title, notes, type, needs_date_check, format) VALUES ('2026-11-21', ?, ?, 'evergreen', false, 'race')")
+            ->execute([$title, 'Race: bars per country in The World\'s 50 Best Bars (1-50), every list 2009-2026. The UK and the US had 26 of 50 in 2012, 7 in 2026; Singapore tops them in 2021 (banner); 2026: Hong Kong, Mexico, the US and France tied at 4. No Vietnamese bar.']);
+        echo "  OK  dw: 2026-11-21 race topic\n";
+    }
+    $topic = DwStudio::topicByDate('2026-11-21');
+    if ($topic !== null && $topic['format'] === 'race' && $topic['title'] === $title && DwStudio::package($topic['id']) === null) {
+        $content = json_decode(<<<'JSON'
+{"format":"race","topic":"The countries with the world's best bars, 2009 to 2026","headline":"The countries with the world's best bars, 2009 → 2026 🍸","headline_accent":"best bars","detail":"2021: Singapore tops the UK and the US 🇸🇬","banner_year":2021,"value_label":"Bars in The World's 50 Best Bars list","data_years":"2009–2026","unit":"","decimals":0,"value_prefix":"🍸 x","step_seconds":0.8,"source":"The World's 50 Best Bars","source_url":"https://www.theworlds50best.com/bars/list/1-50","card_bg":"yellow","outro_question":"What's YOUR favorite bar in your city? 🍸","cta_line":"Show us your favorite bar on hilads.live 🍸","caption":"Saturday night plans? 🍸 In 2012, 26 of The World's 50 Best Bars were in the UK or the US. In 2026: 7. Singapore topped them both in 2021, and this year's list is the most global ever: 22 countries, with Hong Kong, Mexico, the US and France tied at 4 bars each (Hong Kong also has the world's #1, Bar Leone). Great bars are about craft, not quantity: pick one, sip slowly, and get home safe. Different Worlds by Hilads.","hashtags":["#DifferentWorlds","#Worlds50BestBars","#Cocktails","#SaturdayNight","#BarLeone","#Mixology"],"warnings":["The World's 50 Best Bars, every list 2009-2026 (theworlds50best.com, its previous lists and the 2026 list): the bars ranked 1 to 50 (since 2023 the site also ranks 51-100: not counted). Every edition published, none missing; every year adds up to 50.","Countries from each bar's city; Hong Kong apart from mainland China, Puerto Rico apart from the US. 2010 has a tie at #29 (still 50 bars).","Ties share a rank; among tied countries, the one at that count first (since that year) stays above, then the one with the best-ranked bar. 2026: Hong Kong, Mexico, the US and France tie at 4 (Hong Kong above: the #1 bar).","Vietnam: no bar in the 1-50 list in any year: no extra row.","Responsible tone: no drinking amounts, the caption ends on 'get home safe'."],"series":[{"country":"Argentina","flag":"🇦🇷","values":{"2009":0,"2010":1,"2011":1,"2012":1,"2013":1,"2014":1,"2015":0,"2016":1,"2017":1,"2018":1,"2019":2,"2020":2,"2021":3,"2022":3,"2023":3,"2024":3,"2025":2,"2026":2},"ranks":{"2009":6,"2010":6,"2011":6,"2012":6,"2013":6,"2014":6,"2015":7,"2016":5,"2017":6,"2018":5,"2019":5,"2020":5,"2021":3,"2022":4,"2023":4,"2024":3,"2025":4,"2026":3},"order":{"2009":14,"2010":14,"2011":9,"2012":9,"2013":11,"2014":9,"2015":35,"2016":19,"2017":14,"2018":12,"2019":7,"2020":8,"2021":7,"2022":6,"2023":5,"2024":6,"2025":12,"2026":12}},{"country":"Australia","flag":"🇦🇺","values":{"2009":12,"2010":5,"2011":3,"2012":4,"2013":6,"2014":6,"2015":4,"2016":3,"2017":2,"2018":1,"2019":1,"2020":3,"2021":4,"2022":2,"2023":2,"2024":3,"2025":2,"2026":1},"ranks":{"2009":1,"2010":2,"2011":4,"2012":4,"2013":3,"2014":3,"2015":3,"2016":3,"2017":5,"2018":5,"2019":6,"2020":4,"2021":2,"2022":5,"2023":5,"2024":3,"2025":4,"2026":4},"order":{"2009":2,"2010":3,"2011":4,"2012":4,"2013":3,"2014":3,"2015":3,"2016":4,"2017":8,"2018":20,"2019":16,"2020":6,"2021":5,"2022":12,"2023":10,"2024":9,"2025":15,"2026":19}},{"country":"Brazil","flag":"🇧🇷","values":{"2009":0,"2010":2,"2011":0,"2012":0,"2013":0,"2014":0,"2015":0,"2016":0,"2017":0,"2018":0,"2019":1,"2020":0,"2021":0,"2022":0,"2023":0,"2024":1,"2025":1,"2026":2},"ranks":{"2009":6,"2010":5,"2011":7,"2012":7,"2013":7,"2014":7,"2015":7,"2016":6,"2017":7,"2018":6,"2019":6,"2020":7,"2021":6,"2022":7,"2023":7,"2024":5,"2025":5,"2026":3},"order":{"2009":15,"2010":10,"2011":33,"2012":31,"2013":29,"2014":29,"2015":29,"2016":26,"2017":25,"2018":26,"2019":20,"2020":34,"2021":28,"2022":30,"2023":30,"2024":18,"2025":17,"2026":14}},{"country":"China","flag":"🇨🇳","values":{"2009":0,"2010":0,"2011":0,"2012":0,"2013":0,"2014":0,"2015":0,"2016":1,"2017":1,"2018":1,"2019":2,"2020":1,"2021":3,"2022":0,"2023":0,"2024":0,"2025":1,"2026":1},"ranks":{"2009":6,"2010":7,"2011":7,"2012":7,"2013":7,"2014":7,"2015":7,"2016":5,"2017":6,"2018":5,"2019":5,"2020":6,"2021":3,"2022":7,"2023":7,"2024":6,"2025":5,"2026":4},"order":{"2009":16,"2010":18,"2011":17,"2012":17,"2013":17,"2014":17,"2015":20,"2016":14,"2017":12,"2018":14,"2019":9,"2020":21,"2021":10,"2022":35,"2023":34,"2024":33,"2025":20,"2026":17}},{"country":"Colombia","flag":"🇨🇴","values":{"2009":0,"2010":0,"2011":0,"2012":0,"2013":0,"2014":0,"2015":0,"2016":0,"2017":0,"2018":0,"2019":0,"2020":1,"2021":0,"2022":1,"2023":1,"2024":2,"2025":1,"2026":3},"ranks":{"2009":6,"2010":7,"2011":7,"2012":7,"2013":7,"2014":7,"2015":7,"2016":6,"2017":7,"2018":6,"2019":7,"2020":6,"2021":6,"2022":6,"2023":6,"2024":4,"2025":5,"2026":2},"order":{"2009":17,"2010":19,"2011":18,"2012":18,"2013":18,"2014":18,"2015":21,"2016":21,"2017":21,"2018":22,"2019":23,"2020":22,"2021":31,"2022":15,"2023":15,"2024":14,"2025":19,"2026":7}},{"country":"Cuba","flag":"🇨🇺","values":{"2009":0,"2010":0,"2011":1,"2012":0,"2013":0,"2014":0,"2015":0,"2016":0,"2017":0,"2018":0,"2019":0,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0,"2026":0},"ranks":{"2009":6,"2010":7,"2011":6,"2012":7,"2013":7,"2014":7,"2015":7,"2016":6,"2017":7,"2018":6,"2019":7,"2020":7,"2021":6,"2022":7,"2023":7,"2024":6,"2025":6,"2026":5},"order":{"2009":18,"2010":20,"2011":14,"2012":33,"2013":31,"2014":31,"2015":31,"2016":28,"2017":27,"2018":28,"2019":27,"2020":25,"2021":19,"2022":21,"2023":21,"2024":21,"2025":22,"2026":21}},{"country":"Cyprus","flag":"🇨🇾","values":{"2009":0,"2010":0,"2011":0,"2012":0,"2013":0,"2014":0,"2015":1,"2016":1,"2017":1,"2018":1,"2019":0,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0,"2026":0},"ranks":{"2009":6,"2010":7,"2011":7,"2012":7,"2013":7,"2014":7,"2015":6,"2016":5,"2017":6,"2018":5,"2019":7,"2020":7,"2021":6,"2022":7,"2023":7,"2024":6,"2025":6,"2026":5},"order":{"2009":19,"2010":21,"2011":19,"2012":19,"2013":19,"2014":19,"2015":19,"2016":12,"2017":10,"2018":10,"2019":35,"2020":32,"2021":26,"2022":28,"2023":28,"2024":28,"2025":29,"2026":28}},{"country":"Czechia","flag":"🇨🇿","values":{"2009":0,"2010":0,"2011":0,"2012":1,"2013":0,"2014":1,"2015":0,"2016":0,"2017":0,"2018":0,"2019":0,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0,"2026":0},"ranks":{"2009":6,"2010":7,"2011":7,"2012":6,"2013":7,"2014":6,"2015":7,"2016":6,"2017":7,"2018":6,"2019":7,"2020":7,"2021":6,"2022":7,"2023":7,"2024":6,"2025":6,"2026":5},"order":{"2009":20,"2010":22,"2011":20,"2012":14,"2013":34,"2014":14,"2015":36,"2016":32,"2017":31,"2018":32,"2019":31,"2020":29,"2021":23,"2022":25,"2023":25,"2024":25,"2025":26,"2026":25}},{"country":"Denmark","flag":"🇩🇰","values":{"2009":0,"2010":1,"2011":1,"2012":1,"2013":1,"2014":0,"2015":1,"2016":1,"2017":0,"2018":0,"2019":0,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0,"2026":0},"ranks":{"2009":6,"2010":6,"2011":6,"2012":6,"2013":6,"2014":7,"2015":6,"2016":5,"2017":7,"2018":6,"2019":7,"2020":7,"2021":6,"2022":7,"2023":7,"2024":6,"2025":6,"2026":5},"order":{"2009":21,"2010":16,"2011":11,"2012":11,"2013":10,"2014":36,"2015":16,"2016":13,"2017":35,"2018":34,"2019":33,"2020":30,"2021":24,"2022":26,"2023":26,"2024":26,"2025":27,"2026":26}},{"country":"France","flag":"🇫🇷","values":{"2009":2,"2010":3,"2011":4,"2012":2,"2013":5,"2014":1,"2015":2,"2016":2,"2017":3,"2018":3,"2019":1,"2020":1,"2021":1,"2022":1,"2023":2,"2024":3,"2025":3,"2026":4},"ranks":{"2009":4,"2010":4,"2011":3,"2012":5,"2013":4,"2014":6,"2015":5,"2016":4,"2017":4,"2018":3,"2019":6,"2020":6,"2021":5,"2022":6,"2023":5,"2024":3,"2025":3,"2026":1},"order":{"2009":5,"2010":6,"2011":3,"2012":7,"2013":5,"2014":13,"2015":8,"2016":6,"2017":4,"2018":4,"2019":22,"2020":17,"2021":16,"2022":13,"2023":12,"2024":8,"2025":5,"2026":4}},{"country":"Germany","flag":"🇩🇪","values":{"2009":1,"2010":2,"2011":1,"2012":5,"2013":5,"2014":3,"2015":3,"2016":1,"2017":1,"2018":2,"2019":1,"2020":1,"2021":0,"2022":0,"2023":1,"2024":0,"2025":0,"2026":0},"ranks":{"2009":5,"2010":5,"2011":6,"2012":3,"2013":4,"2014":4,"2015":4,"2016":5,"2017":6,"2018":4,"2019":6,"2020":6,"2021":6,"2022":7,"2023":6,"2024":6,"2025":6,"2026":5},"order":{"2009":9,"2010":11,"2011":16,"2012":3,"2013":4,"2014":4,"2015":4,"2016":20,"2017":16,"2018":9,"2019":21,"2020":18,"2021":32,"2022":33,"2023":19,"2024":36,"2025":36,"2026":35}},{"country":"Greece","flag":"🇬🇷","values":{"2009":0,"2010":0,"2011":0,"2012":0,"2013":2,"2014":1,"2015":1,"2016":2,"2017":2,"2018":2,"2019":2,"2020":2,"2021":2,"2022":3,"2023":3,"2024":2,"2025":3,"2026":3},"ranks":{"2009":6,"2010":7,"2011":7,"2012":7,"2013":5,"2014":6,"2015":6,"2016":4,"2017":5,"2018":4,"2019":5,"2020":5,"2021":4,"2022":4,"2023":4,"2024":4,"2025":3,"2026":2},"order":{"2009":22,"2010":23,"2011":21,"2012":20,"2013":9,"2014":15,"2015":11,"2016":8,"2017":6,"2018":5,"2019":5,"2020":7,"2021":11,"2022":7,"2023":6,"2024":13,"2025":6,"2026":6}},{"country":"Hong Kong","flag":"🇭🇰","values":{"2009":0,"2010":0,"2011":0,"2012":0,"2013":1,"2014":1,"2015":2,"2016":2,"2017":2,"2018":1,"2019":2,"2020":2,"2021":3,"2022":2,"2023":2,"2024":2,"2025":2,"2026":4},"ranks":{"2009":6,"2010":7,"2011":7,"2012":7,"2013":6,"2014":6,"2015":5,"2016":4,"2017":5,"2018":5,"2019":5,"2020":5,"2021":3,"2022":5,"2023":5,"2024":4,"2025":4,"2026":1},"order":{"2009":23,"2010":24,"2011":22,"2012":21,"2013":16,"2014":11,"2015":9,"2016":7,"2017":5,"2018":18,"2019":8,"2020":9,"2021":8,"2022":11,"2023":11,"2024":10,"2025":8,"2026":1}},{"country":"Hungary","flag":"🇭🇺","values":{"2009":0,"2010":0,"2011":0,"2012":1,"2013":0,"2014":0,"2015":0,"2016":0,"2017":0,"2018":0,"2019":0,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0,"2026":0},"ranks":{"2009":6,"2010":7,"2011":7,"2012":6,"2013":7,"2014":7,"2015":7,"2016":6,"2017":7,"2018":6,"2019":7,"2020":7,"2021":6,"2022":7,"2023":7,"2024":6,"2025":6,"2026":5},"order":{"2009":24,"2010":25,"2011":23,"2012":15,"2013":35,"2014":34,"2015":33,"2016":30,"2017":29,"2018":30,"2019":29,"2020":27,"2021":21,"2022":23,"2023":23,"2024":23,"2025":24,"2026":23}},{"country":"India","flag":"🇮🇳","values":{"2009":1,"2010":4,"2011":0,"2012":0,"2013":0,"2014":0,"2015":0,"2016":0,"2017":0,"2018":0,"2019":0,"2020":0,"2021":1,"2022":1,"2023":0,"2024":0,"2025":0,"2026":0},"ranks":{"2009":5,"2010":3,"2011":7,"2012":7,"2013":7,"2014":7,"2015":7,"2016":6,"2017":7,"2018":6,"2019":7,"2020":7,"2021":5,"2022":6,"2023":7,"2024":6,"2025":6,"2026":5},"order":{"2009":11,"2010":5,"2011":34,"2012":32,"2013":30,"2014":30,"2015":30,"2016":27,"2017":26,"2018":27,"2019":26,"2020":24,"2021":17,"2022":14,"2023":36,"2024":35,"2025":35,"2026":34}},{"country":"Indonesia","flag":"🇮🇩","values":{"2009":1,"2010":0,"2011":0,"2012":0,"2013":0,"2014":0,"2015":0,"2016":0,"2017":0,"2018":0,"2019":0,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0,"2026":0},"ranks":{"2009":5,"2010":7,"2011":7,"2012":7,"2013":7,"2014":7,"2015":7,"2016":6,"2017":7,"2018":6,"2019":7,"2020":7,"2021":6,"2022":7,"2023":7,"2024":6,"2025":6,"2026":5},"order":{"2009":13,"2010":35,"2011":32,"2012":30,"2013":28,"2014":28,"2015":28,"2016":25,"2017":24,"2018":25,"2019":25,"2020":23,"2021":18,"2022":20,"2023":20,"2024":20,"2025":21,"2026":20}},{"country":"Israel","flag":"🇮🇱","values":{"2009":0,"2010":0,"2011":0,"2012":0,"2013":0,"2014":0,"2015":1,"2016":0,"2017":1,"2018":0,"2019":0,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0,"2026":0},"ranks":{"2009":6,"2010":7,"2011":7,"2012":7,"2013":7,"2014":7,"2015":6,"2016":6,"2017":6,"2018":6,"2019":7,"2020":7,"2021":6,"2022":7,"2023":7,"2024":6,"2025":6,"2026":5},"order":{"2009":25,"2010":26,"2011":24,"2012":22,"2013":20,"2014":20,"2015":14,"2016":33,"2017":20,"2018":35,"2019":34,"2020":31,"2021":25,"2022":27,"2023":27,"2024":27,"2025":28,"2026":27}},{"country":"Italy","flag":"🇮🇹","values":{"2009":1,"2010":4,"2011":0,"2012":1,"2013":2,"2014":2,"2015":2,"2016":2,"2017":1,"2018":0,"2019":2,"2020":2,"2021":3,"2022":4,"2023":5,"2024":4,"2025":4,"2026":2},"ranks":{"2009":5,"2010":3,"2011":7,"2012":6,"2013":5,"2014":5,"2015":5,"2016":4,"2017":6,"2018":6,"2019":5,"2020":5,"2021":3,"2022":3,"2023":2,"2024":2,"2025":2,"2026":3},"order":{"2009":8,"2010":4,"2011":35,"2012":12,"2013":8,"2014":5,"2015":5,"2016":5,"2017":19,"2018":36,"2019":10,"2020":10,"2021":9,"2022":5,"2023":3,"2024":5,"2025":3,"2026":13}},{"country":"Japan","flag":"🇯🇵","values":{"2009":0,"2010":1,"2011":2,"2012":1,"2013":1,"2014":2,"2015":1,"2016":1,"2017":2,"2018":2,"2019":2,"2020":3,"2021":2,"2022":1,"2023":2,"2024":2,"2025":3,"2026":2},"ranks":{"2009":6,"2010":6,"2011":5,"2012":6,"2013":6,"2014":5,"2015":6,"2016":5,"2017":5,"2018":4,"2019":5,"2020":4,"2021":4,"2022":6,"2023":5,"2024":4,"2025":3,"2026":3},"order":{"2009":26,"2010":17,"2011":7,"2012":13,"2013":14,"2014":6,"2015":13,"2016":10,"2017":7,"2018":6,"2019":6,"2020":5,"2021":14,"2022":18,"2023":13,"2024":12,"2025":7,"2026":15}},{"country":"Lebanon","flag":"🇱🇧","values":{"2009":0,"2010":0,"2011":0,"2012":0,"2013":0,"2014":0,"2015":0,"2016":1,"2017":0,"2018":1,"2019":1,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0,"2026":0},"ranks":{"2009":6,"2010":7,"2011":7,"2012":7,"2013":7,"2014":7,"2015":7,"2016":5,"2017":7,"2018":5,"2019":6,"2020":7,"2021":6,"2022":7,"2023":7,"2024":6,"2025":6,"2026":5},"order":{"2009":27,"2010":27,"2011":25,"2012":23,"2013":21,"2014":21,"2015":22,"2016":17,"2017":36,"2018":19,"2019":17,"2020":35,"2021":29,"2022":31,"2023":31,"2024":30,"2025":31,"2026":30}},{"country":"Mexico","flag":"🇲🇽","values":{"2009":0,"2010":1,"2011":1,"2012":1,"2013":1,"2014":2,"2015":1,"2016":1,"2017":1,"2018":2,"2019":1,"2020":1,"2021":4,"2022":4,"2023":4,"2024":4,"2025":2,"2026":4},"ranks":{"2009":6,"2010":6,"2011":6,"2012":6,"2013":6,"2014":5,"2015":6,"2016":5,"2017":6,"2018":4,"2019":6,"2020":6,"2021":2,"2022":3,"2023":3,"2024":2,"2025":4,"2026":1},"order":{"2009":28,"2010":13,"2011":8,"2012":8,"2013":12,"2014":8,"2015":15,"2016":9,"2017":9,"2018":7,"2019":18,"2020":15,"2021":3,"2022":4,"2023":4,"2024":3,"2025":10,"2026":2}},{"country":"Netherlands","flag":"🇳🇱","values":{"2009":0,"2010":0,"2011":1,"2012":0,"2013":1,"2014":2,"2015":2,"2016":1,"2017":1,"2018":1,"2019":0,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0,"2026":0},"ranks":{"2009":6,"2010":7,"2011":6,"2012":7,"2013":6,"2014":5,"2015":5,"2016":5,"2017":6,"2018":5,"2019":7,"2020":7,"2021":6,"2022":7,"2023":7,"2024":6,"2025":6,"2026":5},"order":{"2009":29,"2010":28,"2011":13,"2012":34,"2013":15,"2014":7,"2015":6,"2016":15,"2017":15,"2018":15,"2019":36,"2020":33,"2021":27,"2022":29,"2023":29,"2024":29,"2025":30,"2026":29}},{"country":"New Zealand","flag":"🇳🇿","values":{"2009":2,"2010":3,"2011":1,"2012":0,"2013":0,"2014":0,"2015":0,"2016":0,"2017":0,"2018":0,"2019":0,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0,"2026":0},"ranks":{"2009":4,"2010":4,"2011":6,"2012":7,"2013":7,"2014":7,"2015":7,"2016":6,"2017":7,"2018":6,"2019":7,"2020":7,"2021":6,"2022":7,"2023":7,"2024":6,"2025":6,"2026":5},"order":{"2009":6,"2010":7,"2011":15,"2012":35,"2013":32,"2014":32,"2015":32,"2016":29,"2017":28,"2018":29,"2019":28,"2020":26,"2021":20,"2022":22,"2023":22,"2024":22,"2025":23,"2026":22}},{"country":"Norway","flag":"🇳🇴","values":{"2009":0,"2010":0,"2011":0,"2012":0,"2013":0,"2014":0,"2015":0,"2016":1,"2017":1,"2018":1,"2019":1,"2020":1,"2021":0,"2022":1,"2023":1,"2024":1,"2025":2,"2026":1},"ranks":{"2009":6,"2010":7,"2011":7,"2012":7,"2013":7,"2014":7,"2015":7,"2016":5,"2017":6,"2018":5,"2019":6,"2020":6,"2021":6,"2022":6,"2023":6,"2024":5,"2025":4,"2026":4},"order":{"2009":30,"2010":29,"2011":26,"2012":24,"2013":22,"2014":22,"2015":23,"2016":18,"2017":13,"2018":13,"2019":12,"2020":12,"2021":33,"2022":16,"2023":16,"2024":15,"2025":14,"2026":18}},{"country":"Peru","flag":"🇵🇪","values":{"2009":0,"2010":0,"2011":0,"2012":0,"2013":0,"2014":0,"2015":0,"2016":0,"2017":0,"2018":0,"2019":1,"2020":1,"2021":0,"2022":1,"2023":1,"2024":1,"2025":2,"2026":2},"ranks":{"2009":6,"2010":7,"2011":7,"2012":7,"2013":7,"2014":7,"2015":7,"2016":6,"2017":7,"2018":6,"2019":6,"2020":6,"2021":6,"2022":6,"2023":6,"2024":5,"2025":4,"2026":3},"order":{"2009":31,"2010":30,"2011":27,"2012":25,"2013":23,"2014":23,"2015":24,"2016":22,"2017":22,"2018":23,"2019":19,"2020":16,"2021":34,"2022":17,"2023":18,"2024":16,"2025":13,"2026":10}},{"country":"Puerto Rico","flag":"🇵🇷","values":{"2009":0,"2010":0,"2011":0,"2012":0,"2013":0,"2014":0,"2015":1,"2016":1,"2017":1,"2018":1,"2019":1,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0,"2026":0},"ranks":{"2009":6,"2010":7,"2011":7,"2012":7,"2013":7,"2014":7,"2015":6,"2016":5,"2017":6,"2018":5,"2019":6,"2020":7,"2021":6,"2022":7,"2023":7,"2024":6,"2025":6,"2026":5},"order":{"2009":32,"2010":31,"2011":28,"2012":26,"2013":24,"2014":24,"2015":18,"2016":11,"2017":11,"2018":11,"2019":11,"2020":36,"2021":30,"2022":32,"2023":32,"2024":31,"2025":32,"2026":31}},{"country":"Russia","flag":"🇷🇺","values":{"2009":0,"2010":1,"2011":1,"2012":1,"2013":1,"2014":1,"2015":1,"2016":0,"2017":0,"2018":1,"2019":1,"2020":1,"2021":2,"2022":0,"2023":0,"2024":0,"2025":0,"2026":0},"ranks":{"2009":6,"2010":6,"2011":6,"2012":6,"2013":6,"2014":6,"2015":6,"2016":6,"2017":7,"2018":5,"2019":6,"2020":6,"2021":4,"2022":7,"2023":7,"2024":6,"2025":6,"2026":5},"order":{"2009":33,"2010":15,"2011":10,"2012":10,"2013":13,"2014":10,"2015":10,"2016":34,"2017":32,"2018":21,"2019":15,"2020":14,"2021":12,"2022":36,"2023":35,"2024":34,"2025":34,"2026":33}},{"country":"Singapore","flag":"🇸🇬","values":{"2009":1,"2010":0,"2011":1,"2012":2,"2013":2,"2014":1,"2015":2,"2016":3,"2017":6,"2018":5,"2019":6,"2020":4,"2021":6,"2022":2,"2023":3,"2024":4,"2025":2,"2026":2},"ranks":{"2009":5,"2010":7,"2011":6,"2012":5,"2013":5,"2014":6,"2015":5,"2016":3,"2017":3,"2018":2,"2019":3,"2020":3,"2021":1,"2022":5,"2023":4,"2024":2,"2025":4,"2026":3},"order":{"2009":12,"2010":36,"2011":12,"2012":5,"2013":6,"2014":12,"2015":7,"2016":3,"2017":3,"2018":3,"2019":3,"2020":3,"2021":1,"2022":9,"2023":8,"2024":4,"2025":11,"2026":11}},{"country":"South Africa","flag":"🇿🇦","values":{"2009":2,"2010":2,"2011":0,"2012":1,"2013":0,"2014":0,"2015":0,"2016":0,"2017":0,"2018":0,"2019":0,"2020":0,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0,"2026":0},"ranks":{"2009":4,"2010":5,"2011":7,"2012":6,"2013":7,"2014":7,"2015":7,"2016":6,"2017":7,"2018":6,"2019":7,"2020":7,"2021":6,"2022":7,"2023":7,"2024":6,"2025":6,"2026":5},"order":{"2009":7,"2010":9,"2011":36,"2012":16,"2013":36,"2014":35,"2015":34,"2016":31,"2017":30,"2018":31,"2019":30,"2020":28,"2021":22,"2022":24,"2023":24,"2024":24,"2025":25,"2026":24}},{"country":"Spain","flag":"🇪🇸","values":{"2009":1,"2010":1,"2011":3,"2012":2,"2013":2,"2014":1,"2015":1,"2016":0,"2017":0,"2018":2,"2019":3,"2020":3,"2021":4,"2022":4,"2023":3,"2024":3,"2025":3,"2026":3},"ranks":{"2009":5,"2010":6,"2011":4,"2012":5,"2013":5,"2014":6,"2015":6,"2016":6,"2017":7,"2018":4,"2019":4,"2020":4,"2021":2,"2022":3,"2023":4,"2024":3,"2025":3,"2026":2},"order":{"2009":10,"2010":12,"2011":5,"2012":6,"2013":7,"2014":16,"2015":12,"2016":35,"2017":33,"2018":8,"2019":4,"2020":4,"2021":2,"2022":3,"2023":7,"2024":7,"2025":4,"2026":5}},{"country":"Sweden","flag":"🇸🇪","values":{"2009":0,"2010":0,"2011":0,"2012":0,"2013":0,"2014":0,"2015":0,"2016":1,"2017":1,"2018":1,"2019":1,"2020":1,"2021":2,"2022":1,"2023":1,"2024":1,"2025":1,"2026":0},"ranks":{"2009":6,"2010":7,"2011":7,"2012":7,"2013":7,"2014":7,"2015":7,"2016":5,"2017":6,"2018":5,"2019":6,"2020":6,"2021":4,"2022":6,"2023":6,"2024":5,"2025":5,"2026":5},"order":{"2009":34,"2010":32,"2011":29,"2012":27,"2013":25,"2014":25,"2015":25,"2016":16,"2017":17,"2018":16,"2019":13,"2020":13,"2021":15,"2022":19,"2023":17,"2024":17,"2025":16,"2026":36}},{"country":"Taiwan","flag":"🇹🇼","values":{"2009":0,"2010":0,"2011":0,"2012":0,"2013":0,"2014":0,"2015":0,"2016":0,"2017":1,"2018":1,"2019":1,"2020":2,"2021":0,"2022":0,"2023":0,"2024":0,"2025":0,"2026":0},"ranks":{"2009":6,"2010":7,"2011":7,"2012":7,"2013":7,"2014":7,"2015":7,"2016":6,"2017":6,"2018":5,"2019":6,"2020":5,"2021":6,"2022":7,"2023":7,"2024":6,"2025":6,"2026":5},"order":{"2009":35,"2010":33,"2011":30,"2012":28,"2013":26,"2014":26,"2015":26,"2016":23,"2017":18,"2018":17,"2019":14,"2020":11,"2021":35,"2022":34,"2023":33,"2024":32,"2025":33,"2026":32}},{"country":"Thailand","flag":"🇹🇭","values":{"2009":0,"2010":0,"2011":0,"2012":0,"2013":0,"2014":0,"2015":0,"2016":0,"2017":0,"2018":0,"2019":0,"2020":1,"2021":0,"2022":2,"2023":2,"2024":2,"2025":2,"2026":3},"ranks":{"2009":6,"2010":7,"2011":7,"2012":7,"2013":7,"2014":7,"2015":7,"2016":6,"2017":7,"2018":6,"2019":7,"2020":6,"2021":6,"2022":5,"2023":5,"2024":4,"2025":4,"2026":2},"order":{"2009":36,"2010":34,"2011":31,"2012":29,"2013":27,"2014":27,"2015":27,"2016":24,"2017":23,"2018":24,"2019":24,"2020":20,"2021":36,"2022":10,"2023":9,"2024":11,"2025":9,"2026":8}},{"country":"UAE","flag":"🇦🇪","values":{"2009":4,"2010":3,"2011":2,"2012":0,"2013":0,"2014":0,"2015":1,"2016":0,"2017":0,"2018":0,"2019":0,"2020":1,"2021":2,"2022":3,"2023":2,"2024":1,"2025":1,"2026":1},"ranks":{"2009":3,"2010":4,"2011":5,"2012":7,"2013":7,"2014":7,"2015":6,"2016":6,"2017":7,"2018":6,"2019":7,"2020":6,"2021":4,"2022":4,"2023":5,"2024":5,"2025":5,"2026":4},"order":{"2009":4,"2010":8,"2011":6,"2012":36,"2013":33,"2014":33,"2015":17,"2016":36,"2017":34,"2018":33,"2019":32,"2020":19,"2021":13,"2022":8,"2023":14,"2024":19,"2025":18,"2026":16}},{"country":"United Kingdom","flag":"🇬🇧","values":{"2009":12,"2010":7,"2011":14,"2012":14,"2013":9,"2014":9,"2015":9,"2016":10,"2017":8,"2018":10,"2019":10,"2020":9,"2021":3,"2022":5,"2023":6,"2024":5,"2025":5,"2026":3},"ranks":{"2009":1,"2010":1,"2011":1,"2012":1,"2013":2,"2014":2,"2015":2,"2016":2,"2017":2,"2018":1,"2019":1,"2020":1,"2021":3,"2022":2,"2023":1,"2024":1,"2025":1,"2026":2},"order":{"2009":1,"2010":1,"2011":1,"2012":1,"2013":2,"2014":2,"2015":2,"2016":2,"2017":2,"2018":1,"2019":1,"2020":1,"2021":6,"2022":2,"2023":1,"2024":2,"2025":2,"2026":9}},{"country":"United States","flag":"🇺🇸","values":{"2009":10,"2010":7,"2011":13,"2012":12,"2013":10,"2014":16,"2015":14,"2016":14,"2017":13,"2018":10,"2019":7,"2020":5,"2021":4,"2022":8,"2023":5,"2024":5,"2025":5,"2026":4},"ranks":{"2009":2,"2010":1,"2011":2,"2012":2,"2013":1,"2014":1,"2015":1,"2016":1,"2017":1,"2018":1,"2019":2,"2020":2,"2021":2,"2022":1,"2023":2,"2024":1,"2025":1,"2026":1},"order":{"2009":3,"2010":2,"2011":2,"2012":2,"2013":1,"2014":1,"2015":1,"2016":1,"2017":1,"2018":2,"2019":2,"2020":2,"2021":4,"2022":1,"2023":2,"2024":1,"2025":1,"2026":3}}]}
+JSON, true, 512, JSON_THROW_ON_ERROR);
+        $r = DwStudio::importRace($topic, $content, 'Claude Code');
+        echo $r['ok'] ? "  OK  dw: 2026-11-21 race package v{$r['version']}\n" : "  ERR dw Nov 21 race: " . implode(' ', $r['errors']) . "\n";
+    }
+} catch (Throwable $e) {
+    echo "  ERR dw Nov 21 race: " . $e->getMessage() . "\n";
+}
+
+// Once: Nov 22 becomes the race "The countries with the most skyscrapers, 1990 to 2025" (CTBUH, buildings of 200 m+, China overtakes the US in 2011), Vietnam as
+// the extra row; the unpublished topic on Nov 22 moves to the first date with no topic from Nov 23. As Nov 16.
+try {
+    require_once __DIR__ . '/vendor/autoload.php';
+    $title = 'The countries with the most skyscrapers, 1990 to 2025';
+    $old = $pdo->prepare("SELECT id, title, status FROM dw_topics WHERE date = '2026-11-22' AND title <> ?");
+    $old->execute([$title]);
+    $old = $old->fetch(PDO::FETCH_ASSOC);
+    if ($old && $old['status'] !== 'published') {
+        $free = $pdo->query("SELECT d::date::text FROM generate_series('2026-11-23'::date, '2027-12-31'::date, '1 day') d
+                             WHERE NOT EXISTS (SELECT 1 FROM dw_topics t WHERE t.date = d::date) ORDER BY d LIMIT 1")->fetchColumn();
+        $pdo->prepare("UPDATE dw_topics SET date = ?::date, updated_at = now() WHERE id = ?")->execute([$free, $old['id']]);
+        echo "  OK  dw: \"{$old['title']}\" moved from 2026-11-22 to {$free}\n";
+    }
+    if (!$pdo->query("SELECT 1 FROM dw_topics WHERE date = '2026-11-22'")->fetchColumn()) {
+        $pdo->prepare("INSERT INTO dw_topics (date, title, notes, type, needs_date_check, format) VALUES ('2026-11-22', ?, ?, 'evergreen', false, 'race')")
+            ->execute([$title, 'Race: completed buildings of 200 m+ per country, cumulative, 1990-2025 (CTBUH Skyscraper Center; Hong Kong and Taiwan apart from mainland China). The US leads until 2010, China passes it in 2011 (166 vs 161, banner) and ends 2025 at 1,246 vs 256; Vietnam as the extra row (0 until 2010, 9 in 2025).']);
+        echo "  OK  dw: 2026-11-22 race topic\n";
+    }
+    $topic = DwStudio::topicByDate('2026-11-22');
+    if ($topic !== null && $topic['format'] === 'race' && $topic['title'] === $title && DwStudio::package($topic['id']) === null) {
+        $content = json_decode(<<<'JSON'
+{"format":"race","topic":"The countries with the most skyscrapers, 1990 to 2025","headline":"The countries with the most skyscrapers, 1990 → 2025 🏙️","headline_accent":"most skyscrapers","detail":"2011: China overtakes the US 🇨🇳","banner_year":2011,"extra_row":"Vietnam","value_label":"Completed buildings of 200 m+","data_years":"1990–2025","unit":"","decimals":0,"value_prefix":"🏙️ x","step_seconds":0.6,"source":"CTBUH Skyscraper Center","source_url":"https://www.skyscrapercenter.com/","card_bg":"blue","outro_question":"What's the tallest building in YOUR city? 🏙️","cta_line":"Show us your city's skyline on hilads.live 🌆","caption":"In 1990, the US had 110 of the world's 146 buildings of 200 m or more. Mainland China had 2. China passed the US in 2011 and never looked back: 1,246 by the end of 2025, almost five times the US (256). Vietnam went from none to 9 in 15 years, from Bitexco Tower (2010) to Landmark 81 (461 m, 2018), still the country's tallest. Different Worlds by Hilads.","hashtags":["#DifferentWorlds","#Skyscrapers","#Skyline","#Architecture","#Landmark81","#Vietnam"],"warnings":["CTBUH Skyscraper Center, its building database (country and city pages, every building): buildings (CTBUH's definition: not towers or masts) of 200 m or more (architectural height), completed, counted at the end of each year by their completion year, 1990-2025 (1990: 16 countries already have one; 2026 is not a full year).","Countries as CTBUH records them, except that Hong Kong and Taiwan are shown apart from mainland China (CTBUH files them under China; Macau has none of 200 m+).","Demolished buildings count until they came down: the World Trade Center's two towers until 2000, 270 Park Avenue (JPMorgan Chase Tower, New York) until 2020, AXA Tower (Singapore) until 2022 (CTBUH has no demolition year: public dates).","China and US country pages don't load (too large): their counts come from their city pages, plus a few buildings in smaller cities from CTBUH's own search index (same data); about 10 recent towers missing from that index are counted from the country pages.","Ties share a rank; among tied countries, the one at that count first stays above. China passes the US in 2011 (166 vs 161).","Vietnam: 0 until 2010 (no rank shown), then 1 (Bitexco, 2010) to 9 in 2024-2025 (#24 in 2025, ties shared)."],"series":[{"country":"Singapore","flag":"🇸🇬","values":{"1990":4,"1991":4,"1992":5,"1993":5,"1994":5,"1995":5,"1996":7,"1997":7,"1998":7,"1999":7,"2000":8,"2001":8,"2002":8,"2003":8,"2004":8,"2005":8,"2006":9,"2007":9,"2008":11,"2009":11,"2010":17,"2011":20,"2012":22,"2013":24,"2014":27,"2015":29,"2016":30,"2017":32,"2018":33,"2019":33,"2020":33,"2021":34,"2022":34,"2023":33,"2024":34,"2025":35},"ranks":{"1990":3,"1991":3,"1992":5,"1993":5,"1994":6,"1995":6,"1996":6,"1997":5,"1998":6,"1999":7,"2000":7,"2001":7,"2002":7,"2003":8,"2004":8,"2005":8,"2006":8,"2007":8,"2008":7,"2009":8,"2010":8,"2011":8,"2012":8,"2013":8,"2014":7,"2015":7,"2016":8,"2017":9,"2018":9,"2019":10,"2020":10,"2021":11,"2022":11,"2023":12,"2024":14,"2025":14},"order":{"1990":4,"1991":5,"1992":6,"1993":6,"1994":6,"1995":6,"1996":6,"1997":7,"1998":7,"1999":7,"2000":7,"2001":7,"2002":7,"2003":9,"2004":9,"2005":9,"2006":10,"2007":10,"2008":9,"2009":9,"2010":8,"2011":8,"2012":8,"2013":8,"2014":8,"2015":7,"2016":8,"2017":9,"2018":10,"2019":10,"2020":11,"2021":11,"2022":11,"2023":13,"2024":14,"2025":14}},{"country":"Australia","flag":"🇦🇺","values":{"1990":3,"1991":7,"1992":10,"1993":11,"1994":11,"1995":11,"1996":11,"1997":11,"1998":11,"1999":11,"2000":13,"2001":13,"2002":13,"2003":13,"2004":15,"2005":19,"2006":21,"2007":22,"2008":22,"2009":22,"2010":22,"2011":22,"2012":25,"2013":25,"2014":27,"2015":28,"2016":31,"2017":33,"2018":34,"2019":37,"2020":39,"2021":47,"2022":52,"2023":57,"2024":60,"2025":61},"ranks":{"1990":4,"1991":2,"1992":2,"1993":2,"1994":3,"1995":3,"1996":3,"1997":3,"1998":4,"1999":5,"2000":5,"2001":5,"2002":5,"2003":5,"2004":5,"2005":5,"2006":5,"2007":5,"2008":5,"2009":6,"2010":7,"2011":7,"2012":7,"2013":7,"2014":7,"2015":8,"2016":7,"2017":8,"2018":8,"2019":9,"2020":8,"2021":7,"2022":7,"2023":7,"2024":7,"2025":7},"order":{"1990":5,"1991":2,"1992":2,"1993":2,"1994":3,"1995":3,"1996":3,"1997":3,"1998":4,"1999":5,"2000":5,"2001":5,"2002":5,"2003":5,"2004":5,"2005":5,"2006":5,"2007":5,"2008":6,"2009":6,"2010":7,"2011":7,"2012":7,"2013":7,"2014":7,"2015":8,"2016":7,"2017":8,"2018":9,"2019":9,"2020":9,"2021":7,"2022":7,"2023":7,"2024":7,"2025":7}},{"country":"Panama","flag":"🇵🇦","values":{"1990":0,"1991":0,"1992":0,"1993":0,"1994":0,"1995":0,"1996":0,"1997":0,"1998":0,"1999":0,"2000":0,"2001":0,"2002":0,"2003":0,"2004":0,"2005":0,"2006":0,"2007":0,"2008":2,"2009":2,"2010":3,"2011":13,"2012":17,"2013":19,"2014":19,"2015":21,"2016":21,"2017":23,"2018":23,"2019":23,"2020":23,"2021":24,"2022":24,"2023":25,"2024":25,"2025":25},"ranks":{"2008":13,"2009":13,"2010":14,"2011":9,"2012":9,"2013":9,"2014":8,"2015":10,"2016":12,"2017":13,"2018":12,"2019":13,"2020":13,"2021":14,"2022":15,"2023":15,"2024":17,"2025":18},"order":{"1990":15,"1991":15,"1992":16,"1993":16,"1994":16,"1995":16,"1996":17,"1997":17,"1998":18,"1999":19,"2000":19,"2001":19,"2002":19,"2003":19,"2004":19,"2005":19,"2006":19,"2007":19,"2008":18,"2009":18,"2010":17,"2011":10,"2012":10,"2013":9,"2014":9,"2015":11,"2016":13,"2017":13,"2018":13,"2019":14,"2020":14,"2021":14,"2022":15,"2023":15,"2024":16,"2025":16}},{"country":"Vietnam","flag":"🇻🇳","values":{"1990":0,"1991":0,"1992":0,"1993":0,"1994":0,"1995":0,"1996":0,"1997":0,"1998":0,"1999":0,"2000":0,"2001":0,"2002":0,"2003":0,"2004":0,"2005":0,"2006":0,"2007":0,"2008":0,"2009":0,"2010":1,"2011":3,"2012":4,"2013":4,"2014":5,"2015":6,"2016":6,"2017":6,"2018":7,"2019":7,"2020":7,"2021":8,"2022":8,"2023":8,"2024":9,"2025":9},"ranks":{"2010":16,"2011":16,"2012":16,"2013":18,"2014":15,"2015":16,"2016":17,"2017":20,"2018":19,"2019":21,"2020":21,"2021":21,"2022":20,"2023":21,"2024":21,"2025":24},"order":{"1990":20,"1991":20,"1992":20,"1993":20,"1994":20,"1995":20,"1996":20,"1997":20,"1998":20,"1999":20,"2000":20,"2001":20,"2002":20,"2003":20,"2004":20,"2005":20,"2006":20,"2007":20,"2008":20,"2009":20,"2010":20,"2011":18,"2012":18,"2013":18,"2014":18,"2015":17,"2016":17,"2017":17,"2018":17,"2019":18,"2020":18,"2021":18,"2022":18,"2023":18,"2024":18,"2025":18}},{"country":"Germany","flag":"🇩🇪","values":{"1990":1,"1991":1,"1992":1,"1993":2,"1994":2,"1995":2,"1996":2,"1997":3,"1998":3,"1999":4,"2000":4,"2001":4,"2002":4,"2003":4,"2004":4,"2005":4,"2006":4,"2007":4,"2008":4,"2009":4,"2010":4,"2011":5,"2012":5,"2013":5,"2014":5,"2015":5,"2016":5,"2017":5,"2018":5,"2019":5,"2020":5,"2021":5,"2022":5,"2023":5,"2024":5,"2025":6},"ranks":{"1990":6,"1991":5,"1992":7,"1993":6,"1994":8,"1995":8,"1996":9,"1997":6,"1998":7,"1999":8,"2000":9,"2001":9,"2002":10,"2003":11,"2004":11,"2005":10,"2006":10,"2007":10,"2008":12,"2009":12,"2010":13,"2011":14,"2012":15,"2013":17,"2014":15,"2015":17,"2016":18,"2017":21,"2018":21,"2019":22,"2020":22,"2021":23,"2022":22,"2023":23,"2024":24,"2025":26},"order":{"1990":12,"1991":12,"1992":12,"1993":12,"1994":12,"1995":12,"1996":12,"1997":9,"1998":9,"1999":9,"2000":9,"2001":10,"2002":12,"2003":13,"2004":13,"2005":13,"2006":13,"2007":13,"2008":15,"2009":15,"2010":15,"2011":16,"2012":16,"2013":17,"2014":17,"2015":18,"2016":18,"2017":19,"2018":19,"2019":19,"2020":19,"2021":19,"2022":19,"2023":19,"2024":19,"2025":19}},{"country":"United States","flag":"🇺🇸","values":{"1990":110,"1991":115,"1992":124,"1993":125,"1994":125,"1995":125,"1996":126,"1997":126,"1998":126,"1999":127,"2000":128,"2001":128,"2002":129,"2003":131,"2004":136,"2005":138,"2006":140,"2007":144,"2008":147,"2009":153,"2010":159,"2011":161,"2012":163,"2013":164,"2014":167,"2015":169,"2016":175,"2017":183,"2018":197,"2019":210,"2020":221,"2021":229,"2022":235,"2023":243,"2024":246,"2025":256},"ranks":{"1990":1,"1991":1,"1992":1,"1993":1,"1994":1,"1995":1,"1996":1,"1997":1,"1998":1,"1999":1,"2000":1,"2001":1,"2002":1,"2003":1,"2004":1,"2005":1,"2006":1,"2007":1,"2008":1,"2009":1,"2010":1,"2011":2,"2012":2,"2013":2,"2014":2,"2015":2,"2016":2,"2017":2,"2018":2,"2019":2,"2020":2,"2021":2,"2022":2,"2023":2,"2024":2,"2025":2},"order":{"1990":1,"1991":1,"1992":1,"1993":1,"1994":1,"1995":1,"1996":1,"1997":1,"1998":1,"1999":1,"2000":1,"2001":1,"2002":1,"2003":1,"2004":1,"2005":1,"2006":1,"2007":1,"2008":1,"2009":1,"2010":1,"2011":2,"2012":2,"2013":2,"2014":2,"2015":2,"2016":2,"2017":2,"2018":2,"2019":2,"2020":2,"2021":2,"2022":2,"2023":2,"2024":2,"2025":2}},{"country":"Malaysia","flag":"🇲🇾","values":{"1990":2,"1991":2,"1992":2,"1993":2,"1994":3,"1995":3,"1996":3,"1997":3,"1998":7,"1999":7,"2000":7,"2001":8,"2002":8,"2003":10,"2004":10,"2005":10,"2006":10,"2007":10,"2008":11,"2009":11,"2010":12,"2011":12,"2012":14,"2013":15,"2014":15,"2015":20,"2016":26,"2017":31,"2018":39,"2019":46,"2020":50,"2021":56,"2022":58,"2023":69,"2024":74,"2025":84},"ranks":{"1990":5,"1991":4,"1992":6,"1993":6,"1994":7,"1995":7,"1996":8,"1997":6,"1998":6,"1999":7,"2000":8,"2001":7,"2002":7,"2003":6,"2004":6,"2005":6,"2006":7,"2007":7,"2008":7,"2009":8,"2010":9,"2011":10,"2012":10,"2013":11,"2014":10,"2015":11,"2016":10,"2017":10,"2018":7,"2019":6,"2020":6,"2021":6,"2022":6,"2023":6,"2024":6,"2025":5},"order":{"1990":8,"1991":8,"1992":8,"1993":8,"1994":7,"1995":7,"1996":8,"1997":8,"1998":8,"1999":8,"2000":8,"2001":8,"2002":8,"2003":6,"2004":6,"2005":6,"2006":7,"2007":7,"2008":8,"2009":8,"2010":9,"2011":12,"2012":12,"2013":11,"2014":13,"2015":12,"2016":10,"2017":10,"2018":8,"2019":6,"2020":6,"2021":6,"2022":6,"2023":6,"2024":6,"2025":5}},{"country":"Indonesia","flag":"🇮🇩","values":{"1990":0,"1991":0,"1992":0,"1993":0,"1994":0,"1995":0,"1996":1,"1997":1,"1998":1,"1999":1,"2000":1,"2001":1,"2002":1,"2003":1,"2004":1,"2005":2,"2006":3,"2007":3,"2008":7,"2009":10,"2010":11,"2011":11,"2012":14,"2013":14,"2014":16,"2015":24,"2016":29,"2017":36,"2018":40,"2019":44,"2020":44,"2021":46,"2022":49,"2023":50,"2024":51,"2025":51},"ranks":{"1996":10,"1997":8,"1998":9,"1999":11,"2000":12,"2001":12,"2002":13,"2003":14,"2004":13,"2005":12,"2006":11,"2007":11,"2008":9,"2009":9,"2010":10,"2011":11,"2012":10,"2013":12,"2014":9,"2015":9,"2016":9,"2017":7,"2018":6,"2019":7,"2020":7,"2021":8,"2022":8,"2023":9,"2024":9,"2025":10},"order":{"1990":14,"1991":14,"1992":15,"1993":15,"1994":15,"1995":15,"1996":14,"1997":15,"1998":15,"1999":16,"2000":17,"2001":17,"2002":17,"2003":17,"2004":17,"2005":17,"2006":16,"2007":16,"2008":11,"2009":11,"2010":11,"2011":13,"2012":11,"2013":12,"2014":12,"2015":9,"2016":9,"2017":7,"2018":6,"2019":7,"2020":7,"2021":8,"2022":8,"2023":9,"2024":9,"2025":10}},{"country":"Russia","flag":"🇷🇺","values":{"1990":2,"1991":2,"1992":2,"1993":2,"1994":2,"1995":2,"1996":2,"1997":2,"1998":2,"1999":2,"2000":2,"2001":2,"2002":2,"2003":2,"2004":2,"2005":3,"2006":3,"2007":4,"2008":5,"2009":5,"2010":7,"2011":8,"2012":9,"2013":10,"2014":10,"2015":15,"2016":16,"2017":16,"2018":16,"2019":17,"2020":19,"2021":21,"2022":21,"2023":24,"2024":26,"2025":29},"ranks":{"1990":5,"1991":4,"1992":6,"1993":6,"1994":8,"1995":8,"1996":9,"1997":7,"1998":8,"1999":10,"2000":11,"2001":11,"2002":12,"2003":13,"2004":12,"2005":11,"2006":11,"2007":10,"2008":11,"2009":11,"2010":12,"2011":13,"2012":14,"2013":15,"2014":13,"2015":13,"2016":14,"2017":17,"2018":16,"2019":16,"2020":16,"2021":17,"2022":16,"2023":16,"2024":16,"2025":16},"order":{"1990":9,"1991":9,"1992":9,"1993":9,"1994":9,"1995":9,"1996":9,"1997":12,"1998":12,"1999":12,"2000":14,"2001":15,"2002":15,"2003":15,"2004":15,"2005":15,"2006":15,"2007":15,"2008":14,"2009":14,"2010":14,"2011":15,"2012":15,"2013":15,"2014":15,"2015":14,"2016":14,"2017":15,"2018":15,"2019":15,"2020":15,"2021":16,"2022":16,"2023":16,"2024":15,"2025":15}},{"country":"Japan","flag":"🇯🇵","values":{"1990":6,"1991":7,"1992":7,"1993":8,"1994":12,"1995":13,"1996":14,"1997":15,"1998":15,"1999":15,"2000":18,"2001":18,"2002":20,"2003":22,"2004":22,"2005":22,"2006":23,"2007":27,"2008":28,"2009":30,"2010":30,"2011":30,"2012":32,"2013":33,"2014":35,"2015":35,"2016":37,"2017":39,"2018":39,"2019":40,"2020":44,"2021":45,"2022":47,"2023":52,"2024":52,"2025":55},"ranks":{"1990":2,"1991":2,"1992":4,"1993":4,"1994":2,"1995":2,"1996":2,"1997":2,"1998":3,"1999":3,"2000":3,"2001":4,"2002":4,"2003":4,"2004":4,"2005":4,"2006":4,"2007":4,"2008":4,"2009":5,"2010":5,"2011":6,"2012":6,"2013":6,"2014":6,"2015":6,"2016":6,"2017":6,"2018":7,"2019":8,"2020":7,"2021":9,"2022":9,"2023":8,"2024":8,"2025":8},"order":{"1990":3,"1991":4,"1992":4,"1993":5,"1994":2,"1995":2,"1996":2,"1997":2,"1998":3,"1999":3,"2000":3,"2001":4,"2002":4,"2003":4,"2004":4,"2005":4,"2006":4,"2007":4,"2008":4,"2009":5,"2010":5,"2011":6,"2012":6,"2013":6,"2014":6,"2015":6,"2016":6,"2017":6,"2018":7,"2019":8,"2020":8,"2021":9,"2022":9,"2023":8,"2024":8,"2025":8}},{"country":"UAE","flag":"🇦🇪","values":{"1990":0,"1991":0,"1992":0,"1993":0,"1994":0,"1995":0,"1996":0,"1997":0,"1998":0,"1999":1,"2000":3,"2001":3,"2002":4,"2003":5,"2004":5,"2005":8,"2006":15,"2007":19,"2008":28,"2009":35,"2010":50,"2011":64,"2012":70,"2013":81,"2014":87,"2015":93,"2016":96,"2017":100,"2018":110,"2019":119,"2020":131,"2021":136,"2022":145,"2023":156,"2024":158,"2025":159},"ranks":{"1999":11,"2000":10,"2001":10,"2002":10,"2003":10,"2004":10,"2005":8,"2006":6,"2007":6,"2008":4,"2009":4,"2010":4,"2011":4,"2012":4,"2013":3,"2014":3,"2015":3,"2016":3,"2017":3,"2018":3,"2019":3,"2020":3,"2021":3,"2022":3,"2023":3,"2024":3,"2025":3},"order":{"1990":19,"1991":19,"1992":19,"1993":19,"1994":19,"1995":19,"1996":19,"1997":19,"1998":19,"1999":17,"2000":13,"2001":13,"2002":13,"2003":12,"2004":12,"2005":10,"2006":6,"2007":6,"2008":5,"2009":4,"2010":4,"2011":4,"2012":4,"2013":3,"2014":3,"2015":3,"2016":3,"2017":3,"2018":3,"2019":3,"2020":3,"2021":3,"2022":3,"2023":3,"2024":3,"2025":3}},{"country":"Taiwan","flag":"🇹🇼","values":{"1990":0,"1991":0,"1992":1,"1993":2,"1994":2,"1995":2,"1996":2,"1997":3,"1998":3,"1999":3,"2000":3,"2001":3,"2002":3,"2003":3,"2004":4,"2005":4,"2006":4,"2007":4,"2008":4,"2009":4,"2010":4,"2011":4,"2012":4,"2013":6,"2014":7,"2015":7,"2016":7,"2017":7,"2018":8,"2019":9,"2020":9,"2021":9,"2022":10,"2023":10,"2024":10,"2025":12},"ranks":{"1992":7,"1993":6,"1994":8,"1995":8,"1996":9,"1997":6,"1998":7,"1999":9,"2000":10,"2001":10,"2002":11,"2003":12,"2004":11,"2005":10,"2006":10,"2007":10,"2008":12,"2009":12,"2010":13,"2011":15,"2012":16,"2013":16,"2014":14,"2015":15,"2016":16,"2017":19,"2018":18,"2019":19,"2020":20,"2021":20,"2022":18,"2023":20,"2024":20,"2025":22},"order":{"1990":17,"1991":17,"1992":13,"1993":13,"1994":13,"1995":13,"1996":13,"1997":10,"1998":10,"1999":11,"2000":11,"2001":12,"2002":14,"2003":14,"2004":14,"2005":14,"2006":14,"2007":14,"2008":16,"2009":16,"2010":16,"2011":17,"2012":17,"2013":16,"2014":16,"2015":16,"2016":16,"2017":16,"2018":16,"2019":17,"2020":17,"2021":17,"2022":17,"2023":17,"2024":17,"2025":17}},{"country":"India","flag":"🇮🇳","values":{"1990":0,"1991":0,"1992":0,"1993":0,"1994":0,"1995":0,"1996":0,"1997":0,"1998":0,"1999":0,"2000":0,"2001":0,"2002":0,"2003":0,"2004":0,"2005":0,"2006":0,"2007":0,"2008":0,"2009":0,"2010":2,"2011":2,"2012":2,"2013":2,"2014":2,"2015":3,"2016":3,"2017":6,"2018":6,"2019":14,"2020":17,"2021":22,"2022":30,"2023":41,"2024":46,"2025":52},"ranks":{"2010":15,"2011":17,"2012":18,"2013":20,"2014":18,"2015":19,"2016":20,"2017":20,"2018":20,"2019":17,"2020":17,"2021":16,"2022":12,"2023":10,"2024":10,"2025":9},"order":{"1990":13,"1991":13,"1992":14,"1993":14,"1994":14,"1995":14,"1996":16,"1997":16,"1998":17,"1999":18,"2000":18,"2001":18,"2002":18,"2003":18,"2004":18,"2005":18,"2006":18,"2007":18,"2008":19,"2009":19,"2010":19,"2011":20,"2012":20,"2013":20,"2014":20,"2015":19,"2016":19,"2017":18,"2018":18,"2019":16,"2020":16,"2021":15,"2022":13,"2023":10,"2024":10,"2025":9}},{"country":"Thailand","flag":"🇹🇭","values":{"1990":0,"1991":0,"1992":0,"1993":0,"1994":0,"1995":0,"1996":1,"1997":3,"1998":3,"1999":4,"2000":4,"2001":6,"2002":6,"2003":6,"2004":6,"2005":6,"2006":6,"2007":6,"2008":7,"2009":8,"2010":10,"2011":10,"2012":11,"2013":12,"2014":12,"2015":13,"2016":15,"2017":17,"2018":20,"2019":24,"2020":26,"2021":26,"2022":29,"2023":33,"2024":40,"2025":42},"ranks":{"1996":10,"1997":6,"1998":7,"1999":8,"2000":9,"2001":8,"2002":8,"2003":9,"2004":9,"2005":9,"2006":9,"2007":9,"2008":9,"2009":10,"2010":11,"2011":12,"2012":13,"2013":14,"2014":12,"2015":14,"2016":15,"2017":16,"2018":14,"2019":12,"2020":12,"2021":13,"2022":13,"2023":12,"2024":13,"2025":13},"order":{"1990":18,"1991":18,"1992":18,"1993":18,"1994":18,"1995":18,"1996":15,"1997":11,"1998":11,"1999":10,"2000":10,"2001":9,"2002":9,"2003":10,"2004":10,"2005":11,"2006":11,"2007":11,"2008":12,"2009":13,"2010":13,"2011":14,"2012":14,"2013":14,"2014":14,"2015":15,"2016":15,"2017":14,"2018":14,"2019":13,"2020":13,"2021":13,"2022":14,"2023":14,"2024":13,"2025":13}},{"country":"Venezuela","flag":"🇻🇪","values":{"1990":2,"1991":2,"1992":2,"1993":2,"1994":2,"1995":2,"1996":2,"1997":2,"1998":2,"1999":2,"2000":2,"2001":2,"2002":2,"2003":2,"2004":2,"2005":2,"2006":2,"2007":2,"2008":2,"2009":2,"2010":2,"2011":2,"2012":2,"2013":2,"2014":2,"2015":2,"2016":2,"2017":2,"2018":2,"2019":2,"2020":2,"2021":2,"2022":2,"2023":2,"2024":2,"2025":2},"ranks":{"1990":5,"1991":4,"1992":6,"1993":6,"1994":8,"1995":8,"1996":9,"1997":7,"1998":8,"1999":10,"2000":11,"2001":11,"2002":12,"2003":13,"2004":12,"2005":12,"2006":12,"2007":12,"2008":13,"2009":13,"2010":15,"2011":17,"2012":18,"2013":20,"2014":18,"2015":20,"2016":21,"2017":24,"2018":24,"2019":25,"2020":25,"2021":26,"2022":25,"2023":26,"2024":27,"2025":30},"order":{"1990":11,"1991":11,"1992":11,"1993":11,"1994":11,"1995":11,"1996":11,"1997":14,"1998":14,"1999":14,"2000":16,"2001":16,"2002":16,"2003":16,"2004":16,"2005":16,"2006":17,"2007":17,"2008":17,"2009":17,"2010":18,"2011":19,"2012":19,"2013":19,"2014":19,"2015":20,"2016":20,"2017":20,"2018":20,"2019":20,"2020":20,"2021":20,"2022":20,"2023":20,"2024":20,"2025":20}},{"country":"Philippines","flag":"🇵🇭","values":{"1990":0,"1991":0,"1992":0,"1993":0,"1994":0,"1995":0,"1996":0,"1997":0,"1998":1,"1999":2,"2000":3,"2001":4,"2002":5,"2003":5,"2004":6,"2005":6,"2006":6,"2007":6,"2008":6,"2009":10,"2010":10,"2011":13,"2012":13,"2013":14,"2014":19,"2015":20,"2016":24,"2017":27,"2018":28,"2019":33,"2020":34,"2021":38,"2022":40,"2023":41,"2024":42,"2025":44},"ranks":{"1998":9,"1999":10,"2000":10,"2001":9,"2002":9,"2003":10,"2004":9,"2005":9,"2006":9,"2007":9,"2008":10,"2009":9,"2010":11,"2011":9,"2012":11,"2013":12,"2014":8,"2015":11,"2016":11,"2017":11,"2018":10,"2019":10,"2020":9,"2021":10,"2022":10,"2023":10,"2024":11,"2025":12},"order":{"1990":16,"1991":16,"1992":17,"1993":17,"1994":17,"1995":17,"1996":18,"1997":18,"1998":16,"1999":15,"2000":12,"2001":11,"2002":11,"2003":11,"2004":11,"2005":12,"2006":12,"2007":12,"2008":13,"2009":12,"2010":12,"2011":11,"2012":13,"2013":13,"2014":11,"2015":13,"2016":11,"2017":11,"2018":11,"2019":11,"2020":10,"2021":10,"2022":10,"2023":11,"2024":11,"2025":12}},{"country":"South Korea","flag":"🇰🇷","values":{"1990":2,"1991":2,"1992":2,"1993":2,"1994":2,"1995":2,"1996":2,"1997":2,"1998":2,"1999":2,"2000":2,"2001":3,"2002":6,"2003":9,"2004":10,"2005":10,"2006":10,"2007":10,"2008":12,"2009":16,"2010":24,"2011":35,"2012":38,"2013":47,"2014":49,"2015":51,"2016":58,"2017":65,"2018":69,"2019":72,"2020":75,"2021":76,"2022":79,"2023":79,"2024":80,"2025":80},"ranks":{"1990":5,"1991":4,"1992":6,"1993":6,"1994":8,"1995":8,"1996":9,"1997":7,"1998":8,"1999":10,"2000":11,"2001":10,"2002":8,"2003":7,"2004":6,"2005":6,"2006":7,"2007":7,"2008":6,"2009":7,"2010":6,"2011":5,"2012":5,"2013":5,"2014":5,"2015":5,"2016":5,"2017":5,"2018":5,"2019":5,"2020":5,"2021":5,"2022":5,"2023":5,"2024":5,"2025":6},"order":{"1990":10,"1991":10,"1992":10,"1993":10,"1994":10,"1995":10,"1996":10,"1997":13,"1998":13,"1999":13,"2000":15,"2001":14,"2002":10,"2003":8,"2004":7,"2005":7,"2006":8,"2007":8,"2008":7,"2009":7,"2010":6,"2011":5,"2012":5,"2013":5,"2014":5,"2015":5,"2016":5,"2017":5,"2018":5,"2019":5,"2020":5,"2021":5,"2022":5,"2023":5,"2024":5,"2025":6}},{"country":"Hong Kong","flag":"🇭🇰","values":{"1990":2,"1991":4,"1992":7,"1993":8,"1994":8,"1995":8,"1996":8,"1997":9,"1998":11,"1999":13,"2000":17,"2001":24,"2002":25,"2003":37,"2004":39,"2005":48,"2006":51,"2007":51,"2008":59,"2009":63,"2010":66,"2011":71,"2012":74,"2013":74,"2014":76,"2015":76,"2016":76,"2017":77,"2018":78,"2019":81,"2020":85,"2021":88,"2022":97,"2023":97,"2024":99,"2025":102},"ranks":{"1990":5,"1991":3,"1992":4,"1993":4,"1994":5,"1995":5,"1996":5,"1997":4,"1998":4,"1999":4,"2000":4,"2001":3,"2002":3,"2003":3,"2004":3,"2005":3,"2006":3,"2007":3,"2008":3,"2009":3,"2010":3,"2011":3,"2012":3,"2013":4,"2014":4,"2015":4,"2016":4,"2017":4,"2018":4,"2019":4,"2020":4,"2021":4,"2022":4,"2023":4,"2024":4,"2025":4},"order":{"1990":7,"1991":6,"1992":5,"1993":4,"1994":5,"1995":5,"1996":5,"1997":6,"1998":5,"1999":4,"2000":4,"2001":3,"2002":3,"2003":3,"2004":3,"2005":3,"2006":3,"2007":3,"2008":3,"2009":3,"2010":3,"2011":3,"2012":3,"2013":4,"2014":4,"2015":4,"2016":4,"2017":4,"2018":4,"2019":4,"2020":4,"2021":4,"2022":4,"2023":4,"2024":4,"2025":4}},{"country":"Canada","flag":"🇨🇦","values":{"1990":6,"1991":7,"1992":9,"1993":9,"1994":9,"1995":9,"1996":9,"1997":9,"1998":9,"1999":9,"2000":9,"2001":9,"2002":9,"2003":9,"2004":9,"2005":9,"2006":9,"2007":9,"2008":9,"2009":10,"2010":11,"2011":13,"2012":17,"2013":17,"2014":19,"2015":21,"2016":21,"2017":25,"2018":27,"2019":32,"2020":32,"2021":33,"2022":34,"2023":39,"2024":41,"2025":46},"ranks":{"1990":2,"1991":2,"1992":3,"1993":3,"1994":4,"1995":4,"1996":4,"1997":4,"1998":5,"1999":6,"2000":6,"2001":6,"2002":6,"2003":7,"2004":7,"2005":7,"2006":8,"2007":8,"2008":8,"2009":9,"2010":10,"2011":9,"2012":9,"2013":10,"2014":8,"2015":10,"2016":12,"2017":12,"2018":11,"2019":11,"2020":11,"2021":12,"2022":11,"2023":11,"2024":12,"2025":11},"order":{"1990":2,"1991":3,"1992":3,"1993":3,"1994":4,"1995":4,"1996":4,"1997":5,"1998":6,"1999":6,"2000":6,"2001":6,"2002":6,"2003":7,"2004":8,"2005":8,"2006":9,"2007":9,"2008":10,"2009":10,"2010":10,"2011":9,"2012":9,"2013":10,"2014":10,"2015":10,"2016":12,"2017":12,"2018":12,"2019":12,"2020":12,"2021":12,"2022":12,"2023":12,"2024":12,"2025":11}},{"country":"China","flag":"🇨🇳","values":{"1990":2,"1991":2,"1992":2,"1993":2,"1994":2,"1995":2,"1996":6,"1997":11,"1998":20,"1999":24,"2000":32,"2001":40,"2002":45,"2003":52,"2004":58,"2005":71,"2006":81,"2007":95,"2008":108,"2009":121,"2010":145,"2011":166,"2012":187,"2013":224,"2014":294,"2015":368,"2016":465,"2017":549,"2018":656,"2019":734,"2020":804,"2021":873,"2022":968,"2023":1066,"2024":1161,"2025":1246},"ranks":{"1990":5,"1991":4,"1992":6,"1993":6,"1994":8,"1995":8,"1996":7,"1997":3,"1998":2,"1999":2,"2000":2,"2001":2,"2002":2,"2003":2,"2004":2,"2005":2,"2006":2,"2007":2,"2008":2,"2009":2,"2010":2,"2011":1,"2012":1,"2013":1,"2014":1,"2015":1,"2016":1,"2017":1,"2018":1,"2019":1,"2020":1,"2021":1,"2022":1,"2023":1,"2024":1,"2025":1},"order":{"1990":6,"1991":7,"1992":7,"1993":7,"1994":8,"1995":8,"1996":7,"1997":4,"1998":2,"1999":2,"2000":2,"2001":2,"2002":2,"2003":2,"2004":2,"2005":2,"2006":2,"2007":2,"2008":2,"2009":2,"2010":2,"2011":1,"2012":1,"2013":1,"2014":1,"2015":1,"2016":1,"2017":1,"2018":1,"2019":1,"2020":1,"2021":1,"2022":1,"2023":1,"2024":1,"2025":1}}]}
+JSON, true, 512, JSON_THROW_ON_ERROR);
+        $r = DwStudio::importRace($topic, $content, 'Claude Code');
+        echo $r['ok'] ? "  OK  dw: 2026-11-22 race package v{$r['version']}\n" : "  ERR dw Nov 22 race: " . implode(' ', $r['errors']) . "\n";
+    }
+} catch (Throwable $e) {
+    echo "  ERR dw Nov 22 race: " . $e->getMessage() . "\n";
+}
+
+// Once: today's challenge (2026-11-11, live) "Hop on public transport and get off at a stop you've never seen." made
+// easier: "Snap a typical public transport stop in your city." through the admin's own service functions
+// (DailyAdminService: the English, its 18 translations, the headline). The comparison question ("Which stop?"), theme,
+// cover, status and posted photos untouched. Runs only while the old text is there.
+try {
+    $nov11 = $pdo->query("SELECT id, text_i18n->>'en' AS en FROM daily_challenges WHERE challenge_date = '2026-11-11'")->fetch(PDO::FETCH_ASSOC);
+    if ($nov11 && $nov11['en'] === "Hop on public transport and get off at a stop you've never seen.") {
+        spl_autoload_register(static function (string $class): void {
+            $file = __DIR__ . '/src/' . $class . '.php';
+            if (preg_match('/^[A-Za-z0-9_]+$/', $class) && is_file($file)) require_once $file;
+        });
+        $new = json_decode(<<<'JSON'
+{"text": {"en": "Snap a typical public transport stop in your city.", "fr": "Prends en photo un arrêt de transport typique de ta ville.", "vi": "Chụp một trạm giao thông công cộng đặc trưng ở thành phố bạn.", "es": "Haz una foto de una parada típica del transporte público de tu ciudad.", "it": "Fotografa una tipica fermata dei mezzi pubblici della tua città.", "pt-br": "Fotografe um ponto típico de transporte público da sua cidade.", "pt-pt": "Fotografa uma paragem típica dos transportes públicos da tua cidade.", "de": "Fotografiere eine typische Haltestelle in deiner Stadt.", "nl": "Maak een foto van een typische ov-halte in jouw stad.", "zh-hans": "拍一个你所在城市最典型的公共交通站点。", "zh-hant": "拍一個你所在城市最典型的大眾運輸站點。", "ja": "あなたの街の、いかにも地元らしい駅やバス停を撮ろう。", "ko": "우리 도시의 전형적인 대중교통 정류장을 찍어 보세요.", "fil": "Kunan ng litrato ang isang tipikal na sakayan sa lungsod mo.", "th": "ถ่ายรูปป้ายรถหรือสถานีขนส่งสาธารณะที่เป็นแบบฉบับของเมืองคุณ", "id": "Foto halte transportasi umum yang khas di kotamu.", "hi": "अपने शहर का कोई आम पब्लिक ट्रांसपोर्ट स्टॉप क्लिक करें।", "ru": "Сфотографируй типичную остановку общественного транспорта в своём городе.", "ar": "صوّر محطة نقل عام نموذجية في مدينتك."}, "context": {"en": "Bus stop, metro, tram or ferry: whatever locals use every day.", "fr": "Arrêt de bus, métro, tram ou ferry : ce que les gens d'ici prennent tous les jours.", "vi": "Trạm xe buýt, metro, tàu điện hay bến phà: chỗ người dân ở đây dùng mỗi ngày.", "es": "Parada de bus, metro, tranvía o ferri: lo que la gente de aquí usa a diario.", "it": "Fermata del bus, metro, tram o traghetto: quella che la gente del posto usa ogni giorno.", "pt-br": "Ponto de ônibus, metrô, VLT ou barca: o que o pessoal daqui usa todo dia.", "pt-pt": "Paragem de autocarro, metro, elétrico ou barco: o que a malta daqui usa todos os dias.", "de": "Bushaltestelle, U-Bahn, Tram oder Fähre: was die Leute hier jeden Tag nehmen.", "nl": "Bushalte, metro, tram of pont: wat de mensen hier elke dag gebruiken.", "zh-hans": "公交站、地铁站、有轨电车站或轮渡码头：本地人每天都在用的就行。", "zh-hant": "公車站、捷運站、輕軌站或渡輪碼頭：在地人每天都在用的就行。", "ja": "バス停、地下鉄、路面電車、フェリー乗り場：地元の人が毎日使う場所ならOK。", "ko": "버스 정류장, 지하철역, 트램, 페리 선착장: 현지인이 매일 이용하는 곳이면 돼요.", "fil": "Bus stop, MRT, jeep o bangka: kung ano ang sinasakyan ng mga taga-rito araw-araw.", "th": "ป้ายรถเมล์ รถไฟฟ้า รถราง หรือท่าเรือ: อะไรก็ได้ที่คนท้องถิ่นใช้ทุกวัน", "id": "Halte bus, stasiun MRT, trem, atau dermaga feri: apa pun yang dipakai warga tiap hari.", "hi": "बस स्टॉप, मेट्रो, ट्राम या फ़ेरी: जो भी लोकल लोग रोज़ इस्तेमाल करते हैं।", "ru": "Автобусная остановка, метро, трамвай или паром: то, чем местные пользуются каждый день.", "ar": "موقف باص، مترو، ترام أو عبّارة: أي شيء يستخدمه أهل المدينة كل يوم."}, "headline": {"en": "Snap your city's everyday stop.", "fr": "Photographie l'arrêt typique de ta ville.", "vi": "Chụp trạm xe quen thuộc ở thành phố bạn.", "es": "Fotografía la parada típica de tu ciudad.", "it": "Fotografa la fermata tipica della tua città.", "pt-br": "Fotografe o ponto típico da sua cidade.", "pt-pt": "Fotografa a paragem típica da tua cidade.", "de": "Knips die typische Haltestelle deiner Stadt.", "nl": "Fotografeer de typische halte van jouw stad.", "zh-hans": "拍下你城市最日常的那一站。", "zh-hant": "拍下你城市最日常的那一站。", "ja": "街らしい駅やバス停を撮ろう。", "ko": "우리 도시다운 정류장을 찍어 보세요.", "fil": "Kunan ang tipikal na sakayan sa lungsod mo.", "th": "ถ่ายป้ายรถแบบฉบับเมืองคุณ", "id": "Foto halte khas di kotamu.", "hi": "अपने शहर का रोज़ वाला स्टॉप क्लिक करें।", "ru": "Сфоткай типичную остановку своего города.", "ar": "صوّر المحطة المعتادة في مدينتك."}}
+JSON, true, 512, JSON_THROW_ON_ERROR);
+        $tr = static fn(array $m): array => array_diff_key($m, ['en' => 1]);
+        $id = (string) $nov11['id'];
+        DailyAdminService::updateChallenge($id, ['text' => $new['text']['en'], 'context' => $new['context']['en']]);
+        DailyAdminService::setChallengeTranslations($id, $tr($new['text']), $tr($new['context']));
+        DailyAdminService::setChallengeHeadline($id, $new['headline']['en'], $tr($new['headline']));
+        echo "  OK  daily: 2026-11-11 replaced by \"{$new['text']['en']}\" (19 locales: text, context, headline)\n";
+    }
+} catch (Throwable $e) {
+    echo "  ERR daily 2026-11-11 replacement: " . $e->getMessage() . "\n";
+}
+
+// Once: Nov 11 (singles) back to classic, with the static layout (no animation, a plain list, #1 with a 👑), Vietnam as
+// the extra row, the banner with its flag and the question "Single or taken? 👀", through DwStudio::updateField (as the
+// admin's fields: the caption's last line follows); the quiz PNG 03 dropped (classic renders two). Only while in quiz mode.
+try {
+    spl_autoload_register(static function (string $class): void {
+        $file = __DIR__ . '/src/' . $class . '.php';
+        if (preg_match('/^[A-Za-z0-9_]+$/', $class) && is_file($file)) require_once $file;
+    });
+    $topic = DwStudio::topicByDate('2026-11-11');
+    $pkg = $topic !== null ? DwStudio::package($topic['id']) : null;
+    if ($pkg !== null && ($pkg['content']['mode'] ?? null) === 'quiz') {
+        DwStudio::updateField($pkg['id'], 'mode', 'classic');
+        DwStudio::updateField($pkg['id'], 'layout', 'static');
+        DwStudio::updateField($pkg['id'], 'extra_row', 'Vietnam');
+        DwStudio::updateField($pkg['id'], 'detail', '🇯🇲 Jamaica: 75% of women unmarried at 30 💍');
+        DwStudio::updateField($pkg['id'], 'outro_question', 'Single or taken? 👀');
+        $pdo->prepare("UPDATE dw_packages SET still3_url = NULL WHERE id = ?")->execute([$pkg['id']]);
+        echo "  OK  dw: 2026-11-11 classic, static layout, Vietnam row, \"Single or taken? 👀\"\n";
+    }
+} catch (Throwable $e) {
+    echo "  ERR dw Nov 11 static: " . $e->getMessage() . "\n";
+}
+
+// Once: Nov 12 to 15 in Nov 11's format (classic, static layout) through DwStudio::updateField (as the admin's fields:
+// the caption's last line follows a new question): Nov 13 and 14 banners with their flags, Nov 14 out of quiz mode
+// (its quiz question kept, unused; the question 'Did YOU guess right?' becomes 'Too many tourists in YOUR city? ✈️';
+// its quiz PNG 03 dropped), Vietnam as Nov 15's extra row (#73). Only while a package is not static yet.
+try {
+    spl_autoload_register(static function (string $class): void {
+        $file = __DIR__ . '/src/' . $class . '.php';
+        if (preg_match('/^[A-Za-z0-9_]+$/', $class) && is_file($file)) require_once $file;
+    });
+    $static = [
+        '2026-11-12' => [],
+        '2026-11-13' => ['detail' => '🇮🇩🇱🇦 Indonesia & Laos: 9 in 10 laughed yesterday 😄'],
+        '2026-11-14' => ['mode' => 'classic', 'detail' => '🇦🇩 Andorra: 40 tourists for every local 🙈', 'outro_question' => 'Too many tourists in YOUR city? ✈️'],
+        '2026-11-15' => ['extra_row' => 'Vietnam'],
+    ];
+    foreach ($static as $date => $fields) {
+        $topic = DwStudio::topicByDate($date);
+        $pkg = $topic !== null ? DwStudio::package($topic['id']) : null;
+        if ($pkg === null || ($pkg['content']['layout'] ?? null) === 'static') {
+            continue;
+        }
+        foreach ($fields + ['layout' => 'static'] as $path => $value) {
+            DwStudio::updateField($pkg['id'], $path, $value);
+        }
+        if (isset($fields['mode'])) {
+            $pdo->prepare("UPDATE dw_packages SET still3_url = NULL WHERE id = ?")->execute([$pkg['id']]);
+        }
+        echo "  OK  dw: {$date} static layout\n";
+    }
+} catch (Throwable $e) {
+    echo "  ERR dw Nov 12-15 static: " . $e->getMessage() . "\n";
+}
+
+// Once: the races of Nov 17 to 22 hold, then move (each step still 1.2 s to read, a 0.4 s transition, a 2.5 s freeze on
+// the last year), through DwStudio::updateField (the admin's Pace fields). Years shown: every edition on Nov 18 (4),
+// one out of 2 on Nov 17, 20 and 21, one out of 3 on Nov 19 (fast until 2009) and Nov 22, each banner year kept.
+// Close values (Nov 17 passports, Nov 18 cuisine ratings): bars start just below each year's top 10. Nov 17's headline
+// ends with ✈️ (🛂 rendered as a box). Only while a race does not hold first yet.
+try {
+    spl_autoload_register(static function (string $class): void {
+        $file = __DIR__ . '/src/' . $class . '.php';
+        if (preg_match('/^[A-Za-z0-9_]+$/', $class) && is_file($file)) require_once $file;
+    });
+    $pace = ['hold_first' => 'true', 'step_seconds' => '1.6', 'hold' => '0.75', 'freeze_seconds' => '2.5'];
+    $races = [
+        '2026-11-17' => ['year_step' => '2', 'bar_scale' => 'step', 'headline' => "The world's most powerful passports, 2010 → 2026 ✈️"] + $pace,
+        '2026-11-18' => ['bar_scale' => 'step'] + $pace,
+        '2026-11-19' => ['year_step' => '3', 'step_seconds' => '0.8', 'slow_from' => '2009', 'slow_step' => '1.6'] + $pace,
+        '2026-11-20' => ['year_step' => '2'] + $pace,
+        '2026-11-21' => ['year_step' => '2'] + $pace,
+        '2026-11-22' => ['year_step' => '3'] + $pace,
+    ];
+    foreach ($races as $date => $fields) {
+        $topic = DwStudio::topicByDate($date);
+        $pkg = $topic !== null ? DwStudio::package($topic['id']) : null;
+        if ($pkg === null || !DwRace::isRace($pkg['content']) || !empty($pkg['content']['hold_first'])) {
+            continue;
+        }
+        foreach ($fields as $path => $value) {
+            DwStudio::updateField($pkg['id'], $path, $value);
+        }
+        echo "  OK  dw: {$date} race pace (hold, then move)\n";
+    }
+} catch (Throwable $e) {
+    echo "  ERR dw Nov 17-22 race pace: " . $e->getMessage() . "\n";
+}
+
+// Once: the races of Nov 17 to 22 back to the race format's default pace (every step: 0.8 s still, a 0.3 s move, a 2.5 s
+// freeze; few steps held 2 s; a race over 25 s keeps the normal pace for its last 12 to 15 steps, the early ones fast,
+// the banner year held 1 s if it falls there), clearing their own pace fields through DwStudio::updateField. Nov 22 now
+// starts in 2000 (first_year: the towers built since 1990 already counted; the 1990s add little to the story).
+// Only while a race still has its own pace (hold_first set).
+try {
+    spl_autoload_register(static function (string $class): void {
+        $file = __DIR__ . '/src/' . $class . '.php';
+        if (preg_match('/^[A-Za-z0-9_]+$/', $class) && is_file($file)) require_once $file;
+    });
+    $clear = ['year_step' => '', 'step_seconds' => '', 'hold' => '', 'freeze_seconds' => '', 'slow_from' => '', 'slow_step' => '', 'hold_first' => ''];
+    $races = [
+        '2026-11-17' => [], '2026-11-18' => [], '2026-11-19' => [], '2026-11-20' => [], '2026-11-21' => [],
+        '2026-11-22' => ['first_year' => '2000', 'headline' => 'The countries with the most skyscrapers, 2000 → 2025 🏙️', 'data_years' => '2000–2025'],
+    ];
+    foreach ($races as $date => $fields) {
+        $topic = DwStudio::topicByDate($date);
+        $pkg = $topic !== null ? DwStudio::package($topic['id']) : null;
+        if ($pkg === null || !DwRace::isRace($pkg['content']) || !array_key_exists('hold_first', $pkg['content'])) {
+            continue;
+        }
+        foreach ($clear + $fields as $path => $value) {
+            DwStudio::updateField($pkg['id'], $path, $value);
+        }
+        $after = DwStudio::package($topic['id']);
+        echo "  OK  dw: {$date} race default pace (" . number_format(DwRace::videoSeconds($after['content']), 1) . " s)\n";
+    }
+} catch (Throwable $e) {
+    echo "  ERR dw Nov 17-22 default pace: " . $e->getMessage() . "\n";
+}
+
+// Once: World Hello Day back on Saturday Nov 21 in the slides format's light identity. The bars race moves from Nov 21 to
+// Saturday Nov 28 (what is planned there, if unpublished, moves to the first date with no topic from Nov 29); the earlier
+// World Hello Day topic (Dec 16) comes back to Nov 21 as "World Hello Day: how people say hello", with a new package
+// (DwStudio::import: #1 France in the hook, #2 Brazil, #3 Vietnam, #4 Japan, #5 the Philippines, #6 New Zealand; every
+// slot waits for its AI clip). Only while that package isn't there.
+try {
+    require_once __DIR__ . '/vendor/autoload.php';
+    spl_autoload_register(static function (string $class): void {
+        $file = __DIR__ . '/src/' . $class . '.php';
+        if (preg_match('/^[A-Za-z0-9_]+$/', $class) && is_file($file)) require_once $file;
+    });
+    $whd = $pdo->query("SELECT id, date::text AS date, status FROM dw_topics WHERE title IN ('World Hello Day: how people greet', 'World Hello Day: how people say hello') ORDER BY date LIMIT 1")->fetch(PDO::FETCH_ASSOC);
+    $done = $whd && $whd['date'] === '2026-11-21' && (DwStudio::package((int) $whd['id'])['content']['hook']['number'] ?? null) === 1;
+    if ($whd && !$done && $whd['status'] !== 'published') {
+        $bars = $pdo->query("SELECT id, status FROM dw_topics WHERE date = '2026-11-21' AND id <> " . (int) $whd['id'])->fetch(PDO::FETCH_ASSOC);
+        if ($bars && $bars['status'] !== 'published') {
+            $sat = $pdo->query("SELECT id, title, status FROM dw_topics WHERE date = '2026-11-28'")->fetch(PDO::FETCH_ASSOC);
+            if ($sat && $sat['status'] !== 'published') {
+                $free = $pdo->query("SELECT d::date::text FROM generate_series('2026-11-29'::date, '2027-12-31'::date, '1 day') d
+                                     WHERE NOT EXISTS (SELECT 1 FROM dw_topics t WHERE t.date = d::date) ORDER BY d LIMIT 1")->fetchColumn();
+                $pdo->prepare("UPDATE dw_topics SET date = ?::date, updated_at = now() WHERE id = ?")->execute([$free, $sat['id']]);
+                echo "  OK  dw: \"{$sat['title']}\" moved from 2026-11-28 to {$free}\n";
+            }
+            if (!$pdo->query("SELECT 1 FROM dw_topics WHERE date = '2026-11-28'")->fetchColumn()) {
+                $pdo->prepare("UPDATE dw_topics SET date = '2026-11-28', updated_at = now() WHERE id = ?")->execute([$bars['id']]);
+                echo "  OK  dw: the bars race moved from 2026-11-21 to 2026-11-28\n";
+            }
+        }
+        if (!$pdo->query("SELECT 1 FROM dw_topics WHERE date = '2026-11-21' AND id <> " . (int) $whd['id'])->fetchColumn()) {
+            $pdo->prepare("UPDATE dw_topics SET date = '2026-11-21', title = 'World Hello Day: how people say hello', visual_mode = 'video', updated_at = now() WHERE id = ?")
+                ->execute([$whd['id']]);
+            $doc = json_decode(<<<'JSON'
+{"packages":[{"date":"2026-11-21","model":"Claude Opus 5.5 (Claude Code)","content":{"topic":"World Hello Day: how people say hello","why_today":"November 21 is World Hello Day, started in 1973: the idea is to greet ten people today. Here is how hello looks around the world, from a kiss to noses.","hook":{"number":1,"country":"France","flag":"🇫🇷","headline":"6 ways to say hello 👋","headline_accent":"say hello","detail":"We start with kisses. #6 is wild 😳","source_url":"https://connexionfrance.com/article/French-news/the-secret-to-the-bises-kiss-greeting-in-france-department-by-department","illustration_brief":"AI clip (Google Flow), from Jacques: two French friends greeting each other with la bise, a light cheek-to-cheek kiss on each side, on a Paris street."},"slides":[{"number":2,"country":"Brazil","flag":"🇧🇷","headline":"A warm hug between friends","headline_accent":"warm hug","detail":"Women often add a light kiss on each cheek.","caption_detail":"In Brazil a handshake is the safe greeting with strangers, but friends usually greet each other with a warm hug, and women commonly greet with a light kiss on each cheek. Close male friends often add a pat on the back to the handshake.","source_url":"https://culturalatlas.sbs.com.au/brazilian-culture/brazilian-culture-greetings","illustration_brief":"AI clip needed: two Brazilian friends in their 20s meet on a sunny street (Rio or São Paulo look) and greet with a big, warm hug, both smiling, a pat on the back; no kiss, no handshake. Medium shot, natural daylight."},{"number":3,"country":"Vietnam","flag":"🇻🇳","headline":"A handshake and a small nod","headline_accent":"small nod","detail":"Both hands, left on top, for extra respect.","caption_detail":"In Vietnam men usually greet with a handshake and a small nod; to show respect, people may shake with both hands, the left hand on top. Women often greet with a brief bow or nod, and the oldest person is greeted first.","source_url":"https://culturalatlas.sbs.com.au/vietnamese-culture/vietnamese-culture-greetings","illustration_brief":"AI clip needed: a young Vietnamese man greets an older Vietnamese man (about 60) in a Hanoi café: he shakes his hand with both hands, his left hand placed on top of the handshake, and gives a small nod of the head, smiling. Close-medium shot on the hands and faces."},{"number":4,"country":"Japan","flag":"🇯🇵","headline":"A bow instead of a handshake","headline_accent":"bow","detail":"The deeper the bow, the more respect.","caption_detail":"In Japan the most common greeting is a bow (ojigi). Its depth depends on the situation: a slight nod with friends, about 15° with acquaintances, around 30° in business, deeper for apologies or very formal moments. Many Japanese shake hands with foreign visitors.","source_url":"https://culturalatlas.sbs.com.au/japanese-culture/japanese-culture-greetings","illustration_brief":"AI clip needed: two Japanese office workers in suits meet in a bright lobby and greet each other with a standing bow from the waist (about 30°), back straight, hands at their sides (the man) or joined in front (the woman), then straighten up and smile. No handshake. Side view so the bow is clear."},{"number":5,"country":"Philippines","flag":"🇵🇭","headline":"Mano: elder's hand to your forehead","headline_accent":"elder's hand","detail":"Ask \"mano po\" and receive a blessing.","caption_detail":"The mano is a Filipino gesture of respect to elders: the younger person bows toward the elder's offered hand and presses the back of it to their forehead, often asking \"mano po\". It is done when visiting an elder or arriving at a house or gathering; the elder answers with a blessing.","source_url":"https://culturalatlas.sbs.com.au/filipino-culture/filipino-culture-greetings","illustration_brief":"AI clip needed: in a Filipino family home, a teenage grandchild arrives, takes the right hand of their grandmother (about 70), bows slightly and gently presses the back of her hand to their own forehead; the grandmother smiles and touches the child's head (a blessing). Close-medium shot on the hand and forehead."},{"number":6,"country":"New Zealand","flag":"🇳🇿","headline":"Hongi: noses and foreheads touch","headline_accent":"noses and foreheads","detail":"Traditionally Māori: sharing the ha, the breath of life.","caption_detail":"The hongi is the traditional Māori greeting: two people press their noses and foreheads together and share the ha, the breath of life. It is part of ceremonies like the pōwhiri on a marae, where visitors become one with the people of the land.","source_url":"https://en.wikipedia.org/wiki/Hongi","illustration_brief":"AI clip needed, with care and respect: at a marae welcome in New Zealand, two Māori adults (one older man, one woman) greet with a hongi: they hold right hands, lean in and gently press noses and foreheads together for a breath, eyes closed, then step back smiling. Respectful, documentary style; no costume caricature, no tongue or haka."}],"outro":{"question":"How do YOU say hello? 👋","cta_line":"Say hi to the world on hilads.live 👋","illustration_brief":"The closing slide: no picture needed."},"caption":"Happy World Hello Day 👋 (Nov 21)\n\nKisses in France, a warm hug in Brazil, a handshake and a small nod in Vietnam, a bow in Japan, an elder's hand to the forehead in the Philippines, and the Māori hongi in New Zealand: noses and foreheads together, sharing the breath of life. Different Worlds by Hilads.\n\nHow do YOU say hello? 👋","hashtags":["#DifferentWorlds","#WorldHelloDay","#Greetings","#Culture","#Travel","#Vietnam"],"ai_disclosure":"All six clips are AI-generated (Google Flow): turn on the AI label when publishing.","warnings":["No real licensed clip clearly shows these gestures: Pixabay has none (a Barcelona hug, generic handshakes, no bow, mano or hongi); Pexels' 'bowing' clips are martial-arts bows (not a greeting). Every slide's clip is to be generated with AI from its illustration_brief, then uploaded and marked AI-generated.","Brazil: the number of cheek kisses by region (one in São Paulo, two in Rio, three elsewhere) is only reported by travel blogs: not used.","Vietnam: the Western handshake has largely replaced the traditional hands-together bow in daily life (Lonely Planet); the handshake with a small nod is the common greeting (Cultural Atlas).","New Zealand: the hongi is a traditional Māori greeting used at ceremonies (pōwhiri), not how every New Zealander says hello: the detail says 'Traditionally Māori'."],"follow_up_idea":"How people say goodbye around the world, from a wave to a bow."}}]}
+JSON, true, 512, JSON_THROW_ON_ERROR);
+            foreach (DwStudio::import($doc) as $r) {
+                echo $r['ok'] ? "  OK  dw: 2026-11-21 World Hello Day package v{$r['version']}\n"
+                              : "  ERR dw World Hello Day: " . implode(' ', $r['errors'] ?? []) . "\n";
+            }
+        }
+    }
+} catch (Throwable $e) {
+    echo "  ERR dw World Hello Day: " . $e->getMessage() . "\n";
+}
 
 // ── Self-heal monthly rank columns ────────────────────────────────────────
 // The denormalised users.monthly_rank_* columns are kept fresh by

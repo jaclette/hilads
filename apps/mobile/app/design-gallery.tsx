@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { ImageBackground, ScrollView, Text, View, StyleSheet } from 'react-native';
-import { type ThemeColors } from '@/constants';
+import { Space, Radius, FontSizes, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { Screen, ScreenHeader } from '@/ui';
 import {
@@ -47,7 +47,7 @@ export default function DesignGallery() {
         {[['VN', 'Saigon', 'Một, hai, ba, dzô!'], ['MX', 'Mexico City', '¡Salud!'], ['JP', 'Tokyo', 'Kanpai!'], ['DE', 'Berlin', 'Prost!']].map(([cc, city, a]) => (
           <View key={cc} style={styles.cmpRow}>
             <FlagSticker country={cc} size={30} />
-            <View style={{ flex: 1, gap: 6 }}>
+            <View style={{ flex: 1, gap: Space.sm }}>
               <Text style={styles.city}>{city}</Text>
               <AnswerBubble text={a} />
             </View>
@@ -77,23 +77,23 @@ export default function DesignGallery() {
 }
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  body:      { padding: 16, gap: 12, paddingBottom: 60 },
-  h:         { marginTop: 14, fontSize: 12, fontWeight: '800', color: c.muted, textTransform: 'uppercase', letterSpacing: 0.6 },
-  row:       { flexDirection: 'row', alignItems: 'center', gap: 10 },
-  tag:       { fontSize: 13, fontWeight: '500', color: c.muted },
-  title:     { fontSize: 19, lineHeight: 26, fontWeight: '800', color: c.text, letterSpacing: -0.3 },
-  screenTitle: { fontSize: 28, lineHeight: 34, fontWeight: '800', color: c.text, letterSpacing: -0.3 },
-  wrap:      { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
-  colored:   { fontSize: 15, fontWeight: '800' },
+  body:      { padding: Space.lg, gap: Space.md, paddingBottom: 60 },
+  h:         { marginTop: Space.lg, fontSize: FontSizes.xs, fontWeight: '800', color: c.muted, textTransform: 'uppercase', letterSpacing: 0.6 },
+  row:       { flexDirection: 'row', alignItems: 'center', gap: Space.md },
+  tag:       { fontSize: FontSizes.xs, fontWeight: '500', color: c.muted },
+  title:     { fontSize: FontSizes.lg, lineHeight: 26, fontWeight: '800', color: c.text, letterSpacing: -0.3 },
+  screenTitle: { fontSize: FontSizes.xxl, lineHeight: 39, fontWeight: '800', color: c.text, letterSpacing: -0.3 },
+  wrap:      { flexDirection: 'row', flexWrap: 'wrap', gap: Space.sm },
+  colored:   { fontSize: FontSizes.body, fontWeight: '800' },
   swatch:    { width: 36, height: 36, borderRadius: 18 },
-  photo:     { height: 240, justifyContent: 'flex-end', padding: 16, gap: 12 },
+  photo:     { height: 240, justifyContent: 'flex-end', padding: 16, gap: Space.md },
   photoImg:  { borderRadius: 24 },
   onPhotoBtn: { alignSelf: 'stretch' },
   photoBubble: { position: 'absolute', top: 20, left: 16 },
-  link:      { fontSize: 15, fontWeight: '800' },
-  cmpRow:    { flexDirection: 'row', alignItems: 'center', gap: 12, padding: 12, borderRadius: 16, backgroundColor: c.bg2, borderWidth: 1.5, borderColor: c.line },
-  city:      { fontSize: 12, fontWeight: '700', color: c.muted },
-  price:     { fontSize: 12, fontWeight: '700', color: c.text },
-  header:    { height: 70, justifyContent: 'center', paddingHorizontal: 4 },
-  party:     { height: 220, alignItems: 'center', justifyContent: 'center', gap: 10, borderRadius: 20, backgroundColor: c.bg2, overflow: 'hidden' },
+  link:      { fontSize: FontSizes.body, fontWeight: '800' },
+  cmpRow:    { flexDirection: 'row', alignItems: 'center', gap: Space.md, padding: 14, borderRadius: Radius.card, backgroundColor: c.bg2, borderWidth: 1.5, borderColor: c.line },
+  city:      { fontSize: FontSizes.xs, fontWeight: '700', color: c.muted },
+  price:     { fontSize: FontSizes.xs, fontWeight: '700', color: c.text },
+  header:    { height: 70, justifyContent: 'center', paddingHorizontal: Space.xs },
+  party:     { height: 220, alignItems: 'center', justifyContent: 'center', gap: Space.md, borderRadius: Radius.card, backgroundColor: c.bg2, overflow: 'hidden' },
 });

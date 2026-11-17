@@ -1,8 +1,5 @@
 {
   "emptyTitle": "Chưa có gì đang diễn ra",
-  "emptyBeFirst": "Làm người đầu tiên ở {{city}}",
-  "emptyStartNow": "Khởi động gì đó đi",
-  "emptyCreateLine": "Tạo sự kiện hoặc mở một buổi tụ tập.",
   "hostSpotTitle": "Tổ chức ở chỗ của bạn",
   "hostSpotCity": "Cho {{city}} sôi động lên nào.",
   "hostSpotNoCity": "Cho thành phố sôi động lên nào.",
@@ -11,8 +8,6 @@
   "noHangouts": "Chưa có buổi tụ tập nào",
   "beFirstEventCity": "Tạo cái đầu tiên ở {{city}} đi",
   "beFirstEvent": "Tạo cái đầu tiên đi",
-  "hangoutTalk": "Mở một buổi tụ tập cho cả thành phố rôm rả",
-  "startHangout": "Mở tụ tập 🗣️",
   "inspiration": {
     "heading": "Ý tưởng tụ tập",
     "sub": "Dân ở nơi khác hay tổ chức gì - lấy ý tưởng nè",
@@ -31,26 +26,7 @@
   "browseCities": "Xem các thành phố",
   "filterAll": "Tất cả",
   "filterChallenges": "Thử thách",
-  "challengesSection": "Thử thách",
-  "seeAllChallenges": "Xem hết →",
   "noChallenges": "Chưa có thử thách nào",
-  "noChallengesCity": "Tạo thử thách đầu tiên ở {{city}} đi",
-  "noChallengesGeneric": "Tạo thử thách đầu tiên đi.",
-  "seeComing": "Xem sắp có gì",
-  "createNew": "Tạo mới",
-  "seeHappened": "xem đã có gì →",
   "going": "sẽ đi",
-  "inThisHangout": "trong tụ tập này",
-  "create": {
-    "title": "Làm gì đây?",
-    "challengeLabel": "Tung thử thách",
-    "challengeSub": "Dân địa phương & du khách - kết nối qua một thử thách",
-    "hangoutLabel": "Mở tụ tập",
-    "hangoutSub": "Liền tay - mọi người vào chung với bạn ngay",
-    "eventLabel": "Tạo sự kiện",
-    "eventSub": "Lên kèo cho mọi người cùng tham gia",
-    "cancel": "Hủy"
-  },
-  "hiNowHint": "đi chơi ngay",
-  "hiLaterHint": "lên kèo sự kiện"
+  "inThisHangout": "trong tụ tập này"
 }

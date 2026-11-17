@@ -1,6 +1,7 @@
 import { forwardRef, useEffect, useImperativeHandle, useLayoutEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import Icon from '../Icon'
+import { themeColor } from '../joy/Joy'
 import { themeIcon } from '../../lib/icons'
 import { track } from '../../lib/analytics'
 import { thumbFallback } from '../../lib/thumbFallback'
@@ -12,7 +13,7 @@ import { themeName, compactPrice, formatDistance, sortSpots } from './spotsShare
 export const SHEET_PEEK = 84
 const HINT_KEY = 'hilads_map_sheet_hint_seen'
 const SNAPS = ['peek', 'half', 'full']
-const ROW = { display: 'inline-flex', alignItems: 'center', gap: 6 }
+const ROW = { display: 'inline-flex', alignItems: 'center', gap: 'var(--sp-8)' }
 
 /**
  * The wave (as the app): one asymmetric swell in a 360×30 box, the higher hump at 140, the
@@ -67,8 +68,8 @@ function SpotRow({ spot: s, me, km, onPick }) {
       <span className="wm-row-body">
         <span className="wm-row-name">{s.name}</span>
         <span className="wm-row-chips">
-          {th && <span className="wm-row-theme" style={ROW}><Icon name={themeIcon(th)} size={12} />{themeName(th)}</span>}
-          {s.validatedByLocal && <span className="wm-row-local" style={ROW}><Icon name="checkmark" size={12} />{t('map.validated')}</span>}
+          {th && <span className="wm-row-theme" style={{ ...ROW, '--chip-l': themeColor(th).light, '--chip-d': themeColor(th).dark }}><Icon name={themeIcon(th)} size={14} />{themeName(th)}</span>}
+          {s.validatedByLocal && <span className="wm-row-local" style={ROW}><Icon name="checkmark" size={14} />{t('map.validated')}</span>}
         </span>
         <span className="wm-row-meta">
           {meta && <span>{meta}</span>}
@@ -87,7 +88,7 @@ function SpotRow({ spot: s, me, km, onPick }) {
  * card leads it. The first visit shows a "swipe up" hint.
  * The peek (V6.3, as the app) is an orange wave: a gradient from the brand
  * orange to terracotta, the white handle on its higher hump, the polaroids,
- * "📍 [6] spots to explore" on one line (shrinking when needed), "Nearest
+ * "[6] spots to explore" on one line (shrinking when needed), "Nearest
  * 120 m away · swipe up 👆" and a white chevron; the wave undulates and the
  * chevron bounces until the sheet is opened once (remembered), neither with
  * reduced motion. Open, the wave header stays on top, the list keeps the light
@@ -171,7 +172,7 @@ const MapSheet = forwardRef(function MapSheet({ spots, me, origin, km, place, fi
   }, [titleKey])
 
   const data = sortSpots(spots, sort, me ?? origin, km)
-  // The ticket (as in the app): "📍 [6] spots to explore", the number in its pill (§ marks where it goes in each language).
+  // The ticket (as in the app): "[6] spots to explore", the number in its pill (§ marks where it goes in each language).
   const count = emptyArea ? 0 : spots.length
   const [before, after = ''] = t('dc.map.sheet.peekTitle', { count, num: '§' }).split('§')
   const nearest = me && count ? sortSpots(spots, 'near', me, km)[0] : null
@@ -199,7 +200,7 @@ const MapSheet = forwardRef(function MapSheet({ spots, me, origin, km, place, fi
                 </span>
               ))}
             </span>
-          ) : <span className="wm-ticket-pin" aria-hidden="true">📍</span>}
+          ) : <span className="wm-ticket-pin" aria-hidden="true"><Icon name="location" size={26} /></span>}
           <span className="wm-ticket-text" aria-hidden="true">
             <span ref={title} className={`wm-ticket-title${titleWrap ? ' wm-ticket-title--wrap' : ''}`} style={titleScale < 1 ? { '--wm-title-scale': titleScale } : undefined}>
               {before.trim() && <span>{before.trim()}</span>}

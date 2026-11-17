@@ -2,20 +2,8 @@
   "create": {
     "startTitle": "Hi now",
     "editTitle": "แก้ไขนัดเจอ",
-    "category": "หมวดหมู่",
-    "cat": {
-      "general": "ทั่วไป",
-      "tips": "เคล็ดลับ",
-      "food": "อาหาร",
-      "drinks": "เครื่องดื่ม",
-      "help": "ช่วยเหลือ",
-      "meetup": "เจอกัน"
-    },
     "titleLabel": "คิดอะไรอยู่?",
     "titlePlaceholder": "อยากไปนั่งกินกาแฟ",
-    "detailsLabel": "เพิ่มรายละเอียด",
-    "optional": "(ไม่บังคับ)",
-    "detailsPlaceholder": "เล่าเพิ่มอีกนิด…",
     "expiry": "หายไปเองใน 8 ชม.",
     "saving": "กำลังบันทึก…",
     "starting": "กำลังเริ่ม…",
@@ -73,7 +61,6 @@
     "photo": "รูป",
     "unavailable": "ข้อความต้นฉบับไม่มีแล้ว"
   },
-  "composer": {},
   "errors": {
     "locFailed": "หาตำแหน่งของคุณไม่เจอ เปิดสิทธิ์เข้าถึงตำแหน่งแล้วลองใหม่อีกครั้ง",
     "imageType": "เลือกไฟล์รูป JPEG, PNG หรือ WebP",

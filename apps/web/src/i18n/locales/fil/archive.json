@@ -6,29 +6,14 @@
     "pulses": "Tambayan",
     "challenges": "Mga challenge"
   },
-  "range": {
-    "recent": "Recent",
-    "last7": "Huling 7 araw",
-    "last14": "Huling 14 araw",
-    "custom": "Custom"
-  },
-  "picker": {
-    "pickEnd": "Ngayon, piliin ang huling araw",
-    "pickStart": "Pumili ng unang araw (hanggang {{max}} araw)",
-    "apply": "I-apply"
-  },
   "public": "Public",
   "went_one": "{{count}} ang pumunta",
   "went_other": "{{count}} ang pumunta",
-  "hangoutTag": "Tambayan",
   "replies_one": "{{count}} reply",
   "replies_other": "{{count}} replies",
-  "noReplies": "Walang reply",
   "error": "Hindi ma-load ang archive",
   "retry": "Subukan ulit",
   "emptyTitle": "Wala pang laman dito",
-  "emptyRecentSub": "Lalabas dito ang mga nakaraang event at tambayan kapag may history na ang city.",
-  "emptyWindowSub": "Walang event o tambayan sa range na 'to. Subukan ang mas mahabang range.",
   "loadMore": "Mag-load pa",
   "loading": "Naglo-load…"
 }

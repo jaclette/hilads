@@ -4,21 +4,13 @@
   "nextIn": "Próximo Daily Challenge en {{time}}",
   "nothingLive": "El próximo Daily Challenge ya está en camino",
   "cta": "Acepta el reto",
-  "ctaIn": "Me apunto",
-  "ctaTaken": "Reto hecho · Ver mi foto",
-  "seeProofs": "Ver las fotos de hoy",
-  "localTwist": "Local Twist",
   "twistIn": "Local Twist de {{city}}",
   "twistBy": "por {{name}}",
   "count_one": "{{count}} persona jugó hoy",
   "count_many": "{{count}} personas jugaron hoy",
   "count_other": "{{count}} personas jugaron hoy",
-  "countCity": "{{count}} en {{city}}",
-  "countZero": "Aún nadie. ¡Sé el primero!",
   "beFirst": "Sé el primero hoy",
   "beFirstSub": "Aún no hay fotos. Sé el primero, el mundo espera.",
-  "firstYours": "Tu foto ya está dentro",
-  "firstYoursSub": "Aparecerá aquí cuando se apruebe, con las fotos de los demás.",
   "yourProof": "Tu foto",
   "status": {
     "pending": "Pendiente",
@@ -46,14 +38,12 @@
   "places_many": "{{count}} sitios marcados",
   "places_other": "{{count}} sitios marcados",
   "unnamedPlace": "Lugar marcado",
-  "tabWorld": "Mundo",
   "local": "Local",
   "traveler": "Viajero",
   "validatedByLocal": "Validado por alguien local",
   "loadFailed": "No se pudo cargar el Daily Challenge.",
   "retry": "Reintentar",
   "notFound": "Este Daily Challenge no existe.",
-  "cityRowEmpty": "Sé el primero en crear un reto en {{city}}",
   "proof": {
     "titleNew": "Tu foto",
     "titleEdit": "Edita tu foto",
@@ -124,8 +114,6 @@
     "invalid_back_home": "\"¿Y en tu ciudad?\" necesita una ciudad y una respuesta, un precio o una línea."
   },
   "push": {
-    "bannerTitle": "Recibe el Daily Challenge cada mañana",
-    "bannerCta": "Activar",
     "askTitle": "Daily Challenge",
     "askBody": "Recibe el Daily Challenge cada mañana, a una hora que te venga bien.",
     "askBodyBlocked": "Las notificaciones de Hilads están desactivadas. Actívalas en tus ajustes para recibir el Daily Challenge cada mañana.",
@@ -305,10 +293,10 @@
       "countHere_other": "{{count}} sitios aquí",
       "countHere_many": "{{count}} sitios aquí",
       "peekNearest": "El más cercano a {{distance}}",
-      "peekSwipe": "desliza hacia arriba 👆",
+      "peekSwipe": "desliza hacia arriba",
       "peekEmpty": "Aún no hay spots aquí, sé el pionero 📍",
-      "peekTitle_one": "📍 {{num}} spot por explorar",
-      "peekTitle_other": "📍 {{num}} spots por explorar"
+      "peekTitle_one": "{{num}} spot por explorar",
+      "peekTitle_other": "{{num}} spots por explorar"
     }
   },
   "leaderboard": {
@@ -347,23 +335,15 @@
     "prev": "Mes anterior",
     "next": "Mes siguiente"
   },
-  "guide": {
-    "title": "Guía de la ciudad",
-    "all": "Todos",
-    "emptyCity": "Aún no hay reto de {{theme}} en {{city}}. El próximo: {{day}}.",
-    "emptyWorld": "Aún no hay reto de {{theme}}. El próximo: {{day}}."
-  },
   "localPass": {
     "name": "Local Pass",
     "progress": "{{done}}/{{total}} temas",
     "earned": "Conseguido",
-    "hint": "Completa los 7 temas en {{city}} para conseguir su Local Pass.",
     "profileTitle": "Local Passes",
     "badgeA11y": "Tiene el Local Pass"
   },
   "propose": {
     "cta": "Proponer un reto",
-    "short": "Proponer",
     "title": "Proponer un reto",
     "textLabel": "Tu reto (en inglés)",
     "textPlaceholder": "Find a…",
@@ -411,13 +391,7 @@
       "invalid_twist": "El Local Twist debe tener menos de 280 caracteres.",
       "twist_not_allowed": "Solo la gente local de una ciudad activa puede añadir un Local Twist.",
       "moderation_blocked": "La moderación bloqueó tu propuesta. Intenta reformularla."
-    },
-    "linkAsk": "¿Tienes una idea de reto?",
-    "linkCta": "Proponla",
-    "cardBody": "Tu idea podría ser el reto de mañana para todo el mundo 🌍",
-    "cardHide": "Ocultar una semana",
-    "cardPlayed_one": "Tu idea «{{text}}» se jugó en {{count}} ciudad 🎉",
-    "cardPlayed_other": "Tu idea «{{text}}» se jugó en {{count}} ciudades 🎉"
+    }
   },
   "early": {
     "badge": "Temprano",
@@ -530,7 +504,6 @@
   },
   "takeIt": "Acéptalo",
   "proofHint": {
-    "title": "Saca tu foto",
     "place": "La foto más votada será la foto del sitio.",
     "noPlace": "La foto más votada sube al podio."
   },
@@ -689,25 +662,6 @@
     "clear": "Quitar mi ciudad de origen",
     "hereIn": "Aquí en {{city}}"
   },
-  "tour": {
-    "title": "La vuelta al mundo de *ayer*",
-    "watch": "Ver",
-    "openCity": "Abrir {{city}}",
-    "next": "Siguiente",
-    "kicker": "Daily Challenge · {{theme}}",
-    "moment": {
-      "morning": "Por la mañana",
-      "afternoon": "Por la tarde",
-      "evening": "Al atardecer",
-      "night": "De noche"
-    },
-    "yourTurn": "Te toca.",
-    "todayIs": "La pregunta del día: {{question}}",
-    "close": "Cerrar",
-    "sub_one": "{{count}} ciudad, el mismo reto",
-    "sub_many": "{{count}} ciudades, el mismo reto",
-    "sub_other": "{{count}} ciudades, el mismo reto"
-  },
   "worlds": {
     "tagline": "Mismo reto. Mundos distintos."
   },
@@ -752,18 +706,11 @@
     "endTitle": "¡Eso es todo por ahora!",
     "endBody": "Llegan fotos nuevas todo el día. Vuelve luego.",
     "endPlay": "Te toca: muéstrale tu ciudad al mundo.",
-    "backToday": "Volver a Hoy",
-    "seeAll": "Ver todas las fotos"
+    "backToday": "Volver a Hoy"
   },
   "countries": {
-    "played_one": "{{count}} país jugó hoy",
-    "played_many": "{{count}} países jugaron hoy",
-    "played_other": "{{count}} países jugaron hoy",
-    "yourCity": "Tu ciudad",
     "represent": "Representa a tu ciudad",
     "emptyBody": "Nadie ha jugado aún hoy. ¡Pon tu ciudad en el mapa primero!",
-    "openCountry": "{{city}}: ver las fotos",
-    "byCity": "Por ciudad",
     "topPhoto": "Foto top"
   },
   "recap": {
@@ -821,12 +768,6 @@
     "ctaNoCity": "Saca la foto",
     "played": "Ya jugaste · Mira el mundo",
     "firstCity": "Sé la primera ciudad del mundo hoy",
-    "citiesIn_one": "{{count}} ciudad jugó",
-    "citiesIn_many": "{{count}} ciudades jugaron",
-    "citiesIn_other": "{{count}} ciudades jugaron",
-    "citiesMissing_one": "{{count}} ciudad jugó. ¡{{city}} aún no!",
-    "citiesMissing_many": "{{count}} ciudades jugaron. ¡{{city}} aún no!",
-    "citiesMissing_other": "{{count}} ciudades jugaron. ¡{{city}} aún no!",
     "steps": {
       "snap": "Saca la foto",
       "name": "Nómbralo",
@@ -852,7 +793,6 @@
     "players_other": "{{count}} jugadores",
     "missing": "¡Falta {{city}}!",
     "yesterday": "Ayer el mundo dijo…",
-    "beFirst": "Representa a {{city}}",
     "beFirstSub": "Sé la primera ciudad hoy",
     "swipeHint": "Desliza para viajar 🌍",
     "slotCta": "📸 ¿{{city}}? Sé el primero hoy"
@@ -928,9 +868,9 @@
   },
   "ranks": {
     "seg": {
-      "photos": "📸 Fotos",
-      "players": "🙋 Jugadores",
-      "cities": "🌍 Ciudades"
+      "photos": "Fotos",
+      "players": "Jugadores",
+      "cities": "Ciudades"
     },
     "period": {
       "today": "Hoy",
@@ -942,7 +882,7 @@
       "city": "Mi ciudad",
       "world": "Mundo"
     },
-    "timeLeftMin": "⏳ Queda menos de una hora para votar",
+    "timeLeftMin": "Queda menos de una hora para votar",
     "bestPerCity": "Mejor foto por ciudad",
     "new": "nuevo",
     "you": {
@@ -986,9 +926,9 @@
       "generic": "🏆 Ya están los resultados de ayer",
       "see": "Ver resultados →"
     },
-    "timeLeft_one": "⏳ Queda {{count}} hora para votar",
-    "timeLeft_other": "⏳ Quedan {{count}} horas para votar",
-    "timeLeft_many": "⏳ Quedan {{count}} horas para votar",
+    "timeLeft_one": "Queda {{count}} hora para votar",
+    "timeLeft_other": "Quedan {{count}} horas para votar",
+    "timeLeft_many": "Quedan {{count}} horas para votar",
     "pts_one": "{{count}} pt",
     "pts_other": "{{count}} pts",
     "pts_many": "{{count}} pts",

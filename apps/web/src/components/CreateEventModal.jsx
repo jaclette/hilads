@@ -545,7 +545,7 @@ export default function CreateEventPage({ channelId, guest, nickname, cityTimezo
 
           <button
             type="submit"
-            className="cef-submit"
+            className="cef-submit btn-primary"
             disabled={submitting || !title.trim()}
           >
             {submitting

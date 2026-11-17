@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-require-imports */
+ 
 import type { DailyThemeKey } from '@/types';
 import { defaultThemeFor } from '@/features/daily/themes';
 

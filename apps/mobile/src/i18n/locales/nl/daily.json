@@ -4,20 +4,12 @@
   "nextIn": "Volgende Daily Challenge over {{time}}",
   "nothingLive": "De volgende Daily Challenge komt eraan",
   "cta": "Ga de challenge aan",
-  "ctaIn": "Ik doe mee",
-  "ctaTaken": "Challenge gedaan · Mijn foto bekijken",
-  "seeProofs": "Bekijk de foto's van vandaag",
-  "localTwist": "Local Twist",
   "twistIn": "{{city}} Local Twist",
   "twistBy": "door {{name}}",
   "count_one": "{{count}} persoon deed vandaag mee",
   "count_other": "{{count}} mensen deden vandaag mee",
-  "countCity": "{{count}} in {{city}}",
-  "countZero": "Nog niemand - wees de eerste",
   "beFirst": "Wees vandaag de eerste",
   "beFirstSub": "Nog geen foto. Wees de eerste, de wereld wacht.",
-  "firstYours": "Je foto is binnen",
-  "firstYoursSub": "Hij verschijnt hier zodra hij is goedgekeurd, tussen de foto's van de anderen.",
   "yourProof": "Jouw foto",
   "status": {
     "pending": "In afwachting",
@@ -43,14 +35,12 @@
   "places_one": "{{count}} plek vastgepind",
   "places_other": "{{count}} plekken vastgepind",
   "unnamedPlace": "Vastgepinde plek",
-  "tabWorld": "Wereld",
   "local": "Lokaal",
   "traveler": "Reiziger",
   "validatedByLocal": "Bevestigd door een local",
   "loadFailed": "De Daily Challenge laden is niet gelukt.",
   "retry": "Opnieuw proberen",
   "notFound": "Deze Daily Challenge bestaat niet.",
-  "cityRowEmpty": "Maak als eerste een challenge in {{city}}",
   "proof": {
     "titleNew": "Jouw foto",
     "titleEdit": "Foto bewerken",
@@ -120,8 +110,6 @@
     "invalid_back_home": "Voor \"En bij jou thuis?\" heb je een stad nodig, plus een antwoord, een prijs of een zin."
   },
   "push": {
-    "bannerTitle": "Krijg elke ochtend de Daily Challenge",
-    "bannerCta": "Aanzetten",
     "askTitle": "Daily Challenge",
     "askBody": "Krijg elke ochtend de Daily Challenge, op een tijd die jou uitkomt.",
     "askBodyBlocked": "Meldingen staan uit voor Hilads. Zet ze aan in je instellingen om elke ochtend de Daily Challenge te krijgen.",
@@ -294,10 +282,10 @@
       "countHere_one": "{{count}} plek hier",
       "countHere_other": "{{count}} plekken hier",
       "peekNearest": "Dichtstbijzijnde op {{distance}}",
-      "peekSwipe": "veeg omhoog 👆",
+      "peekSwipe": "veeg omhoog",
       "peekEmpty": "Nog geen spots hier, wees de pionier 📍",
-      "peekTitle_one": "📍 {{num}} spot om te ontdekken",
-      "peekTitle_other": "📍 {{num}} spots om te ontdekken"
+      "peekTitle_one": "{{num}} spot om te ontdekken",
+      "peekTitle_other": "{{num}} spots om te ontdekken"
     }
   },
   "leaderboard": {
@@ -336,23 +324,15 @@
     "prev": "Vorige maand",
     "next": "Volgende maand"
   },
-  "guide": {
-    "title": "Stadsgids",
-    "all": "Alles",
-    "emptyCity": "Nog geen {{theme}}-challenge in {{city}}. De volgende: {{day}}.",
-    "emptyWorld": "Nog geen {{theme}}-challenge. De volgende: {{day}}."
-  },
   "localPass": {
     "name": "Local Pass",
     "progress": "{{done}}/{{total}} thema's",
     "earned": "Verdiend",
-    "hint": "Speel alle 7 thema's in {{city}} om de Local Pass van de stad te halen.",
     "profileTitle": "Local Passes",
     "badgeA11y": "Heeft de Local Pass"
   },
   "propose": {
     "cta": "Challenge voorstellen",
-    "short": "Voorstellen",
     "title": "Challenge voorstellen",
     "textLabel": "Jouw challenge (in het Engels)",
     "textPlaceholder": "Find a…",
@@ -400,13 +380,7 @@
       "invalid_twist": "Hou de Local Twist onder de 280 tekens.",
       "twist_not_allowed": "Alleen locals van een live stad kunnen een Local Twist toevoegen.",
       "moderation_blocked": "Je voorstel is door de moderatie tegengehouden. Probeer het anders te zeggen."
-    },
-    "linkAsk": "Een idee voor een challenge?",
-    "linkCta": "Stel het voor",
-    "cardBody": "Jouw idee kan morgen de challenge voor de hele wereld zijn 🌍",
-    "cardHide": "Een week verbergen",
-    "cardPlayed_one": "Jouw idee “{{text}}” is in {{count}} stad gespeeld 🎉",
-    "cardPlayed_other": "Jouw idee “{{text}}” is in {{count}} steden gespeeld 🎉"
+    }
   },
   "early": {
     "badge": "Vroeg",
@@ -514,7 +488,6 @@
   },
   "takeIt": "Doe mee",
   "proofHint": {
-    "title": "Maak je foto",
     "place": "De foto met de meeste stemmen wordt de foto van de plek.",
     "noPlace": "De foto met de meeste stemmen komt op het podium."
   },
@@ -664,24 +637,6 @@
     "clear": "Mijn thuisstad verwijderen",
     "hereIn": "Hier in {{city}}"
   },
-  "tour": {
-    "title": "De wereldreis van *gisteren*",
-    "watch": "Bekijken",
-    "openCity": "{{city}} openen",
-    "next": "Volgende",
-    "kicker": "Daily Challenge · {{theme}}",
-    "moment": {
-      "morning": "'s Ochtends",
-      "afternoon": "'s Middags",
-      "evening": "'s Avonds",
-      "night": "'s Nachts"
-    },
-    "yourTurn": "Jij bent aan de beurt.",
-    "todayIs": "De vraag van vandaag: {{question}}",
-    "close": "Sluiten",
-    "sub_one": "{{count}} stad, dezelfde challenge",
-    "sub_other": "{{count}} steden, dezelfde challenge"
-  },
   "worlds": {
     "tagline": "Zelfde challenge. Andere werelden."
   },
@@ -725,17 +680,11 @@
     "endTitle": "Dat was iedereen, voor nu!",
     "endBody": "De hele dag komen er nieuwe foto's bij. Kom straks terug voor meer.",
     "endPlay": "Jij bent aan de beurt: laat de wereld je stad zien.",
-    "backToday": "Terug naar Vandaag",
-    "seeAll": "Alle foto's bekijken"
+    "backToday": "Terug naar Vandaag"
   },
   "countries": {
-    "played_one": "{{count}} land deed vandaag mee",
-    "played_other": "{{count}} landen deden vandaag mee",
-    "yourCity": "Jouw stad",
     "represent": "Vertegenwoordig je stad",
     "emptyBody": "Vandaag heeft nog niemand gespeeld. Zet jouw stad als eerste op de kaart!",
-    "openCountry": "{{city}}: bekijk de foto's",
-    "byCity": "Per stad",
     "topPhoto": "Topfoto"
   },
   "recap": {
@@ -787,10 +736,6 @@
     "ctaNoCity": "Maak een foto",
     "played": "Je hebt gespeeld · Bekijk de wereld",
     "firstCity": "Word vandaag de eerste stad ter wereld",
-    "citiesIn_one": "{{count}} stad doet mee",
-    "citiesIn_other": "{{count}} steden doen mee",
-    "citiesMissing_one": "{{count}} stad doet mee. {{city}} nog niet!",
-    "citiesMissing_other": "{{count}} steden doen mee. {{city}} nog niet!",
     "steps": {
       "snap": "Fotografeer",
       "name": "Benoem het",
@@ -814,7 +759,6 @@
     "players_other": "{{count}} spelers",
     "missing": "{{city}} ontbreekt!",
     "yesterday": "Gisteren zei de wereld…",
-    "beFirst": "Vertegenwoordig {{city}}",
     "beFirstSub": "Word vandaag de eerste stad",
     "swipeHint": "Swipe om te reizen 🌍",
     "slotCta": "📸 {{city}}? Wees vandaag de eerste"
@@ -888,9 +832,9 @@
   },
   "ranks": {
     "seg": {
-      "photos": "📸 Foto's",
-      "players": "🙋 Spelers",
-      "cities": "🌍 Steden"
+      "photos": "Foto's",
+      "players": "Spelers",
+      "cities": "Steden"
     },
     "period": {
       "today": "Vandaag",
@@ -902,7 +846,7 @@
       "city": "Mijn stad",
       "world": "Wereld"
     },
-    "timeLeftMin": "⏳ Nog minder dan een uur om te stemmen",
+    "timeLeftMin": "Nog minder dan een uur om te stemmen",
     "bestPerCity": "Beste foto per stad",
     "new": "nieuw",
     "you": {
@@ -944,8 +888,8 @@
       "generic": "🏆 De uitslag van gisteren is er",
       "see": "Bekijk de uitslag →"
     },
-    "timeLeft_one": "⏳ Nog {{count}} uur om te stemmen",
-    "timeLeft_other": "⏳ Nog {{count}} uur om te stemmen",
+    "timeLeft_one": "Nog {{count}} uur om te stemmen",
+    "timeLeft_other": "Nog {{count}} uur om te stemmen",
     "pts_one": "{{count}} pt",
     "pts_other": "{{count}} ptn",
     "ghost": {

@@ -2,11 +2,12 @@ import { Text, TouchableOpacity, View, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
-import { FontSizes, type ThemeColors } from '@/constants';
+import { Space, Radius, FontSizes, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { useApp } from '@/context/AppContext';
 import { track } from '@/services/analytics';
 import { ThemeIcon } from '@/ui/ThemeIcon';
+import { Button } from '@/ui/Button';
 import { DailyStatusChip } from './DailyStatusChip';
 import type { DailyToday } from '@/types';
 
@@ -67,26 +68,22 @@ export function DailyPinBar({ data, source = 'pin', compact = false }: {
       </View>
       {myProof ? <DailyStatusChip status={myProof.status} />
         : challenge.isActive ? (
-          <TouchableOpacity style={styles.take} onPress={take} accessibilityRole="button">
-            <Text style={styles.takeText}>{t('takeIt')}</Text>
-          </TouchableOpacity>
+          <Button size="sm" label={t('takeIt')} onPress={take} />
         ) : null}
     </TouchableOpacity>
   );
 }
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  pill:     { flexDirection: 'row', alignItems: 'center', gap: 6, alignSelf: 'center', maxWidth: '92%', marginTop: 6, marginBottom: 8, minHeight: 36,
-              paddingHorizontal: 14, borderRadius: 18, borderWidth: 1.5, borderColor: c.ticketLine, backgroundColor: c.bg2 },
-  pillText: { flexShrink: 1, fontSize: 13, fontWeight: '700', color: c.text },
-  pillTake: { fontSize: 13, fontWeight: '800', color: c.primaryText },
+  pill:     { flexDirection: 'row', alignItems: 'center', gap: Space.sm, alignSelf: 'center', maxWidth: '92%', marginTop: Space.sm, marginBottom: Space.sm, minHeight: 36,
+              paddingHorizontal: Space.lg, borderRadius: 18, borderWidth: 1.5, borderColor: c.ticketLine, backgroundColor: c.bg2 },
+  pillText: { flexShrink: 1, fontSize: FontSizes.xs, fontWeight: '700', color: c.text },
+  pillTake: { fontSize: FontSizes.xs, fontWeight: '800', color: c.primaryText },
   // marginBottom: the list's top fade sits in this gap, never over the first card.
-  bar:      { flexDirection: 'row', alignItems: 'center', gap: 10, marginHorizontal: 16, marginTop: 6, marginBottom: 8, paddingVertical: 10, paddingLeft: 14, paddingRight: 10,
-              borderRadius: 18, borderWidth: 1.5, borderColor: c.ticketLine, backgroundColor: c.bg2 },
+  bar:      { flexDirection: 'row', alignItems: 'center', gap: Space.md, marginHorizontal: Space.lg, marginTop: Space.sm, marginBottom: Space.sm, paddingVertical: Space.md, paddingLeft: Space.lg, paddingRight: Space.md,
+              borderRadius: Radius.card, borderWidth: 1.5, borderColor: c.ticketLine, backgroundColor: c.bg2 },
   icon:     { width: 36, height: 36, borderRadius: 12, backgroundColor: c.primaryTint, alignItems: 'center', justifyContent: 'center' },
   body:     { flex: 1, minWidth: 0 },
-  kicker:   { fontSize: 12, fontWeight: '700', color: c.primaryText },
+  kicker:   { fontSize: FontSizes.xs, fontWeight: '700', color: c.primaryText },
   text:     { fontSize: FontSizes.sm, fontWeight: '600', color: c.text },
-  take:     { minHeight: 44, paddingHorizontal: 14, borderRadius: 14, backgroundColor: c.primary, alignItems: 'center', justifyContent: 'center' },
-  takeText: { color: c.white, fontSize: FontSizes.sm, fontWeight: '700' },
 });

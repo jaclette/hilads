@@ -2,20 +2,8 @@
   "create": {
     "startTitle": "Hi now",
     "editTitle": "Editar la quedada",
-    "category": "Categoría",
-    "cat": {
-      "general": "General",
-      "tips": "Consejos",
-      "food": "Comida",
-      "drinks": "Bebidas",
-      "help": "Ayuda",
-      "meetup": "Encuentro"
-    },
     "titleLabel": "¿Qué se te pasa por la cabeza?",
     "titlePlaceholder": "Quiero tomar un café",
-    "detailsLabel": "Añade detalles",
-    "optional": "(opcional)",
-    "detailsPlaceholder": "Da un poco de contexto…",
     "expiry": "Caduca en 8 h",
     "saving": "Guardando…",
     "starting": "Lanzando…",
@@ -73,7 +61,6 @@
     "photo": "Foto",
     "unavailable": "Mensaje original no disponible"
   },
-  "composer": {},
   "errors": {
     "locFailed": "No se pudo obtener tu ubicación. Activa el acceso a la ubicación e inténtalo de nuevo.",
     "imageType": "Elige una imagen JPEG, PNG o WebP.",

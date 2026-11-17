@@ -7,16 +7,11 @@ tags: [navigation]
     id: "tab-map"
 - extendedWaitUntil:
     visible:
-      id: "map-view-toggle"
+      id: "map-sheet"
     timeout: 30000
-# The list shows the spots as rows (the map remembers the last view).
-- runFlow:
-    when:
-      notVisible:
-        id: "spot-row"
-    commands:
-      - tapOn:
-          id: "map-view-toggle"
+# The bottom sheet lists the spots as rows: a tap on its head opens it half way.
+- tapOn:
+    id: "map-sheet"
 - extendedWaitUntil:
     visible:
       id: "spot-row"
@@ -36,7 +31,7 @@ tags: [navigation]
       id: "spot-sheet"
     timeout: 20000
 - assertVisible:
-    id: "map-view-toggle"
+    id: "map-sheet"
 # Then the spot's page, and back to the map.
 - tapOn:
     id: "spot-row"
@@ -51,7 +46,7 @@ tags: [navigation]
     env: { KIND: "screen" }
 - extendedWaitUntil:
     visible:
-      id: "map-view-toggle"
+      id: "map-sheet"
     timeout: 30000
 - assertNotVisible:
     id: "spot-screen"

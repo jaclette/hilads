@@ -10,6 +10,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
+import { IconButton } from '@/ui/IconButton';
 import { useApp } from '@/context/AppContext';
 import { socket } from '@/lib/socket';
 import {
@@ -17,9 +18,9 @@ import {
   validateChallenge, unvalidateChallenge, deleteChallenge,
   acceptChallenge, fetchMyAcceptances, AcceptChallengeError,
   fetchChallengeMessages, sendChallengeMessage, sendChallengeImageMessage,
-  fetchMyChallengeParticipation, joinChallengeChannel, leaveChallengeChannel,
-  setChallengeCloseToJoins, setChallengeVisibility, toggleChallengeReaction,
-  abandonAcceptance, restartChallenge, relaunchChallenge, validatePresence,
+  fetchMyChallengeParticipation, leaveChallengeChannel,
+  setChallengeVisibility, toggleChallengeReaction,
+  relaunchChallenge, validatePresence,
 } from '@/api/challenges';
 import { ValidatePresenceSheet } from '@/features/challenge/ValidatePresenceSheet';
 import { GroupSubmissionsGallery } from '@/features/challenge/GroupSubmissionsGallery';
@@ -29,17 +30,11 @@ import * as Clipboard from 'expo-clipboard';
 import * as Haptics from 'expo-haptics';
 import { reactionEmitter, EMOJI_TO_TYPE } from '@/lib/reactionEmitter';
 import i18n from '@/i18n';
-import { AttendeeAvatars } from '@/components/AttendeeAvatars';
-import { ChallengePipeline } from '@/features/challenge/ChallengePipeline';
 import { CampaignCelebration } from '@/features/challenge/CampaignCelebration';
-import { ThreadScheduleBlock } from '@/features/challenge/ThreadScheduleBlock';
-import { DatePickerModal } from '@/features/challenge/DatePickerModal';
 import { ChallengeProofBlock } from '@/features/challenge/ChallengeProofBlock';
-import { ProofReviewModal } from '@/features/challenge/ProofReviewModal';
 import { ChallengeNotificationPill } from '@/features/challenge/ChallengeNotificationPill';
 import { ChallengeChannelMembersStrip } from '@/features/challenge/ChallengeChannelMembersStrip';
 import { countryToFlag } from '@/lib/countryFlag';
-import { proposeDate as proposeDateApi, approveTakeOn, rejectTakeOn } from '@/api/challenges';
 import { ChallengeChannelMembersSheet } from '@/features/challenge/ChallengeChannelMembersSheet';
 import { ChallengePostCreateSheet } from '@/components/ChallengePostCreateSheet';
 import { useMessages } from '@/hooks/useMessages';
@@ -53,9 +48,9 @@ import { ShareToCityPill } from '@/components/ShareToCityPill';
 import { ShareToWorldPill } from '@/components/ShareToWorldPill';
 import { isSameDay, formatDateLabel } from '@/lib/messageTime';
 import { track } from '@/services/analytics';
-import { Border, FontSizes, Spacing, Radius, buildChallengeUrl, type ThemeColors } from '@/constants';
+import { Space, Border, FontSizes, Spacing, Radius, buildChallengeUrl, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
-import type { Challenge, ChallengeType, ChallengeAudience, ChallengeThreadSummary, Message, UserDTO } from '@/types';
+import type { Challenge, ChallengeType, ChallengeThreadSummary, Message, UserDTO } from '@/types';
 import { goBack } from '@/lib/nav';
 
 // Outline icon per challenge type (V3: no emoji as chrome).
@@ -99,26 +94,9 @@ export default function ChallengeChatScreen() {
   const [postCreateOpen, setPostCreateOpen] = useState(false);
   const [participants,     setParticipants]     = useState<UserDTO[]>([]);
   const [membersOpen,      setMembersOpen]      = useState(false);
-  const [acceptBusy,       setAcceptBusy]       = useState(false);
   const [validateBusy,     setValidateBusy]     = useState(false);
-  // PR2/3/4 - if I have an acceptance on this challenge, store the full
-  // summary so the lifecycle pipeline can render my current phase + the
-  // Accept button can morph into "Open thread →".
+  // My acceptance on this challenge (group: joined / present / absent), if any.
   const [myAcceptance, setMyAcceptance] = useState<ChallengeThreadSummary | null>(null);
-
-  // PR18 - once an acceptance is terminal (approved = both rated and the
-  // mutual debrief landed, rejected = creator turned the take-on down)
-  // the challenge has returned to "available" globally. From the user's
-  // POV we should unlock the detail screen: drop the locked "Mission
-  // accomplished" pipeline, re-show the Take-on CTA, allow them to
-  // re-engage. Chat history stays - they're still a channel participant
-  // (iAmParticipant gates on membership, not on acceptance state).
-  // Re-accepting creates a new acceptance row; score_events.UNIQUE
-  // prevents double-earning points on the same (user, challenge, role).
-  const activeAcceptance = (myAcceptance &&
-    (myAcceptance.phase === 'approved' || myAcceptance.phase === 'rejected'))
-    ? null
-    : myAcceptance;
 
   // Participation gate. null = still loading, false = visitor with no
   // explicit join row, true = creator / active taker / explicit joiner.
@@ -133,7 +111,6 @@ export default function ChallengeChatScreen() {
   // to the channel's pushes without any join row. Drives the notif pill so a
   // talker can mute what they now receive.
   const [iCanSubscribe, setICanSubscribe] = useState(false);
-  const [joiningChannel, setJoiningChannel] = useState(false);
 
   // "How challenges work" carousel - same primitive the city chat
   // surfaces from its delayed feed prompt. Mounting it here too so a
@@ -149,10 +126,6 @@ export default function ChallengeChatScreen() {
   // affordances on entry. Guests are by definition the audience for
   // the explicit "chat free / sign up to take it" message.
   const [showGuestWelcome, setShowGuestWelcome] = useState(true);
-  // Picker for the FIRST proposal (no existing proposal yet). Counter-propose
-  // has its own picker inside ThreadScheduleBlock; this one is reached from
-  // the pipeline's "Propose a date →" sub-CTA so we don't double up.
-  const [pickerOpen, setPickerOpen] = useState(false);
 
   // Owner check - two paths, mutually exclusive:
   //   1. Challenge has a registered creator → ownership is decided STRICTLY
@@ -169,36 +142,6 @@ export default function ChallengeChatScreen() {
       : (identity?.guestId && challenge?.guest_id && identity.guestId === challenge.guest_id)
   );
 
-  // The acceptance that drives the pipeline + proof review/block. For the
-  // TAKER it's their own (activeAcceptance). The CREATOR has none of their
-  // own, so fall back to a synthetic built from the active taker's snapshot
-  // on the challenge (id + phase) - this is what lets the creator see the
-  // pipeline advance to Proof and open the proof block / review modal (both
-  // fetch by acceptance id; the backend authorizes the creator).
-  const effectiveActiveAcceptance: ChallengeThreadSummary | null =
-    activeAcceptance
-    ?? ((isOwner && challenge?.acceptor_acceptance_id && challenge?.acceptor_phase)
-          ? ({
-              id: challenge.acceptor_acceptance_id,
-              phase: challenge.acceptor_phase,
-              effective_phase: challenge.acceptor_phase,
-              // ChallengePipeline.derive() reads acceptance.counterparty.displayName
-              // unconditionally - omitting it crashes the creator's view as soon as
-              // a taker exists. Fill it from the taker (the creator's counterparty).
-              counterparty: {
-                id:             challenge.acceptor_user_id ?? '',
-                displayName:    challenge.acceptor_display_name ?? '',
-                thumbAvatarUrl: challenge.acceptor_thumb_avatar_url ?? null,
-              },
-            } as unknown as ChallengeThreadSummary)
-          : null);
-
-  // "Am I currently a participant?" - derived from the participant list.
-  const isParticipant = !!(
-    (account?.id   && participants.some(p => p.id === account.id)) ||
-    (identity?.guestId && participants.some(p => p.id === identity.guestId))
-  );
-
   // Public channels are open to anyone - guests included. The conversation
   // surface renders inline regardless of iAmParticipant. Only friends /
   // private fall back to the gated view (and there, the lock state
@@ -207,15 +150,6 @@ export default function ChallengeChatScreen() {
   // fetch - much safer than the reverse.
   const challengeIsPublic = (challenge?.visibility ?? 'public') === 'public';
 
-  // Photo-proof verdict path. International is always photo-proof
-  // (locked server-side). Local challenges where the creator picked
-  // photo at creation also use the same submission UI + creator
-  // review modal. Older clients that never sent validation_method
-  // get 'meet' from the format() default, so this evaluates false
-  // for them - preserving the historical IRL flow.
-  const usesPhotoProof =
-    (challenge?.mode ?? 'local') === 'international'
-    || (challenge?.validation_method ?? 'meet') === 'photo_proof';
 
   // Target city - only meaningful for International challenges. For Local
   // challenges this stays null; the invite picker just uses the origin
@@ -314,28 +248,8 @@ export default function ChallengeChatScreen() {
         },
       },
     ]);
-  }, [id, identity, router, t]);
+  }, [id, identity, t]);
 
-  // Creator restarts from zero: removes the current taker, wipes the chat,
-  // reopens the challenge. Confirm first - it can't be undone.
-  const handleRestart = useCallback(() => {
-    Alert.alert(t('restart.confirmTitle'), t('restart.confirmBody'), [
-      { text: t('cancel', { ns: 'common' }), style: 'cancel' },
-      {
-        text: t('restart.confirmCta'), style: 'destructive',
-        onPress: async () => {
-          try {
-            await restartChallenge(id);
-            loadChallenge();
-            loadParticipants();
-            loadMyAcceptance();
-          } catch {
-            Alert.alert(t('restart.failed'));
-          }
-        },
-      },
-    ]);
-  }, [id, t, loadChallenge, loadParticipants, loadMyAcceptance]);
 
   // Creator relaunches an ENDED challenge: reopens with the SAME countdown it was
   // originally given (server recomputes the deadline). One tap, confirm first.
@@ -381,24 +295,12 @@ export default function ChallengeChatScreen() {
   // Owner-only "Manage challenge" modal - opens from the inline pill in
   // the meta row. Bundles Close (lifecycle) / Delete.
   const [manageOpen, setManageOpen] = useState(false);
-  // International proof-spec popin - tapping the pipeline's "Waiting for
-  // the proof" pill opens this read-only sheet.
-  const [proofSpecOpen, setProofSpecOpen] = useState(false);
-  // PR62 - creator-side "Review the proof" modal. Opens from the pipeline
-  // sub-CTA on intl when phase='proof_submitted'. Shows the photo big +
-  // Approve / Reject buttons; reject swaps the same sheet into a reason
-  // prompt. Backend broadcasts the verdict on WS to both sides, so the
-  // pipeline + chat refresh elsewhere via the existing acceptance
-  // listener; the local screen also nudges loadMyAcceptance() on close.
-  const [proofReviewOpen, setProofReviewOpen] = useState(false);
   // Group-challenge UI state (Phase 4).
   const [joining,      setJoining]      = useState(false);
   const [validateOpen, setValidateOpen] = useState(false);
   // Bumped on proof-submitted / validated WS events so the group submissions
   // gallery re-fetches when someone else's photo (or the winner) lands.
   const [galleryTick,  setGalleryTick]  = useState(0);
-  // How many photos have been submitted - drives the owner's hint copy.
-  const [submissionCount, setSubmissionCount] = useState(0);
   // Bumped to open the submissions gallery (e.g. proof-submitted push deep-link).
   const [gallerySignal, setGallerySignal] = useState(0);
   const [validating,   setValidating]   = useState(false);
@@ -406,11 +308,10 @@ export default function ChallengeChatScreen() {
   const reviewProofFiredRef = useRef(false);
 
   // Proof-review deep-link: a "📸 new proof" push routes here with ?reviewProof=1.
-  // GROUP photo-proof → open the submissions gallery (pick-the-winner). Legacy
-  // 1-1 → the old ProofReviewModal once the proof has landed. Param is stripped
-  // after so a back-nav / refresh doesn't re-open it. MUST stay in the hooks
-  // section (before the loading early-return) - computing the group-photo flag
-  // inline avoids a rules-of-hooks violation.
+  // GROUP photo-proof → open the submissions gallery (pick-the-winner). Param is
+  // stripped after so a back-nav / refresh doesn't re-open it. MUST stay in the
+  // hooks section (before the loading early-return) - computing the group-photo
+  // flag inline avoids a rules-of-hooks violation.
   useEffect(() => {
     if (reviewProof !== '1' || reviewProofFiredRef.current || !isOwner || !challenge) return;
     const groupPhoto = (challenge.challenge_format ?? 'legacy') === 'group'
@@ -419,39 +320,11 @@ export default function ChallengeChatScreen() {
       reviewProofFiredRef.current = true;
       setGallerySignal(s => s + 1);
       router.setParams({ reviewProof: undefined } as never);
-      return;
     }
-    if (usesPhotoProof && effectiveActiveAcceptance?.phase === 'proof_submitted') {
-      reviewProofFiredRef.current = true;
-      setProofReviewOpen(true);
-      router.setParams({ reviewProof: undefined } as never);
-    }
-  }, [reviewProof, isOwner, challenge, usesPhotoProof, effectiveActiveAcceptance?.phase, router]);
+  }, [reviewProof, isOwner, challenge, router]);
 
-  // Creator-only visibility flip (Public ↔ Friends). Private isn't
-  // reachable here - that's the mutual go-private flow. International
-  // rows are forced Public; the pill renders read-only for them.
+  // Creator-only visibility picker state (see handlePickVisibility).
   const [visBusy, setVisBusy] = useState(false);
-  const handleToggleVisibility = useCallback(async () => {
-    if (!challenge || visBusy) return;
-    if ((challenge.mode ?? 'local') === 'international') return;
-    const current = challenge.visibility ?? 'public';
-    if (current === 'private') return; // can't flip out of private here
-    const next: 'public' | 'friends' = current === 'public' ? 'friends' : 'public';
-    setVisBusy(true);
-    try {
-      await setChallengeVisibility(id, next);
-      setChallenge(prev => prev ? { ...prev, visibility: next } : prev);
-    } catch {
-      Alert.alert(t('errSave'));
-    } finally {
-      setVisBusy(false);
-    }
-  }, [id, challenge, visBusy, t]);
-
-  // Creator-only close-to-new-joins toggle. Existing participants stay;
-  // /join refuses new ones while this is on.
-  const [closeBusy, setCloseBusy] = useState(false);
   // Unified visibility picker - Public / Friends / Private. Private maps
   // to closed_to_new_joins=true; Public / Friends clear that flag and
   // align the visibility column.
@@ -465,7 +338,7 @@ export default function ChallengeChatScreen() {
     setDetailsOpen(v => !v);
   }, []);
   const handlePickVisibility = useCallback(async (choice: 'public' | 'friends' | 'private') => {
-    if (visBusy || closeBusy || !challenge) return;
+    if (visBusy || !challenge) return;
     setVisMenuOpen(false);
     try {
       // Picker is the single source of truth for "who can see this and
@@ -492,24 +365,10 @@ export default function ChallengeChatScreen() {
         setVisBusy(false);
       }
     } catch {
-      setVisBusy(false); setCloseBusy(false);
+      setVisBusy(false);
       Alert.alert(t('errSave'));
     }
-  }, [id, challenge, visBusy, closeBusy, t]);
-
-  const handleToggleClosedToJoins = useCallback(async () => {
-    if (!challenge || closeBusy) return;
-    const next = !challenge.closed_to_new_joins;
-    setCloseBusy(true);
-    try {
-      await setChallengeCloseToJoins(id, next);
-      setChallenge(prev => prev ? { ...prev, closed_to_new_joins: next } : prev);
-    } catch {
-      Alert.alert(t('errSave'));
-    } finally {
-      setCloseBusy(false);
-    }
-  }, [id, challenge, closeBusy, t]);
+  }, [id, challenge, visBusy, t]);
 
   // ── Participant actions (non-owner) ──────────────────────────────────────────
 
@@ -567,72 +426,13 @@ export default function ChallengeChatScreen() {
       setValidateOpen(false);
       await loadChallenge();
       loadParticipants();
-    } catch (e) {
+    } catch {
       Alert.alert(t('group.validateFailed', { defaultValue: 'Could not validate - try again.' }));
     } finally {
       setValidating(false);
     }
   }, [validating, id, t, loadChallenge, loadParticipants]);
 
-  /**
-   * PR2 - take-on flow.
-   *
-   * Three paths:
-   *   1. I already have a thread → just navigate to it.
-   *   2. I'm a registered user → call /accept; on success navigate to the
-   *      returned thread channel; on 403 show a tailored alert (mode prompt,
-   *      cap full, etc.).
-   *   3. I'm a guest → bounce to auth-gate (accept requires registration).
-   */
-  const handleAccept = useCallback(async () => {
-    if (acceptBusy) return;
-
-    // Already actively accepted? No-op - the inline chat is right here.
-    // A terminal myAcceptance (approved/rejected) does NOT block: the user
-    // is re-engaging with a completed challenge; the new row coexists with
-    // the old, and score_events.UNIQUE keeps points from re-firing.
-    if (activeAcceptance) return;
-
-    // Guest? Send them to register first. Carry the originating
-    // challenge id as ?returnTo so the user lands back on this exact
-    // screen post-signup, primed to tap Take-on again - instead of
-    // landing on the NOW feed and having to re-find the challenge.
-    if (!account?.id) {
-      const returnTo = encodeURIComponent(`/challenge/${id}`);
-      router.push(`/auth-gate?reason=accept_challenge&returnTo=${returnTo}` as never);
-      return;
-    }
-
-    setAcceptBusy(true);
-    try {
-      await acceptChallenge(id);
-      // Refresh the full summary - the pipeline flips to "Date" and the inline
-      // chat block mounts (both keyed off myAcceptance becoming non-null).
-      loadMyAcceptance();
-      track('challenge_take_on', { challengeId: id });
-    } catch (err) {
-      if (err instanceof AcceptChallengeError) {
-        // Localized per error code. mode_* codes also offer to open the
-        // settings screen so the user can switch mode in one tap.
-        if (err.code === 'mode_required' || err.code === 'mode_mismatch') {
-          Alert.alert(
-            t(`accept.err.${err.code}.title`),
-            t(`accept.err.${err.code}.body`),
-            [
-              { text: t('cancel', { ns: 'common' }), style: 'cancel' },
-              { text: t('accept.err.openSettings'), onPress: () => router.push('/(tabs)/me' as never) },
-            ],
-          );
-        } else {
-          Alert.alert(t(`accept.err.${err.code}.title`), err.message);
-        }
-      } else {
-        Alert.alert(t('accept.err.unknown.title'), t('accept.err.unknown.body'));
-      }
-    } finally {
-      setAcceptBusy(false);
-    }
-  }, [id, account?.id, acceptBusy, myAcceptance, loadMyAcceptance, router, t]);
 
   // Listen for WS status flips (validated ⇄ open) for this exact challenge
   // so the pill flips live when the creator toggles from another device.
@@ -649,8 +449,8 @@ export default function ChallengeChatScreen() {
     return () => { offV(); offU(); offE(); };
   }, [id]);
 
-  // PR2 - refresh acceptance state when someone takes on or cancels this
-  // challenge (server pushes to creator's user-room + acceptor's user-room).
+  // Refresh acceptance state when someone joins this challenge (server pushes
+  // to the creator's user-room + the joiner's user-room).
   useEffect(() => {
     const onAcceptanceChange = (data: Record<string, unknown>) => {
       const payload = data.payload as { challenge?: { id?: string }; challengeId?: string } | undefined;
@@ -658,37 +458,18 @@ export default function ChallengeChatScreen() {
       if (eventChallengeId === id) { loadMyAcceptance(); loadParticipants(); }
     };
     const offA = socket.on('challenge_accepted',              onAcceptanceChange);
-    const offC = socket.on('challenge_acceptance_cancelled',  onAcceptanceChange);
-    return () => { offA(); offC(); };
+    return () => { offA(); };
   }, [id, loadMyAcceptance, loadParticipants]);
 
-  // PR3/4/5 - refresh on date/verdict/take-on-review pushes. Schedule block
-  // + pipeline + locked-state branches all read off myAcceptance, so a
-  // single reload is enough.
+  // Photo proof submitted → refresh my acceptance and bump the group
+  // submissions gallery so a new photo appears for everyone live. Winner
+  // picked broadcasts 'challenge_validated' → refresh the gallery's crown too.
   useEffect(() => {
-    const onChange = () => loadMyAcceptance();
-    // Taker left → the creator's screen must reset the whole challenge (it's
-    // un-taken now), not just myAcceptance.
-    const onReset  = () => { loadMyAcceptance(); loadChallenge(); loadParticipants(); };
-    const off1 = socket.on('challenge_date_proposed',     onChange);
-    const off2 = socket.on('challenge_date_withdrawn',    onChange);
-    const off3 = socket.on('challenge_date_approved',     onChange);
-    const off4 = socket.on('challenge_verdict_approved',  onChange);
-    const off5 = socket.on('challenge_verdict_rejected',  onChange);
-    const off6 = socket.on('challenge_takeon_reviewed',   onChange);
-    const off7 = socket.on('challenge_acceptor_left',     onReset);
-    // Creator restarted → the removed taker's screen resets (their take-on is gone).
-    const off8 = socket.on('challenge_restarted',         onReset);
-    // Photo proof submitted → creator's pipeline flips to proof_submitted live
-    // and the "Review the proof" CTA appears without a reload. Also bumps the
-    // group submissions gallery so a new photo appears for everyone live.
-    const onProof = () => { onChange(); setGalleryTick(x => x + 1); };
-    const off9  = socket.on('challenge_proof_submitted',   onProof);
-    // Winner picked broadcasts 'challenge_validated' → refresh the gallery's
-    // crown highlight too.
-    const off10 = socket.on('challenge_validated',         () => setGalleryTick(x => x + 1));
-    return () => { off1(); off2(); off3(); off4(); off5(); off6(); off7(); off8(); off9(); off10(); };
-  }, [loadMyAcceptance, loadChallenge, loadParticipants]);
+    const onProof = () => { loadMyAcceptance(); setGalleryTick(x => x + 1); };
+    const off1 = socket.on('challenge_proof_submitted',   onProof);
+    const off2 = socket.on('challenge_validated',         () => setGalleryTick(x => x + 1));
+    return () => { off1(); off2(); };
+  }, [loadMyAcceptance]);
 
   // ── Unified challenge channel chat ───────────────────────────────────────
   // Replaces the per-acceptance THREAD chat. Reads + sends both gate on
@@ -801,27 +582,6 @@ export default function ChallengeChatScreen() {
   }, [id, account?.id]);
   useEffect(() => { loadParticipation(); }, [loadParticipation, myAcceptance?.id]);
 
-  async function handleJoinChannel() {
-    if (joiningChannel || !id) return;
-    if (!account?.id) {
-      router.push('/auth-gate?reason=join_challenge' as never);
-      return;
-    }
-    setJoiningChannel(true);
-    try {
-      await joinChallengeChannel(id);
-      setIAmParticipant(true);
-      loadParticipants();
-    } catch (err) {
-      const e = err as { code?: string; message?: string };
-      if (e?.code === 'kicked')                  Alert.alert(t('join.errKicked'));
-      else if (e?.code === 'closed_to_new_joins') Alert.alert(t('join.errClosed'));
-      else                                       Alert.alert(e?.message || t('join.errGeneric'));
-    } finally {
-      setJoiningChannel(false);
-    }
-  }
-
   async function handleLeaveChannel() {
     if (!id || !account?.id) return;
     try {
@@ -831,33 +591,6 @@ export default function ChallengeChatScreen() {
     } catch { /* silent - re-probe on next visit */ }
   }
 
-  // The TAKER abandons their take-on: timeline resets, challenge reopens, chat
-  // is wiped, creator is notified. Confirm first - it can't be undone.
-  function handleLeaveTakeon() {
-    if (!myAcceptance) return;
-    const accId = myAcceptance.id;
-    Alert.alert(
-      t('leaveTakeon.confirmTitle'),
-      t('leaveTakeon.confirmBody'),
-      [
-        { text: t('cancel', { ns: 'common' }), style: 'cancel' },
-        {
-          text: t('leaveTakeon.confirmCta'),
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              await abandonAcceptance(accId);
-              setMyAcceptance(null);
-              loadChallenge();
-              loadParticipants();
-            } catch {
-              Alert.alert(t('leaveTakeon.failed'));
-            }
-          },
-        },
-      ],
-    );
-  }
   // Silence unused-var warnings when the channel-chat branch is hidden.
   void guestIdForChat;
 
@@ -872,24 +605,21 @@ export default function ChallengeChatScreen() {
   // them, the second render (challenge loaded) reaches them, hook count
   // mismatch → React throws "Rendered more hooks than during the previous
   // render" and the screen crashes.
+  const createdBy      = challenge?.created_by;
+  const creatorGuestId = challenge?.guest_id;
   const creator = useMemo(
-    () => challenge
-      ? participants.find(p =>
-          (challenge.created_by && p.id === challenge.created_by) ||
-          (challenge.guest_id   && p.id === challenge.guest_id)
-        )
-      : undefined,
-    [participants, challenge?.created_by, challenge?.guest_id],
-  );
-  const otherParticipants = useMemo(
-    () => participants.filter(p => p !== creator),
-    [participants, creator],
+    // No challenge → both ids are undefined → no match (undefined), as before.
+    () => participants.find(p =>
+      (createdBy      && p.id === createdBy) ||
+      (creatorGuestId && p.id === creatorGuestId)
+    ),
+    [participants, createdBy, creatorGuestId],
   );
 
   // Active taker - derived from challenge.acceptor_user_id so it stays
   // accurate when the channel reopens after a finished round. The
   // previous taker often lingers in `participants` (they joined the
-  // channel), so falling back to otherParticipants[0] would surface
+  // channel), so falling back to the first non-creator participant would surface
   // their TAKER pill even after the LATERAL slot was vacated. Hydrate
   // from `participants` when available (richer DTO - vibe/mode) and
   // fall back to the acceptor_* snapshot shipped on the challenge.
@@ -924,18 +654,6 @@ export default function ChallengeChatScreen() {
     return ids;
   }, [activeTaker?.id, participants]);
 
-  // 1:1 gate - `inProgress` is true when the challenge has a non-terminal
-  // acceptance owned by someone else. Visitors don't see the Accept button
-  // (and see the in-progress locked state); the owner / current taker are
-  // unaffected because they already have their own acceptance row. Uses
-  // `activeAcceptance` (defined near the top - terminal acceptances treated
-  // as null) so a previously-finished take doesn't keep the user locked
-  // when the slot has actually freed.
-  const inProgress = !!(
-    challenge?.is_in_progress &&
-    !isOwner &&
-    !activeAcceptance
-  );
 
   // Collapse the badges / pipeline / participants block when the user starts
   // scrolling the chat OR taps the composer (keyboard open). Mirror the
@@ -997,20 +715,13 @@ export default function ChallengeChatScreen() {
     return (
       <SafeAreaView style={styles.container}>
         <View style={styles.nav}>
-          <TouchableOpacity style={styles.backPill} onPress={() => goBack()} activeOpacity={0.75}>
-            <Ionicons name="chevron-back" size={18} color={colors.text} />
-            <Text style={styles.backPillText}>{t('back', { ns: 'common' })}</Text>
-          </TouchableOpacity>
+          <IconButton icon="chevron-back" onPress={() => goBack()} label={t('back', { ns: 'common' })} testID="header-back" />
         </View>
         <View style={styles.center}><Text style={styles.errorText}>{t('notFound')}</Text></View>
       </SafeAreaView>
     );
   }
 
-  const audienceLabel: Record<ChallengeAudience, string> = {
-    locals:    t('forLocals'),
-    explorers: t('forExplorers'),
-  };
   const typeIcon: IoniconName = TYPE_ICONS[challenge.challenge_type] ?? 'flame-outline';
   const isValidated = challenge.status === 'validated';
   // Ended = meet date / deadline passed and never validated. The creator gets a
@@ -1046,10 +757,7 @@ export default function ChallengeChatScreen() {
           the right. The emoji is sized to roughly match the back pill so the
           title stays visually centered; no need for a manual spacer. */}
       <View style={styles.nav}>
-        <TouchableOpacity style={styles.backPill} onPress={() => goBack()} activeOpacity={0.75}>
-          <Ionicons name="chevron-back" size={18} color={colors.text} />
-          <Text style={styles.backPillText} numberOfLines={1}>{t('back', { ns: 'common' })}</Text>
-        </TouchableOpacity>
+        <IconButton icon="chevron-back" onPress={() => goBack()} label={t('back', { ns: 'common' })} testID="header-back" />
         <View style={styles.navCenter}>
           <CopyTranslateText value={challenge.title} style={styles.navTitle} numberOfLines={2} />
           {challenge.creator_display_name ? (
@@ -1124,7 +832,7 @@ export default function ChallengeChatScreen() {
           ) : isEnded ? (
             isOwner ? (
               <TouchableOpacity style={[styles.statusPill, styles.statusPillRestart]} onPress={handleRelaunch} activeOpacity={0.8}>
-                <Ionicons name="refresh-outline" size={11} color={colors.white} />
+                <Ionicons name="refresh-outline" size={11} color={colors.onCta} />
                 <Text style={[styles.statusPillText, styles.statusPillTextRestart]}>{t('relaunch.cta', { defaultValue: 'Restart' })}</Text>
               </TouchableOpacity>
             ) : (
@@ -1241,7 +949,7 @@ export default function ChallengeChatScreen() {
               effective === 'friends' ? colors.travelerText :
               effective === 'private' ? colors.red :
               colors.primaryOnTint;
-            const busyAny = visBusy || closeBusy;
+            const busyAny = visBusy;
             return (
               <TouchableOpacity
                 style={[styles.sharePillInline, pillTint]}
@@ -1254,27 +962,11 @@ export default function ChallengeChatScreen() {
                   {busyAny ? '…' : t(labelKey)}
                 </Text>
                 {tapable && (
-                  <Ionicons name="chevron-down" size={10} color={caretColor} style={{ marginLeft: 2 }} />
+                  <Ionicons name="chevron-down" size={10} color={caretColor} style={{ marginLeft: Space.xxs }} />
                 )}
               </TouchableOpacity>
             );
           })()}
-          {/* Leave the take-on - the TAKER (active acceptance) backs out:
-              timeline resets to zero, the challenge reopens, the creator is
-              pushed. Active phases only (matches the backend gate). */}
-          {myAcceptance && !isOwner
-            && ['pending', 'accepted', 'scheduled'].includes(myAcceptance.phase) && (
-            <TouchableOpacity
-              style={styles.sharePillInline}
-              onPress={handleLeaveTakeon}
-              activeOpacity={0.75}
-              accessibilityLabel={t('leaveTakeon.pill')}
-            >
-              <Text style={[styles.sharePillInlineText, { color: colors.red }]} numberOfLines={1}>
-                {t('leaveTakeon.pill')}
-              </Text>
-            </TouchableOpacity>
-          )}
           {/* Manage challenge - creator-only pill. Opens a modal with
               Close challenge / Delete to keep the meta row tight. */}
           {isOwner && challenge && (
@@ -1346,7 +1038,7 @@ export default function ChallengeChatScreen() {
                   {challenge.closed_to_new_joins
                     ? t('group.closed', { defaultValue: 'Closed to new joins' })
                     : <>
-                        <Ionicons name="add" size={16} color={colors.white} />{' '}
+                        <Ionicons name="add" size={16} color={colors.onCta} />{' '}
                         {isGroupPhoto
                           ? t('group.joinContestCta', { defaultValue: 'Join the challenge (+2 pts)' })
                           : t('group.joinCta', { defaultValue: 'Join the challenge (+2 pts)' })}
@@ -1372,9 +1064,9 @@ export default function ChallengeChatScreen() {
           />
         )}
 
-        {/* GROUP: members strip sits ABOVE the submissions gallery (the photos
-            card reads as the call-to-action, with the roster as context). */}
-        {isGroup && iAmParticipant === true && (
+        {/* Members strip sits ABOVE the submissions gallery (the photos card
+            reads as the call-to-action, with the roster as context). */}
+        {iAmParticipant === true && (
           <ChallengeChannelMembersStrip
             challenge={challenge}
             activeTaker={activeTaker}
@@ -1392,97 +1084,10 @@ export default function ChallengeChatScreen() {
             isValidated={isValidated}
             refreshKey={galleryTick}
             onChanged={() => { loadChallenge(); loadParticipants(); }}
-            onCount={setSubmissionCount}
             openSignal={gallerySignal}
           />
         )}
 
-        {/* Lifecycle pipeline (replaces the old binary "in progress / done" pill).
-            Visualises all 4 steps + highlights the viewer's current one.
-            Tap behaviour depends on state:
-              - acceptance exists + no proposal → opens the date picker (the
-                pipeline's "Propose a date →" sub-CTA is the only one we
-                surface; the bottom ScheduleBlock empty state is hidden)
-              - otherwise → no-op (informational). The thread chat is right
-                below this, no navigation needed. */}
-        {!isGroup && (
-        <ChallengePipeline
-          // Creator has no acceptance of their own - effectiveActiveAcceptance
-          // falls back to the taker's snapshot so the timeline reflects real
-          // progress (e.g. an international challenge at the Proof step).
-          acceptance={effectiveActiveAcceptance}
-          iAmCreator={isOwner}
-          myUserId={account?.id ?? null}
-          // A 'global' campaign is a cross-city photo-proof contest; the pipeline
-          // only models local/international, so treat global like international.
-          mode={(challenge.mode === 'global' ? 'international' : challenge.mode) ?? 'local'}
-          validationMethod={challenge.validation_method ?? 'meet'}
-          onPress={(() => {
-            // Local + meet only: open date picker. Local + photo_proof has
-            // no date step, so don't intercept the tap to a picker that
-            // would never get acted on.
-            if ((challenge.mode ?? 'local') === 'local'
-                && (challenge.validation_method ?? 'meet') === 'meet'
-                && myAcceptance && !myAcceptance.proposed_starts_at && myAcceptance.phase === 'accepted') {
-              return () => setPickerOpen(true);
-            }
-            // NOTE: the acceptor's "Submit your proof" action is NOT wired to
-            // the pipeline tap anymore - the whole-timeline TouchableOpacity made
-            // it feel like you were pressing the entire step row, and the
-            // imperative submit could silently no-op. It's now a DEDICATED button
-            // inside ChallengeProofBlock below. The pipeline stays a pure status
-            // indicator for the acceptor at the proof step (falls through to the
-            // requirements popin if the creator set any, else non-interactive).
-            // Creator + photo-proof + acceptance is at proof_submitted ⇒ open
-            // the modal review sheet. This is the "Review the proof"
-            // sub-CTA path; it surfaces the photo and Approve / Reject in
-            // one place instead of forcing the creator to scroll the chat
-            // for the photo then hunt for the inline verdict row.
-            if (usesPhotoProof
-                && isOwner
-                && effectiveActiveAcceptance?.phase === 'proof_submitted') {
-              return () => setProofReviewOpen(true);
-            }
-            if (usesPhotoProof && challenge.proof_requirements) {
-              // Creator (no submit action) - still useful to surface the
-              // requirements popin so they can re-read what they asked for.
-              return () => setProofSpecOpen(true);
-            }
-            return undefined;
-          })()}
-        />
-        )}
-
-        {/* Photo-proof submission + verdict block. Renders for every
-            challenge that uses the photo flow (international + local
-            with validation_method='photo_proof') whenever there's an
-            ACTIVE acceptance; visitors and creators-without-acceptance
-            see no extra surface here (the pipeline educates them
-            passively). Uses activeAcceptance so a terminal approved
-            acceptance no longer keeps the "🎉 Challenge accomplished"
-            banner permanently locked on the detail page after the
-            challenge wrapped. Group photo-proof has its OWN submit block above
-            (keyed on the group acceptance), so the legacy block is gated off
-            for group to avoid a double submit surface. */}
-        {!isGroup && usesPhotoProof && effectiveActiveAcceptance && (
-          <ChallengeProofBlock
-            acceptanceId={effectiveActiveAcceptance.id}
-            iAmCreator={isOwner}
-            iAmAcceptor={!isOwner}
-            proofRequirements={challenge.proof_requirements ?? null}
-            acceptancePhase={effectiveActiveAcceptance.phase}
-          />
-        )}
-
-        {/* Channel members strip (legacy/non-group) - under the pipeline /
-            proof block. Group renders it above the gallery instead. */}
-        {!isGroup && iAmParticipant === true && (
-          <ChallengeChannelMembersStrip
-            challenge={challenge}
-            activeTaker={activeTaker}
-            onOpen={() => setMembersOpen(true)}
-          />
-        )}
         </View>
         )}{/* /detailsOpen */}
 
@@ -1535,77 +1140,6 @@ export default function ChallengeChatScreen() {
         </View>
       )}
 
-      {/* Participants row - three layouts:
-            A) acceptors exist → avatars + count on the left, accept button on
-               the right (icon + label when the viewer can still take on).
-            B) no acceptors, viewer can take on → full-width prominent labeled
-               button (replaces the old "Be the first to accept" + small + duo).
-            C) full → "Challenge full" label, no button.
-          Skipped entirely for owners on a validated challenge (nothing to do). */}
-      {/* Lifecycle-state row (was "Participants · N" + accept-pill row).
-          Legacy avatar strip dropped - the channel-members strip above
-          covers the "who's in" panel for everyone. Three passive states +
-          the Accept CTA remain. Group rows use the group block above instead. */}
-      {!isGroup && (() => {
-        // A completed challenge (isClosed) is permanently closed to new takers,
-        // same passive state as the manual 'validated' archive.
-        if ((isValidated || isClosed) && !isOwner) {
-          return (
-            <View style={styles.participantsRow}>
-              <Text style={styles.participantsEmpty}>{t('cta.closed')}</Text>
-            </View>
-          );
-        }
-        // PR18 - gate "Currently being taken by X" on challenge.is_in_progress
-        // (server-derived: a non-terminal acceptance EXISTS) rather than on
-        // otherParticipants.length, so a previously-completed challenge
-        // (terminal acceptance still in the participants list) no longer
-        // reads as "in progress" - the slot is genuinely free.
-        if (challenge?.is_in_progress && !isValidated && !isOwner && !activeAcceptance) {
-          return (
-            <View style={styles.participantsRow}>
-              <Text style={styles.participantsEmpty} numberOfLines={1}>
-                {t('cta.takenBy', { name: activeTaker?.displayName ?? '-' })}
-              </Text>
-            </View>
-          );
-        }
-        // PR18 - show the Take-on CTA whenever the slot is open + viewer is
-        // not the owner + challenge not closed. Replaces the
-        // "otherParticipants.length === 0" guard which kept a terminal user
-        // (whose row is still in participants) locked at "Mission
-        // accomplished" - the bug the user reported.
-        //
-        // !activeAcceptance: server-side `is_in_progress` (IS_IN_PROGRESS_SQL)
-        // intentionally excludes 'pending' so the city feed reads "Available"
-        // while the creator is reviewing. On the DETAIL page that signal is
-        // wrong for the requester themselves - they already have an active
-        // pending acceptance, so re-rendering the Accept CTA is misleading
-        // (and previously surfaced as a half-clipped orange pill stuck under
-        // the members strip while the screen was waiting on the creator's
-        // response). Guard on the local truth instead.
-        if (!isOwner && !isValidated && !isClosed && !challenge?.is_in_progress && !activeAcceptance) {
-          return (
-            <View style={styles.participantsRow}>
-              <TouchableOpacity
-                style={styles.acceptCtaFull}
-                onPress={handleAccept}
-                activeOpacity={0.85}
-                disabled={acceptBusy}
-                accessibilityLabel={t('acceptCta')}
-              >
-                {acceptBusy
-                  ? <ActivityIndicator color={colors.primary} size="small" />
-                  : <>
-                      <Ionicons name="add" size={20} color={colors.primaryText} />
-                      <Text style={styles.acceptCtaFullText}>{t('pipeline.subcta.tapToAccept')}</Text>
-                    </>}
-              </TouchableOpacity>
-            </View>
-          );
-        }
-        return null;
-      })()}
       </View>{/* /measuring wrapper */}
       </Animated.View>
 
@@ -1682,19 +1216,9 @@ export default function ChallengeChatScreen() {
         style={styles.flex}
         behavior="padding"
       >
-        {/* PR34 - show the chat for ALL participants once they're in the
-            channel, including acceptors with phase='pending'. The pipeline
-            above already conveys "waiting for the creator's review"; the
-            big "En attente" block was duplicative and worse, it hid the
-            very chat the acceptor needs to talk to the creator while
-            waiting. Two narrow exceptions still take over the surface:
-              - Creator with a pending acceptance - they need Accept/Reject
-                buttons, not the chat (those buttons live in the block).
-              - Acceptor whose take-on was rejected - terminal communication
-                that deserves its own surface so the user understands the
-                channel is closed for them.
-            Both branches are handled inside the non-chat IIFE below. */}
-        {(challengeIsPublic || iAmParticipant === true) && !(isOwner && myAcceptance?.phase === 'pending') && !(!isOwner && myAcceptance?.phase === 'rejected') ? (
+        {/* The chat shows for everyone on a public channel and for
+            participants of a friends / private one. */}
+        {(challengeIsPublic || iAmParticipant === true) ? (
           <>
             {/* Guest welcome - fires on entry for any unauthenticated
                 viewer of a public channel. Two-line: "chat free, no
@@ -1815,23 +1339,6 @@ export default function ChallengeChatScreen() {
               ) : undefined}
             />
 
-            {/* Schedule band - Local-MEET only (skip on photo-proof: no
-                date to schedule, the timeline goes straight from accept
-                to proof submission). Only for the creator + ACTIVE taker.
-                Uses activeAcceptance so a previously-completed user
-                doesn't see a stale "proposed at HH:MM" from their old
-                approved row - the slot is open again, the schedule
-                belongs to whoever takes it next. */}
-            {(challenge.mode ?? 'local') === 'local'
-              && (challenge.validation_method ?? 'meet') === 'meet'
-              && activeAcceptance && account?.id && (
-              <ThreadScheduleBlock
-                thread={activeAcceptance}
-                myUserId={account.id}
-                onChange={loadMyAcceptance}
-                hideEmptyCta
-              />
-            )}
 
             {(isValidated || isClosed) ? (
               <ComposerEndedNotice text={i18n.t('composer.closedChallenge', { ns: 'common' })} />
@@ -1868,13 +1375,9 @@ export default function ChallengeChatScreen() {
             )}
           </>
         ) : (
-          /* Non-chat surface. Branches (in priority order):
-             - non-public + iAmParticipant=false → private lock state
-             - Creator + pending acceptance → review banner with accept/reject
-             - Acceptor + pending           → "Waiting for review"
-             - Acceptor + rejected          → "Your take-on was declined"
-             Public channels never reach this branch when the viewer isn't
-             a participant - the chat above renders for them directly. */
+          /* Non-chat surface: non-public + iAmParticipant=false → private
+             lock state, else the default locked state. Public channels never
+             reach this branch - the chat above renders for them directly. */
           (() => {
             // Non-public + non-participant → conversation is locked. No
             // CTA, no join step (those channels are tied to creator +
@@ -1887,84 +1390,6 @@ export default function ChallengeChatScreen() {
                   <Ionicons name="lock-closed-outline" size={40} color={colors.muted} style={styles.lockedEmoji} />
                   <Text style={styles.lockedTitle}>{t('lock.private.title')}</Text>
                   <Text style={styles.lockedBody}>{t('lock.private.body')}</Text>
-                </View>
-              );
-            }
-
-            const isPending  = myAcceptance?.phase === 'pending';
-            const isRejected = myAcceptance?.phase === 'rejected';
-
-            // Creator side - a pending request awaiting their review. Inline
-            // Accept / Reject buttons. Tapping fires the API, the WS push
-            // refreshes loadMyAcceptance, and the panel morphs into the chat.
-            if (isOwner && isPending && myAcceptance) {
-              const acceptorName = myAcceptance.counterparty.displayName || '?';
-              return (
-                <View style={styles.lockedWrap}>
-                  <Ionicons name="people-outline" size={40} color={colors.muted} style={styles.lockedEmoji} />
-                  <Text style={styles.lockedTitle}>
-                    {t('takeon.creator.pendingTitle', { name: acceptorName })}
-                  </Text>
-                  <Text style={styles.lockedBody}>
-                    {t('takeon.creator.pendingBody', { name: acceptorName })}
-                  </Text>
-                  <View style={styles.takeonReviewActions}>
-                    <TouchableOpacity
-                      style={styles.takeonRejectBtn}
-                      onPress={async () => {
-                        try { await rejectTakeOn(myAcceptance.id); loadMyAcceptance(); }
-                        catch { Alert.alert(t('takeon.creator.rejectFailed')); }
-                      }}
-                      activeOpacity={0.85}
-                    >
-                      <Text style={styles.takeonRejectText}>{t('takeon.creator.reject')}</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                      style={styles.takeonAcceptBtn}
-                      onPress={async () => {
-                        try { await approveTakeOn(myAcceptance.id); loadMyAcceptance(); }
-                        catch { Alert.alert(t('takeon.creator.approveFailed')); }
-                      }}
-                      activeOpacity={0.85}
-                    >
-                      <Text style={styles.takeonAcceptText}>{t('takeon.creator.approve')}</Text>
-                    </TouchableOpacity>
-                  </View>
-                </View>
-              );
-            }
-
-            // Acceptor - pending / rejected states.
-            if (!isOwner && isPending) {
-              const creatorName = myAcceptance?.counterparty.displayName || '?';
-              return (
-                <View style={styles.lockedWrap}>
-                  <Ionicons name="hourglass-outline" size={40} color={colors.muted} style={styles.lockedEmoji} />
-                  <Text style={styles.lockedTitle}>{t('takeon.acceptor.waitingTitle')}</Text>
-                  <Text style={styles.lockedBody}>{t('takeon.acceptor.waitingBody', { name: creatorName })}</Text>
-                </View>
-              );
-            }
-            if (!isOwner && isRejected) {
-              const creatorName = myAcceptance?.counterparty.displayName || '?';
-              return (
-                <View style={styles.lockedWrap}>
-                  <Ionicons name="close" size={40} color={colors.muted} style={styles.lockedEmoji} />
-                  <Text style={styles.lockedTitle}>{t('takeon.acceptor.rejectedTitle')}</Text>
-                  <Text style={styles.lockedBody}>{t('takeon.acceptor.rejectedBody', { name: creatorName })}</Text>
-                </View>
-              );
-            }
-
-            // Visitor + challenge is in progress with someone else → show
-            // the "someone's on this one" state instead of the generic
-            // take-on nudge. Creator falls back to the regular branch.
-            if (!isOwner && inProgress) {
-              return (
-                <View style={styles.lockedWrap}>
-                  <Ionicons name="hourglass-outline" size={40} color={colors.muted} style={styles.lockedEmoji} />
-                  <Text style={styles.lockedTitle}>{t('locked.inProgress.title')}</Text>
-                  <Text style={styles.lockedBody}>{t('locked.inProgress.body')}</Text>
                 </View>
               );
             }
@@ -1985,23 +1410,6 @@ export default function ChallengeChatScreen() {
         )}
       </KeyboardAvoidingView>
 
-      {/* Date picker - opened by the pipeline's "Propose a date →" sub-CTA. */}
-      {myAcceptance && (
-        <DatePickerModal
-          visible={pickerOpen}
-          onClose={() => setPickerOpen(false)}
-          onSubmit={async (startsAtUnix, endsAtUnix, venue) => {
-            setPickerOpen(false);
-            try {
-              await proposeDateApi(myAcceptance.id, startsAtUnix, endsAtUnix, venue);
-              loadMyAcceptance();
-            } catch {
-              Alert.alert(t('schedule.err.proposeFailed'));
-            }
-          }}
-          submitLabel={t('schedule.proposeCta')}
-        />
-      )}
 
       {/* Channel members sheet - synthesizes Challenger + Taker rows
           at the head from the challenge/acceptance context, then lists
@@ -2055,17 +1463,6 @@ export default function ChallengeChatScreen() {
                 {isValidated ? t('reopenCta') : t('closeCta')}
               </Text>
             </TouchableOpacity>
-            {/* Restart - only when there's an active taker to remove. */}
-            {challenge?.is_in_progress && (
-              <TouchableOpacity
-                style={styles.manageRow}
-                onPress={() => { setManageOpen(false); handleRestart(); }}
-                activeOpacity={0.75}
-              >
-                <Ionicons name="refresh-outline" size={18} color={colors.primaryText} />
-                <Text style={[styles.manageRowText, { color: colors.primaryText }]}>{t('restart.cta')}</Text>
-              </TouchableOpacity>
-            )}
             <TouchableOpacity
               style={[styles.manageRow, styles.manageRowDanger]}
               onPress={() => { setManageOpen(false); handleDelete(); }}
@@ -2078,18 +1475,6 @@ export default function ChallengeChatScreen() {
         </Modal>
       )}
 
-      {/* Creator's proof-review modal. Big photo + Approve / Reject +
-          reject-reason face. Mounted for any photo-proof creator (intl
-          + local-with-photo) with an active acceptance - the modal
-          renders nothing if there's no pending proof. */}
-      {usesPhotoProof && isOwner && effectiveActiveAcceptance && (
-        <ProofReviewModal
-          visible={proofReviewOpen}
-          onClose={() => setProofReviewOpen(false)}
-          acceptanceId={effectiveActiveAcceptance.id}
-          onVerdict={() => { loadMyAcceptance(); loadChallenge(); }}
-        />
-      )}
 
       {/* Group MEET presence validation (challenger-only, multi-select). */}
       {isGroupMeet && (
@@ -2104,29 +1489,6 @@ export default function ChallengeChatScreen() {
       )}
 
 
-      {/* Proof-spec popin - read-only sheet showing what the creator asked
-          for. Opened by tapping the pipeline's "Waiting for the proof" pill. */}
-      {challenge?.proof_requirements && (
-        <Modal
-          visible={proofSpecOpen}
-          animationType="fade"
-          transparent
-          onRequestClose={() => setProofSpecOpen(false)}
-        >
-          <TouchableOpacity style={styles.modalBackdrop} activeOpacity={1} onPress={() => setProofSpecOpen(false)} />
-          <View style={styles.manageSheet}>
-            <Text style={styles.manageTitle}>{t('intl.proof.requirementsLabel')}</Text>
-            <Text style={styles.proofSpecBody}>{challenge.proof_requirements}</Text>
-            <TouchableOpacity
-              style={[styles.manageRow, { justifyContent: 'center' }]}
-              onPress={() => setProofSpecOpen(false)}
-              activeOpacity={0.75}
-            >
-              <Text style={[styles.manageRowText, { color: colors.primaryText }]}>OK</Text>
-            </TouchableOpacity>
-          </View>
-        </Modal>
-      )}
 
       {/* Visibility picker - Public / Friends / Private dropdown. */}
       {challenge && (
@@ -2152,12 +1514,12 @@ export default function ChallengeChatScreen() {
                   key={opt}
                   style={[styles.manageRow, selected && { backgroundColor: colors.primaryTint, borderWidth: Border, borderColor: colors.primary }]}
                   onPress={() => handlePickVisibility(opt)}
-                  disabled={visBusy || closeBusy}
+                  disabled={visBusy}
                   activeOpacity={0.75}
                 >
                   <View style={{ flex: 1 }}>
                     <Text style={styles.manageRowText}>{t(`visibility.badge.${opt}`)}</Text>
-                    <Text style={{ fontSize: FontSizes.sm - 1, color: colors.muted, marginTop: 2 }}>{hint}</Text>
+                    <Text style={{ fontSize: FontSizes.xs, color: colors.muted, marginTop: Space.xxs }}>{hint}</Text>
                   </View>
                 </TouchableOpacity>
               );
@@ -2264,20 +1626,20 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   guestWelcome: {
     flexDirection:     'row',
     alignItems:        'center',
-    gap:               8,
+    gap:               Space.sm,
     marginHorizontal:  Spacing.md,
     marginTop:         Spacing.xs,
     marginBottom:      Spacing.xs,
-    paddingVertical:   10,
-    paddingHorizontal: 12,
+    paddingVertical:   Space.md,
+    paddingHorizontal: Space.md,
     backgroundColor:   c.bg2,
-    borderRadius:      Radius.md,
+    borderRadius:      Radius.card,
     borderWidth:       Border,
     borderColor:       c.primary,
   },
   guestWelcomeBody: {
     flex: 1,
-    gap:  2,
+    gap:  Space.xxs,
   },
   guestWelcomeText: {
     color:      c.text,
@@ -2291,7 +1653,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   },
   guestWelcomeClose: {
     alignSelf: 'flex-start',
-    paddingTop: 2,
+    paddingTop: Space.xxs,
   },
 
   // Nav
@@ -2304,23 +1666,15 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
     borderBottomColor: c.line,
     gap:               Spacing.sm,
   },
-  backPill: {
-    flexDirection: 'row', alignItems: 'center', gap: 4,
-    paddingHorizontal: 10, paddingVertical: 6,
-    borderRadius: Radius.full,
-    backgroundColor: c.bg3,
-    borderWidth: Border, borderColor: c.line,
-  },
-  backPillText: { color: c.text, fontSize: FontSizes.sm, fontWeight: '700' },
   navCenter: { flex: 1, flexDirection: 'column', alignItems: 'center', justifyContent: 'center' },
   navTitle:  { fontSize: FontSizes.md, fontWeight: '800', color: c.text, flexShrink: 1, textAlign: 'center' },
-  navCreatorRow:    { flexDirection: 'row', alignItems: 'center', gap: 5, marginTop: 2 },
-  navCreatorTap:    { flexDirection: 'row', alignItems: 'center', gap: 5, flexShrink: 1 },
+  navCreatorRow:    { flexDirection: 'row', alignItems: 'center', gap: Space.xs, marginTop: Space.xxs },
+  navCreatorTap:    { flexDirection: 'row', alignItems: 'center', gap: Space.xs, flexShrink: 1 },
   navCreatorAvatar: { width: 14, height: 14, borderRadius: 7 },
-  navCreatorText:   { fontSize: 11, fontWeight: '600', color: c.muted, flexShrink: 1 },
+  navCreatorText:   { fontSize: FontSizes.xs, fontWeight: '600', color: c.muted, flexShrink: 1 },
   // Sized to roughly match the back-pill width so the title stays centered
   // without needing a manual right-side spacer.
-  navEmoji:  { fontSize: 28, lineHeight: 32, minWidth: 64, textAlign: 'center' },
+  navEmoji:  { fontSize: 28, lineHeight: 32, minWidth: 44, textAlign: 'center' },
 
   // Hero (badge + audience + status + actions)
   hero: {
@@ -2330,63 +1684,53 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: c.line,
   },
-  badgeRow: { flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', gap: 6 },
+  badgeRow: { flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', gap: Space.sm },
 
   kindBadge: {
     backgroundColor:   c.primaryTint,
     borderRadius:      Radius.full,
-    paddingHorizontal: 8, paddingVertical: 2,
+    paddingHorizontal: Space.sm, paddingVertical: Space.xxs,
     borderWidth:       Border, borderColor: c.primary,
   },
-  kindBadgeText: { fontSize: 10, fontWeight: '800', color: c.primaryOnTint, letterSpacing: 0.5 },
+  kindBadgeText: { fontSize: FontSizes.tiny, fontWeight: '800', color: c.primaryOnTint, letterSpacing: 0.5 },
 
   // Row so the leading stroke icon (checkmark / refresh / hourglass / live
   // dot) sits next to the label.
-  statusPill:          { flexDirection: 'row', alignItems: 'center', gap: 4, borderRadius: Radius.full, paddingHorizontal: 8, paddingVertical: 2, borderWidth: Border },
+  statusPill:          { flexDirection: 'row', alignItems: 'center', gap: Space.xs, borderRadius: Radius.full, paddingHorizontal: Space.sm, paddingVertical: Space.xxs, borderWidth: Border },
   statusPillDone:      { backgroundColor: c.localBg,  borderColor: c.localText },
   statusPillLive:      { backgroundColor: c.goldTint, borderColor: c.gold },
   statusPillEnded:     { backgroundColor: c.bg3, borderColor: c.line },
-  statusPillRestart:   { backgroundColor: c.primary, borderColor: 'transparent' },
-  statusPillText:      { fontSize: 10, fontWeight: '800', letterSpacing: 0.5 },
+  statusPillRestart:   { backgroundColor: c.cta, borderColor: 'transparent' },
+  statusPillText:      { fontSize: FontSizes.xs, fontWeight: '800', letterSpacing: 0.5 },
   statusPillTextDone:  { color: c.localText },
   statusPillTextLive:  { color: c.gold },
   statusPillTextEnded: { color: c.mutedDim },
-  statusPillTextRestart: { color: c.white },
+  statusPillTextRestart: { color: c.onCta },
   statusLiveDot:       { width: 6, height: 6, borderRadius: 3, backgroundColor: c.green },
-
-  // Violet tint - see ChallengeVersusCard for the rationale (distinct from
-  // orange brand + green validated, the other pills on the same row).
-  audiencePill: {
-    backgroundColor:   c.primaryTint,
-    borderRadius:      Radius.full,
-    paddingHorizontal: 8, paddingVertical: 2,
-    borderWidth:       Border, borderColor: c.primary,
-  },
-  audiencePillText: { fontSize: 11, fontWeight: '700', color: c.primaryText, letterSpacing: 0.3 },
 
   // International chip - cyan, distinct from audience violet so Local vs
   // Intl reads at a glance (mirrors the NOW-card pattern from step 8).
   intlPill: {
-    flexDirection:     'row', alignItems: 'center', gap: 4,
+    flexDirection:     'row', alignItems: 'center', gap: Space.xs,
     backgroundColor:   c.travelerBg,
     borderRadius:      Radius.full,
-    paddingHorizontal: 8, paddingVertical: 2,
+    paddingHorizontal: Space.sm, paddingVertical: Space.xxs,
     borderWidth:       Border, borderColor: c.travelerText,
     flexShrink:        1,
   },
-  intlPillText: { fontSize: 11, fontWeight: '700', color: c.travelerText, letterSpacing: 0.3, flexShrink: 1 },
+  intlPillText: { fontSize: FontSizes.xs, fontWeight: '700', color: c.travelerText, letterSpacing: 0.3, flexShrink: 1 },
 
   // Share inline pill - same height/padding as the kind + audience pills so
   // the three sit on a single row without alignment drift. Orange brand tint
   // because Share is the most user-facing growth lever on this screen.
   sharePillInline: {
-    flexDirection: 'row', alignItems: 'center', gap: 4,
+    flexDirection: 'row', alignItems: 'center', gap: Space.xs,
     backgroundColor:   c.primaryTint,
     borderRadius:      Radius.full,
-    paddingHorizontal: 8, paddingVertical: 2,
+    paddingHorizontal: Space.sm, paddingVertical: Space.xxs,
     borderWidth:       Border, borderColor: c.primary,
   },
-  sharePillInlineText: { fontSize: 11, fontWeight: '700', color: c.primaryText, letterSpacing: 0.3 },
+  sharePillInlineText: { fontSize: FontSizes.xs, fontWeight: '700', color: c.primaryText, letterSpacing: 0.3 },
 
   // Share - V3 drops the legacy violet: same primary tint as the other
   // inline pills (kept as a separate style so it can diverge again).
@@ -2412,22 +1756,22 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   detailsBlock: { },
 
   // Group challenge block (meet info + join / validate).
-  groupBlock:     { paddingHorizontal: Spacing.md, paddingTop: Spacing.xs, gap: 6 },
+  groupBlock:     { paddingHorizontal: Spacing.md, paddingTop: Spacing.xs, gap: Space.sm },
   groupMeetCard:  {
-    flexDirection: 'row', alignItems: 'center', gap: 8,
-    backgroundColor: c.bg2, borderRadius: 10, borderWidth: Border, borderColor: c.line,
-    paddingHorizontal: Spacing.md, paddingVertical: 6,
+    flexDirection: 'row', alignItems: 'center', gap: Space.sm,
+    backgroundColor: c.bg2, borderRadius: Radius.card, borderWidth: Border, borderColor: c.line,
+    paddingHorizontal: Spacing.md, paddingVertical: Space.sm,
   },
-  groupMeetLine:  { flex: 1, fontSize: FontSizes.xs + 1, fontWeight: '600', color: c.muted },
-  groupStateText: { fontSize: FontSizes.sm, fontWeight: '700', color: c.green, textAlign: 'center', paddingVertical: 4 },
+  groupMeetLine:  { flex: 1, fontSize: FontSizes.sm, fontWeight: '600', color: c.muted },
+  groupStateText: { fontSize: FontSizes.sm, fontWeight: '700', color: c.green, textAlign: 'center', paddingVertical: Space.xs },
   groupPrimaryBtn: {
     // Solid fill = unmistakably tappable. The old translucent/outlined style
     // read as an already-done state ("✓ validated") rather than a CTA.
-    paddingVertical: 14, borderRadius: 14, alignItems: 'center', justifyContent: 'center',
-    // V3: flat primary fill (no glow shadow).
-    backgroundColor: c.primary,
+    minHeight: 48, paddingVertical: Space.md, paddingHorizontal: Space.lg, borderRadius: Radius.button, alignItems: 'center', justifyContent: 'center',
+    // V3: the shared primary look (Button): tangerine with ink text.
+    backgroundColor: c.cta,
   },
-  groupPrimaryBtnText: { color: c.white, fontSize: 15, fontWeight: '800' },
+  groupPrimaryBtnText: { color: c.onCta, fontSize: FontSizes.md, fontWeight: '800', textAlign: 'center' },
 
   // Visibility pill tints - applied to BOTH the TouchableOpacity (for
   // background + borderColor) and the inner Text (for color). Split into
@@ -2439,33 +1783,9 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   visibilityPillTextFriends: { color: c.travelerText },
   visibilityPillTextPrivate: { color: c.red },
 
-  // Close-to-new-joins pill - on-state retints to a deeper orange so the
-  // creator can see at a glance whether the channel is locked.
-  closedPillOn: {
-    backgroundColor: c.primaryTint,
-    borderColor:     c.primary,
-  },
-
   // (Old status-pill styles removed - the ChallengePipeline component owns
   // the lifecycle visual now. The close-challenge action moved to the
   // owner-secondary row as a small ghost button.)
-
-  // Secondary housekeeping row - icon + small label, ghost styling so the
-  // eye lands on the orange CTA above first.
-  ownerSecondaryRow: {
-    flexDirection:  'row',
-    justifyContent: 'center',
-    gap:            Spacing.lg,
-    marginTop:      Spacing.sm,
-  },
-  ownerIconBtn: {
-    flexDirection:  'row',
-    alignItems:     'center',
-    gap:            4,
-    paddingVertical:   4,
-    paddingHorizontal: 6,
-  },
-  ownerIconLabel: { fontSize: FontSizes.xs, fontWeight: '600', color: c.muted },
 
   // Primary owner CTA - "Send it to someone in {city}". Cyan rather than
   // orange so it visually separates from the share pill above (which IS
@@ -2477,7 +1797,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
     flexDirection:     'row',
     alignItems:        'center',
     justifyContent:    'center',
-    gap:               8,
+    gap:               Space.sm,
     paddingVertical:   Spacing.sm + 2,
     paddingHorizontal: Spacing.md,
     borderRadius:      Radius.full,
@@ -2511,85 +1831,15 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
     alignItems: 'center', justifyContent: 'center',
     overflow: 'hidden',
   },
-  challengerAvatarLetter: { color: c.white, fontWeight: '700', fontSize: 18 },
-  challengerInfo: { flex: 1, gap: 2, minWidth: 0 },
+  challengerAvatarLetter: { color: c.white, fontWeight: '700', fontSize: FontSizes.md },
+  challengerInfo: { flex: 1, gap: Space.xxs, minWidth: 0 },
   challengerName: { fontSize: FontSizes.md, fontWeight: '700', color: c.text },
-  challengerTag:  { fontSize: 11, fontWeight: '800', color: c.primaryText, letterSpacing: 0.3 },
-
-  // Inline quick-action group - Share is a labeled pill (verb is the
-  // social hook), Accept is the compact icon-only round next to it.
-  quickActions: { flexDirection: 'row', gap: 8, alignItems: 'center' },
-  sharePill: {
-    flexDirection:    'row',
-    alignItems:       'center',
-    gap:              6,
-    height:           36,
-    paddingHorizontal: 12,
-    borderRadius:     18,
-    backgroundColor:  c.primaryTint,
-    borderWidth:      Border,
-    borderColor:      c.primary,
-    maxWidth:         200,
-  },
-  sharePillText: { color: c.primaryText, fontSize: 12, fontWeight: '800', letterSpacing: 0.1 },
-  quickBtn: {
-    width:           36,
-    height:          36,
-    borderRadius:    18,
-    alignItems:      'center',
-    justifyContent:  'center',
-    backgroundColor: c.primaryTint,
-    borderWidth:     Border,
-    borderColor:     c.primary,
-  },
-  quickBtnAcceptIn: {
-    backgroundColor: c.primary,
-    borderColor:     c.primary,
-  },
-
-  // Participants row - always shown for non-owners so the Accept button
-  // has a permanent home; for owners only when somebody else accepted.
-  participantsRow: {
-    flexDirection: 'row', alignItems: 'center', gap: Spacing.sm,
-    paddingHorizontal: Spacing.md, paddingVertical: Spacing.sm,
-    borderBottomWidth: 1, borderBottomColor: c.line,
-  },
-  participantsInfo: {
-    flex: 1, flexDirection: 'row', alignItems: 'center', gap: Spacing.sm,
-    minWidth: 0,
-  },
-  membersLabel: { fontSize: FontSizes.sm, color: c.muted, fontWeight: '600' },
-  participantsEmpty: { fontSize: FontSizes.sm, color: c.muted, fontWeight: '500' },
-
-  // Labeled Accept button - full-width when nobody has taken on yet (replaces
-  // the old "Be the first to accept" + tiny + duo) and compact when there are
-  // already acceptors (sits to the right of the avatars).
-  acceptCtaFull: {
-    flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
-    gap: 6,
-    paddingHorizontal: Spacing.md, paddingVertical: 10,
-    borderRadius: 999,
-    backgroundColor: c.primaryTint,
-    borderWidth: Border, borderColor: c.primary,
-  },
-  acceptCtaFullText: {
-    color: c.primaryText, fontWeight: '800', fontSize: FontSizes.sm,
-  },
-  acceptCompact: {
-    flexDirection: 'row', alignItems: 'center', gap: 4,
-    paddingHorizontal: 12, paddingVertical: 7,
-    borderRadius: 999,
-    backgroundColor: c.primaryTint,
-    borderWidth: Border, borderColor: c.primary,
-  },
-  acceptCompactText: {
-    color: c.primaryText, fontWeight: '700', fontSize: FontSizes.xs ?? 12,
-  },
+  challengerTag:  { fontSize: FontSizes.xs, fontWeight: '800', color: c.primaryText, letterSpacing: 0.3 },
 
   // Inline thread chat
-  chatList:         { paddingHorizontal: Spacing.md, paddingTop: Spacing.sm, paddingBottom: Spacing.md, gap: 4 },
+  chatList:         { paddingHorizontal: Spacing.md, paddingTop: Spacing.sm, paddingBottom: Spacing.md, gap: Space.xs },
   loadingOlderWrap: { paddingVertical: Spacing.md, alignItems: 'center' },
-  emptyChat:        { paddingVertical: 60, alignItems: 'center', gap: 8 },
+  emptyChat:        { paddingVertical: 60, alignItems: 'center', gap: Space.sm },
   emptyChatEmoji:   { },
   emptyChatText:    { fontSize: FontSizes.sm, color: c.muted, textAlign: 'center', paddingHorizontal: Spacing.lg },
 
@@ -2598,7 +1848,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   // participants row.
   lockedWrap: {
     flex: 1, alignItems: 'center', justifyContent: 'center',
-    paddingHorizontal: Spacing.xl, gap: 10,
+    paddingHorizontal: Spacing.xl, gap: Space.md,
   },
   lockedEmoji: { opacity: 0.7 },
   lockedTitle: { fontSize: FontSizes.md, fontWeight: '800', color: c.text, textAlign: 'center' },
@@ -2608,14 +1858,10 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   joinCta: {
     marginTop:       Spacing.sm,
     paddingHorizontal: Spacing.xl,
-    paddingVertical:   Spacing.sm + 2,
-    borderRadius:      Radius.full,
-    backgroundColor:   c.primary,
-  },
-  joinCtaText: {
-    color:      c.white,
-    fontSize:   FontSizes.md,
-    fontWeight: '800',
+    minHeight:         48,
+    justifyContent:    'center',
+    borderRadius:      Radius.button,
+    backgroundColor:   c.cta,
   },
 
   // Manage / proof-spec modal - bottom-sheet style with backdrop. Reuses
@@ -2644,38 +1890,4 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   // V3: red outline on a transparent ground instead of a red tint.
   manageRowDanger: { backgroundColor: 'transparent', borderWidth: Border, borderColor: c.red },
   manageRowText:   { fontSize: FontSizes.md, fontWeight: '700', color: c.text },
-  proofSpecBody:   {
-    fontSize: FontSizes.sm, lineHeight: FontSizes.sm * 1.5,
-    color: c.text,
-    paddingHorizontal: Spacing.md,
-    paddingVertical:   Spacing.sm + 2,
-    backgroundColor:   c.bg3,
-    borderRadius:      Radius.md,
-  },
-
-  // PR5 - creator's review banner inside the locked state. Inline Reject /
-  // Accept buttons let the creator triage without leaving the challenge page.
-  takeonReviewActions: {
-    flexDirection: 'row',
-    gap:           Spacing.sm,
-    marginTop:     Spacing.md,
-  },
-  takeonRejectBtn: {
-    paddingHorizontal: 16,
-    paddingVertical:   10,
-    borderRadius:      999,
-    backgroundColor:   c.bg3,
-    borderWidth:       Border,
-    borderColor:       c.line,
-  },
-  takeonRejectText: { color: c.muted, fontSize: FontSizes.sm, fontWeight: '700' },
-  takeonAcceptBtn: {
-    paddingHorizontal: 16,
-    paddingVertical:   10,
-    borderRadius:      999,
-    backgroundColor:   c.primary,
-    borderWidth:       Border,
-    borderColor:       c.primary,
-  },
-  takeonAcceptText: { color: c.white, fontSize: FontSizes.sm, fontWeight: '800' },
 });

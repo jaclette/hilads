@@ -3,7 +3,7 @@ import { ActivityIndicator, Linking, Text, TextInput, TouchableOpacity, View, St
 import * as Location from 'expo-location';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
-import { FontSizes, Radius, Spacing, type ThemeColors } from '@/constants';
+import { Space, FontSizes, Radius, Spacing, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { track } from '@/services/analytics';
 import { requestFeatureLocation } from '@/lib/geoFeature';
@@ -12,6 +12,7 @@ import { fetchPlaceSuggestions, type PlaceSuggestion } from '@/lib/placeSuggesti
 import { distance } from '@/features/today/format';
 import type { DailyThemeKey, NearbyPlace } from '@/types';
 import { KeyboardForm } from '@/ui/keyboard';
+import { Button } from '@/ui/Button';
 
 /** Above this, the position is flagged as approximate (the check allows 150 m). */
 const APPROX_M = 100;
@@ -103,9 +104,7 @@ export function PlaceStep({ theme, onPicked }: {
         <View style={styles.icon}><Ionicons name="location-outline" size={30} color={colors.primaryOnTint} /></View>
         <Text style={styles.title}>{t('place.title')}</Text>
         <Text style={styles.body}>{t('place.why')}</Text>
-        <TouchableOpacity style={styles.cta} onPress={locate} accessibilityRole="button">
-          <Text style={styles.ctaText}>{t('place.find')}</Text>
-        </TouchableOpacity>
+        <Button label={t('place.find')} onPress={locate} style={styles.cta} />
       </View>
     );
   }
@@ -119,13 +118,9 @@ export function PlaceStep({ theme, onPicked }: {
         <Text style={styles.title}>{phase === 'denied' ? t('place.deniedTitle') : t('place.failedTitle')}</Text>
         <Text style={styles.body}>{phase === 'denied' ? t('place.deniedBody') : t('place.failedBody')}</Text>
         {settings && (
-          <TouchableOpacity style={styles.cta} onPress={() => Linking.openSettings().catch(() => {})} accessibilityRole="button">
-            <Text style={styles.ctaText}>{t('place.openSettings')}</Text>
-          </TouchableOpacity>
+          <Button label={t('place.openSettings')} onPress={() => Linking.openSettings().catch(() => {})} style={styles.cta} />
         )}
-        <TouchableOpacity style={[styles.cta, settings && styles.secondary]} onPress={locate} accessibilityRole="button">
-          <Text style={[styles.ctaText, settings && styles.secondaryText]}>{t('place.retry')}</Text>
-        </TouchableOpacity>
+        <Button label={t('place.retry')} variant={settings ? 'secondary' : 'primary'} onPress={locate} style={styles.cta} />
       </View>
     );
   }
@@ -135,10 +130,7 @@ export function PlaceStep({ theme, onPicked }: {
   return (
     // The new place's name stays in sight above the keyboard, its button rides on top of it.
     <KeyboardForm contentContainerStyle={styles.list} footerStyle={styles.footer} footer={phase === 'new' ? (
-      <TouchableOpacity style={[styles.cta, name.trim() === '' && styles.off]} onPress={pickNew} disabled={name.trim() === ''}
-                        accessibilityRole="button" testID="place-use-new">
-        <Text style={styles.ctaText}>{t('place.useNew')}</Text>
-      </TouchableOpacity>
+      <Button label={t('place.useNew')} onPress={pickNew} disabled={name.trim() === ''} testID="place-use-new" />
     ) : undefined}>
       <Text style={styles.title}>{t('place.title')}</Text>
       {approximate && (
@@ -233,33 +225,29 @@ export function PlaceStep({ theme, onPicked }: {
 }
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  center:        { flex: 1, alignItems: 'center', justifyContent: 'center', padding: Spacing.lg, gap: 12 },
+  center:        { flex: 1, alignItems: 'center', justifyContent: 'center', padding: Spacing.lg, gap: Space.md },
   icon:          { width: 64, height: 64, borderRadius: Radius.full, backgroundColor: c.primaryTint, alignItems: 'center', justifyContent: 'center' },
   title:         { fontSize: FontSizes.lg, fontWeight: '800', color: c.text, textAlign: 'center' },
   body:          { fontSize: FontSizes.sm, color: c.muted, textAlign: 'center' },
-  cta:           { alignSelf: 'stretch', minHeight: 48, borderRadius: 16, backgroundColor: c.primary, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 16 },
-  ctaText:       { color: c.white, fontSize: FontSizes.md, fontWeight: '700' },
-  secondary:     { backgroundColor: c.bg2, borderWidth: 1.5, borderColor: c.line },
-  secondaryText: { color: c.text },
-  off:           { opacity: 0.45 },
-  list:          { padding: Spacing.md, gap: 10, paddingBottom: Spacing.xl },
+  cta:           { alignSelf: 'stretch' },
+  list:          { padding: Spacing.md, gap: Space.md, paddingBottom: Spacing.xl },
   footer:        { padding: Spacing.md, borderTopWidth: 1, borderTopColor: c.line, backgroundColor: c.bg },
-  warn:          { flexDirection: 'row', alignItems: 'center', gap: 8, padding: 10, borderRadius: 14, backgroundColor: c.bg2, borderWidth: 1.5, borderColor: c.line },
+  warn:          { flexDirection: 'row', alignItems: 'center', gap: Space.sm, padding: 14, borderRadius: Radius.card, backgroundColor: c.bg2, borderWidth: 1.5, borderColor: c.line },
   warnText:      { flex: 1, fontSize: FontSizes.xs, color: c.text },
-  refresh:       { alignSelf: 'center', flexDirection: 'row', alignItems: 'center', gap: 6, minHeight: 36 },
+  refresh:       { alignSelf: 'center', flexDirection: 'row', alignItems: 'center', gap: Space.sm, minHeight: 36 },
   link:          { fontSize: FontSizes.sm, fontWeight: '700', color: c.primaryText },
-  search:        { flexDirection: 'row', alignItems: 'center', gap: 8, height: 44, paddingHorizontal: 14, borderRadius: Radius.full, borderWidth: 1.5, borderColor: c.line, backgroundColor: c.bg2 },
+  search:        { flexDirection: 'row', alignItems: 'center', gap: Space.sm, height: 44, paddingHorizontal: Space.lg, borderRadius: Radius.full, borderWidth: 1.5, borderColor: c.line, backgroundColor: c.bg2 },
   searchInput:   { flex: 1, fontSize: FontSizes.sm, color: c.text, paddingVertical: 0 },
-  row:           { flexDirection: 'row', alignItems: 'center', gap: 12, minHeight: 56, paddingHorizontal: 14, paddingVertical: 10, borderRadius: 16, backgroundColor: c.bg2, borderWidth: 1.5, borderColor: c.line },
+  row:           { flexDirection: 'row', alignItems: 'center', gap: Space.md, minHeight: 56, paddingHorizontal: Space.lg, paddingVertical: Space.md, borderRadius: Radius.card, backgroundColor: c.bg2, borderWidth: 1.5, borderColor: c.line },
   newRow:        { borderStyle: 'dashed' },
-  section:       { fontSize: FontSizes.sm, fontWeight: '700', color: c.text, marginTop: 6 },
+  section:       { fontSize: FontSizes.sm, fontWeight: '700', color: c.text, marginTop: Space.sm },
   credit:        { fontSize: FontSizes.xs, color: c.muted, alignSelf: 'flex-end', marginTop: -4 },
   rowBody:       { flex: 1 },
   rowName:       { fontSize: FontSizes.md, fontWeight: '700', color: c.text },
-  rowMeta:       { fontSize: FontSizes.xs, color: c.muted, marginTop: 2 },
-  newBox:        { gap: 8 },
-  label:         { fontSize: FontSizes.sm, fontWeight: '700', color: c.text, marginTop: 6 },
-  input:         { backgroundColor: c.bg2, borderWidth: 1.5, borderColor: c.line, borderRadius: 14, paddingHorizontal: 14, paddingVertical: 12, fontSize: FontSizes.md, color: c.text },
+  rowMeta:       { fontSize: FontSizes.xs, color: c.muted, marginTop: Space.xxs },
+  newBox:        { gap: Space.sm },
+  label:         { fontSize: FontSizes.sm, fontWeight: '700', color: c.text, marginTop: Space.sm },
+  input:         { backgroundColor: c.bg2, borderWidth: 1.5, borderColor: c.line, borderRadius: 14, paddingHorizontal: Space.lg, paddingVertical: Space.md, fontSize: FontSizes.md, color: c.text },
   hint:          { fontSize: FontSizes.xs, color: c.muted },
   backToList:    { alignSelf: 'center', minHeight: 44, justifyContent: 'center' },
 });

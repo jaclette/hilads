@@ -1,8 +1,5 @@
 {
   "emptyTitle": "Il ne se passe rien pour l'instant",
-  "emptyBeFirst": "Sois le premier à {{city}}",
-  "emptyStartNow": "Lance un truc maintenant",
-  "emptyCreateLine": "Crée un événement ou lance une sortie.",
   "hostSpotTitle": "Anime ton spot",
   "hostSpotCity": "Fais vivre {{city}}.",
   "hostSpotNoCity": "Fais vivre ta ville.",
@@ -11,8 +8,6 @@
   "noHangouts": "Pas encore de sortie",
   "beFirstEventCity": "Sois le premier à en créer un à {{city}}",
   "beFirstEvent": "Sois le premier à en créer un",
-  "hangoutTalk": "Lance une sortie et fais parler la ville",
-  "startHangout": "Lancer une sortie 🗣️",
   "inspiration": {
     "heading": "Idées de sorties",
     "sub": "Ce que les locaux organisent ailleurs, pour t'inspirer",
@@ -31,26 +26,7 @@
   "browseCities": "Parcourir les villes",
   "filterAll": "Tout",
   "filterChallenges": "Défis",
-  "challengesSection": "Défis",
-  "seeAllChallenges": "Voir tout →",
   "noChallenges": "Pas encore de défi",
-  "noChallengesCity": "Sois le premier à en lancer un à {{city}}",
-  "noChallengesGeneric": "Sois le premier à lancer un défi.",
-  "seeComing": "À venir",
-  "createNew": "Créer",
-  "seeHappened": "Événements passés →",
   "going": "y vont",
-  "inThisHangout": "dans cette sortie",
-  "create": {
-    "title": "On fait quoi ?",
-    "challengeLabel": "Lancer un défi",
-    "challengeSub": "Locaux et voyageurs, réunis autour d'un défi",
-    "hangoutLabel": "Lancer une sortie",
-    "hangoutSub": "Tout de suite - les gens te rejoignent direct",
-    "eventLabel": "Créer un événement",
-    "eventSub": "Organise un truc ouvert aux autres",
-    "cancel": "Annuler"
-  },
-  "hiNowHint": "se voir maintenant",
-  "hiLaterHint": "prévoir un événement"
+  "inThisHangout": "dans cette sortie"
 }

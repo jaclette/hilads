@@ -27,7 +27,7 @@ import * as Clipboard from 'expo-clipboard';
 import i18n from '@/i18n';
 import { isSameDay, formatDateLabel } from '@/lib/messageTime';
 import { formatExpiresIn } from '@/lib/expiry';
-import { FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
+import { Space, FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
 import { Banner, Button, Chip, EmptyState, IconButton, Screen, ScreenHeader } from '@/ui';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import type { Message, Topic, UserDTO } from '@/types';
@@ -100,7 +100,7 @@ export default function TopicChatScreen() {
         },
       },
     ]);
-  }, [id, identity, router, t]);
+  }, [id, identity, t]);
 
   async function handleShare() {
     if (!id) return;
@@ -252,6 +252,7 @@ export default function TopicChatScreen() {
       offConnected();
       appSub.remove();
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- sessionId kept on purpose: a new WS session re-runs this (topic refresh + poll state), as before
   }, [id, sessionId]));
 
   // Join the WS topic room ONLY as a confirmed member. The WS server can't
@@ -506,23 +507,23 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
 
   infoBlock: {
     paddingHorizontal: Spacing.md,
-    paddingTop:        4,
-    paddingBottom:     14,
+    paddingTop:        Space.xs,
+    paddingBottom:     Space.lg,
     borderBottomWidth: 1,
     borderBottomColor: c.line,
-    gap:               8,
+    gap:               Space.sm,
   },
   infoBlockLoading: { paddingVertical: Spacing.lg, alignItems: 'center' },
-  titleRow:  { flexDirection: 'row', alignItems: 'center', gap: 10 },
+  titleRow:  { flexDirection: 'row', alignItems: 'center', gap: Space.md },
   titleIcon: { width: 40, height: 40, borderRadius: Radius.full, backgroundColor: c.primaryTint, alignItems: 'center', justifyContent: 'center' },
   title:     { flex: 1, fontSize: FontSizes.lg, fontWeight: '800', color: c.text, letterSpacing: -0.3, lineHeight: 26 },
   infoDesc:  { fontSize: FontSizes.sm, fontWeight: '400', color: c.muted, lineHeight: 20 },
   expiry:    { alignSelf: 'flex-start' },
-  ownerRow:  { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+  ownerRow:  { flexDirection: 'row', flexWrap: 'wrap', gap: Space.sm },
 
   membersStrip: {
-    flexDirection: 'row', alignItems: 'center', gap: 12, minHeight: 56,
-    paddingHorizontal: Spacing.md, paddingVertical: 10,
+    flexDirection: 'row', alignItems: 'center', gap: Space.md, minHeight: 56,
+    paddingHorizontal: Spacing.md, paddingVertical: Space.md,
     borderBottomWidth: 1, borderBottomColor: c.line,
   },
   membersLabel: { flex: 1, fontSize: FontSizes.sm, fontWeight: '600', color: c.text },
@@ -534,7 +535,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
 
   listContent:      { paddingVertical: Spacing.sm },
   msgsLoading:      { paddingVertical: Spacing.md, alignItems: 'center' },
-  loadingOlderWrap: { paddingVertical: 14, alignItems: 'center' },
+  loadingOlderWrap: { paddingVertical: Space.lg, alignItems: 'center' },
   beginningText:    { fontSize: FontSizes.xs, fontWeight: '500', color: c.muted },
   emptyWrap:        { paddingHorizontal: Spacing.lg },
 });

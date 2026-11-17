@@ -2,20 +2,8 @@
   "create": {
     "startTitle": "Hi now",
     "editTitle": "मुलाक़ात एडिट करें",
-    "category": "कैटेगरी",
-    "cat": {
-      "general": "जनरल",
-      "tips": "टिप्स",
-      "food": "खाना",
-      "drinks": "ड्रिंक्स",
-      "help": "मदद",
-      "meetup": "मुलाक़ात"
-    },
     "titleLabel": "आपके मन में क्या है?",
     "titlePlaceholder": "कॉफ़ी पीने का मन है",
-    "detailsLabel": "डिटेल्स जोड़ें",
-    "optional": "(ऑप्शनल)",
-    "detailsPlaceholder": "थोड़ा और बताएँ…",
     "expiry": "8 घंटे में अपने-आप ख़त्म",
     "saving": "सेव हो रहा है…",
     "starting": "शुरू हो रहा है…",
@@ -73,7 +61,6 @@
     "photo": "फ़ोटो",
     "unavailable": "असली मैसेज उपलब्ध नहीं"
   },
-  "composer": {},
   "errors": {
     "locFailed": "आपकी लोकेशन नहीं मिल सकी। लोकेशन एक्सेस ऑन करके फिर से कोशिश करें।",
     "imageType": "JPEG, PNG या WebP इमेज चुनें।",

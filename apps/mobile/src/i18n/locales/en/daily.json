@@ -4,20 +4,12 @@
   "nextIn": "Next Daily Challenge in {{time}}",
   "nothingLive": "The next Daily Challenge is on its way",
   "cta": "Take the challenge",
-  "ctaIn": "I'm in",
-  "ctaTaken": "Challenge taken · See my photo",
-  "seeProofs": "See today's photos",
-  "localTwist": "Local Twist",
   "twistIn": "{{city}} Local Twist",
   "twistBy": "by {{name}}",
   "count_one": "{{count}} person did it today",
   "count_other": "{{count}} people did it today",
-  "countCity": "{{count}} in {{city}}",
-  "countZero": "Nobody yet - be the first",
   "beFirst": "Be the first today",
   "beFirstSub": "No photo yet. Be the first, the world is waiting.",
-  "firstYours": "Your photo is in",
-  "firstYoursSub": "It shows here once it's approved, with everyone else's photos.",
   "yourProof": "Your photo",
   "status": {
     "pending": "Pending",
@@ -43,14 +35,12 @@
   "places_one": "{{count}} spot pinned",
   "places_other": "{{count}} spots pinned",
   "unnamedPlace": "Pinned place",
-  "tabWorld": "World",
   "local": "Local",
   "traveler": "Traveler",
   "validatedByLocal": "Validated by a local",
   "loadFailed": "Couldn't load the Daily Challenge.",
   "retry": "Retry",
   "notFound": "This Daily Challenge doesn't exist.",
-  "cityRowEmpty": "Be the first to create a challenge in {{city}}",
   "proof": {
     "titleNew": "Your photo",
     "titleEdit": "Edit your photo",
@@ -120,8 +110,6 @@
     "invalid_back_home": "Back home needs a city and an answer, a price or a line."
   },
   "push": {
-    "bannerTitle": "Get the Daily Challenge every morning",
-    "bannerCta": "Turn on",
     "askTitle": "Daily Challenge",
     "askBody": "Get the Daily Challenge every morning, at a good time for you.",
     "askBodyBlocked": "Notifications are off for Hilads. Turn them on in your settings to get the Daily Challenge every morning.",
@@ -294,10 +282,10 @@
       "countHere_one": "{{count}} spot here",
       "countHere_other": "{{count}} spots here",
       "peekNearest": "Nearest {{distance}} away",
-      "peekSwipe": "swipe up 👆",
+      "peekSwipe": "swipe up",
       "peekEmpty": "No spots here yet, be the pioneer 📍",
-      "peekTitle_one": "📍 {{num}} spot to explore",
-      "peekTitle_other": "📍 {{num}} spots to explore"
+      "peekTitle_one": "{{num}} spot to explore",
+      "peekTitle_other": "{{num}} spots to explore"
     }
   },
   "leaderboard": {
@@ -336,23 +324,15 @@
     "prev": "Previous month",
     "next": "Next month"
   },
-  "guide": {
-    "title": "City guide",
-    "all": "All",
-    "emptyCity": "No {{theme}} challenge in {{city}} yet. Next one on {{day}}.",
-    "emptyWorld": "No {{theme}} challenge yet. Next one on {{day}}."
-  },
   "localPass": {
     "name": "Local Pass",
     "progress": "{{done}}/{{total}} themes",
     "earned": "Earned",
-    "hint": "Complete all 7 themes in {{city}} to earn its Local Pass.",
     "profileTitle": "Local Passes",
     "badgeA11y": "Local Pass holder"
   },
   "propose": {
     "cta": "Propose a challenge",
-    "short": "Propose",
     "title": "Propose a challenge",
     "textLabel": "Your challenge (in English)",
     "textPlaceholder": "Find a…",
@@ -400,13 +380,7 @@
       "invalid_twist": "Keep the Local Twist under 280 characters.",
       "twist_not_allowed": "Only locals of a live city can add a Local Twist.",
       "moderation_blocked": "Your proposal was flagged by moderation. Please rephrase."
-    },
-    "linkAsk": "Got a challenge idea?",
-    "linkCta": "Propose it",
-    "cardBody": "Your idea could become tomorrow's challenge for the whole world 🌍",
-    "cardHide": "Hide for a week",
-    "cardPlayed_one": "Your idea “{{text}}” was played in {{count}} city 🎉",
-    "cardPlayed_other": "Your idea “{{text}}” was played in {{count}} cities 🎉"
+    }
   },
   "early": {
     "badge": "Early",
@@ -514,7 +488,6 @@
   },
   "takeIt": "Take it",
   "proofHint": {
-    "title": "Take your photo",
     "place": "The most voted photo becomes the spot's photo.",
     "noPlace": "The most voted photo makes the podium."
   },
@@ -664,24 +637,6 @@
     "clear": "Remove my home city",
     "hereIn": "Here in {{city}}"
   },
-  "tour": {
-    "title": "*Yesterday* around the world",
-    "watch": "Watch",
-    "openCity": "Open {{city}}",
-    "next": "Next",
-    "kicker": "Daily Challenge · {{theme}}",
-    "moment": {
-      "morning": "In the morning",
-      "afternoon": "In the afternoon",
-      "evening": "In the evening",
-      "night": "At night"
-    },
-    "yourTurn": "Your turn.",
-    "todayIs": "Today's question: {{question}}",
-    "close": "Close",
-    "sub_one": "{{count}} city, same challenge",
-    "sub_other": "{{count}} cities, same challenge"
-  },
   "worlds": {
     "tagline": "Same challenge. Different worlds."
   },
@@ -725,17 +680,11 @@
     "endTitle": "That's everyone so far!",
     "endBody": "New photos land all day. Come back for more.",
     "endPlay": "Your turn: show the world your city.",
-    "backToday": "Back to Today",
-    "seeAll": "See all photos"
+    "backToday": "Back to Today"
   },
   "countries": {
-    "played_one": "{{count}} country played today",
-    "played_other": "{{count}} countries played today",
-    "yourCity": "Your city",
     "represent": "Represent your city",
     "emptyBody": "Nobody has played yet today. Put your city on the map first!",
-    "openCountry": "{{city}}: see the photos",
-    "byCity": "By city",
     "topPhoto": "Top photo"
   },
   "recap": {
@@ -787,10 +736,6 @@
     "ctaNoCity": "Snap it",
     "played": "You played · See the world",
     "firstCity": "Be the first city in the world today",
-    "citiesIn_one": "{{count}} city in",
-    "citiesIn_other": "{{count}} cities in",
-    "citiesMissing_one": "{{count}} city in. {{city}} isn't yet!",
-    "citiesMissing_other": "{{count}} cities in. {{city}} isn't yet!",
     "steps": {
       "snap": "Snap it",
       "name": "Name it",
@@ -814,7 +759,6 @@
     "players_other": "{{count}} players",
     "missing": "{{city}} is missing!",
     "yesterday": "Yesterday the world said…",
-    "beFirst": "Represent {{city}}",
     "beFirstSub": "Be the first city today",
     "swipeHint": "Swipe to travel 🌍",
     "slotCta": "📸 {{city}}? Be first today"
@@ -888,9 +832,9 @@
   },
   "ranks": {
     "seg": {
-      "photos": "📸 Photos",
-      "players": "🙋 Players",
-      "cities": "🌍 Cities"
+      "photos": "Photos",
+      "players": "Players",
+      "cities": "Cities"
     },
     "period": {
       "today": "Today",
@@ -902,7 +846,7 @@
       "city": "My city",
       "world": "World"
     },
-    "timeLeftMin": "⏳ Less than an hour left to vote",
+    "timeLeftMin": "Less than an hour left to vote",
     "bestPerCity": "Best photo per city",
     "new": "new",
     "you": {
@@ -944,8 +888,8 @@
       "generic": "🏆 Yesterday's results are in",
       "see": "See results →"
     },
-    "timeLeft_one": "⏳ {{count}} hour left to vote",
-    "timeLeft_other": "⏳ {{count}} hours left to vote",
+    "timeLeft_one": "{{count}} hour left to vote",
+    "timeLeft_other": "{{count}} hours left to vote",
     "pts_one": "{{count}} pt",
     "pts_other": "{{count}} pts",
     "ghost": {

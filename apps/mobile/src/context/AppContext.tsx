@@ -75,7 +75,7 @@ interface AppActions {
   setBootError:            (error: string | null) => void;
   setWsConnected:          (connected: boolean) => void;
   setUnreadDMs:            (count: number | ((prev: number) => number)) => void;
-  setUnreadNotifications:  (count: number) => void;
+  setUnreadNotifications:  (count: number | ((prev: number) => number)) => void;
   setEventChatPreview:     (eventId: string, preview: EventChatPreview) => void;
   removeEventChatPreview:  (eventId: string) => void;
   clearEventChatCounts:    () => void;

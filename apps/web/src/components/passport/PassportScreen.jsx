@@ -10,9 +10,10 @@ import { themeIcon } from '../../lib/icons'
 import { shareLink } from '../../lib/shareLink'
 import Icon from '../Icon'
 import HeaderArt from '../HeaderArt'
-import { FlagSticker, themeColor } from '../joy/Joy'
+import { themeColor } from '../joy/Joy'
 import { RankMedal } from '../daily/dailyShared'
 import { useBackLayer } from '../../lib/backLayers'
+import { useNotifCounts } from '../../lib/notifCounts'
 
 // Each stamp sits at its own slight angle, like a real passport (passport.html).
 const ROTATION = [-6, 5, -3, 7, -5, 4, -7]
@@ -20,7 +21,7 @@ const ROTATION = [-6, 5, -3, 7, -5, 4, -7]
 // The three ways to earn Daily Challenge points, same rows as the app's sheet.
 const POINTS = [['proof', 10], ['vote', 2], ['top', '30 / 20 / 10']]
 
-const ROW = { display: 'inline-flex', alignItems: 'center', gap: 6 }
+const ROW = { display: 'inline-flex', alignItems: 'center', gap: 'var(--sp-8)' }
 
 const usePp = () => useTranslation('profile', { keyPrefix: 'pp' })
 
@@ -38,6 +39,9 @@ const usePp = () => useTranslation('profile', { keyPrefix: 'pp' })
 export default function PassportScreen({ account, guestName, guestMode, cityId, cityName, cityCountry, onSettings, onSignUp, onSignIn, onOpen }) {
   const { t, i18n } = usePp()
   const { t: tc } = useTranslation('challenge')
+  const { t: tn } = useTranslation('notifications')
+  const { t: tdm } = useTranslation('dm')
+  const { total: unreadNotifs } = useNotifCounts()
   const [stats, setStats] = useState(null)
   const [today, setToday] = useState(null)
   const [counts, setCounts] = useState({ spots: null, proposals: null, friends: null, week: null, alltime: null })
@@ -89,7 +93,7 @@ export default function PassportScreen({ account, guestName, guestMode, cityId, 
           <div className="pp-guest">
             <p className="pp-guest-title">{t('passport.guestTitle')}</p>
             <p className="dc-muted">{t('passport.guestBody')}</p>
-            <button type="button" className="today-cta dc-full" onClick={onSignUp}>{t('passport.signUp')}</button>
+            <button type="button" className="today-cta dc-full btn-primary" onClick={onSignUp}>{t('passport.signUp')}</button>
             <button type="button" className="dc-link pp-center" onClick={onSignIn}>{t('passport.signIn')}</button>
           </div>
         </div>
@@ -134,36 +138,17 @@ export default function PassportScreen({ account, guestName, guestMode, cityId, 
 
         <div className="pp-cards">
           <div className="pp-card">
-            <span className="pp-card-title" style={ROW}><Icon name="flame-outline" size={18} />{tc('dc.streak', { count: streak })}</span>
+            <span className="pp-card-disc pp-card-disc--streak"><Icon name="flame" size={20} /></span>
+            <span className="pp-card-title">{tc('dc.streak', { count: streak })}</span>
             <span className="dc-muted">{t('passport.best', { count: stats?.bestStreak ?? 0 })}</span>
           </div>
-          <button type="button" className="pp-card pp-card--tap" onClick={() => onOpen('week')}>
-            <span className="pp-card-title" style={ROW}><Icon name="trophy-outline" size={18} />{counts.week ? t('passport.weekRank', { rank: counts.week }) : t('passport.weekNone')}</span>
+          <button type="button" className="pp-card pp-card--tap tappable" onClick={() => onOpen('week')}>
+            <span className="pp-card-disc pp-card-disc--rank"><Icon name="trophy-outline" size={20} /></span>
+            <span className="pp-card-title">{counts.week ? t('passport.weekRank', { rank: counts.week }) : t('passport.weekNone')}</span>
             <span className="dc-muted pp-ellipsis">{city ? t('passport.mostLocalIn', { city }) : t('passport.mostLocalWorld')}</span>
           </button>
         </div>
-        {/* Your rivals (V6): the cities I played the same challenges as, most duels first; a click opens the face-off. */}
-        {stats && (
-          <div className="pp-compared-block" data-testid="passport-rivals">
-            <span className="pp-rivals-title">⚔️ {t('passport.rivals')}</span>
-            {(stats.comparedCities?.length ?? 0) > 0 ? (
-              <div className="pp-flags">
-                {stats.comparedCities.map(c => (
-                  <button key={c.id} type="button" className="pp-flag-chip"
-                          aria-label={`${shortCityName(c.name ?? '')}, ${t('passport.duels', { count: c.duels ?? 1 })}`}
-                          onClick={() => onOpen('rivals', { city: c.id, user: account.id })}>
-                    <FlagSticker country={c.country} size={22} />
-                    <span className="pp-flag-name">{shortCityName(c.name ?? '')}</span>
-                    {!!c.duels && <span className="pp-duels">{t('passport.duels', { count: c.duels })}</span>}
-                  </button>
-                ))}
-              </div>
-            ) : (
-              <span className="dc-muted pp-compared">{t('passport.rivalsEmpty')}</span>
-            )}
-          </div>
-        )}
-
+        {/* Your rivals moved to World › Cities (UX audit: one place to compare cities). */}
         {progress.length > 0 && (
           <div className="pp-pages-wrap">
             {/* One page per city, snapping page by page. */}
@@ -186,19 +171,25 @@ export default function PassportScreen({ account, guestName, guestMode, cityId, 
         {(stats?.pioneerOf?.length ?? 0) > 0 && <PioneerBadges pioneers={stats.pioneerOf} />}
         {(stats?.specialStamps?.length ?? 0) > 0 && <SpecialStamps stamps={stats.specialStamps} />}
 
+        {/* The inbox (UX audit option B): notifications and private messages live here, Hi being no longer a tab. */}
         <div className="pp-rows">
-          <Row label={t('passport.myPhotos')} value={stats?.photos !== undefined ? String(stats.photos) : ''} onClick={() => onOpen('photos')} />
-          <Row label={t('passport.mySpots')} value={counts.spots !== null ? String(counts.spots) : ''} onClick={() => onOpen('spots')} />
-          <Row label={t('passport.myProposals')} value={counts.proposals ? t('passport.inReview', { count: counts.proposals }) : ''} onClick={() => onOpen('proposals')} />
-          <Row icon="add-circle-outline" label={tc('dc.propose.cta')} onClick={() => onOpen('propose', { source: 'passport' })} />
-          <Row label={t('passport.friends')} value={counts.friends !== null ? String(counts.friends) : ''} onClick={() => onOpen('friends')} />
-          <Row label={t('passport.mostLocalAllTime')}
-               leading={counts.alltime && counts.alltime <= 3 ? <RankMedal rank={counts.alltime} size={26} /> : null}
+          <Row icon="notifications-outline" tone="get_around" label={tn('title')} value={unreadNotifs > 0 ? String(unreadNotifs) : ''} onClick={() => onOpen('notifications')} />
+          <Row icon="chatbubbles-outline" tone="hidden_gem" label={tdm('title')} onClick={() => onOpen('messages')} />
+        </div>
+
+        <div className="pp-rows">
+          <Row icon="camera-outline" tone="taste" label={t('passport.myPhotos')} value={stats?.photos !== undefined ? String(stats.photos) : ''} onClick={() => onOpen('photos')} />
+          <Row icon="location-outline" tone="local_find" label={t('passport.mySpots')} value={counts.spots !== null ? String(counts.spots) : ''} onClick={() => onOpen('spots')} />
+          <Row icon="bulb-outline" tone="sip" label={t('passport.myProposals')} value={counts.proposals ? t('passport.inReview', { count: counts.proposals }) : ''} onClick={() => onOpen('proposals')} />
+          <Row icon="add-circle-outline" tone="cta" label={tc('dc.propose.cta')} onClick={() => onOpen('propose', { source: 'passport' })} />
+          <Row icon="people-outline" tone="night_out" label={t('passport.friends')} value={counts.friends !== null ? String(counts.friends) : ''} onClick={() => onOpen('friends')} />
+          <Row label={t('passport.mostLocalAllTime')} icon={counts.alltime && counts.alltime <= 3 ? null : 'trophy-outline'} tone="gold"
+               leading={counts.alltime && counts.alltime <= 3 ? <RankMedal rank={counts.alltime} size={36} /> : null}
                value={counts.alltime ? (city ? t('passport.allTimeRank', { rank: counts.alltime, city }) : `#${counts.alltime}`) : ''}
                onClick={() => onOpen('alltime')} />
         </div>
 
-        <button type="button" className="today-cta dc-full" style={{ gap: 8 }} onClick={share}>
+        <button type="button" className="today-cta dc-full btn-primary" style={{ gap: 'var(--sp-8)' }} onClick={share}>
           <Icon name="share-social-outline" size={18} />{copied ? i18n.t('shareLink.copied', { ns: 'common' }) : t('passport.share')}
         </button>
         <button type="button" className="dc-link pp-help" style={ROW} onClick={() => setHelp(true)}><Icon name="information-circle-outline" size={16} />{t('passport.howPoints')}</button>
@@ -212,6 +203,7 @@ function Identity({ name, photo, mode, city, country, since = null, stats = null
   const { t } = usePp()
   const local = mode === 'local'
   return (
+    <>
     <div className="pp-identity">
       {/* A seasonal event's live day: the passport photo wears the hat. */}
       <span className="pp-avatar-wrap">
@@ -225,17 +217,19 @@ function Identity({ name, photo, mode, city, country, since = null, stats = null
         {since && <span className="pp-since">{since}</span>}
         <div className="pp-chips">
           {mode && <span className={`pp-chip ${local ? 'pp-chip--local' : 'pp-chip--traveler'}`}>{t(`mode.${local ? 'local' : 'exploring'}.label`)}</span>}
-          {city && <span className="pp-chip pp-chip--city" style={{ ...ROW, gap: 4 }}>{country ? <CityFlag country={country} size={14} /> : <Icon name="location-outline" size={13} />}{city}</span>}
+          {city && <span className="pp-chip pp-chip--city" style={{ ...ROW, gap: 'var(--sp-4)' }}>{country ? <CityFlag country={country} size={14} /> : <Icon name="location-outline" size={13} />}{city}</span>}
         </div>
-        {stats && (
-          <div className="pp-stats">
-            {[['cities', stats.cities], ['photos', stats.photos], ['likes', stats.likes]].map(([k, n]) => n !== null && (
-              <span key={k}><strong>{n}</strong> {t(`passportStats.${k}`, { count: n })}</span>
-            ))}
-          </div>
-        )}
       </div>
     </div>
+    {/* Cities, photos, likes: the passport's numbers, large (design pass), under the identity. */}
+    {stats && (
+      <div className="pp-stats">
+        {[['cities', stats.cities], ['photos', stats.photos], ['likes', stats.likes]].map(([k, n]) => (
+          <span key={k} className="pp-stat"><strong>{n ?? '–'}</strong><span>{t(`passportStats.${k}`, { count: n ?? 0 })}</span></span>
+        ))}
+      </div>
+    )}
+    </>
   )
 }
 
@@ -345,10 +339,17 @@ function PioneerBadges({ pioneers }) {
   )
 }
 
-function Row({ label, value = '', icon = null, leading = null, onClick }) {
+/** A menu row; `tone` (a theme key, 'cta' or 'gold') puts the icon in a soft disc of that color (design pass, as in the app). */
+function Row({ label, value = '', icon = null, tone = null, leading = null, onClick }) {
+  const pair = tone && tone !== 'cta' && tone !== 'gold' ? themeColor(tone) : null
+  const disc = pair ? { '--c': pair.fill, '--ci-l': pair.light, '--ci-d': pair.dark }
+    : tone === 'cta' ? { '--c': 'var(--cta)', '--ci-l': 'var(--primary-text)', '--ci-d': 'var(--primary-text)' }
+    : tone === 'gold' ? { '--c': 'var(--medal-gold)', '--ci-l': 'var(--gold)', '--ci-d': 'var(--gold)' } : null
   return (
-    <button type="button" className="pp-row" onClick={onClick}>
-      {icon && <Icon name={icon} size={20} style={{ color: 'var(--primary-text)' }} />}
+    <button type="button" className="pp-row tappable" onClick={onClick}>
+      {icon && (disc
+        ? <span className="pp-row-disc" style={disc}><Icon name={icon} size={20} /></span>
+        : <Icon name={icon} size={20} style={{ color: 'var(--primary-text)' }} />)}
       {leading}
       <span className="pp-row-label">{label}</span>
       <span className="pp-row-value">{value}</span>
@@ -373,7 +374,7 @@ function PointsSheet({ onClose }) {
           ))}
         </div>
         <p className="dc-muted">{t('points.weekly')}</p>
-        <button type="button" className="today-cta dc-full" onClick={onClose}>{t('passport.gotIt')}</button>
+        <button type="button" className="today-cta dc-full btn-primary" onClick={onClose}>{t('passport.gotIt')}</button>
       </div>
     </div>
   )

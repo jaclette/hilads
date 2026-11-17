@@ -4,19 +4,11 @@
   "nextIn": "距離下一個 Daily Challenge 還有 {{time}}",
   "nothingLive": "下一個 Daily Challenge 馬上就來",
   "cta": "接受挑戰",
-  "ctaIn": "我來挑戰",
-  "ctaTaken": "已參加 · 看我的照片",
-  "seeProofs": "看看今天的照片",
-  "localTwist": "Local Twist",
   "twistIn": "{{city}} Local Twist",
   "twistBy": "來自 {{name}}",
   "count_other": "今天已有 {{count}} 人參加",
-  "countCity": "{{city}} {{count}} 人",
-  "countZero": "還沒有人參加，來當第一個吧",
   "beFirst": "當今天的第一個",
   "beFirstSub": "還沒有照片。來當第一個吧，全世界都在等。",
-  "firstYours": "你的照片送出了",
-  "firstYoursSub": "審核通過後會和大家的照片一起顯示在這裡。",
   "yourProof": "你的照片",
   "status": {
     "pending": "待審核",
@@ -40,14 +32,12 @@
   "priceFrom_other": "根據 {{count}} 張照片",
   "places_other": "已標記 {{count}} 個地點",
   "unnamedPlace": "已標記地點",
-  "tabWorld": "世界",
   "local": "在地人",
   "traveler": "旅人",
   "validatedByLocal": "在地人認證",
   "loadFailed": "Daily Challenge 載入失敗。",
   "retry": "重試",
   "notFound": "這個 Daily Challenge 不存在。",
-  "cityRowEmpty": "來當第一個在{{city}}建立挑戰的人",
   "proof": {
     "titleNew": "你的照片",
     "titleEdit": "編輯你的照片",
@@ -116,8 +106,6 @@
     "invalid_back_home": "「你家鄉呢？」需要一個城市，再加上回答、價格或一句話。"
   },
   "push": {
-    "bannerTitle": "每天早上收到 Daily Challenge",
-    "bannerCta": "開啟",
     "askTitle": "Daily Challenge",
     "askBody": "每天早上，在你方便的時間收到 Daily Challenge。",
     "askBodyBlocked": "Hilads 的通知已關閉。到設定裡打開，每天早上收到 Daily Challenge。",
@@ -283,9 +271,9 @@
       "count_other": "{{city}} 有 {{count}} 個地點",
       "countHere_other": "這裡有 {{count}} 個地點",
       "peekNearest": "最近的 {{distance}}",
-      "peekSwipe": "向上滑 👆",
+      "peekSwipe": "向上滑",
       "peekEmpty": "這裡還沒有地點，來當第一個 📍",
-      "peekTitle_other": "📍 {{num}} 個地點等你探索"
+      "peekTitle_other": "{{num}} 個地點等你探索"
     }
   },
   "leaderboard": {
@@ -324,23 +312,15 @@
     "prev": "上個月",
     "next": "下個月"
   },
-  "guide": {
-    "title": "城市指南",
-    "all": "全部",
-    "emptyCity": "{{city}}還沒有{{theme}}挑戰。下一次在{{day}}。",
-    "emptyWorld": "還沒有{{theme}}挑戰。下一次在{{day}}。"
-  },
   "localPass": {
     "name": "Local Pass",
     "progress": "{{done}}/{{total}} 個主題",
     "earned": "已獲得",
-    "hint": "在{{city}}完成全部 7 個主題，就能拿到這座城市的 Local Pass。",
     "profileTitle": "Local Pass",
     "badgeA11y": "Local Pass 持有者"
   },
   "propose": {
     "cta": "提議一個挑戰",
-    "short": "提議",
     "title": "提議一個挑戰",
     "textLabel": "你的挑戰（用英文寫）",
     "textPlaceholder": "Find a…",
@@ -388,12 +368,7 @@
       "invalid_twist": "Local Twist 請在 280 個字元以內。",
       "twist_not_allowed": "只有已上線城市的在地人才能加 Local Twist。",
       "moderation_blocked": "你的提議被系統擋下了，換個說法吧。"
-    },
-    "linkAsk": "有挑戰的點子嗎？",
-    "linkCta": "提出來",
-    "cardBody": "你的點子可能成為明天全世界的挑戰 🌍",
-    "cardHide": "隱藏一週",
-    "cardPlayed_other": "你的點子「{{text}}」已在 {{count}} 座城市被玩過 🎉"
+    }
   },
   "early": {
     "badge": "早鳥",
@@ -496,7 +471,6 @@
   },
   "takeIt": "參加",
   "proofHint": {
-    "title": "拍下你的照片",
     "place": "票數最高的照片會成為這個地點的代表照。",
     "noPlace": "票數最高的照片會登上頒獎台。"
   },
@@ -637,23 +611,6 @@
     "clear": "移除我的家鄉",
     "hereIn": "這裡：{{city}}"
   },
-  "tour": {
-    "title": "*昨天*的環球之旅",
-    "watch": "觀看",
-    "openCity": "打開{{city}}",
-    "next": "下一個",
-    "kicker": "Daily Challenge · {{theme}}",
-    "moment": {
-      "morning": "早上",
-      "afternoon": "下午",
-      "evening": "傍晚",
-      "night": "夜裡"
-    },
-    "yourTurn": "換你了。",
-    "todayIs": "今日問題：{{question}}",
-    "close": "關閉",
-    "sub_other": "{{count}} 座城市，同一個挑戰"
-  },
   "worlds": {
     "tagline": "同一個挑戰，不同的世界。"
   },
@@ -696,16 +653,11 @@
     "endTitle": "目前就這些囉！",
     "endBody": "新照片整天都會出現，晚點再回來看。",
     "endPlay": "換你了：讓世界看看你的城市。",
-    "backToday": "返回今天",
-    "seeAll": "查看所有照片"
+    "backToday": "返回今天"
   },
   "countries": {
-    "played_other": "今天已有 {{count}} 個國家參加",
-    "yourCity": "你的城市",
     "represent": "為你的城市出戰",
     "emptyBody": "今天還沒有人參加。搶先讓你的城市登上地圖！",
-    "openCountry": "{{city}}：查看照片",
-    "byCity": "依城市",
     "topPhoto": "最佳照片"
   },
   "recap": {
@@ -751,8 +703,6 @@
     "ctaNoCity": "拍一張",
     "played": "你已出戰 · 看看世界",
     "firstCity": "當今天全球第一座城市",
-    "citiesIn_other": "{{count}} 座城市已參加",
-    "citiesMissing_other": "{{count}} 座城市已參加，{{city}}還沒有！",
     "steps": {
       "snap": "拍一張",
       "name": "說出名稱",
@@ -774,7 +724,6 @@
     "players_other": "{{count}} 位玩家",
     "missing": "還缺{{city}}！",
     "yesterday": "昨天，全世界這樣說…",
-    "beFirst": "為{{city}}出戰",
     "beFirstSub": "當今天第一座城市",
     "swipeHint": "滑動去旅行 🌍",
     "slotCta": "📸 {{city}}？今天第一個出戰"
@@ -846,9 +795,9 @@
   },
   "ranks": {
     "seg": {
-      "photos": "📸 照片",
-      "players": "🙋 玩家",
-      "cities": "🌍 城市"
+      "photos": "照片",
+      "players": "玩家",
+      "cities": "城市"
     },
     "period": {
       "today": "今天",
@@ -860,7 +809,7 @@
       "city": "我的城市",
       "world": "全球"
     },
-    "timeLeftMin": "⏳ 投票剩不到一小時",
+    "timeLeftMin": "投票剩不到一小時",
     "bestPerCity": "每座城市的最佳照片",
     "new": "新",
     "you": {
@@ -900,7 +849,7 @@
       "generic": "🏆 昨天的結果出來了",
       "see": "查看結果 →"
     },
-    "timeLeft_other": "⏳ 還剩 {{count}} 小時投票",
+    "timeLeft_other": "還剩 {{count}} 小時投票",
     "pts_other": "{{count}} 分",
     "ghost": {
       "photo": "你的照片放這裡？📸",

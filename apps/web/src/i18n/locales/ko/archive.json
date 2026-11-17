@@ -6,27 +6,12 @@
     "pulses": "모임",
     "challenges": "챌린지"
   },
-  "range": {
-    "recent": "최근",
-    "last7": "최근 7일",
-    "last14": "최근 14일",
-    "custom": "직접 설정"
-  },
-  "picker": {
-    "pickEnd": "이제 마지막 날을 골라 주세요",
-    "pickStart": "시작일을 골라 주세요 (최대 {{max}}일)",
-    "apply": "적용"
-  },
   "public": "공개",
   "went_other": "{{count}}명 참석",
-  "hangoutTag": "모임",
   "replies_other": "답글 {{count}}개",
-  "noReplies": "답글 없음",
   "error": "아카이브를 불러오지 못했어요",
   "retry": "다시 시도",
   "emptyTitle": "아직 아무것도 없어요",
-  "emptyRecentSub": "지난 이벤트와 모임은 도시에 기록이 쌓이면 여기에 나와요.",
-  "emptyWindowSub": "이 기간에는 이벤트나 모임이 없어요. 기간을 더 넓혀 보세요.",
   "loadMore": "더 보기",
   "loading": "불러오는 중…"
 }

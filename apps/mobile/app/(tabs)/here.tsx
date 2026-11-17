@@ -21,7 +21,7 @@ import { filterBlocked } from '@/lib/blockFilter';
 import type { OnlineUser } from '@/types';
 import { canAccessProfile } from '@/lib/profileAccess';
 import { BADGE_META } from '@/types';
-import { Border, FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
+import { Space, Border, FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { Avatar, Button, Chip, EmptyState, IconButton, ModeLabel, Screen, ScreenHeader } from '@/ui';
 
@@ -62,10 +62,10 @@ function Mode({ mode }: { mode?: string | null }) {
 }
 
 const makePillStyles = (c: ThemeColors) => StyleSheet.create({
-  pill:     { alignSelf: 'flex-start', height: 22, justifyContent: 'center', borderRadius: Radius.full, paddingHorizontal: 8, backgroundColor: c.bg3 },
+  pill:     { alignSelf: 'flex-start', height: 22, justifyContent: 'center', borderRadius: Radius.full, paddingHorizontal: Space.sm, backgroundColor: c.bg3 },
   pillTint: { backgroundColor: c.primaryTint },
   pillGold: { backgroundColor: c.bg3 },
-  text:     { fontSize: 11, fontWeight: '700', color: c.muted },
+  text:     { fontSize: FontSizes.xs, fontWeight: '700', color: c.muted },
   textTint: { color: c.primaryOnTint },
   textGold: { color: c.gold },
 });
@@ -404,28 +404,28 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   headerSub:        { maxWidth: 160, fontSize: FontSizes.xs, fontWeight: '600', color: c.muted },
   empty:            { flex: 1, justifyContent: 'center', padding: Spacing.lg },
   filtersWrap:      { flexGrow: 0 },
-  filterRow:        { alignItems: 'center', gap: 8, paddingHorizontal: Spacing.md, paddingVertical: 8 },
-  filterGroupLabel: { fontSize: 12, fontWeight: '700', color: c.muted },
-  filterDivider:    { width: 1, height: 22, backgroundColor: c.line, marginHorizontal: 4 },
+  filterRow:        { alignItems: 'center', gap: Space.sm, paddingHorizontal: Spacing.md, paddingVertical: Space.sm },
+  filterGroupLabel: { fontSize: FontSizes.xs, fontWeight: '700', color: c.muted },
+  filterDivider:    { width: 1, height: 22, backgroundColor: c.line, marginHorizontal: Space.xs },
   scrollContent:    { paddingHorizontal: Spacing.md, paddingBottom: Spacing.xl },
-  sectionHeader:    { flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: Spacing.md, marginBottom: 8 },
-  sectionHeaderCol: { gap: 2, marginTop: Spacing.md, marginBottom: 8 },
-  sectionTitleRow:  { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  sectionHeader:    { flexDirection: 'row', alignItems: 'center', gap: Space.sm, marginTop: Spacing.md, marginBottom: Space.sm },
+  sectionHeaderCol: { gap: Space.xxs, marginTop: Spacing.md, marginBottom: Space.sm },
+  sectionTitleRow:  { flexDirection: 'row', alignItems: 'center', gap: Space.sm },
   sectionTitle:     { fontSize: FontSizes.md, fontWeight: '800', color: c.text },
   sectionSub:       { fontSize: FontSizes.xs, fontWeight: '400', color: c.muted },
   liveDotSection:   { width: 8, height: 8, borderRadius: Radius.full, backgroundColor: c.green },
-  group:            { borderRadius: Radius.card, borderWidth: Border, borderColor: c.line, backgroundColor: c.bg2, paddingHorizontal: 14 },
+  group:            { borderRadius: Radius.card, borderWidth: Border, borderColor: c.line, backgroundColor: c.bg2, paddingHorizontal: Space.lg },
   groupGold:        { borderColor: c.gold },
   divider:          { borderTopWidth: 1, borderTopColor: c.line },
-  row:              { flexDirection: 'row', alignItems: 'center', gap: 12, minHeight: 64, paddingVertical: 10 },
+  row:              { flexDirection: 'row', alignItems: 'center', gap: Space.md, minHeight: 64, paddingVertical: Space.md },
   liveDot:          { position: 'absolute', right: 0, bottom: 0, width: 12, height: 12, borderRadius: Radius.full, backgroundColor: c.green,
                       borderWidth: 2, borderColor: c.bg2 },
-  rowInfo:          { flex: 1, minWidth: 0, gap: 4 },
-  nickname:         { fontSize: 15, fontWeight: '700', color: c.text },
+  rowInfo:          { flex: 1, minWidth: 0, gap: Space.xs },
+  nickname:         { fontSize: FontSizes.body, fontWeight: '700', color: c.text },
   youLabel:         { fontSize: FontSizes.xs, fontWeight: '600', color: c.muted },
-  badgeRow:         { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: 4 },
-  pickRow:          { flexDirection: 'row', alignItems: 'center', gap: 4 },
-  legendPickPreview:{ flex: 1, fontSize: 12, fontWeight: '400', color: c.muted },
-  loader:           { marginTop: 12 },
+  badgeRow:         { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: Space.xs },
+  pickRow:          { flexDirection: 'row', alignItems: 'center', gap: Space.xs },
+  legendPickPreview:{ flex: 1, fontSize: FontSizes.xs, fontWeight: '400', color: c.muted },
+  loader:           { marginTop: Space.md },
   loadMore:         { marginTop: Spacing.md },
 });

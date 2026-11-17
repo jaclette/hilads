@@ -4,19 +4,11 @@
   "nextIn": "Daily Challenge ถัดไปในอีก {{time}}",
   "nothingLive": "Daily Challenge ถัดไปกำลังจะมา",
   "cta": "รับชาเลนจ์",
-  "ctaIn": "เอาด้วย",
-  "ctaTaken": "ทำชาเลนจ์แล้ว · ดูรูปของฉัน",
-  "seeProofs": "ดูรูปวันนี้",
-  "localTwist": "Local Twist",
   "twistIn": "Local Twist ของ {{city}}",
   "twistBy": "โดย {{name}}",
   "count_other": "วันนี้มี {{count}} คนเล่นแล้ว",
-  "countCity": "{{count}} คนใน {{city}}",
-  "countZero": "ยังไม่มีใครเล่น มาเป็นคนแรกเลย",
   "beFirst": "เป็นคนแรกของวันนี้",
   "beFirstSub": "ยังไม่มีรูป มาเป็นคนแรกเลย ทั้งโลกรออยู่",
-  "firstYours": "ส่งรูปของคุณแล้ว",
-  "firstYoursSub": "รูปจะขึ้นตรงนี้พร้อมรูปของคนอื่น เมื่อผ่านการอนุมัติ",
   "yourProof": "รูปของคุณ",
   "status": {
     "pending": "รอตรวจ",
@@ -40,14 +32,12 @@
   "priceFrom_other": "จาก {{count}} รูป",
   "places_other": "ปักหมุดแล้ว {{count}} แห่ง",
   "unnamedPlace": "สถานที่ที่ปักหมุด",
-  "tabWorld": "ทั่วโลก",
   "local": "คนท้องถิ่น",
   "traveler": "นักเดินทาง",
   "validatedByLocal": "ยืนยันโดยคนท้องถิ่น",
   "loadFailed": "โหลด Daily Challenge ไม่สำเร็จ",
   "retry": "ลองอีกครั้ง",
   "notFound": "ไม่มี Daily Challenge นี้",
-  "cityRowEmpty": "มาเป็นคนแรกที่สร้างชาเลนจ์ใน {{city}}",
   "proof": {
     "titleNew": "รูปของคุณ",
     "titleEdit": "แก้ไขรูปของคุณ",
@@ -116,8 +106,6 @@
     "invalid_back_home": "\"แล้วที่บ้านคุณล่ะ\" ต้องมีเมือง กับคำตอบ ราคา หรือข้อความสักประโยค"
   },
   "push": {
-    "bannerTitle": "รับ Daily Challenge ทุกเช้า",
-    "bannerCta": "เปิด",
     "askTitle": "Daily Challenge",
     "askBody": "รับ Daily Challenge ทุกเช้า ในเวลาที่คุณสะดวก",
     "askBodyBlocked": "การแจ้งเตือนของ Hilads ปิดอยู่ เปิดในการตั้งค่าเพื่อรับ Daily Challenge ทุกเช้า",
@@ -283,9 +271,9 @@
       "count_other": "{{count}} ที่ใน{{city}}",
       "countHere_other": "{{count}} ที่แถวนี้",
       "peekNearest": "ใกล้สุด {{distance}}",
-      "peekSwipe": "ปัดขึ้น 👆",
+      "peekSwipe": "ปัดขึ้น",
       "peekEmpty": "ยังไม่มีสปอตตรงนี้ มาเป็นคนแรกกัน 📍",
-      "peekTitle_other": "📍 {{num}} สปอตให้สำรวจ"
+      "peekTitle_other": "{{num}} สปอตให้สำรวจ"
     }
   },
   "leaderboard": {
@@ -324,23 +312,15 @@
     "prev": "เดือนก่อน",
     "next": "เดือนถัดไป"
   },
-  "guide": {
-    "title": "คู่มือเมือง",
-    "all": "ทั้งหมด",
-    "emptyCity": "ยังไม่มีชาเลนจ์ {{theme}} ใน {{city}} รอบหน้า: {{day}}",
-    "emptyWorld": "ยังไม่มีชาเลนจ์ {{theme}} รอบหน้า: {{day}}"
-  },
   "localPass": {
     "name": "Local Pass",
     "progress": "{{done}}/{{total}} ธีม",
     "earned": "ได้รับแล้ว",
-    "hint": "เล่นครบ 7 ธีมใน {{city}} เพื่อรับ Local Pass ของเมืองนี้",
     "profileTitle": "Local Pass",
     "badgeA11y": "มี Local Pass"
   },
   "propose": {
     "cta": "เสนอชาเลนจ์",
-    "short": "เสนอ",
     "title": "เสนอชาเลนจ์",
     "textLabel": "ชาเลนจ์ของคุณ (ภาษาอังกฤษ)",
     "textPlaceholder": "Find a…",
@@ -388,12 +368,7 @@
       "invalid_twist": "Local Twist ไม่เกิน 280 ตัวอักษรนะ",
       "twist_not_allowed": "เฉพาะคนท้องถิ่นของเมืองที่เปิดแล้ว ที่เพิ่ม Local Twist ได้",
       "moderation_blocked": "ข้อเสนอนี้ไม่ผ่านการตรวจ ลองเขียนใหม่นะ"
-    },
-    "linkAsk": "มีไอเดียชาเลนจ์ไหม?",
-    "linkCta": "เสนอเลย",
-    "cardBody": "ไอเดียของคุณอาจกลายเป็นชาเลนจ์ของพรุ่งนี้สำหรับคนทั้งโลก 🌍",
-    "cardHide": "ซ่อนหนึ่งสัปดาห์",
-    "cardPlayed_other": "ไอเดีย “{{text}}” ของคุณถูกเล่นใน {{count}} เมือง 🎉"
+    }
   },
   "early": {
     "badge": "มาเร็ว",
@@ -496,7 +471,6 @@
   },
   "takeIt": "เล่นเลย",
   "proofHint": {
-    "title": "ถ่ายรูปของคุณ",
     "place": "รูปที่ได้โหวตเยอะสุดจะเป็นรูปของสปอต",
     "noPlace": "รูปที่ได้โหวตเยอะสุดจะได้ขึ้นโพเดียม"
   },
@@ -637,23 +611,6 @@
     "clear": "ลบเมืองบ้านเกิด",
     "hereIn": "ที่นี่ {{city}}"
   },
-  "tour": {
-    "title": "ทัวร์รอบโลก*เมื่อวาน*",
-    "watch": "ดู",
-    "openCity": "เปิด {{city}}",
-    "next": "ถัดไป",
-    "kicker": "Daily Challenge · {{theme}}",
-    "moment": {
-      "morning": "ตอนเช้า",
-      "afternoon": "ตอนบ่าย",
-      "evening": "ตอนเย็น",
-      "night": "ตอนกลางคืน"
-    },
-    "yourTurn": "ตาคุณแล้ว",
-    "todayIs": "คำถามวันนี้: {{question}}",
-    "close": "ปิด",
-    "sub_other": "{{count}} เมือง ชาเลนจ์เดียวกัน"
-  },
   "worlds": {
     "tagline": "ชาเลนจ์เดียวกัน โลกที่ต่างกัน"
   },
@@ -696,16 +653,11 @@
     "endTitle": "ดูครบทุกคนแล้ว!",
     "endBody": "มีรูปใหม่เข้ามาทั้งวัน แวะกลับมาดูอีกนะ",
     "endPlay": "ตาคุณแล้ว: อวดเมืองของคุณให้โลกเห็น",
-    "backToday": "กลับไปหน้าวันนี้",
-    "seeAll": "ดูรูปทั้งหมด"
+    "backToday": "กลับไปหน้าวันนี้"
   },
   "countries": {
-    "played_other": "วันนี้มี {{count}} ประเทศเล่นแล้ว",
-    "yourCity": "เมืองของคุณ",
     "represent": "เป็นตัวแทนเมืองของคุณ",
     "emptyBody": "วันนี้ยังไม่มีใครเล่นเลย พาเมืองของคุณขึ้นแผนที่ก่อนใคร!",
-    "openCountry": "{{city}}: ดูรูป",
-    "byCity": "ตามเมือง",
     "topPhoto": "รูปยอดนิยม"
   },
   "recap": {
@@ -751,8 +703,6 @@
     "ctaNoCity": "ถ่ายเลย",
     "played": "เล่นแล้ว · ดูทั่วโลก",
     "firstCity": "มาเป็นเมืองแรกของโลกวันนี้",
-    "citiesIn_other": "{{count}} เมืองเล่นแล้ว",
-    "citiesMissing_other": "{{count}} เมืองเล่นแล้ว {{city}} ยังไม่เล่นเลย!",
     "steps": {
       "snap": "ถ่าย",
       "name": "ตั้งชื่อ",
@@ -774,7 +724,6 @@
     "players_other": "ผู้เล่น {{count}} คน",
     "missing": "ยังขาด {{city}}!",
     "yesterday": "เมื่อวานทั่วโลกว่า…",
-    "beFirst": "เป็นตัวแทนของ {{city}}",
     "beFirstSub": "มาเป็นเมืองแรกวันนี้",
     "swipeHint": "ปัดเพื่อออกเดินทาง 🌍",
     "slotCta": "📸 {{city}} ล่ะ? เล่นเป็นคนแรกวันนี้"
@@ -846,9 +795,9 @@
   },
   "ranks": {
     "seg": {
-      "photos": "📸 รูป",
-      "players": "🙋 ผู้เล่น",
-      "cities": "🌍 เมือง"
+      "photos": "รูป",
+      "players": "ผู้เล่น",
+      "cities": "เมือง"
     },
     "period": {
       "today": "วันนี้",
@@ -860,7 +809,7 @@
       "city": "เมืองของฉัน",
       "world": "ทั่วโลก"
     },
-    "timeLeftMin": "⏳ เหลือเวลาโหวตไม่ถึงชั่วโมง",
+    "timeLeftMin": "เหลือเวลาโหวตไม่ถึงชั่วโมง",
     "bestPerCity": "รูปเด็ดสุดของแต่ละเมือง",
     "new": "ใหม่",
     "you": {
@@ -900,7 +849,7 @@
       "generic": "🏆 ผลของเมื่อวานออกแล้ว",
       "see": "ดูผล →"
     },
-    "timeLeft_other": "⏳ เหลือเวลาโหวตอีก {{count}} ชั่วโมง",
+    "timeLeft_other": "เหลือเวลาโหวตอีก {{count}} ชั่วโมง",
     "pts_other": "{{count}} แต้ม",
     "ghost": {
       "photo": "รูปของคุณตรงนี้? 📸",

@@ -1,6 +1,6 @@
 /**
- * Notification settings (V6, from the ⚙️ of Notifications): push status at the
- * top, then one group per category (same emoji and color as the inbox) with a
+ * Notification settings (V6; from the ⚙️ of Notifications and from Settings): every push
+ * setting in one place. Push status at the top, then one group per category (same emoji and color as the inbox) with a
  * master toggle and its toggles, each with a one-line description, and quiet
  * hours. Every change is saved at once (optimistic), with a little ✓.
  */
@@ -11,8 +11,8 @@ import Animated, { useAnimatedStyle, useSharedValue, withDelay, withSequence, wi
 import { useTranslation } from 'react-i18next';
 import * as Haptics from 'expo-haptics';
 import { fetchNotificationPreferences, updateNotificationPreferences, type NotifCategory, type NotificationPreferences } from '@/api/notifications';
-import { Radius, Spacing, type ThemeColors } from '@/constants';
-import { Screen, ScreenHeader } from '@/ui';
+import { Space, FontSizes, Radius, Spacing, type ThemeColors } from '@/constants';
+import { Button, Screen, ScreenHeader } from '@/ui';
 import { tint } from '@/ui/joy';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { CATEGORY_EMOJI, categoryColor } from '@/features/notifications/categories';
@@ -51,6 +51,14 @@ const GROUPS: { category: NotifCategory; toggles: Toggle[] }[] = [
     { label: 'announce', keys: ['admin_announcement_push'] },
   ] },
 ];
+
+/** Private, plan and city messages (dm:pref.* strings): they lived on the Messages screen. */
+const MESSAGE_TOGGLES: { label: string; key: Key }[] = [
+  { label: 'dm', key: 'dm_push' },
+  { label: 'event', key: 'event_message_push' },
+  { label: 'city', key: 'channel_message_push' },
+];
+const MESSAGE_KEYS = MESSAGE_TOGGLES.map(x => x.key);
 
 const DEFAULT_QUIET = { start: 23 * 60, end: 8 * 60 };
 const hhmm = (m: number) => `${String(Math.floor(m / 60)).padStart(2, '0')}:${String(m % 60).padStart(2, '0')}`;
@@ -98,9 +106,7 @@ export default function NotificationSettingsScreen() {
             {push === false && <Text style={styles.sub}>{t('settings.pushOffSub')}</Text>}
           </View>
           {push === false && (
-            <Pressable onPress={() => Linking.openSettings().catch(() => {})} style={styles.turnOn} accessibilityRole="button">
-              <Text style={styles.turnOnText}>{t('settings.turnOn')}</Text>
-            </Pressable>
+            <Button size="sm" label={t('settings.turnOn')} onPress={() => Linking.openSettings().catch(() => {})} />
           )}
         </View>
 
@@ -126,6 +132,26 @@ export default function NotificationSettingsScreen() {
             </View>
           );
         })}
+
+        {/* Messages (moved here from the Messages screen: every push setting in one place). */}
+        {prefs && (
+          <View style={styles.card} testID="prefs-messages">
+            <View style={styles.groupHead}>
+              <View style={[styles.groupEmoji, { backgroundColor: colors.primaryTint }]}><Text style={styles.emoji}>💬</Text></View>
+              <Text style={styles.groupTitle}>{t('messages', { ns: 'common' })}</Text>
+              <PrefSwitch value={on(MESSAGE_KEYS)} onChange={v => setAll(MESSAGE_KEYS, v)} color={colors.primary} label={t('messages', { ns: 'common' })} />
+            </View>
+            {MESSAGE_TOGGLES.map(x => (
+              <View key={x.label} style={styles.row}>
+                <View style={styles.flex}>
+                  <Text style={styles.label}>{t(`pref.${x.label}Label`, { ns: 'dm' })}</Text>
+                  <Text style={styles.sub}>{t(`pref.${x.label}Sub`, { ns: 'dm' })}</Text>
+                </View>
+                <PrefSwitch value={on([x.key])} onChange={v => setAll([x.key], v)} color={colors.primary} label={t(`pref.${x.label}Label`, { ns: 'dm' })} />
+              </View>
+            ))}
+          </View>
+        )}
 
         {prefs && (
           <View style={styles.card}>
@@ -167,22 +193,20 @@ function PrefSwitch({ value, onChange, color, label }: { value: boolean; onChang
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
   flex:       { flex: 1 },
-  content:    { padding: Spacing.md, paddingBottom: Spacing.xl, gap: 14 },
-  card:       { backgroundColor: c.bg2, borderRadius: Radius.card, borderWidth: 1.5, borderColor: c.line, padding: 14, gap: 4 },
-  pushCard:   { flexDirection: 'row', alignItems: 'center', gap: 12 },
-  pushTitle:  { fontSize: 16, lineHeight: 21, fontWeight: '800', color: c.text },
-  turnOn:     { paddingHorizontal: 16, height: 40, borderRadius: Radius.full, backgroundColor: c.cta, alignItems: 'center', justifyContent: 'center' },
-  turnOnText: { fontSize: 14, fontWeight: '800', color: c.onCta },
-  groupHead:  { flexDirection: 'row', alignItems: 'center', gap: 10, paddingBottom: 6 },
+  content:    { padding: Spacing.md, paddingBottom: Spacing.xl, gap: Space.lg },
+  card:       { backgroundColor: c.bg2, borderRadius: Radius.card, borderWidth: 1.5, borderColor: c.line, padding: 14, gap: Space.xs },
+  pushCard:   { flexDirection: 'row', alignItems: 'center', gap: Space.md },
+  pushTitle:  { fontSize: FontSizes.body, lineHeight: 21, fontWeight: '800', color: c.text },
+  groupHead:  { flexDirection: 'row', alignItems: 'center', gap: Space.md, paddingBottom: Space.sm },
   groupEmoji: { width: 36, height: 36, borderRadius: 18, alignItems: 'center', justifyContent: 'center' },
   emoji:      { fontSize: 18, lineHeight: 23 },
-  groupTitle: { flex: 1, fontSize: 17, lineHeight: 22, fontWeight: '800', color: c.text },
-  row:        { flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 10, borderTopWidth: 1, borderTopColor: c.line },
-  label:      { fontSize: 15, lineHeight: 20, fontWeight: '700', color: c.text },
-  sub:        { fontSize: 13, lineHeight: 18, color: c.muted },
-  quietTimes: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingTop: 8 },
-  timeChip:   { paddingHorizontal: 16, height: 40, borderRadius: Radius.full, backgroundColor: c.primaryTint, alignItems: 'center', justifyContent: 'center' },
-  timeText:   { fontSize: 16, fontWeight: '800', color: c.primaryOnTint },
-  saved:      { paddingHorizontal: 10, height: 30, borderRadius: Radius.full, backgroundColor: c.primaryTint, alignItems: 'center', justifyContent: 'center' },
-  savedText:  { fontSize: 13, fontWeight: '800', color: c.primaryOnTint },
+  groupTitle: { flex: 1, fontSize: FontSizes.md, lineHeight: 22, fontWeight: '800', color: c.text },
+  row:        { flexDirection: 'row', alignItems: 'center', gap: Space.md, paddingVertical: Space.md, borderTopWidth: 1, borderTopColor: c.line },
+  label:      { fontSize: FontSizes.body, lineHeight: 20, fontWeight: '700', color: c.text },
+  sub:        { fontSize: FontSizes.xs, lineHeight: 18, color: c.muted },
+  quietTimes: { flexDirection: 'row', alignItems: 'center', gap: Space.md, paddingTop: Space.sm },
+  timeChip:   { paddingHorizontal: Space.lg, height: 40, borderRadius: Radius.full, backgroundColor: c.primaryTint, alignItems: 'center', justifyContent: 'center' },
+  timeText:   { fontSize: FontSizes.body, fontWeight: '800', color: c.primaryOnTint },
+  saved:      { paddingHorizontal: Space.md, height: 30, borderRadius: Radius.full, backgroundColor: c.primaryTint, alignItems: 'center', justifyContent: 'center' },
+  savedText:  { fontSize: FontSizes.xs, fontWeight: '800', color: c.primaryOnTint },
 });

@@ -7,7 +7,7 @@ import { requestFeatureLocation } from '@/lib/geoFeature';
 import { useApp } from '@/context/AppContext';
 import { createTopic, updateTopic } from '@/api/topics';
 import { ApiError } from '@/api/client';
-import { Border, FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
+import { Space, Border, FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { Button, EmptyState, Screen, ScreenHeader, TextField } from '@/ui';
 import { goBack } from '@/lib/nav';
@@ -159,9 +159,9 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   stretch:     { alignSelf: 'stretch', marginTop: Spacing.sm },
   body:        { flex: 1 },
   bodyContent: { padding: Spacing.md, gap: Spacing.md, paddingBottom: Spacing.xl },
-  footer:      { paddingHorizontal: Spacing.md, paddingTop: 10, paddingBottom: 10, borderTopWidth: 1, borderTopColor: c.line, backgroundColor: c.bg },
+  footer:      { paddingHorizontal: Spacing.md, paddingTop: Space.md, paddingBottom: Space.md, borderTopWidth: 1, borderTopColor: c.line, backgroundColor: c.bg },
   expiryNote:  { fontSize: FontSizes.sm, fontWeight: '500', color: c.muted, textAlign: 'center' },
-  geoHint:     { flexDirection: 'row', alignItems: 'flex-start', gap: 10, paddingVertical: 12, paddingHorizontal: 14,
+  geoHint:     { flexDirection: 'row', alignItems: 'flex-start', gap: Space.md, paddingVertical: Space.md, paddingHorizontal: Space.lg,
                  borderRadius: Radius.card, borderWidth: Border, borderColor: c.line, backgroundColor: c.bg2 },
   geoHintText: { flex: 1, fontSize: FontSizes.sm, fontWeight: '600', color: c.text, lineHeight: 19 },
   errorText:   { fontSize: FontSizes.sm, fontWeight: '600', color: c.red, textAlign: 'center' },

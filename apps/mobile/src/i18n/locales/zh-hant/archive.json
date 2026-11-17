@@ -2,15 +2,7 @@
   "title": "回顧",
   "loadError": "無法載入過去的動態",
   "filterAll": "全部",
-  "rangeRecent": "最近",
-  "range7": "最近 7 天",
-  "range14": "最近 14 天",
   "custom": "自訂",
-  "pickEnd": "接著選結束日",
-  "pickStart": "選開始日（最多 {{max}} 天）",
-  "apply": "套用",
   "emptyTitle": "這裡還沒有東西",
-  "emptyRecentSub": "等城市累積一些紀錄，過去的活動和聚會就會出現在這裡。",
-  "emptyWindowSub": "這段期間沒有活動或聚會，試試拉長範圍。",
   "filterChallenges": "挑戰"
 }

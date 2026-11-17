@@ -26,7 +26,7 @@ import { useTranslation } from 'react-i18next';
 import { LocalPassBadge } from '@/features/daily/LocalPassBadge';
 import i18n from '@/i18n';
 import * as Haptics from 'expo-haptics';
-import { Border, FontSizes, Radius, Spacing, type ThemeColors } from '@/constants';
+import { Space, Border, FontSizes, Radius, Spacing, type ThemeColors } from '@/constants';
 import { Ionicons } from '@expo/vector-icons';
 import { Avatar, Button } from '@/ui';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
@@ -111,17 +111,17 @@ function LocationBubble({ content, isMine }: { content: string; isMine: boolean 
 const makeLocStyles = (c: ThemeColors) => StyleSheet.create({
   // minWidth is required: the row shrinks children to content width, which
   // would collapse the flex body and leave only the pin visible.
-  card:        { flexDirection: 'row', alignItems: 'flex-start', gap: 10, borderRadius: 18, paddingHorizontal: 14, paddingVertical: 12,
+  card:        { flexDirection: 'row', alignItems: 'flex-start', gap: Space.md, borderRadius: 18, paddingHorizontal: Space.lg, paddingVertical: Space.md,
                  minWidth: 200, maxWidth: 260 },
   cardOther:   { backgroundColor: c.bg3, borderTopLeftRadius: 6 },
   cardMine:    { backgroundColor: c.caramel, borderTopRightRadius: 6 },
   icon:        { marginTop: 1, flexShrink: 0 },
-  body:        { flex: 1, flexShrink: 1, minWidth: 0, gap: 3 },
+  body:        { flex: 1, flexShrink: 1, minWidth: 0, gap: Space.xs },
   line1:       { fontSize: FontSizes.sm, fontWeight: '700', color: c.text, lineHeight: 20 },
-  addr:        { fontSize: 12, fontWeight: '400', color: c.muted, lineHeight: 17 },
+  addr:        { fontSize: FontSizes.xs, fontWeight: '400', color: c.muted, lineHeight: 17 },
   textMine:    { color: c.white },
   addrMine:    { color: c.onCaramelMuted },
-  tapHint:     { fontSize: FontSizes.xs, fontWeight: '600', color: c.primaryText, marginTop: 2 },
+  tapHint:     { fontSize: FontSizes.xs, fontWeight: '600', color: c.primaryText, marginTop: Space.xxs },
   tapHintMine: { color: c.onCaramelMuted },
 });
 
@@ -160,6 +160,7 @@ function useEntryAnimation(duration = 200) {
       Animated.timing(opacity,    { toValue: 1, duration, useNativeDriver: true }),
       Animated.timing(translateY, { toValue: 0, duration, useNativeDriver: true }),
     ]).start();
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- entry animation: plays once on mount
   }, []);
 
   return { opacity, translateY };
@@ -316,6 +317,7 @@ function AnimatedEventPill({
         useNativeDriver: true,
       }),
     ]).start();
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- entry animation: plays once on mount (a later index shift must not replay the stagger)
   }, []);
 
   const cancelDismiss = useAutoDismissFade({
@@ -372,8 +374,8 @@ function BadgePill({ badge }: { badge: { key: string; label: string } }) {
 }
 
 const makeBadgeStyles = (c: ThemeColors) => StyleSheet.create({
-  pill: { height: 20, justifyContent: 'center', borderRadius: Radius.full, paddingHorizontal: 7, backgroundColor: c.bg3 },
-  text: { fontSize: 11, fontWeight: '700', color: c.gold },
+  pill: { height: 20, justifyContent: 'center', borderRadius: Radius.full, paddingHorizontal: Space.sm, backgroundColor: c.bg3 },
+  text: { fontSize: FontSizes.xs, fontWeight: '700', color: c.gold },
 });
 
 // PR9 - role badge (Challenger / Taker) on unified challenge channel rows.
@@ -383,11 +385,11 @@ const makeBadgeStyles = (c: ThemeColors) => StyleSheet.create({
 // PR23 - Spectator added: neutral slate palette so the badge reads "just
 // watching" without competing with the brand colors of the two protagonists.
 const makeRoleStyles = (c: ThemeColors) => StyleSheet.create({
-  pill:           { height: 20, justifyContent: 'center', borderRadius: Radius.full, paddingHorizontal: 7 },
+  pill:           { height: 20, justifyContent: 'center', borderRadius: Radius.full, paddingHorizontal: Space.sm },
   pillChallenger: { backgroundColor: c.primaryTint },
   pillTaker:      { backgroundColor: c.localBg },
   pillSpectator:  { backgroundColor: c.bg3 },
-  text:           { fontSize: 11, fontWeight: '700', letterSpacing: 0.4, textTransform: 'uppercase' },
+  text:           { fontSize: FontSizes.xs, fontWeight: '700', letterSpacing: 0.4, textTransform: 'uppercase' },
   textChallenger: { color: c.primaryOnTint },
   textTaker:      { color: c.localText },
   textSpectator:  { color: c.muted },
@@ -560,7 +562,7 @@ function ChatMessageInner({ message, myGuestId, isGrouped = false, index = 0, sh
     if (!isHighlighted) return;
     highlightAnim.setValue(0.28);
     Animated.timing(highlightAnim, { toValue: 0, duration: 1400, useNativeDriver: false }).start();
-  }, [isHighlighted]);
+  }, [isHighlighted, highlightAnim]);
 
   // Image preview state - must be declared here (before early returns) per hooks rules
   const [previewUri, setPreviewUri] = useState<string | null>(null);
@@ -1084,87 +1086,88 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   bubbleWrap: {},
 
   // ── Feed cards: plans, Hi now, challenges, prompts (chat.html card look) ──
-  eventRow:  { alignItems: 'center', marginVertical: 6, paddingHorizontal: Spacing.md },
-  feedCard:  { alignSelf: 'stretch', flexDirection: 'row', alignItems: 'center', gap: 10, minHeight: 56, paddingLeft: 14, paddingRight: 8,
-               paddingVertical: 8, borderRadius: Radius.card, borderWidth: Border, borderColor: c.line, backgroundColor: c.bg2 },
+  eventRow:  { alignItems: 'center', marginVertical: Space.sm, paddingHorizontal: Spacing.md },
+  feedCard:  { alignSelf: 'stretch', flexDirection: 'row', alignItems: 'center', gap: Space.md, minHeight: 56, paddingLeft: Space.lg, paddingRight: Space.sm,
+               paddingVertical: Space.sm, borderRadius: Radius.card, borderWidth: Border, borderColor: c.line, backgroundColor: c.bg2 },
   feedBody:  { flex: 1, minWidth: 0 },
   feedText:  { flex: 1, fontSize: FontSizes.sm, fontWeight: '600', color: c.text, lineHeight: 20 },
   feedArrow: { width: 44, height: 44, borderRadius: Radius.full, backgroundColor: c.primary, alignItems: 'center', justifyContent: 'center' },
 
-  activityRow:  { alignSelf: 'center', marginVertical: 4, paddingHorizontal: 14, paddingVertical: 4 },
-  activityText: { fontSize: 12, fontWeight: '600', color: c.muted, textAlign: 'center' },
+  activityRow:  { alignSelf: 'center', marginVertical: Space.xs, paddingHorizontal: Space.lg, paddingVertical: Space.xs },
+  activityText: { fontSize: FontSizes.xs, fontWeight: '600', color: c.muted, textAlign: 'center' },
 
   // ── System line (chat.html): small, muted, centred ──
-  systemRow:  { alignItems: 'center', marginVertical: 6, paddingHorizontal: Spacing.md, gap: 2 },
-  systemText: { fontSize: 12, fontWeight: '600', color: c.muted, textAlign: 'center' },
-  systemTime: { fontSize: 11, fontWeight: '400', color: c.mutedDim },
+  systemRow:  { alignItems: 'center', marginVertical: Space.sm, paddingHorizontal: Spacing.md, gap: Space.xxs },
+  systemText: { fontSize: FontSizes.xs, fontWeight: '600', color: c.muted, textAlign: 'center' },
+  systemTime: { fontSize: FontSizes.xs, fontWeight: '400', color: c.mutedDim },
 
   row:        { flexDirection: 'column', maxWidth: '78%' },
   rowOther:   { alignSelf: 'flex-start', alignItems: 'flex-start', paddingLeft: Spacing.md },
   rowMine:    { alignSelf: 'flex-end', alignItems: 'flex-end', paddingRight: Spacing.md },
-  rowFirst:   { marginTop: 10 },
-  rowGrouped: { marginTop: 3 },
+  rowFirst:   { marginTop: Space.md },
+  rowGrouped: { marginTop: Space.xs },
   rowSending: { opacity: 0.65 },
 
-  meta:   { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 4 },
-  author: { fontSize: 13, fontWeight: '700', color: c.text },
-  modeLabel:          { fontSize: 11, fontWeight: '700', paddingHorizontal: 7, paddingVertical: 2, borderRadius: 9, overflow: 'hidden' },
+  meta:   { flexDirection: 'row', alignItems: 'center', gap: Space.sm, marginBottom: Space.xs },
+  author: { fontSize: FontSizes.xs, fontWeight: '700', color: c.text },
+  modeLabel:          { fontSize: FontSizes.xs, fontWeight: '700', paddingHorizontal: Space.sm, paddingVertical: Space.xxs, borderRadius: 9, overflow: 'hidden' },
   modeLabelLocal:     { color: c.primaryOnTint, backgroundColor: c.primaryTint },
   modeLabelExploring: { color: c.travelerText, backgroundColor: c.travelerBg },
   modeFlag:           { fontSize: FontSizes.xs },
 
   // ── Bubbles (chat.html): others on the warm grey, mine on caramel ──
-  bubble:         { borderRadius: 18, paddingHorizontal: 14, paddingVertical: 9 },
+  bubble:         { borderRadius: 18, paddingHorizontal: Space.lg, paddingVertical: Space.sm },
   bubbleOther:    { backgroundColor: c.bg3, borderTopLeftRadius: 6 },
   bubbleMine:     { backgroundColor: c.caramel, borderTopRightRadius: 6 },
   bubbleText:     { fontSize: FontSizes.sm, fontWeight: '400', color: c.text, lineHeight: 20 },
   bubbleTextMine: { color: c.white },
   // The primary token like every other button; a white ring keeps it distinct on my own (orange) bubble.
-  sharedLinkCta:  { alignSelf: 'flex-start', marginTop: 8, minHeight: 40, justifyContent: 'center', paddingHorizontal: 14, borderRadius: Radius.full, backgroundColor: c.primary, borderWidth: 1.5, borderColor: 'rgba(255,255,255,0.7)' },
-  sharedLinkCtaText:     { fontSize: FontSizes.xs, fontWeight: '800', color: c.white },
+  // Button size sm's look (two lines allowed, so not the Button itself).
+  sharedLinkCta:  { alignSelf: 'flex-start', marginTop: Space.sm, minHeight: 44, justifyContent: 'center', paddingHorizontal: Space.lg, borderRadius: 14, backgroundColor: c.cta, borderWidth: 1.5, borderColor: 'rgba(255,255,255,0.7)' },
+  sharedLinkCtaText:     { fontSize: FontSizes.sm, fontWeight: '800', color: c.onCta },
   sharedLinkCtaCampaign: { alignSelf: 'stretch', alignItems: 'center' },
-  campaignScopePill:     { alignSelf: 'flex-start', flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 8, marginBottom: 6,
-                           paddingHorizontal: 9, height: 22, borderRadius: Radius.full, backgroundColor: c.gold },
-  campaignScopePillText: { fontSize: 11, fontWeight: '800', color: c.white },
+  campaignScopePill:     { alignSelf: 'flex-start', flexDirection: 'row', alignItems: 'center', gap: Space.xs, marginTop: Space.sm, marginBottom: Space.sm,
+                           paddingHorizontal: Space.sm, height: 22, borderRadius: Radius.full, backgroundColor: c.gold },
+  campaignScopePillText: { fontSize: FontSizes.xs, fontWeight: '800', color: c.white },
   bubbleTombstone: { opacity: 0.7 },
   tombstoneText:   { fontSize: FontSizes.sm, fontWeight: '400', fontStyle: 'italic', color: c.muted, lineHeight: 20 },
-  editedTag:       { fontSize: 11, fontWeight: '400', color: c.muted },
+  editedTag:       { fontSize: FontSizes.xs, fontWeight: '400', color: c.muted },
   editedTagMine:   { color: c.onCaramelMuted },
   mentionText:     { fontWeight: '700', color: c.primaryText },
   mentionMine:     { color: c.white, textDecorationLine: 'underline' },
   mentionGuest:    { color: c.travelerText },
 
-  joinReqRow:  { alignItems: 'center', marginVertical: 6, paddingHorizontal: Spacing.md },
-  joinReqCard: { alignSelf: 'stretch', gap: 10, paddingHorizontal: 14, paddingVertical: 12, borderRadius: Radius.card,
+  joinReqRow:  { alignItems: 'center', marginVertical: Space.sm, paddingHorizontal: Spacing.md },
+  joinReqCard: { alignSelf: 'stretch', gap: Space.md, paddingHorizontal: Space.lg, paddingVertical: Space.md, borderRadius: Radius.card,
                  borderWidth: Border, borderColor: c.line, backgroundColor: c.bg2 },
   joinReqText: { fontSize: FontSizes.sm, fontWeight: '400', color: c.text, textAlign: 'center' },
   joinReqName: { fontWeight: '700' },
-  joinReqBtns: { flexDirection: 'row', gap: 10 },
+  joinReqBtns: { flexDirection: 'row', gap: Space.md },
   joinReqBtn:  { flex: 1 },
   joinReqResolved:      { fontSize: FontSizes.xs, fontWeight: '600', color: c.localText, textAlign: 'center' },
   joinReqResolvedMuted: { fontSize: FontSizes.xs, fontWeight: '400', color: c.muted, textAlign: 'center' },
 
   bubbleFailed: { borderWidth: Border, borderColor: c.red },
-  failedLabel:  { fontSize: FontSizes.xs, fontWeight: '600', color: c.red, marginTop: 4, marginLeft: 4 },
+  failedLabel:  { fontSize: FontSizes.xs, fontWeight: '600', color: c.red, marginTop: Space.xs, marginLeft: Space.xs },
 
-  dateSepRow:  { flexDirection: 'row', alignItems: 'center', marginVertical: 16, paddingHorizontal: Spacing.md, gap: 10 },
+  dateSepRow:  { flexDirection: 'row', alignItems: 'center', marginVertical: Space.lg, paddingHorizontal: Spacing.md, gap: Space.md },
   dateSepLine: { flex: 1, height: 1, backgroundColor: c.line },
-  dateSepText: { fontSize: 12, fontWeight: '700', color: c.muted },
+  dateSepText: { fontSize: FontSizes.xs, fontWeight: '700', color: c.muted },
 
-  timestamp:      { fontSize: 11, fontWeight: '400', marginTop: 3, color: c.mutedDim },
-  timestampMine:  { textAlign: 'right', paddingRight: 2 },
-  timestampOther: { textAlign: 'left', paddingLeft: 2 },
+  timestamp:      { fontSize: FontSizes.xs, fontWeight: '400', marginTop: Space.xs, color: c.mutedDim },
+  timestampMine:  { textAlign: 'right', paddingRight: Space.xxs },
+  timestampOther: { textAlign: 'left', paddingLeft: Space.xxs },
 
   // Quote of the replied message: a left rule inside the bubble.
-  replyQuote:         { marginBottom: 6, paddingLeft: 8, paddingVertical: 2, borderLeftWidth: 3 },
+  replyQuote:         { marginBottom: Space.sm, paddingLeft: Space.sm, paddingVertical: Space.xxs, borderLeftWidth: 3 },
   replyQuoteOther:    { borderLeftColor: c.primary },
   replyQuoteMine:     { borderLeftColor: c.onCaramelMuted },
-  replyQuoteName:     { fontSize: 12, fontWeight: '700', color: c.primaryText, lineHeight: 16 },
+  replyQuoteName:     { fontSize: FontSizes.xs, fontWeight: '700', color: c.primaryText, lineHeight: 16 },
   replyQuoteNameMine: { color: c.white },
-  replyQuoteText:     { fontSize: 12, fontWeight: '400', color: c.muted, lineHeight: 16 },
+  replyQuoteText:     { fontSize: FontSizes.xs, fontWeight: '400', color: c.muted, lineHeight: 16 },
   replyQuoteTextMine: { color: c.onCaramelMuted },
 
-  image:      { width: 260, height: 220, marginTop: 2 },
+  image:      { width: 260, height: 220, marginTop: Space.xxs },
   imageOther: { borderRadius: 18, borderTopLeftRadius: 6 },
   imageMine:  { borderRadius: 18, borderTopRightRadius: 6 },
 });

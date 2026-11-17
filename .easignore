@@ -1,0 +1,29 @@
+# EAS Build reads .easignore at the repository root (not apps/mobile/.easignore), and with it
+# no longer reads .gitignore. Only the app goes in the build's archive: without this file EAS
+# copied the whole repo (screenshots, Claude worktrees, docs, ~4.3 GB) and a local build ran
+# out of disk ("ENOSPC: no space left on device" while compressing).
+
+# Everything at the root but the app (and the root package.json)
+/*
+!/package.json
+!/apps
+/apps/*
+!/apps/mobile
+
+# Inside the app: what apps/mobile/.easignore and the .gitignore files exclude
+/apps/mobile/ios
+/apps/mobile/android
+node_modules/
+.expo/
+.expo-shared/
+.DS_Store
+*.log
+/apps/mobile/expo-env.d.ts
+/apps/mobile/.env.local
+/apps/mobile/.env*.local
+/apps/mobile/credentials.json
+/apps/mobile/credentials/
+# Local build outputs
+/apps/mobile/build-*.aab
+/apps/mobile/build-*.apk
+/apps/mobile/build-*.ipa

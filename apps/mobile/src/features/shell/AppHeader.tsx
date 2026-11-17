@@ -8,13 +8,13 @@
  */
 
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { useApp } from '@/context/AppContext';
-import { Radius, type ThemeColors } from '@/constants';
+import { Space, type ThemeColors } from '@/constants';
 import { useThemedStyles } from '@/context/ThemeContext';
-import { BrandMark, IconButton } from '@/ui';
+import { BrandMark, Button, IconButton } from '@/ui';
 import { ScopeSelector } from './ScopeSelector';
 import { LogoHat } from '@/features/event/SeasonalArt';
 import { BellButton } from '@/features/notifications/BellButton';
@@ -49,14 +49,7 @@ export function AppHeader({ rightExtra, messages = false }: Props) {
       {account ? (
         <BellButton onPress={() => router.push('/notifications' as never)} />
       ) : (
-        <TouchableOpacity
-          style={styles.signUp}
-          onPress={() => router.push('/sign-up?action=header' as never)}
-          testID="header-signup"
-          accessibilityRole="button"
-        >
-          <Text style={styles.signUpText} numberOfLines={1}>{t('signUp')}</Text>
-        </TouchableOpacity>
+        <Button size="sm" label={t('signUp')} onPress={() => router.push('/sign-up?action=header' as never)} testID="header-signup" />
       )}
     </View>
   );
@@ -64,8 +57,6 @@ export function AppHeader({ rightExtra, messages = false }: Props) {
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
   // No horizontal padding: each tab's header container sets it.
-  bar:            { flexDirection: 'row', alignItems: 'center', gap: 10, paddingTop: 10, paddingBottom: 6 },
+  bar:            { flexDirection: 'row', alignItems: 'center', gap: Space.md, paddingTop: Space.md, paddingBottom: Space.sm },
   logo:           { overflow: 'visible' },
-  signUp:         { height: 44, paddingHorizontal: 16, borderRadius: Radius.full, backgroundColor: c.cta, alignItems: 'center', justifyContent: 'center' },
-  signUpText:     { color: c.onCta, fontSize: 14, fontWeight: '800' },
 });

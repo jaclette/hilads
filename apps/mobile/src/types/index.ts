@@ -169,7 +169,7 @@ export interface ChallengeThreadSummary {
 /** Backend error code shape on accept-failure 403s. */
 // `cap_reached` retired with the 1:1 model - still listed for back-compat
 // in case an older API build returns it. `in_progress` is the new code.
-export type AcceptFailureCode = 'not_creator' | 'mode_required' | 'mode_mismatch' | 'cap_reached' | 'in_progress' | 'completed';
+export type AcceptFailureCode = 'not_creator' | 'mode_required' | 'mode_mismatch' | 'cap_reached' | 'in_progress' | 'completed' | 'closed_to_new_joins' | 'legacy_retired';
 
 /** Leaderboard scope/period selectors mirrored from GET /api/v1/leaderboard.
  *  'cities' ranks cities themselves (sum of their members' points), not users. */
@@ -214,28 +214,6 @@ export interface LeaderboardResponse {
     rank:    number | null;
     points:  number;
   };
-}
-
-/** A single rate-eligible meet-up the caller has not rated yet - surfaced by
- *  GET /me/rate-prompts. The in-app banner on the threads screen reads off
- *  these; the rating sheet posts back to POST /challenges/:id/ratings. */
-export interface RatePrompt {
-  acceptance_id:   string;
-  challenge_id:    string;
-  challenge_title: string;
-  /** Caller's role for this prompt - matches the trigger's role mapping. */
-  role:            'challenger' | 'taker';
-  counterparty: {
-    id:             string;
-    displayName:    string;
-    thumbAvatarUrl: string | null;
-  };
-  /** Epoch seconds when the meet-up ended (or started, if no end set). May
-   *  be null for legacy 'approved' rows where no proposal was recorded. */
-  meetup_ended_at: number | null;
-  /** True iff the OTHER party has already rated. Lets the banner warm the
-   *  copy ("they're waiting on you") vs. a neutral nudge. */
-  other_rated:    boolean;
 }
 
 export interface Challenge {
@@ -351,11 +329,6 @@ export interface Challenge {
   /** Distinct people who actually submitted a photo (group photo-proof). */
   submission_count?:     number;
 }
-
-/** Item in the /now mixed feed - either an event or a topic. */
-export type NowItem =
-  | (HiladsEvent & { kind: 'event' })
-  | (Topic       & { kind: 'topic' });
 
 // ── Normalized /now feed DTO ──────────────────────────────────────────────────
 // This is the canonical shape returned by GET /channels/{id}/now after
@@ -672,9 +645,6 @@ export interface User {
   badges?: BadgeKey[];
 }
 
-/** Friends list items - canonical UserDTO shape. */
-export type FriendUser = UserDTO;
-
 // ── Conversations (DMs) ───────────────────────────────────────────────────────
 
 export interface Conversation {
@@ -724,51 +694,6 @@ export interface FriendRequest {
   other_display_name?: string;
   other_photo_url?:    string | null;
   other_vibe?:         string | null;
-}
-
-// ── Notifications ─────────────────────────────────────────────────────────────
-
-export interface Notification {
-  id: number;
-  type:
-    | 'dm_message' | 'event_message' | 'event_join' | 'new_event'
-    | 'channel_message' | 'city_join'
-    | 'friend_request_received' | 'friend_request_accepted' | 'friend_added' // friend_added kept for legacy rows
-    | 'vibe_received' | 'profile_view' | 'daily_twist_picked'
-    | 'daily_vote' | 'daily_twist_completed'
-    | 'photo_comment' | 'photo_mention';   // comments on Daily photos
-  title: string;
-  body: string;
-  data: {
-    conversationId?: string;
-    eventId?: string;
-    channelId?: string;
-    senderName?: string;
-    senderUserId?: string;
-    accepterUserId?: string;
-    accepterName?: string;
-    requestId?: string;
-    actorId?: string;
-    actorName?: string;
-    vibeId?: number;
-    viewerId?: string;
-    viewerName?: string;
-    proofId?: string;   // daily_vote, daily_twist_completed, photo_comment, photo_mention
-    date?: string;
-    commentId?: number; // photo_comment, photo_mention: open the comments on it
-    actorPhoto?: string | null;
-    photoThumb?: string | null;
-  };
-  is_read: boolean;
-  created_at: string;
-}
-
-// ── WebSocket messages ────────────────────────────────────────────────────────
-
-export interface WsMessage {
-  type: string;
-  channelId?: string;
-  [key: string]: unknown;
 }
 
 // ── Daily Challenge (docs/daily-challenge/API.md) ─────────────────────────────
@@ -1214,16 +1139,6 @@ export interface DailyCountryGroup {
   top:      DailyProof;                    // most voted, newest on a tie
 }
 
-/** GET /daily/podium: Today's "Yesterday's podium" (SPEC 9.3). */
-export interface DailyPodium {
-  date:      string;                       // yesterday
-  scope:     'world' | 'city';             // 'world' when the city had no proof yesterday
-  city:      { id: number; name: string | null; country?: string | null } | null;
-  total:     number;
-  countries: number;
-  proofs:    (DailyProof & { rank: number })[];   // the top 3, rank 1 first
-}
-
 export interface DailySheet extends DailyToday {
   scope:      'world' | 'city';
   proofs:     DailyProof[];
@@ -1254,30 +1169,6 @@ export interface DailyPlacePin {
   /** "Already done" map only: the challenge it was posted for. */
   date?:          string;
   challengeText?: string;
-}
-
-/** One line of the provisional leaderboard (GET /daily/leaderboard). */
-export interface DailyLeaderboardEntry {
-  rank:      number;          // shared on ties (1, 1, 3)
-  proofId:   string;
-  voteCount: number;
-  isLocal:   boolean;
-  user:      DailyPerson;
-  city:      { id: number; name: string; country?: string | null } | null;
-  thumbUrl:  string | null;
-}
-
-/** Provisional leaderboard of the active challenge (V2-01). */
-export interface DailyLeaderboard {
-  date:          string | null;
-  endsAt:        number | null;
-  provisional:   boolean;
-  approvedCount: number;
-  minProofs:     number;
-  ranked:        boolean;     // false below minProofs approved proofs
-  world:         DailyLeaderboardEntry[];
-  cities:        { city: { id: number; name: string; country?: string | null }; entries: DailyLeaderboardEntry[] }[];
-  me:            { proofId: string; rank: number; cityRank: number | null; voteCount: number } | null;
 }
 
 /** Live vote state of a proof (GET /daily/proofs/state). */
@@ -1342,20 +1233,6 @@ export interface DailyCalendar {
   today:  string;
   days:   { date: string; theme: DailyTheme | null; special?: DailySpecial | null; published: boolean; myStatus: DailyProofStatus | null }[];
   streak: { current: number; best: number } | null;
-}
-
-/** GET /daily/guide: one summary per theme for a city (World selection for a dead city). */
-export interface DailyGuide {
-  scope:  'world' | 'city';
-  themes: {
-    theme:          DailyTheme;
-    challengesDone: number;
-    proofs:         number;
-    bestPhotos:     { proofId: string; date: string; thumbUrl: string | null; voteCount: number }[];
-    priceRange:     DailyPriceRange | null;
-    pinnedPlaces:   number;
-  }[];
-  localPass: DailyLocalPassProgress | null;
 }
 
 export interface DailyArchiveItem {

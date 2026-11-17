@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import BackButton from '../BackButton'
-import { fetchDailyProof, fetchDailyProofsByIds, fetchDailySheet, fetchDailyTodayCountries } from '../../api'
+import { fetchDailyProofsByIds, fetchDailyTodayCountries } from '../../api'
 import { shortCityName } from '../../i18n/cityName'
 import { track } from '../../lib/analytics'
 import Icon from '../Icon'
@@ -9,10 +9,9 @@ import { FlagSticker } from '../joy/Joy'
 import { thumbFallback } from '../../lib/thumbFallback'
 import { answerText, captionRepeatsAnswer } from './compareShared'
 import { compareCountryGroups, lastCountries, rankCountryProofs } from './countryOrder'
-import { LeaderboardPanel } from './dailyBoard'
 import {
-  EarlyBadge, LocalPassBadge, ProofViewer, RoleLabel, SheetSkeleton, VoteButton, getLastToday, personName, seedProofs,
-  useCountdown, useDaily, useDc, useHere,
+  EarlyBadge, LocalPassBadge, RoleLabel, SheetSkeleton, VoteButton, getLastToday, personName, seedProofs,
+  useDaily, useDc, useHere,
 } from './dailyShared'
 import { SeasonalZone } from '../event/seasonal'
 import { thumbUrl } from '../../lib/imageThumb'
@@ -27,7 +26,7 @@ const BATCH = 50
  * count) with all its photos in a 2-column grid of light cards; "By country |
  * Top 10". Countries in the shared order (compareCountryGroups), a country's
  * photos best first, its mosaic photo leading. `date` a past day (default
- * today), `country` scrolls to that section, `sort` 'top10' opens on Top 10.
+ * today), `country` scrolls to that section. By city only: the photo ranking is World › Photos.
  * A photo opens Today's photos on it (a past day: on its own).
  */
 // A seasonal event's live look (Halloween...) re-colors the screen.
@@ -35,17 +34,15 @@ export default function CountriesScreen(props) {
   return <SeasonalZone><CountriesScreenContent {...props} /></SeasonalZone>
 }
 
-function CountriesScreenContent({ date: dateParam = null, country = null, sort: initialSort = 'country', source = 'today', onBack }) {
+function CountriesScreenContent({ date: dateParam = null, country = null, source = 'today', onBack }) {
   const { t, i18n } = useDc()
   const { openDaily } = useDaily()
   const here = useHere()
   const lastToday = getLastToday()
   const date = dateParam && dateParam !== lastToday?.challenge?.date ? dateParam : null
-  const [sort, setSort] = useState(initialSort === 'top10' ? 'top10' : 'country')
   const [data, setData] = useState(date ? null : lastCountries())
   const [proofs, setProofs] = useState(null)
   const [failed, setFailed] = useState(false)
-  const [viewing, setViewing] = useState(null)
 
   const load = async () => {
     setFailed(false)
@@ -61,7 +58,7 @@ function CountriesScreenContent({ date: dateParam = null, country = null, sort: 
       setFailed(true)
     }
   }
-  useEffect(() => { track('today_countries_all', { source, past: !!date, sort, platform_surface: 'web' }); load() }, []) // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { track('today_countries_all', { source, past: !!date, platform_surface: 'web' }); load() }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   const sections = useMemo(() => {
     if (!data || !proofs) return []
@@ -75,12 +72,14 @@ function CountriesScreenContent({ date: dateParam = null, country = null, sort: 
   // `country` (a bubble of the challenge screen): that country's section, once.
   const scrolled = useRef(false)
   useEffect(() => {
-    if (!country || scrolled.current || sort !== 'country' || sections.length === 0) return
+    if (!country || scrolled.current || sections.length === 0) return
     scrolled.current = true
     requestAnimationFrame(() => document.getElementById(`country-${country.toUpperCase()}`)?.scrollIntoView({ block: 'start' }))
-  }, [sections, country, sort])
+  }, [sections, country])
 
-  const open = (p) => (date ? setViewing(p) : openDaily('photos', { proofId: p.id, source: 'today_all' }))
+  // Today: Today's photos on it; a past day: that day's photos in the feed (the one photo viewer), in this order.
+  const open = (p) => (date ? openDaily('photos', { list: sections.flatMap(s => s.list), proofId: p.id, source: 'countries_past' })
+    : openDaily('photos', { proofId: p.id, source: 'today_all' }))
 
   return (
     <div className="full-page dc-page">
@@ -89,15 +88,7 @@ function CountriesScreenContent({ date: dateParam = null, country = null, sort: 
         <span className="page-title">{t('worlds.tagline')}</span>
       </div>
       <div className="page-body dc-body">
-        <div className="dc-sort" role="tablist">
-          {[['country', t('countries.byCity')], ['top10', t('leaderboard.tab')]].map(([k, label]) => (
-            <button key={k} type="button" role="tab" aria-selected={sort === k} className={`dc-sort-btn${sort === k ? ' dc-sort-btn--on' : ''}`}
-                    onClick={() => { setSort(k); track('today_countries_sort', { sort: k, platform_surface: 'web' }) }}>{label}</button>
-          ))}
-        </div>
-        {sort === 'top10' ? (
-          <TopTen date={data?.date ?? date ?? lastToday?.challenge?.date ?? null} onOpen={open} />
-        ) : failed ? (
+        {failed ? (
           <div className="dc-center">
             <p className="dc-muted">{t('loadFailed')}</p>
             <button type="button" className="dc-link" onClick={load}>{t('retry')}</button>
@@ -122,7 +113,6 @@ function CountriesScreenContent({ date: dateParam = null, country = null, sort: 
           )
         })}
       </div>
-      <ProofViewer proof={viewing} onClose={() => setViewing(null)} />
     </div>
   )
 }
@@ -181,24 +171,3 @@ function CompactTile({ proof, top, onOpen }) {
   )
 }
 
-/** Top 10: the live leaderboard while the challenge is open, the official podium once closed. */
-function TopTen({ date, onOpen }) {
-  const { i18n } = useDc()
-  const { cityId } = useDaily()
-  const [sheet, setSheet] = useState(null)
-  useEffect(() => {
-    if (!date) return
-    let alive = true
-    fetchDailySheet(date, { scope: 'world', cityId, locale: i18n.language })
-      .then(s => { if (alive) { seedProofs([...s.proofs, ...(s.results?.world ?? []), ...(s.results?.cities ?? [])], !!s.challenge?.isActive); setSheet(s) } })
-      .catch(() => {})
-    return () => { alive = false }
-  }, [date, cityId, i18n.language])
-  const secondsLeft = useCountdown(sheet?.challenge?.isActive ? sheet.challenge.endsAt : null)
-  if (!sheet) return <SheetSkeleton rows />
-  const known = [...sheet.proofs, ...(sheet.results?.world ?? []), ...(sheet.results?.cities ?? [])]
-  return (
-    <LeaderboardPanel sheet={sheet} secondsLeft={secondsLeft}
-                      onOpenProof={id => { const p = known.find(x => x.id === id); if (p) onOpen(p); else fetchDailyProof(id, i18n.language).then(onOpen).catch(() => {}) }} />
-  )
-}

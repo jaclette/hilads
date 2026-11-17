@@ -235,7 +235,11 @@ class ImageProcessor
         $h = imagesy($img);
         if (max($w, $h) > $maxDim) {
             $scale  = $maxDim / max($w, $h);
-            $scaled = imagescale($img, max(1, (int) round($w * $scale)), max(1, (int) round($h * $scale)), IMG_BICUBIC);
+            $nw = max(1, (int) round($w * $scale));
+            $nh = max(1, (int) round($h * $scale));
+            // Bicubic where this GD has it; some builds (system libgd 2.3) answer false for it, which
+            // silently skipped the cap: resample by hand then (works on every GD, alpha kept).
+            $scaled = @imagescale($img, $nw, $nh, IMG_BICUBIC) ?: self::resample($img, $nw, $nh);
             if ($scaled !== false) {
                 imagedestroy($img);
                 $img = $scaled;
@@ -262,6 +266,17 @@ class ImageProcessor
         }
 
         return $tmpPath;
+    }
+
+    /** A resized copy by imagecopyresampled (any GD build), transparency kept; false on failure. */
+    private static function resample(\GdImage $img, int $w, int $h): \GdImage|false
+    {
+        $out = imagecreatetruecolor($w, $h);
+        if ($out === false) return false;
+        imagealphablending($out, false);
+        imagesavealpha($out, true);
+        imagefill($out, 0, 0, imagecolorallocatealpha($out, 0, 0, 0, 127));
+        return imagecopyresampled($out, $img, 0, 0, 0, 0, $w, $h, imagesx($img), imagesy($img)) ? $out : false;
     }
 
     /** Rotate/flip pixels per the EXIF Orientation tag (1 = already upright). */

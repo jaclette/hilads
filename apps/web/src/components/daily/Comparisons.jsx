@@ -84,11 +84,12 @@ export function ComparisonCard({ card, onOpen, onShare, rows, className = '' }) 
 }
 
 /**
- * "The world, compared" on Today (SPEC 10.9): last week's comparisons, one
- * card per shared key with at least 2 cities of 3 answers or more, then "See
- * all comparisons". A card opens the Index screen on it. Nothing without cards.
+ * "The world, compared" (SPEC 10.9), at the foot of Ranks › Cities and in the archive: last
+ * week's comparisons, one card per shared key with at least 2 cities of 3 answers or more, then
+ * "See all comparisons". A card opens the Index screen on it. Without cards: nothing, or with
+ * `alwaysLink` (Ranks, its home) the title and the "See all comparisons" link alone.
  */
-export function IndexCarousel() {
+export function IndexCarousel({ alwaysLink = false, source: from = 'today' }) {
   const { t, i18n } = useDc()
   const { openDaily } = useDaily()
   const value = useComparisonValue()
@@ -101,10 +102,22 @@ export function IndexCarousel() {
     return () => { alive = false }
   }, [i18n.language])
 
-  if (!data || data.cards.length === 0) return null
-  const open = (focus, source) => {
+  const open = (focus, how) => {
+    const source = from === 'today' ? how : `${from}_${how}`
     track('index_opened', { source, focus, platform_surface: 'web' })
     openDaily('index', { focus, source })
+  }
+  if (!data || data.cards.length === 0) {
+    if (!alwaysLink) return null
+    return (
+      <div className="today-card index">
+        <div className="today-card-head">
+          <HighlightText className="today-card-title" text={t('index.carouselTitle')} />
+          <button type="button" className="dc-link" onClick={() => open(null, 'link')}>{t('index.seeAllComparisons')}</button>
+        </div>
+        <span className="dc-muted today-proofs-stats">{t('index.carouselSub')}</span>
+      </div>
+    )
   }
   return (
     <div className="today-card index">

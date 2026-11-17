@@ -1,5 +1,4 @@
 {
-  "pageTitle": "Profile ko",
   "changePhoto": "Palitan ang profile photo",
   "yourProfile": "Profile mo",
   "mode": "Mode",
@@ -77,32 +76,11 @@
     "story": "City story",
     "storyPlaceholder": "Isang bagay na love mo sa city na 'to"
   },
-  "hangouts": {
-    "empty": "Wala pang tambayan - magsimula ka 🗣️",
-    "host": "Host"
-  },
-  "events": {
-    "going": "Pupunta",
-    "goingEmpty": "Wala pang lakad - maghanap ng gagawin 🔥",
-    "hosting": "Nagho-host",
-    "hostingEmpty": "Wala ka pang hino-host - magsimula ng kahit ano ✨",
-    "live": "Live",
-    "recurring": "↻ Regular",
-    "upcoming": "Paparating",
-    "deleteEvent": "I-delete ang event"
-  },
-  "friends": {
-    "requests": "Friend requests",
-    "empty": "Wala ka pang friends. Mag-add mula sa mga profile.",
-    "mine": "Friends ko"
-  },
   "vibesTab": {
-    "received": "Vibes na natanggap",
     "score": "{{score}} vibe score",
     "basedOn_one": "batay sa {{count}} vibe",
     "basedOn_other": "batay sa {{count}} vibes",
-    "empty": "Wala pang vibe",
-    "emptyHint": "Lalabas dito ang score mo kapag may nag-iwan sa 'yo ng note ✨"
+    "empty": "Wala pang vibe"
   },
   "save": {
     "uploading": "Ina-upload…",
@@ -127,10 +105,6 @@
     "usernameInvalid": "Hindi valid ang username",
     "saveFailed": "Hindi na-save. Subukan ulit.",
     "generic": "May nangyaring mali. Subukan ulit."
-  },
-  "challenges": {
-    "empty": "Wala pang challenge - mag-launch ka 🔥",
-    "challenger": "Challenger"
   },
   "appearance": "Itsura",
   "themeLight": "Light",
@@ -169,15 +143,11 @@
       "inReview_other": "{{count}} chine-check pa",
       "specialTitle": "Special stamps",
       "specialSub": "Limited edition, isa kada special day. Hindi kasama sa Local Pass.",
-      "compared_one": "Kinumpara sa {{count}} bansa",
-      "compared_other": "Kinumpara sa {{count}} bansa",
       "stampsOf_one": "{{count}} sa {{total}} stamps",
       "stampsOf_other": "{{count}} sa {{total}} stamps",
       "passEarned": "Nakuha sa {{city}}",
       "passToGo_one": "{{count}} stamp na lang",
       "passToGo_other": "{{count}} stamps na lang",
-      "comparedCities_one": "Kinumpara sa {{count}} city",
-      "comparedCities_other": "Kinumpara sa {{count}} cities",
       "myPhotos": "Mga photo ko",
       "noPhotos": "Dito lalabas ang Daily Challenge photos mo.",
       "share": "I-share ang passport ko",

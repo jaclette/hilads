@@ -2,20 +2,8 @@
   "create": {
     "startTitle": "Hi now",
     "editTitle": "Edit hangout",
-    "category": "Category",
-    "cat": {
-      "general": "General",
-      "tips": "Tips",
-      "food": "Food",
-      "drinks": "Drinks",
-      "help": "Help",
-      "meetup": "Meet up"
-    },
     "titleLabel": "What's on your mind?",
     "titlePlaceholder": "I want to grab a coffee",
-    "detailsLabel": "Add details",
-    "optional": "(optional)",
-    "detailsPlaceholder": "Give it some context…",
     "expiry": "Auto-expires in 8 h",
     "saving": "Saving…",
     "starting": "Starting…",
@@ -73,7 +61,6 @@
     "photo": "Photo",
     "unavailable": "Original message unavailable"
   },
-  "composer": {},
   "errors": {
     "locFailed": "Couldn't get your location. Please enable location access and try again.",
     "imageType": "Please select a JPEG, PNG, or WebP image.",

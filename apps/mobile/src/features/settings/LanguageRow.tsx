@@ -1,11 +1,11 @@
 import { useState } from 'react';
-import { ScrollView, Text, TouchableOpacity, StyleSheet, useWindowDimensions } from 'react-native';
+import { Text, TouchableOpacity, StyleSheet, useWindowDimensions } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
-import { FontSizes, type ThemeColors } from '@/constants';
+import { Space, FontSizes, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { setLocale, SUPPORTED, DEFAULT_LOCALE, type Locale } from '@/i18n';
-import { ListRow, Sheet, SheetScrollView } from '@/ui';
+import { ListRow, Sheet, SheetScrollView, SheetTitle } from '@/ui';
 
 // Language names are always shown in their own language (not translated), the
 // standard convention so a user can recognize their language regardless of the
@@ -79,7 +79,7 @@ export function LanguageRow({ divider = false }: { divider?: boolean }) {
       <ListRow icon="language-outline" title={t('language')} value={`${LANG_FLAGS[current]} ${LANG_NAMES[current]}`}
                divider={divider} onPress={() => setOpen(true)} />
       <Sheet visible={open} onClose={() => setOpen(false)} closeLabel={t('close')}>
-        <Text style={styles.sheetTitle} accessibilityRole="header">{t('language')}</Text>
+        <SheetTitle style={styles.sheetTitle}>{t('language')}</SheetTitle>
         {/* Numeric maxHeight gives the ScrollView a definite bound so it
             sizes to content and scrolls inside the content-sized sheet. */}
         <SheetScrollView style={{ maxHeight: height * 0.6 }} showsVerticalScrollIndicator={false}>
@@ -107,8 +107,8 @@ export function LanguageRow({ divider = false }: { divider?: boolean }) {
 }
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  sheetTitle:       { fontSize: FontSizes.lg, fontWeight: '800', color: c.text, paddingVertical: 4 },
-  option:           { flexDirection: 'row', alignItems: 'center', gap: 12, minHeight: 52 },
+  sheetTitle:       { paddingVertical: Space.xs },
+  option:           { flexDirection: 'row', alignItems: 'center', gap: Space.md, minHeight: 52 },
   optionFlag:       { fontSize: 20, lineHeight: 24 },
   optionText:       { flex: 1, fontSize: FontSizes.md, fontWeight: '500', color: c.text },
   optionTextActive: { color: c.primaryText, fontWeight: '700' },

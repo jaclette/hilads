@@ -132,14 +132,14 @@ export default function LeaderboardPage({ account, city, cityChannelId, onBack, 
             className={`leaderboard-seg-item${scope === 'cities' ? ' is-active' : ''}`}
             onClick={() => setScope('cities')}
           >
-            <Icon name="business-outline" size={14} style={{ marginRight: 4 }} />{t('leaderboard.scope.cities')}
+            <Icon name="business-outline" size={14} style={{ marginRight: 'var(--sp-4)' }} />{t('leaderboard.scope.cities')}
           </button>
           <button
             type="button"
             className={`leaderboard-seg-item${scope === 'world' ? ' is-active' : ''}`}
             onClick={() => setScope('world')}
           >
-            <Icon name="globe-outline" size={14} style={{ marginRight: 4 }} />{t('leaderboard.scope.world')}
+            <Icon name="globe-outline" size={14} style={{ marginRight: 'var(--sp-4)' }} />{t('leaderboard.scope.world')}
           </button>
         </div>
         <div className="leaderboard-seg">
@@ -161,7 +161,7 @@ export default function LeaderboardPage({ account, city, cityChannelId, onBack, 
       </div>
 
       {rankShare && onShareRank && (
-        <div style={{ display: 'flex', justifyContent: 'center', padding: '8px 16px 4px' }}>
+        <div style={{ display: 'flex', justifyContent: 'center', padding: 'var(--sp-8) var(--sp-16) var(--sp-4)' }}>
           <button
             type="button"
             className="share-to-city-pill"
@@ -176,12 +176,12 @@ export default function LeaderboardPage({ account, city, cityChannelId, onBack, 
         {loading && !data ? (
           <div style={{ padding: 40, textAlign: 'center', color: 'var(--muted, #b3b3b3)' }}>…</div>
         ) : error ? (
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', padding: 40, gap: 12 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', padding: 40, gap: 'var(--sp-12)' }}>
             <Icon name="cloud-offline-outline" size={32} style={{ color: 'var(--muted2)' }} />
             <p style={{ color: 'var(--muted, #b3b3b3)', margin: 0 }}>{error}</p>
           </div>
         ) : entries.length === 0 ? (
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', padding: 40, gap: 12 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', padding: 40, gap: 'var(--sp-12)' }}>
             <Icon name="trophy-outline" size={32} style={{ color: 'var(--primary-text)' }} />
             <h3 style={{ margin: 0 }}>{t('leaderboard.empty.title')}</h3>
             <p style={{ color: 'var(--muted, #b3b3b3)', margin: 0 }}>{t('leaderboard.empty.body')}</p>
@@ -255,11 +255,11 @@ export default function LeaderboardPage({ account, city, cityChannelId, onBack, 
           ) : (
             <button
               type="button"
-              className="leaderboard-unranked-cta"
+              className="leaderboard-unranked-cta btn-primary"
               onClick={onCreateChallenge}
             >
               <span className="leaderboard-unranked-cta-label">
-                <Icon name="flame-outline" size={16} style={{ marginRight: 6 }} />{t('leaderboard.me.unranked')}
+                <Icon name="flame-outline" size={16} style={{ marginRight: 'var(--sp-8)' }} />{t('leaderboard.me.unranked')}
               </span>
               <span className="leaderboard-unranked-cta-arrow" aria-hidden="true"><Icon name="chevron-forward" size={18} /></span>
             </button>
@@ -293,7 +293,7 @@ function RankDisc({ rank }) {
       aria-label={`#${rank}`}
       style={{
         display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-        width: 30, height: 30, borderRadius: '50%', fontSize: '0.8125rem', fontWeight: 800,
+        width: 30, height: 30, borderRadius: '50%', fontSize: 'var(--fs-xs)', fontWeight: 800,
         background: isGold ? 'var(--gold)' : 'var(--primary-tint)',
         color: isGold ? 'var(--surface)' : 'var(--primary-on-tint)',
       }}

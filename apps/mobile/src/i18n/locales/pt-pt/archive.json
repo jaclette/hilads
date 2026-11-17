@@ -2,15 +2,7 @@
   "title": "O que aconteceu",
   "loadError": "Não foi possível carregar o arquivo",
   "filterAll": "Tudo",
-  "rangeRecent": "Recentes",
-  "range7": "Últimos 7 dias",
-  "range14": "Últimos 14 dias",
   "custom": "Personalizado",
-  "pickEnd": "Agora escolhe o último dia",
-  "pickStart": "Escolhe o primeiro dia (até {{max}} dias)",
-  "apply": "Aplicar",
   "emptyTitle": "Ainda não há nada aqui",
-  "emptyRecentSub": "Os eventos e convívios passados vão aparecer aqui assim que a cidade tiver algum historial.",
-  "emptyWindowSub": "Nenhum evento ou convívio neste período. Experimenta um intervalo maior.",
   "filterChallenges": "Desafios"
 }

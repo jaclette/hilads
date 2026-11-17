@@ -4,7 +4,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
-import { FontSizes, Radius, Spacing, type ThemeColors } from '@/constants';
+import { Space, FontSizes, Radius, Spacing, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { fetchAppConfig, type AppConfig } from '@/api/appConfig';
 import { setMediaUrl } from '@/lib/imageThumb';
@@ -71,7 +71,7 @@ export function UpdateGate() {
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
   banner:        { position: 'absolute', left: Spacing.md, right: Spacing.md },
-  required:      { flex: 1, backgroundColor: c.bg, alignItems: 'center', justifyContent: 'center', paddingHorizontal: Spacing.lg, gap: 14 },
+  required:      { flex: 1, backgroundColor: c.bg, alignItems: 'center', justifyContent: 'center', paddingHorizontal: Spacing.lg, gap: Space.lg },
   requiredIcon:  { width: 84, height: 84, borderRadius: Radius.full, backgroundColor: c.primaryTint, alignItems: 'center', justifyContent: 'center' },
   requiredTitle: { fontSize: FontSizes.xl, fontWeight: '800', color: c.text, textAlign: 'center' },
   requiredBody:  { fontSize: FontSizes.md, color: c.muted, textAlign: 'center' },

@@ -41,7 +41,7 @@ export default function ForgotPasswordScreen({ onBack }) {
             <p className="auth-success-body">
               {t('forgotPassword.sentBody')}
             </p>
-            <button className="modal-submit" onClick={onBack} style={{ marginTop: 24 }}>
+            <button className="modal-submit btn-primary" onClick={onBack} style={{ marginTop: 'var(--sp-24)' }}>
               {t('forgotPassword.backToSignIn')}
             </button>
           </div>
@@ -66,7 +66,7 @@ export default function ForgotPasswordScreen({ onBack }) {
 
             {error && <p className="auth-error">{error}</p>}
 
-            <button className="modal-submit" type="submit" disabled={loading}>
+            <button className="modal-submit btn-primary" type="submit" disabled={loading}>
               {loading ? '...' : t('forgotPassword.submit')}
             </button>
           </form>

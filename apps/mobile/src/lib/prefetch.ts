@@ -1,6 +1,6 @@
 import { Image } from 'expo-image';
 import { mediumUrl } from '@/lib/imageThumb';
-import type { DailyProof } from '@/types';
+import type { DailyChallenge, DailyProof } from '@/types';
 
 // What a full-screen viewer loads (DualPhoto: the medium size of the photo and of its selfie),
 // warmed into memory before the viewer opens: on a press-in, or for the next stories.
@@ -30,9 +30,14 @@ export function takeHandedProof(id: string | null | undefined): DailyProof | nul
   return p;
 }
 
-// A ranked list of photos (the Ranks tab) handed to the photo feed, which plays it in that order.
-let handedList: { key: string; proofs: DailyProof[] } | null = null;
-export function handOffList(key: string, proofs: DailyProof[]): void { handedList = { key, proofs }; }
+// A list of photos handed to the photo feed, which plays it in that order (a ranking, a day's or a
+// profile's photos), with their challenge when it isn't today's (to share them).
+let handedList: { key: string; proofs: DailyProof[]; challenge: DailyChallenge | null } | null = null;
+export function handOffList(key: string, proofs: DailyProof[], challenge: DailyChallenge | null = null): void { handedList = { key, proofs, challenge }; }
+/** The challenge handed with the list under `key`, or null. */
+export function takeHandedChallenge(key: string | null | undefined): DailyChallenge | null {
+  return key && handedList?.key === key ? handedList.challenge : null;
+}
 /** The list handed under `key`, or null. Kept (not cleared) so a double render (StrictMode) reads it too; the next hand-off replaces it. */
 export function takeHandedList(key: string | null | undefined): DailyProof[] | null {
   return key && handedList?.key === key ? handedList.proofs : null;

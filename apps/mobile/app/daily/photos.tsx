@@ -4,12 +4,12 @@ import {
   type ListViewToken as ViewToken,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { prefetchProof, takeHandedList, takeHandedProof } from '@/lib/prefetch';
+import { prefetchProof, takeHandedChallenge, takeHandedList, takeHandedProof } from '@/lib/prefetch';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import { FontSizes, type ThemeColors } from '@/constants';
+import { Space, FontSizes, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { useApp } from '@/context/AppContext';
 import { fetchDailyProof, fetchDailyTodayProofs } from '@/api/daily';
@@ -17,7 +17,9 @@ import { track } from '@/services/analytics';
 import { localizeCityName, shortCityName } from '@/i18n/cityName';
 import { canAccessProfile } from '@/lib/profileAccess';
 import { goBack } from '@/lib/nav';
-import { Avatar, Button, DualPhoto, IconButton, ModeLabel, Photo } from '@/ui';
+import { Avatar, Button, DualPhoto, IconButton, ModeLabel } from '@/ui';
+import { usePhotoZoom } from '@/ui/usePhotoZoom';
+import { GestureDetector } from 'react-native-gesture-handler';
 import { selfieOf } from '@/features/daily/selfie';
 import { Confetti, FlagSticker, onFillOf, themeColor } from '@/ui/joy';
 import { AnswerChip } from '@/features/compare/AnswerChip';
@@ -28,7 +30,8 @@ import { lastCountries } from '@/features/today/useTodayCountries';
 import { rankCountryProofs } from '@/features/daily/countryOrder';
 import { CommentButton } from '@/features/daily/CommentButton';
 import { COMMENT_BAR_H, StoryCommentBar } from '@/features/daily/StoryCommentBar';
-import { commentsTargetOf, PhotoCommentsHost } from '@/features/daily/PhotoCommentsSheet';
+import { commentsTargetOf, openPhotoComments, PhotoCommentsHost } from '@/features/daily/PhotoCommentsSheet';
+import { PhotoCredit } from '@/features/map/PhotoCredit';
 import { useCastVote } from '@/features/daily/DailyVoteButton';
 import { DailyVotersSheet } from '@/features/daily/DailyVotersSheet';
 import { LocalPassBadge } from '@/features/daily/LocalPassBadge';
@@ -75,9 +78,14 @@ function PhotosScreenContent() {
   const router = useRouter();
   const { account, identity, city } = useApp();
   const guestId = account ? null : identity?.guestId ?? null;
-  const { proof: pinnedId, source, tab: tabParam, country, list: listKey } = useLocalSearchParams<{ proof?: string; source?: string; tab?: string; country?: string; list?: string }>();
-  // A ranked list (the Ranks tab, V6): played in its order from the tapped photo, no tabs.
+  const { proof: pinnedId, source, tab: tabParam, country, list: listKey, share: shareParam, comment: commentParam } =
+    useLocalSearchParams<{ proof?: string; source?: string; tab?: string; country?: string; list?: string; share?: string; comment?: string }>();
+  // A handed list (openPhotoFeed: a ranking, a day's or a profile's photos…): played in its order,
+  // opening on the tapped photo (the ones before it a scroll up), no tabs; with its challenge when
+  // it isn't today's (Share).
   const [ranked] = useState<DailyProof[] | null>(() => takeHandedList(listKey));
+  const [handedChallenge] = useState(() => takeHandedChallenge(listKey));
+  const rankedStart = ranked ? Math.max(0, ranked.findIndex(p => p.id === pinnedId)) : 0;
   const today = useDailyToday(city?.channelId).data;
   const here = useHere();
   const challenge = today?.challenge ?? null;
@@ -90,12 +98,14 @@ function PhotosScreenContent() {
   const [pinned, setPinned] = useState<DailyProof | null>(() => takeHandedProof(pinnedId));
   const [failed, setFailed] = useState(false);
   const [height, setHeight] = useState(() => Dimensions.get('window').height);
-  const [index, setIndex] = useState(0);
+  const [index, setIndex] = useState(rankedStart);
   const [composing, setComposing] = useState(false);
   const [share, setShare] = useState<ShareContent | null>(null);
   const [votersOf, setVotersOf] = useState<string | null>(null);
   const [confetti, setConfetti] = useState(false);
   const voted = useRef(false);
+  // A photo is pinch-zoomed: the feed holds still and its overlays hide.
+  const [zooming, setZooming] = useState(false);
   const list = useRef<FlatList<Item>>(null);
   const seen = useRef(new Set<string>());
 
@@ -106,7 +116,7 @@ function PhotosScreenContent() {
 
   // The push's photo leads; one from another day opens on its own challenge instead.
   useEffect(() => {
-    if (!pinnedId) return;
+    if (!pinnedId || ranked) return;   // a handed list already holds it (any day)
     fetchDailyProof(pinnedId).then(p => {
       if (challenge && p.date !== challenge.date) {
         router.replace(`/daily/${p.date}?source=push&proof=${encodeURIComponent(p.id)}` as never);
@@ -129,7 +139,7 @@ function PhotosScreenContent() {
     } catch {
       setFailed(true);
     }
-  }, [tab, cityId, guestId, challenge?.isActive]);
+  }, [tab, cityId, guestId, challenge?.isActive, ranked]);
   useEffect(() => { setProofs(null); load(); }, [load]);
 
   // A country's story (Today's stories row, a mosaic tile): its photos best first (its top photo
@@ -145,10 +155,7 @@ function PhotosScreenContent() {
   }, [country, proofs]);
 
   const items: Item[] = useMemo(() => {
-    if (ranked) {
-      const at = Math.max(0, ranked.findIndex(p => p.id === pinnedId));
-      return [...ranked.slice(at).map(p => ({ kind: 'photo' as const, proof: p })), { kind: 'end' as const }];
-    }
+    if (ranked) return [...ranked.map(p => ({ kind: 'photo' as const, proof: p })), { kind: 'end' as const }];
     if (proofs === null) return pinned ? [{ kind: 'photo' as const, proof: pinned }] : [];
     if (story && tab === 'world') {
       // Photos posted since Today loaded follow the story.
@@ -158,7 +165,23 @@ function PhotosScreenContent() {
     const rest = (proofs ?? []).filter(p => p.id !== pinned?.id);
     const photos = pinned && tab === 'world' ? [pinned, ...rest] : pinned && pinned.city?.id === cityId ? [pinned, ...rest] : rest;
     return [...photos.map(p => ({ kind: 'photo' as const, proof: p })), { kind: 'end' as const }];
-  }, [proofs, pinned, tab, cityId, story, ranked, pinnedId]);
+  }, [proofs, pinned, tab, cityId, story, ranked]);
+
+  // A photo's challenge for Share: today's, or the handed list's (another day's).
+  const shareChallengeOf = (p: DailyProof) => (challenge && p.challengeId === challenge.id ? challenge
+    : handedChallenge && p.challengeId === handedChallenge.id ? handedChallenge : null);
+  // ?share=1 (yesterday's podium, "Share"): the share sheet on the start photo at once; ?comment=<id>
+  // (a comment notification): its comments, on that comment.
+  const startOpened = useRef(false);
+  useEffect(() => {
+    if (startOpened.current || !ranked) return;
+    const start = ranked[rankedStart];
+    if (!start) return;
+    startOpened.current = true;
+    const c = shareChallengeOf(start);
+    if (shareParam === '1' && c) setShare(proofShare(start, c));
+    if (commentParam !== undefined) setTimeout(() => openPhotoComments(commentsTargetOf(start, Number(commentParam) || null)), 450);
+  }, [challenge?.id]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const switchTab = (next: Tab) => {
     if (next === tab) return;
@@ -215,10 +238,11 @@ function PhotosScreenContent() {
           data={items}
           keyExtractor={(it, i) => (it.kind === 'photo' ? it.proof.id : `end-${i}`)}
           pagingEnabled
-          scrollEnabled={!composing}
+          scrollEnabled={!composing && !zooming}
           showsVerticalScrollIndicator={false}
           decelerationRate="fast"
           getItemLayout={(_, i) => ({ length: height, offset: height * i, index: i })}
+          initialScrollIndex={rankedStart}
           onViewableItemsChanged={onViewable}
           viewabilityConfig={{ itemVisiblePercentThreshold: 60 }}
           windowSize={3}
@@ -227,8 +251,8 @@ function PhotosScreenContent() {
           renderItem={({ item, index: i }) => item.kind === 'photo' ? (
             <Slide proof={item.proof} height={height} first={i === 0 && photoCount > 1}
                    insetBottom={insets.bottom + (item.proof.status === 'approved' ? COMMENT_BAR_H : 0)}
-                   onProfile={openProfile} onVoted={onVoted}
-                   onShare={challenge && item.proof.challengeId === challenge.id ? () => setShare(proofShare(item.proof, challenge)) : null}
+                   onProfile={openProfile} onVoted={onVoted} onZoom={setZooming}
+                   onShare={shareChallengeOf(item.proof) ? () => setShare(proofShare(item.proof, shareChallengeOf(item.proof)!)) : null}
                    onVoters={() => setVotersOf(item.proof.id)} />
           ) : (
             <End height={height} empty={photoCount === 0} tab={tab} cityName={cityName}
@@ -238,7 +262,11 @@ function PhotosScreenContent() {
         />
       )}
       {composing && <Pressable style={[StyleSheet.absoluteFill, styles.dim]} onPress={() => Keyboard.dismiss()} accessibilityRole="button" accessibilityLabel={t('back')} />}
-      {barProof && height > 0 && <StoryCommentBar key={barProof.id} proof={barProof} onComposing={setComposing} />}
+      {barProof && height > 0 && (
+        <View style={[StyleSheet.absoluteFill, zooming && styles.hidden]} pointerEvents={zooming ? 'none' : 'box-none'}>
+          <StoryCommentBar key={barProof.id} proof={barProof} onComposing={setComposing} />
+        </View>
+      )}
       {((proofs === null && !pinned) || height === 0) && (
         <View style={[StyleSheet.absoluteFill, styles.center]}>
           {failed ? (
@@ -250,9 +278,9 @@ function PhotosScreenContent() {
         </View>
       )}
 
-      {/* On top: close, World / my city, and today's challenge as a pill. */}
-      <LinearGradient colors={SHADE_TOP} style={styles.shadeTop} pointerEvents="none" />
-      <View style={[styles.top, { paddingTop: insets.top + 6 }]} pointerEvents="box-none">
+      {/* On top: close, World / my city, and today's challenge as a pill (hidden while a photo is zoomed). */}
+      <LinearGradient colors={SHADE_TOP} style={[styles.shadeTop, zooming && styles.hidden]} pointerEvents="none" />
+      <View style={[styles.top, { paddingTop: insets.top + 6 }, zooming && styles.hidden]} pointerEvents={zooming ? 'none' : 'box-none'}>
         <View style={styles.head}>
           <IconButton icon="close" tone="onPhoto" onPress={goBack} label={t('back')} testID="photos-close" />
           <View style={styles.tabs}>
@@ -298,9 +326,10 @@ function TabPill({ label, icon, country, on, onPress }: {
 }
 
 /** One photo, full screen: the photo (blurred around it), its player and answer, the heart and Share. */
-function Slide({ proof, height, first, insetBottom, onProfile, onVoted, onShare, onVoters }: {
+function Slide({ proof, height, first, insetBottom, onProfile, onVoted, onShare, onVoters, onZoom }: {
   proof: DailyProof; height: number; first: boolean; insetBottom: number;
   onProfile: (id: string) => void; onVoted: () => void; onShare: (() => void) | null; onVoters: () => void;
+  onZoom: (zooming: boolean) => void;
 }) {
   const styles = useThemedStyles(makeStyles);
   const { colors } = useTheme();
@@ -315,6 +344,9 @@ function Slide({ proof, height, first, insetBottom, onProfile, onVoted, onShare,
   const pop = useRef(new Animated.Value(1)).current;
   const name = proof.user.displayName || proof.user.username || '';
   const title = proof.spot?.name ?? proof.place?.name ?? null;
+  // Pinch-to-zoom on the big picture (springs back on release); the feed and its overlays wait meanwhile.
+  const zoom = usePhotoZoom();
+  useEffect(() => { onZoom(zoom.zooming); }, [zoom.zooming]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const celebrate = () => {
     burst.setValue(0);
@@ -341,13 +373,13 @@ function Slide({ proof, height, first, insetBottom, onProfile, onVoted, onShare,
   };
 
   return (
-    <View style={{ height }}>
-      <Photo thumb={proof.thumbUrl} full={proof.photoUrl} hash={proof.thumbHash} style={StyleSheet.absoluteFill} contentFit="cover" blurRadius={40} />
-      <View style={[StyleSheet.absoluteFill, styles.blurShade]} />
+    <GestureDetector gesture={zoom.gesture}>
+    <View style={{ height }} onLayout={zoom.onLayout}>
+      {/* The picture whole over a blurred copy of itself (DualPhoto fit="screen"), the photo or the selfie swapped big. */}
       <Pressable style={StyleSheet.absoluteFill} onPress={onTap} accessibilityRole="image"
                  accessibilityLabel={[name, proof.city?.name, title].filter(Boolean).join(', ')} accessibilityHint={t('feed.doubleTap')}>
         <DualPhoto main={{ uri: proof.photoUrl, thumb: proof.thumbUrl, hash: proof.thumbHash }} selfie={selfieOf(proof)} style={StyleSheet.absoluteFill}
-                   contentFit="contain" insetTop={insetTop} />
+                   fit="screen" zoomStyle={zoom.style} sharp={zoom.zooming} insetTop={insetTop} />
       </Pressable>
       <Animated.View pointerEvents="none" style={[styles.burst, {
         opacity: burst.interpolate({ inputRange: [0, 0.15, 0.7, 1], outputRange: [0, 1, 1, 0] }),
@@ -355,9 +387,9 @@ function Slide({ proof, height, first, insetBottom, onProfile, onVoted, onShare,
       }]}>
         <Ionicons name="heart" size={120} color={colors.primary} />
       </Animated.View>
-      <LinearGradient colors={SHADE_BOTTOM} style={styles.shadeBottom} pointerEvents="none" />
+      <LinearGradient colors={SHADE_BOTTOM} style={[styles.shadeBottom, zoom.zooming && styles.hidden]} pointerEvents="none" />
 
-      <View style={[styles.bottom, { paddingBottom: insetBottom + 18 }]} pointerEvents="box-none">
+      <View style={[styles.bottom, { paddingBottom: insetBottom + 18 }, zoom.zooming && styles.hidden]} pointerEvents={zoom.zooming ? 'none' : 'box-none'}>
         <View style={styles.info} pointerEvents="box-none">
           <TouchableOpacity style={styles.who} onPress={() => onProfile(proof.user.id)} accessibilityRole="button" hitSlop={6}>
             <Avatar uri={proof.user.photoUrl} name={name} size={40} ring />
@@ -376,6 +408,8 @@ function Slide({ proof, height, first, insetBottom, onProfile, onVoted, onShare,
             </View>
           </TouchableOpacity>
           {proof.answer && !proof.backHome && <AnswerChip answer={proof.answer} onDark />}
+          {/* A Hilads suggestion (a real place we picked): its photo credit. */}
+          {proof.suggestion && !!proof.credit && <PhotoCredit by={null} credit={proof.credit} url={proof.creditUrl} overlay />}
           {!!proof.caption && !captionRepeatsAnswer(proof.caption, proof.backHome ? null : proof.answer, i18n.language) && (
             <Text style={styles.caption} numberOfLines={3}>{proof.caption}</Text>
           )}
@@ -416,6 +450,7 @@ function Slide({ proof, height, first, insetBottom, onProfile, onVoted, onShare,
         </View>
       </View>
     </View>
+    </GestureDetector>
   );
 }
 
@@ -446,40 +481,40 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   wrap:        { flex: 1, backgroundColor: c.photoScrim },
   flex:        { flex: 1 },
   center:      { alignItems: 'center', justifyContent: 'center' },
-  centerBox:   { alignItems: 'center', gap: 12, paddingHorizontal: 24 },
+  centerBox:   { alignItems: 'center', gap: Space.md, paddingHorizontal: Space.xl },
   shadeTop:    { position: 'absolute', top: 0, left: 0, right: 0, height: 170 },
   shadeBottom: { position: 'absolute', bottom: 0, left: 0, right: 0, height: '45%' },
-  blurShade:   { backgroundColor: c.photoBlurShade },
-  top:         { position: 'absolute', top: 0, left: 0, right: 0, paddingHorizontal: 12, gap: 10 },
-  head:        { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  hidden:      { opacity: 0 },
+  top:         { position: 'absolute', top: 0, left: 0, right: 0, paddingHorizontal: Space.md, gap: Space.md },
+  head:        { flexDirection: 'row', alignItems: 'center', gap: Space.sm },
   headSide:    { width: 44 },
-  tabs:        { flex: 1, flexDirection: 'row', justifyContent: 'center', gap: 8 },
-  tab:         { flexDirection: 'row', alignItems: 'center', gap: 6, maxWidth: 160, height: 36, paddingHorizontal: 14, borderRadius: 18, backgroundColor: c.photoControl },
+  tabs:        { flex: 1, flexDirection: 'row', justifyContent: 'center', gap: Space.sm },
+  tab:         { flexDirection: 'row', alignItems: 'center', gap: Space.sm, maxWidth: 160, height: 36, paddingHorizontal: Space.lg, borderRadius: 18, backgroundColor: c.photoControl },
   tabOn:       { backgroundColor: c.white },
   tabText:     { flexShrink: 1, fontSize: FontSizes.sm, fontWeight: '800', color: c.white },
   tabTextOn:   { color: TAB_ON_INK },
-  pill:        { alignSelf: 'center', flexDirection: 'row', alignItems: 'center', gap: 4, maxWidth: '92%', paddingHorizontal: 14, paddingVertical: 8, borderRadius: 999 },
+  pill:        { alignSelf: 'center', flexDirection: 'row', alignItems: 'center', gap: Space.xs, maxWidth: '92%', paddingHorizontal: Space.lg, paddingVertical: Space.sm, borderRadius: 999 },
   pillText:    { flexShrink: 1, fontSize: FontSizes.sm, fontWeight: '800' },
   burst:       { position: 'absolute', top: 0, bottom: 0, left: 0, right: 0, alignItems: 'center', justifyContent: 'center' },
-  bottom:      { position: 'absolute', left: 0, right: 0, bottom: 0, flexDirection: 'row', alignItems: 'flex-end', gap: 12, paddingHorizontal: 16 },
-  info:        { flex: 1, gap: 8 },
-  who:         { flexDirection: 'row', alignItems: 'center', gap: 10 },
-  nameRow:     { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  bottom:      { position: 'absolute', left: 0, right: 0, bottom: 0, flexDirection: 'row', alignItems: 'flex-end', gap: Space.md, paddingHorizontal: Space.lg },
+  info:        { flex: 1, gap: Space.sm },
+  who:         { flexDirection: 'row', alignItems: 'center', gap: Space.md },
+  nameRow:     { flexDirection: 'row', alignItems: 'center', gap: Space.sm },
   name:        { flexShrink: 1, fontSize: FontSizes.lg, fontWeight: '800', color: c.white },
-  cityRow:     { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 2 },
+  cityRow:     { flexDirection: 'row', alignItems: 'center', gap: Space.sm, marginTop: Space.xxs },
   city:        { flexShrink: 1, fontSize: FontSizes.sm, fontWeight: '700', color: c.white },
   caption:     { fontSize: FontSizes.md, fontWeight: '500', color: c.white },
-  placeRow:    { flexDirection: 'row', alignItems: 'center', gap: 4 },
+  placeRow:    { flexDirection: 'row', alignItems: 'center', gap: Space.xs },
   place:       { flexShrink: 1, fontSize: FontSizes.sm, fontWeight: '700', color: c.white },
-  hint:        { flexDirection: 'row', alignItems: 'center', gap: 4, alignSelf: 'center', marginTop: 4 },
+  hint:        { flexDirection: 'row', alignItems: 'center', gap: Space.xs, alignSelf: 'center', marginTop: Space.xs },
   hintText:    { fontSize: FontSizes.xs, fontWeight: '700', color: c.onCaramelMuted },
-  actions:     { alignItems: 'center', gap: 18, paddingBottom: 6 },
+  actions:     { alignItems: 'center', gap: 18, paddingBottom: Space.sm },
   heart:       { width: 56, height: 56, borderRadius: 28, alignItems: 'center', justifyContent: 'center', backgroundColor: c.photoControl },
   heartOn:     { backgroundColor: c.primary },
-  count:       { marginTop: 4, textAlign: 'center', fontSize: FontSizes.sm, fontWeight: '800', color: c.white },
-  end:         { alignItems: 'center', justifyContent: 'center', paddingHorizontal: 28, gap: 10 },
+  count:       { marginTop: Space.xs, textAlign: 'center', fontSize: FontSizes.sm, fontWeight: '800', color: c.white },
+  end:         { alignItems: 'center', justifyContent: 'center', paddingHorizontal: 28, gap: Space.md },
   endEmoji:    { fontSize: 56 },
   endTitle:    { fontSize: FontSizes.xxl, fontWeight: '800', color: c.white, textAlign: 'center' },
   endBody:     { fontSize: FontSizes.md, fontWeight: '500', color: c.onCaramelMuted, textAlign: 'center' },
-  endActions:  { alignSelf: 'stretch', gap: 6, marginTop: 14 },
+  endActions:  { alignSelf: 'stretch', gap: Space.sm, marginTop: Space.lg },
 });

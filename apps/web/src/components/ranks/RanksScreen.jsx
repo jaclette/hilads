@@ -10,7 +10,9 @@ import { shareLink } from '../../lib/shareLink'
 import i18n from '../../i18n'
 import Icon from '../Icon'
 import { themeIcon } from '../../lib/icons'
-import { Confetti, FitText, MEDAL, Movement, Podium, RaceBar, RankRow, ScopeToggle, YouBar } from './parts'
+import { Confetti, FitText, MEDAL, Movement, Podium, RaceBar, RankRow, YouBar } from './parts'
+import { IndexCarousel } from '../daily/Comparisons'
+import RivalsBlock from './RivalsBlock'
 
 const PERIODS = { photos: ['today', 'yesterday', 'week', 'alltime'], players: ['today', 'week', 'alltime'], cities: ['today', 'week', 'alltime'] }
 const GOLD = themeColor('sip')
@@ -25,18 +27,20 @@ const GOLD = themeColor('sip')
  * with the scope toggle on its right ("🇻🇳 Saigon | 🌍 World", the header's city;
  * none on Cities); a podium short of 3 shows dashed ghost places leading to Today.
  */
+const SEG_ICON = { photos: 'camera-outline', players: 'person-outline', cities: 'flag-outline' }
+
 export default function RanksScreen({ header, initial }) {
   const { t } = useDc()
-  const { cityId: browsedCity, openToday } = useDaily()
+  const { cityId: browsedCity, openToday, scope: appScope } = useDaily()
   const [tab, setTab] = useState(initial?.tab ?? 'photos')
   const [period, setPeriod] = useState(initial?.period ?? 'today')
-  // The scope follows the city chosen in the header (World without one).
-  const [scope, setScope] = useState(initial?.scope ?? 'city')
+  // One scope control (UX audit): the header's pill (my city or World), World without a city. A
+  // deep link's scope applies here only, until the pill changes.
+  const [scope, setScope] = useState(initial?.scope ?? appScope ?? 'city')
+  useEffect(() => { if (appScope) setScope(appScope) }, [appScope])
   const [resp, setResp] = useState(null)
   const [failed, setFailed] = useState(false)
   const cityId = Number(initial?.cityId) || Number(browsedCity) || null
-  const cityName = getLastToday()?.city?.name ?? null
-  const cityCountry = getLastToday()?.city?.country ?? null
   const scopeNow = cityId ? scope : 'world'
   const key = `${tab}|${period}|${scopeNow}|${cityId}`
   // Each answer is kept with what it was asked for: a view only gets its own shape.
@@ -60,11 +64,10 @@ export default function RanksScreen({ header, initial }) {
     return () => { alive = false }
   }, [key]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  // The info line (today's photos: the time left to vote), on the left of the scope toggle.
+  // The info line (today's photos: the time left to vote).
   const endsAt = tab === 'photos' && period === 'today' ? data?.endsAt ?? null : null
   const hours = endsAt ? Math.max(0, Math.floor((endsAt * 1000 - Date.now()) / 3600000)) : null
   const info = hours === null ? '' : hours > 0 ? t('ranks.timeLeft', { count: hours }) : t('ranks.timeLeftMin')
-  const showToggle = tab !== 'cities' && !!cityId
   // An empty podium place (as the app): a past period has nobody to call ("Nobody took this spot");
   // today, before I've played: play (Today: the web has no camera); once I've played: invite a
   // friend (my photo's link, else today's challenge).
@@ -90,7 +93,8 @@ export default function RanksScreen({ header, initial }) {
           <div className="leaderboard-seg r6-seg" role="tablist">
             {['photos', 'players', 'cities'].map(k => (
               <button key={k} type="button" role="tab" aria-selected={tab === k} className={`leaderboard-seg-item${tab === k ? ' is-active' : ''}`} onClick={() => setTab(k)}>
-                <FitText>{t(`ranks.seg.${k}`)}</FitText>
+                {/* Icons, not emoji in the labels (one icon system: UX audit visual review). */}
+                <Icon name={SEG_ICON[k]} size={16} /><FitText>{t(`ranks.seg.${k}`)}</FitText>
               </button>
             ))}
           </div>
@@ -98,13 +102,10 @@ export default function RanksScreen({ header, initial }) {
           <div className="r6-chips" role="tablist">
             {PERIODS[tab].map(p => <Chip key={p} on={period === p} onClick={() => setPeriod(p)}><FitText>{t(`ranks.period.${p}`)}</FitText></Chip>)}
           </div>
-          {(showToggle || info) && (
+          {info && (
             <div className="r6-info-row">
+              <Icon name="hourglass-outline" size={16} className="r6-info-icon" />
               <span className="r6-info"><FitText min={0.75}>{info}</FitText></span>
-              {showToggle && (
-                <ScopeToggle value={scope} onChange={setScope} worldLabel={t('ranks.scope.world')} country={cityCountry}
-                             city={cityName ? shortCityName(cityName) : t('ranks.scope.city')} />
-              )}
             </div>
           )}
         </div>
@@ -119,13 +120,13 @@ export default function RanksScreen({ header, initial }) {
 }
 
 function Chip({ on, onClick, children }) {
-  return <button type="button" role="tab" aria-selected={on} className={`r6-chip${on ? ' r6-chip--on' : ''}`} style={on ? { background: GOLD.fill, borderColor: GOLD.fill, color: GOLD.onFill } : undefined} onClick={onClick}>{children}</button>
+  return <button type="button" role="tab" aria-selected={on} className={`r6-chip${on ? ' r6-chip--on' : ''}`} onClick={onClick}>{children}</button>
 }
 
 function Empty({ text, failed, loading }) {
   const { t } = useDc()
   if (loading) return <div className="r6-empty"><span className="r6-spinner" /></div>
-  return <div className="r6-empty"><span className="r6-empty-emoji">{failed ? '📡' : '🏆'}</span><p>{failed ? t('loadFailed') : text}</p></div>
+  return <div className="r6-empty"><span className={`r6-empty-disc${failed ? ' r6-empty-disc--off' : ''}`}><Icon name={failed ? 'cloud-offline-outline' : 'trophy-outline'} size={34} /></span><p>{failed ? t('loadFailed') : text}</p></div>
 }
 
 const handle = (u) => (u?.username ? `@${u.username}` : u?.displayName ?? '')
@@ -176,7 +177,7 @@ function Photos({ data, failed, period, ghost, loadMore, focusAt = null }) {
   const top = items.filter(i => i.rank <= 3)
   const rest = items.filter(i => i.rank > 3)
   const podium = top.map(i => ({
-    key: i.proof.id, rank: i.rank, label: handle(i.proof.user), value: i.proof.voteCount, format: n => `${n} ❤️`, onClick: () => open(proofs, i.proof),
+    key: i.proof.id, rank: i.rank, label: handle(i.proof.user), value: i.proof.voteCount, format: n => String(n), heart: true, onClick: () => open(proofs, i.proof),
     lead: <img className="r6-podium-photo" style={{ borderColor: MEDAL[i.rank - 1] }} src={thumbUrl(i.proof.thumbUrl || i.proof.photoUrl)} alt="" loading="lazy" />,
   }))
   // The "You" bar: my best photo of the period and the likes it needs to pass the one above.
@@ -208,7 +209,7 @@ function Photos({ data, failed, period, ghost, loadMore, focusAt = null }) {
         </div>
       )}
       <div className="r6-list r6-list--you">
-        {rest.map(i => <PhotoRow key={i.proof.id} item={i} week={period === 'week'} mine={me?.proofId === i.proof.id} rowRef={el => { rows.current[i.proof.id] = el }} onClick={() => open(proofs, i.proof)} />)}
+        {rest.map(i => <PhotoRow key={i.proof.id} item={i} week={period === 'week'} single={period === 'today' || period === 'yesterday'} mine={me?.proofId === i.proof.id} rowRef={el => { rows.current[i.proof.id] = el }} onClick={() => open(proofs, i.proof)} />)}
         <div ref={end} className="r6-more">{loading && <span className="r6-spinner" />}</div>
       </div>
       <YouBar text={you} onClick={onYou} />
@@ -217,8 +218,12 @@ function Photos({ data, failed, period, ghost, loadMore, focusAt = null }) {
   )
 }
 
-/** A photo from #4: the big rank, the thumbnail, the challenge and its theme, the author, "4 ❤️ · 2 💬" (ties: comments, then the earliest posted). */
-function PhotoRow({ item, mine, week, onClick, rowRef }) {
+/**
+ * A photo from #4: the big rank, the thumbnail, the author and city, likes and comments as icons (ties: comments, then the
+ * earliest posted). Week / All time add the challenge and its theme; a one-challenge board (`single`) would repeat them on
+ * every row, so the player leads (design pass, as in the app).
+ */
+function PhotoRow({ item, mine, week, single, onClick, rowRef }) {
   const p = item.proof
   const theme = p.context?.theme?.key ?? null
   const who = handle(p.user)
@@ -232,6 +237,13 @@ function PhotoRow({ item, mine, week, onClick, rowRef }) {
       </span>
       <img className="r6-pthumb" src={thumbUrl(p.thumbUrl || p.photoUrl)} alt="" loading="lazy" />
       <span className="r6-pbody">
+        {single ? (<>
+          <span className="r6-pwho r6-pwho--lead">
+            <AvatarWithFlag userId={p.user.id} displayName={p.user.displayName ?? p.user.username} photoUrl={p.user.photoUrl} size={24} />
+            <span className="r6-pname">{who}</span>
+          </span>
+          {p.city && <span className="r6-pwho"><FlagSticker country={p.city.country} size={14} /><span className="r6-pname">{shortCityName(p.city.name ?? '')}</span></span>}
+        </>) : (<>
         {p.context?.text && <span className="r6-ptitle">{p.context.text}</span>}
         {theme && (
           // The theme's text color (light / dark), not its fill: the peach ones (and the retired themes of
@@ -245,8 +257,10 @@ function PhotoRow({ item, mine, week, onClick, rowRef }) {
           <span className="r6-pname">{who}</span>
           <FlagSticker country={p.city?.country} size={14} />
         </span>
+        </>)}
       </span>
-      <span className="r6-pill">{p.voteCount} ❤️ · {p.commentCount ?? 0} 💬</span>
+      <span className="r6-pill"><Icon name="heart" size={15} className="r6-heart" />{p.voteCount}
+        {(p.commentCount ?? 0) > 0 && <><Icon name="chatbubble-outline" size={14} className="r6-pill-gap" />{p.commentCount}</>}</span>
     </button>
   )
 }
@@ -309,11 +323,14 @@ function Cities({ data, failed, period, myCityId, ghost }) {
                    mine={e.city.id === myCityId} onClick={() => openCity(e.city)}
                    movement={<Movement rank={e.rank} prevRank={e.prevRank} show={period !== 'today'} />}
                    lead={<FlagSticker country={e.city.country} size={34} />}
-                   sub={<>{t('mosaic.players', { count: e.players })} · {e.likes} ❤️</>}
+                   sub={<>{t('mosaic.players', { count: e.players })} <Icon name="heart" size={13} className="r6-heart" />{e.likes}</>}
                    extra={<RaceBar ratio={e.photos / Math.max(1, leader)} color={e.city.id === myCityId ? 'var(--cta)' : GOLD.fill} delay={Math.min(i, 8) * 60} />} />
         ))}
       </div>
-      {mine && (
+      {/* Under the city ranking: my rivals (moved from Passport), then how the cities answered (the Hilads Index). */}
+      <div className="r6-index"><RivalsBlock /><IndexCarousel alwaysLink source="ranks" /></div>
+      {/* #1: the line at the top already says so (the bar would repeat it, over the Index). */}
+      {mine && mine.rank !== 1 && (
         <YouBar text={mine.rank === 1 ? t('ranks.city.lineTop', { city: name(mine.city) })
           : t('ranks.city.youBar', { city: name(mine.city), rank: mine.rank, count: mine.gap ?? 1, next: mine.next ? shortCityName(mine.next.name) : '' })}
                 onClick={() => rows.current[mine.city.id]?.scrollIntoView({ block: 'center', behavior: 'smooth' })} />

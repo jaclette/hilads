@@ -10,10 +10,7 @@
     "special": "特別篇",
     "onlyIn": "只有 {{city}} 有"
   },
-  "nowTitle": "現在",
   "filterEvents": "在地活動",
-  "hiLocalTitle": "👋 Hi Local",
-  "filterHangouts": "🗣️ 聚會",
   "publicEventsSection": "公開在地活動",
   "accountWelcome": {
     "title": "恭喜你，{{username}}！",
@@ -46,15 +43,12 @@
     "noResults": "找不到地點",
     "loading": "正在取得位置……",
     "confirm": "分享這個地點",
-    "yourLocation": "你的位置",
-    "close": "關閉",
-    "clearSearch": "清除搜尋"
+    "yourLocation": "你的位置"
   },
   "language": "語言",
   "cancel": "取消",
   "loading": "載入中……",
   "retry": "再試一次",
-  "save": "儲存",
   "done": "完成",
   "close": "關閉",
   "clear": "清除",
@@ -176,9 +170,7 @@
   "tabs": {
     "today": "今天",
     "map": "地圖",
-    "chat": "Hi",
-    "passport": "護照",
-    "ranks": "排行"
+    "passport": "護照"
   },
   "scope": {
     "title": "顯示",
@@ -200,7 +192,6 @@
     "requiredTitle": "更新 Hilads",
     "requiredBody": "這個版本已不再支援，請更新 App 才能繼續使用 Hilads。"
   },
-  "mapSoon": "地點地圖快來了。",
   "firstLaunch": "在地玩，全球比。",
   "signUp": "註冊",
   "open": "打開",
@@ -225,7 +216,6 @@
     "errorBody": "檢舉送出失敗，再試一次。"
   },
   "subtitles": {
-    "map": "全世界照片裡的地點。",
     "hi": "跟你的城市打聲招呼，加入一個計畫。",
     "passport": "你的城市、你的照片、你的印章。"
   },
@@ -257,7 +247,7 @@
     "off": "關閉"
   },
   "wakingUp": {
-    "title": "Hilads 起床中… 🌍",
-    "body": "再等幾秒，我們會一直重試。"
+    "title": "無法連上 Hilads",
+    "body": "請檢查網路連線，我們會一直重試。"
   }
 }

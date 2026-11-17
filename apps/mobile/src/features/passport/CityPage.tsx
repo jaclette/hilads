@@ -1,7 +1,8 @@
-import { Text, TouchableOpacity, View, StyleSheet } from 'react-native';
+import { Text, View, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
-import { FontSizes, type ThemeColors } from '@/constants';
+import { Space, Radius, Type, Elevation, type ThemeColors } from '@/constants';
+import { Tappable } from '@/ui/Tappable';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { THEME_KEYS, themeName } from '@/features/daily/themes';
 import { ThemeIcon } from '@/ui/ThemeIcon';
@@ -73,8 +74,8 @@ export function CityPage({ cityName, country, themes, stamps, total = 7, earned,
           return (
             <View key={k} style={styles.cell}>
               {earnedBy && onStamp ? (
-                <TouchableOpacity onPress={() => onStamp(earnedBy)} accessibilityRole="button" testID="passport-stamp"
-                                  accessibilityLabel={`${themeName(k, { city: cityName })}, ${day(earnedBy.date)}`}>{body}</TouchableOpacity>
+                <Tappable onPress={() => onStamp(earnedBy)} accessibilityRole="button" testID="passport-stamp"
+                          accessibilityLabel={`${themeName(k, { city: cityName })}, ${day(earnedBy.date)}`}>{body}</Tappable>
               ) : body}
               <Text style={[styles.label, !stamped && !next && styles.labelOff]} numberOfLines={2}>{themeName(k, { city: cityName })}</Text>
               {earnedBy && <Text style={styles.date}>{day(earnedBy.date)}</Text>}
@@ -99,28 +100,29 @@ export function CityPage({ cityName, country, themes, stamps, total = 7, earned,
 const SIZE = 58;
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  page:      { padding: 16, gap: 12, borderRadius: 20, borderWidth: 1.5, borderColor: c.ticketLine, backgroundColor: c.bg2 },
-  head:      { flexDirection: 'row', alignItems: 'baseline', justifyContent: 'space-between', gap: 8 },
-  cityRow:   { flex: 1, flexDirection: 'row', alignItems: 'center', gap: 8, minWidth: 0 },
-  city:      { flexShrink: 1, fontSize: FontSizes.lg, fontWeight: '800', color: c.text },
-  count:     { fontSize: FontSizes.xs, fontWeight: '600', color: c.muted },
-  hint:      { fontSize: FontSizes.xs, color: c.text, lineHeight: 18 },
-  grid:      { flexDirection: 'row', flexWrap: 'wrap', rowGap: 12 },
-  cell:      { width: '25%', alignItems: 'center', gap: 4 },
+  // A passport page (design pass): the hero radius, a hairline in the ticket's warm line, the resting elevation.
+  page:      { padding: Space.lg, gap: Space.md, borderRadius: Radius.hero, borderWidth: 1, borderColor: c.ticketLine, backgroundColor: c.bg2, ...Elevation(c, 'rest') },
+  head:      { flexDirection: 'row', alignItems: 'baseline', justifyContent: 'space-between', gap: Space.sm },
+  cityRow:   { flex: 1, flexDirection: 'row', alignItems: 'center', gap: Space.sm, minWidth: 0 },
+  city:      { flexShrink: 1, ...Type.title, color: c.text },
+  count:     { ...Type.caption, color: c.muted },
+  hint:      { ...Type.caption, fontWeight: '500', color: c.text },
+  grid:      { flexDirection: 'row', flexWrap: 'wrap', rowGap: Space.lg },
+  cell:      { width: '25%', alignItems: 'center', gap: Space.xs },
   stamp:     { width: SIZE, height: SIZE, borderRadius: SIZE / 2, borderWidth: 2.5, alignItems: 'center', justifyContent: 'center' },
   // The ink's inner ring, dashed like a real rubber stamp.
   stampInner:{ width: SIZE - 12, height: SIZE - 12, borderRadius: (SIZE - 12) / 2, borderWidth: 1.5, borderStyle: 'dashed',
                alignItems: 'center', justifyContent: 'center' },
   empty:     { width: SIZE, height: SIZE, borderRadius: SIZE / 2, borderWidth: 2, borderStyle: 'dashed', borderColor: c.line,
                alignItems: 'center', justifyContent: 'center' },
-  label:     { fontSize: 11, fontWeight: '700', color: c.text, textAlign: 'center', lineHeight: 14 },
+  label:     { ...Type.caption, fontWeight: '700', color: c.text, textAlign: 'center', paddingHorizontal: Space.xxs },
   labelOff:  { fontWeight: '600', color: c.muted },
-  date:      { fontSize: 9, fontWeight: '700', color: c.muted, letterSpacing: 0.3 },
-  pass:      { flexDirection: 'row', alignItems: 'center', gap: 12, padding: 12, borderRadius: 16, borderWidth: 1.5, borderStyle: 'dashed', borderColor: c.gold },
-  passOn:    { borderStyle: 'solid', borderWidth: 2.5, backgroundColor: tint('#D9AE52', 0.14) },
+  date:      { ...Type.caption, fontWeight: '600', color: c.muted },
+  pass:      { flexDirection: 'row', alignItems: 'center', gap: Space.md, padding: Space.lg, borderRadius: Radius.card, borderWidth: 1.5, borderStyle: 'dashed', borderColor: c.gold },
+  passOn:    { borderStyle: 'solid', borderWidth: 2.5, backgroundColor: tint(c.medalGold, 0.16) },
   seal:      { width: 48, height: 48, borderRadius: 24, borderWidth: 2, borderStyle: 'dashed', borderColor: c.gold, alignItems: 'center', justifyContent: 'center' },
-  sealOn:    { borderStyle: 'solid', borderWidth: 3 },
-  passBody:  { flex: 1, gap: 2 },
-  passTitle: { fontSize: FontSizes.md, fontWeight: '800', color: c.gold },
-  passSub:   { fontSize: 13, fontWeight: '600', color: c.text },
+  sealOn:    { borderStyle: 'solid', borderWidth: 3, backgroundColor: tint(c.medalGold, 0.22) },
+  passBody:  { flex: 1, gap: Space.xxs },
+  passTitle: { ...Type.label, color: c.gold },
+  passSub:   { ...Type.caption, fontWeight: '600', color: c.text },
 });

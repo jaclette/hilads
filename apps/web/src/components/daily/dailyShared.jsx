@@ -2,15 +2,14 @@ import { createContext, useContext, useEffect, useState, useSyncExternalStore } 
 import { createPortal } from 'react-dom'
 import { useTranslation } from 'react-i18next'
 import i18n from '../../i18n'
-import { voteDailyProof, unvoteDailyProof, reportDailyProof, fetchDailyVoters } from '../../api'
+import { voteDailyProof, unvoteDailyProof, reportDailyProof } from '../../api'
 import { shortCityName } from '../../i18n/cityName'
 import { CityName } from '../CityName'
 import { track } from '../../lib/analytics'
 import Icon from '../Icon'
 import AvatarWithFlag from '../AvatarWithFlag'
-import { AnswerChip, BackHomeBlock, captionRepeatsAnswer, useMoney } from './compareShared'
+import { AnswerChip } from './compareShared'
 import { seedComments } from './comments'
-import { CommentButton, commentsTargetOf } from './PhotoCommentsSheet'
 
 // Where I am, as Today last said ({id, name, country, source, presence} | null):
 // the sheet's "Answer for [city]" uses it, never the browsed city.
@@ -28,11 +27,9 @@ export function setLastHere(here) {
 export function useHere() {
   return useSyncExternalStore(l => { hereListeners.add(l); return () => hereListeners.delete(l) }, () => lastHere)
 }
-import { themeName } from '../map/spotsShared'
 import { thumbFallback } from '../../lib/thumbFallback'
 import { useBackLayer } from '../../lib/backLayers'
-import { DualPhoto, selfieOf } from './DualPhoto'
-import { mediumUrl, thumbUrl } from '../../lib/imageThumb'
+import { thumbUrl } from '../../lib/imageThumb'
 import { placeholderStyle } from '../../lib/thumbhash'
 
 // Shared pieces of the web Daily Challenge screens (W2, ports of the app's
@@ -347,117 +344,36 @@ export function ProofTile({ proof, onOpen }) {
 
 const REPORT_REASONS = ['inappropriate', 'person_without_consent', 'dangerous', 'spam', 'other']
 
-/** Full-screen photo of one proof: author, badges, caption, price, place, vote, report. */
-export function ProofViewer({ proof, onClose }) {
+/**
+ * Report a photo (the photo feed's flag; was the old single-photo viewer's): the reasons as a
+ * sheet, then a short notice through `onNotice`. `proof` null: closed.
+ */
+export function ReportProofSheet({ proof, onClose, onNotice }) {
   useBackLayer(!!proof, onClose)   // browser back closes it
-  const { t, i18n } = useDc()
-  const { account, needAccount, openSpot, openProfile } = useDaily()
-  const [reporting, setReporting] = useState(false)
-  const [voters, setVoters] = useState(null)   // null closed, 'loading', 'error' or the list
-  useBackLayer(voters !== null, () => setVoters(null))   // the list closes before the photo
-  useBackLayer(reporting, () => setReporting(false))   // the report menu closes before the photo
-  const [notice, setNotice] = useState(null)
-  const money = useMoney()
+  const { t } = useDc()
   if (!proof) return null
-  const name = personName(proof.user)
-
-  const showVoters = async () => {
-    setVoters('loading')
-    try { setVoters(await fetchDailyVoters(proof.id)) } catch { setVoters('error') }
-  }
-
   const report = async (reason) => {
-    setReporting(false)
+    onClose()
     try {
       await reportDailyProof(proof.id, reason)
-      setNotice(t('report.thanks'))
+      onNotice?.(t('report.thanks'))
     } catch (err) {
-      setNotice(err.status === 409 ? t('report.already') : t('vote.errors.generic'))
+      onNotice?.(err.status === 409 ? t('report.already') : t('vote.errors.generic'))
     }
   }
-
-  // At the app root, above the tab bar (a screen's own layer would trap it);
-  // #root is the desktop column, so the viewer stays inside it.
   return createPortal(
-    <div className="dc-viewer" role="dialog" aria-modal="true">
-      <button type="button" className="dc-viewer-close" onClick={onClose} aria-label={t('back')}><Icon name="close" size={22} /></button>
-      {/* A blurred, darkened copy of the photo fills the space around it (landscape photos). */}
-      <div className="dc-viewer-blur" style={{ backgroundImage: `url("${proof.thumbUrl || proof.photoUrl}")` }} aria-hidden="true" />
-      <div className="dc-viewer-scroll">
-      {proof.selfieUrl
-        ? <DualPhoto className="dc-viewer-photo dc-viewer-dual" main={{ url: proof.photoUrl, thumb: proof.thumbUrl, hash: proof.thumbHash }} selfie={selfieOf(proof)} fit="contain" alt={proof.caption || ''} />
-        : <img className="dc-viewer-photo" src={mediumUrl(proof.photoUrl)} style={placeholderStyle(proof.thumbHash)} onError={thumbFallback(proof.photoUrl)} decoding="async" alt={proof.caption || ''} />}
-      <div className="dc-viewer-meta">
-        <div className="dc-viewer-name">
-          {name} · <RoleLabel isLocal={proof.isLocal} suggestion={proof.suggestion} />
-          {proof.city && <> · <CityName name={proof.city.name} country={proof.city.country} short /></>}
-          {proof.user.localPass && <LocalPassBadge label onDark />}
-          {proof.isEarly && <EarlyBadge onDark />}
-        </div>
-        {(proof.validatedByLocal || (proof.worldRank !== null && proof.worldRank <= 3)) && (
-          <div className="dc-viewer-badge">
-            {proof.worldRank !== null && proof.worldRank <= 3 && (
-              <span style={INLINE}><RankMedal rank={proof.worldRank} size={20} />{t('results.worldRank', { rank: proof.worldRank })}</span>
-            )}
-            {proof.worldRank !== null && proof.worldRank <= 3 && proof.validatedByLocal ? '  ·  ' : ''}
-            {proof.validatedByLocal && <span style={INLINE}><Icon name="checkmark" size={13} />{t('validatedByLocal')}</span>}
-          </div>
-        )}
-        {/* The proof's challenge: "Drinks · How do locals say cheers?", then its text (a shared link lands here). */}
-        {proof.context && (
-          <div className="dc-viewer-context">
-            <strong>{[proof.context.theme ? themeName(proof.context.theme.key, { special: proof.context.special, city: proof.city?.name }) : null,
-              proof.context.question].filter(Boolean).join(' · ')}</strong>
-            {proof.context.text && <span>{proof.context.text}</span>}
-          </div>
-        )}
-        {proof.answer && !proof.backHome && <AnswerChip answer={proof.answer} onDark />}
-        {/* Once: a caption that only repeats the answer stays out. */}
-        {proof.caption && !captionRepeatsAnswer(proof.caption, proof.backHome ? null : proof.answer, i18n.language) && <p className="dc-viewer-caption">{proof.caption}</p>}
-        {proof.backHome && <BackHomeBlock proof={proof} />}
-        {((proof.price && !proof.backHome) || proof.place || proof.spot) && (
-          <p className="dc-viewer-extra">
-            {proof.price && !proof.backHome && (
-              // Converted to my currency, the original after it (SPEC 10.5).
-              <span style={{ ...INLINE, marginRight: 12 }}><Icon name="cash-outline" size={13} />{money.price(proof.price).main}
-                {money.price(proof.price).original && <small className="dc-price-original">{money.price(proof.price).original}</small>}</span>
-            )}
-            {proof.spot ? (
-              <button type="button" className="dc-viewer-spot" style={INLINE} onClick={() => { onClose(); openSpot(proof.spot.id) }}><Icon name="location-outline" size={13} />{proof.spot.name}</button>
-            ) : proof.place ? <span style={INLINE}><Icon name="location-outline" size={13} />{proof.place.name || t('unnamedPlace')}</span> : ''}
-          </p>
-        )}
-        <div className="dc-viewer-actions">
-          {proof.status === 'approved' && !proof.suggestion && <VoteButton proof={proof} variant="viewer" source="viewer" onShowVoters={proof.isMine ? showVoters : undefined} />}
-          {/* Its comments open above the viewer; a profile from them closes it first. */}
-          {proof.status === 'approved' && <CommentButton target={commentsTargetOf(proof, { onLeave: onClose })} variant="pill" />}
-          {!proof.isMine && (
-            <button type="button" className="dc-viewer-report" onClick={() => (account ? setReporting(true) : needAccount('view_profile'))}>
-              {t('report.title')}
-            </button>
-          )}
-        </div>
-        {notice && <p className="dc-viewer-notice" role="status">{notice}</p>}
+    <div className="v3-sheet-wrap" role="dialog" aria-modal="true" aria-label={t('report.title')}>
+      <button type="button" className="v3-sheet-scrim" onClick={onClose} aria-label={t('cancel')} />
+      <div className="v3-sheet">
+        <span className="v3-sheet-grabber" aria-hidden="true" />
+        <p className="v3-sheet-title">{t('report.title')}</p>
+        <p className="dc-muted">{t('report.body')}</p>
+        {REPORT_REASONS.map(r => (
+          <button key={r} type="button" className="v3-scope-row" onClick={() => report(r)}>
+            <span className="v3-scope-row-body"><span className="v3-scope-row-title">{t(`report.reasons.${r}`)}</span></span>
+          </button>
+        ))}
       </div>
-      </div>
-      {/* A voter's profile opens over the app: the viewer closes first. */}
-      <VotersSheet voters={voters} onClose={() => setVoters(null)}
-                   onOpen={(v) => { setVoters(null); onClose(); openProfile(v.id, v.username) }} />
-      {reporting && (
-        <div className="v3-sheet-wrap" role="dialog" aria-modal="true" aria-label={t('report.title')}>
-          <button type="button" className="v3-sheet-scrim" onClick={() => setReporting(false)} aria-label={t('cancel')} />
-          <div className="v3-sheet">
-            <span className="v3-sheet-grabber" aria-hidden="true" />
-            <p className="v3-sheet-title">{t('report.title')}</p>
-            <p className="dc-muted">{t('report.body')}</p>
-            {REPORT_REASONS.map(r => (
-              <button key={r} type="button" className="v3-scope-row" onClick={() => report(r)}>
-                <span className="v3-scope-row-body"><span className="v3-scope-row-title">{t(`report.reasons.${r}`)}</span></span>
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
     </div>,
     document.getElementById('root') ?? document.body,
   )

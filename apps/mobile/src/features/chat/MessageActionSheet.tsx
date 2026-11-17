@@ -10,7 +10,7 @@ import { View, Text, TouchableOpacity, StyleSheet, Share } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import type { Reaction } from '@/types';
-import { Border, FontSizes, Radius, type ThemeColors } from '@/constants';
+import { Space, Border, FontSizes, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { Button, Sheet } from '@/ui';
 
@@ -96,13 +96,13 @@ function Action({ icon, label, onPress, danger = false }: {
 }
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  emojiRow:       { flexDirection: 'row', justifyContent: 'space-between', paddingBottom: 6 },
+  emojiRow:       { flexDirection: 'row', justifyContent: 'space-between', paddingBottom: Space.sm },
   emojiBtn:       { width: 52, height: 52, borderRadius: Radius.full, alignItems: 'center', justifyContent: 'center',
                     borderWidth: Border, borderColor: c.line, backgroundColor: c.bg2 },
   emojiBtnActive: { borderColor: c.primary, backgroundColor: c.primaryTint },
   emojiText:      { fontSize: 26 },
   actions:        { borderTopWidth: 1, borderTopColor: c.line },
-  action:         { flexDirection: 'row', alignItems: 'center', gap: 14, minHeight: 52, borderBottomWidth: 1, borderBottomColor: c.line },
+  action:         { flexDirection: 'row', alignItems: 'center', gap: Space.lg, minHeight: 52, borderBottomWidth: 1, borderBottomColor: c.line },
   actionLabel:    { fontSize: FontSizes.md, fontWeight: '600' },
-  cancel:         { alignSelf: 'center', marginTop: 4 },
+  cancel:         { alignSelf: 'center', marginTop: Space.xs },
 });

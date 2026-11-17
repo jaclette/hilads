@@ -7,19 +7,17 @@ import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import * as Haptics from 'expo-haptics';
 import { useTheme } from '@/context/ThemeContext';
-import { FontSizes } from '@/constants';
+import { Space, FontSizes, IconSize } from '@/constants';
 import { useSeasonalLive } from '@/features/event/seasonal';
 import { PumpkinIcon, SeasonalScope, TabGhost } from '@/features/event/SeasonalArt';
 import { patchNotifCounts, refreshNotifCounts, useNotifCounts } from '@/features/notifications/counts';
 import { markNotificationTypesRead } from '@/api/notifications';
-import { themeColor, tint } from '@/ui/joy';
 import { markTabFocus, markTabPress } from '@/lib/perfProbe';
-
-const GOLD = themeColor('sip');
+import { track } from '@/services/analytics';
 
 // V6 tab badges: what each tab's badge counts, and the notification types its visit marks read.
-const TAB_BADGE: Record<string, { key: 'chat' | 'passport' | 'ranks'; types: string[]; count: boolean }> = {
-  chat:     { key: 'chat',     types: ['mention', 'city_here'],            count: true },
+// (Hi is no longer a tab: its mentions reach the bell and the inbox.)
+const TAB_BADGE: Record<string, { key: 'passport' | 'ranks'; types: string[]; count: boolean }> = {
   passport: { key: 'passport', types: ['daily_local_pass'],                count: false },
   ranks:    { key: 'ranks',    types: ['daily_result', 'daily_rank'],      count: false },
 };
@@ -33,12 +31,13 @@ type TabDef = {
   icon:  React.ComponentProps<typeof Ionicons>['name'];
 };
 
+// Four tabs (UX audit option B, 2026-11): play (Today), compare (World: the ranks route, its
+// photos, players, cities and the Index), where (Map: spots and plans), me (Passport: inbox,
+// settings). Hi is a screen of the city, opened from Today, not a tab.
 const TABS: TabDef[] = [
   { name: 'today',    label: 'tabs.today',    icon: 'flame-outline' },
+  { name: 'ranks',    label: 'scope.world',   icon: 'earth-outline' },
   { name: 'map',      label: 'tabs.map',      icon: 'map-outline' },
-  // V6: the game hub, gold when active.
-  { name: 'ranks',    label: 'tabs.ranks',    icon: 'trophy-outline' },
-  { name: 'chat',     label: 'tabs.chat',     icon: 'chatbubble-outline' },
   { name: 'passport', label: 'tabs.passport', icon: 'id-card-outline' },
 ];
 
@@ -47,7 +46,7 @@ export const unstable_settings = { initialRouteName: 'today' };
 
 function CustomTabBar({ state, emitter, navigateToTab }: BottomTabBarProps) {
   const insets = useSafeAreaInsets();
-  const { colors, theme } = useTheme();
+  const { colors } = useTheme();
   const { t } = useTranslation('common');
   // A seasonal event's live day: Today wears its icon (Halloween: a pumpkin) and a ghost peeks over the active tab.
   const halloween = useSeasonalLive()?.key === 'halloween';
@@ -64,11 +63,10 @@ function CustomTabBar({ state, emitter, navigateToTab }: BottomTabBarProps) {
     const onHide = Keyboard.addListener(hideEvt, () => setKeyboardUp(false));
     return () => { onShow.remove(); onHide.remove(); };
   }, []);
-  // A hidden route (challenges, me...) highlights the tab it belongs to.
+  // A hidden route (challenges, me, Hi and its lists...) highlights the tab it belongs to.
   const current = state.routes[state.index]?.name;
   const activeTab = current === 'me' ? 'passport'
-    : current === 'challenges' ? 'today'
-    : current === 'events' || current === 'here' ? 'chat'
+    : current === 'challenges' || current === 'chat' || current === 'events' || current === 'here' ? 'today'
     : current;
 
   // Opening a tab clears its badge (the notifications behind it are read).
@@ -78,7 +76,7 @@ function CustomTabBar({ state, emitter, navigateToTab }: BottomTabBarProps) {
     if (!b || !badges[b.key]) return;
     patchNotifCounts(c => ({ ...c, badges: { ...c.badges, [b.key]: 0 } }));
     markNotificationTypesRead(b.types).then(refreshNotifCounts);
-  }, [activeTab, badges]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [activeTab, badges]);  
 
   if (keyboardUp) return null;
 
@@ -91,8 +89,8 @@ function CustomTabBar({ state, emitter, navigateToTab }: BottomTabBarProps) {
       {TABS.map(tab => {
         const routeIndex = state.routes.findIndex(r => r.name === tab.name);
         const focused    = activeTab === tab.name;
-        const gold       = tab.name === 'ranks' && focused;
-        const color      = gold ? (theme === 'dark' ? GOLD.textDark : GOLD.textLight) : focused ? colors.primaryOnTint : colors.muted;
+        // One selected state for every tab (design pass): the shared peach. Gold is for prizes only.
+        const color      = focused ? colors.onSelected : colors.muted;
         const label      = t(tab.label);
         return (
           <Pressable
@@ -101,7 +99,7 @@ function CustomTabBar({ state, emitter, navigateToTab }: BottomTabBarProps) {
             accessibilityLabel={label}
             testID={`tab-${tab.name}`}
             accessibilityState={{ selected: focused }}
-            style={[styles.tab, focused && { backgroundColor: gold ? tint(GOLD.fill, 0.22) : colors.primaryTint }]}
+            style={[styles.tab, focused && { backgroundColor: colors.selected }]}
             onPress={() => {
               const route = state.routes[routeIndex];
               // expo-router 58: the bar gets an emitter and navigateToTab (no navigation object).
@@ -112,6 +110,7 @@ function CustomTabBar({ state, emitter, navigateToTab }: BottomTabBarProps) {
               });
               if (state.index !== routeIndex && !event.defaultPrevented) {
                 markTabPress(tab.name);
+                track('tab_pressed', { from: activeTab ?? null, to: tab.name });
                 if (Platform.OS !== 'web') Haptics.selectionAsync().catch(() => {});
                 if (route) navigateToTab(route.key);
               }
@@ -120,7 +119,7 @@ function CustomTabBar({ state, emitter, navigateToTab }: BottomTabBarProps) {
             {focused && <TabGhost />}
             <View>
               {halloween && tab.name === 'today' ? <PumpkinIcon size={24} color={color} />
-                : <Ionicons name={gold ? 'trophy' : tab.icon} size={24} color={color} />}
+                : <Ionicons name={tab.icon} size={IconSize.lg} color={color} />}
               <TabBadge n={TAB_BADGE[tab.name] && !focused ? badges[TAB_BADGE[tab.name].key] : 0} count={!!TAB_BADGE[tab.name]?.count} />
             </View>
             <Text style={[styles.label, { color }, focused && styles.labelActive]} numberOfLines={1}>{label}</Text>
@@ -147,23 +146,23 @@ function TabBadge({ n, count }: { n: number; count: boolean }) {
 const styles = StyleSheet.create({
   container: {
     flexDirection:     'row',
-    gap:               6,
+    gap:               Space.sm,
     borderTopWidth:    1,
-    paddingTop:        8,
-    paddingHorizontal: 12,
+    paddingTop:        Space.sm,
+    paddingHorizontal: Space.md,
   },
   tab: {
     flex:           1,
     alignItems:     'center',
     justifyContent: 'center',
-    gap:            2,
+    gap:            Space.xxs,
     minHeight:      56,
     borderRadius:   16,
   },
-  label:       { fontSize: FontSizes.tiny + 1, fontWeight: '600' },
-  badge:       { position: 'absolute', top: -5, right: -10, minWidth: 18, height: 18, paddingHorizontal: 4, borderRadius: 9,
+  label:       { fontSize: FontSizes.xs, fontWeight: '600' },
+  badge:       { position: 'absolute', top: -5, right: -10, minWidth: 18, height: 18, paddingHorizontal: Space.xs, borderRadius: 9,
                  borderWidth: 2, alignItems: 'center', justifyContent: 'center' },
-  badgeText:   { fontSize: 10, lineHeight: 12, fontWeight: '800' },
+  badgeText:   { fontSize: FontSizes.tiny, lineHeight: 14, fontWeight: '800' },
   dot:         { position: 'absolute', top: -2, right: -4, width: 11, height: 11, borderRadius: 6, borderWidth: 2 },
   labelActive: { fontWeight: '700' },
 });

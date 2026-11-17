@@ -114,6 +114,9 @@ export type AnalyticsEvent =
   | 'today_countries_play'
   | 'today_countries_all'
   | 'today_countries_sort'
+  // Navigation: tab_pressed { from, to } (the $screen events come from trackScreen)
+  | 'tab_pressed'
+  | 'city_chat_opened'          // { source, mentions }: Hi from Today (no longer a tab)
   // V6
   | 'ranks_viewed'
   | 'ranks_ghost_tapped'
@@ -149,6 +152,7 @@ export type AnalyticsEvent =
   // V3-07: the map of spots (SPEC 9.13)
   | 'map_viewed'
   | 'map_filter_used'
+  | 'plan_opened'             // { source }: a Hi plan opened from the Map's Plans list
   | 'map_first_spot_tapped'
   | 'map_view_switched'
   | 'map_city_bubble_tapped'
@@ -162,7 +166,13 @@ export type AnalyticsEvent =
   // The points reward's victory screen (2026-11-07).
   | 'score_win_shown'
   | 'score_win_ranks'
-  | 'score_win_share';
+  | 'score_win_share'
+  | 'challenge_shared'          // { challengeId }
+  | 'city_search_pick'          // { geonameId, cityId, created }: a GeoNames city picked in Switch city
+  | 'here_set'                  // { cityId, how: 'pick' | 'gps' }: "I'm here" set from Switch city
+  | 'city_switch_proposed'      // { from, to }: GPS says the user is in another city
+  | 'city_switch_accepted'
+  | 'city_switch_declined';
 
 type Payload = Record<string, string | number | boolean | undefined | null>;
 
@@ -186,20 +196,38 @@ const posthog = new PostHog('phc_zz4Q6VJETesgBUkeKe8a9asUwbra9qGXgw4ff6zPTxLM', 
 
 export function track(event: AnalyticsEvent, payload?: Payload): void {
   if (__DEV__) {
-    // eslint-disable-next-line no-console
+     
     console.log('[analytics]', event, { ..._ctx, ...payload });
     return;
   }
   posthog.capture(event, { platform: 'mobile', ..._ctx, ...payload });
 }
 
+/** A screen view (`$screen`, `$screen_name` = the route pattern, e.g. "daily/[date]"). Sent by
+ *  useScreenTracking on every route change; web sends the same event with its own screen names. */
+export function trackScreen(name: string, payload?: Payload): void {
+  if (__DEV__) {
+     
+    console.log('[analytics] screen', name, payload ?? '');
+    return;
+  }
+  posthog.screen(name, { platform: 'mobile', ..._ctx, ...payload } as Parameters<typeof posthog.screen>[1]);
+}
+
+/** PostHog person properties are JSON values: drop the undefined keys a Payload may carry. */
+function withoutUndefined(p: Payload): Record<string, string | number | boolean | null> {
+  const out: Record<string, string | number | boolean | null> = {};
+  for (const [k, v] of Object.entries(p)) if (v !== undefined) out[k] = v;
+  return out;
+}
+
 export function identifyUser(id: string, props?: Payload): void {
   if (__DEV__) {
-    // eslint-disable-next-line no-console
+     
     console.log('[analytics] identify', id, props ?? '');
     return;
   }
-  posthog.identify(id, props);
+  posthog.identify(id, props && withoutUndefined(props));
 }
 
 export function resetAnalytics(): void {

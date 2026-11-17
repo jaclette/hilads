@@ -7,9 +7,6 @@ import type {
   NearbyPlace,
   DailyArchive,
   DailyCalendar,
-  DailyGuide,
-  DailyLeaderboard,
-  DailyPlacePin,
   DailyProposal,
   DailyProof,
   PhotoComment,
@@ -17,7 +14,6 @@ import type {
   DailySheet,
   DailyTodayProofs,
   DailyTodayCountries,
-  DailyPodium,
   DailyToday,
   DailyTwistProposal,
   DailyTwistProposalScreen,
@@ -57,9 +53,6 @@ export async function fetchDailyBoard(date: string, guestId?: string | null): Pr
 
 // The last Compare board per date (Today prefetches it): the sheet shows it at once, then refreshes.
 const boardCache = new Map<string, DailyBoard>();
-export function cachedDailyBoard(date: string): DailyBoard | null {
-  return boardCache.get(`${date}|${locale()}`) ?? null;
-}
 
 /** Yesterday around the world (SPEC 10.7): one slide per city of yesterday's challenge. Public. */
 export async function fetchDailyTour(opts: { cityId?: string | number | null; guestId?: string | null; date?: string } = {}): Promise<DailyTour> {
@@ -81,15 +74,6 @@ export async function fetchDailyRates(): Promise<DailyRates> {
 /** "Remind me later" (Today's how-it-works sheet): today's evening reminder for me, within the push cap. */
 export async function remindMeLater(): Promise<{ queued: boolean }> {
   return api.post<{ queued: boolean }>('/daily/remind-me', {});
-}
-
-/** Yesterday's podium: the scope's top 3 proofs of yesterday, total and countries. A city with none falls back to World. */
-export async function fetchDailyPodium(
-  opts: { scope?: 'world' | 'city'; cityId?: string | number | null; guestId?: string | null } = {},
-): Promise<DailyPodium> {
-  return api.get<DailyPodium>('/daily/podium', {
-    params: { scope: opts.scope ?? 'world', cityId: cityParam(opts.cityId), guestId: opts.guestId ?? undefined, locale: locale() },
-  });
 }
 
 /** Today's stories row and mosaic in one call: a day's players' photos grouped by country (`date`: a past day, default today). */
@@ -157,20 +141,6 @@ export async function fetchDailyArchive(
 /** Week strip / month calendar: days from..to (at most 62) with my status, and my streak. */
 export async function fetchDailyCalendar(from: string, to: string): Promise<DailyCalendar> {
   return api.get<DailyCalendar>('/daily/calendar', { params: { from, to } });
-}
-
-/** City guide: one summary per weekly theme, plus my Local Pass progress in that city. */
-export async function fetchDailyGuide(cityId?: string | number | null, guestId?: string | null): Promise<DailyGuide> {
-  return api.get<DailyGuide>('/daily/guide', { params: { cityId: cityParam(cityId), guestId: guestId ?? undefined } });
-}
-
-/** "Already done" map: pinned places of past challenges for a city (World selection for a dead city). */
-export async function fetchDailyPlaces(
-  opts: { cityId?: string | number | null; limit?: number; guestId?: string | null } = {},
-): Promise<{ scope: 'world' | 'city'; items: DailyPlacePin[] }> {
-  return api.get('/daily/places', {
-    params: { cityId: cityParam(opts.cityId), limit: opts.limit ?? 200, guestId: opts.guestId ?? undefined, locale: locale() },
-  });
 }
 
 export async function fetchDailyProof(id: string): Promise<DailyProof> {
@@ -307,19 +277,6 @@ export async function fetchDailyProofStates(ids: string[], guestId?: string | nu
   items: Record<string, DailyVoteState>; myVotes: { used: number; left: number } | null;
 }> {
   return api.get('/daily/proofs/state', { params: { ids: ids.join(','), guestId: guestId ?? undefined } });
-}
-
-/**
- * Provisional leaderboard of the active challenge. Pass the last ETag: the
- * result is null when nothing changed (304).
- */
-export async function fetchDailyLeaderboard(etag: string | null, guestId?: string | null): Promise<{ data: DailyLeaderboard; etag: string | null } | null> {
-  try {
-    return await api.getWithEtag<DailyLeaderboard>('/daily/leaderboard', etag, { params: { guestId: guestId ?? undefined } });
-  } catch (err) {
-    if (err instanceof ApiError && err.status === 304) return null;
-    throw err;
-  }
 }
 
 /** Propose a Daily Challenge (signed in; one pending at a time). */

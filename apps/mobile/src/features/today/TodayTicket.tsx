@@ -1,11 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, Alert, Pressable, Text, View, StyleSheet } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
-import { FontSizes, type ThemeColors } from '@/constants';
+import { Space, Spacing, Radius, Type, Elevation, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { useApp } from '@/context/AppContext';
 import { useScope } from '@/context/ScopeContext';
@@ -17,7 +16,8 @@ import { dailyTrackProps } from '@/features/daily/track';
 import { trackLocalPassEarned } from '@/features/daily/localPassTracking';
 import { ThemeIcon } from '@/ui/ThemeIcon';
 import { CoverPhoto } from '@/ui/Photo';
-import { FlagSticker, themeColor } from '@/ui/joy';
+import { CoverScrim } from '@/ui/CoverScrim';
+import { themeColor } from '@/ui/joy';
 import { themeCover } from './covers';
 import { PulseButton, type PulseTone } from './PulseButton';
 import { HowItWorksSheet } from './HowItWorksSheet';
@@ -45,9 +45,8 @@ const FIRST_PROOF_KEY = 'hilads_daily_first_proof_done';
  * Today's Daily Challenge, the hero (SPEC 9.3, V3 polish): the cover photo
  * with the theme chip and the time left; the short headline and, under it, the
  * full ask; for a player who never played, the three steps (Snap it, Name it,
- * Compare); the live strip of the cities that played today (the same list as
- * the compare section under it: GET /daily/today/countries), which opens the
- * compare view; "Snap it for [city]" (straight to the camera), then "You played
+ * Compare) (the cities that played today are the block under it, not a strip
+ * here: UX audit 2026-11); "Snap it for [city]" (straight to the camera), then "You played
  * · See the world" once my photo is in. Tapping the photo opens the challenge.
  */
 export function TodayTicket({ data, countries, loading, error = false, secondsLeft, visible = true, onReload }: {
@@ -136,9 +135,8 @@ export function TodayTicket({ data, countries, loading, error = false, secondsLe
   };
   const placeTheme = isPlaceTheme(challenge.theme?.key);
   const cityShort = here?.name ? shortCityName(here.name) : null;
-  // Today's cities, the same list as the compare section: is mine in?
+  // Today's cities, the same list as the block under the hero (for the tracking).
   const cities = todayCities(countries);
-  const mineIn = !!myProof || (!!here && cities.some(c => c.city.id === here.id));
   // "Only in Saigon" in city scope, "Only here" in World; a special day's own name.
   const themeLabel = challenge.theme
     ? themeName(challenge.theme.key, { special: challenge.special, city: scope === 'city' ? city?.name : null })
@@ -175,7 +173,9 @@ export function TodayTicket({ data, countries, loading, error = false, secondsLe
   // The full ask under a short headline ("...and share its local name"): the subtitle, else the text,
   // unless the text only says the headline again in other words (V6: "Find where locals hang out at
   // night." / "Find the place where locals gather after dark.").
-  const ask = original ? null : challenge.subtitle
+  // The subtitle (back office) too, only when it adds something: context or a local twist.
+  const subtitle = challenge.subtitle && !sameAsk(headline, challenge.subtitle) ? challenge.subtitle : null;
+  const ask = original ? null : subtitle
     || (challenge.headline && challenge.headline !== challenge.text && !sameAsk(challenge.headline, challenge.text) ? challenge.text : null);
   // The theme's own color (DESIGN.md): the chip's fill and its text color.
   const tc = themeColor(challenge.special ? 'special' : challenge.theme?.key);
@@ -191,8 +191,6 @@ export function TodayTicket({ data, countries, loading, error = false, secondsLe
       <Pressable style={StyleSheet.absoluteFill} onPress={openSheet} accessibilityRole="button" testID="today-hero"
                  accessibilityLabel={`${DAILY_CHALLENGE}${challenge.theme ? `, ${themeLabel}` : ''}: ${challenge.text}`}>
         <CoverPhoto url={challenge.coverUrl} fallback={fallbackCover} style={StyleSheet.absoluteFill} contentFit="cover" transition={150} />
-        <LinearGradient colors={['rgba(0,0,0,0.62)', 'rgba(0,0,0,0)']} style={styles.shadeTop} />
-        <LinearGradient colors={['rgba(0,0,0,0)', 'rgba(0,0,0,0.55)', 'rgba(0,0,0,0.88)']} locations={[0, 0.4, 1]} style={styles.shadeBottom} />
       </Pressable>
       <SeasonalHeroDecor visible={visible} />
       {/* Event mode: bats drifting across the hero. */}
@@ -220,13 +218,13 @@ export function TodayTicket({ data, countries, loading, error = false, secondsLe
       </View>
 
       <View style={styles.heroBottom} pointerEvents="box-none">
+        {/* The shade behind the text only: the photo keeps its real brightness above it. */}
+        <CoverScrim />
         <View style={styles.titles} pointerEvents="none">
           <Text style={styles.headline} numberOfLines={3}>{headline}</Text>
           {!!ask && <Text style={styles.ask} numberOfLines={2}>{ask}</Text>}
         </View>
         {showSteps && <Steps compareType={challenge.compare?.type ?? null} price={!!challenge.compare?.priceLabel} />}
-        <LiveStrip cities={cities} mineIn={mineIn} city={cityShort} active={challenge.isActive}
-                   onPress={() => openCompare('hero_strip')} />
         {myProof ? (
           <>
             {myProof.status !== 'approved' && <DailyStatusChip status={myProof.status} />}
@@ -288,90 +286,60 @@ function Steps({ compareType, price }: { compareType: DailyCompareType | null; p
   );
 }
 
-/**
- * The live strip: the flags of the cities that played today (mine first) and
- * where my city stands ("2 cities in. Saigon isn't yet!", "3 cities in ·
- * Compare", "Be the first city in the world today"). Opens the compare view.
- */
-function LiveStrip({ cities, mineIn, city, active, onPress }: {
-  cities: ReturnType<typeof todayCities>; mineIn: boolean; city: string | null; active: boolean; onPress: () => void;
-}) {
-  const styles = useThemedStyles(makeStyles);
-  const { t } = useTranslation('daily');
-  const n = cities.length;
-  if (n === 0 && !active) return null;
-  const text = n === 0 ? t('hero.firstCity')
-    : mineIn ? `${t('hero.citiesIn', { count: n })} · ${t('compare.seeAnswers')}`
-    : city ? t('hero.citiesMissing', { count: n, city })
-    : t('hero.citiesIn', { count: n });
-  return (
-    <Pressable style={({ pressed }) => [styles.strip, pressed && styles.pressed]} onPress={onPress}
-               accessibilityRole="button" accessibilityLabel={text} hitSlop={4} testID="today-live-strip">
-      {n > 0 ? (
-        <View style={styles.flags}>
-          {cities.slice(0, 4).map((c, i) => (
-            <FlagSticker key={c.city.id} country={c.city.country} size={22} style={i > 0 ? styles.flagOverlap : undefined} />
-          ))}
-        </View>
-      ) : <Ionicons name="earth-outline" size={18} color="#FFFFFF" />}
-      <Text style={styles.stripText} numberOfLines={1}>{text}</Text>
-      <Ionicons name="chevron-forward" size={16} color="#FFFFFF" />
-    </Pressable>
-  );
-}
-
 // White on the photo: a soft shadow keeps 4.5:1 over the gradients (SPEC 9.3).
 // On the photo the button is white (or "sun orange"); the primary stays for small accents.
 const HERO_CTA_TONE: PulseTone = 'white';
-const ON_PHOTO_SHADOW = { textShadowColor: 'rgba(0,0,0,0.5)', textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 4 };
+// A safety net on bright covers, on top of the scrim (CoverScrim).
+const ON_PHOTO_SHADOW = { textShadowColor: 'rgba(0,0,0,0.6)', textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 6 };
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  hero:        { aspectRatio: 4 / 5, borderRadius: 24, overflow: 'hidden', backgroundColor: c.bg3, justifyContent: 'space-between' },
-  shadeTop:    { position: 'absolute', top: 0, left: 0, right: 0, height: '32%' },
-  shadeBottom: { position: 'absolute', bottom: 0, left: 0, right: 0, height: '72%' },
-  heroTop:     { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8, padding: 14 },
-  heroTopRight: { alignItems: 'flex-end', gap: 6, flexShrink: 1 },
-  chip:        { flexDirection: 'row', alignItems: 'center', gap: 6, flexShrink: 1, paddingHorizontal: 10, paddingVertical: 6,
-                 borderRadius: 14, backgroundColor: 'rgba(0,0,0,0.42)' },
-  chipText:    { flexShrink: 1, fontSize: 13, fontWeight: '700', color: '#FFFFFF' },
-  themeChip:   { borderRadius: 999, paddingHorizontal: 11 },
-  heroBottom:  { gap: 12, padding: 16 },
-  titles:      { gap: 4 },
-  headline:    { fontSize: 24, lineHeight: 29, fontWeight: '800', color: '#FFFFFF', letterSpacing: -0.3, ...ON_PHOTO_SHADOW },
-  ask:         { fontSize: 15, lineHeight: 20, fontWeight: '600', color: 'rgba(255,255,255,0.92)', ...ON_PHOTO_SHADOW },
-  steps:       { flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', rowGap: 6 },
-  stepWrap:    { flexDirection: 'row', alignItems: 'center', gap: 4, marginRight: 4 },
-  step:        { flexDirection: 'row', alignItems: 'center', gap: 5, paddingHorizontal: 9, paddingVertical: 5, borderRadius: 999,
+  hero:        { aspectRatio: 4 / 5, borderRadius: Radius.hero, overflow: 'hidden', backgroundColor: c.bg3, justifyContent: 'space-between' },
+  heroTop:     { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', gap: Space.sm, padding: Space.lg },
+  heroTopRight: { alignItems: 'flex-end', gap: Space.sm, flexShrink: 1 },
+  chip:        { flexDirection: 'row', alignItems: 'center', gap: Space.sm, flexShrink: 1, paddingHorizontal: Space.md, paddingVertical: Space.sm,
+                 borderRadius: Radius.control, backgroundColor: c.photoButton },
+  chipText:    { flexShrink: 1, ...Type.caption, fontWeight: '800', color: c.white },
+  themeChip:   { paddingHorizontal: Space.md },
+  heroBottom:  { gap: Space.md, padding: Space.lg },
+  titles:      { gap: Space.xs },
+  // The day's question is the screen's display title (design pass).
+  headline:    { ...Type.display, color: c.white, ...ON_PHOTO_SHADOW },
+  ask:         { ...Type.body, fontWeight: '600', color: 'rgba(255,255,255,0.92)', ...ON_PHOTO_SHADOW },
+  steps:       { flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', rowGap: Space.sm },
+  stepWrap:    { flexDirection: 'row', alignItems: 'center', gap: Space.xs, marginRight: Space.xs },
+  step:        { flexDirection: 'row', alignItems: 'center', gap: Space.xs, paddingHorizontal: Space.sm, paddingVertical: Space.xs, borderRadius: 999,
                  backgroundColor: 'rgba(255,255,255,0.18)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.35)' },
-  stepText:    { fontSize: 12, fontWeight: '800', color: '#FFFFFF' },
-  strip:       { flexDirection: 'row', alignItems: 'center', gap: 8, minHeight: 40, paddingLeft: 8, paddingRight: 10, paddingVertical: 6,
-                 borderRadius: 20, backgroundColor: 'rgba(0,0,0,0.5)', alignSelf: 'flex-start', maxWidth: '100%' },
-  pressed:     { opacity: 0.7 },
-  flags:       { flexDirection: 'row', alignItems: 'center' },
-  flagOverlap: { marginLeft: -7 },
-  stripText:   { flexShrink: 1, fontSize: 13, fontWeight: '700', color: '#FFFFFF' },
-  ticket:      { backgroundColor: c.bg2, borderWidth: 1.5, borderColor: c.ticketLine, borderRadius: 22 },
+  stepText:    { ...Type.caption, fontWeight: '800', color: c.white },
+  ticket:      { backgroundColor: c.bg2, borderWidth: 1, borderColor: c.ticketLine, borderRadius: Radius.hero, ...Elevation(c, 'rest') },
   placeholder: { minHeight: 180, alignItems: 'center', justifyContent: 'center' },
-  top:         { paddingHorizontal: 18, paddingTop: 14, paddingBottom: 12, gap: 8, zIndex: 2 },
-  kicker:      { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  kickerText:  { fontSize: FontSizes.sm, fontWeight: '700', color: c.primaryText },
-  text:        { fontSize: FontSizes.lg, lineHeight: 25, fontWeight: '800', color: c.text, letterSpacing: -0.2 },
-  meta:        { fontSize: FontSizes.xs, fontWeight: '600', color: c.muted, fontVariant: ['tabular-nums'] },
+  top:         { paddingHorizontal: Spacing.md, paddingTop: Space.lg, paddingBottom: Space.md, gap: Space.sm, zIndex: 2 },
+  kicker:      { flexDirection: 'row', alignItems: 'center', gap: Space.sm },
+  kickerText:  { ...Type.caption, fontWeight: '800', color: c.primaryText },
+  text:        { ...Type.title, color: c.text },
+  meta:        { ...Type.caption, color: c.muted, fontVariant: ['tabular-nums'] },
   cta:         { minHeight: 56 },
 });
 
+/** Words every challenge uses, ignored when checking that a subtitle adds something (sameAsk). */
+const FILLER = new Set('find snap show share take spot photo picture your you the and for from with that this its their our city cities local locals love loves loved favorite favourite favorites best most one people where what which who how can get here there only every any just like'.split(' '));
+
 /**
- * The subtitle only says the headline again: at least half of the headline's
- * words (3+ letters) are in it and it is barely longer (at most 1.5×), so it
- * adds no "how" and no local twist. Scripts without spaces (CJK, Thai): the same
- * on characters, 60% shared. Exported for tests.
+ * The subtitle only says the headline again, so it is hidden (it must add context or a local twist):
+ * - at least half of the headline's words (3+ letters) are in it and it is barely longer (at most 1.5×);
+ * - or, without the words every challenge uses ("find", "your", "city", "locals", "love", "favorite"...),
+ *   it shares a word with the headline and adds at most one new one ("Find your city's favorite sweet." /
+ *   "Find the sweet treat locals love.": "sweet" shared, only "treat" new).
+ * Scripts without spaces (CJK, Thai): the same on characters, 60% shared. Exported for tests.
  */
 export function sameAsk(headline: string, subtitle: string): boolean {
   const norm = (v: string) => v.toLocaleLowerCase().normalize('NFKD').replace(/[\u0300-\u036f]/g, '').replace(/[.,!?¡¿;:'"‘’“”«»()…\-–—]/g, ' ');
   const words = (v: string) => new Set(norm(v).split(/\s+/).filter(w => w.length >= 3));
   const share = (a: Set<string>, b: Set<string>) => { let n = 0; a.forEach(x => { if (b.has(x)) n++; }); return a.size ? n / a.size : 0; };
   const wh = words(headline), ws = words(subtitle);
-  if (wh.size >= 2 && ws.size >= 2) return share(wh, ws) >= 0.5 && ws.size <= wh.size * 1.5;
+  if (wh.size >= 2 && ws.size >= 2 && share(wh, ws) >= 0.5 && ws.size <= wh.size * 1.5) return true;
+  const kh = [...wh].filter(w => !FILLER.has(w)), ks = [...ws].filter(w => !FILLER.has(w));
+  if (kh.length && ks.length) return kh.some(w => ks.includes(w)) && ks.filter(w => !kh.includes(w)).length <= 1;
+  if (wh.size >= 2 && ws.size >= 2) return false;
   const ch = new Set([...norm(headline).replace(/\s/g, '')]), cs = new Set([...norm(subtitle).replace(/\s/g, '')]);
   return share(ch, cs) >= 0.6 && cs.size <= ch.size * 1.5;
 }

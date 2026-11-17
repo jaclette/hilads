@@ -2,6 +2,10 @@
 
 // In development, these come from .env (EXPO_PUBLIC_* prefix required).
 // In production, set via EAS environment variables.
+import { eventSlug } from '@/lib/eventSlug';
+import { challengeSlug } from '@/lib/challengeSlug';
+import i18n, { SUPPORTED, DEFAULT_LOCALE } from '@/i18n';
+
 export const API_URL =
   (process.env.EXPO_PUBLIC_API_URL ?? 'http://localhost:8080') + '/api/v1';
 
@@ -11,16 +15,7 @@ export const WS_URL =
 export const BASE_URL =
   process.env.EXPO_PUBLIC_BASE_URL ?? 'https://hilads.live';
 
-// ── Feature flags ─────────────────────────────────────────────────────────────
-// Hangouts (topics) are re-enabled as the "Hi now" temporality in the Hi Local
-// feed (spontaneous, ~8h TTL) alongside events ("Hi later").
-export const HANGOUTS_ENABLED = true;
-
 // ── Link builders ─────────────────────────────────────────────────────────────
-
-import { eventSlug } from '@/lib/eventSlug';
-import { challengeSlug } from '@/lib/challengeSlug';
-import i18n, { SUPPORTED, DEFAULT_LOCALE } from '@/i18n';
 
 // Active-locale prefix for shared links: '' for English (default), '/fr' | '/vi'
 // otherwise - so a recipient lands on the localized (translated) page. The SSR
@@ -61,16 +56,6 @@ export function buildChallengeUrl(challenge: { id: string; title?: string } | st
   return `${BASE_URL}${lp}/challenge/${challengeSlug(challenge)}`;
 }
 
-/**
- * Shareable leaderboard URL carrying the current filter. Tapping it (in a feed
- * link card) re-opens the leaderboard on the same scope + period.
- */
-export function buildLeaderboardUrl(scope: string, period: string): string {
-  // No locale prefix: the shared message is English-only and the leaderboard is
-  // an in-app overlay (not an SSR page), so the prefix would be dead weight.
-  return `${BASE_URL}/leaderboard?scope=${encodeURIComponent(scope)}&period=${encodeURIComponent(period)}`;
-}
-
 // ── Env diagnostics - unconditional, fires in both dev and production APK ─────
 console.log('[env] EXPO_PUBLIC_API_URL =', process.env.EXPO_PUBLIC_API_URL ?? '(undefined - will use localhost fallback!)');
 console.log('[env] API_URL (resolved)  =', API_URL);
@@ -80,7 +65,6 @@ if (!process.env.EXPO_PUBLIC_API_URL) {
 }
 
 export const APP_VERSION = '1.0.0';
-export const IS_DEV = __DEV__;
 
 // ── Design tokens - aligned with web app ──────────────────────────────────────
 // Web source: apps/web/src/index.css CSS variables
@@ -90,12 +74,10 @@ export const Colors = {
   bg:       '#0d0b09',   // web --bg
   bg2:      '#161210',   // web --surface
   bg3:      '#1e1812',   // web --surface2
-  border:   '#272018',   // web --border (warm brown)
 
   // Text - contrast targets on bg #0d0b09 (≈ pure black at L≈0):
   //   text     ~16.6:1   primary
   //   muted     ~5.5:1   secondary (still WCAG AA at all sizes)
-  //   muted2    ~4.7:1   tertiary  (WCAG AA at normal sizes)
   //   mutedDim  ~2.4:1   reserved for visually-disabled affordances ONLY,
   //                      e.g. inactive button labels, dot pagers. NEVER on
   //                      visible body or secondary text. Apple Guideline 4
@@ -103,20 +85,15 @@ export const Colors = {
   //                      when used for body / timestamps / sub-labels.
   text:     '#ede9e5',   // web --text   (warm off-white)
   muted:    '#968880',   // web --muted2 (visible secondary)
-  muted2:   '#8a7d75',   // tertiary - bumped from #635650 for WCAG AA on dark bg
   mutedDim: '#635650',   // disabled-only - opt-in, not a default. See note above.
 
   // Brand
   accent:   '#FF7A3C',   // web --hot-dot (energy orange - active states, FAB)
-  accentDim:'rgba(255,122,60,0.15)',
-  accent2:  '#C24A38',   // web --accent  (deep red-orange - CTA buttons)
-  accent3:  '#B87228',   // web --accent2 (gradient end - CTA buttons)
 
   // Semantic
   green:    '#3ddc84',   // web --green  (online / live)
   red:      '#f87171',
   warning:  '#F5A524',   // amber - time running out (Daily countdown, last 3h)
-  violet:   '#8B5CF6',   // web --profile-dot (member badge)
   white:    '#ffffff',
 
   // Bright orange used as TEXT (the `accent` above stays #FF7A3C for FILLS —
@@ -126,12 +103,9 @@ export const Colors = {
   // Overlay / structural tokens — the vocabulary the theme migration routes the
   // ~256 hardcoded rgba(255,255,255,.x) literals through (dark values here).
   separator:     'rgba(255,255,255,0.08)',
-  overlayWeak:   'rgba(255,255,255,0.04)',
   overlay:       'rgba(255,255,255,0.07)',
-  overlayStrong: 'rgba(255,255,255,0.12)',
   scrim:         'rgba(0,0,0,0.6)',
   elevated:      '#1e1812',
-  inputBg:       '#0d0b09',
 
   // V3 tokens (SPEC 9.11; dark values derived from this palette).
   primary:       '#D9622A',   // buttons, pins, active (white text on it)
@@ -143,7 +117,6 @@ export const Colors = {
   onCta:         '#2A1C13',
   // The peach highlight (key words, the Taste pill): same in both themes, see `Highlight`.
   highlightBg:   '#FFD2C2',
-  highlightText: '#8A3418',
   stepBg:        '#1e1812',   // a soft block inside a card (Today's photo step): the sand inset, a shade off the card
   line:          '#272018',   // borders
   ticketLine:    '#4A3426',   // Daily Challenge ticket border + perforation
@@ -180,6 +153,15 @@ export const Colors = {
   onPeek:         '#FFFFFF',
   onPeekMuted:    'rgba(255,255,255,0.88)',
   peekShadow:     'rgba(0,0,0,0.30)',
+  // Design pass (docs/design-pass/design-system.md).
+  onPrimary:      '#FFFFFF',   // text / icons on primary
+  selected:       '#3A2216',   // THE selected state (tab, segment, period, filter): peach ground…
+  onSelected:     '#FFB48A',   // …and its text / icon
+  shadow:         '#000000',   // one shadow color; opacity comes from Elevation
+  medalGold:      '#F7B733',   // podium / crown fills (joyful, saturated), ink on top
+  medalSilver:    '#A9C1E0',
+  medalBronze:    '#EE8F4F',
+  onMedal:        '#2A1C13',
 } as const;
 
 // A theme is the full color set; both palettes share these keys.
@@ -199,28 +181,19 @@ export const LightColors: ThemeColors = {
   bg:       '#FBF5EE',   // ground (SPEC 9.11)
   bg2:      '#FFFFFF',   // card / surface
   bg3:      '#F3EAE0',   // sand inset
-  border:   '#EADCCD',   // line (SPEC 9.11)
   text:     '#2A1C13',   // ink (SPEC 9.11)
   muted:    '#6F5B4D',   // muted ink (SPEC 9.11)
-  muted2:   '#6F5B4D',   // tertiary
   mutedDim: '#9A8877',   // disabled-only
   accent:   '#C9501A',   // primary (SPEC 9.11): white text on it passes 4.5:1
-  accentDim:'rgba(201,80,26,0.12)',
-  accent2:  '#C24A38',   // deep CTA orange
-  accent3:  '#B87228',
   green:    '#17864C',   // darkened so it reads as text/dots on white
   red:      '#C0264A',
   warning:  '#B45309',   // amber, dark enough to read as text on cream
-  violet:   '#7C4DE0',
   white:    '#ffffff',
   accentText: '#C24A38', // readable deep orange as text on cream
   separator:     '#EADCCD',
-  overlayWeak:   'rgba(28,20,14,0.03)',
   overlay:       'rgba(28,20,14,0.05)',
-  overlayStrong: 'rgba(28,20,14,0.08)',
   scrim:         'rgba(28,20,14,0.35)',
   elevated:      '#FFFFFF',
-  inputBg:       '#FFFFFF',
 
   // V3 tokens (SPEC 9.11).
   primary:       '#C9501A',
@@ -230,7 +203,6 @@ export const LightColors: ThemeColors = {
   cta:           '#FF7A3D',   // tangerine, ink text on it (6.4:1)
   onCta:         '#2A1C13',
   highlightBg:   '#FFD2C2',
-  highlightText: '#8A3418',
   stepBg:        '#FBF5EE',   // the ground colour
   line:          '#EADCCD',
   ticketLine:    '#E8CDB8',
@@ -265,6 +237,14 @@ export const LightColors: ThemeColors = {
   onPeek:         '#FFFFFF',
   onPeekMuted:    'rgba(255,255,255,0.88)',
   peekShadow:     'rgba(42,28,19,0.12)',
+  onPrimary:      '#FFFFFF',
+  selected:       '#FFE6D8',
+  onSelected:     '#8A3A12',
+  shadow:         '#5A3418',   // warm ink, never grey
+  medalGold:      '#F7B733',
+  medalSilver:    '#A9C1E0',
+  medalBronze:    '#EE8F4F',
+  onMedal:        '#2A1C13',
 };
 
 export type ThemeName = 'light' | 'dark';
@@ -282,94 +262,99 @@ export const Themes: Record<ThemeName, ThemeColors> = { dark: Colors, light: Lig
 // pre-scale here or it would double-scale.
 export const FontSizes = {
   tiny: 11,  // badges + count pips ONLY (not visible body text)
-  xs:   13,
-  sm:   14,
-  md:   17,
-  lg:   20,
-  xl:   24,
-  xxl:  32,
-  hero: 40,  // city name hero, large screen titles
+  xs:   13,  // caption
+  sm:   13,  // caption (was 14: folded into the 5-size scale)
+  body: 15,  // body
+  md:   17,  // label
+  lg:   20,  // title
+  xl:   20,  // title (was 24)
+  title: 28, // display (a tab's large title)
+  xxl:  28,  // display (was 32)
+  hero: 40,  // celebration numbers ONLY (score pop, victory): not a screen title
 } as const;
 
-export const Radius = {
-  sm:     6,
-  md:     10,
-  lg:     18,   // bumped to match web 18px card radius
-  full:   999,
-  // V3 (SPEC 9.11): cards 18-22, buttons 16, chips full.
-  button: 16,
-  card:   18,
-  ticket: 22,
-  sheet:  22,
+/**
+ * The type scale (design pass): five roles, each with its size, weight and line height. Spread one
+ * into a style (`...Type.title`) and override only the color. Titles: `numberOfLines={2}` and a
+ * tail ellipsis, never a mid-word cut. RAW sizes, scaled once by src/scaling.ts.
+ */
+export const Type = {
+  display: { fontSize: 28, lineHeight: 34, fontWeight: '800', letterSpacing: -0.4 },   // a tab's title, a podium number
+  title:   { fontSize: 20, lineHeight: 25, fontWeight: '800', letterSpacing: -0.3 },   // section and card titles
+  label:   { fontSize: 17, lineHeight: 22, fontWeight: '800' },                        // buttons, row and tile titles
+  body:    { fontSize: 15, lineHeight: 21, fontWeight: '500' },                        // running text
+  caption: { fontSize: 13, lineHeight: 17, fontWeight: '600' },                        // meta, chips, counts
 } as const;
+
+/**
+ * Three radii (design pass): control (chips, buttons, segments: a pill), card, hero (the big Today
+ * ticket, sheets). `inner` is the one derived value: media nested inside a card (card - 8).
+ * The older keys point at these.
+ */
+export const Radius = {
+  control: 999,
+  card:    20,
+  hero:    28,
+  inner:   12,
+  full:    999,
+  sm:      12,   // → inner
+  md:      12,   // → inner
+  lg:      20,   // → card
+  button:  999,  // → control
+  ticket:  28,   // → hero
+  sheet:   28,   // → hero
+} as const;
+
+/** Two elevations, one shadow color (`colors.shadow`); dark mode gets the softer opacity. */
+export function Elevation(c: ThemeColors, level: 'rest' | 'float') {
+  // A dark ground (dark theme, Halloween): the softer shadow reads the same.
+  const n = parseInt(c.bg.slice(1, 7), 16);
+  const dark = (((n >> 16) & 255) * 0.299 + ((n >> 8) & 255) * 0.587 + (n & 255) * 0.114) < 128;
+  const rest = level === 'rest';
+  return {
+    shadowColor: c.shadow,
+    shadowOpacity: rest ? (dark ? 0.22 : 0.07) : (dark ? 0.4 : 0.16),
+    shadowRadius: rest ? 10 : 22,
+    shadowOffset: { width: 0, height: rest ? 3 : 10 },
+    elevation: rest ? 2 : 8,
+  } as const;
+}
+
+/** Motion (design pass): one set of durations and one spring. Respect reduce motion (useReducedMotion). */
+export const Motion = {
+  fast: 150,
+  base: 250,
+  spring: { damping: 14, stiffness: 220, mass: 0.8 },
+  pressScale: 0.97,
+} as const;
+
+/** Icon sizes: Ionicons outline everywhere in UI chrome (filled = the "on" state). */
+export const IconSize = { sm: 16, md: 20, lg: 24 } as const;
 
 /** V3 border width for cards, chips, inputs and round buttons. */
 export const Border = 1.5;
 
+/**
+ * The spacing grid (design pass): 4 / 8 / 12 / 16 / 24 / 32. The screen gutter is 16 on every screen.
+ */
+export const Space = {
+  xxs: 2,   // hairline nudges only (badge padding)
+  xs:  4,
+  sm:  8,
+  md:  12,
+  lg:  16,
+  xl:  24,
+  xxl: 32,
+} as const;
+
+export const Gutter = 16;
+
+/** The older layout scale, snapped onto the grid (md = the gutter). Prefer Space / Gutter in new code. */
 export const Spacing = {
-  xs:   5,
-  sm:   9,
-  md:   18,
-  lg:   27,
-  xl:   36,
-  xxl:  54,
-} as const;
-
-// ── Gradients - direct port of web index.css linear-gradients ────────────────
-// 135° on web ≈ start (0,0) → end (1,1) on RN's LinearGradient.
-// Web sources (single source of truth):
-//   .ob-btn / .cef-submit / .modal-submit / .send-btn:
-//     linear-gradient(135deg, var(--accent), var(--accent2))   = #C24A38 → #B87228
-//   .vibe-btn / .dm-vibe-btn:
-//     linear-gradient(135deg, #C24A38 0%, #B87228 100%)        = same stops, louder glow
-//   DeleteAccountPage .logoMark:
-//     linear-gradient(135deg, #FF7A3C, #C24A38)                = brighter start for the logo
-//   .bottom-nav-tab.active::after:
-//     linear-gradient(180deg, rgba(255,122,60,0.16), rgba(255,122,60,0.06))
-
-export const Gradients = {
-  primary: {
-    colors: ['#C24A38', '#B87228'] as [string, string],
-    start:  { x: 0, y: 0 },
-    end:    { x: 1, y: 1 },
-  },
-  // Disabled state - muted gray pair at 0.55 opacity matches web
-  // .cef-submit:disabled (opacity 0.5, no shadow).
-  primaryDisabled: {
-    colors: ['#5b524c', '#4a423d'] as [string, string],
-    start:  { x: 0, y: 0 },
-    end:    { x: 1, y: 1 },
-  },
-  logo: {
-    colors: ['#FF7A3C', '#C24A38'] as [string, string],
-    start:  { x: 0, y: 0 },
-    end:    { x: 1, y: 1 },
-  },
-  activePill: {
-    colors: ['rgba(255,122,60,0.16)', 'rgba(255,122,60,0.06)'] as [string, string],
-    start:  { x: 0, y: 0 },
-    end:    { x: 0, y: 1 },
-  },
-} as const;
-
-// ── Shadows - colored CTA glow (iOS native, faux on Android) ─────────────────
-// Web sources:
-//   .cef-submit / .ob-btn / .modal-submit:  0 4–6px 18–20px rgba(194,74,56,0.25–0.32)
-//   .vibe-btn / .dm-vibe-btn:               0 0 16px rgba(194,74,56,0.42) + 0 4px 14px rgba(0,0,0,0.35)
-
-export const Shadows = {
-  primaryCta: {
-    shadowColor:   '#C24A38',
-    shadowOpacity: 0.25,
-    shadowRadius:  20,
-    shadowOffset:  { width: 0, height: 4 },
-    elevation:     6,
-  },
-  fab: {
-    shadowColor:   '#C24A38',
-    shadowOpacity: 0.42,
-    shadowRadius:  16,
-    shadowOffset:  { width: 0, height: 4 },
-    elevation:     10,
-  },
+  xs:   4,
+  sm:   8,
+  md:   16,
+  lg:   24,
+  xl:   32,
+  xxl:  48,
 } as const;

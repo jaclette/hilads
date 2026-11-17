@@ -6,29 +6,14 @@
     "pulses": "Treffen",
     "challenges": "Challenges"
   },
-  "range": {
-    "recent": "Kürzlich",
-    "last7": "Letzte 7 Tage",
-    "last14": "Letzte 14 Tage",
-    "custom": "Eigener Zeitraum"
-  },
-  "picker": {
-    "pickEnd": "Wähle jetzt den letzten Tag",
-    "pickStart": "Wähle einen Starttag (max. {{max}} Tage)",
-    "apply": "Anwenden"
-  },
   "public": "Öffentlich",
   "went_one": "{{count}} war dabei",
   "went_other": "{{count}} waren dabei",
-  "hangoutTag": "Treffen",
   "replies_one": "{{count}} Antwort",
   "replies_other": "{{count}} Antworten",
-  "noReplies": "Keine Antworten",
   "error": "Das Archiv konnte nicht geladen werden",
   "retry": "Erneut versuchen",
   "emptyTitle": "Hier ist noch nichts",
-  "emptyRecentSub": "Vergangene Events und Treffen erscheinen hier, sobald in der Stadt etwas los war.",
-  "emptyWindowSub": "Keine Events oder Treffen in diesem Zeitraum. Versuch einen größeren Zeitraum.",
   "loadMore": "Mehr laden",
   "loading": "Wird geladen…"
 }

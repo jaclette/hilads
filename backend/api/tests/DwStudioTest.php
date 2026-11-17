@@ -159,7 +159,7 @@ final class DwStudioTest extends TestCase
         $this->assertSame([], $errors);
         $plan = DwStudio::slidePlan($c);
         $this->assertSame(['url' => $url, 'start' => 6.0, 'credit' => 'Video: A, CC BY-SA 4.0, Wikimedia Commons',
-                           'page' => 'https://commons.wikimedia.org/wiki/File:Parade.webm'], $plan[1]['clip']);
+                           'page' => 'https://commons.wikimedia.org/wiki/File:Parade.webm', 'ai' => false], $plan[1]['clip']);
         $this->assertNull($plan[0]['clip']);
 
         $bad = $this->content();
@@ -230,12 +230,12 @@ final class DwStudioTest extends TestCase
     {
         $with = DwSlides::compose(['kind' => 'outro', 'text' => 'What does October 31 look like in your city?', 'cta' => 'Compare your city on hilads.live'], null);
         $this->assertStringContainsString('>Compare your city on </tspan>', $with);
-        $this->assertStringContainsString('fill="#FF7A3D">hilads.live</tspan>', $with);
+        $this->assertStringContainsString('fill="#C24E1C">hilads.live</tspan>', $with);   // the light identity's terracotta
         $this->assertStringContainsString('viewBox="0 0 64 64"', $with);   // the logo
         $doc = new DOMDocument();
         $this->assertTrue($doc->loadXML($with));
         // The question ends above the line, and stays at least twice its size.
-        preg_match('/font-size="(\d+)" fill="#FFFFFF"><tspan/', $with, $q);
+        preg_match('/font-size="(\d+)" fill="#2B1A12" xml:space="preserve"><tspan/', $with, $q);
         preg_match('/<text x="\d+" y="(\d+)" font-family="Be Vietnam Pro" font-size="(\d+)" xml:space="preserve"><tspan font-weight/', $with, $cta);
         $this->assertGreaterThanOrEqual(2 * (int) $cta[2], (int) $q[1]);
         preg_match_all('/<tspan x="72" y="(\d+)">/', $with, $ys);
@@ -355,5 +355,21 @@ final class DwStudioTest extends TestCase
         $c['slides'][0]['detail'] = str_repeat('more ', 10);
         $this->assertNotEmpty(array_filter(DwStudio::readWarnings($c), fn($w) => str_contains($w, 'shorten or drop its detail')));
         $this->assertLessThanOrEqual(DwStudio::MAX_VIDEO_SECONDS, DwStudio::videoSeconds($this->content(6)));
+    }
+
+    public function testOwnSlideClip(): void
+    {
+        putenv('R2_PUBLIC_URL=https://media.example.com');
+        $c = $this->content();
+        $c['slides'][0] += ['clip_url' => 'https://media.example.com/dw/57/v4/clip-0a1b2c3d4e5f.mp4', 'clip_start' => 0, 'clip_credit' => '', 'clip_ai' => true];
+        $c['slides'][1]['illustration_brief'] = 'AI clip needed: two friends hug.';
+        [$errors, $warn] = DwStudio::validate($c, ['Vietnam']);
+        $this->assertSame([], $errors);                                         // our own upload: no credit needed
+        $this->assertNotEmpty(array_filter($warn, static fn($w) => str_contains($w, 'AI clip needed')));
+        $clip = DwStudio::slidePlan($c)[1]['clip'];
+        $this->assertTrue($clip['ai']);
+        $this->assertNull($clip['page']);
+        $this->assertFalse(DwClips::ownUpload('https://evil.example.com/dw/57/v4/clip-0a1b.mp4'));
+        putenv('R2_PUBLIC_URL');
     }
 }

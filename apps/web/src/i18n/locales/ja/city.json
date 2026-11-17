@@ -1,22 +1,15 @@
 {
   "world": {
     "tab": "世界",
-    "banner_other": "街をまたぐチャレンジが{{count}}件進行中",
-    "online": "{{count}}人がオンライン",
-    "cities_other": "{{count}}の街",
     "sys": {
       "challengeCreated": "🔥 {{nickname}}がチャレンジを出しました：{{cityA}} → {{cityB}}",
       "newUser": "🎉 {{city}}の{{nickname}}がHiladsに参加しました",
       "challengeWon": "🏆 {{city}}の{{nickname}}がチャレンジ「{{challenge}}」で勝ちました"
     },
     "quietCard": "静か？「世界」に未読が{{count}}件。タップして開こう",
-    "heroEmpty": "最初に街へチャレンジを出そう",
-    "heroEmptySub": "街をまたぐチャレンジを出そう",
-    "leaderboard": "ランキング",
     "arrivals_other": "{{count}}人が到着",
     "arrivalsTitle": "最近来た人",
-    "arrivalsEmpty": "最近来た人はいません",
-    "seeAll": "すべて見る"
+    "arrivalsEmpty": "最近来た人はいません"
   },
   "inspiration": {
     "heading": "集まりのアイデア",
@@ -28,37 +21,7 @@
   },
   "guestGate": {
     "createAccount": "アカウントを作成",
-    "signIn": "サインイン",
-    "create_event": {
-      "pageTitle": "イベントを作成",
-      "title": "Ghostは見るだけで、主催はできません。",
-      "sub": "アカウントを作って、自分のイベントを開いて街を盛り上げよう。"
-    },
-    "view_profile": {
-      "pageTitle": "プロフィール",
-      "title": "Ghostは見るだけ。プロフィールはメンバー限定です。",
-      "sub": "アカウントを作ると、プロフィールを見たり、人とつながって街の仲間を作ったりできます。"
-    },
-    "join_hangout": {
-      "pageTitle": "集まりに参加",
-      "title": "Ghostは見るだけで、集まりには参加できません。",
-      "sub": "登録すると、集まりに参加したり、名前を残したり、会いたい人がいるときに通知を受け取ったりできます。"
-    },
-    "create_hangout": {
-      "pageTitle": "集まりを始める",
-      "title": "Ghostは見るだけで、主催はできません。",
-      "sub": "登録すると、集まりを始めて、名前を残して、みんなを呼べます。"
-    },
-    "create_challenge": {
-      "pageTitle": "チャレンジを始める",
-      "title": "Ghostは見るだけで、チャレンジは出せません。",
-      "sub": "登録すると、地元の人や旅行者向けにチャレンジを出して、自分で判定できます。"
-    },
-    "accept_challenge": {
-      "pageTitle": "チャレンジを受ける",
-      "title": "登録してこのチャレンジに挑戦しよう",
-      "sub": "3秒で終わります。すぐチャレンジに戻れます。"
-    }
+    "signIn": "サインイン"
   },
   "welcome": {
     "live": "{{city}}は今ライブ中",
@@ -99,15 +62,12 @@
   "joiningDefault": "チャットに参加中…",
   "tryAgain": "もう一度",
   "feed": {
-    "hangoutTag": "集まり",
-    "eventTag": "イベント",
     "nowTag": "今",
     "laterTag": "予定",
     "hiNow": "Hi now",
     "hiLater": "Hi plan",
     "public": "公開",
     "activeNow": "今アクティブ",
-    "repliesNew": "まだ返信はありません。最初に返信しよう",
     "sayHi": "{{name}}にあいさつしよう",
     "sayHiGeneric": "挨拶しよう",
     "hostWaiting": "最初のあいさつを待っています",
@@ -118,8 +78,6 @@
     "groupPublic": "公開イベント",
     "groupPublicTicket": "公開イベント",
     "createEvent": "ローカルイベントを作成",
-    "startHangout": "集まりを始める",
-    "openPlace": "自分のスポットで主催しよう",
     "loadError": "イベントを読み込めませんでした",
     "loadErrorSub": "あとでもう一度試すか、{{city}}で新しく何か始めよう。",
     "emptyLocalTitle": "スポットを盛り上げよう",
@@ -127,27 +85,16 @@
     "emptyLocalSub": "{{city}}を盛り上げよう。お気に入りの場所で定期イベントを始めてみて。",
     "emptySub": "{{city}}で一番乗りで何か始めよう",
     "noEvents": "今はローカルイベントがありません",
-    "noHangouts": "まだ集まりはありません",
-    "noEventsSub": "{{city}}で最初に作ってみよう",
-    "noHangoutsSub": "集まりを始めて街を盛り上げよう",
-    "filterAll": "すべて",
-    "seeComing": "これからの予定を見る",
-    "seeHappened": "何があったか見る",
-    "createNew": "新規作成",
-    "hiNowHint": "今すぐ集まる",
-    "hiLaterHint": "予定を立てる"
+    "noEventsSub": "{{city}}で最初に作ってみよう"
   },
   "header": {
     "online": "近くに{{count}}人",
     "liveNow": "ライブ中",
     "seeWhosHere": "ここにいる人を見る",
-    "onlineAria_other": "近くに{{count}}人。タップして誰がいるか見る",
     "notifications": "通知",
     "messages": "メッセージ",
     "shareCity": "街をシェア",
-    "switchCity": "街を切り替える",
-    "changeCity": "街を変更",
-    "currentWeather": "現在の天気：{{label}}"
+    "switchCity": "街を切り替える"
   },
   "here": {
     "title": "ここにいる人",
@@ -156,7 +103,6 @@
     "filterMode": "モード",
     "you": "（あなた）",
     "hereNow": "今ここ",
-    "noMatchLive": "今このフィルターに合う人はいません。",
     "legends": "Hilads の伝説たち",
     "legendsSub": "街を盛り上げる人たち",
     "cityCrew": "街のクルー",
@@ -165,7 +111,6 @@
     "messageAria": "{{name}}にメッセージ"
   },
   "eventHeader": {
-    "yourEvent": "自分のイベント",
     "edit": "編集",
     "join": "参加",
     "joined": "参加済み",
@@ -181,26 +126,7 @@
     "firstHi": "最初にあいさつしよう"
   },
   "create": {
-    "title": "何する？",
-    "hangoutTitle": "集まりを始める",
-    "hangoutSub": "今すぐ。みんなにすぐ来てもらおう",
-    "eventTitle": "イベントを作成",
-    "eventSub": "みんなが参加できる予定を立てよう",
-    "challengeTitle": "チャレンジを始める",
-    "challengeSub": "地元の人と旅行者がチャレンジでつながる",
-    "challengePageTitle": "チャレンジを作成",
-    "challengeAudience": "誰向け？",
-    "challengeAudLocals": "地元の人",
-    "challengeAudExplorers": "旅行者",
-    "challengeType": "タイプ",
-    "challengeTypeFood": "グルメ",
-    "challengeTypePlace": "場所",
-    "challengeTypeCulture": "文化",
-    "challengeTypeHelp": "クレイジー",
-    "challengeTitleLabel": "チャレンジ内容",
-    "challengeTitlePlaceholder": "例：お気に入りの隠れ家カフェに連れて行って",
-    "challengeCta": "チャレンジを始める",
-    "challengeErrStart": "チャレンジを開始できませんでした"
+    "title": "何する？"
   },
   "goingModal": {
     "going": "参加",
@@ -273,9 +199,6 @@
     "challengeValidated": "チャレンジ達成！{{name}}が「{{title}}」を承認しました。",
     "challengeInternational": "{{fromFlag}} → {{toFlag}} 国際チャレンジ：{{title}}"
   },
-  "replyPreview": {
-    "photo": "📷 写真"
-  },
   "typing": {
     "one": "{{name}}が入力中…",
     "two": "{{a}}と{{b}}が入力中…",
@@ -292,25 +215,11 @@
     "sheetTitle": "到着した人",
     "empty": "まだ誰も到着していません"
   },
-  "cityHero": {
-    "mainEmpty": "🌱 {{city}}にはまだチャレンジがありません",
-    "subRanked": "タップして次のチャレンジを受けよう →",
-    "subUnranked": "最初のチャレンジを受けて上を目指そう →",
-    "subTop": "トップの座を守ろう →",
-    "subEmpty": "最初のチャレンジを作って、旅行者に受けてもらおう →",
-    "members_other": "メンバー{{count}}人",
-    "nearby": "近くに{{count}}人",
-    "recent": "最近{{count}}人",
-    "mainUnranked_other": "🔥 {{city}}のチャレンジ{{count}}件",
-    "mainRanked_other": "🔥 {{city}}のチャレンジ{{count}}件 · 🏆 #{{rank}}",
-    "mainTop_other": "🔥 {{city}}のチャレンジ{{count}}件 · 🏆 #1"
-  },
   "daily": {
     "kicker": "Daily Challenge",
     "localTwist": "Local Twist",
     "local": "地元",
     "traveler": "旅行者",
-    "ctaApp": "アプリでチャレンジに参加",
     "localPass": "Local Pass",
     "early": "早め",
     "proposedBy": "{{name}}の提案",

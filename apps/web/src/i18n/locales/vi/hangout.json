@@ -2,20 +2,8 @@
   "create": {
     "startTitle": "Hi now",
     "editTitle": "Sửa tụ tập",
-    "category": "Danh mục",
-    "cat": {
-      "general": "Chung",
-      "tips": "Mẹo",
-      "food": "Ăn uống",
-      "drinks": "Đồ uống",
-      "help": "Cần giúp",
-      "meetup": "Gặp mặt"
-    },
     "titleLabel": "Bạn đang nghĩ gì?",
     "titlePlaceholder": "Mình muốn đi cà phê",
-    "detailsLabel": "Thêm chi tiết",
-    "optional": "(không bắt buộc)",
-    "detailsPlaceholder": "Kể thêm chút…",
     "expiry": "Tự hết hạn sau 8 tiếng",
     "saving": "Đang lưu…",
     "starting": "Đang mở…",
@@ -73,7 +61,6 @@
     "photo": "Ảnh",
     "unavailable": "Tin nhắn gốc không còn"
   },
-  "composer": {},
   "errors": {
     "locFailed": "Không lấy được vị trí. Bật quyền vị trí rồi thử lại nhé.",
     "imageType": "Chọn ảnh JPEG, PNG hoặc WebP nhé.",

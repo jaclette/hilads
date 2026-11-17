@@ -9,7 +9,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, {
   useAnimatedStyle, useReducedMotion, useSharedValue, withSequence, withSpring, withTiming,
 } from 'react-native-reanimated';
-import { FontSizes, Radius, Spacing, type ThemeColors } from '@/constants';
+import { Space, FontSizes, Radius, Spacing, type ThemeColors } from '@/constants';
 import { useTheme, useThemedStyles } from '@/context/ThemeContext';
 import { useModalStatusBar } from '@/lib/useModalStatusBar';
 import { Button, DualPhoto, IconButton } from '@/ui';
@@ -398,35 +398,35 @@ function Chip({ icon, label, onPress }: { icon: keyof typeof Ionicons.glyphMap; 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
   root:      { flex: 1, backgroundColor: c.photoScrim },
   flex:      { flex: 1 },
-  center:    { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 12, padding: Spacing.lg, backgroundColor: c.bg },
-  permIcon:  { width: 72, height: 72, borderRadius: Radius.full, backgroundColor: c.primaryTint, alignItems: 'center', justifyContent: 'center', marginBottom: 4 },
-  permText:  { color: c.text, fontSize: 16, fontWeight: '600', textAlign: 'center', lineHeight: 22, marginBottom: 8 },
+  center:    { flex: 1, alignItems: 'center', justifyContent: 'center', gap: Space.md, padding: Spacing.lg, backgroundColor: c.bg },
+  permIcon:  { width: 72, height: 72, borderRadius: Radius.full, backgroundColor: c.primaryTint, alignItems: 'center', justifyContent: 'center', marginBottom: Space.xs },
+  permText:  { color: c.text, fontSize: FontSizes.body, fontWeight: '600', textAlign: 'center', lineHeight: 22, marginBottom: Space.sm },
   stretch:   { alignSelf: 'stretch' },
   topBar:    { position: 'absolute', left: 0, right: 0, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: Spacing.md },
   round:     { width: 48, height: 48, borderRadius: Radius.full, alignItems: 'center', justifyContent: 'center', backgroundColor: c.photoButton },
-  dual:      { flexDirection: 'row', alignItems: 'center', gap: 6, minHeight: 40, paddingHorizontal: 14, borderRadius: Radius.full,
+  dual:      { flexDirection: 'row', alignItems: 'center', gap: Space.sm, minHeight: 40, paddingHorizontal: Space.lg, borderRadius: Radius.full,
                backgroundColor: c.photoButton, borderWidth: 1.5, borderColor: c.onPhotoLine },
   dualOn:    { backgroundColor: c.white, borderColor: c.white },
   dualEmoji: { fontSize: 16 },
   dualText:  { fontSize: FontSizes.sm, fontWeight: '800', color: c.white },
   dualTextOn:{ color: c.onGold },
   bottomBar: { position: 'absolute', bottom: 0, left: 0, right: 0, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-around',
-               paddingTop: 16, backgroundColor: c.photoControl },
+               paddingTop: Space.lg, backgroundColor: c.photoControl },
   shutter:      { width: 78, height: 78, borderRadius: Radius.full, borderWidth: 4, borderColor: c.white, alignItems: 'center', justifyContent: 'center' },
   shutterInner: { width: 60, height: 60, borderRadius: Radius.full, backgroundColor: c.white },
   dim:       { opacity: 0.4 },
-  auto:      { position: 'absolute', right: 8, bottom: 6, fontSize: 10, fontWeight: '800', color: c.gold },
+  auto:      { position: 'absolute', right: 8, bottom: 6, fontSize: FontSizes.xs, fontWeight: '800', color: c.gold },
   flash:     { backgroundColor: c.white },
   mainThumb: { position: 'absolute', left: Spacing.md, width: 84, height: 112, borderRadius: 12, overflow: 'hidden', borderWidth: 2, borderColor: c.white },
-  countWrap: { position: 'absolute', left: 0, right: 0, top: '30%', alignItems: 'center', gap: 6 },
+  countWrap: { position: 'absolute', left: 0, right: 0, top: '30%', alignItems: 'center', gap: Space.sm },
   nowYou:    { fontSize: FontSizes.xl, fontWeight: '800', color: c.white, textShadowColor: c.photoBlurShade, textShadowRadius: 6 },
   count:     { fontSize: 96, lineHeight: 110, fontWeight: '800', color: c.white, textShadowColor: c.photoBlurShade, textShadowRadius: 10 },
   closeTop:  { position: 'absolute', left: Spacing.md },
   notice:    { position: 'absolute', left: Spacing.md, right: Spacing.md, textAlign: 'center', color: c.white, fontSize: FontSizes.sm, fontWeight: '700',
-               backgroundColor: c.photoButton, borderRadius: Radius.md, overflow: 'hidden', paddingVertical: 8, paddingHorizontal: 12 },
-  reviewBar: { position: 'absolute', left: 0, right: 0, bottom: 0, gap: 12, paddingHorizontal: 20, paddingTop: 16, backgroundColor: c.photoBlurShade },
+               backgroundColor: c.photoButton, borderRadius: Radius.md, overflow: 'hidden', paddingVertical: Space.sm, paddingHorizontal: Space.md },
+  reviewBar: { position: 'absolute', left: 0, right: 0, bottom: 0, gap: Space.md, paddingHorizontal: Space.xl, paddingTop: Space.lg, backgroundColor: c.photoBlurShade },
   hint:      { color: c.white, fontSize: FontSizes.xs, fontWeight: '700', textAlign: 'center' },
-  row:       { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: 8 },
-  chip:      { flexDirection: 'row', alignItems: 'center', gap: 6, minHeight: 40, paddingHorizontal: 14, borderRadius: Radius.full, backgroundColor: c.photoControl },
+  row:       { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: Space.sm },
+  chip:      { flexDirection: 'row', alignItems: 'center', gap: Space.sm, minHeight: 40, paddingHorizontal: Space.lg, borderRadius: Radius.full, backgroundColor: c.photoControl },
   chipText:  { color: c.white, fontSize: FontSizes.sm, fontWeight: '700' },
 });

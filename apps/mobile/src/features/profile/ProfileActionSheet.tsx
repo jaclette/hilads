@@ -10,9 +10,9 @@ import React from 'react';
 import { Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
-import { FontSizes, type ThemeColors } from '@/constants';
+import { Space, FontSizes, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
-import { Button, Sheet } from '@/ui';
+import { Button, Sheet, SheetTitle } from '@/ui';
 
 export interface ProfileSheetAction {
   key:          string;
@@ -38,7 +38,7 @@ export function ProfileActionSheet({ visible, title, actions, onClose }: Props) 
 
   return (
     <Sheet visible={visible} onClose={onClose} closeLabel={t('cancel')}>
-      {title ? <Text style={styles.title} numberOfLines={1}>{title}</Text> : null}
+      {title ? <SheetTitle style={styles.title} numberOfLines={1}>{title}</SheetTitle> : null}
 
       {actions.map((a, idx) => (
         <TouchableOpacity
@@ -61,11 +61,11 @@ export function ProfileActionSheet({ visible, title, actions, onClose }: Props) 
 }
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  title:                  { fontSize: FontSizes.sm, fontWeight: '700', color: c.muted, paddingBottom: 4 },
-  action:                 { flexDirection: 'row', alignItems: 'center', gap: 14, minHeight: 52 },
+  title:                  { paddingBottom: Space.xs },
+  action:                 { flexDirection: 'row', alignItems: 'center', gap: Space.lg, minHeight: 52 },
   actionDivider:          { borderTopWidth: 1, borderTopColor: c.line },
   actionDisabled:         { opacity: 0.4 },
   actionLabel:            { fontSize: FontSizes.md, fontWeight: '600', color: c.text },
   actionLabelDestructive: { color: c.red },
-  cancel:                 { marginTop: 6 },
+  cancel:                 { marginTop: Space.sm },
 });

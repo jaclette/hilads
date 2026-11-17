@@ -9,7 +9,6 @@
  * when the navigator unmounts anyway.
  */
 if (typeof WeakRef === 'undefined') {
-  // eslint-disable-next-line no-restricted-globals
   (globalThis as unknown as Record<string, unknown>).WeakRef = class WeakRef<T extends object> {
     private _target: T;
     constructor(target: T) {

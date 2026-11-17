@@ -1,32 +1,11 @@
 {
   "showcase": {
-    "cta": "قصص نجاح",
-    "title": "قصص نجاح",
-    "allCities": "كل المدن",
-    "clearCity": "مسح",
     "localTag": "محلي",
-    "by": "من {{name}}",
-    "loadMore": "تحميل المزيد",
-    "empty": {
-      "title": "لا قصص نجاح بعد",
-      "body": "هنا تظهر التحدّيات المكتملة الأعلى تقييمًا. كن أول من يحقّق واحدًا!"
-    },
     "tryCta": "أنشئ تحدّيًا جديدًا",
     "note": "ماذا قالوا"
   },
-  "myChallenges": {
-    "cta": "تحدّياتي"
-  },
-  "tabIntro": "تحدّيات بين السكان المحليين والمسافرين داخل المدينة، وبين المدن أيضًا.",
-  "howItWorks": "كيف يعمل",
   "mostLocal": "Most Local",
   "seeAll": "عرض الكل",
-  "leaderboardCta": {
-    "title": "ترتيب المدينة",
-    "view": "عرض",
-    "sub": "كن أول من يدخل الترتيب: أطلق تحدّيًا وأكمله"
-  },
-  "createTitle": "أنشئ تحدّيًا",
   "editTitle": "تعديل التحدّي",
   "audience": "لمن هو؟",
   "aud": {
@@ -35,77 +14,19 @@
     "members": "الأعضاء"
   },
   "type": "النوع",
-  "tp": {
-    "food": "طعام",
-    "place": "مكان",
-    "culture": "ثقافة",
-    "help": "جنون"
-  },
   "titleLabel": "تحدّيك",
   "titlePlaceholder": "مثال: خذني إلى مقهاك المفضّل المخفي",
-  "maxParticipantsLabel": {
-    "locals": "كم ساكنًا محليًا كحدّ أقصى؟",
-    "explorers": "كم مسافرًا كحدّ أقصى؟"
-  },
-  "returnClauseLabel": "وبعدها؟",
-  "returnClauseTemplates": {
-    "food": "...وتعال شاركني إياه 🍜",
-    "place": "...وخذني إلى هناك بنفسك 🗺️",
-    "culture": "...ونلتقي لنتحدث عنه 🎭",
-    "help": "...ولنفعل شيئًا مجنونًا معًا 🤪"
-  },
-  "createCta": "أطلق التحدي",
   "saveChanges": "حفظ التغييرات",
   "errSave": "تعذّر حفظ التغييرات",
-  "errStart": "تعذّر إطلاق التحدّي",
   "deleteTitle": "حذف التحدّي؟",
   "deleteBody": "سيُحذف التحدّي للجميع، ولا يمكن التراجع عن ذلك.",
   "deleteConfirm": "حذف",
-  "acceptCta": "اقبل التحدّي",
-  "acceptedCta": "تم القبول ✓",
   "validatedBadge": "تم التحقّق",
   "card": {
-    "open": "مفتوح",
-    "full": "مكتمل العدد",
-    "available": "متاح",
-    "inProgress": "جارٍ الآن",
-    "takeIt": "أقبله",
-    "takerLabel": "خائض التحدّي",
-    "rankBadge": "المرتبة {{rank}}",
-    "photoBadge": "إثبات بالصورة",
-    "meetBadge": "لقاء",
-    "photosCount_zero": "لا صور",
-    "photosCount_one": "صورة واحدة",
-    "photosCount_two": "صورتان",
-    "photosCount_few": "{{count}} صور",
-    "photosCount_many": "{{count}} صورة",
-    "photosCount_other": "{{count}} صورة",
-    "noOneJoined": "لم ينضم أحد بعد",
-    "beFirst": "كن الأول · +2",
-    "daysLeft": "الأيام المتبقية: {{count}}",
-    "lastDay": "ينتهي قريبًا",
-    "joinGroup": "انضم إلى التحدّي",
-    "whoJoined": "من انضم ({{count}})",
-    "ended": "انتهى",
-    "awaitingResults": "بانتظار النتائج"
+    "takerLabel": "خائض التحدّي"
   },
-  "statusInProgress": "التحدّي جارٍ",
-  "statusAccomplished": "أُنجز التحدّي!",
-  "openBadge": "مفتوح",
   "forLocals": "للسكان المحليين",
   "forExplorers": "للمسافرين",
-  "validation": {
-    "label": "كيف يتم التحقّق؟",
-    "meet": {
-      "label": "لقاء",
-      "hint": "عيشوا التجربة معًا وجهًا لوجه",
-      "bonusChip": "+50 مكافأة لقاء عندما يحضر الجميع"
-    },
-    "photo_proof": {
-      "label": "إثبات بالصورة",
-      "hint": "قبول الإثبات عن بُعد"
-    }
-  },
   "notFound": "لم نعثر على التحدّي",
   "typeBadge": {
     "food": "تحدّي طعام",
@@ -114,104 +35,22 @@
     "help": "تحدٍّ مجنون"
   },
   "challengerTag": "صاحب التحدّي",
-  "participantsLabel": "المشاركون",
   "editBtn": "تعديل",
   "deleteBtn": "حذف",
   "shareCta": "مشاركة",
-  "shareInvite": "خُض هذا التحدي معي!",
   "shareCopied": "تم نسخ الرابط",
   "noun": "تحدٍّ",
   "byCreator": "من {{name}}",
   "inspiration": {
     "heading": "أفكار تحدّيات",
     "sub": "ما يطلقه السكان المحليون في مدن أخرى، استلهم منه",
-    "firstLocal": "كن أول محلي في {{city}}",
-    "firstLocalSub": "أطلق تحدّيًا · وسيخوضه المسافرون القادمون",
-    "reward": "أول تحدٍّ · +10",
-    "launchFirst": "أطلق أول تحدٍّ",
-    "createYours": "أنشئ تحدّيك في {{city}}",
     "by": "من {{name}} · {{city}}"
   },
-  "examples": {
-    "label": "تحتاج أفكارًا؟ اختر واحدة",
-    "food": [
-      "دلّني على أفضل قهوة في المدينة",
-      "أين يتناول السكان المحليون غداءهم فعلًا",
-      "أفضل مكان لأكل الشارع بالقرب من هنا"
-    ],
-    "place": [
-      "أرني أفضل مكان لمشاهدة الغروب",
-      "مكان لا يجده السياح أبدًا",
-      "المكان الذي تذهب إليه لتصفّي ذهنك"
-    ],
-    "culture": [
-      "ليلة موسيقى محلية حقيقية هذا الأسبوع",
-      "فن شارع يستحق المشاهدة",
-      "عرض محلي لن أنساه"
-    ],
-    "help": [
-      "حلّاق لن يفسد أسبوعي",
-      "طبيب يتحدث الإنجليزية",
-      "أين أصلح شاشة هاتفي"
-    ]
-  },
-  "beFirstToAccept": "كن أول من يقبل",
-  "openThreadCta": "فتح المحادثة",
-  "accept": {
-    "err": {
-      "openSettings": "فتح الإعدادات",
-      "unknown": {
-        "title": "تعذّر القبول",
-        "body": "حدث خطأ ما. حاول مرة أخرى."
-      },
-      "not_creator": {
-        "title": "هذا تحدّيك أنت",
-        "body": "أنت من أنشأ هذا التحدّي، انتظر أن يقبله شخص آخر."
-      },
-      "mode_required": {
-        "title": "اختر أولًا: ساكن محلي أم مسافر",
-        "body": "اختر وضعك في ملفك الشخصي قبل قبول التحدّيات."
-      },
-      "mode_mismatch": {
-        "title": "هذا التحدّي ليس لك",
-        "body": "غيّر وضعك في ملفك الشخصي إذا أردت خوضه."
-      },
-      "cap_reached": {
-        "title": "التحدّي مكتمل العدد"
-      },
-      "in_progress": {
-        "title": "هناك من يخوضه الآن",
-        "body": "مسافر آخر يخوض هذا التحدّي الآن. عُد عندما ينتهي، فسيصبح التحدّي متاحًا من جديد."
-      },
-      "completed": {
-        "title": "التحدّي مكتمل بالفعل",
-        "body": "اكتمل هذا التحدّي، ولم يعد متاحًا لمشاركين جدد."
-      }
-    }
-  },
-  "messageCreator": "راسل {{name}} على الخاص",
   "join": {
-    "gateTitle": "كن مُشاهدًا",
-    "gateBody": "ادخل كمُشاهد لتتابع المحادثة وتشجّع خائض التحدّي.",
-    "cta": "ادخل كمُشاهد",
     "leaveCta": "غادر القناة",
     "errKicked": "تمت إزالتك من هذا التحدي. لا يمكنك الانضمام مرة أخرى.",
     "errClosed": "هذا التحدّي مغلق أمام المنضمّين الجدد.",
     "errGeneric": "تعذّر الدخول، حاول مرة أخرى."
-  },
-  "leaveTakeon": {
-    "pill": "مغادرة",
-    "confirmTitle": "مغادرة هذا التحدّي؟",
-    "confirmBody": "سيعود التقدّم إلى الصفر، ويُفتح التحدّي للآخرين من جديد. لا يمكن التراجع عن ذلك.",
-    "confirmCta": "مغادرة",
-    "failed": "تعذّرت المغادرة، حاول مرة أخرى."
-  },
-  "restart": {
-    "cta": "أعد التحدّي من البداية",
-    "confirmTitle": "إعادة التحدّي من البداية؟",
-    "confirmBody": "سيُزال خائض التحدّي الحالي، وتُمسح الدردشة، ويُفتح التحدّي من الصفر. لا يمكن التراجع عن ذلك.",
-    "confirmCta": "إعادة البدء",
-    "failed": "تعذّرت إعادة البدء، حاول مرة أخرى."
   },
   "lock": {
     "private": {
@@ -220,83 +59,8 @@
     }
   },
   "thread": {
-    "notFound": "لم نعثر على المحادثة",
     "empty": "كن أول من يكتب شيئًا.",
-    "emptyIntl": "قل مرحبًا، وأرسل صورة عندما تنجح.",
-    "cancel": {
-      "creatorTitle": "إلغاء هذه المشاركة؟",
-      "acceptorTitle": "الانسحاب من هذا التحدّي؟",
-      "body": "ستُحذف المحادثة والدردشة. يمكنك القبول من جديد لاحقًا إذا غيّرت رأيك.",
-      "confirm": "إلغاء المشاركة",
-      "failed": "تعذّر الإلغاء. حاول مرة أخرى."
-    },
-    "cancelledByOther": {
-      "title": "أُلغيت المحادثة",
-      "body": "ألغى الطرف الآخر هذه المشاركة."
-    }
-  },
-  "threads": {
-    "title": "محادثات تحدّياتي",
-    "noMessagesYet": "لا رسائل بعد",
-    "empty": {
-      "title": "لا محادثات نشطة",
-      "body": "عندما تقبل تحدّيًا أو يقبل أحدهم تحدّيك، تظهر المحادثة هنا."
-    },
-    "guestGate": {
-      "title": "سجّل الدخول لترى المحادثات",
-      "body": "المحادثات خاصة بينك وبين صاحب التحدّي. تحتاج إلى حساب لتبدأ واحدة."
-    }
-  },
-  "ratePrompts": {
-    "banner": {
-      "title": "قيّم هذا التحدّي: كيف كان؟",
-      "titleUrgent": "دورك لتقييم هذا التحدّي"
-    },
-    "sheet": {
-      "title": "كيف كان التحدّي؟",
-      "subtitle": "قيّم التحدّي، لا الشخص.",
-      "starsAria": "{{n}} نجمة",
-      "commentPlaceholder": "اترك ملاحظة عن التحدّي (اختياري)",
-      "submit": "إرسال التقييم",
-      "later": "ليس الآن"
-    },
-    "errSubmit": "تعذّر إرسال تقييمك. حاول مرة أخرى."
-  },
-  "scoringInfo": {
-    "aria": "كيف تُحتسب النقاط",
-    "helpLabel": "كيف تكسب النقاط",
-    "title": "كيف تعمل التحديات",
-    "intro": "نقاط قليلة للانضمام، والنقاط الكبيرة للحضور الفعلي أو الفوز. الانضمام فقط لجمع النقاط لا يستحق العناء.",
-    "colStep": "الخطوة",
-    "steps": {
-      "created": "تم إنشاء التحدّي",
-      "accepted": "تم قبول التحدّي",
-      "date": "تم تثبيت الموعد",
-      "meet": "لقاء",
-      "rate": "تقييم متبادل"
-    },
-    "noPoints": "-",
-    "totalLabel": "الإجمالي لكل تحدٍّ",
-    "footnote": "قد تتغيّر الأرقام بينما نضبط اللعبة.",
-    "types": {
-      "heading": "نوعان من التحدّيات",
-      "local": "لقاء: اجمع مجموعة وجهًا لوجه في وقت ومكان محدّدين. كل من يحضر يكسب الكثير.",
-      "international": "تحدّي صور: يرسل الجميع صورة قبل الموعد النهائي، ويختار صاحب التحدّي الفائز."
-    },
-    "lifecycle": {
-      "heading": "كيف يُحسم",
-      "body": "يحدّد صاحب التحدّي الفكرة، وينضم الناس، وفي النهاية يؤكّد صاحب التحدّي من حضر أو أي صورة فازت."
-    },
-    "pointsHeading": "كيف تكسب النقاط",
-    "ways": {
-      "join": "الانضمام إلى تحدٍّ",
-      "create": "أنشئ تحدّيًا",
-      "present": "الحضور (بعد التحقّق)",
-      "host": "استضافة لقاء",
-      "submit": "أرسل صورة في تحدٍّ",
-      "win": "افز بتحدّي الصور"
-    },
-    "seeExamples": "شاهد 3 أمثلة حقيقية"
+    "emptyIntl": "قل مرحبًا، وأرسل صورة عندما تنجح."
   },
   "leaderboard": {
     "title": "Most Local",
@@ -316,7 +80,6 @@
     },
     "points": "{{points}} نقطة",
     "me": {
-      "ranked": "أنت · #{{rank}} · {{points}} نقطة",
       "unranked": "خُض تحدّيًا لتدخل الترتيب"
     },
     "empty": {
@@ -324,7 +87,6 @@
       "body": "كن أول من يخوض تحدّيًا ويكسب النقاط."
     },
     "errLoad": "تعذّر تحميل الترتيب. اسحب لإعادة المحاولة.",
-    "neutral": "🏆 Most Local",
     "titleCity": "Most {{demonym}}",
     "share": {
       "cta": "شارك ترتيبي",
@@ -338,115 +100,8 @@
       "cityTop": "👑 {{place}} في المرتبة 1 بين كل المدن {{period}} بـ{{pts}} نقطة! {{below1}} ({{b1Pts}} نقطة) و{{below2}} ({{b2Pts}} نقطة) يلاحقاننا. يا أهل المدينة، لنبقَ في القمة 🔥"
     }
   },
-  "schedule": {
-    "proposeCta": "اقترح موعدًا",
-    "counterCta": "اقترح موعدًا آخر",
-    "editCta": "غيّر الموعد",
-    "you": "أنت",
-    "iProposedTitle": "بانتظار موافقة الطرف الآخر",
-    "theyProposedTitle": "اقترح {{name}}",
-    "scheduled": {
-      "title": "تم تحديد موعد اللقاء"
-    },
-    "withdraw": {
-      "title": "سحب الاقتراح؟",
-      "body": "سيُلغى الموعد الذي اقترحته، وسيصل إشعار للطرف الآخر.",
-      "confirm": "سحب"
-    },
-    "today": "اليوم",
-    "tomorrow": "غدًا",
-    "picker": {
-      "title": "متى ستلتقيان؟",
-      "whenLabel": "متى",
-      "timeLabel": "الوقت",
-      "whereLabel": "أين (اختياري)",
-      "wherePlaceholder": "مثال: مقهى الروضة، شارع الحمراء"
-    },
-    "err": {
-      "proposeFailed": "تعذّر اقتراح الموعد. حاول مرة أخرى.",
-      "approveFailed": "تعذّرت الموافقة. حاول مرة أخرى.",
-      "withdrawFailed": "تعذّر السحب. حاول مرة أخرى."
-    }
-  },
-  "debrief": {
-    "creatorPrompt": {
-      "title": "كيف كان الأمر؟",
-      "body": "هل نجح {{name}} في التحدّي؟"
-    },
-    "acceptorWaiting": {
-      "title": "بانتظار الحكم",
-      "body": "سيحدّد {{name}} كيف جرى الأمر."
-    },
-    "approved": {
-      "title": "أُنجز التحدّي"
-    },
-    "rejected": {
-      "title": "أُغلق التحدّي"
-    },
-    "confirm": {
-      "approve": {
-        "title": "هل أُنجز التحدّي؟",
-        "body": "هذا قرار نهائي، ولن تستطيع تغييره بعد ذلك.",
-        "confirm": "أُنجز التحدّي"
-      },
-      "reject": {
-        "title": "الإغلاق دون حكم؟",
-        "body": "اختر هذا إن لم يحدث اللقاء فعلًا. هذا قرار نهائي.",
-        "confirm": "إغلاق"
-      }
-    },
-    "err": {
-      "approveFailed": "تعذّرت الموافقة. حاول مرة أخرى.",
-      "rejectFailed": "تعذّر الإغلاق. حاول مرة أخرى."
-    }
-  },
   "closeCta": "إغلاق التحدّي",
   "reopenCta": "إعادة الفتح",
-  "pipeline": {
-    "step": {
-      "accept": "قبول",
-      "date": "الموعد",
-      "meet": "لقاء",
-      "wrap": "الختام",
-      "proof": "الإثبات",
-      "verdict": "الحكم"
-    },
-    "subcta": {
-      "tapToAccept": "اقبل التحدّي",
-      "creatorWaiting": "بانتظار من يخوضه",
-      "creatorReviewPending": "ردّ على طلب {{name}}",
-      "acceptorAwaitingReview": "بانتظار ردّ {{name}}",
-      "proposeDate": "اقترح موعدًا",
-      "dateAwaiting": "بانتظار موافقة صاحب التحدّي",
-      "approveDate": "تم اقتراح موعد",
-      "meetSoon": "نلتقي يوم {{date}}",
-      "creatorVerdict": "كيف كان الأمر مع {{name}}؟",
-      "acceptorWaitingVerdict": "بانتظار تأكيد {{name}}",
-      "rateMeetup": "قيّم لقاءك مع {{name}}",
-      "accomplished": "أُنجز التحدّي",
-      "closed": "أُغلق التحدّي",
-      "submitProof": "أرسل الإثبات",
-      "waitingForProof": "بانتظار الإثبات",
-      "reviewProof": "راجع الإثبات",
-      "waitingForVerdict": "بانتظار الحكم"
-    }
-  },
-  "takeon": {
-    "creator": {
-      "pendingTitle": "{{name}} يريد خوض تحدّيك",
-      "pendingBody": "اقبل لتبدأ الدردشة وتنسّق اللقاء، أو ارفض ليبقى المكان متاحًا.",
-      "approve": "قبول",
-      "reject": "رفض",
-      "approveFailed": "تعذّر القبول. حاول مرة أخرى.",
-      "rejectFailed": "تعذّر الرفض. حاول مرة أخرى."
-    },
-    "acceptor": {
-      "waitingTitle": "بانتظار المراجعة",
-      "waitingBody": "سيقبل {{name}} طلبك أو يرفضه، وسيصلك إشعار عندما يقرّر.",
-      "rejectedTitle": "رُفض الطلب",
-      "rejectedBody": "رفض {{name}} هذا الطلب. يمكنك اختيار تحدٍّ آخر."
-    }
-  },
   "postCreate": {
     "title": "تحدّيك منشور الآن",
     "subtitle": "والآن أطلقه: اجعل أحدًا يخوضه خلال الساعة القادمة.",
@@ -464,34 +119,6 @@
     "sentSubtitle": "سيصلهم إشعار الآن.",
     "pickerSubtitleAll": "لا تطابق دقيق، نعرض الجميع في {{city}}."
   },
-  "invitation": {
-    "accept": "قبول",
-    "ignore": "تجاهل"
-  },
-  "locked": {
-    "visitor": {
-      "title": "اقبل التحدّي لتفتح الدردشة",
-      "body": "بمجرد أن تقبل، ستحصل أنت وصاحب التحدّي على محادثة خاصة لتنسيق لقائكما."
-    },
-    "creator": {
-      "title": "بانتظار من يخوضه",
-      "body": "عندما يقبل مسافر التحدّي، ستتحدثان هنا مباشرة لتنسيق لقائكما."
-    },
-    "full": {
-      "title": "التحدّي مكتمل العدد",
-      "body": "كل الأماكن محجوزة. عُد لاحقًا إذا انسحب أحدهم."
-    },
-    "inProgress": {
-      "title": "هناك من يخوضه الآن",
-      "body": "مسافر يخوض هذا التحدّي الآن. عندما ينتهي سيصبح متاحًا من جديد، فعُد قريبًا."
-    }
-  },
-  "typeFilter": {
-    "label": "تصفية حسب النوع",
-    "all": "الكل",
-    "empty": "لا شيء في هذه الفئة الآن."
-  },
-  "seeAllChallenges": "كل التحدّيات →",
   "mode": {
     "label": "الوضع",
     "local": "محلي",
@@ -506,56 +133,17 @@
     "friends": "الأصدقاء",
     "publicHint": "يمكن لأي شخص في المدينة رؤيته وقبوله.",
     "friendsHint": "لا يراه إلا أصدقاؤك ومن تدعوهم.",
-    "intlLocked": "التحدّيات الدولية عامة دائمًا.",
-    "moderationBlocked": "نصّك مخالف، أعد صياغته من فضلك.",
     "badge": {
       "public": "عام",
       "friends": "الأصدقاء",
       "private": "خاص"
-    },
-    "optin": {
-      "title": "انتبه: هذا عام",
-      "body": "تظهر التحدّيات العامة في صفحة المدينة وعلى الويب. سيرى أي شخص اسمك ونص تحدّيك، بمن فيهم غير الأعضاء ومحركات البحث. يمكنك التبديل إلى الأصدقاء في الأسفل إن أردت دائرة أضيق.",
-      "cta": "فهمت، انشره للعموم",
-      "switchToFriends": "اجعله للأصدقاء",
-      "dontShowAgain": "لا تُظهر هذا مرة أخرى"
     }
   },
   "privacy": {
-    "panelTitle": "الخصوصية",
-    "currentPublic": "هذا التحدي عام: يمكن لأي شخص رؤيته.",
-    "currentFriends": "هذا التحدي للأصدقاء فقط.",
-    "currentPrivate": "هذا التحدي خاص: لا يراه أحد سواكما.",
-    "intlNote": "التحدّيات الدولية عامة دائمًا.",
-    "goPrivateCta": "اجعله خاصًا (بموافقة الطرفين)",
-    "myVoteAgreed": "صوّتّ بنعم. في انتظار الطرف الآخر.",
-    "myVoteDenied": "رفضت. اضغط أدناه إذا غيّرت رأيك.",
-    "otherVoteAgreed": "صوّت الطرف الآخر بنعم، والقرار لك الآن.",
-    "otherVoteDenied": "رفض الطرف الآخر.",
-    "voteAgreedCta": "موافق، اجعله خاصًا",
-    "voteDeniedCta": "رفض",
-    "withdrawCta": "اسحب تصويتي",
-    "needCounterparty": "متاح عندما يقبل أحدهم هذا التحدي.",
-    "errVote": "تعذّر حفظ تصويتك. حاول مجددًا.",
     "errSave": "تعذّر الحفظ. حاول مجددًا.",
-    "notifTitle": "إشعارات هذا التحدي",
-    "notif": {
-      "milestones": "المراحل الأساسية",
-      "all": "كل رسالة",
-      "off": "متوقف"
-    },
-    "notifHint": {
-      "milestones": "قبول المشارك، إرسال الإثبات، التأكيد النهائي.",
-      "all": "نبّهني عند كل رسالة جديدة في القناة.",
-      "off": "بلا إشعارات، سأتفقّد القناة بنفسي."
-    },
-    "closedTitle": "إغلاق أمام المنضمّين الجدد",
-    "closedBody": "يبقى المشاركون الحاليون. يتوقف زر الانضمام عن قبول أشخاص جدد حتى تعيد الفتح.",
-    "closedCloseCta": "أغلق القناة أمام المنضمّين الجدد",
-    "closedReopenCta": "أعد فتحها للمنضمّين الجدد"
+    "closedBody": "يبقى المشاركون الحاليون. يتوقف زر الانضمام عن قبول أشخاص جدد حتى تعيد الفتح."
   },
   "members": {
-    "title": "في القناة",
     "countIn": "في القناة: {{count}}",
     "seeAll": "عرض الكل",
     "empty": "لم ينضم أحد بعد، كن الأول.",
@@ -580,55 +168,15 @@
     "taker": "خائض التحدّي",
     "spectator": "مُشاهد"
   },
-  "cta": {
-    "takenBy": "{{name}} يخوضه الآن",
-    "closed": "هذا التحدّي مغلق"
-  },
   "intl": {
-    "targetCityLabel": "المدينة المستهدفة",
-    "targetCityAnywhere": "أي مكان في العالم",
-    "targetCityHint": "اترك «أي مكان» لتصل إلى المسافرين في كل مكان، أو اختر مدينة لاستهداف أدق.",
-    "proofRequirementsLabel": "ماذا يجب أن تُظهر الصورة؟",
-    "proofRequirementsPlaceholder": "مثال: الطبق في ضوء النهار وأنت في الصورة",
-    "proofRequirementsHint": "الإثبات صورة. يقرأ المشارك هذا قبل الإرسال، فكن دقيقًا.",
-    "cityPicker": {
-      "title": "اختر مدينة مستهدفة",
-      "searchPlaceholder": "ابحث عن مدينة…",
-      "anywhere": "أي مكان في العالم"
-    },
     "proof": {
-      "requirementsLabel": "ما طلبه صاحب التحدّي",
       "submitCta": "أرسل الإثبات",
       "tryAgainCta": "حاول مرة أخرى (المتبقي: {{count}})",
-      "waitingProof": "بانتظار الإثبات",
       "waitingVerdict": "بانتظار الحكم",
       "approvedLine": "أُنجز التحدّي",
       "closedLine": "أُغلق التحدّي",
       "lastReason": "السبب: {{reason}}",
-      "geotagOk": "تم التحقّق من الموقع",
-      "geotagWarn": "الموقع خارج المنطقة المستهدفة",
-      "approveCta": "قبول",
-      "rejectCta": "رفض",
-      "rejectModalTitle": "رفض هذا الإثبات",
-      "rejectModalHint_zero": "لم تبقَ له أي محاولة. أخبره بما يجب تعديله.",
-      "rejectModalHint_one": "بقيت له محاولة واحدة. أخبره بما يجب تعديله.",
-      "rejectModalHint_two": "بقيت له محاولتان. أخبره بما يجب تعديله.",
-      "rejectModalHint_few": "بقيت له {{count}} محاولات. أخبره بما يجب تعديله.",
-      "rejectModalHint_many": "بقيت له {{count}} محاولة. أخبره بما يجب تعديله.",
-      "rejectModalHint_other": "بقيت له {{count}} محاولة. أخبره بما يجب تعديله.",
-      "reasonPlaceholder": "مثال: الصورة مشوّشة، والطبق لا يظهر",
-      "rejectConfirm": "إرسال الرفض",
-      "reasonRequiredTitle": "اكتب السبب",
-      "reasonRequiredBody": "سبب قصير (من 1 إلى 200 حرف) يساعد خائض التحدّي.",
-      "permPhotoTitle": "نحتاج إلى الوصول إلى الصور",
-      "permPhotoBody": "فعّل الوصول إلى مكتبة الصور من الإعدادات لاختيار إثبات.",
-      "permGpsTitle": "نحتاج إلى موقعك",
-      "permGpsBody": "تحديد الموقع إلزامي. فعّله من الإعدادات.",
-      "gpsFailTitle": "تعذّرت قراءة الموقع",
-      "gpsFailBody": "حاول مرة أخرى في الخارج أو بعد تفعيل خدمات الموقع.",
-      "submitFailTitle": "تعذّر الإرسال",
-      "submitFailBody": "تحقّق من اتصالك وحاول مرة أخرى.",
-      "reviewFailTitle": "تعذّر حفظ الحكم"
+      "submitFailBody": "تحقّق من اتصالك وحاول مرة أخرى."
     }
   },
   "modeFilter": {
@@ -636,55 +184,20 @@
     "all": "الكل"
   },
   "scoreCelebration": {
-    "unit": "نقطة",
-    "subtitle": {
-      "accepted": "قُبل تحدّيك",
-      "date_locked": "تم تثبيت الموعد، هيا بنا",
-      "meetup": "المهمة أُنجزت",
-      "debrief": "المهمة أُنجزت",
-      "ghost": "حظًا أوفر في المرة القادمة",
-      "default": "أنت تتقدّم في الترتيب",
-      "meet_bonus": "حصلت على مكافأة اللقاء",
-      "challenge_created": "أطلقت تحدّيًا"
-    },
     "rank": {
       "city": "رقم {{rank}} في {{city}}",
       "cityBeyond": "خارج أفضل {{topN}} في مدينتك",
       "world": "رقم {{rank}} في العالم",
       "worldBeyond": "خارج أفضل {{topN}} في العالم",
       "cityUnranked": "خارج الترتيب هذا الشهر في {{city}}",
-      "worldUnranked": "خارج الترتيب العالمي هذا الشهر",
-      "cities": "{{city}} في المرتبة {{rank}} بين المدن",
-      "citiesBeyond": "{{city}} خارج أفضل {{topN}} مدينة"
-    },
-    "cta": "هيا بنا",
-    "kindShort": {
-      "accepted": "تم القبول",
-      "date_locked": "تم تثبيت الموعد",
-      "meetup": "تم اللقاء",
-      "debrief": "تقييم متبادل",
-      "ghost": "لم يحضر",
-      "default": "نقاط مكتسبة",
-      "meet_bonus": "مكافأة اللقاء",
-      "challenge_created": "تم إنشاء التحدّي"
-    },
-    "event": {
-      "deletedChallenge": "تحدٍّ محذوف",
-      "andMore": "و{{count}} غيرها"
-    },
-    "total": "المجموع: {{total}} نقطة"
+      "worldUnranked": "خارج الترتيب العالمي هذا الشهر"
+    }
   },
   "welcomeGuest": {
     "title": "أهلًا بك! دردش هنا بحرية، بلا تسجيل.",
     "cta": "تريد خوض هذا التحدّي؟ سجّل في 3 ثوانٍ"
   },
   "group": {
-    "meetLabel": "متى وأين",
-    "meetCta": "حدّد موعد اللقاء",
-    "meetHint": "كل من ينضم يلتقي هنا معًا، وبعدها تؤكّد من حضر.",
-    "meetRequired": "اختر تاريخًا للقاء.",
-    "meetSet": "حدّد اللقاء",
-    "done": "انتهى هذا اللقاء.",
     "validateCta": "أكّد من حضر",
     "validateAfter": "يمكنك التأكيد بعد اللقاء · {{time}}",
     "youreIn": "أنت مشارك، نراك هناك!",
@@ -698,20 +211,9 @@
     "validateConfirm": "تأكيد الحضور ({{count}})",
     "noParticipants": "لم ينضم أحد بعد.",
     "join": "انضم",
-    "joinedCount": "المنضمّون: {{count}}",
-    "deadlineLabel": "آخر موعد لإرسال الصور",
-    "deadline24h": "24 ساعة",
-    "deadline3d": "3 أيام",
-    "deadline1w": "أسبوع",
-    "deadlineHint": "كل من ينضم يرسل صورة قبل الموعد النهائي، وبعدها تختار الفائز.",
-    "deadlineRequiredTitle": "اختر موعدًا نهائيًا",
-    "deadlineRequired": "اختر مدة التحدّي.",
     "deadlinePrefix": "أرسل قبل",
-    "contestDone": "انتهى هذا التحدّي.",
     "youreInPhoto": "أنت مشارك، أرسل صورتك في الأسفل.",
-    "pickWinnerCta": "اختر الفائز",
     "joinContestCta": "انضم إلى التحدّي (+2 نقطة)",
-    "winnerTitle": "اختر الفائز",
     "winnerSub": "اختر أفضل صورة، وسيحصل الفائز على المكافأة الكبرى.",
     "winnerConfirm": "توّج الفائز",
     "winnerNoSubmission": "هذا الشخص لم يرسل صورة.",
@@ -725,46 +227,13 @@
     "tapToPick": "اختر الأفضل",
     "winnerTag": "الفائز",
     "pickThis": "اختر هذه",
-    "winnerConfirmTitle": "تتويج الفائز؟",
     "winnerConfirmBody": "{{name}} يفوز بالمكافأة الكبرى.",
-    "pickHint": "اختر الفائز من الصور في الأسفل.",
-    "awaitingPhotos": "لا صور بعد، والتحدّي يشتعل 🔥",
     "checkPhotos_zero": "شاهد الصور",
     "checkPhotos_one": "شاهد الصورة",
     "checkPhotos_two": "شاهد الصورتين",
     "checkPhotos_few": "شاهد الصور الـ{{count}}",
     "checkPhotos_many": "شاهد الصور الـ{{count}}",
     "checkPhotos_other": "شاهد الصور الـ{{count}}"
-  },
-  "challengeIntro": {
-    "slide1": {
-      "title": "عِش المدينة الآن",
-      "body": "التحدّيات مغامرات صغيرة في الواقع بين الناس داخل المدينة، وبين المدن أيضًا."
-    },
-    "slide2": {
-      "title": "صُغ تحدّيًا",
-      "body": "حدّد لقاءً (تاريخ ومكان) أو تحدّي صور بموعد نهائي. أنت المضيف."
-    },
-    "slide3": {
-      "title": "ينضم أي شخص ببساطة",
-      "body": "بلا طلبات ولا انتظار، من يريد ينضم. وتحصل على +2 فورًا."
-    },
-    "slide4": {
-      "title": "حقّقه",
-      "body": "يحضر الجميع معًا إلى لقائك، أو يرسلون أفضل صورة قبل الموعد النهائي."
-    },
-    "slide5": {
-      "title": "أنت من يؤكّد",
-      "body": "بعد ذلك تؤكّد من حضر، أو تختار الصورة الفائزة. وهنا تأتي النقاط الكبيرة."
-    },
-    "slide6": {
-      "title": "بين المدن",
-      "body": "تحدّيات الصور تعمل عن بُعد: تحدَّ مدينة أخرى بأكملها أن ترسل أفضل لقطة لها."
-    },
-    "slide7": {
-      "title": "تقدّم في Most Local",
-      "body": "احضر وافز لتصعد في الترتيب. نقاط الانضمام تبقى قليلة، فالمهم أن تفعلها حقًا."
-    }
   },
   "result": {
     "winner": {
@@ -786,8 +255,7 @@
     "host": {
       "titlePhoto": "فاز {{name}} بتحدّيك!",
       "titleMeet": "انتهى لقاؤك!",
-      "body": "شكرًا على الاستضافة.",
-      "breakdown": "{{people}} = +{{headTotal}}   🏠 +{{base}}"
+      "body": "شكرًا على الاستضافة."
     },
     "cta": "رائع!",
     "total": "لديك الآن {{total}} نقطة",
@@ -799,25 +267,6 @@
     "live": "مباشر",
     "done": "تم",
     "ended": "انتهى"
-  },
-  "pointExamples": {
-    "title": "3 أمثلة حقيقية",
-    "intro": "كيف وُزّعت النقاط في تحدّيات حقيقية: من كسب ماذا.",
-    "empty": "لا أمثلة بعد، كن أول من يطلق تحدّيًا!",
-    "each": "لكل شخص",
-    "line": {
-      "created": "أنشأه {{name}}",
-      "winner": "فاز {{name}}",
-      "present": "الحضور: {{count}}",
-      "submission": "الصور المرسلة: {{count}}",
-      "host": "استضافه {{name}}"
-    }
-  },
-  "titlePh": {
-    "food": "مثال: دلّني على أفضل طبق فول في المدينة 🍜",
-    "place": "مثال: خذني إلى مكانك السرّي المفضّل 📍",
-    "culture": "مثال: أرني شيئًا لا يعرفه إلا السكان المحليون 🎭",
-    "help": "مثال: تحدَّني أن أجرّب شيئًا مجنونًا 🤪"
   },
   "relaunch": {
     "cta": "إعادة البدء",
@@ -831,7 +280,6 @@
     "titleCity": "شاهد أماكن {{city}} على الخريطة",
     "body": "هنا ينشر السكان المحليون صور Daily Challenge. انشر صورتك من تطبيق Hilads."
   },
-  "creationClosed": "إنشاء التحديات مغلق. العب Daily Challenge في تطبيق Hilads.",
   "map": {
     "see": "عرض الخريطة",
     "button": "الخريطة",
@@ -846,10 +294,7 @@
     "pricePaid": "السعر المدفوع {{price}}",
     "closeSpot": "إغلاق",
     "emptyTitle": "كن أول من يضع مكانًا هنا",
-    "list": "القائمة",
-    "mapView": "الخريطة",
     "sortNearest": "الأقرب",
-    "sortWeek": "الأكثر تصويتًا هذا الأسبوع",
     "spotsTomorrow": "تأتي الأماكن من تحدّي الغد: {{theme}}",
     "proofs_zero": "لا صور",
     "proofs_one": "صورة واحدة",
@@ -904,7 +349,6 @@
     "nothingLive": "Daily Challenge التالي في الطريق",
     "cta": "خُض التحدّي",
     "ctaIn": "أنا مشارك",
-    "ctaTaken": "خضت التحدّي · اعرض صورتي",
     "seeProofs": "شاهد صور اليوم",
     "localTwist": "Local Twist",
     "twistIn": "Local Twist في {{city}}",
@@ -915,12 +359,8 @@
     "count_few": "شارك {{count}} أشخاص اليوم",
     "count_many": "شارك {{count}} شخصًا اليوم",
     "count_other": "شارك {{count}} شخص اليوم",
-    "countCity": "{{count}} في {{city}}",
-    "countZero": "لا أحد بعد، كن الأول",
     "beFirst": "كن الأول اليوم",
     "beFirstSub": "لا توجد صورة بعد. كن الأول، العالم ينتظر.",
-    "firstYours": "وصلت صورتك",
-    "firstYoursSub": "ستظهر هنا بعد الموافقة عليها مع صور الآخرين.",
     "yourProof": "صورتك",
     "status": {
       "pending": "قيد الانتظار",
@@ -930,7 +370,6 @@
     },
     "pendingHint": "تم الإبلاغ عن هذه الصورة وهي قيد المراجعة.",
     "reasonLabel": "السبب: {{reason}}",
-    "fixIt": "عدّلها",
     "edit": "تعديل",
     "delete": "حذف",
     "deleteTitle": "حذف صورتك؟",
@@ -954,87 +393,20 @@
     "places_many": "{{count}} مكانًا على الخريطة",
     "places_other": "{{count}} مكان على الخريطة",
     "unnamedPlace": "مكان محدّد",
-    "tabWorld": "العالم",
     "local": "محلي",
     "traveler": "مسافر",
     "validatedByLocal": "بتأكيد أحد السكان المحليين",
     "loadFailed": "تعذّر تحميل Daily Challenge.",
     "retry": "أعد المحاولة",
     "notFound": "هذا الـ Daily Challenge غير موجود.",
-    "cityRowEmpty": "كن أول من يُنشئ تحدّيًا في {{city}}",
     "proof": {
-      "titleNew": "صورتك",
-      "titleEdit": "عدّل صورتك",
-      "camera": "الكاميرا",
-      "gallery": "المعرض",
-      "changePhoto": "تغيير الصورة",
-      "addPhoto": "أضف صورة لتحدّيك",
       "caption": "وصف",
-      "captionPlaceholder": "جملة واحدة عنها (اختياري)",
       "price": "السعر المدفوع",
-      "pricePlaceholder": "المبلغ (اختياري)",
-      "pin": "حدّد هذا المكان على الخريطة",
-      "pinHint": "فقط إن أردت أن يجده الآخرون.",
-      "pinChange": "غيّر",
-      "pinRemove": "إزالة",
       "submit": "انشر صورتي",
-      "save": "حفظ التغييرات",
-      "sending": "جارٍ الإرسال…",
-      "sentTitle": "لعبت {{city}}!",
-      "sentBody": "شاهد ما قاله العالم. صورتك منشورة الآن.",
-      "ok": "حسنًا",
-      "permPhotoTitle": "نحتاج إلى الوصول إلى الصور",
-      "permPhotoBody": "اسمح بالوصول من الإعدادات لإضافة صورة.",
-      "permCameraTitle": "نحتاج إلى الوصول إلى الكاميرا",
-      "permCameraBody": "اسمح بالوصول إلى الكاميرا من الإعدادات لالتقاط صورة.",
-      "photoRequired": "أضف صورة أولًا.",
-      "locationOff": "الموقع متوقف، لذا لا يمكن تحديد هذا المكان.",
-      "editOnlyActive": "يمكنك تعديل صورتك حتى ينتهي التحدّي.",
-      "takeTitle": "التقط صورتك",
-      "retake": "أعد الالتقاط"
+      "save": "حفظ التغييرات"
     },
     "errors": {
-      "already_posted": "لعبت تحدّي اليوم بالفعل.",
-      "challenge_closed": "هذا التحدّي مغلق.",
-      "no_active_challenge": "لا يوجد Daily Challenge حاليًا.",
-      "moderation_blocked": "وصفك غير مقبول، أعد صياغته من فضلك.",
-      "banned": "لم يعد بإمكانك النشر هنا.",
-      "invalid_photo": "لا يمكن استخدام هذه الصورة. جرّب صورة أخرى.",
-      "invalid_caption": "الوصف طويل جدًا.",
-      "invalid_price": "تحقّق من المبلغ والعملة.",
-      "invalid_place": "اختر مكانًا واحدًا.",
-      "rate_limited": "محاولات كثيرة، انتظر قليلًا.",
-      "image_processing_failed": "تعذّرت معالجة هذه الصورة. جرّب صورة أخرى.",
-      "generic": "حدث خطأ ما. حاول مرة أخرى.",
-      "place_required": "اختر مكان صورتك.",
-      "place_not_allowed": "هذا التحدّي لا يحتاج إلى مكان.",
-      "place_not_found": "هذا المكان لم يعد متاحًا. اختر مكانًا آخر.",
-      "invalid_place_name": "يجب أن يكون اسم المكان من 1 إلى 80 حرفًا.",
-      "place_name_blocked": "اسم المكان غير مقبول. أعد صياغته من فضلك.",
-      "invalid_position": "نحتاج موقعك لنشر هذه الصورة.",
-      "too_far": "أنت بعيد جدًا عن هذا المكان."
-    },
-    "push": {
-      "bannerTitle": "احصل على Daily Challenge كل صباح",
-      "bannerCta": "فعّل",
-      "askTitle": "Daily Challenge",
-      "askBody": "احصل على Daily Challenge كل صباح، في وقت يناسبك.",
-      "askBodyBlocked": "الإشعارات متوقفة لـ Hilads. فعّلها من الإعدادات لتحصل على Daily Challenge كل صباح.",
-      "yes": "نعم، نبّهني",
-      "notNow": "ليس الآن",
-      "openSettings": "فتح الإعدادات"
-    },
-    "archive": {
-      "title": "التحدّيات السابقة",
-      "pickCity": "اختر مدينة",
-      "worldSelection": "مختارات العالم: هذه المدينة ليست نشطة بعد",
-      "empty": "أولى تحدّيات Daily Challenge في الطريق.",
-      "proofs_zero": "لا صور",
-      "proofs_one": "صورة واحدة",
-      "proofs_two": "صورتان",
-      "proofs_few": "{{count}} صور",
-      "proofs_many": "{{count}} صورة",
-      "proofs_other": "{{count}} صورة"
+      "generic": "حدث خطأ ما. حاول مرة أخرى."
     },
     "report": {
       "title": "الإبلاغ عن هذه الصورة",
@@ -1063,25 +435,10 @@
         "generic": "حدث خطأ ما. حاول مرة أخرى."
       },
       "voteFor": "صوّت لـ{{city}}",
-      "prompt": "صوّت للصور التي تحبها",
-      "tourNote": "الصورة الأكثر أصواتًا في كل مدينة تدخل جولة العالم غدًا.",
-      "afterPost": "صوّت للصور التي تحبها",
       "validatedHint": "بتأكيد أحد السكان المحليين: شخص يعيش هنا صوّت لهذه الصورة."
     },
     "results": {
-      "title": "النتائج",
-      "yesterdayTop3": "أفضل 3 بالأمس",
-      "worldRank": "#{{rank}} في العالم",
-      "bestInCities": "الأفضل في كل مدينة نشطة",
-      "bestIn": "الأفضل في {{city}}",
-      "none": "لا أصوات في هذا التحدّي، فلا منصة تتويج."
-    },
-    "profile": {
-      "streak": "السلسلة الحالية",
-      "bestStreak": "أفضل سلسلة",
-      "completed": "مُنجَز",
-      "bestProofs": "أفضل الصور",
-      "emptyMine": "تبدأ سلسلتك مع تحدّي اليوم."
+      "worldRank": "#{{rank}} في العالم"
     },
     "streak_zero": "{{count}} يوم متتالٍ",
     "streak_one": "يوم متتالٍ واحد",
@@ -1101,7 +458,6 @@
       "hint": "نصيحة لا يعرفها إلا السكان المحليون، بالإنجليزية. نراجعها قبل نشرها.",
       "submit": "أرسل اقتراحي",
       "withdraw": "سحب",
-      "withdrawTitle": "سحب اقتراحك؟",
       "withdrawBody": "يمكنك الاقتراح مجددًا حتى إغلاق الاقتراحات.",
       "status": {
         "pending": "قيد المراجعة",
@@ -1113,7 +469,6 @@
         "picked": "يُنشر مع تحدّي الغد في {{city}} باسمك.",
         "not_picked": "اختير اقتراح آخر هذه المرة. حاول غدًا!"
       },
-      "heroCta": "اقترح Local Twist الغد · حتى {{time}}",
       "heroStatus": "Local Twist الخاص بك للغد: {{status}}",
       "reasons": {
         "no_city": "حدّد مدينتك لتقترح Local Twist.",
@@ -1144,11 +499,6 @@
       "see": "عرض الخريطة",
       "button": "الخريطة",
       "empty": "لا توجد أماكن مثبّتة بعد.",
-      "titleChallenge": "الأماكن المثبّتة",
-      "titleCity": "الأماكن المثبّتة في {{city}}",
-      "titleWorld": "الأماكن المثبّتة حول العالم",
-      "seeProof": "عرض الصورة",
-      "openChallenge": "افتح التحدّي",
       "search": "ابحث عن طبق أو مقهى أو شارع",
       "searchA11y": "ابحث عن أماكن",
       "clearSearch": "امسح البحث",
@@ -1158,15 +508,12 @@
       "locate": "ركّز الخريطة عليّ",
       "locationDenied": "اسمح بالموقع في الإعدادات لتركيز الخريطة عليك.",
       "locationFailed": "موقعك غير متاح الآن.",
-      "noToken": "الخريطة غير متاحة في هذا الإصدار.",
       "openSpot": "افتح المكان",
       "directions": "الاتجاهات",
       "validated": "بتأكيد أحد السكان المحليين",
       "pricePaid": "السعر المدفوع {{price}}",
-      "selected": "المحدد: {{name}}",
       "closeSpot": "إغلاق",
       "emptyTitle": "كن أول من يضع مكانًا هنا",
-      "planA11y": "خطة: {{title}}، {{time}}",
       "proofs_zero": "لا صور",
       "proofs_one": "صورة واحدة",
       "proofs_two": "صورتان",
@@ -1174,62 +521,26 @@
       "proofs_many": "{{count}} صورة",
       "proofs_other": "{{count}} صورة",
       "sheet": {
-        "byNear": "الأقرب أولًا",
-        "byLiked": "الأكثر إعجابًا أولًا",
-        "byNew": "الأحدث أولًا",
         "sortLiked": "الأكثر إعجابًا",
         "sortNew": "الأحدث",
-        "hint": "اسحب للأعلى لرؤية القائمة",
-        "emptyArea": "لا شيء هنا بعد",
         "pioneer": "كن الرائد: العب هنا اليوم 📍",
-        "count_zero": "{{count}} مكان في {{city}}",
-        "count_one": "مكان واحد في {{city}}",
-        "count_two": "مكانان في {{city}}",
-        "count_few": "{{count}} أماكن في {{city}}",
-        "count_many": "{{count}} مكانًا في {{city}}",
-        "count_other": "{{count}} مكان في {{city}}",
-        "countHere_zero": "{{count}} مكان هنا",
-        "countHere_one": "مكان واحد هنا",
-        "countHere_two": "مكانان هنا",
-        "countHere_few": "{{count}} أماكن هنا",
-        "countHere_many": "{{count}} مكانًا هنا",
-        "countHere_other": "{{count}} مكان هنا",
         "peekNearest": "الأقرب على بُعد {{distance}}",
-        "peekSwipe": "اسحب للأعلى 👆",
+        "peekSwipe": "اسحب للأعلى",
         "peekEmpty": "لا أماكن هنا بعد، كن الرائد 📍",
-        "peekTitle_zero": "📍 {{num}} أماكن لاستكشافها",
-        "peekTitle_one": "📍 {{num}} مكان لاستكشافه",
-        "peekTitle_two": "📍 {{num}} مكانان لاستكشافهما",
-        "peekTitle_few": "📍 {{num}} أماكن لاستكشافها",
-        "peekTitle_many": "📍 {{num}} مكانًا لاستكشافه",
-        "peekTitle_other": "📍 {{num}} مكان لاستكشافه"
+        "peekTitle_zero": "{{num}} أماكن لاستكشافها",
+        "peekTitle_one": "{{num}} مكان لاستكشافه",
+        "peekTitle_two": "{{num}} مكانان لاستكشافهما",
+        "peekTitle_few": "{{num}} أماكن لاستكشافها",
+        "peekTitle_many": "{{num}} مكانًا لاستكشافه",
+        "peekTitle_other": "{{num}} مكان لاستكشافه"
       },
       "surprise": "فاجئني"
     },
     "leaderboard": {
-      "tab": "Top 10",
-      "provisional": "مؤقت حتى التحدّي التالي",
-      "finalIn": "نهائي خلال {{time}}",
-      "official": "منصة التتويج الرسمية",
-      "minProofs": "يُفتح Top 10 عندما يبلغ عدد الصور {{min}}. حتى الآن: {{n}}.",
-      "noVotes": "لا أصوات بعد. صوّت لصورك المفضلة!",
-      "me": "أنت: #{{rank}} · ♥ {{votes}}",
-      "meCity": "رقم {{rank}} في {{city}}",
-      "noProof": "العب لتدخل الترتيب.",
-      "pending": "ستدخل صورتك الترتيب بعد الموافقة عليها.",
-      "cityTop": "أفضل 3 في {{city}}",
-      "compactTitle": "أفضل 3 الآن",
-      "seeAll": "Top 10 ›"
+      "me": "أنت: #{{rank}} · ♥ {{votes}}"
     },
     "week": {
       "title": "هذا الأسبوع",
-      "calendar": "التقويم",
-      "today": "اليوم",
-      "tomorrow": "غدًا",
-      "done": "مُنجَز",
-      "pending": "بانتظار المراجعة",
-      "missed": "لم يُنجز",
-      "none": "لا تحدّي",
       "keep": "العب اليوم لتحافظ على سلسلتك"
     },
     "calendar": {
@@ -1242,23 +553,12 @@
       "prev": "الشهر السابق",
       "next": "الشهر التالي"
     },
-    "guide": {
-      "title": "دليل المدينة",
-      "all": "الكل",
-      "emptyCity": "لا تحدّي من موضوع {{theme}} في {{city}} بعد. التالي: {{day}}.",
-      "emptyWorld": "لا تحدّي من موضوع {{theme}} بعد. التالي: {{day}}."
-    },
     "localPass": {
       "name": "Local Pass",
-      "progress": "{{done}}/{{total}} مواضيع",
-      "earned": "تم الحصول عليه",
-      "hint": "أكمل المواضيع السبعة في {{city}} لتحصل على Local Pass الخاص بها.",
-      "profileTitle": "Local Pass",
       "badgeA11y": "حامل Local Pass"
     },
     "propose": {
       "cta": "اقترح تحدّيًا",
-      "short": "اقترح",
       "title": "اقترح تحدّيًا",
       "textLabel": "تحدّيك (بالإنجليزية)",
       "textPlaceholder": "Find a…",
@@ -1295,7 +595,6 @@
       },
       "reason": "السبب: {{reason}}",
       "withdraw": "سحب",
-      "withdrawTitle": "سحب هذا الاقتراح؟",
       "withdrawBody": "يمكنك إرسال اقتراح آخر بعدها مباشرة.",
       "proposedBy": "اقترحه {{name}}",
       "proposedByCity": "اقترحه {{name}} · {{city}}",
@@ -1306,32 +605,13 @@
         "invalid_twist": "اجعل Local Twist أقل من 280 حرفًا.",
         "twist_not_allowed": "إضافة Local Twist لسكان المدن النشطة فقط.",
         "moderation_blocked": "اقتراحك غير مقبول. أعد صياغته من فضلك."
-      },
-      "linkAsk": "لديك فكرة لتحدٍّ؟",
-      "linkCta": "اقترحها",
-      "cardBody": "قد تصبح فكرتك تحدي الغد للعالم كله 🌍",
-      "cardHide": "إخفاء لمدة أسبوع",
-      "cardPlayed_zero": "لُعبت فكرتك «{{text}}» في {{count}} مدينة 🎉",
-      "cardPlayed_one": "لُعبت فكرتك «{{text}}» في {{count}} مدينة 🎉",
-      "cardPlayed_two": "لُعبت فكرتك «{{text}}» في {{count}} مدينة 🎉",
-      "cardPlayed_few": "لُعبت فكرتك «{{text}}» في {{count}} مدينة 🎉",
-      "cardPlayed_many": "لُعبت فكرتك «{{text}}» في {{count}} مدينة 🎉",
-      "cardPlayed_other": "لُعبت فكرتك «{{text}}» في {{count}} مدينة 🎉"
+      }
     },
     "early": {
-      "badge": "مبكر",
-      "hint": "مكافأة التبكير: انشر قبل {{time}}"
-    },
-    "group": {
-      "title": "صور جديدة: {{n}}",
-      "citiesMore": "{{cities}} و{{n}} أخرى",
-      "galleryTitle": "صور جديدة"
+      "badge": "مبكر"
     },
     "today": {
-      "early": "مكافأة التبكير حتى {{time}}",
       "tomorrow": "غدًا: {{theme}}",
-      "aroundWorld": "اليوم حول *العالم*",
-      "inCity": "اليوم في *{{city}}*",
       "proofs_zero": "لا صور",
       "proofs_one": "صورة واحدة",
       "proofs_two": "صورتان",
@@ -1345,21 +625,12 @@
       "countries_many": "{{count}} دولة",
       "countries_other": "{{count}} دولة",
       "proofsIn": "{{proofs}} من {{countries}}",
-      "podiumTitle": "منصة تتويج الأمس",
       "allPast": "كل التحدّيات السابقة",
       "archiveTitle": "التحدّيات السابقة",
       "archiveAll": "كل المواضيع",
       "archiveEmpty": "لا تحدّيات سابقة هنا بعد.",
       "archiveMore": "عرض المزيد",
       "seeAll": "عرض الكل",
-      "openMap": "افتح الخريطة",
-      "seeMine": "عرض صورتك",
-      "votes_zero": "لا أصوات",
-      "votes_one": "صوت واحد",
-      "votes_two": "صوتان",
-      "votes_few": "{{count}} أصوات",
-      "votes_many": "{{count}} صوتًا",
-      "votes_other": "{{count}} صوت",
       "day": {
         "done": "أُنجز",
         "pending": "قيد المراجعة",
@@ -1372,19 +643,7 @@
       "links": {
         "twistTitle": "اقترح Local Twist الغد",
         "twistSub": "للسكان المحليين، حتى {{time}}"
-      },
-      "spotsTeaser_zero": "لا أماكن قريبة",
-      "spotsTeaser_one": "مكان واحد قريب منك",
-      "spotsTeaser_two": "مكانان قريبان منك",
-      "spotsTeaser_few": "{{count}} أماكن قريبة منك",
-      "spotsTeaser_many": "{{count}} مكانًا قريبًا منك",
-      "spotsTeaser_other": "{{count}} مكان قريب منك",
-      "spotsTeaserIn_zero": "لا أماكن في {{city}}",
-      "spotsTeaserIn_one": "مكان واحد في {{city}}",
-      "spotsTeaserIn_two": "مكانان في {{city}}",
-      "spotsTeaserIn_few": "{{count}} أماكن في {{city}}",
-      "spotsTeaserIn_many": "{{count}} مكانًا في {{city}}",
-      "spotsTeaserIn_other": "{{count}} مكان في {{city}}"
+      }
     },
     "spot": {
       "rankWeekFirst": "الأكثر تصويتًا هذا الأسبوع في {{city}}",
@@ -1393,119 +652,23 @@
       "rankAlltime": "المرتبة {{rank}} على الإطلاق في {{city}}",
       "photos": "الصور",
       "captions": "ماذا يقول الناس",
-      "seeOnMap": "اعرض على الخريطة",
       "notFound": "هذا المكان غير متاح.",
       "local": "محلي"
     },
     "place": {
-      "title": "أين أنت؟",
-      "why": "يُستخدم موقعك مرة واحدة لعرض الأماكن حولك والتأكد من وجودك هناك. لا يُحفَظ أبدًا.",
-      "find": "ابحث عن الأماكن حولي",
-      "locating": "نبحث عن موقعك…",
-      "deniedTitle": "الموقع متوقف",
-      "deniedBody": "يجري هذا التحدّي في مكان محدد: نحتاج موقعك للتأكد من وجودك هناك.",
-      "failedTitle": "موقعك غير متاح",
-      "failedBody": "تأكد من تشغيل الموقع وحاول مجددًا، ويفضَّل في الخارج.",
-      "openSettings": "فتح الإعدادات",
-      "retry": "حاول مرة أخرى",
-      "approximate": "موقعك تقريبي (±{{m}} م). اخرج أو انتظر قليلًا ثم حدّث.",
-      "refresh": "حدّث موقعي",
-      "search": "ابحث في الأماكن هنا",
-      "inReview": "قيد المراجعة",
-      "newTitle": "مكان جديد",
-      "notListed": "ليس في القائمة؟ أضفه.",
-      "noneNearby": "لا مكان على Hilads هنا بعد: أضف هذا المكان.",
-      "nameLabel": "اسم المكان",
-      "namePlaceholder": "مثلًا: فلافل أبو شاكر",
-      "newHint": "يصبح موقعك موقع المكان. يظهر على الخريطة بعد التحقق منه.",
-      "useNew": "استخدم هذا المكان",
-      "backToList": "العودة إلى الأماكن القريبة",
-      "at": "في {{name}}",
-      "none": "لا مكان بعد",
-      "change": "غيّر",
-      "tooFar": "أنت على بعد {{distance}} من {{name}}. اقترب حتى {{radius}} م وحاول مجددًا.",
-      "tryAgain": "أنا هنا، أعد المحاولة",
-      "pickAnother": "اختر مكانًا آخر",
-      "newOnMapLater": "سيظهر مكانك الجديد على الخريطة بعد الموافقة عليه."
-    },
-    "stamp": {
-      "title": "ختم جديد: {{theme}}",
-      "body": "جواز سفرك في {{city}} فيه ختم جديد.",
-      "ok": "رائع",
-      "close": "إغلاق"
+      "retry": "حاول مرة أخرى"
     },
     "takeIt": "خُضه",
     "proofHint": {
-      "title": "التقط صورتك",
       "place": "الصورة الأكثر تصويتًا تصبح صورة المكان.",
       "noPlace": "الصورة الأكثر أصواتًا تصعد إلى منصة التتويج."
     },
     "compare": {
-      "tab": "قارن",
-      "allCities": "كل المدن",
-      "boardCount": "المدن: {{count}} · الدول: {{countries}}",
-      "earliest": "الأبكر: {{city}} {{answer}}",
-      "latest": "الأكثر تأخرًا: {{city}} {{answer}}",
-      "lowest": "الأدنى: {{city}} {{answer}}",
-      "highest": "الأعلى: {{city}} {{answer}}",
-      "emptyTitle": "لا صور بعد",
-      "emptyBody": "اجعل مدينتك الأولى على اللوحة.",
-      "noAnswer": "لا إجابة بعد",
-      "median": "السعر المعتاد {{price}}",
-      "proofs_zero": "لا صور",
-      "proofs_one": "صورة واحدة",
-      "proofs_two": "صورتان",
-      "proofs_few": "{{count}} صور",
-      "proofs_many": "{{count}} صورة",
-      "proofs_other": "{{count}} صورة",
-      "boardTitle": "ماذا قال العالم",
-      "cheapest": "الأرخص: {{city}} {{price}}",
-      "priciest": "الأغلى: {{city}} {{price}}",
-      "funFact": "{{ratio}}× أغلى في {{city}} مقارنةً بـ{{other}}.",
-      "worldAnswers": "سؤال اليوم",
-      "seeAnswers": "قارن",
-      "firstIn": "أولى الصور تصل",
-      "picksTitle": "اختيارات Hilads",
-      "answeredRow_zero": "لم تلعب أي دولة بعد",
-      "answeredRow_one": "لعبت دولة واحدة حتى الآن",
-      "answeredRow_two": "لعبت دولتان حتى الآن",
-      "answeredRow_few": "لعبت {{count}} دول حتى الآن",
-      "answeredRow_many": "لعبت {{count}} دولة حتى الآن",
-      "answeredRow_other": "لعبت {{count}} دولة حتى الآن",
-      "tip": "اضغط لمقارنة مدينتك بالعالم.",
-      "nCountries_zero": "لا دول",
-      "nCountries_one": "دولة واحدة",
-      "nCountries_two": "دولتان",
-      "nCountries_few": "{{count}} دول",
-      "nCountries_many": "{{count}} دولة",
-      "nCountries_other": "{{count}} دولة",
-      "youAnswered": "وصلت صورتك. شاهد كيف تقارن مدينتك بالعالم."
+      "funFact": "{{ratio}}× أغلى في {{city}} مقارنةً بـ{{other}}."
     },
     "backHome": {
       "hereIn": "هنا في {{city}}",
       "homeIn": "في الوطن، {{city}}"
-    },
-    "tour": {
-      "title": "جولة *الأمس* حول العالم",
-      "watch": "شاهد",
-      "openCity": "افتح {{city}}",
-      "next": "التالي",
-      "kicker": "Daily Challenge · {{theme}}",
-      "moment": {
-        "morning": "في الصباح",
-        "afternoon": "بعد الظهر",
-        "evening": "في المساء",
-        "night": "في الليل"
-      },
-      "yourTurn": "دورك الآن.",
-      "todayIs": "سؤال اليوم: {{question}}",
-      "close": "إغلاق",
-      "sub_zero": "لا مدن بعد",
-      "sub_one": "مدينة واحدة، التحدّي نفسه",
-      "sub_two": "مدينتان، التحدّي نفسه",
-      "sub_few": "{{count}} مدن، التحدّي نفسه",
-      "sub_many": "{{count}} مدينة، التحدّي نفسه",
-      "sub_other": "{{count}} مدينة، التحدّي نفسه"
     },
     "worlds": {
       "tagline": "التحدّي نفسه. عوالم مختلفة."
@@ -1541,9 +704,6 @@
     },
     "ctaAnswer": "العب لأجل {{city}}",
     "ctaAnswerNoCity": "العب اليوم",
-    "represent": {
-      "button": "العب لأجل {{city}}"
-    },
     "countdown": {
       "hm": "{{h}} س {{m}} د",
       "ms": "{{m}} د {{s}} ث"
@@ -1558,21 +718,11 @@
       "endTitle": "هذا كل من لعب حتى الآن!",
       "endBody": "تصل صور جديدة طوال اليوم. عُد لترى المزيد.",
       "endPlay": "دورك الآن: أرِ العالم مدينتك.",
-      "backToday": "العودة إلى «اليوم»",
-      "seeAll": "عرض كل الصور"
+      "backToday": "العودة إلى «اليوم»"
     },
     "countries": {
-      "played_zero": "لم تلعب أي دولة اليوم",
-      "played_one": "لعبت دولة واحدة اليوم",
-      "played_two": "لعبت دولتان اليوم",
-      "played_few": "لعبت {{count}} دول اليوم",
-      "played_many": "لعبت {{count}} دولة اليوم",
-      "played_other": "لعبت {{count}} دولة اليوم",
-      "yourCity": "مدينتك",
       "represent": "مثّل مدينتك",
       "emptyBody": "لم يلعب أحد اليوم بعد. كن أول من يضع مدينته على الخريطة!",
-      "openCountry": "{{city}}: شاهد الصور",
-      "byCity": "حسب المدينة",
       "topPhoto": "الصورة الأولى"
     },
     "stories": {
@@ -1582,7 +732,6 @@
       "played_few": "لعبت {{count}} مدن اليوم",
       "played_many": "لعبت {{count}} مدينة اليوم",
       "played_other": "لعبت {{count}} مدينة اليوم",
-      "yourCity": "{{city}}؟",
       "of": "الصورة {{index}} من {{total}}",
       "cityOf": "المدينة {{index}} من {{total}}",
       "next": "الصورة التالية"
@@ -1600,15 +749,6 @@
       "beFirstSub": "اجعل مدينتك الأولى اليوم",
       "swipeHint": "اسحب لتسافر 🌍",
       "slotCta": "📸 {{city}}؟ كن الأول اليوم"
-    },
-    "recap": {
-      "label": "أمس",
-      "cities_zero": "لم تلعب أي مدينة",
-      "cities_one": "لعبت مدينة واحدة",
-      "cities_two": "لعبت مدينتان",
-      "cities_few": "لعبت {{count}} مدن",
-      "cities_many": "لعبت {{count}} مدينة",
-      "cities_other": "لعبت {{count}} مدينة"
     },
     "worldSays": {
       "title": "العالم يقول",
@@ -1646,29 +786,13 @@
         "played_few": "{{count}} مدن مسكونة 🎃",
         "played_many": "{{count}} مدينة مسكونة 🎃",
         "played_other": "{{count}} مدينة مسكونة 🎃",
-        "represent": "أرعب مدينتك 👻",
-        "onBoard": "{{city}} تسكن لوحة النتائج! 👻"
-      },
-      "limited": "إصدار محدود",
-      "stampEarned": "حصلت على ختم الإصدار المحدود!"
+        "represent": "أرعب مدينتك 👻"
+      }
     },
     "hero": {
       "cta": "صوّر لأجل {{city}}",
       "ctaNoCity": "صوّر",
       "played": "لعبت · شاهد العالم",
-      "firstCity": "اجعل مدينتك الأولى في العالم اليوم",
-      "citiesIn_zero": "لم تشارك أي مدينة",
-      "citiesIn_one": "مدينة واحدة شاركت",
-      "citiesIn_two": "مدينتان شاركتا",
-      "citiesIn_few": "{{count}} مدن شاركت",
-      "citiesIn_many": "{{count}} مدينة شاركت",
-      "citiesIn_other": "{{count}} مدينة شاركت",
-      "citiesMissing_zero": "لم تشارك أي مدينة بعد، ولا {{city}}!",
-      "citiesMissing_one": "مدينة واحدة شاركت. {{city}} لم تشارك بعد!",
-      "citiesMissing_two": "مدينتان شاركتا. {{city}} لم تشارك بعد!",
-      "citiesMissing_few": "{{count}} مدن شاركت. {{city}} لم تشارك بعد!",
-      "citiesMissing_many": "{{count}} مدينة شاركت. {{city}} لم تشارك بعد!",
-      "citiesMissing_other": "{{count}} مدينة شاركت. {{city}} لم تشارك بعد!",
       "steps": {
         "snap": "صوّر",
         "name": "سمِّه",
@@ -1742,23 +866,14 @@
       "send": "إرسال"
     },
     "dual": {
-      "toggle": "مزدوجة",
-      "on": "الصورة المزدوجة مفعّلة",
-      "off": "الصورة المزدوجة متوقفة",
-      "nowYou": "دورك الآن! 😄",
-      "frontFailed": "تعذّر فتح الكاميرا الأمامية. ستُنشر صورتك وحدها.",
       "swapHint": "اضغط على الصورة الصغيرة للتبديل 👆",
-      "retakeSelfie": "إعادة السيلفي",
-      "removeSelfie": "إزالة السيلفي",
-      "retakeAll": "إعادة الكل",
-      "addFace": "أضف وجهك 🤳",
       "swapA11y": "تبديل الصورتين"
     },
     "ranks": {
       "seg": {
-        "photos": "📸 الصور",
-        "players": "🙋 اللاعبون",
-        "cities": "🌍 المدن"
+        "photos": "الصور",
+        "players": "اللاعبون",
+        "cities": "المدن"
       },
       "period": {
         "today": "اليوم",
@@ -1766,11 +881,7 @@
         "week": "الأسبوع",
         "alltime": "كل الأوقات"
       },
-      "scope": {
-        "city": "مدينتي",
-        "world": "العالم"
-      },
-      "timeLeftMin": "⏳ بقي أقل من ساعة للتصويت",
+      "timeLeftMin": "بقي أقل من ساعة للتصويت",
       "bestPerCity": "أفضل صورة في كل مدينة",
       "new": "جديد",
       "you": {
@@ -1806,15 +917,7 @@
         "players": "لم يسجل أحد نقاطًا بعد. العب واحصل على المركز الأول 🙋",
         "cities": "لا مدن في الترتيب بعد. ضع مدينتك أولًا 🌍"
       },
-      "race": {
-        "title": "🏁 سباق اليوم",
-        "you": "{{city}} في المركز {{rank}}",
-        "youNone": "{{city}} ليست في السباق بعد",
-        "see": "عرض الترتيب"
-      },
       "results": {
-        "title": "🏆 النتائج وصلت!",
-        "sub": "شاهد كيف كان أداء صورتك أمس",
         "dismiss": "إغلاق",
         "world": "🏆 حلّت صورتك في المركز #{{rank}} عالميًا أمس",
         "city": "🏆 حلّت صورتك في المركز #{{rank}} في {{city}} أمس",
@@ -1828,12 +931,12 @@
         "generic": "🏆 نتائج الأمس صدرت",
         "see": "عرض النتائج ←"
       },
-      "timeLeft_zero": "⏳ بقيت {{count}} ساعة للتصويت",
-      "timeLeft_one": "⏳ بقيت ساعة للتصويت",
-      "timeLeft_two": "⏳ بقيت ساعتان للتصويت",
-      "timeLeft_few": "⏳ بقيت {{count}} ساعات للتصويت",
-      "timeLeft_many": "⏳ بقيت {{count}} ساعة للتصويت",
-      "timeLeft_other": "⏳ بقيت {{count}} ساعة للتصويت",
+      "timeLeft_zero": "بقيت {{count}} ساعة للتصويت",
+      "timeLeft_one": "بقيت ساعة للتصويت",
+      "timeLeft_two": "بقيت ساعتان للتصويت",
+      "timeLeft_few": "بقيت {{count}} ساعات للتصويت",
+      "timeLeft_many": "بقيت {{count}} ساعة للتصويت",
+      "timeLeft_other": "بقيت {{count}} ساعة للتصويت",
       "pts_zero": "{{count}} نقطة",
       "pts_one": "نقطة واحدة",
       "pts_two": "نقطتان",

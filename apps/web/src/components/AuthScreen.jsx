@@ -211,7 +211,7 @@ export default function AuthScreen({ guestId, guestNickname, onSuccess, onBack, 
 
           {error && <p className="auth-error">{error}</p>}
 
-          <button className="modal-submit" type="submit" disabled={loading}>
+          <button className="modal-submit btn-primary" type="submit" disabled={loading}>
             {loading ? '...' : tab === 'signup' ? t('title.signup') : t('title.login')}
           </button>
 

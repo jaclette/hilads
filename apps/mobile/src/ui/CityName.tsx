@@ -1,6 +1,6 @@
 import { Text, View, StyleSheet, type StyleProp, type TextStyle } from 'react-native';
 import { Image } from 'expo-image';
-import { type ThemeColors } from '@/constants';
+import { Space, type ThemeColors } from '@/constants';
 import { useThemedStyles } from '@/context/ThemeContext';
 import { localizeCityName, shortCityName } from '@/i18n/cityName';
 import { FLAGS } from './flags';
@@ -45,6 +45,6 @@ export function CityName({ name, country, short = false, style, size }: {
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
   flag:     { borderRadius: 2, overflow: 'hidden' },
   hairline: { borderRadius: 2, borderWidth: StyleSheet.hairlineWidth, borderColor: c.flagLine },
-  row:      { flexDirection: 'row', alignItems: 'center', gap: 5, flexShrink: 1, minWidth: 0 },
+  row:      { flexDirection: 'row', alignItems: 'center', gap: Space.xs, flexShrink: 1, minWidth: 0 },
   text:     { flexShrink: 1 },
 });

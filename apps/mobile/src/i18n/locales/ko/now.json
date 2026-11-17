@@ -1,8 +1,5 @@
 {
   "emptyTitle": "아직 아무 일도 없어요",
-  "emptyBeFirst": "{{city}}에서 첫 번째가 되어 보세요",
-  "emptyStartNow": "지금 뭔가 시작해 보세요",
-  "emptyCreateLine": "이벤트를 만들거나 모임을 시작해 보세요.",
   "hostSpotTitle": "단골 장소에서 열어 보세요",
   "hostSpotCity": "{{city}}에 활기를 불어넣어 보세요.",
   "hostSpotNoCity": "내 도시에 활기를 불어넣어 보세요.",
@@ -11,8 +8,6 @@
   "noHangouts": "아직 모임이 없어요",
   "beFirstEventCity": "{{city}}에서 첫 이벤트를 만들어 보세요",
   "beFirstEvent": "첫 이벤트를 만들어 보세요",
-  "hangoutTalk": "모임을 열고 도시를 들썩이게 해 보세요",
-  "startHangout": "모임 시작하기 🗣️",
   "inspiration": {
     "heading": "모임 아이디어",
     "sub": "다른 도시 현지인들이 여는 모임에서 아이디어를 얻어 보세요",
@@ -31,26 +26,7 @@
   "browseCities": "도시 둘러보기",
   "filterAll": "전체",
   "filterChallenges": "챌린지",
-  "challengesSection": "챌린지",
-  "seeAllChallenges": "전체 보기 →",
   "noChallenges": "아직 챌린지가 없어요",
-  "noChallengesCity": "{{city}}에서 첫 챌린지를 시작해 보세요",
-  "noChallengesGeneric": "첫 챌린지를 시작해 보세요.",
-  "seeComing": "다가오는 일정 보기",
-  "createNew": "새로 만들기",
-  "seeHappened": "무슨 일이 있었는지 보기 →",
   "going": "참여",
-  "inThisHangout": "이 모임에",
-  "create": {
-    "title": "뭐 할까요?",
-    "challengeLabel": "챌린지 시작하기",
-    "challengeSub": "현지인과 여행자, 챌린지로 만나요",
-    "hangoutLabel": "모임 시작하기",
-    "hangoutSub": "즉석 모임, 지금 바로 함께해요",
-    "eventLabel": "이벤트 만들기",
-    "eventSub": "누구나 함께할 일정을 잡아요",
-    "cancel": "취소"
-  },
-  "hiNowHint": "지금 모이기",
-  "hiLaterHint": "약속 잡기"
+  "inThisHangout": "이 모임에"
 }

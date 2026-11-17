@@ -7,7 +7,6 @@ import { Linking, LogBox } from 'react-native';
 import { acceptEula, updateProfile } from '@/api/auth';
 import { EulaPromptModal } from '@/features/auth/EulaPromptModal';
 import { AccountWelcome } from '@/features/onboarding/AccountWelcome';
-import { RatePromptLaunchGate } from '@/features/challenge/RatePromptLaunchGate';
 import { ScoreCelebrationLaunchGate } from '@/features/challenge/ScoreCelebrationLaunchGate';
 import { ChallengeResultLaunchGate } from '@/features/challenge/ChallengeResultLaunchGate';
 import { Stack, router, useRootNavigationState } from 'expo-router';
@@ -28,6 +27,7 @@ import { useEventChatNotifications } from '@/hooks/useEventChatNotifications';
 import { useGlobalDmNotifications } from '@/hooks/useGlobalDmNotifications';
 import { usePushRegistration } from '@/hooks/usePushRegistration';
 import { useDeviceTimezone } from '@/hooks/useDeviceTimezone';
+import { useScreenTracking } from '@/hooks/useScreenTracking';
 import { useGpsCityCorrection } from '@/hooks/useGpsCityCorrection';
 import { BootScreen } from '@/components/BootScreen';
 import { CitySwitchSheet } from '@/components/CitySwitchSheet';
@@ -148,6 +148,7 @@ function RootLayoutInner() {
   useGlobalDmNotifications();      // always-on unread DM badge + global conversation rooms
   usePushRegistration();           // register push token whenever an account is available
   useDeviceTimezone();             // device IANA timezone → backend (Daily pushes at local time)
+  useScreenTracking();             // one $screen per route change (analytics)
   // fix an IP-mislocated city when precise GPS becomes available; ask before moving a kept city
   const citySwitch = useGpsCityCorrection();
 
@@ -182,6 +183,7 @@ function RootLayoutInner() {
 
   useEffect(() => {
     if (!booting && !bootError && joined) track('app_open');
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- once per boot/join transition; bootError only gates it (a retry clearing it must not re-track)
   }, [booting, joined]);
 
   // NotificationHandler always mounted so cold-start push taps are captured early.
@@ -224,7 +226,8 @@ function RootLayoutInner() {
               options={{ presentation: 'transparentModal', animation: 'fade', contentStyle: { backgroundColor: 'transparent' } }}
             />
             {/* Yesterday around the world (SPEC 10.7): a full-screen story viewer; it handles swipe down itself. */}
-            <Stack.Screen name="daily/tour" options={{ presentation: 'fullScreenModal', animation: 'fade', gestureEnabled: false }} />
+            {/* The two photo viewers (stories by city, the feed) open alike: full screen, fade, closed by their own swipe down / X. */}
+            <Stack.Screen name="daily/stories" options={{ presentation: 'fullScreenModal', animation: 'fade', gestureEnabled: false }} />
             <Stack.Screen name="daily/photos" options={{ presentation: 'fullScreenModal', animation: 'fade', gestureEnabled: false }} />
             <Stack.Screen name="dm/[id]" />
             <Stack.Screen name="messages" />
@@ -272,15 +275,8 @@ function RootLayoutInner() {
       <ChallengeResultLaunchGate />
 
       {/* PR17 - "+X points!" popin once per cold start when the user has
-          unacknowledged score_events. Sits above RatePromptLaunchGate so
-          the celebration lands first (it's the upbeat moment; the rate
-          sheet comes after). Both gates are independent. */}
+          unacknowledged score_events. */}
       <ScoreCelebrationLaunchGate />
-
-      {/* PR11 - auto-open the RateSheet once per cold start if the caller
-          has any rate-eligible meet-up (proposed_ends_at < now() and not
-          yet rated). Replaces the abandoned rate-ready push. */}
-      <RatePromptLaunchGate />
     </>
   );
 }

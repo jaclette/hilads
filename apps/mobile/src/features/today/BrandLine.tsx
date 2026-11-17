@@ -1,6 +1,6 @@
 import { Text, View, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { type ThemeColors } from '@/constants';
+import { Space, Type, type ThemeColors } from '@/constants';
 import { useThemedStyles } from '@/context/ThemeContext';
 import { Wordmark } from '@/ui/joy';
 
@@ -24,6 +24,6 @@ export function BrandLine() {
 }
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  row:     { flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 0, marginBottom: 8 },
-  tagline: { flexShrink: 1, fontSize: 13, lineHeight: 18, fontWeight: '500', color: c.muted },
+  row:     { flexDirection: 'row', alignItems: 'center', gap: Space.sm, marginTop: 0, marginBottom: Space.sm },
+  tagline: { flexShrink: 1, ...Type.caption, fontWeight: '500', color: c.muted },
 });

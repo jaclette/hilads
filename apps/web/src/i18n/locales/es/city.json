@@ -1,28 +1,17 @@
 {
   "world": {
     "tab": "Mundo",
-    "banner_one": "{{count}} reto entre ciudades en curso",
-    "banner_many": "{{count}} retos entre ciudades en curso",
-    "banner_other": "{{count}} retos entre ciudades en curso",
-    "online": "{{count}} en línea",
-    "cities_one": "{{count}} ciudad",
-    "cities_many": "{{count}} ciudades",
-    "cities_other": "{{count}} ciudades",
     "sys": {
       "challengeCreated": "🔥 {{nickname}} lanzó un reto {{cityA}} → {{cityB}}",
       "newUser": "🎉 {{nickname}} de {{city}} acaba de unirse a Hilads",
       "challengeWon": "🏆 {{nickname}} de {{city}} ganó el reto {{challenge}}"
     },
     "quietCard": "¿Esto está tranquilo? {{count}} sin leer en Mundo: toca para abrir",
-    "heroEmpty": "Sé el primero en retar a una ciudad",
-    "heroEmptySub": "Lanza un reto entre ciudades",
-    "leaderboard": "Clasificación",
     "arrivals_one": "{{count}} llegada",
     "arrivals_many": "{{count}} llegadas",
     "arrivals_other": "{{count}} llegadas",
     "arrivalsTitle": "Llegadas recientes",
-    "arrivalsEmpty": "Sin llegadas recientes",
-    "seeAll": "Ver todo"
+    "arrivalsEmpty": "Sin llegadas recientes"
   },
   "inspiration": {
     "heading": "Ideas de quedadas",
@@ -34,37 +23,7 @@
   },
   "guestGate": {
     "createAccount": "Crear cuenta",
-    "signIn": "Iniciar sesión",
-    "create_event": {
-      "pageTitle": "Crear evento",
-      "title": "Los Ghost pueden mirar, pero no organizar.",
-      "sub": "Crea una cuenta para organizar tu propio evento y poner tu ciudad en el mapa."
-    },
-    "view_profile": {
-      "pageTitle": "Perfil",
-      "title": "Los Ghost pueden mirar, pero los perfiles son para miembros.",
-      "sub": "Crea una cuenta para ver perfiles, conocer gente y armar tu grupo en la ciudad."
-    },
-    "join_hangout": {
-      "pageTitle": "Unirse a una quedada",
-      "title": "Los Ghost pueden mirar, pero no unirse a quedadas.",
-      "sub": "Regístrate para unirte a quedadas, guardar tu nombre y enterarte cuando alguien quiera quedar."
-    },
-    "create_hangout": {
-      "pageTitle": "Lanzar una quedada",
-      "title": "Los Ghost pueden mirar, pero no organizar.",
-      "sub": "Regístrate para lanzar una quedada, guardar tu nombre y que la gente se te una."
-    },
-    "create_challenge": {
-      "pageTitle": "Lanzar un reto",
-      "title": "Los Ghost pueden mirar, pero no retar.",
-      "sub": "Regístrate para lanzar un reto a la gente local o a viajeros, y validarlo tú."
-    },
-    "accept_challenge": {
-      "pageTitle": "Aceptar un reto",
-      "title": "Regístrate para aceptar este reto",
-      "sub": "Solo 3 segundos. Vuelves al reto enseguida."
-    }
+    "signIn": "Iniciar sesión"
   },
   "welcome": {
     "live": "{{city}} está en directo",
@@ -115,15 +74,12 @@
   "joiningDefault": "Entrando al chat…",
   "tryAgain": "Reintentar",
   "feed": {
-    "hangoutTag": "Quedada",
-    "eventTag": "Evento",
     "nowTag": "Now",
     "laterTag": "Plan",
     "hiNow": "Hi now",
     "hiLater": "Hi plan",
     "public": "Público",
     "activeNow": "Activo ahora",
-    "repliesNew": "Aún no hay respuestas: sé el primero",
     "sayHi": "Saluda a {{name}}",
     "sayHiGeneric": "Saluda",
     "hostWaiting": "Esperando el primer saludo",
@@ -138,8 +94,6 @@
     "groupPublic": "Eventos públicos locales",
     "groupPublicTicket": "Eventos públicos locales",
     "createEvent": "Crear evento local",
-    "startHangout": "Lanzar una quedada",
-    "openPlace": "Abre tu sitio",
     "loadError": "No se pudieron cargar los eventos",
     "loadErrorSub": "Inténtalo más tarde o crea algo nuevo en {{city}}.",
     "emptyLocalTitle": "Anima tu sitio",
@@ -147,29 +101,16 @@
     "emptyLocalSub": "Dale vida a {{city}}. Lanza un evento recurrente en tu sitio favorito.",
     "emptySub": "Haz que pase algo en {{city}}",
     "noEvents": "Ahora mismo no hay eventos locales",
-    "noHangouts": "Aún no hay quedadas",
-    "noEventsSub": "Crea el primero en {{city}}",
-    "noHangoutsSub": "Lanza una quedada y pon a hablar a la ciudad",
-    "filterAll": "Todo",
-    "seeComing": "Mira lo que viene",
-    "seeHappened": "mira lo que pasó",
-    "createNew": "Crear",
-    "hiNowHint": "quedar ahora",
-    "hiLaterHint": "planear un evento"
+    "noEventsSub": "Crea el primero en {{city}}"
   },
   "header": {
     "online": "{{count}} cerca de ti",
     "liveNow": "en vivo",
     "seeWhosHere": "Mira quién está aquí",
-    "onlineAria_one": "{{count}} persona cerca de ti, toca para ver quién",
-    "onlineAria_many": "{{count}} personas cerca de ti, toca para ver quién",
-    "onlineAria_other": "{{count}} personas cerca de ti, toca para ver quién",
     "notifications": "Notificaciones",
     "messages": "Mensajes",
     "shareCity": "Compartir ciudad",
-    "switchCity": "Cambiar de ciudad",
-    "changeCity": "Cambiar de ciudad",
-    "currentWeather": "Tiempo actual: {{label}}"
+    "switchCity": "Cambiar de ciudad"
   },
   "here": {
     "title": "A tu alrededor",
@@ -178,7 +119,6 @@
     "filterMode": "Modo",
     "you": "(tú)",
     "hereNow": "Aquí ahora",
-    "noMatchLive": "Nadie coincide con estos filtros por ahora.",
     "legends": "Leyendas de Hilads",
     "legendsSub": "Hacen que la ciudad se mueva",
     "cityCrew": "Miembros de la ciudad",
@@ -187,7 +127,6 @@
     "messageAria": "Enviar un mensaje a {{name}}"
   },
   "eventHeader": {
-    "yourEvent": "Tu evento",
     "edit": "Editar",
     "join": "Unirme",
     "joined": "Te uniste",
@@ -205,26 +144,7 @@
     "firstHi": "Sé el primero en saludar"
   },
   "create": {
-    "title": "¿Qué hacemos?",
-    "hangoutTitle": "Lanzar una quedada",
-    "hangoutSub": "Al instante: que la gente se te una ya",
-    "eventTitle": "Crear un evento",
-    "eventSub": "Organiza algo al que otros puedan unirse",
-    "challengeTitle": "Lanzar un reto",
-    "challengeSub": "Gente local y viajeros, conectados por un reto",
-    "challengePageTitle": "Crear un reto",
-    "challengeAudience": "¿Para quién?",
-    "challengeAudLocals": "Gente local",
-    "challengeAudExplorers": "Viajeros",
-    "challengeType": "Tipo",
-    "challengeTypeFood": "Comida",
-    "challengeTypePlace": "Lugar",
-    "challengeTypeCulture": "Cultura",
-    "challengeTypeHelp": "Locura",
-    "challengeTitleLabel": "Tu reto",
-    "challengeTitlePlaceholder": "p. ej., Llévame a tu cafetería escondida favorita",
-    "challengeCta": "Lanzar reto",
-    "challengeErrStart": "No se pudo lanzar el reto"
+    "title": "¿Qué hacemos?"
   },
   "goingModal": {
     "going": "van",
@@ -299,9 +219,6 @@
     "challengeValidated": "¡Reto cumplido! {{name}} validó \"{{title}}\".",
     "challengeInternational": "{{fromFlag}} → {{toFlag}} Reto internacional: {{title}}"
   },
-  "replyPreview": {
-    "photo": "📷 Foto"
-  },
   "typing": {
     "one": "{{name}} está escribiendo…",
     "two": "{{a}} y {{b}} están escribiendo…",
@@ -318,33 +235,11 @@
     "sheetTitle": "Llegadas",
     "empty": "Aún no hay llegadas"
   },
-  "cityHero": {
-    "mainEmpty": "🌱 aún no hay retos en {{city}}",
-    "subRanked": "Toca para aceptar tu próximo reto →",
-    "subUnranked": "Acepta tu primer reto para empezar a subir →",
-    "subTop": "Defiende tu título →",
-    "subEmpty": "Crea el primero para que los viajeros lo acepten →",
-    "members_one": "{{count}} miembro",
-    "members_many": "{{count}} miembros",
-    "members_other": "{{count}} miembros",
-    "nearby": "{{count}} cerca",
-    "recent": "{{count}} recientes",
-    "mainUnranked_one": "🔥 {{count}} reto en {{city}}",
-    "mainUnranked_many": "🔥 {{count}} retos en {{city}}",
-    "mainUnranked_other": "🔥 {{count}} retos en {{city}}",
-    "mainRanked_one": "🔥 {{count}} reto · 🏆 #{{rank}} en {{city}}",
-    "mainRanked_many": "🔥 {{count}} retos · 🏆 #{{rank}} en {{city}}",
-    "mainRanked_other": "🔥 {{count}} retos · 🏆 #{{rank}} en {{city}}",
-    "mainTop_one": "🔥 {{count}} reto · 🏆 #1 en {{city}}",
-    "mainTop_many": "🔥 {{count}} retos · 🏆 #1 en {{city}}",
-    "mainTop_other": "🔥 {{count}} retos · 🏆 #1 en {{city}}"
-  },
   "daily": {
     "kicker": "Daily Challenge",
     "localTwist": "Local Twist",
     "local": "Local",
     "traveler": "Viajero",
-    "ctaApp": "Juega el reto en la app",
     "localPass": "Local Pass",
     "early": "Temprano",
     "proposedBy": "Propuesto por {{name}}",

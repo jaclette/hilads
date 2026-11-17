@@ -1,7 +1,7 @@
 import { Text, TouchableOpacity, View, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
-import { Border, FontSizes, Radius, type ThemeColors } from '@/constants';
+import { Space, Border, FontSizes, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 
 type Mode = 'local' | 'exploring';
@@ -37,10 +37,10 @@ export function ModePicker({ value, onChange, disabled = false }: { value: Mode 
 }
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  wrap:     { gap: 6 },
+  wrap:     { gap: Space.sm },
   heading:  { fontSize: FontSizes.xs, fontWeight: '700', color: c.muted },
-  row:      { flexDirection: 'row', gap: 10 },
-  option:   { flex: 1, alignItems: 'center', gap: 4, minHeight: 96, paddingVertical: 14, paddingHorizontal: 8,
+  row:      { flexDirection: 'row', gap: Space.md },
+  option:   { flex: 1, alignItems: 'center', gap: Space.xs, minHeight: 96, paddingVertical: Space.lg, paddingHorizontal: Space.sm,
               borderRadius: Radius.card, borderWidth: Border, borderColor: c.line, backgroundColor: c.bg2 },
   optionOn: { borderColor: c.primary, backgroundColor: c.primaryTint },
   label:    { fontSize: FontSizes.md, fontWeight: '700', color: c.text },

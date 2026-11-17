@@ -1,5 +1,4 @@
 {
-  "pageTitle": "Profilku",
   "changePhoto": "Ganti foto profil",
   "yourProfile": "Profilmu",
   "mode": "Mode",
@@ -77,31 +76,10 @@
     "story": "Cerita kota",
     "storyPlaceholder": "Hal yang kamu suka dari kota ini"
   },
-  "hangouts": {
-    "empty": "Belum ada nongkrong, yuk mulai 🗣️",
-    "host": "Host"
-  },
-  "events": {
-    "going": "Yang ikut",
-    "goingEmpty": "Belum ada rencana, cari sesuatu yuk 🔥",
-    "hosting": "Kamu host",
-    "hostingEmpty": "Belum ada yang kamu adakan, mulai sesuatu yuk ✨",
-    "live": "Live",
-    "recurring": "↻ Rutin",
-    "upcoming": "Akan datang",
-    "deleteEvent": "Hapus acara"
-  },
-  "friends": {
-    "requests": "Permintaan pertemanan",
-    "empty": "Belum ada teman. Tambahkan dari profil orang.",
-    "mine": "Temanku"
-  },
   "vibesTab": {
-    "received": "Vibes diterima",
     "score": "Skor vibe {{score}}",
     "basedOn_other": "berdasarkan {{count}} vibes",
-    "empty": "Belum ada vibes",
-    "emptyHint": "Skormu bakal muncul di sini setelah ada yang ninggalin catatan buatmu ✨"
+    "empty": "Belum ada vibes"
   },
   "save": {
     "uploading": "Lagi diunggah…",
@@ -126,10 +104,6 @@
     "usernameInvalid": "Nama pengguna tidak valid",
     "saveFailed": "Gagal nyimpan. Coba lagi.",
     "generic": "Ada yang salah. Coba lagi."
-  },
-  "challenges": {
-    "empty": "Belum ada tantangan, yuk bikin 🔥",
-    "challenger": "Penantang"
   },
   "appearance": "Tampilan",
   "themeLight": "Terang",
@@ -164,11 +138,9 @@
       "inReview_other": "{{count}} lagi ditinjau",
       "specialTitle": "Stempel spesial",
       "specialSub": "Edisi terbatas, satu tiap hari spesial. Nggak dihitung untuk Local Pass.",
-      "compared_other": "Dibandingkan dengan {{count}} negara",
       "stampsOf_other": "{{count}} dari {{total}} stempel",
       "passEarned": "Didapat di {{city}}",
       "passToGo_other": "{{count}} stempel lagi",
-      "comparedCities_other": "Dibandingkan dengan {{count}} kota",
       "myPhotos": "Fotoku",
       "noPhotos": "Foto Daily Challenge-mu akan muncul di sini.",
       "share": "Bagikan pasporku",

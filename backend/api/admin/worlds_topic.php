@@ -138,8 +138,12 @@ worlds_styles();
     <?php if ($pkg === null): ?>
         <div class="form-card" style="max-width:none;margin-bottom:18px">
             <h3 style="margin-bottom:6px">No package yet</h3>
-            <p class="worlds-muted">Prepare it from the <a href="/admin/worlds?brief=1&days=14">brief</a> in Claude Code, then import it below.</p>
+            <p class="worlds-muted">Prepare it from the <a href="/admin/worlds?brief=1&days=14">brief</a> in Claude Code<?= $topic['format'] === 'reaction' ? ' (its reaction_prompt: this topic is in the reaction + ranking format)' : '' ?>, then import it below.</p>
         </div>
+    <?php elseif ($topic['format'] === 'reaction'): ?>
+        <?php require __DIR__ . '/worlds_reaction.php'; ?>
+    <?php elseif ($topic['format'] === 'race'): ?>
+        <?php require __DIR__ . '/worlds_race.php'; ?>
     <?php else: ?>
         <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:12px" id="slides">
             <strong>Version <?= $pkg['version'] ?></strong>
@@ -296,7 +300,12 @@ worlds_styles();
             <div class="form-group"><label>Type</label><select name="type">
                 <?php foreach (['evergreen', 'dated'] as $ty): ?><option value="<?= $ty ?>"<?= $topic['type'] === $ty ? ' selected' : '' ?>><?= $ty ?></option><?php endforeach; ?></select></div>
             <div class="form-group"><label><input type="checkbox" name="needs_date_check" value="1"<?= $topic['needs_date_check'] ? ' checked' : '' ?>> The event date needs checking</label></div>
-            <div class="form-group"><label>Visual mode</label><select name="visual_mode">
+            <div class="form-group"><label>Format</label><select name="format">
+                <option value="slides"<?= $topic['format'] === 'slides' ? ' selected' : '' ?>>slides (hook, 5 to 6 countries, outro)</option>
+                <option value="reaction"<?= $topic['format'] === 'reaction' ? ' selected' : '' ?>>reaction + ranking (one screen, a clip over a top 10)</option>
+                <option value="race"<?= $topic['format'] === 'race' ? ' selected' : '' ?>>race (a bar chart race over the years, no clip)</option></select>
+                <div class="worlds-muted">Reaction: a Pixabay reaction clip on top, the top 10 of a ranking from one source revealed under it. Race: the top 10 of each year from one source, racing year by year. A new format needs a new package.</div></div>
+            <div class="form-group"><label>Visual mode <span class="worlds-muted">(slides format)</span></label><select name="visual_mode">
                 <option value="image"<?= $video ? '' : ' selected' ?>>image (photos)</option>
                 <option value="video"<?= $video ? ' selected' : '' ?>>video (clips in the photo square)</option></select>
                 <div class="worlds-muted">Video: the package gives a Commons clip where one fits (see the brief); a slide's clip can be set below its slide.</div></div>
@@ -318,7 +327,7 @@ worlds_styles();
   // As DwStudio::fullCaption: the caption's text, the disclosure, the hilads.live line, the question, the hashtags.
   const val = p => ((document.querySelector('textarea[data-path="' + p + '"]') || {}).value || '').trim();
   document.querySelectorAll('[data-full-caption]').forEach(b => b.addEventListener('click', () => {
-    const cta = b.dataset.cta.trim(), question = val('outro.question'), ending = cta + '\n' + question;
+    const cta = b.dataset.cta.trim(), question = val(b.dataset.question || 'outro.question'), ending = cta + '\n' + question;
     let body = val('caption').replace(/\r\n/g, '\n');
     if (body.toLowerCase().endsWith(ending.toLowerCase())) body = body.slice(0, -ending.length).trim();
     copy([body, val('ai_disclosure'), ending, val('hashtags')].filter(Boolean).join('\n\n'), b);

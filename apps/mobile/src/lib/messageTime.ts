@@ -35,13 +35,6 @@ export function toMs(ts: number | string | undefined): number {
   return isNaN(ms) ? 0 : ms;
 }
 
-/** "18:42" - short local time. Kept for backward compatibility; prefer formatSmartTime. */
-export function formatTime(ts: number | string | undefined): string {
-  const ms = toMs(ts);
-  if (!ms) return '';
-  return new Date(ms).toLocaleTimeString(i18n.language, { hour: 'numeric', minute: '2-digit' });
-}
-
 /**
  * Smart timestamp for message bubbles and feed items:
  *   Today      → "3:04 PM"

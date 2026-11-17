@@ -1,8 +1,8 @@
-import { Text, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { FontSizes, type ThemeColors } from '@/constants';
+import { type ThemeColors } from '@/constants';
 import { useThemedStyles } from '@/context/ThemeContext';
-import { Sheet } from '@/ui';
+import { Sheet, SheetTitle } from '@/ui';
 import { SharePanel } from './SharePanel';
 import type { ShareContent } from './content';
 
@@ -12,12 +12,12 @@ export function ShareSheet({ content, source, onClose }: { content: ShareContent
   const { t } = useTranslation('daily');
   return (
     <Sheet visible={!!content} onClose={onClose} closeLabel={t('back')}>
-      <Text style={styles.title} accessibilityRole="header">{t(content?.type === 'today' ? (content.represent ? 'represent.invite' : 'share.challengeFriend') : 'share.title')}</Text>
+      <SheetTitle style={styles.title}>{t(content?.type === 'today' ? (content.represent ? 'represent.invite' : 'share.challengeFriend') : 'share.title')}</SheetTitle>
       {content && <SharePanel content={content} source={source} />}
     </Sheet>
   );
 }
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  title: { fontSize: FontSizes.lg, fontWeight: '800', color: c.text, marginBottom: 6 },
+  title: { marginBottom: 6 },
 });

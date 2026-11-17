@@ -2,20 +2,8 @@
   "create": {
     "startTitle": "Hi now",
     "editTitle": "编辑聚会",
-    "category": "分类",
-    "cat": {
-      "general": "综合",
-      "tips": "贴士",
-      "food": "美食",
-      "drinks": "喝一杯",
-      "help": "求助",
-      "meetup": "见面"
-    },
     "titleLabel": "你在想什么？",
     "titlePlaceholder": "我想去喝杯咖啡",
-    "detailsLabel": "添加详情",
-    "optional": "（可选）",
-    "detailsPlaceholder": "补充点背景信息…",
     "expiry": "8 小时后自动到期",
     "saving": "保存中…",
     "starting": "发起中…",
@@ -73,7 +61,6 @@
     "photo": "照片",
     "unavailable": "原消息无法显示"
   },
-  "composer": {},
   "errors": {
     "locFailed": "没能获取你的位置。打开定位权限后再试一次吧。",
     "imageType": "请选择 JPEG、PNG 或 WebP 格式的图片。",

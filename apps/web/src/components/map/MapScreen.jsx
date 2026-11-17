@@ -25,7 +25,7 @@ import { thumbUrl } from '../../lib/imageThumb'
 import { placeholderStyle } from '../../lib/thumbhash'
 
 const IDLE_MS = 350
-const ROW = { display: 'inline-flex', alignItems: 'center', gap: 6 }
+const ROW = { display: 'inline-flex', alignItems: 'center', gap: 'var(--sp-8)' }
 /** A selected theme chip wears the theme's color (the pins' color: the Map's legend). */
 const chipOn = (k) => { const c = themeColor(k); return { background: c.fill, borderColor: c.line ?? c.fill, color: c.onFill } }
 // The camera stays around the city (like the app): about 110 km each way.
@@ -273,7 +273,7 @@ function EmptyCard({ today, t }) {
     <>
       <span className="wm-sheet-title" style={ROW}><Icon name="location-outline" size={20} style={{ color: 'var(--primary-text)' }} />{cityShort ? tc('represent.mapEmpty', { city: cityShort }) : t('map.emptyTitle')}</span>
       {challenge && <span className="wm-empty-text">{challenge.text}</span>}
-      {canTake && <span className="wm-sheet-cta">{t('dc.takeIt')}</span>}
+      {canTake && <span className="wm-sheet-cta btn-primary">{t('dc.takeIt')}</span>}
       {challenge?.isActive && !placeTheme && tomorrowKey && <span className="wm-empty-tomorrow">{t('map.spotsTomorrow', { theme: themeName(tomorrowKey) })}</span>}
     </>
   )
@@ -313,6 +313,9 @@ export default function MapScreen({ channelId, cityName, onOpenPlan, initialSpot
   const [theme, setTheme]     = useState(initialTheme)   // the challenge screen's "Places pinned": opened on its theme
   // "Today": only the spots of today's challenge photos (a chip after All).
   const [todayOnly, setTodayOnly] = useState(false)
+  // Plans (UX audit option B, as the app: the Map is the plans' home): only the Hi plans, pinned and listed.
+  const [plansOnly, setPlansOnly] = useState(false)
+  const { t: tn } = useTranslation('notifications')
   // The pins grow in once, when the first spots arrive.
   const [grow, setGrow]       = useState(true)
   const [selected, setSelected] = useState(null)
@@ -450,11 +453,21 @@ export default function MapScreen({ channelId, cityName, onOpenPlan, initialSpot
     const next = theme === k ? null : k
     setTheme(next)
     setTodayOnly(false)
+    setPlansOnly(false)
     setSelected(null)
     if (areaRef.current) loadArea(areaRef.current, next)
   }
 
+  const pickPlans = () => {
+    setTodayOnly(false)
+    setPlansOnly(true)
+    setSelected(null)
+    track('map_filter_used', { theme: 'plans', platform_surface: 'web' })
+    if (theme !== null) { setTheme(null); if (areaRef.current) loadArea(areaRef.current, null) }
+  }
+
   const pickToday = () => {
+    setPlansOnly(false)
     setTodayOnly(true)
     setSelected(null)
     if (theme !== null) { setTheme(null); if (areaRef.current) loadArea(areaRef.current, null) }
@@ -484,15 +497,15 @@ export default function MapScreen({ channelId, cityName, onOpenPlan, initialSpot
   const todayTheme = today?.challenge?.theme?.key ?? null
   const todayDate = today?.challenge?.date ?? null
   const isToday = (s) => !!todayDate && s.lastProofDate === todayDate
-  const shown = todayOnly ? spots.filter(isToday) : spots
+  const shown = plansOnly ? [] : todayOnly ? spots.filter(isToday) : spots
   // The list shares the map's state: the search hits (in the theme) or the area's spots.
-  const listSpots = results !== null ? results.filter(s => theme === null || theme === SPECIAL || s.themes.includes(theme)) : shown
+  const listSpots = plansOnly ? [] : results !== null ? results.filter(s => theme === null || theme === SPECIAL || s.themes.includes(theme)) : shown
   // The spot fits today's theme and I haven't played: "Play here today" (the app modal, photos are posted from the app).
   const canPlayHere = !!selected && !!todayTheme && selected.themes.includes(todayTheme) && today?.challenge?.isActive && !today?.myProof
   const areaCentre = areaRef.current ? [(areaRef.current[1] + areaRef.current[3]) / 2, (areaRef.current[0] + areaRef.current[2]) / 2] : center
   const showEmpty = center && !selected && (nearMe ? spots.length === 0 && plans.length === 0 : cityEmpty)
   // Zoomed into a place with no spot (the city has some): "Nothing here yet · Be the pioneer 📍".
-  const emptyArea = !!center && !worldView && !showEmpty && !cityEmpty && shown.length === 0 && results === null
+  const emptyArea = !!center && !worldView && !showEmpty && !cityEmpty && shown.length === 0 && results === null && !plansOnly
   // 🎲 Surprise me: fly to a random good spot of the area (a photo and some likes first) and open its card.
   const surprise = () => {
     const pool = shown.filter(x => x.id !== selected?.id)
@@ -536,7 +549,10 @@ export default function MapScreen({ channelId, cityName, onOpenPlan, initialSpot
           </div>
           {results === null ? (
             <div className="wm-chips" role="toolbar">
-              <button type="button" className={`wm-chip${theme === null && !todayOnly ? ' wm-chip--on' : ''}`} onClick={() => pickTheme(null)}>{t('map.all')}</button>
+              <button type="button" className={`wm-chip${theme === null && !todayOnly && !plansOnly ? ' wm-chip--on' : ''}`} onClick={() => pickTheme(null)}>{t('map.all')}</button>
+              {!world && (plans.length > 0 || plansOnly) && (
+                <button type="button" className={`wm-chip${plansOnly ? ' wm-chip--on' : ''}`} aria-pressed={plansOnly} onClick={pickPlans}>{tn('inbox.cat.plans')}</button>
+              )}
               {todayDate && (
                 <button type="button" className={`wm-chip${todayOnly ? ' wm-chip--on' : ''}`} style={{ ...ROW, ...(todayOnly ? chipOn(todayTheme) : null) }}
                         aria-pressed={todayOnly} onClick={pickToday}>
@@ -604,7 +620,7 @@ export default function MapScreen({ channelId, cityName, onOpenPlan, initialSpot
         )}
         {/* Above the sheet: 🎲 Surprise me. */}
         {center && !worldView && shown.length > 0 && (
-          <button type="button" className="wm-surprise" style={{ bottom: peekH + 12 }} onClick={surprise} data-testid="map-surprise">🎲 {t('dc.map.surprise')}</button>
+          <button type="button" className="wm-surprise tappable" style={{ bottom: peekH + 12 }} onClick={surprise} data-testid="map-surprise"><Icon name="dice-outline" size={20} />{t('dc.map.surprise')}</button>
         )}
         {/* The sticky sheet: the visible area's spots, a selected pin's card first. */}
         {center && (
@@ -616,10 +632,21 @@ export default function MapScreen({ channelId, cityName, onOpenPlan, initialSpot
             origin={areaCentre}
             km={km}
             place={!world && !nearMe && cityName ? shortCityName(cityName) : null}
-            filterLabel={todayOnly ? t('map.todayChip') : theme === SPECIAL ? t('map.halloween') : theme ? themeName(theme) : null}
+            filterLabel={plansOnly ? tn('inbox.cat.plans') : todayOnly ? t('map.todayChip') : theme === SPECIAL ? t('map.halloween') : theme ? themeName(theme) : null}
             emptyArea={emptyArea}
             onPick={s => { track('web_map_list_picked', { spot: s.id }); select(s, true) }}
-            topNote={showEmpty ? <EmptyCard today={today} t={t} /> : emptyArea ? (
+            topNote={plansOnly ? (
+              <div className="pp-rows">
+                {planItems.slice(0, 30).map(({ plan, text }) => (
+                  <button key={`${plan.id}@${plan.startsAt}`} type="button" className="pp-row"
+                          onClick={() => { track('plan_opened', { source: 'map_plans', platform_surface: 'web' }); onOpenPlan?.(plan.id) }}>
+                    <Icon name="calendar-outline" size={20} style={{ color: 'var(--primary-text)' }} />
+                    <span className="pp-row-label">{text}</span>
+                    <Icon name="chevron-forward" size={18} style={{ color: 'var(--muted2)' }} />
+                  </button>
+                ))}
+              </div>
+            ) : showEmpty ? <EmptyCard today={today} t={t} /> : emptyArea ? (
               <button type="button" className="wm-pioneer"
                       onClick={() => { track('web_today_take_clicked', { store: deviceStore() ?? 'ios', surface: 'map_pioneer' }); openAppModal({ action: 'play', surface: 'map_pioneer' }) }}>
                 {t('dc.map.sheet.pioneer')}
@@ -649,12 +676,12 @@ export default function MapScreen({ channelId, cityName, onOpenPlan, initialSpot
           </span>
         </button>
         {canPlayHere && (
-          <button type="button" className="wm-sheet-cta"
+          <button type="button" className="wm-sheet-cta btn-primary"
                   onClick={() => { track('web_today_take_clicked', { store: deviceStore() ?? 'ios', surface: 'map_spot' }); openAppModal({ action: 'play', surface: 'map_spot' }) }}>
             <Icon name="camera-outline" size={18} />{t('map.playHere')}
           </button>
         )}
-        <button type="button" className={`wm-sheet-cta${canPlayHere ? ' wm-btn--ghost' : ''}`} onClick={() => setOpenSpotId(selected.id)}>{t('map.openSpot')}</button>
+        <button type="button" className={`wm-sheet-cta ${canPlayHere ? 'btn-secondary' : 'btn-primary'}`} onClick={() => setOpenSpotId(selected.id)}>{t('map.openSpot')}</button>
         {/* The cover photo's comments (their header loads from the photo). */}
         {selected.cover?.proofId && <CommentButton target={{ proofId: selected.cover.proofId, thumbUrl: selected.cover.thumbUrl ?? selected.cover.photoUrl }} variant="inline" />}
       </div>

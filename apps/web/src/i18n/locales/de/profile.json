@@ -1,5 +1,4 @@
 {
-  "pageTitle": "Mein Profil",
   "changePhoto": "Profilfoto ändern",
   "yourProfile": "Dein Profil",
   "mode": "Modus",
@@ -77,32 +76,11 @@
     "story": "Stadtgeschichte",
     "storyPlaceholder": "Etwas, das du an dieser Stadt liebst"
   },
-  "hangouts": {
-    "empty": "Noch keine Treffen - starte eins 🗣️",
-    "host": "Host"
-  },
-  "events": {
-    "going": "Dabei",
-    "goingEmpty": "Noch keine Pläne - finde was 🔥",
-    "hosting": "Du hostest",
-    "hostingEmpty": "Noch nichts gehostet - starte was ✨",
-    "live": "Live",
-    "recurring": "↻ Wiederkehrend",
-    "upcoming": "Demnächst",
-    "deleteEvent": "Event löschen"
-  },
-  "friends": {
-    "requests": "Freundschaftsanfragen",
-    "empty": "Noch keine Freunde. Füg welche über ihre Profile hinzu.",
-    "mine": "Meine Freunde"
-  },
   "vibesTab": {
-    "received": "Erhaltene Vibes",
     "score": "{{score}} Vibe-Score",
     "basedOn_one": "basierend auf {{count}} Vibe",
     "basedOn_other": "basierend auf {{count}} Vibes",
-    "empty": "Noch keine vibes",
-    "emptyHint": "Dein Score erscheint hier, sobald dir jemand eine Notiz hinterlässt ✨"
+    "empty": "Noch keine vibes"
   },
   "save": {
     "uploading": "Wird hochgeladen…",
@@ -127,10 +105,6 @@
     "usernameInvalid": "Ungültiger Nutzername",
     "saveFailed": "Speichern hat nicht geklappt. Versuch's nochmal.",
     "generic": "Etwas ist schiefgelaufen. Versuch es nochmal."
-  },
-  "challenges": {
-    "empty": "Noch keine Challenges - starte eine 🔥",
-    "challenger": "Challenger"
   },
   "appearance": "Darstellung",
   "themeLight": "Hell",
@@ -169,15 +143,11 @@
       "inReview_other": "{{count}} in Prüfung",
       "specialTitle": "Sonderstempel",
       "specialSub": "Limitierte Edition, einer pro Sondertag. Zählt nicht für den Local Pass.",
-      "compared_one": "Verglichen mit {{count}} Land",
-      "compared_other": "Verglichen mit {{count}} Ländern",
       "stampsOf_one": "{{count}} von {{total}} Stempeln",
       "stampsOf_other": "{{count}} von {{total}} Stempeln",
       "passEarned": "Erhalten in {{city}}",
       "passToGo_one": "Noch {{count}} Stempel",
       "passToGo_other": "Noch {{count}} Stempel",
-      "comparedCities_one": "Verglichen mit {{count}} Stadt",
-      "comparedCities_other": "Verglichen mit {{count}} Städten",
       "myPhotos": "Meine Fotos",
       "noPhotos": "Deine Daily-Challenge-Fotos erscheinen hier.",
       "share": "Meinen Reisepass teilen",

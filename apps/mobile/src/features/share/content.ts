@@ -28,7 +28,9 @@ export type ShareContent =
       /** The photo's challenge date, votes and the share card's question (the challenge's, else the apps' default). */
       date?: string; voteCount?: number; shareQuestion?: string | null;
       /** Today's question and my answer, for the share line (COPY.md). */
-      question?: string | null; answer?: string | null }
+      question?: string | null; answer?: string | null;
+      /** The challenge is over (its results are out): the Result card is offered (else not). */
+      resultsOut?: boolean }
   | { type: 'spot'; id: string; photoUrl: string | null; theme: ThemeKey | null; name: string; city: City; by: string | null }
   | { type: 'today'; photoUrl: string | null; theme: ThemeKey | null; themeLabel?: string | null; date?: string; text: string; city: City;
       /** "Answer for Saigon with me on Hilads." (SPEC 9.16) instead of the challenge line. */
@@ -59,6 +61,7 @@ export function proofShare(proof: DailyProof, challenge: DailyChallenge): ShareC
     rank: world ? { rank: world, city: null } : city && proof.city?.name ? { rank: city, city: proof.city.name } : null,
     question: challenge.compare?.question ?? null,
     answer: proof.answer ? answerText(proof.answer, i18n.language) : null,
+    resultsOut: !challenge.isActive,
   };
 }
 

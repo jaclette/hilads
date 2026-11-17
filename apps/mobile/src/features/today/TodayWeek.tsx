@@ -4,7 +4,7 @@ import * as Haptics from 'expo-haptics';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
-import { FontSizes, Radius, type ThemeColors } from '@/constants';
+import { Space, Radius, Type, Elevation, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { useApp } from '@/context/AppContext';
 import { track } from '@/services/analytics';
@@ -181,6 +181,13 @@ export function TodayWeek({ today }: { today: DailyToday | null }) {
                    }} />
         </RowGroup>
       )}
+      {/* Every past challenge (was under yesterday's card, now off Today). */}
+      <TouchableOpacity style={styles.archive} onPress={() => router.push('/daily/archive?source=today_week' as never)}
+                        accessibilityRole="button" hitSlop={6} testID="today-archive">
+        <Ionicons name="calendar-outline" size={16} color={colors.primaryText} />
+        <Text style={styles.archiveText}>{t('today.allPast')}</Text>
+        <Ionicons name="chevron-forward" size={15} color={colors.primaryText} />
+      </TouchableOpacity>
     </View>
   );
 }
@@ -208,35 +215,38 @@ const DOT = 40;
 const ACCENT_TEAL = '#1FB5A8';
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  wrap:         { gap: 10, padding: 14, borderRadius: 20, borderWidth: 1.5, borderColor: c.line, backgroundColor: c.bg2, overflow: 'hidden' },
-  links:        { marginTop: 6 },
-  linkRow:      { flexDirection: 'row', alignItems: 'center', gap: 12, minHeight: 64, paddingHorizontal: 14, paddingVertical: 10 },
+  // The same card as every other on Today (design pass): hairline, card radius, resting elevation.
+  wrap:         { gap: Space.md, padding: Space.lg, borderRadius: Radius.card, borderWidth: 1, borderColor: c.line, backgroundColor: c.bg2, ...Elevation(c, 'rest') },
+  links:        { marginTop: Space.sm },
+  linkRow:      { flexDirection: 'row', alignItems: 'center', gap: Space.md, minHeight: 64, paddingHorizontal: Space.lg, paddingVertical: Space.md },
   rowDivider:   { borderTopWidth: 1, borderTopColor: c.line },
   rowPressed:   { backgroundColor: c.bg3 },
   rowIcon:      { width: 38, height: 38, borderRadius: 19, backgroundColor: c.bg, alignItems: 'center', justifyContent: 'center' },
   rowBody:      { flex: 1, gap: 1 },
-  rowTitle:     { fontSize: 15, fontWeight: '700', color: c.text },
-  rowSub:       { fontSize: 13, lineHeight: 17, fontWeight: '500', color: c.muted },
-  peek:         { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  peekText:     { fontSize: FontSizes.sm, fontWeight: '700', color: c.text },
-  head:         { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 8 },
+  rowTitle:     { ...Type.body, fontWeight: '700', color: c.text },
+  rowSub:       { ...Type.caption, fontWeight: '500', color: c.muted },
+  peek:         { flexDirection: 'row', alignItems: 'center', gap: Space.sm },
+  peekText:     { ...Type.caption, fontWeight: '700', color: c.text },
+  head:         { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: Space.sm },
   streak:       { minHeight: 32, justifyContent: 'center' },
-  streakInner:  { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  tomorrowRow:  { flexDirection: 'row', alignItems: 'center', gap: 5, flexShrink: 1 },
-  risk:         { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 10, paddingVertical: 8, borderRadius: 12, backgroundColor: c.primaryTint },
-  riskText:     { flexShrink: 1, fontSize: 13, fontWeight: '700', color: c.primaryOnTint },
-  streakText:   { fontSize: 15, fontWeight: '800', color: c.text },
-  tomorrowText: { flexShrink: 1, fontSize: FontSizes.xs, fontWeight: '800', textAlign: 'right' },
-  row:          { flexDirection: 'row', justifyContent: 'space-between', gap: 4 },
-  day:          { flex: 1, alignItems: 'center', gap: 6, minHeight: 44 },
-  weekday:      { fontSize: 12, fontWeight: '600', color: c.muted },
+  streakInner:  { flexDirection: 'row', alignItems: 'center', gap: Space.sm },
+  tomorrowRow:  { flexDirection: 'row', alignItems: 'center', gap: Space.xs, flexShrink: 1 },
+  archive:      { flexDirection: 'row', alignItems: 'center', gap: Space.sm, minHeight: 28 },
+  archiveText:  { flex: 1, ...Type.caption, fontWeight: '800', color: c.primaryText },
+  risk:         { flexDirection: 'row', alignItems: 'center', gap: Space.sm, paddingHorizontal: Space.md, paddingVertical: Space.sm, borderRadius: Radius.control, backgroundColor: c.primaryTint },
+  riskText:     { flexShrink: 1, ...Type.caption, fontWeight: '700', color: c.primaryOnTint },
+  streakText:   { ...Type.label, color: c.text },
+  tomorrowText: { flexShrink: 1, ...Type.caption, fontWeight: '800', textAlign: 'right' },
+  row:          { flexDirection: 'row', justifyContent: 'space-between', gap: Space.xs },
+  day:          { flex: 1, alignItems: 'center', gap: Space.sm, minHeight: 44 },
+  weekday:      { ...Type.caption, color: c.muted },
   weekdayToday: { fontWeight: '800', color: c.text },
   dot:          { width: DOT, height: DOT, borderRadius: Radius.full, alignItems: 'center', justifyContent: 'center' },
   done:         {},
   pending:      {},
-  missed:       { backgroundColor: c.bg2, borderWidth: 1.5, borderColor: c.line },
+  missed:       { backgroundColor: c.bg3, borderWidth: 1, borderColor: c.line },
   today:        { borderWidth: 2.5 },
   tomorrow:     { borderWidth: 2, borderStyle: 'dashed' },
-  later:        { borderWidth: 1.5, borderStyle: 'dashed', borderColor: c.line },
+  later:        { borderWidth: 1, borderColor: c.line, backgroundColor: c.bg3 },
   none:         { backgroundColor: c.bg2, borderWidth: 1.5, borderColor: c.line },
 });

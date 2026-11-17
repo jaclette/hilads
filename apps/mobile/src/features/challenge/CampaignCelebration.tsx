@@ -10,7 +10,7 @@
 import { useEffect, useRef } from 'react';
 import { Animated, Dimensions, Easing, StyleSheet, Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Radius, type ThemeColors } from '@/constants';
+import { Space, FontSizes, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 
 const { width: SCREEN_W, height: SCREEN_H } = Dimensions.get('window');
@@ -94,11 +94,11 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   piece:   { position: 'absolute', top: 0 },
   badgeWrap: { ...StyleSheet.absoluteFill, alignItems: 'center', justifyContent: 'center' },
   badge: {
-    flexDirection: 'row', alignItems: 'center', gap: 6,
+    flexDirection: 'row', alignItems: 'center', gap: Space.sm,
     backgroundColor: c.gold,
     paddingHorizontal: 22, paddingVertical: 12, borderRadius: Radius.full,
     shadowColor: c.gold, shadowOpacity: 0.6, shadowRadius: 16, shadowOffset: { width: 0, height: 0 },
     elevation: 8,
   },
-  badgeText: { fontSize: 22, fontWeight: '900', color: c.onGold, letterSpacing: 0.4 },
+  badgeText: { fontSize: FontSizes.xl, fontWeight: '800', color: c.onGold, letterSpacing: 0.4 },
 });

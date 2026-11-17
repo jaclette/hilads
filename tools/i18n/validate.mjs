@@ -40,8 +40,11 @@ for (const surface of Object.keys(ROOTS)) {
   let en;
   try { en = load(surface, 'en'); } catch (e) { console.error(`${surface}/en: ${e.message}`); process.exit(1); }
   const enBases = new Map(); // base -> { plural: bool, other: value }
+  // A plural form only when English has the base's "_other" (i18next needs it): photoComment.author_many and
+  // author_many_one are plain keys the code picks by name, not plurals of "author" / "author_many".
+  const enPluralCat = (k) => (pluralCat(k) && en[`${pluralBase(k)}_other`] !== undefined ? pluralCat(k) : null);
   for (const [k, v] of Object.entries(en)) {
-    const cat = pluralCat(k);
+    const cat = enPluralCat(k);
     const base = cat ? pluralBase(k) : k;
     const e = enBases.get(base) ?? { plural: false, value: v };
     if (cat) { e.plural = true; if (cat === 'other') e.value = v; }
@@ -87,6 +90,8 @@ for (const surface of Object.keys(ROOTS)) {
       }
     }
     for (const key of Object.keys(loc)) {
+      const plain = enBases.get(key);
+      if (plain && !plain.plural) continue; // an English plain key, even one ending in _many / _one
       const cat = pluralCat(key);
       const base = cat ? pluralBase(key) : key;
       const e = enBases.get(base);

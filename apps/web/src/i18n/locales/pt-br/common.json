@@ -16,11 +16,7 @@
     "eventTitle": "Evento local: {{title}} | Hilads",
     "eventDesc": "Participe de {{title}} no Hilads, um evento local rolando agora. Veja quem vai e converse ao vivo com quem está online."
   },
-  "nowTitle": "Agora",
   "filterEvents": "🎉 Eventos locais",
-  "hiLocalTitle": "Hi Local",
-  "filterHangouts": "🗣️ Rolês",
-  "publicEventsSection": "🎫 Eventos locais públicos",
   "accountWelcome": {
     "title": "Parabéns, {{username}}!",
     "subtitle": "Sua conta está pronta - veja o que você pode fazer agora",
@@ -32,68 +28,6 @@
     "fc1": "Desafie a galera da sua cidade",
     "fc2": "Desafie outra cidade pelo mundo",
     "cta": "Bora"
-  },
-  "onboarding": {
-    "skip": "Pular ✕",
-    "next": "Próximo",
-    "fallbackCity": "sua cidade",
-    "slide1": {
-      "title": "Jogue local. Compare global.",
-      "body": "O Hilads é o app que transforma viajantes em locais, e ajuda os moradores a mostrar o que deixa a cidade viva."
-    },
-    "slide2": {
-      "title": "Três formas de viver a cidade",
-      "itemChallenges": "🤝 Desafios - desafie ou seja desafiado a descobrir lugares escondidos, provar comida de verdade, trocar cultura ou dar uma mão.",
-      "itemHangouts": "🗣️ Hi now - conheça alguém na hora",
-      "itemEvents": "🎉 Hi plan - marque um momento pra se encontrar"
-    },
-    "slide3": {
-      "title": "Conquiste seu espaço na cidade",
-      "body": "Cada desafio que você completa, cada encontro, cada lugar que descobre te dá pontos. Os pontos mostram o quanto você já virou local em {{city}}. Chegue ao topo do Most Local e conquiste seu espaço entre quem deixa a cidade viva."
-    },
-    "slide4": {
-      "title": "Bora começar?",
-      "ctaChallenge": "📍 Encare seu primeiro desafio em {{city}}",
-      "ctaMostLocal": "🤝 Conheça o Most Local de {{city}}",
-      "ctaLookAround": "👀 Só dar uma olhada por enquanto",
-      "ctaHiNow": "🗣️ Hi now",
-      "ctaHiLater": "🎉 Hi plan"
-    }
-  },
-  "challengeIntro": {
-    "title": "Como funcionam os desafios",
-    "slide1": {
-      "title": "Desafios transformam viagens em histórias",
-      "body": "Moradores e viajantes se desafiam a mostrar o que a cidade tem de verdade - comida, lugares, cultura, ajuda. A recompensa? Se encontrar ao vivo, ou mandar a prova de longe."
-    },
-    "slide2": {
-      "title": "Lance seu desafio",
-      "body": "Comida, lugar, cultura ou ajuda. Escolha pra quem é, quantas vagas e como fechar: encontro ou prova por foto."
-    },
-    "slide3": {
-      "title": "Alguém aceita",
-      "body": "A pessoa manda um pedido. Você confere e aceita, e a conversa privada abre pra vocês combinarem tudo."
-    },
-    "slide4": {
-      "title": "Encontro ou prova por foto",
-      "body": "Encontrem-se ao vivo ou mandem uma foto de longe, você decide. De qualquer jeito, cada passo fica registrado."
-    },
-    "slide5": {
-      "title": "Feche o desafio",
-      "body": "Depois do encontro (ou quando a foto chegar), marque como concluído. Sua cidade vivida de verdade, um desafio de cada vez."
-    },
-    "next": "Próximo",
-    "done": "Entendi!",
-    "skip": "Pular ✕",
-    "slide6": {
-      "title": "Além da sua cidade",
-      "body": "Desafie qualquer pessoa, em qualquer lugar. Ela manda a prova, uma foto geolocalizada, e você valida de longe. O mesmo fluxo de foto vale pro local também. Local ou global, todo desafio conta."
-    },
-    "slide7": {
-      "title": "Seja o Most Local",
-      "body": "Cada desafio te dá pontos, na sua cidade E no mundo. Encontrem-se ao vivo e ganhem +50 de bônus. Local ou viajante, o que importa é o que você constrói aqui. Ranking novo todo mês."
-    },
-    "createCta": "🔥 Criar um desafio"
   },
   "share": {
     "title": "Compartilhe algo",
@@ -211,7 +145,6 @@
   "settings": "Configurações",
   "firstLaunch": "Jogue local. Compare global.",
   "subtitles": {
-    "map": "Lugares das fotos do mundo.",
     "hi": "Dá um oi pra sua cidade. Entra num rolê.",
     "passport": "Suas cidades, suas fotos, seus carimbos."
   },
@@ -233,22 +166,9 @@
     "textPassportNoCity": "Meu passaporte Hilads. Mesmo desafio. Mundos diferentes."
   },
   "represent": {
-    "empty": "{{city}} ainda não jogou hoje. Saia na frente.",
-    "beFirst": "Abra o placar por {{city}}",
-    "emptyThere": "{{city}} ainda não jogou hoje.",
-    "notIn": "Não está em {{city}}?",
-    "change": "Mudar",
     "locationNeeded": "Permita a localização para jogar por onde você está.",
-    "button": "Jogue por {{city}}",
-    "firstPosted": "Você colocou {{city}} no mapa do mundo de hoje.",
     "pioneer": "Pioneer de {{city}}",
     "spotOne": "Lugar #1 em {{city}}",
-    "streak_one": "{{city}} jogou {{count}} dia seguido",
-    "streak_many": "{{city}} jogou {{count}} de dias seguidos",
-    "streak_other": "{{city}} jogou {{count}} dias seguidos",
-    "board_one": "{{count}} cidade está no placar de hoje. {{city}} ainda não.",
-    "board_many": "{{count}} de cidades estão no placar de hoje. {{city}} ainda não.",
-    "board_other": "{{count}} cidades estão no placar de hoje. {{city}} ainda não.",
     "mapEmpty": "{{city}} ainda não está no mapa do mundo. Bora colocar?",
     "invite": "Convide um amigo",
     "share": "Jogue por {{city}} comigo no Hilads.",
@@ -290,8 +210,7 @@
     "mainNav": "Principal",
     "emojiPicker": "Seletor de emoji",
     "cancelReply": "Cancelar resposta",
-    "welcome": "Boas-vindas",
-    "approve": "Aprovar"
+    "welcome": "Boas-vindas"
   },
   "tapToOpenMaps": "Toque pra abrir no mapa",
   "openInApp": {

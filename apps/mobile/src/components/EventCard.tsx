@@ -3,7 +3,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import i18n from '@/i18n';
 import type { FeedItem, HiladsEvent } from '@/types';
-import { FontSizes, Radius, type ThemeColors } from '@/constants';
+import { Space, FontSizes, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { AttendeeAvatars } from '@/components/AttendeeAvatars';
 import { eventIcon } from '@/features/events/EventPill';
@@ -139,17 +139,17 @@ export function EventCard({ event, tz, onPress, distanceLabel, onAvatarsPress, s
 }
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  card:          { padding: 14, gap: 8 },
+  card:          { padding: Space.lg, gap: Space.sm },
   cardRecurring: { borderColor: c.caramel },
-  titleRow:      { flexDirection: 'row', alignItems: 'center', gap: 10 },
+  titleRow:      { flexDirection: 'row', alignItems: 'center', gap: Space.md },
   icon:          { width: 36, height: 36, borderRadius: Radius.full, backgroundColor: c.primaryTint, alignItems: 'center', justifyContent: 'center' },
   title:         { flex: 1, fontSize: FontSizes.md, fontWeight: '800', color: c.text },
-  going:         { flexDirection: 'row', alignItems: 'center', gap: 4, flexShrink: 0 },
+  going:         { flexDirection: 'row', alignItems: 'center', gap: Space.xs, flexShrink: 0 },
   goingText:     { fontSize: FontSizes.sm, fontWeight: '800', color: c.primaryText },
-  chips:         { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: 6 },
-  recur:         { flexDirection: 'row', alignItems: 'center', gap: 4, flexShrink: 1 },
+  chips:         { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: Space.sm },
+  recur:         { flexDirection: 'row', alignItems: 'center', gap: Space.xs, flexShrink: 1 },
   recurText:     { fontSize: FontSizes.xs, fontWeight: '700', color: c.caramel },
-  metaRow:       { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  metaRow:       { flexDirection: 'row', alignItems: 'center', gap: Space.sm },
   meta:          { flex: 1, fontSize: FontSizes.sm, fontWeight: '600', color: c.muted },
   metaLive:      { color: c.primaryText },
   host:          { fontSize: FontSizes.xs, fontWeight: '500', color: c.muted },

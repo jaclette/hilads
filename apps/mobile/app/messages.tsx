@@ -13,7 +13,7 @@ import { thumbUrl } from '@/lib/imageThumb';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import {
-  View, Text, ScrollView, TouchableOpacity, Switch,
+  View, Text, ScrollView, TouchableOpacity,
   ActivityIndicator, RefreshControl, StyleSheet, Alert,
 } from 'react-native';
 import { useRouter, useFocusEffect } from 'expo-router';
@@ -23,12 +23,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
 import { useConversations } from '@/hooks/useConversations';
 import { fetchMyEvents } from '@/api/events';
-import {
-  fetchNotificationPreferences, updateNotificationPreferences,
-  type NotificationPreferences,
-} from '@/api/notifications';
 import { UpgradePrompt } from '@/features/auth/UpgradePrompt';
-import { Border, FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
+import { Space, Border, FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { Avatar, Button, EmptyState, Screen, ScreenHeader } from '@/ui';
 import type { Conversation, HiladsEvent, EventChatPreview } from '@/types';
@@ -234,24 +230,8 @@ export default function MessagesScreen() {
 
   useEffect(() => { loadEvents(); }, [loadEvents]);
 
-  // ── Envelope-scoped notification preferences ─────────────────────────────
-  // Three toggles: DMs, event-chat, city-chat - mirroring the three notification
-  // types that route to the envelope icon. Other prefs live on the bell screen.
-  const [prefs, setPrefs] = useState<NotificationPreferences | null>(null);
-  useEffect(() => {
-    if (!account) return;
-    fetchNotificationPreferences().then(setPrefs).catch(() => {});
-  }, [account]);
-
-  const togglePref = useCallback((key: keyof NotificationPreferences, value: boolean) => {
-    if (!prefs) return;
-    const prev = prefs;
-    setPrefs({ ...prefs, [key]: value });
-    updateNotificationPreferences({ [key]: value }).catch(() => setPrefs(prev));
-  }, [prefs]);
-
   const reload = useCallback(() => { reloadDMs(); loadEvents(); }, [reloadDMs, loadEvents]);
-  const goBack = () => (router.canGoBack() ? router.back() : router.replace('/(tabs)/chat'));
+  const goBack = () => (router.canGoBack() ? router.back() : router.replace('/(tabs)/passport' as never));
 
   if (!account) {
     return (
@@ -358,62 +338,13 @@ export default function MessagesScreen() {
             ) : activeFilter === 'events' ? null : null
           )}
 
-          {/* ── Notification preferences (envelope-scoped) ────────────────── */}
-          {prefs && (
-            <View style={styles.prefSection}>
-              <Text style={styles.prefSectionTitle}>{t('prefTitle')}</Text>
-              <View style={styles.prefCard}>
-                <PrefRow
-                  label={t('pref.dmLabel')}
-                  subtitle={t('pref.dmSub')}
-                  value={prefs.dm_push}
-                  onChange={v => togglePref('dm_push', v)}
-                />
-                <View style={styles.prefDivider} />
-                <PrefRow
-                  label={t('pref.eventLabel')}
-                  subtitle={t('pref.eventSub')}
-                  value={prefs.event_message_push}
-                  onChange={v => togglePref('event_message_push', v)}
-                />
-                <View style={styles.prefDivider} />
-                <PrefRow
-                  label={t('pref.cityLabel')}
-                  subtitle={t('pref.citySub')}
-                  value={prefs.channel_message_push}
-                  onChange={v => togglePref('channel_message_push', v)}
-                />
-              </View>
-            </View>
-          )}
+          {/* Message notifications: in Notification settings (every push setting in one place). */}
+          <TouchableOpacity style={styles.prefLink} onPress={() => router.push('/notification-settings' as never)} accessibilityRole="button">
+            <Text style={styles.prefLinkText}>{t('prefTitle')}</Text>
+          </TouchableOpacity>
         </ScrollView>
       )}
     </Screen>
-  );
-}
-
-// ── Preference toggle row (local - same shape as the bell screen's PrefRow) ──
-
-function PrefRow({
-  label, subtitle, value, onChange,
-}: { label: string; subtitle: string; value: boolean; onChange: (v: boolean) => void }) {
-  const { colors } = useTheme();
-  const styles = useThemedStyles(makeStyles);
-  return (
-    <View style={styles.prefRow}>
-      <View style={styles.prefText}>
-        <Text style={styles.prefLabel}>{label}</Text>
-        <Text style={styles.prefSub}>{subtitle}</Text>
-      </View>
-      <Switch
-        value={value}
-        onValueChange={onChange}
-        trackColor={{ false: colors.line, true: colors.primary }}
-        thumbColor={colors.white}
-        ios_backgroundColor={colors.line}
-        accessibilityLabel={label}
-      />
-    </View>
   );
 }
 
@@ -423,8 +354,8 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   center:      { flex: 1, alignItems: 'center', justifyContent: 'center', padding: Spacing.lg },
   listContent: { paddingBottom: Spacing.xl },
 
-  filterBar:       { flexDirection: 'row', gap: 8, paddingHorizontal: Spacing.md, paddingTop: 4, paddingBottom: 10 },
-  pill:            { flexDirection: 'row', alignItems: 'center', gap: 6, height: 38, paddingHorizontal: 14, borderRadius: Radius.full,
+  filterBar:       { flexDirection: 'row', gap: Space.sm, paddingHorizontal: Spacing.md, paddingTop: Space.xs, paddingBottom: Space.md },
+  pill:            { flexDirection: 'row', alignItems: 'center', gap: Space.sm, height: 38, paddingHorizontal: Space.lg, borderRadius: Radius.full,
                      borderWidth: Border, borderColor: c.line, backgroundColor: c.bg2 },
   pillActive:      { backgroundColor: c.primary, borderColor: c.primary },
   pillLabel:       { fontSize: FontSizes.sm, fontWeight: '600', color: c.text },
@@ -432,27 +363,21 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   pillDot:         { width: 7, height: 7, borderRadius: Radius.full, backgroundColor: c.primary },
   pillDotActive:   { backgroundColor: c.white },
 
-  sectionHeader: { paddingHorizontal: Spacing.md, paddingTop: 14, paddingBottom: 6 },
+  sectionHeader: { paddingHorizontal: Spacing.md, paddingTop: Space.lg, paddingBottom: Space.sm },
   sectionTitle:  { fontSize: FontSizes.md, fontWeight: '800', color: c.text },
   sectionLoader: { paddingVertical: Spacing.md, alignItems: 'center' },
 
-  row:              { flexDirection: 'row', alignItems: 'center', gap: 12, minHeight: 68, paddingHorizontal: Spacing.md, paddingVertical: 10 },
+  row:              { flexDirection: 'row', alignItems: 'center', gap: Space.md, minHeight: 68, paddingHorizontal: Spacing.md, paddingVertical: Space.md },
   eventIcon:        { width: 48, height: 48, borderRadius: 14, backgroundColor: c.primaryTint, alignItems: 'center', justifyContent: 'center' },
-  rowBody:          { flex: 1, minWidth: 0, gap: 2 },
-  rowTop:           { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  rowName:          { flex: 1, fontSize: 15, fontWeight: '600', color: c.text },
+  rowBody:          { flex: 1, minWidth: 0, gap: Space.xxs },
+  rowTop:           { flexDirection: 'row', alignItems: 'center', gap: Space.sm },
+  rowName:          { flex: 1, fontSize: FontSizes.body, fontWeight: '600', color: c.text },
   rowNameUnread:    { fontWeight: '800' },
-  rowTime:          { fontSize: 12, fontWeight: '400', color: c.muted },
+  rowTime:          { fontSize: FontSizes.xs, fontWeight: '400', color: c.muted },
   rowPreview:       { fontSize: FontSizes.sm, fontWeight: '400', color: c.muted },
   rowPreviewUnread: { fontWeight: '600', color: c.text },
   unreadDot:        { width: 10, height: 10, borderRadius: Radius.full, backgroundColor: c.primary },
 
-  prefSection:      { paddingHorizontal: Spacing.md, paddingTop: Spacing.lg, gap: 8 },
-  prefSectionTitle: { fontSize: FontSizes.md, fontWeight: '800', color: c.text },
-  prefCard:         { borderRadius: Radius.card, borderWidth: Border, borderColor: c.line, backgroundColor: c.bg2, paddingHorizontal: 14 },
-  prefDivider:      { height: 1, backgroundColor: c.line },
-  prefRow:          { flexDirection: 'row', alignItems: 'center', gap: 12, minHeight: 64, paddingVertical: 10 },
-  prefText:         { flex: 1, gap: 2 },
-  prefLabel:        { fontSize: 15, fontWeight: '700', color: c.text },
-  prefSub:          { fontSize: FontSizes.xs, fontWeight: '400', color: c.muted },
+  prefLink:         { paddingHorizontal: Spacing.md, paddingVertical: Spacing.lg, alignItems: 'center' },
+  prefLinkText:     { fontSize: FontSizes.sm, fontWeight: '700', color: c.primaryText },
 });

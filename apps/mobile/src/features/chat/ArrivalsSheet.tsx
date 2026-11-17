@@ -8,7 +8,7 @@
  * join pill uses.
  */
 
-import { Text, ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
+import { Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { thumbUrl } from '@/lib/imageThumb';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
@@ -16,10 +16,10 @@ import i18n from '@/i18n';
 import type { Message } from '@/types';
 import { useApp } from '@/context/AppContext';
 import { canAccessProfile } from '@/lib/profileAccess';
-import { formatSmartTime } from '@/lib/messageTime';
-import { FontSizes, type ThemeColors } from '@/constants';
+import { formatSmartTime, toMs } from '@/lib/messageTime';
+import { Space, FontSizes, type ThemeColors } from '@/constants';
 import { useThemedStyles } from '@/context/ThemeContext';
-import { Avatar, EmptyState, SectionTitle, Sheet, SheetScrollView } from '@/ui';
+import { Avatar, EmptyState, Sheet, SheetScrollView, SheetTitle } from '@/ui';
 
 const FEED_JOIN_VARIANTS = 5;
 
@@ -62,14 +62,14 @@ export function ArrivalsSheet({ visible, arrivals, onClose }: Props) {
 
   return (
     <Sheet visible={visible} onClose={onClose} closeLabel={t('close', { ns: 'common' })} style={styles.sheet}>
-      <SectionTitle title={t('arrivalsBar.sheetTitle')} />
+      <SheetTitle>{t('arrivalsBar.sheetTitle')}</SheetTitle>
       <SheetScrollView style={styles.list} showsVerticalScrollIndicator={false}>
         {arrivals.length === 0 ? (
           <EmptyState body={t('arrivalsBar.empty')} />
         ) : (
           // Newest at the top → oldest at the bottom, like the chat feed.
           [...arrivals]
-            .sort((a, b) => (b.createdAt ?? 0) - (a.createdAt ?? 0))
+            .sort((a, b) => toMs(b.createdAt) - toMs(a.createdAt))
             .map((m, i) => {
               const tappable = !!m.userId || !!m.guestId;
               return (
@@ -96,7 +96,7 @@ export function ArrivalsSheet({ visible, arrivals, onClose }: Props) {
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
   sheet:   { maxHeight: '70%' },
   list:    { flexGrow: 0 },
-  row:     { flexDirection: 'row', alignItems: 'center', gap: 12, minHeight: 56, paddingVertical: 8 },
+  row:     { flexDirection: 'row', alignItems: 'center', gap: Space.md, minHeight: 56, paddingVertical: Space.sm },
   divider: { borderTopWidth: 1, borderTopColor: c.line },
   rowText: { flex: 1, fontSize: FontSizes.sm, fontWeight: '600', color: c.text },
   rowTime: { fontSize: FontSizes.xs, fontWeight: '400', color: c.muted },

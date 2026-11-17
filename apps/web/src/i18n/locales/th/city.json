@@ -1,22 +1,15 @@
 {
   "world": {
     "tab": "ทั่วโลก",
-    "banner_other": "ชาเลนจ์ข้ามเมือง {{count}} อันกำลังเล่นอยู่",
-    "online": "ออนไลน์ {{count}} คน",
-    "cities_other": "{{count}} เมือง",
     "sys": {
       "challengeCreated": "🔥 {{nickname}} ปล่อยชาเลนจ์ {{cityA}} → {{cityB}}",
       "newUser": "🎉 {{nickname}} จาก{{city}} เพิ่งเข้าร่วม Hilads",
       "challengeWon": "🏆 {{nickname}} จาก{{city}} ชนะชาเลนจ์ {{challenge}}"
     },
     "quietCard": "เงียบจัง? มี {{count}} ข้อความที่ยังไม่อ่านในห้องทั่วโลก แตะเพื่อเปิด",
-    "heroEmpty": "ท้าเมืองอื่นเป็นคนแรก",
-    "heroEmptySub": "ปล่อยชาเลนจ์ข้ามเมือง",
-    "leaderboard": "อันดับ",
     "arrivals_other": "{{count}} คนเพิ่งมา",
     "arrivalsTitle": "เพิ่งมาถึง",
-    "arrivalsEmpty": "ยังไม่มีใครเพิ่งมา",
-    "seeAll": "ดูทั้งหมด"
+    "arrivalsEmpty": "ยังไม่มีใครเพิ่งมา"
   },
   "inspiration": {
     "heading": "ไอเดียนัดเจอ",
@@ -28,37 +21,7 @@
   },
   "guestGate": {
     "createAccount": "สร้างบัญชี",
-    "signIn": "เข้าสู่ระบบ",
-    "create_event": {
-      "pageTitle": "สร้างกิจกรรม",
-      "title": "Ghost ดูได้ แต่เป็นเจ้าภาพไม่ได้",
-      "sub": "สร้างบัญชีเพื่อจัดกิจกรรมของคุณเอง แล้วปักหมุดเมืองของคุณบนแผนที่"
-    },
-    "view_profile": {
-      "pageTitle": "โปรไฟล์",
-      "title": "Ghost ดูได้ แต่โปรไฟล์มีไว้สำหรับสมาชิก",
-      "sub": "สร้างบัญชีเพื่อปลดล็อกโปรไฟล์ ทำความรู้จักผู้คน และสร้างแก๊งในเมืองของคุณ"
-    },
-    "join_hangout": {
-      "pageTitle": "เข้าร่วมนัดเจอ",
-      "title": "Ghost ดูได้ แต่เข้าร่วมนัดเจอไม่ได้",
-      "sub": "สมัครเพื่อเข้าร่วมนัดเจอ เก็บชื่อของคุณไว้ และรู้ทันทีเมื่อมีคนอยากเจอ"
-    },
-    "create_hangout": {
-      "pageTitle": "เริ่มนัดเจอ",
-      "title": "Ghost ดูได้ แต่เป็นเจ้าภาพไม่ได้",
-      "sub": "สมัครเพื่อเริ่มนัดเจอ เก็บชื่อของคุณไว้ แล้วชวนคนมาร่วม"
-    },
-    "create_challenge": {
-      "pageTitle": "เริ่มชาเลนจ์",
-      "title": "Ghost ดูได้ แต่สร้างชาเลนจ์ไม่ได้",
-      "sub": "สมัครเพื่อเปิดชาเลนจ์ให้คนท้องถิ่นหรือนักเดินทาง และเป็นคนตัดสินผลเอง"
-    },
-    "accept_challenge": {
-      "pageTitle": "รับชาเลนจ์",
-      "title": "สมัครเพื่อรับคำท้านี้",
-      "sub": "แค่ 3 วินาที แล้วกลับมาที่ชาเลนจ์ได้เลย"
-    }
+    "signIn": "เข้าสู่ระบบ"
   },
   "welcome": {
     "live": "{{city}} กำลังคึกคัก",
@@ -99,15 +62,12 @@
   "joiningDefault": "กำลังเข้าแชท…",
   "tryAgain": "ลองอีกครั้ง",
   "feed": {
-    "hangoutTag": "นัดเจอ",
-    "eventTag": "กิจกรรม",
     "nowTag": "ตอนนี้",
     "laterTag": "แพลน",
     "hiNow": "Hi now",
     "hiLater": "Hi plan",
     "public": "สาธารณะ",
     "activeNow": "ออนไลน์อยู่ตอนนี้",
-    "repliesNew": "ยังไม่มีใครตอบ มาเป็นคนแรกเลย",
     "sayHi": "ทักทาย {{name}}",
     "sayHiGeneric": "ทักทาย",
     "hostWaiting": "รอคำทักทายแรกอยู่",
@@ -118,8 +78,6 @@
     "groupPublic": "อีเวนต์สาธารณะในพื้นที่",
     "groupPublicTicket": "อีเวนต์สาธารณะในพื้นที่",
     "createEvent": "สร้างกิจกรรมท้องถิ่น",
-    "startHangout": "เริ่มนัดเจอ",
-    "openPlace": "เปิดสปอตของคุณ",
     "loadError": "โหลดกิจกรรมไม่ได้",
     "loadErrorSub": "ดึงลงเพื่อลองใหม่ทีหลัง หรือสร้างอะไรใหม่ๆ ใน {{city}}",
     "emptyLocalTitle": "เป็นเจ้าภาพที่สปอตของคุณ",
@@ -127,27 +85,16 @@
     "emptyLocalSub": "ทำให้ {{city}} คึกคักขึ้น เริ่มกิจกรรมประจำที่สถานที่โปรดของคุณ",
     "emptySub": "มาเป็นคนแรกที่ทำให้ {{city}} มีอะไรเกิดขึ้น",
     "noEvents": "ตอนนี้ยังไม่มีกิจกรรมท้องถิ่น",
-    "noHangouts": "ยังไม่มีนัดเจอ",
-    "noEventsSub": "มาเป็นคนแรกที่สร้างใน {{city}}",
-    "noHangoutsSub": "เริ่มนัดเจอ แล้วชวนทั้งเมืองมาคุยกัน",
-    "filterAll": "ทั้งหมด",
-    "seeComing": "ดูว่ามีอะไรกำลังจะมา",
-    "seeHappened": "ดูว่าเกิดอะไรขึ้น",
-    "createNew": "สร้างใหม่",
-    "hiNowHint": "เจอกันตอนนี้",
-    "hiLaterHint": "วางแผนกิจกรรม"
+    "noEventsSub": "มาเป็นคนแรกที่สร้างใน {{city}}"
   },
   "header": {
     "online": "ใกล้ๆ {{count}} คน",
     "liveNow": "สดๆ ตอนนี้",
     "seeWhosHere": "ดูว่าใครอยู่แถวนี้",
-    "onlineAria_other": "มี {{count}} คนอยู่ใกล้ๆ แตะเพื่อดูว่าใคร",
     "notifications": "การแจ้งเตือน",
     "messages": "ข้อความ",
     "shareCity": "แชร์เมือง",
-    "switchCity": "เปลี่ยนเมือง",
-    "changeCity": "เปลี่ยนเมือง",
-    "currentWeather": "อากาศตอนนี้: {{label}}"
+    "switchCity": "เปลี่ยนเมือง"
   },
   "here": {
     "title": "คนที่อยู่ที่นี่",
@@ -156,7 +103,6 @@
     "filterMode": "โหมด",
     "you": "(คุณ)",
     "hereNow": "อยู่ที่นี่ตอนนี้",
-    "noMatchLive": "ตอนนี้ไม่มีใครตรงกับตัวกรองนี้",
     "legends": "ตำนาน Hilads",
     "legendsSub": "พวกเขาทำให้เมืองมีชีวิต",
     "cityCrew": "แก๊งในเมือง",
@@ -165,7 +111,6 @@
     "messageAria": "ส่งข้อความถึง {{name}}"
   },
   "eventHeader": {
-    "yourEvent": "กิจกรรมของคุณ",
     "edit": "แก้ไข",
     "join": "เข้าร่วม",
     "joined": "เข้าร่วมแล้ว",
@@ -181,26 +126,7 @@
     "firstHi": "ทักทายเป็นคนแรกเลย"
   },
   "create": {
-    "title": "จะทำอะไรกันดี?",
-    "hangoutTitle": "เริ่มนัดเจอ",
-    "hangoutSub": "ทันที ชวนคนมาเจอคุณได้เลยตอนนี้",
-    "eventTitle": "สร้างกิจกรรม",
-    "eventSub": "แพลนอะไรสักอย่างให้คนอื่นมาร่วม",
-    "challengeTitle": "เริ่มชาเลนจ์",
-    "challengeSub": "คนท้องถิ่นและนักเดินทาง มาเจอกันผ่านชาเลนจ์",
-    "challengePageTitle": "สร้างชาเลนจ์",
-    "challengeAudience": "สำหรับใคร?",
-    "challengeAudLocals": "คนท้องถิ่น",
-    "challengeAudExplorers": "นักเดินทาง",
-    "challengeType": "ประเภท",
-    "challengeTypeFood": "อาหาร",
-    "challengeTypePlace": "สถานที่",
-    "challengeTypeCulture": "วัฒนธรรม",
-    "challengeTypeHelp": "บ้าๆ",
-    "challengeTitleLabel": "ชาเลนจ์ของคุณ",
-    "challengeTitlePlaceholder": "เช่น พาฉันไปร้านกาแฟลับที่คุณชอบที่สุด",
-    "challengeCta": "เริ่มชาเลนจ์",
-    "challengeErrStart": "เริ่มชาเลนจ์ไม่สำเร็จ"
+    "title": "จะทำอะไรกันดี?"
   },
   "goingModal": {
     "going": "จะไป",
@@ -273,9 +199,6 @@
     "challengeValidated": "ชาเลนจ์สำเร็จ! {{name}} ยืนยัน \"{{title}}\" แล้ว",
     "challengeInternational": "{{fromFlag}} → {{toFlag}} ชาเลนจ์นานาชาติ: {{title}}"
   },
-  "replyPreview": {
-    "photo": "📷 รูป"
-  },
   "typing": {
     "one": "{{name}} กำลังพิมพ์…",
     "two": "{{a}} และ {{b}} กำลังพิมพ์…",
@@ -292,25 +215,11 @@
     "sheetTitle": "คนที่มาถึง",
     "empty": "ยังไม่มีใครมาถึง"
   },
-  "cityHero": {
-    "mainEmpty": "🌱 ยังไม่มีชาเลนจ์ใน {{city}}",
-    "subRanked": "แตะเพื่อรับคำท้าถัดไป →",
-    "subUnranked": "รับคำท้าแรกเพื่อเริ่มไต่อันดับ →",
-    "subTop": "รักษาแชมป์ไว้ →",
-    "subEmpty": "สร้างชาเลนจ์แรกให้นักเดินทางมารับคำท้า →",
-    "members_other": "สมาชิก {{count}} คน",
-    "nearby": "ใกล้ๆ {{count}} คน",
-    "recent": "เพิ่งมา {{count}} คน",
-    "mainUnranked_other": "🔥 {{count}} ชาเลนจ์ใน {{city}}",
-    "mainRanked_other": "🔥 {{count}} ชาเลนจ์ · 🏆 #{{rank}} ใน {{city}}",
-    "mainTop_other": "🔥 {{count}} ชาเลนจ์ · 🏆 #1 ใน {{city}}"
-  },
   "daily": {
     "kicker": "Daily Challenge",
     "localTwist": "Local Twist",
     "local": "คนท้องถิ่น",
     "traveler": "นักเดินทาง",
-    "ctaApp": "เล่นชาเลนจ์ในแอป",
     "localPass": "Local Pass",
     "early": "มาเร็ว",
     "proposedBy": "เสนอโดย {{name}}",
