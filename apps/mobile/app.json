@@ -2,7 +2,7 @@
   "expo": {
     "name": "Hilads",
     "slug": "hilads",
-    "version": "1.6.6",
+    "version": "2.2.0",
     "runtimeVersion": {
       "policy": "appVersion"
     },
@@ -63,7 +63,7 @@
           "ar"
         ]
       },
-      "buildNumber": "111"
+      "buildNumber": "162"
     },
     "android": {
       "googleServicesFile": "./google-services.json",
@@ -73,7 +73,7 @@
       },
       "package": "com.hilads.app",
       "softwareKeyboardLayoutMode": "resize",
-      "versionCode": 241,
+      "versionCode": 304,
       "permissions": [
         "android.permission.ACCESS_FINE_LOCATION",
         "android.permission.ACCESS_COARSE_LOCATION",
