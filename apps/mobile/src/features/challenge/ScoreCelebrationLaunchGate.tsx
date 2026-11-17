@@ -40,6 +40,8 @@ export function ScoreCelebrationLaunchGate() {
   const { account } = useApp();
   const [data, setData] = useState<ScoreCelebration | null>(null);
   const [share, setShare] = useState<ShareContent | null>(null);
+  // iOS can't present the share sheet over the reward (two sibling modals): the reward hides first.
+  const [sharing, setSharing] = useState(false);
   const loading = useRef(false);
   const userId = account?.id ?? null;
 
@@ -84,7 +86,7 @@ export function ScoreCelebrationLaunchGate() {
     track('score_win_shown', { points: data.points, period: data.win?.period ?? null, sources: data.win?.sources.map(s => s.source).join(',') ?? null });
   }, [turn, data, userId]);
 
-  const close = useCallback(() => { setShare(null); setData(null); }, []);
+  const close = useCallback(() => { setShare(null); setSharing(false); setData(null); }, []);
 
   const openRanks = useCallback((to: RanksTarget) => {
     track('score_win_ranks', { tab: to.tab, scope: to.scope, period: to.period });
@@ -97,14 +99,17 @@ export function ScoreCelebrationLaunchGate() {
     track('score_win_share', { medal: medal?.key ?? null, rank: medal?.rank ?? null });
     const base = proofShare(win.proof, win.challenge);
     if (base.type !== 'proof') return;
-    setShare({ ...base, rank: medal ? { rank: medal.rank, city: medal.key === 'world' ? null : medal.city?.name ?? null } : base.rank,
-               rankText: medal ? winLine(medal, win.period) : null });
+    setSharing(true);
+    const content: ShareContent = { ...base, rank: medal ? { rank: medal.rank, city: medal.key === 'world' ? null : medal.city?.name ?? null } : base.rank,
+                                    rankText: medal ? winLine(medal, win.period) : null };
+    setTimeout(() => setShare(content), 350);   // once the reward's modal is dismissed
   }, []);
 
   return (
     <>
-      <ScoreCelebrationModal data={data} visible={turn && data !== null} onClose={close} onOpenRanks={openRanks} onShare={openShare} />
-      <ShareSheet content={share} source="score_win" onClose={() => setShare(null)} />
+      <ScoreCelebrationModal data={data} visible={turn && data !== null && !sharing} onClose={close} onOpenRanks={openRanks} onShare={openShare} />
+      {/* Closing the share sheet ends the reward too (it was already seen). */}
+      <ShareSheet content={share} source="score_win" onClose={close} />
     </>
   );
 }
