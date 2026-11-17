@@ -12160,13 +12160,17 @@ html[data-event="halloween"] { --header-art: #FFA552; --header-art-opacity: 0.28
 
 /* ── The points reward: a victory card (docs/mockups/hilads_reward_mockup.html) ──────────── */
 /* Its own colors: it sits on the day's theme color, the same in every palette (like the joy layer). */
-.win-dim { position: fixed; inset: 0; z-index: 2000; background: rgba(30,15,5,.55); backdrop-filter: blur(2px);
+.win-dim { position: fixed; inset: 0; z-index: 2000; backdrop-filter: blur(2px);
   display: flex; align-items: center; justify-content: center; padding: var(--sp-24) var(--sp-16); }
+/* Two layers: the dark scrim fades in on its own; the card above it is opaque from its first frame. */
+.win-dim::before { content: ''; position: absolute; inset: 0; background: rgba(0,0,0,.6); animation: win-scrim .25s ease-out both }
+@keyframes win-scrim { from { opacity: 0 } }
 .win { position: relative; box-sizing: border-box; width: 100%; max-width: 400px; max-height: 100%; overflow: hidden auto; border-radius: 30px;
-  background: radial-gradient(circle at 50% 22%, var(--win-top) 0, var(--win-fill) 38%, var(--win-end) 100%);
+  background-color: var(--win-fill);
+  background-image: radial-gradient(circle at 50% 22%, var(--win-top) 0, var(--win-fill) 38%, var(--win-end) 100%);
   box-shadow: 0 20px 50px rgba(0,0,0,.35); display: flex; flex-direction: column; align-items: center; padding: var(--sp-24) var(--gutter) var(--gutter);
-  color: #2B1A12; font-family: inherit; transform: scale(.6); opacity: 0; animation: win-pop .5s cubic-bezier(.2,1.6,.4,1) forwards; }
-@keyframes win-pop { to { transform: scale(1); opacity: 1 } }
+  color: #2B1A12; font-family: inherit; transform: scale(.6); animation: win-pop .5s cubic-bezier(.2,1.6,.4,1) forwards; }
+@keyframes win-pop { to { transform: scale(1) } }
 .win-doodle { position: absolute; opacity: .35; font-size: var(--fs-xl); color: var(--win-tag); pointer-events: none }
 .win-rays { position: absolute; top: -60px; left: 50%; width: 420px; height: 420px; margin-left: -210px; pointer-events: none;
   background: repeating-conic-gradient(rgba(255,255,255,.28) 0 10deg, transparent 10deg 24deg); border-radius: 50%;
@@ -12229,7 +12233,8 @@ html[data-event="halloween"] { --header-art: #FFA552; --header-art-opacity: 0.28
 .win-btn { border: 0; cursor: pointer; font: inherit; border-radius: var(--r-button); padding: var(--sp-12); text-align: center; font-weight: 900; font-size: var(--fs-body) }
 .win-btn--p { background: #C24E1C; color: #fff; box-shadow: 0 4px 0 #8A330F }
 .win-btn--s { background: #fff; color: #C24E1C }
-.win-confetti { position: fixed; inset: 0; pointer-events: none; z-index: 2001; overflow: hidden }
+/* Inside the card, over its background, clipped by its corners (never over the screen behind). */
+.win-confetti { position: absolute; inset: 0; pointer-events: none; z-index: 1; overflow: hidden; border-radius: inherit }
 .win-confetti i { position: absolute; top: -12px; width: 8px; height: 12px; border-radius: 2px; opacity: 0 }
 @keyframes win-fall { 0% { opacity: 1; transform: translate(0,0) rotate(0) } 100% { opacity: 0; transform: translate(var(--dx), 100vh) rotate(var(--r)) } }
 /* A click anywhere: everything at its final state at once (the trophy keeps wobbling). */

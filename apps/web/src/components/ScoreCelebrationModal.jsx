@@ -107,7 +107,7 @@ export default function ScoreCelebrationModal({ data, visible, onClose, onOpenRa
     return () => window.removeEventListener('keydown', onKey)
   }, [visible]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  const confetti = useMemo(() => Array.from({ length: 70 }, (_, i) => ({
+  const confetti = useMemo(() => Array.from({ length: 50 }, (_, i) => ({
     left: `${Math.random() * 100}%`, bg: CONFETTI[i % CONFETTI.length],
     dx: `${Math.random() * 120 - 60}px`, r: `${Math.random() * 720 - 360}deg`,
     anim: `win-fall ${1.6 + Math.random() * 1.4}s ${0.2 + Math.random() * 0.6}s ease-in forwards`,
@@ -145,6 +145,11 @@ export default function ScoreCelebrationModal({ data, visible, onClose, onOpenRa
       <div ref={card} className={`win${done ? ' is-done' : ''}`} style={vars} role="dialog" aria-modal="true" aria-label={t('scoreWin.a11yPoints', { count: delta })}
            onClick={(e) => { e.stopPropagation(); skip() }}>
         <div className="win-rays" aria-hidden="true" />
+        {!reduced && !done && (
+          <div className="win-confetti" aria-hidden="true">
+            {confetti.map((p, i) => <i key={i} style={{ left: p.left, background: p.bg, '--dx': p.dx, '--r': p.r, animation: p.anim }} />)}
+          </div>
+        )}
         <span className="win-doodle" style={{ left: 16, top: 120 }} aria-hidden="true">✦</span>
         <span className="win-doodle" style={{ right: 20, top: 170 }} aria-hidden="true"><Icon name={themeIcon(themeKey, win.challenge?.special)} size={22} /></span>
         <span className="win-doodle" style={{ left: 24, top: 200 }} aria-hidden="true">〰</span>
@@ -219,11 +224,6 @@ export default function ScoreCelebrationModal({ data, visible, onClose, onOpenRa
           )}
         </div>
       </div>
-      {!reduced && !done && (
-        <div className="win-confetti" aria-hidden="true">
-          {confetti.map((p, i) => <i key={i} style={{ left: p.left, background: p.bg, '--dx': p.dx, '--r': p.r, animation: p.anim }} />)}
-        </div>
-      )}
     </div>
   )
 }

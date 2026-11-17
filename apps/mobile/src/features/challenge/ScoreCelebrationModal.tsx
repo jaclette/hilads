@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Dimensions, Modal, Pressable, Text, View, StyleSheet, type LayoutChangeEvent } from 'react-native';
+import { Modal, Pressable, Text, View, StyleSheet, type LayoutChangeEvent } from 'react-native';
 import Animated, {
   Easing, cancelAnimation, interpolate, type SharedValue, useAnimatedStyle, useReducedMotion, useSharedValue,
   withDelay, withRepeat, withSequence, withTiming,
@@ -37,7 +37,7 @@ type Props = {
  */
 const W = {
   ink: '#2B1A12', muted: '#7A6558', orange: '#F2783A', terra: '#C24E1C', terraShadow: '#8A330F',
-  green: '#1A9E6B', dim: 'rgba(30,15,5,0.55)', card3d: 'rgba(160,90,0,0.25)', track: '#F3E3C3',
+  green: '#1A9E6B', scrim: 'rgba(0,0,0,0.6)', card3d: 'rgba(160,90,0,0.25)', track: '#F3E3C3',
   coin: '#F2B200', coinEdge: '#D08E00', coinText: '#8A5A00', coinLight: '#FFE680',
   glass: 'rgba(255,255,255,0.75)', closeBg: 'rgba(255,255,255,0.6)',
   medal: {
@@ -108,7 +108,9 @@ export function ScoreCelebrationModal({ data, visible, onClose, onOpenRanks, onS
   const [odoInstant, setOdoInstant] = useState(true);
   const [done, setDone] = useState(false);
   const [pill, setPill] = useState<{ x: number; y: number } | null>(null);
-  const [cardW, setCardW] = useState(0);
+  const [card, setCard] = useState({ w: 0, h: 0 });
+  const scrim = useSharedValue(0);
+  const cardW = card.w;
   const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
   const pop = useStep(), trophy = useStep(), wobble = useSharedValue(0), plus = useStep(), chip = useStep();
   const medalA = useStep(), medalB = useStep(), medalC = useStep(), goal = useStep(), bar = useStep(), ctas = useStep(), rays = useSharedValue(0);
@@ -144,7 +146,9 @@ export function ScoreCelebrationModal({ data, visible, onClose, onOpenRanks, onS
   };
 
   useEffect(() => {
-    if (!visible || !win) return;
+    if (!visible || !win) { scrim.value = 0; return; }
+    // Only the scrim fades in; the card is opaque from its first frame and pops (scale) above it.
+    scrim.value = reduced ? 1 : withTiming(1, { duration: 250, easing: Easing.out(Easing.ease) });
     clear();
     setDone(false); setOdoInstant(true); setOdoValue(from);
     [...all, ...coins, bar, wobble].forEach(v => { cancelAnimation(v); v.value = 0; });
@@ -175,7 +179,9 @@ export function ScoreCelebrationModal({ data, visible, onClose, onOpenRanks, onS
     return () => { clear(); cancelAnimation(rays); cancelAnimation(wobble); };
   }, [visible, win]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const popStyle = useAnimatedStyle(() => ({ opacity: Math.min(1, pop.value * 1.6), transform: [{ scale: 0.6 + 0.4 * pop.value }] }));
+  // Scale only: the card is opaque from its first frame (a fading card let Today show through it).
+  const scrimStyle = useAnimatedStyle(() => ({ opacity: scrim.value }));
+  const popStyle = useAnimatedStyle(() => ({ transform: [{ scale: 0.6 + 0.4 * pop.value }] }));
   const raysStyle = useAnimatedStyle(() => ({ transform: [{ rotate: `${rays.value * 360}deg` }] }));
   const trophyStyle = useAnimatedStyle(() => ({ transform: [{ scale: trophy.value }, { rotate: `${-20 * (1 - trophy.value) + wobble.value}deg` }] }));
   const plusStyle = useAnimatedStyle(() => ({ transform: [{ scale: plus.value }] }));
@@ -208,9 +214,12 @@ export function ScoreCelebrationModal({ data, visible, onClose, onOpenRanks, onS
     : win.goal.type === 'stamp' ? `${win.goal.done} / ${win.goal.total}` : null;
 
   return (
-    <Modal visible={visible} transparent statusBarTranslucent animationType="fade" onRequestClose={close}>
-      <Pressable style={styles.dim} onPress={done ? close : skip} accessibilityLabel={t('scoreWin.close')}>
-        <Animated.View style={[styles.card, popStyle]} onLayout={(e: LayoutChangeEvent) => setCardW(e.nativeEvent.layout.width)}>
+    <Modal visible={visible} transparent statusBarTranslucent animationType="none" onRequestClose={close}>
+      {/* Two layers: an opaque dark scrim over the whole screen, then the card on top of it. */}
+      <Animated.View style={[styles.scrim, scrimStyle]} pointerEvents="none" />
+      <Pressable style={styles.stage} onPress={done ? close : skip} accessibilityLabel={t('scoreWin.close')}>
+        <Animated.View style={[styles.card, { backgroundColor: tc.fill }, popStyle]}
+                       onLayout={(e: LayoutChangeEvent) => setCard({ w: e.nativeEvent.layout.width, h: e.nativeEvent.layout.height })}>
           {/* The day's color, light rays turning slowly, doodles. */}
           <Svg style={StyleSheet.absoluteFill} width="100%" height="100%">
             <Defs>
@@ -223,6 +232,8 @@ export function ScoreCelebrationModal({ data, visible, onClose, onOpenRanks, onS
             <Rect width="100%" height="100%" fill="url(#winBg)" />
           </Svg>
           <Animated.View style={[styles.rays, raysStyle]} pointerEvents="none"><Rays /></Animated.View>
+          {/* Confetti inside the card, over its background, clipped by its corners. */}
+          {!reduced && visible && card.h > 0 && <ConfettiRain width={card.w} height={card.h} />}
           <Text style={[styles.doodle, { left: 16, top: 120, color: tagColor }]}>✦</Text>
           <View style={[styles.doodle, { right: 20, top: 170 }]}><ThemeIcon theme={themeKey} size={22} color={tagColor} /></View>
           <Text style={[styles.doodle, { left: 24, top: 200, color: tagColor }]}>〰</Text>
@@ -313,7 +324,6 @@ export function ScoreCelebrationModal({ data, visible, onClose, onOpenRanks, onS
             <FlyingCoin key={i} p={c} sx={cardW / 2 - 11 + (i - 2) * 26} sy={150} ex={pill.x + 10} ey={pill.y + 2} />
           ))}
         </Animated.View>
-        {!reduced && visible && <ConfettiRain />}
       </Pressable>
     </Modal>
   );
@@ -442,10 +452,9 @@ function Rays() {
   );
 }
 
-/** 70 confetti pieces over the whole screen, as in the mockup. */
-function ConfettiRain() {
-  const { width, height } = Dimensions.get('window');
-  const pieces = useMemo(() => Array.from({ length: 70 }, (_, i) => ({
+/** 50 confetti pieces falling through the card (kept inside it, never over the screen behind). */
+function ConfettiRain({ width, height }: { width: number; height: number }) {
+  const pieces = useMemo(() => Array.from({ length: 50 }, (_, i) => ({
     x: Math.random() * width, color: W.confetti[i % W.confetti.length], dx: Math.random() * 120 - 60,
     r: Math.random() * 720 - 360, dur: 1600 + Math.random() * 1400, delay: 200 + Math.random() * 600,
   })), [width]);
@@ -466,7 +475,8 @@ function Piece({ x, color, dx, r, dur, delay, fall }: { x: number; color: string
 }
 
 const styles = StyleSheet.create({
-  dim:        { flex: 1, backgroundColor: W.dim, justifyContent: 'center', paddingHorizontal: 14, paddingVertical: 22 },
+  scrim:      { ...StyleSheet.absoluteFillObject, backgroundColor: W.scrim },
+  stage:      { flex: 1, justifyContent: 'center', paddingHorizontal: 14, paddingVertical: 22 },
   card:       { alignSelf: 'center', width: '100%', maxWidth: 400, borderRadius: 30, overflow: 'hidden',
                 shadowColor: '#000', shadowOpacity: 0.35, shadowRadius: 25, shadowOffset: { width: 0, height: 20 }, elevation: 18 },
   rays:       { position: 'absolute', top: -60, alignSelf: 'center', width: 420, height: 420 },
