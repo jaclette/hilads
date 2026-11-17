@@ -217,7 +217,7 @@ export function ScoreCelebrationModal({ data, visible, onClose, onOpenRanks, onS
     <Modal visible={visible} transparent statusBarTranslucent animationType="none" onRequestClose={close}>
       {/* Two layers: an opaque dark scrim over the whole screen, then the card on top of it. */}
       <Animated.View style={[styles.scrim, scrimStyle]} pointerEvents="none" />
-      <Pressable style={styles.stage} onPress={done ? close : skip} accessibilityLabel={t('scoreWin.close')}>
+      <Pressable style={styles.stage} onPress={done ? close : skip} accessible={false}>
         <Animated.View style={[styles.card, { backgroundColor: tc.fill }, popStyle]}
                        onLayout={(e: LayoutChangeEvent) => setCard({ w: e.nativeEvent.layout.width, h: e.nativeEvent.layout.height })}>
           {/* The day's color, light rays turning slowly, doodles. */}
