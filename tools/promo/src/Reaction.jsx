@@ -194,7 +194,7 @@ function StaticTableScreen({ headline, detail, rows: allRows, source, highlight 
   const rows = [...top, ...(extra ? [{ ...extra, highlight: true }] : [])];
   const sourceLine = allRows.length > MAX_ROWS ? `Top ${MAX_ROWS} · ${source}` : source;
   const pctDecimals = rows.some((r) => r.unit === '%' && !Number.isInteger(Number(r.value)));
-  const decimals = (r) => r.unit === '$' ? 2 : valueFormat === 'ratio' ? (Number(r.value) < 10 ? 1 : 0) : valueFormat === 'one_decimal' ? 1
+  const decimals = (r) => r.unit === '$' ? 2 : valueFormat === 'ratio' ? (Number(r.value) < 10 ? 1 : 0) : valueFormat === 'one_decimal' ? 1 : valueFormat === 'two_decimals' ? 2
     : r.unit === '%' ? (pctDecimals ? 1 : 0) : (Number.isInteger(Number(r.value)) ? 0 : 1);
   const label = (r) => {
     const v = Number(r.value).toFixed(decimals(r));
@@ -315,11 +315,11 @@ function TableScreen({ headline, detail, rows: allRows, source, highlight = [], 
   const cut = allRows.length > MAX_ROWS;
   const sourceLine = cut ? `Top ${MAX_ROWS} · ${source}` : source;
 
-  // Values as the source gives them (81, 79.2), "ratio" (4.0, 45), "one_decimal" (52.0), prices $9.04, percentages all
+  // Values as the source gives them (81, 79.2), "ratio" (4.0, 45), "one_decimal" (52.0), "two_decimals" (4.60), prices $9.04, percentages all
   // with one decimal as soon as one has it; a short unit (%, L) on each value, a long one ("servings") in the source line.
   // While counting up, the same decimals; the last frames show the exact value.
   const pctDecimals = rows.some((r) => r.unit === '%' && !Number.isInteger(Number(r.value)));
-  const decimals = (r) => r.unit === '$' ? 2 : valueFormat === 'ratio' ? (Number(r.value) < 10 ? 1 : 0) : valueFormat === 'one_decimal' ? 1
+  const decimals = (r) => r.unit === '$' ? 2 : valueFormat === 'ratio' ? (Number(r.value) < 10 ? 1 : 0) : valueFormat === 'one_decimal' ? 1 : valueFormat === 'two_decimals' ? 2
     : r.unit === '%' ? (pctDecimals ? 1 : 0) : (Number.isInteger(Number(r.value)) ? 0 : 1);
   const label = (r, p = 1) => {
     const v = (Number(r.value) * clamp01(p)).toFixed(decimals(r));

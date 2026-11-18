@@ -11,7 +11,7 @@ declare(strict_types=1);
  * A package's content: {format: "reaction", topic, headline, detail?, rows: [{rank,
  * country, flag, value, unit ("$": a price, shown $9.04), gap_before? (a "…" separator above, the ranking
  * skips to this row), highlight? (this row in the accent color too, e.g. a reference country)}], source, source_url?, data_year, data_years? (a range when the latest
- * year differs by country, e.g. "2010s"), value_format? ("ratio": 4.0, 8.9, 45; "one_decimal": 52.0), value_label?,
+ * year differs by country, e.g. "2010s"), value_format? ("ratio": 4.0, 8.9, 45; "one_decimal": 52.0; "two_decimals": 4.60, scores out of 5), value_label?,
  * clip_query, clip?, caption, hashtags, outro_question, cta_line (the closing slide's invitation to Hilads, with hilads.live), card_bg? (the ranking card's color: a CARD_THEMES name or a
  * light #rrggbb, cream by default), headline_accent? (words of the headline drawn in terracotta), mode? (classic | quiz),
  * quiz_question? (quiz: a question whose answer is the #1), clip_speed? (the clip faster or slower than filmed, 0.5 to 3,
@@ -68,8 +68,8 @@ final class DwReaction
         if (isset($c['data_years']) && (!is_string($c['data_years']) || mb_strlen(trim($c['data_years'])) > 60)) {
             $errors[] = '"data_years" is the years of the data as text, e.g. "2015–2018", "2010s" or "2019, last year before the pandemic" (60 characters at most).';
         }
-        if (isset($c['value_format']) && !in_array($c['value_format'], ['ratio', 'one_decimal'], true)) {
-            $errors[] = '"value_format" is "ratio" (one decimal below 10, whole numbers from 10), "one_decimal" (always one: 52.0) or absent (as given).';
+        if (isset($c['value_format']) && !in_array($c['value_format'], ['ratio', 'one_decimal', 'two_decimals'], true)) {
+            $errors[] = '"value_format" is "ratio" (one decimal below 10, whole numbers from 10), "one_decimal" (always one: 52.0), "two_decimals" (always two: 4.60, e.g. ratings out of 5) or absent (as given).';
         }
         if (isset($c['card_bg']) && !self::cardBgOk($c['card_bg'])) {
             $errors[] = '"card_bg" is ' . implode(', ', self::CARD_THEMES) . ' or a light color as #rrggbb (the text stays dark on it).';

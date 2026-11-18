@@ -232,7 +232,7 @@ $highlight = DwStudio::settings()['countries_always_included'];
     const srcText = (cut ? 'Top 10 · ' : '') + (first ? first + ' · ' : '') + (field('source').includes(', ') ? 'Sources: ' : 'Source: ') + field('source');
     const vf = <?= json_encode($c['value_format'] ?? null) ?>;
     const pctDec = ok.some(r => r.unit === '%' && !Number.isInteger(+r.value));
-    const fmt = (v, unit) => (+v).toFixed(vf === 'ratio' ? (+v < 10 ? 1 : 0) : vf === 'one_decimal' ? 1 : unit === '%' ? (pctDec ? 1 : 0) : (Number.isInteger(+v) ? 0 : 1));
+    const fmt = (v, unit) => (+v).toFixed(vf === 'ratio' ? (+v < 10 ? 1 : 0) : vf === 'one_decimal' ? 1 : vf === 'two_decimals' ? 2 : unit === '%' ? (pctDec ? 1 : 0) : (Number.isInteger(+v) ? 0 : 1));
     const val = r => r.unit === '$' ? '$' + (+r.value).toFixed(2) : fmt(r.value, r.unit) + (r.unit === '%' ? '%' : String(r.unit).length <= 3 ? ' ' + r.unit : '');
     const bg = cardColor(field('card_bg'));
     const podium = ok.slice(0, 3), list = ok.slice(3), W = 892;
