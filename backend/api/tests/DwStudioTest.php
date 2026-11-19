@@ -372,4 +372,20 @@ final class DwStudioTest extends TestCase
         $this->assertFalse(DwClips::ownUpload('https://evil.example.com/dw/57/v4/clip-0a1b.mp4'));
         putenv('R2_PUBLIC_URL');
     }
+
+    public function testTheCaptionHasNoHashAndFiveHashtagsAtMost(): void
+    {
+        [$errors] = DwStudio::captionTagIssues(['caption' => 'Italy is #1.', 'hashtags' => ['#A', '#B', '#C', '#D', '#E', '#F']]);
+        $this->assertCount(2, $errors);
+        [$errors, $warn] = DwStudio::captionTagIssues(['caption' => 'Italy is No. 1.', 'hashtags' => ['#A', '#B', '#C', '#D', '#E']]);
+        $this->assertSame([[], []], [$errors, $warn]);
+    }
+
+    public function testOlderCaptionsAndHashtagsAreTidied(): void
+    {
+        $this->assertSame('Back at No. 1, Peru (No. 3). Hello DifferentWorlds',
+            DwStudio::tidyCaption('Back at #1, Peru (#3). Hello #DifferentWorlds'));
+        $this->assertSame(['#DifferentWorlds', '#Food', '#TasteAtlas', '#Foodie', '#ItalianFood'],
+            DwStudio::tidyHashtags(['#Food', 'DifferentWorlds', '#TasteAtlas', '#food', '#Foodie', '#ItalianFood', '#WorldRanking']));
+    }
 }

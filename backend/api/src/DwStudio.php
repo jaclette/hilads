@@ -545,12 +545,9 @@ final class DwStudio
                 $warn[] = 'The caption does not mention "Different Worlds by Hilads".';
             }
         }
-        $tags = $c['hashtags'] ?? null;
-        if (!is_array($tags) || array_filter($tags, static fn($t) => !is_string($t) || trim($t) === '') !== []) {
-            $errors[] = '"hashtags" must be a list of strings.';
-        } elseif (count($tags) < 5 || count($tags) > 8) {
-            $warn[] = count($tags) . ' hashtags (5 to 8).';
-        }
+        [$tagErrors, $tagWarn] = self::captionTagIssues($c);
+        array_push($errors, ...$tagErrors);
+        array_push($warn, ...$tagWarn);
         if (isset($c['warnings']) && !is_array($c['warnings'])) {
             $errors[] = '"warnings" must be a list.';
         }
@@ -1112,8 +1109,14 @@ final class DwStudio
             $art = $value === '' ? ['svg' => ''] : ['photo' => self::fetchPhoto($value)];
         }
         $c = $pkg['content'];
+        if ($path === 'caption' && str_contains($value, '#')) {
+            throw new InvalidArgumentException('No "#" in the caption: write ranks as "No. 1", and put hashtags in Hashtags.');
+        }
         if ($path === 'hashtags' || $path === 'warnings') {
             $list = array_values(array_filter(array_map('trim', preg_split($path === 'hashtags' ? '/[\s,]+/u' : '/\n+/u', $value)), static fn($v) => $v !== ''));
+            if ($path === 'hashtags' && count($list) > self::HASHTAGS_MAX) {
+                throw new InvalidArgumentException(count($list) . ' hashtags: ' . self::HASHTAGS_MAX . ' at most.');
+            }
             $c[$path] = $path === 'hashtags' ? array_map(static fn($t) => '#' . ltrim($t, '#'), $list) : $list;
         } else {
             $keys = explode('.', $path);
@@ -1356,6 +1359,52 @@ final class DwStudio
     public static function question(array $c): string
     {
         return (string) (DwReaction::isReaction($c) || DwRace::isRace($c) ? ($c['outro_question'] ?? '') : ($c['outro']['question'] ?? ''));
+    }
+
+    /** Hashtags on a post: at most this many, and only in "hashtags" (the caption has no "#"). */
+    public const HASHTAGS_MAX = 5;
+
+    /**
+     * The caption and hashtag rules every format shares: [errors, warnings]. A "#" in the
+     * caption (a rank like "#1" or an inline hashtag) and more than HASHTAGS_MAX hashtags are errors. Pure.
+     */
+    public static function captionTagIssues(array $c): array
+    {
+        $errors = [];
+        $warn = [];
+        if (is_string($c['caption'] ?? null) && str_contains($c['caption'], '#')) {
+            $errors[] = 'The caption has a "#": write ranks as "No. 1", and put hashtags only in "hashtags".';
+        }
+        $tags = $c['hashtags'] ?? null;
+        if (!is_array($tags) || array_filter($tags, static fn($t) => !is_string($t) || trim($t) === '') !== []) {
+            $errors[] = '"hashtags" must be a list of strings.';
+        } elseif (count($tags) > self::HASHTAGS_MAX) {
+            $errors[] = count($tags) . ' hashtags (' . self::HASHTAGS_MAX . ' at most).';
+        } elseif (count($tags) < self::HASHTAGS_MAX) {
+            $warn[] = count($tags) . ' hashtags (' . self::HASHTAGS_MAX . ' expected).';
+        }
+        return [$errors, $warn];
+    }
+
+    /** An older caption without "#": a rank "#16" becomes "No. 16", an inline "#tag" loses its "#". Pure. */
+    public static function tidyCaption(string $caption): string
+    {
+        $caption = preg_replace('/#(?=\d)/u', 'No. ', $caption);
+        return preg_replace('/#(?=\p{L})/u', '', $caption);
+    }
+
+    /** An older list cut to HASHTAGS_MAX: #DifferentWorlds kept, then the others in order, no duplicates. Pure. */
+    public static function tidyHashtags(array $tags): array
+    {
+        $out = [];
+        foreach ($tags as $t) {
+            $t = '#' . ltrim(trim((string) $t), '#');
+            if ($t !== '#' && !in_array(mb_strtolower($t), array_map('mb_strtolower', $out), true)) {
+                $out[] = $t;
+            }
+        }
+        usort($out, static fn($a, $b) => (strcasecmp($b, '#DifferentWorlds') === 0) <=> (strcasecmp($a, '#DifferentWorlds') === 0));
+        return array_slice($out, 0, self::HASHTAGS_MAX);
     }
 
     /**

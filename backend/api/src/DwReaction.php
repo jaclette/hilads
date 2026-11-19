@@ -142,12 +142,9 @@ final class DwReaction
                 }
             }
         }
-        $tags = $c['hashtags'] ?? null;
-        if (!is_array($tags) || array_filter($tags, static fn($t) => !is_string($t) || trim($t) === '') !== []) {
-            $errors[] = '"hashtags" must be a list of strings.';
-        } elseif (count($tags) < 5 || count($tags) > 8) {
-            $warn[] = count($tags) . ' hashtags (5 to 8).';
-        }
+        [$tagErrors, $tagWarn] = DwStudio::captionTagIssues($c);
+        array_push($errors, ...$tagErrors);
+        array_push($warn, ...$tagWarn);
         if (isset($c['warnings']) && !is_array($c['warnings'])) {
             $errors[] = '"warnings" must be a list.';
         }

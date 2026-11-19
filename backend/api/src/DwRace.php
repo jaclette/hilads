@@ -261,10 +261,9 @@ final class DwRace
         if (is_string($c['outro_question'] ?? null) && ($w = DwStudio::screenWords($c['outro_question'])) > DwReaction::QUESTION_WORDS) {
             $warn[] = "The question is {$w} words (max " . DwReaction::QUESTION_WORDS . ').';
         }
-        $tags = $c['hashtags'] ?? null;
-        if (!is_array($tags) || count($tags) < 5 || count($tags) > 8) {
-            $warn[] = 'Use 5 to 8 hashtags.';
-        }
+        [$tagErrors, $tagWarn] = DwStudio::captionTagIssues($c);
+        array_push($errors, ...$tagErrors);
+        array_push($warn, ...$tagWarn);
         return [$errors, $warn];
     }
 

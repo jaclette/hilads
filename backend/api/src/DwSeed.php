@@ -78,8 +78,8 @@ Respond ONLY with valid JSON, no preamble, no markdown fences, matching this sch
     { "country": string, "flag": string, "headline": string, "detail": string, "caption_detail": string, "illustration_brief": string, "photo_url": string, "photo_credit": string, "source_url": string }
   ],
   "outro": { "question": string, "illustration_brief": string, "photo_url": string, "photo_credit": string },
-  "caption": string (under 150 words, mentions "Different Worlds by Hilads", and ends with exactly these two lines: "{{CAPTION_CTA}}", then the outro question as the very last line),
-  "hashtags": [string] (5 to 8, mixing broad and niche),
+  "caption": string (under 150 words, no "#" anywhere in it: ranks are written "No. 1", never "#1", and hashtags go only in "hashtags"; mentions "Different Worlds by Hilads", and ends with exactly these two lines: "{{CAPTION_CTA}}", then the outro question as the very last line),
+  "hashtags": [string] (exactly 5, mixing broad and niche),
   "ai_disclosure": string,
   "follow_up_idea": string,
   "warnings": [string] (anything you could not verify, or a date to double-check)
@@ -126,13 +126,13 @@ Respond ONLY with valid JSON, no preamble, no markdown fences, matching this sch
   "card_bg": "cream", "yellow", "green", "pink" or "blue" (optional: the ranking card's color, matching the topic, e.g. yellow for noodles, green for coffee; cream by default),
   "clip_query": string,
   "clip": { "pixabay_id": number } (optional),
-  "caption": string (under 150 words, mentions "Different Worlds by Hilads", and ends with exactly these two lines: "{{CAPTION_CTA}}", then the outro question as the very last line),
+  "caption": string (under 150 words, no "#" anywhere in it: ranks are written "No. 1", never "#1", and hashtags go only in "hashtags"; mentions "Different Worlds by Hilads", and ends with exactly these two lines: "{{CAPTION_CTA}}", then the outro question as the very last line),
   "outro_question": string (the closing slide's big question, specific to the topic, never generic like "What's your country's answer?", and the caption's last line: max 7 words, an emoji at the end is fine),
   "mode": "classic" or "quiz" (optional, classic by default: quiz only when the #1 is surprising for the audience, e.g. a small or unexpected country; the video then opens on the quiz question alone for 1 s and a 3, 2, 1 countdown, one second each, before the ranking is revealed at 4 s),
   "quiz_question": string (quiz mode only: a real question whose answer is the #1 of the ranking, matching exactly what the table measures, max about 7 words, ending with an emoji, e.g. "Which country eats the most rice? 🍚"; in quiz mode the outro_question is about the guess and speaks to the viewer, e.g. "Did YOU guess right? 🍚"; if the answer seems too predictable for the audience, say so in "warnings"),
   "extra_row": string (optional: a highlighted country ranked below the top 10 by the same source, e.g. "Vietnam", given as a row with its real rank after the top rows: the video shows it after the top 10 under a "• • •" separator),
   "cta_line": string (the closing slide's button under the question: an invitation to share a photo on Hilads, specific to the topic, starting with an action verb, always with "hilads.live", max about 8 words, an emoji at the end is fine; e.g. noodles "Show the world your bowl on hilads.live 🍜", cats "Show us your cat on hilads.live 🐱", beer "Snap your local beer on hilads.live 🍻"),
-  "hashtags": [string] (5 to 8),
+  "hashtags": [string] (exactly 5),
   "warnings": [string] (anything you could not verify)
 }
 TXT;
@@ -178,8 +178,8 @@ Respond ONLY with valid JSON, no preamble, no markdown fences, matching this sch
     { "country": string, "flag": string, "on_screen_text": string, "caption_detail": string, "illustration_brief": string, "photo_url": string, "photo_credit": string, "source_url": string }
   ],
   "outro": { "question": string, "illustration_brief": string, "photo_url": string, "photo_credit": string },
-  "caption": string (under 150 words, ends with the outro question, mentions "Different Worlds by Hilads"),
-  "hashtags": [string] (5 to 8, mixing broad and niche),
+  "caption": string (under 150 words, no "#" anywhere in it: ranks are written "No. 1", never "#1", and hashtags go only in "hashtags"; ends with the outro question, mentions "Different Worlds by Hilads"),
+  "hashtags": [string] (exactly 5, mixing broad and niche),
   "ai_disclosure": string,
   "follow_up_idea": string,
   "warnings": [string] (anything you could not verify, or a date to double-check)
@@ -227,8 +227,8 @@ Respond ONLY with valid JSON, no preamble, no markdown fences, matching this sch
     { "country": string, "flag": string, "on_screen_text": string, "caption_detail": string, "illustration_brief": string, "source_url": string }
   ],
   "outro": { "question": string, "illustration_brief": string },
-  "caption": string (under 150 words, ends with the outro question, mentions "Different Worlds by Hilads"),
-  "hashtags": [string] (5 to 8, mixing broad and niche),
+  "caption": string (under 150 words, no "#" anywhere in it: ranks are written "No. 1", never "#1", and hashtags go only in "hashtags"; ends with the outro question, mentions "Different Worlds by Hilads"),
+  "hashtags": [string] (exactly 5, mixing broad and niche),
   "ai_disclosure": string,
   "follow_up_idea": string,
   "warnings": [string] (anything you could not verify, or a date to double-check)
