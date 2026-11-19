@@ -1,6 +1,5 @@
 import { Image } from 'react-native';
 import { ImageManipulator, SaveFormat } from 'expo-image-manipulator';
-import { File } from 'expo-file-system';
 import { API_URL } from '@/constants';
 import { getAuthToken } from './client';
 import { appHeaders } from '@/lib/appVersion';
@@ -72,29 +71,35 @@ export async function uploadFile(
              : 'image/jpeg';
   const ext  = type === 'image/png' ? 'png' : type === 'image/webp' ? 'webp' : type === 'image/gif' ? 'gif' : 'jpg';
 
-  // Since SDK 58 the global fetch is expo/fetch, which refuses React Native's
-  // { uri, type, name } part ("Unsupported FormDataPart implementation"): every
-  // upload failed. An expo-file-system File is a Blob that expo/fetch reads.
+  // Sent with React Native's own XMLHttpRequest and its { uri, type, name } file part: the
+  // way every upload went before SDK 58. Since SDK 58 the global fetch is expo/fetch, which
+  // refuses that part ("Unsupported FormDataPart implementation"), so uploads stay off fetch.
   const formData = new FormData();
-  formData.append('file', new File(sendUri) as unknown as Blob, `photo.${ext}`);
+  formData.append('file', { uri: sendUri, type, name: `photo.${ext}` } as unknown as Blob);
 
   const headers: Record<string, string> = { ...appHeaders() };
   const token = getAuthToken();
   if (token) headers['Cookie'] = `hilads_token=${token}`;
 
-  const res = await fetch(`${API_URL}/uploads`, {
-    method:  'POST',
-    headers,
-    body:    formData,
+  const { status, text } = await new Promise<{ status: number; text: string }>((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', `${API_URL}/uploads`);
+    for (const [k, v] of Object.entries(headers)) xhr.setRequestHeader(k, v);
+    xhr.timeout = 60_000;
+    xhr.onload    = () => resolve({ status: xhr.status, text: xhr.responseText ?? '' });
+    xhr.onerror   = () => reject(new Error('Upload network error'));
+    xhr.ontimeout = () => reject(new Error('Upload timed out'));
+    xhr.send(formData);
   });
+  let body: { url?: string; thumbUrl?: string | null; error?: string } = {};
+  try { body = JSON.parse(text); } catch { /* not JSON */ }
 
-  if (!res.ok) {
-    const body = await res.json().catch(() => ({}));
-    console.error('[image-upload] upload failed =', res.status, JSON.stringify(body));
-    throw new Error(`Upload failed (${res.status})${body?.error ? `: ${body.error}` : ''}`);
+  if (status < 200 || status >= 300 || !body.url) {
+    console.error('[image-upload] upload failed =', status, text.slice(0, 300));
+    throw new Error(`Upload failed (${status})${body.error ? `: ${body.error}` : ''}`);
   }
 
-  const { url, thumbUrl = null } = await res.json();
+  const { url, thumbUrl = null } = body;
   console.log('[image-upload] upload success url=', url, 'thumbUrl=', thumbUrl);
   return { url: url as string, thumbUrl: (thumbUrl as string | null) };
 }

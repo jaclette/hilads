@@ -374,6 +374,7 @@ function DailyProofScreenContent() {
 
     setSending(true);
     setTooFar(null);
+    let stage = 'start';   // which step failed, in the alert's technical line
     try {
       const input: DailyProofInput = {
         caption: caption.trim() === '' ? null : caption.trim(),
@@ -386,21 +387,25 @@ function DailyProofScreenContent() {
       else if (withHome && step === 'home' && original?.backHome) input.backHome = null;
       // The place, in the V3 format (V3-02). An edit that keeps its place sends none.
       if (needsPlace && place) {
+        stage = 'position';
         const pos = await freshPosition(forcePosition);
         if (!pos) { Alert.alert(t('place.failedTitle'), t('place.failedBody')); return; }
         input.position = { lat: pos.lat, lng: pos.lng };
         if (place.kind === 'spot') input.spotId = place.spot.id;
         else input.newPlace = { name: place.name };
       }
+      stage = 'photo';
       const photoUrl = photo.remoteUrl ?? (await uploadFile(photo.uri, photo.mime)).url;
       if (!original || photoUrl !== original.photoUrl) input.photoUrl = photoUrl;
       // The upload is done: keep it if a retry is needed.
       if (!photo.remoteUrl) setPhoto({ ...photo, remoteUrl: photoUrl });
       // The selfie, in the same post (atomic): sent when new, changed or removed.
+      stage = 'selfie';
       const selfieUrl = selfie ? selfie.remoteUrl ?? (await uploadFile(selfie.uri, selfie.mime)).url : null;
       if (selfie && !selfie.remoteUrl && selfieUrl) setSelfie({ ...selfie, remoteUrl: selfieUrl });
       if (original ? (original.selfieUrl ?? null) !== selfieUrl : selfieUrl !== null) input.selfieUrl = selfieUrl;
 
+      stage = 'post';
       let cityFirst = false;
       let saved: DailyProof;
       if (original) {
@@ -410,6 +415,7 @@ function DailyProofScreenContent() {
         saved = created.proof;
         cityFirst = created.cityFirstToday;
       }
+      stage = 'after';
       track('daily_proof_posted', {
         ...dailyTrackProps({ challenge: today?.challenge ?? null, city: today?.city ?? null, myProof: saved }, account?.mode),
         edit: !!original, has_caption: !!input.caption, has_price: !!input.price,
@@ -453,9 +459,11 @@ function DailyProofScreenContent() {
       if (code === 'invalid_back_home') setStep('home');
       if (code) { Alert.alert(t(`errors.${code}`, { defaultValue: t('errors.generic') })); return; }
       // No server code (the upload, a 5xx, the network): a short technical line, so a report says what failed.
-      Sentry.captureException(err, { tags: { where: 'daily_proof_post' } });
-      const detail = err instanceof ApiError ? `HTTP ${err.status}` : err instanceof Error ? err.message : String(err);
-      Alert.alert(t('errors.generic'), detail.slice(0, 160));
+      Sentry.captureException(err, { tags: { where: 'daily_proof_post', stage } });
+      const why = err instanceof ApiError ? `HTTP ${err.status}`
+                : err instanceof Error ? `${err.name}: ${err.message || '(no message)'}`
+                : String(err);
+      Alert.alert(t('errors.generic'), `v3 · ${stage} · ${why}`.slice(0, 200));
     } finally {
       setSending(false);
     }
