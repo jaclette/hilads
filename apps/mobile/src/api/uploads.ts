@@ -1,5 +1,6 @@
 import { Image } from 'react-native';
 import { ImageManipulator, SaveFormat } from 'expo-image-manipulator';
+import { File } from 'expo-file-system';
 import { API_URL } from '@/constants';
 import { getAuthToken } from './client';
 import { appHeaders } from '@/lib/appVersion';
@@ -71,12 +72,11 @@ export async function uploadFile(
              : 'image/jpeg';
   const ext  = type === 'image/png' ? 'png' : type === 'image/webp' ? 'webp' : type === 'image/gif' ? 'gif' : 'jpg';
 
+  // Since SDK 58 the global fetch is expo/fetch, which refuses React Native's
+  // { uri, type, name } part ("Unsupported FormDataPart implementation"): every
+  // upload failed. An expo-file-system File is a Blob that expo/fetch reads.
   const formData = new FormData();
-  formData.append('file', {
-    uri:  sendUri,
-    type,
-    name: `photo.${ext}`,
-  } as unknown as Blob);
+  formData.append('file', new File(sendUri) as unknown as Blob, `photo.${ext}`);
 
   const headers: Record<string, string> = { ...appHeaders() };
   const token = getAuthToken();
