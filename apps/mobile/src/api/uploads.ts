@@ -91,7 +91,7 @@ export async function uploadFile(
   if (!res.ok) {
     const body = await res.json().catch(() => ({}));
     console.error('[image-upload] upload failed =', res.status, JSON.stringify(body));
-    throw new Error(body?.error ?? 'Upload failed');
+    throw new Error(`Upload failed (${res.status})${body?.error ? `: ${body.error}` : ''}`);
   }
 
   const { url, thumbUrl = null } = await res.json();

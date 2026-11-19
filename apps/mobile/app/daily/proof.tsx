@@ -16,6 +16,7 @@ import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { useApp } from '@/context/AppContext';
 import { track } from '@/services/analytics';
 import { askDailyPush } from '@/services/push';
+import * as Sentry from '@sentry/react-native';
 import { uploadFile } from '@/api/uploads';
 import { createDailyProof, dailyErrorCode, fetchDailyProof, fetchDailyToday, fetchDailyTodayCountries, updateDailyProof } from '@/api/daily';
 import * as Haptics from 'expo-haptics';
@@ -450,7 +451,11 @@ function DailyProofScreenContent() {
       if (code === 'place_not_found' || code === 'place_required') { setPlace(null); setStep('place'); }
       if (code === 'answer_required' || code === 'invalid_answer') setStep('answer');
       if (code === 'invalid_back_home') setStep('home');
-      Alert.alert(code ? t(`errors.${code}`, { defaultValue: t('errors.generic') }) : t('errors.generic'));
+      if (code) { Alert.alert(t(`errors.${code}`, { defaultValue: t('errors.generic') })); return; }
+      // No server code (the upload, a 5xx, the network): a short technical line, so a report says what failed.
+      Sentry.captureException(err, { tags: { where: 'daily_proof_post' } });
+      const detail = err instanceof ApiError ? `HTTP ${err.status}` : err instanceof Error ? err.message : String(err);
+      Alert.alert(t('errors.generic'), detail.slice(0, 160));
     } finally {
       setSending(false);
     }
