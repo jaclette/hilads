@@ -298,7 +298,9 @@
     "playHere": "Chơi ở đây hôm nay",
     "planNow": "bây giờ",
     "planGoing_other": "{{count}} người đi",
-    "halloween": "🎃 Halloween"
+    "halloween": "🎃 Halloween",
+    "areaPhotos_one": "{{count}} ảnh quanh đây",
+    "areaPhotos_other": "{{count}} ảnh quanh đây"
   },
   "spot": {
     "rankWeekFirst": "Nhiều bình chọn nhất tuần này ở {{city}}",

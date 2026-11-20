@@ -304,7 +304,9 @@
     "planNow": "अभी",
     "planGoing_one": "{{count}} जा रहा है",
     "planGoing_other": "{{count}} जा रहे हैं",
-    "halloween": "🎃 हैलोवीन"
+    "halloween": "🎃 हैलोवीन",
+    "areaPhotos_one": "यहाँ आसपास {{count}} फ़ोटो",
+    "areaPhotos_other": "यहाँ आसपास {{count}} फ़ोटो"
   },
   "spot": {
     "rankWeekFirst": "इस हफ़्ते {{city}} में सबसे ज़्यादा वोट",

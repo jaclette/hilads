@@ -310,7 +310,9 @@
     "planGoing_one": "{{count}} va",
     "planGoing_many": "{{count}} van",
     "planGoing_other": "{{count}} van",
-    "halloween": "🎃 Halloween"
+    "halloween": "🎃 Halloween",
+    "areaPhotos_one": "{{count}} foto por aquí",
+    "areaPhotos_other": "{{count}} fotos por aquí"
   },
   "spot": {
     "rankWeekFirst": "El más votado esta semana en {{city}}",

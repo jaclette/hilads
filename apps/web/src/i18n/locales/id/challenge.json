@@ -298,7 +298,9 @@
     "playHere": "Main di sini hari ini",
     "planNow": "sekarang",
     "planGoing_other": "{{count}} ikut",
-    "halloween": "🎃 Halloween"
+    "halloween": "🎃 Halloween",
+    "areaPhotos_one": "{{count}} foto di sekitar sini",
+    "areaPhotos_other": "{{count}} foto di sekitar sini"
   },
   "spot": {
     "rankWeekFirst": "Vote terbanyak minggu ini di {{city}}",

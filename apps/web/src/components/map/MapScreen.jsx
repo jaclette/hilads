@@ -1,12 +1,12 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { MapContainer, TileLayer, Marker, useMap, useMapEvents } from 'react-leaflet'
+import { MapContainer, TileLayer, Marker, Circle, useMap, useMapEvents } from 'react-leaflet'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import '../../lib/leafletGuard'
 import { useTranslation } from 'react-i18next'
 import SpotPage from './SpotPage'
 import MapSheet, { SHEET_PEEK } from './MapSheet'
-import { fetchMap, fetchMapCities, searchSpots, fetchDailyToday } from '../../api'
+import { fetchMap, fetchMapCities, searchSpots, fetchDailyToday, fetchDailyProofsByIds } from '../../api'
 import { track } from '../../lib/analytics'
 import { THEME_KEYS, isPlaceTheme, themeName, CITY_ZOOM, MIN_ZOOM, mapTiles, clusterPins, pinLabel, placeLabels, deviceStore, } from './spotsShared'
 import { openAppModal } from '../AppModal'
@@ -306,6 +306,9 @@ export default function MapScreen({ channelId, cityName, onOpenPlan, initialSpot
   const { t, i18n } = useTranslation('challenge')
   const [center, setCenter]   = useState(null)
   const [spots, setSpots]     = useState([])
+  // Photos shown "around my neighborhood": soft ~400 m areas, never a person's spot.
+  const [areas, setAreas]     = useState([])
+  const { openDaily: openDailyAreas } = useDaily()
   const [plans, setPlans]     = useState([])
   // The plans' pill texts ("Birdy, in 2 hours · 4 going"): the Pins layer places their cards.
   const planItems = useMemo(() => plans.map(p => ({ plan: p, ...planLabel(p, t, i18n.language) })), [plans, t, i18n.language])
@@ -371,8 +374,8 @@ export default function MapScreen({ channelId, cityName, onOpenPlan, initialSpot
         const c = d.city ? [d.city.lat, d.city.lng] : (d.spots[0] ? [d.spots[0].lat, d.spots[0].lng] : null)
         cityCenterRef.current = c
         setCenter(c)
-        setSpots(d.spots); setPlans(d.plans)
-        setCityEmpty(d.spots.length === 0)
+        setSpots(d.spots); setAreas(d.areas ?? []); setPlans(d.plans)
+        setCityEmpty(d.spots.length === 0 && (d.areas ?? []).length === 0)
         // A city's stored centre can be kilometres from its spots: without my
         // position (asked below), frame the spots.
         if (d.spots.length > 1) setCamera({ scope: 'city', bounds: d.spots.map(s => [s.lat, s.lng]) })
@@ -439,7 +442,7 @@ export default function MapScreen({ channelId, cityName, onOpenPlan, initialSpot
     // The whole world: the bubbles say it, no pins to load.
     if (world && bbox[2] - bbox[0] > 40) { setSpots([]); setPlans([]); return }
     fetchMap({ cityId: nearMe || world ? null : channelId, bbox, theme: th })
-      .then(d => { setSpots(d.spots); setPlans(world ? [] : d.plans) })
+      .then(d => { setSpots(d.spots); setAreas(world ? [] : (d.areas ?? [])); setPlans(world ? [] : d.plans) })
       .catch(() => {})
   }, [channelId, theme, nearMe, world])
 
@@ -505,7 +508,7 @@ export default function MapScreen({ channelId, cityName, onOpenPlan, initialSpot
   const areaCentre = areaRef.current ? [(areaRef.current[1] + areaRef.current[3]) / 2, (areaRef.current[0] + areaRef.current[2]) / 2] : center
   const showEmpty = center && !selected && (nearMe ? spots.length === 0 && plans.length === 0 : cityEmpty)
   // Zoomed into a place with no spot (the city has some): "Nothing here yet · Be the pioneer 📍".
-  const emptyArea = !!center && !worldView && !showEmpty && !cityEmpty && shown.length === 0 && results === null && !plansOnly
+  const emptyArea = !!center && !worldView && !showEmpty && !cityEmpty && shown.length === 0 && areas.length === 0 && results === null && !plansOnly
   // 🎲 Surprise me: fly to a random good spot of the area (a photo and some likes first) and open its card.
   const surprise = () => {
     const pool = shown.filter(x => x.id !== selected?.id)
@@ -601,6 +604,19 @@ export default function MapScreen({ channelId, cityName, onOpenPlan, initialSpot
                   onCluster={g => setCamera({ scope, lat: g.lat, lng: g.lng, zoom: Math.min(zoom + 2, 18) })}
                   theme={theme} halo={todayOnly ? pinColor(todayTheme ?? 'taste') : null} isToday={isToday} grow={grow}
                   plans={planItems} onPlan={id => onOpenPlan?.(id)} />
+            {/* Neighborhood photos: a soft circle the size of their area and a count, never a pin on a spot. */}
+            {!worldView && !plansOnly && areas.filter(a => !todayOnly || a.lastProofDate === todayDate).map(a => {
+              const open = () => {
+                track('map_area_tapped', { count: a.count, platform_surface: 'web' })
+                fetchDailyProofsByIds(a.proofIds).then(list => { if (list.length) openDailyAreas('photos', { list, proofId: list[0].id, source: 'map_area' }) }).catch(() => {})
+              }
+              return [
+                <Circle key={`a:${a.id}`} center={[a.lat, a.lng]} radius={230} eventHandlers={{ click: open }}
+                        pathOptions={{ className: 'wm-area' }} />,
+                zoom >= 13 && <Marker key={`al:${a.id}`} position={[a.lat, a.lng]} eventHandlers={{ click: open }} title={t('map.areaPhotos', { count: a.count })}
+                                      icon={L.divIcon({ className: 'wm-area-count', html: `<span>📷 ${a.count}</span>`, iconSize: null })} />,
+              ]
+            })}
             {me && <Marker position={me} icon={meIcon} interactive={false} />}
           </MapContainer>
         ) : (

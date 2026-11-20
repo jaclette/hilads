@@ -304,7 +304,9 @@
     "planNow": "ngayon",
     "planGoing_one": "{{count}} pupunta",
     "planGoing_other": "{{count}} pupunta",
-    "halloween": "🎃 Halloween"
+    "halloween": "🎃 Halloween",
+    "areaPhotos_one": "{{count}} photo sa paligid",
+    "areaPhotos_other": "{{count}} photo sa paligid"
   },
   "spot": {
     "rankWeekFirst": "Pinakamaraming votes ngayong linggo sa {{city}}",

@@ -328,7 +328,9 @@
     "planGoing_few": "{{count}} سيحضرون",
     "planGoing_many": "{{count}} شخصًا سيحضرون",
     "planGoing_other": "{{count}} شخص سيحضرون",
-    "halloween": "🎃 هالوين"
+    "halloween": "🎃 هالوين",
+    "areaPhotos_one": "{{count}} صورة هنا",
+    "areaPhotos_other": "{{count}} صور هنا"
   },
   "spot": {
     "rankWeekFirst": "الأكثر تصويتًا هذا الأسبوع في {{city}}",

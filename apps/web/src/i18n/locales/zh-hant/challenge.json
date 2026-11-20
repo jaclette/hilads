@@ -298,7 +298,9 @@
     "playHere": "今天就在這裡參加",
     "planNow": "進行中",
     "planGoing_other": "{{count}} 人要去",
-    "halloween": "🎃 萬聖節"
+    "halloween": "🎃 萬聖節",
+    "areaPhotos_one": "附近 {{count}} 張照片",
+    "areaPhotos_other": "附近 {{count}} 張照片"
   },
   "spot": {
     "rankWeekFirst": "{{city}}本週最多票",

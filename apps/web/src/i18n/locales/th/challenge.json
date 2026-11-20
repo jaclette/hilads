@@ -298,7 +298,9 @@
     "playHere": "เล่นที่นี่วันนี้",
     "planNow": "ตอนนี้",
     "planGoing_other": "ไป {{count}} คน",
-    "halloween": "🎃 ฮาโลวีน"
+    "halloween": "🎃 ฮาโลวีน",
+    "areaPhotos_one": "{{count}} รูปแถวนี้",
+    "areaPhotos_other": "{{count}} รูปแถวนี้"
   },
   "spot": {
     "rankWeekFirst": "โหวตเยอะสุดสัปดาห์นี้ใน{{city}}",

@@ -316,7 +316,9 @@
     "planGoing_few": "идут {{count}}",
     "planGoing_many": "идут {{count}}",
     "planGoing_other": "идут {{count}}",
-    "halloween": "🎃 Хэллоуин"
+    "halloween": "🎃 Хэллоуин",
+    "areaPhotos_one": "Фото поблизости: {{count}}",
+    "areaPhotos_other": "Фото поблизости: {{count}}"
   },
   "spot": {
     "rankWeekFirst": "Лидер недели в городе {{city}}",

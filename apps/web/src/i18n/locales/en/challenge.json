@@ -304,7 +304,9 @@
     "planNow": "now",
     "planGoing_one": "{{count}} going",
     "planGoing_other": "{{count}} going",
-    "halloween": "🎃 Halloween"
+    "halloween": "🎃 Halloween",
+    "areaPhotos_one": "{{count}} photo around here",
+    "areaPhotos_other": "{{count}} photos around here"
   },
   "spot": {
     "rankWeekFirst": "Top voted this week in {{city}}",

@@ -298,7 +298,9 @@
     "playHere": "오늘 여기서 참여하기",
     "planNow": "지금",
     "planGoing_other": "{{count}}명 참여",
-    "halloween": "🎃 할로윈"
+    "halloween": "🎃 할로윈",
+    "areaPhotos_one": "이 근처 사진 {{count}}장",
+    "areaPhotos_other": "이 근처 사진 {{count}}장"
   },
   "spot": {
     "rankWeekFirst": "이번 주 {{city}} 최다 득표",

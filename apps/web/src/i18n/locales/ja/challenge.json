@@ -298,7 +298,9 @@
     "playHere": "今日ここで参加",
     "planNow": "今",
     "planGoing_other": "{{count}}人が参加",
-    "halloween": "🎃 ハロウィン"
+    "halloween": "🎃 ハロウィン",
+    "areaPhotos_one": "このあたりの写真 {{count}}枚",
+    "areaPhotos_other": "このあたりの写真 {{count}}枚"
   },
   "spot": {
     "rankWeekFirst": "今週の{{city}}で最多得票",
