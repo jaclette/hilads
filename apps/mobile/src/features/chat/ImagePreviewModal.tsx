@@ -12,6 +12,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { Space, Spacing, FontSizes, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { IconButton } from '@/ui';
+import { useApp } from '@/context/AppContext';
+import { askReportPhoto } from '@/features/daily/reportPhoto';
 import { Image } from 'expo-image';
 import { mediumUrl, thumbUrl } from '@/lib/imageThumb';
 
@@ -20,6 +22,8 @@ const { width: SW, height: SH } = Dimensions.get('window');
 interface Props {
   uri: string | null;
   onClose: () => void;
+  /** Someone else's chat photo (city, Hi plan, Hi now, challenge): its message id, for the Report flag. */
+  reportId?: string | null;
 }
 
 // ── Local cache helpers ──────────────────────────────────────────────────────
@@ -44,7 +48,8 @@ async function ensureLocalCopy(remoteUrl: string): Promise<string> {
   return result.uri;
 }
 
-export function ImagePreviewModal({ uri, onClose }: Props) {
+export function ImagePreviewModal({ uri, onClose, reportId = null }: Props) {
+  const { account, identity } = useApp();
   const styles = useThemedStyles(makeStyles);
   const { colors } = useTheme();
   const { t } = useTranslation('chat');
@@ -210,6 +215,12 @@ export function ImagePreviewModal({ uri, onClose }: Props) {
             the notch / status bar area. */}
         <IconButton icon="close" tone="onPhoto" label={t('close', { ns: 'common' })} onPress={onClose}
                     style={[styles.closeBtn, { top: Math.max(insets.top + 8, 28) }]} />
+        {/* Report (someone else's photo): top-left, away from Close. */}
+        {!!reportId && (
+          <IconButton icon="flag-outline" tone="onPhoto" label={t('actionReport')} testID="image-preview-report"
+                      onPress={() => askReportPhoto('chat', reportId, account ? null : identity?.guestId)}
+                      style={[styles.reportBtn, { top: Math.max(insets.top + 8, 28) }]} />
+        )}
 
         {/* Action bar - bottom of the lightbox. Two thumb-friendly pill
             buttons. Bottom inset keeps them above the Android nav bar /
@@ -251,6 +262,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   imageWrap:     { width: SW, height: SH, justifyContent: 'center', alignItems: 'center' },
   image:         { width: SW, height: SH },
   closeBtn:      { position: 'absolute', right: 16 },
+  reportBtn:     { position: 'absolute', left: 16 },
   actionBar:     { position: 'absolute', left: 0, right: 0, flexDirection: 'row', justifyContent: 'center', gap: Space.md },
   actionBtn:     { flexDirection: 'row', alignItems: 'center', gap: Space.sm, minHeight: 44, paddingHorizontal: Spacing.md, borderRadius: Radius.full,
                    backgroundColor: c.photoControl },

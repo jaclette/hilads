@@ -894,7 +894,8 @@ function ChatMessageInner({ message, myGuestId, isGrouped = false, index = 0, sh
           </View>
         </Animated.View>
 
-        <ImagePreviewModal uri={previewUri} onClose={() => setPreviewUri(null)} />
+        <ImagePreviewModal uri={previewUri} onClose={() => setPreviewUri(null)}
+                           reportId={!isMine && message.id && !message.id.startsWith('local-') && !message.deletedAt ? message.id : null} />
       </>
     );
   }

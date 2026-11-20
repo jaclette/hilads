@@ -29,6 +29,7 @@ import { useCastVote } from '@/features/daily/DailyVoteButton';
 import { DailyVotersSheet } from '@/features/daily/DailyVotersSheet';
 import { LocalPassBadge } from '@/features/daily/LocalPassBadge';
 import { CommentButton } from '@/features/daily/CommentButton';
+import { askReportPhoto } from '@/features/daily/reportPhoto';
 import { commentsTargetOf, useCommentsOpen } from '@/features/daily/PhotoCommentsSheet';
 import { COMMENT_BAR_H, StoryCommentBar } from '@/features/daily/StoryCommentBar';
 import { lastCountries, todayCities } from '@/features/today/useTodayCountries';
@@ -324,6 +325,7 @@ function Bottom({ proof, insetBottom, onProfile, onVoters }: {
     proofId: proof.id, date: proof.date, cityName: proof.city?.name ?? null, cityId: proof.city?.id ?? null, source: 'stories',
   });
   const pop = useRef(new Animated.Value(1)).current;
+  const { account, identity } = useApp();
   const name = proof.user.displayName || proof.user.username || '';
   const vote = () => {
     if (state?.isMine) { if (state.voteCount > 0) onVoters(); return; }
@@ -357,6 +359,13 @@ function Bottom({ proof, insetBottom, onProfile, onVoters }: {
           <Text style={styles.count}>{state?.voteCount ?? proof.voteCount}</Text>
         </TouchableOpacity>
         <CommentButton target={commentsTargetOf(proof)} variant="side" />
+        {/* Report: someone else's photo (the photo feed's flag). */}
+        {!state?.isMine && proof.user.id !== account?.id && (
+          <TouchableOpacity onPress={() => askReportPhoto('daily', proof.id, account ? null : identity?.guestId)}
+                            accessibilityRole="button" accessibilityLabel={t('report.title')} testID="stories-report" hitSlop={6}>
+            <View style={styles.flagBtn}><Ionicons name="flag-outline" size={20} color={colors.white} /></View>
+          </TouchableOpacity>
+        )}
         </View>
       )}
     </View>
@@ -389,5 +398,6 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   rail:        { alignItems: 'center', gap: Space.lg },
   heart:       { width: 54, height: 54, borderRadius: 27, alignItems: 'center', justifyContent: 'center', backgroundColor: c.photoControl },
   heartOn:     { backgroundColor: c.primary },
+  flagBtn:     { width: 42, height: 42, borderRadius: 21, alignItems: 'center', justifyContent: 'center', backgroundColor: c.photoControl, alignSelf: 'center' },
   count:       { marginTop: Space.xs, textAlign: 'center', fontSize: FontSizes.sm, fontWeight: '800', color: c.white },
 });
