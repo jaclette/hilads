@@ -58,6 +58,55 @@ final class PhotoWatch
         NotificationRepository::createUnchecked($adminId, 'daily_admin', 'New photo published', $body, ['url' => '/admin/photos'], 'en');
     }
 
+    /** Reports from different people that hide a chat photo until the admin decides (as Daily photos). */
+    public const REPORT_HIDE_THRESHOLD = 3;
+
+    /**
+     * A photo was reported: its row (made now for a photo older than the watch) goes back
+     * to "new" at the top with its report count and reasons, and the admin hears it at once
+     * (once per photo, and again when it gets hidden). $count: the open reports so far.
+     */
+    public static function reported(string $source, string $refId, string $url, array $author, ?string $where,
+                                    string $reason, int $count, bool $hidden): void
+    {
+        try {
+            $pdo = Database::pdo();
+            $st  = $pdo->prepare('SELECT id, report_reasons FROM photo_watch WHERE source = ? AND ref_id = ? AND url = ? ORDER BY id DESC LIMIT 1');
+            $st->execute([$source, $refId, $url]);
+            $row = $st->fetch(PDO::FETCH_ASSOC);
+            $who = isset($author['username']) && $author['username'] !== '' ? '@' . $author['username']
+                 : (string) ($author['display_name'] ?? $author['nickname'] ?? '?');
+            if (!$row) {
+                $ins = $pdo->prepare("
+                    INSERT INTO photo_watch (source, ref_id, url, user_id, guest_id, author, place)
+                    VALUES (?, ?, ?, ?, ?, ?, ?) RETURNING id
+                ");
+                $ins->execute([$source, $refId, $url, $author['id'] ?? null, $author['guest_id'] ?? null,
+                               mb_substr($who, 0, 60), $where !== null ? mb_substr($where, 0, 80) : null]);
+                $row = ['id' => (int) $ins->fetchColumn(), 'report_reasons' => null];
+            }
+            $reasons = array_values(array_unique(array_filter(array_merge(explode(',', (string) $row['report_reasons']), [$reason]))));
+            $pdo->prepare("
+                UPDATE photo_watch
+                SET report_count = GREATEST(report_count, ?), report_reasons = ?, reported_at = now(), seen_at = NULL,
+                    hidden_at = CASE WHEN ?::boolean THEN COALESCE(hidden_at, now()) ELSE hidden_at END
+                WHERE id = ?
+            ")->execute([$count, implode(',', $reasons), $hidden ? 'true' : 'false', $row['id']]);
+
+            $adminId = trim((string) getenv('ADMIN_TEST_USER_ID'));
+            $first   = DbRateLimiter::allow("photo_report|{$source}|{$refId}", 1, 86400 * 30);
+            if ($adminId !== '' && ($first || $hidden)) {
+                $what = $source === 'daily' ? 'Daily photo' : 'chat photo';
+                $body = "{$who}" . ($where !== null && $where !== '' ? " in {$where}" : '') . " · {$what} · "
+                      . str_replace('_', ' ', $reason) . ($hidden ? ' · hidden after ' . $count . ' reports' : '');
+                NotificationRepository::createUnchecked($adminId, 'daily_admin', $hidden ? 'Photo hidden by reports' : 'Photo reported',
+                    $body, ['url' => '/admin/photos'], 'en');
+            }
+        } catch (\Throwable $e) {
+            error_log('[photo-watch] report ' . $source . ' ' . $refId . ': ' . $e->getMessage());
+        }
+    }
+
     public static function unseenCount(): int
     {
         try {
@@ -72,9 +121,10 @@ final class PhotoWatch
     {
         $stmt = Database::pdo()->prepare("
             SELECT id, source, ref_id, url, user_id, guest_id, author, place, seen_at, removed_at,
+                   report_count, report_reasons, hidden_at,
                    EXTRACT(EPOCH FROM created_at)::BIGINT AS created_ts
             FROM photo_watch" . ($unseenOnly ? ' WHERE seen_at IS NULL' : '') . "
-            ORDER BY created_at DESC, id DESC
+            ORDER BY (seen_at IS NULL AND report_count > 0) DESC, created_at DESC, id DESC
             LIMIT ? OFFSET ?
         ");
         $stmt->bindValue(1, $limit, PDO::PARAM_INT);

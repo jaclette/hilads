@@ -14163,7 +14163,73 @@ $router->add('POST', '/api/v1/daily/proofs/{id}/report', function (array $params
         Response::json(['error' => 'You already reported this proof.', 'code' => 'already_reported'], 409);
     }
     apiLog('daily', 'proof reported', ['proof' => $proof['id'], 'result' => $result]);
+    // Back office › Photos: at the top with its reports, and the admin hears it.
+    $open = Database::pdo()->prepare("SELECT count(*) FROM daily_proof_reports WHERE proof_id = ? AND status = 'open'");
+    $open->execute([$proof['id']]);
+    PhotoWatch::reported('daily', $proof['id'], (string) $proof['photo_url'],
+        ['id' => $proof['user_id'], 'username' => $proof['username'] ?? null, 'display_name' => $proof['display_name'] ?? null],
+        $proof['city_name'] ?? null, (string) $body['reasonCode'], (int) $open->fetchColumn(), $result === 'reported_hidden');
     Response::json(['ok' => true], 201);
+});
+
+// POST /api/v1/messages/{id}/report {reasonCode, guestId?} - report a chat photo (city, Hi plan,
+// Hi now, challenge or World chat; not DMs). Same reasons as a Daily photo. It goes to the top of
+// Back office › Photos with an admin push; 3 reports from different people hide it (soft delete:
+// the back office keeps the picture and can put it back).
+$router->add('POST', '/api/v1/messages/{id}/report', function (array $params) {
+    $user    = AuthService::currentUser();
+    $body    = Request::json() ?? [];
+    $guestId = $user === null && isValidGuestId($body['guestId'] ?? null) ? $body['guestId'] : null;
+    if ($user === null && $guestId === null) {
+        Response::json(['error' => 'Identity required'], 401);
+    }
+    $reason = (string) ($body['reasonCode'] ?? '');
+    if (!in_array($reason, DailyModerationService::REPORT_REASONS, true)) {
+        Response::json(['error' => 'reasonCode must be one of: ' . implode(', ', DailyModerationService::REPORT_REASONS), 'code' => 'invalid_reason'], 422);
+    }
+    $pdo = Database::pdo();
+    $st  = $pdo->prepare("
+        SELECT m.id, m.type, m.image_url, m.user_id, m.guest_id, m.nickname, m.deleted_at, c.type AS channel_type, c.name AS channel_name,
+               u.username, u.display_name
+        FROM messages m
+        LEFT JOIN channels c ON c.id = m.channel_id
+        LEFT JOIN users u ON u.id = m.user_id
+        WHERE m.id = ?
+    ");
+    $st->execute([(string) $params['id']]);
+    $msg = $st->fetch(PDO::FETCH_ASSOC);
+    if (!$msg || $msg['type'] !== 'image' || $msg['image_url'] === null || $msg['deleted_at'] !== null) {
+        Response::json(['error' => 'Photo not found', 'code' => 'not_found'], 404);
+    }
+    if (($user !== null && $msg['user_id'] === $user['id']) || ($guestId !== null && $msg['guest_id'] === $guestId)) {
+        Response::json(['error' => 'You cannot report your own photo.', 'code' => 'own_photo'], 422);
+    }
+    $reporter = $user !== null ? 'u:' . $user['id'] : 'g:' . $guestId;
+    if (!DbRateLimiter::allow('photo_report|' . $reporter, 5, 3600)) {
+        Response::json(['error' => 'Too many reports - slow down.', 'code' => 'rate_limited'], 429);
+    }
+    $ins = $pdo->prepare("
+        INSERT INTO message_reports (message_id, reporter_key, reporter_user_id, reporter_guest_id, reason_code)
+        VALUES (?, ?, ?, ?, ?) ON CONFLICT (message_id, reporter_key) DO NOTHING
+    ");
+    $ins->execute([$msg['id'], $reporter, $user['id'] ?? null, $guestId, $reason]);
+    if ($ins->rowCount() === 0) {
+        Response::json(['error' => 'You already reported this photo.', 'code' => 'already_reported'], 409);
+    }
+    $cnt = $pdo->prepare("SELECT count(*) FROM message_reports WHERE message_id = ? AND status = 'open'");
+    $cnt->execute([$msg['id']]);
+    $count  = (int) $cnt->fetchColumn();
+    $hidden = $count >= PhotoWatch::REPORT_HIDE_THRESHOLD;
+    if ($hidden) {
+        $pdo->prepare("UPDATE messages SET image_url = NULL, deleted_at = now() WHERE id = ? AND deleted_at IS NULL")->execute([$msg['id']]);
+    }
+    $label = ['city' => 'chat', 'event' => 'Hi plan', 'topic' => 'Hi now', 'challenge' => 'challenge', 'world' => 'World chat'][$msg['channel_type'] ?? ''] ?? 'chat';
+    $where = ($msg['channel_type'] ?? '') === 'world' ? $label : trim(($msg['channel_name'] ?? '') . ' ' . $label);
+    PhotoWatch::reported('chat', $msg['id'], (string) $msg['image_url'],
+        ['id' => $msg['user_id'], 'guest_id' => $msg['guest_id'], 'nickname' => $msg['nickname'], 'username' => $msg['username'], 'display_name' => $msg['display_name']],
+        $where, $reason, $count, $hidden);
+    apiLog('chat', 'photo reported', ['message' => $msg['id'], 'count' => $count, 'hidden' => $hidden]);
+    Response::json(['ok' => true, 'hidden' => $hidden], 201);
 });
 
 /** Delete an uploaded photo and its thumbnail from R2 (best effort). */

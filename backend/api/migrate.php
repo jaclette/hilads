@@ -4831,6 +4831,24 @@ run($pdo, "CREATE TABLE IF NOT EXISTS photo_watch (
 )", 'photo_watch');
 run($pdo, "CREATE INDEX IF NOT EXISTS photo_watch_unseen ON photo_watch (created_at DESC) WHERE seen_at IS NULL", 'photo_watch_unseen');
 run($pdo, "CREATE INDEX IF NOT EXISTS photo_watch_created ON photo_watch (created_at DESC)", 'photo_watch_created');
+// Reports on photos (2026-11-20): chat photos get reported like Daily photos (3 people hide one until
+// the admin decides); Back office › Photos shows the count and reasons at the top.
+// Reversal: DROP TABLE message_reports; ALTER TABLE photo_watch DROP COLUMN report_count, report_reasons, reported_at, hidden_at.
+run($pdo, "ALTER TABLE photo_watch ADD COLUMN IF NOT EXISTS report_count INT NOT NULL DEFAULT 0", 'photo_watch.report_count');
+run($pdo, "ALTER TABLE photo_watch ADD COLUMN IF NOT EXISTS report_reasons TEXT", 'photo_watch.report_reasons');
+run($pdo, "ALTER TABLE photo_watch ADD COLUMN IF NOT EXISTS reported_at TIMESTAMPTZ", 'photo_watch.reported_at');
+run($pdo, "ALTER TABLE photo_watch ADD COLUMN IF NOT EXISTS hidden_at TIMESTAMPTZ", 'photo_watch.hidden_at');
+run($pdo, "CREATE TABLE IF NOT EXISTS message_reports (
+    id                BIGSERIAL PRIMARY KEY,
+    message_id        TEXT NOT NULL,
+    reporter_key      TEXT NOT NULL,
+    reporter_user_id  TEXT,
+    reporter_guest_id TEXT,
+    reason_code       TEXT NOT NULL,
+    status            TEXT NOT NULL DEFAULT 'open',
+    created_at        TIMESTAMPTZ NOT NULL DEFAULT now(),
+    UNIQUE (message_id, reporter_key)
+)", 'message_reports');
 
 // ── Self-heal monthly rank columns ────────────────────────────────────────
 // The denormalised users.monthly_rank_* columns are kept fresh by

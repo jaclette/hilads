@@ -44,10 +44,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $pdo->prepare('UPDATE users SET profile_photo_url = NULL, profile_thumb_photo_url = NULL, updated_at = ? WHERE id = ? AND profile_photo_url = ?')
                     ->execute([time(), $row['ref_id'], $row['url']]);
             }
+            if ($row['source'] === 'chat') {
+                $pdo->prepare("UPDATE message_reports SET status = 'reviewed' WHERE message_id = ? AND status = 'open'")->execute([$row['ref_id']]);
+            }
             PhotoWatch::markSeen([$id]);
             $pdo->prepare('UPDATE photo_watch SET removed_at = now() WHERE id = ?')->execute([$id]);
             error_log('[admin] photo removed: ' . $row['source'] . ' ' . $row['ref_id']);
             flash_set('success', 'Photo removed.');
+        } elseif ($action === 'keep' && $id > 0) {
+            // The reports are dismissed; a photo hidden by them comes back.
+            $st = $pdo->prepare('SELECT * FROM photo_watch WHERE id = ?');
+            $st->execute([$id]);
+            $row = $st->fetch(PDO::FETCH_ASSOC);
+            if (!$row) {
+                throw new InvalidArgumentException('Photo not found.');
+            }
+            if ($row['source'] === 'daily') {
+                DailyModerationService::resolveReports($row['ref_id'], 'dismissed');
+                $proof = DailyProofRepository::findById($row['ref_id']);
+                if ($proof !== null && $proof['moderation_status'] === 'pending') {
+                    DailyModerationService::approveProof($row['ref_id']);
+                }
+            } elseif ($row['source'] === 'chat') {
+                $pdo->prepare("UPDATE message_reports SET status = 'dismissed' WHERE message_id = ? AND status = 'open'")->execute([$row['ref_id']]);
+                if ($row['hidden_at'] !== null) {
+                    $pdo->prepare('UPDATE messages SET image_url = ?, deleted_at = NULL WHERE id = ? AND image_url IS NULL')->execute([$row['url'], $row['ref_id']]);
+                }
+            }
+            $pdo->prepare('UPDATE photo_watch SET report_count = 0, hidden_at = NULL, seen_at = now() WHERE id = ?')->execute([$id]);
+            flash_set('success', $row['hidden_at'] !== null ? 'Reports dismissed - the photo is back.' : 'Reports dismissed.');
         }
     } catch (InvalidArgumentException $e) {
         flash_set('error', $e->getMessage());
@@ -114,7 +139,7 @@ admin_nav($self);
                 default  => null,
             };
         ?>
-        <div style="background:#141414;border:1px solid <?= $isNew ? $color : '#262626' ?>;border-radius:10px;overflow:hidden;<?= $removed ? 'opacity:.4' : '' ?>">
+        <div style="background:#141414;border:<?= (int) $r['report_count'] > 0 && !$removed ? '2px solid #ef4444' : '1px solid ' . ($isNew ? $color : '#262626') ?>;border-radius:10px;overflow:hidden;<?= $removed ? 'opacity:.4' : '' ?>">
             <a href="<?= dh($r['url']) ?>" target="_blank" rel="noopener">
                 <img src="<?= dh($thumb) ?>" alt="" loading="lazy" style="display:block;width:100%;aspect-ratio:1;object-fit:cover;background:#222">
             </a>
@@ -122,6 +147,10 @@ admin_nav($self);
                 <span class="badge" style="background:<?= $color ?>22;color:<?= $color ?>;border:1px solid <?= $color ?>55"><?= dh(PhotoWatch::SOURCES[$r['source']] ?? $r['source']) ?></span>
                 <?php if ($isNew): ?><span class="badge" style="background:#22c55e22;color:#4ade80">new</span><?php endif; ?>
                 <?php if ($removed): ?><span class="badge" style="background:#ef444422;color:#f87171">removed</span><?php endif; ?>
+                <?php if ((int) $r['report_count'] > 0 && !$removed): ?>
+                    <span class="badge" style="background:#ef444422;color:#f87171">reported ×<?= (int) $r['report_count'] ?><?= $r['hidden_at'] ? ' · hidden' : '' ?></span>
+                    <div style="color:#f87171;margin-top:2px"><?= dh(str_replace(['_', ','], [' ', ', '], (string) $r['report_reasons'])) ?></div>
+                <?php endif; ?>
                 <div style="margin-top:4px;color:#ddd">
                     <?php if ($r['user_id']): ?><a href="/admin/users/<?= rawurlencode((string) $r['user_id']) ?>/edit"><?= dh((string) $r['author']) ?></a>
                     <?php else: ?><?= dh((string) $r['author']) ?> <span style="color:#666">(guest)</span><?php endif; ?>
@@ -130,6 +159,11 @@ admin_nav($self);
                 <div style="color:#666"><?= dh(date('M j, H:i', (int) $r['created_ts'] + 7 * 3600)) ?> <span style="color:#444">UTC+7</span></div>
                 <div style="display:flex;gap:6px;margin-top:6px">
                     <?php if ($open): ?><a class="btn btn-secondary btn-sm" href="<?= dh($open) ?>">Open</a><?php endif; ?>
+                    <?php if ((int) $r['report_count'] > 0 && !$removed): ?>
+                    <form method="POST" action="<?= dh($back) ?>" style="margin:0"><?= csrf_input() ?>
+                        <input type="hidden" name="action" value="keep"><input type="hidden" name="id" value="<?= (int) $r['id'] ?>">
+                        <button class="btn btn-secondary btn-sm" type="submit" title="Dismiss the reports<?= $r['hidden_at'] ? ' and put the photo back' : '' ?>">Keep</button></form>
+                    <?php endif; ?>
                     <?php if (!$removed): ?>
                     <form method="POST" action="<?= dh($back) ?>" style="margin:0" onsubmit="return confirm('Remove this photo from the app?')"><?= csrf_input() ?>
                         <input type="hidden" name="action" value="remove"><input type="hidden" name="id" value="<?= (int) $r['id'] ?>">
