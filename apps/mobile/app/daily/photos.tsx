@@ -40,6 +40,7 @@ import { ShareSheet } from '@/features/share/ShareSheet';
 import { useDailyToday, useHere } from '@/hooks/useDaily';
 import type { DailyProof } from '@/types';
 import { SeasonalScope } from '@/features/event/SeasonalArt';
+import { askReportPhoto } from '@/features/daily/reportPhoto';
 
 type Tab = 'world' | 'city';
 type Item = { kind: 'photo'; proof: DailyProof } | { kind: 'end' };
@@ -334,6 +335,7 @@ function Slide({ proof, height, first, insetBottom, onProfile, onVoted, onShare,
   const styles = useThemedStyles(makeStyles);
   const { colors } = useTheme();
   const { t, i18n } = useTranslation('daily');
+  const { identity, account } = useApp();
   // The selfie inset sits below the feed's tabs.
   const insetTop = useSafeAreaInsets().top + 64;
   const { state, canVote, voteLabel, press } = useCastVote({
@@ -447,6 +449,13 @@ function Slide({ proof, height, first, insetBottom, onProfile, onVoted, onShare,
               <View style={styles.heart}><Ionicons name="paper-plane" size={24} color={colors.white} /></View>
             </TouchableOpacity>
           )}
+          {/* Report: someone else's photo (the web's flag). */}
+          {proof.status === 'approved' && !state?.isMine && proof.user.id !== account?.id && (
+            <TouchableOpacity onPress={() => askReportPhoto('daily', proof.id, account ? null : identity?.guestId)}
+                              accessibilityRole="button" accessibilityLabel={t('report.title')} testID="photos-report">
+              <View style={styles.flagBtn}><Ionicons name="flag-outline" size={20} color={colors.white} /></View>
+            </TouchableOpacity>
+          )}
         </View>
       </View>
     </View>
@@ -510,6 +519,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   hintText:    { fontSize: FontSizes.xs, fontWeight: '700', color: c.onCaramelMuted },
   actions:     { alignItems: 'center', gap: 18, paddingBottom: Space.sm },
   heart:       { width: 56, height: 56, borderRadius: 28, alignItems: 'center', justifyContent: 'center', backgroundColor: c.photoControl },
+  flagBtn:     { width: 44, height: 44, borderRadius: 22, alignItems: 'center', justifyContent: 'center', backgroundColor: c.photoControl, alignSelf: 'center' },
   heartOn:     { backgroundColor: c.primary },
   count:       { marginTop: Space.xs, textAlign: 'center', fontSize: FontSizes.sm, fontWeight: '800', color: c.white },
   end:         { alignItems: 'center', justifyContent: 'center', paddingHorizontal: 28, gap: Space.md },

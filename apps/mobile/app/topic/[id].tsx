@@ -483,6 +483,7 @@ export default function TopicChatScreen() {
             );
           } : undefined;
         })()}
+        message={actionSheetMsg}
         onClose={() => setActionSheetMsg(null)}
       />
       </>

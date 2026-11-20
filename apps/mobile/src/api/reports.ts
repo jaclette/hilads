@@ -53,3 +53,8 @@ export async function fetchReportStatus(params: {
   );
   return { reported: res.reported, existing: res.existing_report };
 }
+
+/** Report a chat photo (city, Hi plan, Hi now, challenge, World; not DMs). Same reasons as a Daily photo. */
+export async function reportChatPhoto(messageId: string, reasonCode: string, guestId?: string | null): Promise<void> {
+  await api.post(`/messages/${messageId}/report`, { reasonCode, guestId: guestId ?? undefined });
+}

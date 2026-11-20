@@ -1603,6 +1603,7 @@ export default function ChallengeChatScreen() {
             );
           } : undefined;
         })()}
+        message={actionSheetMsg}
         onClose={() => setActionSheetMsg(null)}
       />
 

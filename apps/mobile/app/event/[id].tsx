@@ -652,6 +652,7 @@ export default function EventDetailScreen() {
             );
           } : undefined;
         })()}
+        message={actionSheetMsg}
         onClose={() => setActionSheetMsg(null)}
       />
 

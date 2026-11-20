@@ -1077,6 +1077,7 @@ export default function ChatTab() {
           ? () => handleEdit(actionSheetMsg) : undefined}
         onDelete={actionSheetMsg && isOwnMessage(actionSheetMsg) && !actionSheetMsg.deletedAt && !isDailyCard(actionSheetMsg)
           ? () => handleDelete(actionSheetMsg) : undefined}
+        message={actionSheetMsg}
         onClose={() => setActionSheetMsg(null)}
       />
 

@@ -9,7 +9,9 @@ import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Share } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
-import type { Reaction } from '@/types';
+import type { Message, Reaction } from '@/types';
+import { useApp } from '@/context/AppContext';
+import { askReportPhoto } from '@/features/daily/reportPhoto';
 import { Space, Border, FontSizes, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { Button, Sheet } from '@/ui';
@@ -35,11 +37,18 @@ interface Props {
   translateText?: string;
   onEdit?:   () => void;
   onDelete?: () => void;
+  /** The long-pressed message: someone else's photo gets "Report photo". */
+  message?:  Message | null;
   onClose:   () => void;
 }
 
-export function MessageActionSheet({ visible, reactions = [], onReact, onReply, onCopy, translateText, onEdit, onDelete, onClose }: Props) {
+export function MessageActionSheet({ visible, reactions = [], onReact, onReply, onCopy, translateText, onEdit, onDelete, message, onClose }: Props) {
   const { t } = useTranslation('chat');
+  const { identity, account } = useApp();
+  // Report: a photo someone else posted, still there (not a draft being sent).
+  const mine = !!message && ((!!account?.id && message.userId === account.id) || (!!identity?.guestId && message.guestId === identity.guestId));
+  const reportable = !!message?.id && message.type === 'image' && !!message.imageUrl && !message.deletedAt && !mine
+                     && !message.id.startsWith('local-');
   const styles = useThemedStyles(makeStyles);
   const selfMap = Object.fromEntries(reactions.map(r => [r.emoji, r.self]));
   const run = (fn: () => void) => () => { fn(); onClose(); };
@@ -74,6 +83,8 @@ export function MessageActionSheet({ visible, reactions = [], onReact, onReply, 
         {/* Edit / Delete - only when the viewer owns the message (callers pass undefined otherwise). */}
         {onEdit && <Action icon="create-outline" label={t('actionEdit')} onPress={run(onEdit)} />}
         {onDelete && <Action icon="trash-outline" label={t('actionDelete')} onPress={run(onDelete)} danger />}
+        {reportable && <Action icon="flag-outline" label={t('actionReport')}
+                               onPress={run(() => askReportPhoto('chat', message!.id!, account ? null : identity?.guestId))} danger />}
       </View>
 
       <Button variant="link" label={t('actionCancel')} onPress={onClose} style={styles.cancel} />

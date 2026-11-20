@@ -162,6 +162,7 @@ export type AnalyticsEvent =
   | 'place_picker_opened'
   | 'place_picked'
   | 'proof_too_far'
+  | 'photo_reported'        // a Daily or chat photo reported (props: kind, reason)
   | 'stamp_earned'
   // The points reward's victory screen (2026-11-07).
   | 'score_win_shown'
