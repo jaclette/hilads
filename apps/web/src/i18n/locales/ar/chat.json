@@ -6,6 +6,7 @@
   "actionCopy": "نسخ",
   "actionEdit": "تعديل",
   "actionDelete": "حذف",
+  "actionReport": "الإبلاغ عن الصورة",
   "deleteConfirmBody": "حذف هذه الرسالة؟ ستُحذف لدى الجميع.",
   "editFailed": "تعذّر حفظ التعديل. حاول مرة أخرى.",
   "deleteFailed": "تعذّر حذف الرسالة. حاول مرة أخرى.",

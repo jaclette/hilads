@@ -2451,6 +2451,25 @@ export async function fetchDailyProofsByIds(ids, locale) {
 }
 
 /** Report a visible proof. 409 = already reported. */
+/** Report a chat photo (not DMs); guests send their guest id (the server prefers the signed-in user). */
+export async function reportChatPhoto(id, reasonCode) {
+  let guestId
+  try { guestId = localStorage.getItem('hilads_guest_id') || undefined } catch { guestId = undefined }
+  const res = await fetch(`${BASE}/messages/${encodeURIComponent(id)}/report`, {
+    method: 'POST',
+    credentials: 'include',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ reasonCode, guestId }),
+  })
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}))
+    const err = new Error(data.error || `HTTP ${res.status}`)
+    err.status = res.status
+    err.code = data.code
+    throw err
+  }
+}
+
 export function reportDailyProof(id, reasonCode) {
   return daily('POST', `/daily/proofs/${id}/report`, { body: { reasonCode } })
 }

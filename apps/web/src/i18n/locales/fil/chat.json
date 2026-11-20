@@ -6,6 +6,7 @@
   "actionCopy": "I-copy",
   "actionEdit": "I-edit",
   "actionDelete": "I-delete",
+  "actionReport": "I-report ang photo",
   "deleteConfirmBody": "Burahin ang message na 'to? Mawawala ito para sa lahat.",
   "editFailed": "Hindi na-save ang edit. Subukan ulit.",
   "deleteFailed": "Hindi nabura ang message. Subukan ulit.",

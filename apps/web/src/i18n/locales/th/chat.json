@@ -6,6 +6,7 @@
   "actionCopy": "คัดลอก",
   "actionEdit": "แก้ไข",
   "actionDelete": "ลบ",
+  "actionReport": "รายงานรูปภาพ",
   "deleteConfirmBody": "ลบข้อความนี้ไหม? ทุกคนจะไม่เห็นอีก",
   "editFailed": "บันทึกการแก้ไขไม่ได้ ลองใหม่อีกครั้ง",
   "deleteFailed": "ลบข้อความไม่ได้ ลองใหม่อีกครั้ง",

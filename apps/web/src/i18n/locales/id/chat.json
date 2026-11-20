@@ -6,6 +6,7 @@
   "actionCopy": "Salin",
   "actionEdit": "Edit",
   "actionDelete": "Hapus",
+  "actionReport": "Laporkan foto",
   "deleteConfirmBody": "Hapus pesan ini? Pesannya bakal hilang buat semua orang.",
   "editFailed": "Gagal nyimpan perubahan. Coba lagi, ya.",
   "deleteFailed": "Gagal hapus pesan. Coba lagi, ya.",

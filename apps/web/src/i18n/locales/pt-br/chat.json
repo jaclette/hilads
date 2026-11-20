@@ -6,6 +6,7 @@
   "actionCopy": "Copiar",
   "actionEdit": "Editar",
   "actionDelete": "Apagar",
+  "actionReport": "Denunciar foto",
   "deleteConfirmBody": "Apagar esta mensagem? Ela some pra todo mundo.",
   "editFailed": "Não deu pra salvar a edição. Tente de novo.",
   "deleteFailed": "Não deu pra apagar a mensagem. Tente de novo.",

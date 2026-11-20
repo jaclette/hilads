@@ -6,6 +6,7 @@
   "actionCopy": "Kopieren",
   "actionEdit": "Bearbeiten",
   "actionDelete": "Löschen",
+  "actionReport": "Foto melden",
   "deleteConfirmBody": "Diese Nachricht löschen? Sie wird für alle entfernt.",
   "editFailed": "Änderung konnte nicht gespeichert werden. Versuch's nochmal.",
   "deleteFailed": "Nachricht konnte nicht gelöscht werden. Versuch's nochmal.",

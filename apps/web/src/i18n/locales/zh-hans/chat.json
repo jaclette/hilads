@@ -6,6 +6,7 @@
   "actionCopy": "复制",
   "actionEdit": "编辑",
   "actionDelete": "删除",
+  "actionReport": "举报照片",
   "deleteConfirmBody": "删除这条消息？所有人都将看不到它。",
   "editFailed": "编辑没保存上，再试一次吧。",
   "deleteFailed": "消息没删掉，再试一次吧。",

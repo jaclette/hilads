@@ -1,7 +1,11 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import i18n from '../i18n'
 import { useTranslation } from 'react-i18next'
+import { createPortal } from 'react-dom'
 import Icon from './Icon'
+import { reportChatPhoto } from '../api'
+
+const REPORT_REASONS = ['inappropriate', 'person_without_consent', 'dangerous', 'spam', 'other']
 
 /**
  * Shared chat message-interaction UI, used by EVERY web chat surface (city
@@ -69,8 +73,13 @@ export function ReplyPreview({ replyingTo, onCancel }) {
  */
 export function MessageActionBubble({ bubble, onClose, onReact, onReply, onEdit, onDelete }) {
   const { t, i18n } = useTranslation('chat')
-  if (!bubble) return null
+  // Report a photo: the reasons sheet outlives the bubble (it closes first).
+  const [reporting, setReporting] = useState(null)
+  const [notice, setNotice] = useState(null)
+  if (!bubble) return <ReportPhotoSheet msg={reporting} onClose={() => setReporting(null)} notice={notice} onNotice={setNotice} />
   const msg = bubble.msg
+  // Someone else's photo, still there, in a real chat (onReact: not a title menu).
+  const reportable = !!onReact && !bubble.isMine && msg.type === 'image' && !!msg.imageUrl && !msg.deletedAt && !!msg.id
   return (
     <div className="action-bubble-overlay" onClick={onClose}>
       <div
@@ -123,8 +132,50 @@ export function MessageActionBubble({ bubble, onClose, onReact, onReply, onEdit,
             {t('actionDelete', { defaultValue: 'Delete' })}
           </button>
         )}
+        {reportable && (
+          <button className="action-bubble-btn action-bubble-btn--danger" onClick={() => { setReporting(msg); onClose() }}>
+            {t('actionReport', { defaultValue: 'Report photo' })}
+          </button>
+        )}
       </div>
     </div>
+  )
+}
+
+/** The reasons for reporting a chat photo (the Daily photo sheet's look and words), then a short notice. */
+function ReportPhotoSheet({ msg, onClose, notice, onNotice }) {
+  const { t } = useTranslation('challenge', { keyPrefix: 'dc' })
+  useEffect(() => {
+    if (!notice) return undefined
+    const id = setTimeout(() => onNotice(null), 3000)
+    return () => clearTimeout(id)
+  }, [notice, onNotice])
+  if (!msg && !notice) return null
+  if (!msg) return createPortal(<p className="dc-viewer-notice dc-photos-notice" role="status">{notice}</p>, document.body)
+  const report = async (reason) => {
+    onClose()
+    try {
+      await reportChatPhoto(msg.id, reason)
+      onNotice(t('report.thanks'))
+    } catch (err) {
+      onNotice(err.status === 409 ? t('report.already') : t('vote.errors.generic'))
+    }
+  }
+  return createPortal(
+    <div className="v3-sheet-wrap" role="dialog" aria-modal="true" aria-label={t('report.title')}>
+      <button type="button" className="v3-sheet-scrim" onClick={onClose} aria-label={t('cancel')} />
+      <div className="v3-sheet">
+        <span className="v3-sheet-grabber" aria-hidden="true" />
+        <p className="v3-sheet-title">{t('report.title')}</p>
+        <p className="dc-muted">{t('report.body')}</p>
+        {REPORT_REASONS.map(r => (
+          <button key={r} type="button" className="v3-scope-row" onClick={() => report(r)}>
+            <span className="v3-scope-row-body"><span className="v3-scope-row-title">{t(`report.reasons.${r}`)}</span></span>
+          </button>
+        ))}
+      </div>
+    </div>,
+    document.body,
   )
 }
 

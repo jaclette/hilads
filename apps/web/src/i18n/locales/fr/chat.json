@@ -6,6 +6,7 @@
   "actionCopy": "Copier",
   "actionEdit": "Modifier",
   "actionDelete": "Supprimer",
+  "actionReport": "Signaler la photo",
   "deleteConfirmBody": "Supprimer ce message ? Il sera supprimé pour tout le monde.",
   "editFailed": "Impossible d'enregistrer la modif. Réessaie.",
   "deleteFailed": "Impossible de supprimer le message. Réessaie.",

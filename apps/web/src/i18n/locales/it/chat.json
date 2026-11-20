@@ -6,6 +6,7 @@
   "actionCopy": "Copia",
   "actionEdit": "Modifica",
   "actionDelete": "Elimina",
+  "actionReport": "Segnala foto",
   "deleteConfirmBody": "Eliminare questo messaggio? Verrà rimosso per tutti.",
   "editFailed": "Impossibile salvare la modifica. Riprova.",
   "deleteFailed": "Impossibile eliminare il messaggio. Riprova.",

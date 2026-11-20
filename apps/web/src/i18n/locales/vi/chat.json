@@ -6,6 +6,7 @@
   "actionCopy": "Sao chép",
   "actionEdit": "Sửa",
   "actionDelete": "Xóa",
+  "actionReport": "Báo cáo ảnh",
   "deleteConfirmBody": "Xóa tin nhắn này? Mọi người sẽ không thấy nó nữa.",
   "editFailed": "Không lưu được chỉnh sửa. Thử lại nhé.",
   "deleteFailed": "Không xóa được tin nhắn. Thử lại nhé.",

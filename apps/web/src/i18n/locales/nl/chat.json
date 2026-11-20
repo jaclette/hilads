@@ -6,6 +6,7 @@
   "actionCopy": "Kopiëren",
   "actionEdit": "Bewerken",
   "actionDelete": "Verwijderen",
+  "actionReport": "Foto melden",
   "deleteConfirmBody": "Dit bericht verwijderen? Het wordt voor iedereen verwijderd.",
   "editFailed": "Bewerking opslaan lukte niet. Probeer het opnieuw.",
   "deleteFailed": "Bericht verwijderen lukte niet. Probeer het opnieuw.",

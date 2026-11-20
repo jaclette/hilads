@@ -6,6 +6,7 @@
   "actionCopy": "복사",
   "actionEdit": "수정",
   "actionDelete": "삭제",
+  "actionReport": "사진 신고",
   "deleteConfirmBody": "이 메시지를 삭제할까요? 모두에게서 사라져요.",
   "editFailed": "수정한 내용을 저장하지 못했어요. 다시 시도해 주세요.",
   "deleteFailed": "메시지를 삭제하지 못했어요. 다시 시도해 주세요.",

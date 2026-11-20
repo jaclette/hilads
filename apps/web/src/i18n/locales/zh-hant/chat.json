@@ -6,6 +6,7 @@
   "actionCopy": "複製",
   "actionEdit": "編輯",
   "actionDelete": "刪除",
+  "actionReport": "檢舉照片",
   "deleteConfirmBody": "要刪除這則訊息嗎？所有人都會看不到。",
   "editFailed": "無法儲存修改，請再試一次。",
   "deleteFailed": "無法刪除訊息，請再試一次。",

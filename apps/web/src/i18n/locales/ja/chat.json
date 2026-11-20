@@ -6,6 +6,7 @@
   "actionCopy": "コピー",
   "actionEdit": "編集",
   "actionDelete": "削除",
+  "actionReport": "写真を報告",
   "deleteConfirmBody": "このメッセージを削除しますか？全員の画面から消えます。",
   "editFailed": "編集を保存できませんでした。もう一度試してください。",
   "deleteFailed": "メッセージを削除できませんでした。もう一度試してください。",
