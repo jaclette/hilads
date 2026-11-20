@@ -142,6 +142,12 @@ export function MessageActionBubble({ bubble, onClose, onReact, onReply, onEdit,
   )
 }
 
+/** The chat photo report sheet on its own (the full-screen photo's flag): `msg` null = closed; the notice stays after. */
+export function ChatPhotoReportSheet({ msg, onClose }) {
+  const [notice, setNotice] = useState(null)
+  return <ReportPhotoSheet msg={msg} onClose={onClose} notice={notice} onNotice={setNotice} />
+}
+
 /** The reasons for reporting a chat photo (the Daily photo sheet's look and words), then a short notice. */
 function ReportPhotoSheet({ msg, onClose, notice, onNotice }) {
   const { t } = useTranslation('challenge', { keyPrefix: 'dc' })

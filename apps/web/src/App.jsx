@@ -54,7 +54,7 @@ import LinkPreviewCard from './components/LinkPreviewCard'
 import ScoreCelebrationLaunchGate from './components/ScoreCelebrationLaunchGate'
 import ChallengeResultLaunchGate from './components/ChallengeResultLaunchGate'
 import ThumbImg from './components/ThumbImg'
-import { ReactionPills, ReplyPreview, MessageActionBubble, CopyTranslateText } from './components/MessageActions'
+import { ReactionPills, ReplyPreview, MessageActionBubble, CopyTranslateText, ChatPhotoReportSheet } from './components/MessageActions'
 import { Marquee } from './components/Marquee'
 import AuthScreen from './components/AuthScreen'
 import SignUpSheet from './components/SignUpSheet'
@@ -1165,6 +1165,9 @@ export default function App() {
   const [typingUsers, setTypingUsers] = useState([])
   const [uploading, setUploading] = useState(false)
   const [lightboxUrl, setLightboxUrl] = useState(null)
+  // The city chat photo open full screen when it is someone else's (its flag), and the one being reported.
+  const [lightboxMsg, setLightboxMsg] = useState(null)
+  const [reportingPhoto, setReportingPhoto] = useState(null)
   const [showShareSheet, setShowShareSheet]       = useState(false)
   const [spotLoading, setSpotLoading]             = useState(false)
   const [locationPickerCoords, setLocationPickerCoords] = useState(null) // { lat, lng }
@@ -5850,7 +5853,7 @@ export default function App() {
                         src={item.imageUrl}
                         className="msg-image"
                         alt="shared image"
-                        onClick={() => setLightboxUrl(item.imageUrl)}
+                        onClick={() => { setLightboxUrl(item.imageUrl); setLightboxMsg(isMine ? null : item) }}
                       />
                     ) : item.content?.startsWith('📍') ? (
                       (() => {
@@ -7515,7 +7518,10 @@ export default function App() {
         </div>
       )}
 
-      <Lightbox url={lightboxUrl} onClose={() => setLightboxUrl(null)} />
+      <Lightbox url={lightboxUrl} onClose={() => { setLightboxUrl(null); setLightboxMsg(null) }}
+                onReport={lightboxMsg && lightboxMsg.imageUrl === lightboxUrl && !lightboxMsg.deletedAt
+                  ? () => { setReportingPhoto(lightboxMsg); setLightboxUrl(null); setLightboxMsg(null) } : null} />
+      <ChatPhotoReportSheet msg={reportingPhoto} onClose={() => setReportingPhoto(null)} />
 
       <ReactionBurstLayer
         bursts={reactionBursts}

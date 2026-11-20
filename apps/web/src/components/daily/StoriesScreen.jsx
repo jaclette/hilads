@@ -9,7 +9,7 @@ import { FlagSticker, themeColor } from '../joy/Joy'
 import { todayCities } from '../today/TodayCountries'
 import { AnswerChip, captionRepeatsAnswer } from './compareShared'
 import { lastCountries, rememberCountries } from './countryOrder'
-import { LocalPassBadge, getLastToday, personName, seedProofs, useCastVote, useDaily, useDc } from './dailyShared'
+import { LocalPassBadge, ReportProofSheet, getLastToday, personName, seedProofs, useCastVote, useDaily, useDc } from './dailyShared'
 import { CommentButton, commentsTargetOf, useCommentsOpen } from './PhotoCommentsSheet'
 import StoryCommentBar from './StoryCommentBar'
 import { flushSeen, markSeen } from './seen'
@@ -46,7 +46,7 @@ export default function StoriesScreen(props) {
 
 function Stories({ city: startCity = null, photo: startPhoto = null, source = 'today', onBack }) {
   const { t, i18n } = useDc()
-  const { account, openProfile } = useDaily()
+  const { account, openProfile, needAccount } = useDaily()
   const [cities, setCities] = useState(() => {
     const list = todayCities(lastCountries())
     return list.length ? list : null
@@ -62,7 +62,11 @@ function Stories({ city: startCity = null, photo: startPhoto = null, source = 't
   const commentsOpen = useCommentsOpen()
   // Typing in the inline comment bar: the story waits, the photo dims, the taps rest.
   const [composing, setComposing] = useState(false)
-  const paused = held || commentsOpen || composing
+  // Report (the flag): the photo being reported, and the short notice after.
+  const [reporting, setReporting] = useState(null)
+  const [notice, setNotice] = useState(null)
+  useEffect(() => { if (!notice) return undefined; const id = setTimeout(() => setNotice(null), 3000); return () => clearTimeout(id) }, [notice])
+  const paused = held || commentsOpen || composing || !!reporting
   const reduce = typeof window !== 'undefined' && !!window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
 
   // Start at the city asked for; the cities before it come at the end.
@@ -206,7 +210,10 @@ function Stories({ city: startCity = null, photo: startPhoto = null, source = 't
       </div>
 
       {composing && <div className="scb-dim" aria-hidden="true" />}
-      {proof && <Bottom proof={proof} onProfile={() => openProfile(proof.user.id, proof.user.username)} />}
+      {proof && <Bottom proof={proof} onProfile={() => openProfile(proof.user.id, proof.user.username)}
+                        onReport={proof.user.id === account?.id ? null : () => (account ? setReporting(proof) : needAccount('view_profile'))} />}
+      <ReportProofSheet proof={reporting} onClose={() => setReporting(null)} onNotice={setNotice} />
+      {notice && <p className="dc-viewer-notice dc-photos-notice" role="status">{notice}</p>}
       {/* The inline comment bar (my own photo too: people reply there). */}
       {proof?.status === 'approved' && <StoryCommentBar proof={proof} onComposing={setComposing} />}
     </div>,
@@ -255,7 +262,7 @@ function TapZone({ proof, onPrev, onNext, onHold }) {
 }
 
 /** The photo's player, answer, caption and heart. */
-function Bottom({ proof, onProfile }) {
+function Bottom({ proof, onProfile, onReport }) {
   const { t, i18n } = useDc()
   const { state, canVote, voteLabel, error, press } = useCastVote(proof, 'stories')
   const name = personName(proof.user)
@@ -284,6 +291,12 @@ function Bottom({ proof, onProfile }) {
             <span className="dc-photos-count">{state?.voteCount ?? proof.voteCount}</span>
           </button>
           <CommentButton target={commentsTargetOf(proof)} variant="side" />
+          {/* Report (someone else's photo): the reasons sheet (the photo feed's flag). */}
+          {onReport && !state?.isMine && (
+            <button type="button" className="dc-photos-heart" aria-label={t('report.title')} onClick={onReport}>
+              <span className="dc-photos-heart-btn"><Icon name="flag-outline" size={22} /></span>
+            </button>
+          )}
         </div>
       )}
     </div>

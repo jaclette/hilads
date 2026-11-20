@@ -12289,3 +12289,6 @@ html[data-event="halloween"] { --header-art: #FFA552; --header-art-opacity: 0.28
 .wm-area { stroke: var(--primary); stroke-opacity: 0.55; stroke-width: 1.5; fill: var(--primary); fill-opacity: 0.16; cursor: pointer; }
 .wm-area-count { background: none; border: 0; }
 .wm-area-count span { display: inline-block; transform: translate(-50%, -50%); white-space: nowrap; padding: 2px 8px; border-radius: 999px; font-size: 12px; font-weight: 700; color: var(--text); background: var(--surface); box-shadow: 0 1px 4px rgba(0, 0, 0, 0.18); }
+
+/* The full-screen chat photo's Report flag (someone else's photo): top-left, Close stays top-right. */
+.lightbox-report { right: auto; left: 18px; }

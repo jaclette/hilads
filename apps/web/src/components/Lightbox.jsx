@@ -20,7 +20,7 @@ import { useBackLayer } from '../lib/backLayers'
  *
  * The overlay also closes on backdrop click and on Escape.
  */
-export default function Lightbox({ url, onClose }) {
+export default function Lightbox({ url, onClose, onReport = null }) {
   useBackLayer(!!url, onClose)   // browser back closes it
   const { t } = useTranslation('chat')
   const [busy, setBusy] = useState(null)  // 'download' | 'share' | null
@@ -126,6 +126,11 @@ export default function Lightbox({ url, onClose }) {
   return (
     <div className="lightbox-overlay" onClick={onClose}>
       <button className="lightbox-close" onClick={onClose} aria-label={i18n.t('a11y.close', { ns: 'common' })}><Icon name="close" size={22} /></button>
+      {/* Report (someone else's chat photo): top-left, away from Close. */}
+      {onReport && (
+        <button className="lightbox-close lightbox-report" onClick={(e) => { e.stopPropagation(); onReport() }}
+                aria-label={t('actionReport', { defaultValue: 'Report photo' })}><Icon name="flag-outline" size={20} /></button>
+      )}
       <img
         src={url}
         className="lightbox-img"
