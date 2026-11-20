@@ -99,6 +99,7 @@ final class DailyChallengeRepository
             LEFT JOIN channels ch ON ch.id = p.city_id
             LEFT JOIN cities cc   ON cc.channel_id = p.city_id
             WHERE p.challenge_id = ? AND p.moderation_status = 'approved' AND NOT p.is_suggestion AND p.place_lat IS NOT NULL"
+            . (DailyProofRepository::hasPrecision() ? " AND p.location_precision IS DISTINCT FROM 'area'" : '')
             . str_replace('city_id', 'p.city_id', $cityFilter) . "
             ORDER BY p.approved_at DESC
             LIMIT 50
@@ -129,6 +130,7 @@ final class DailyChallengeRepository
             JOIN daily_challenges dc ON dc.id = p.challenge_id
             JOIN users u ON u.id = p.user_id
             WHERE p.moderation_status = 'approved' AND p.place_lat IS NOT NULL
+              " . (DailyProofRepository::hasPrecision() ? "AND p.location_precision IS DISTINCT FROM 'area'" : '') . "   -- a hidden spot is never a person's pin
               AND dc.status = 'published' AND dc.challenge_date < ?
               AND (CAST(? AS TEXT) IS NULL OR p.city_id = ?)
             ORDER BY dc.challenge_date DESC, p.approved_at DESC

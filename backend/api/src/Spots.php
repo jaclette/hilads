@@ -438,6 +438,67 @@ final class Spots
         return Cache::remember($key, self::CACHE_TTL, static fn(): array => self::query($scope)) ?? [];
     }
 
+    public const AREA_LIMIT = 300;
+
+    /**
+     * Photo location privacy (2026-11-20): the photos posted "around my neighborhood", one
+     * point per ~400 m cell (place_lat/lng is already the cell's centre: no finer position
+     * is stored) with its photo count, the cover (most voted, then newest) and the photos' ids,
+     * newest first, for the photo feed. Same scope and theme as the spots. Cached CACHE_TTL.
+     * [{id, lat, lng, count, lastProofDate, cover: {photoUrl, thumbUrl, pinUrl}, proofIds}]
+     */
+    public static function areas(array $scope): array
+    {
+        if (!DailyProofRepository::hasPrecision()) {
+            return [];
+        }
+        $key = 'spot_areas_v1_' . md5(json_encode($scope));
+        return Cache::remember($key, self::CACHE_TTL, static function () use ($scope): array {
+            $where = ["p.location_precision = 'area'", "p.moderation_status = 'approved'", 'NOT p.is_demo', 'NOT cu.is_demo', 'p.place_lat IS NOT NULL'];
+            $args  = [];
+            if (isset($scope['cityId'])) {
+                $where[] = 'p.city_id = ?';
+                $args[]  = $scope['cityId'];
+            }
+            if (isset($scope['bbox'])) {
+                [$minLng, $minLat, $maxLng, $maxLat] = $scope['bbox'];
+                $where[] = 'p.place_lat BETWEEN ? AND ? AND p.place_lng BETWEEN ? AND ?';
+                array_push($args, $minLat, $maxLat, $minLng, $maxLng);
+            }
+            if (isset($scope['theme'])) {
+                $where[] = 'dc.theme = ?';
+                $args[]  = $scope['theme'];
+            }
+            $args[] = self::AREA_LIMIT;
+            $stmt = Database::pdo()->prepare("
+                SELECT p.place_lat AS lat, p.place_lng AS lng, count(*) AS n, max(dc.challenge_date)::text AS last_date,
+                       (array_agg(p.photo_url ORDER BY p.vote_count DESC, p.created_at DESC))[1] AS cover,
+                       (array_agg(p.id ORDER BY p.created_at DESC))[1:50] AS ids
+                FROM daily_proofs p
+                JOIN users cu            ON cu.id = p.user_id
+                JOIN daily_challenges dc ON dc.id = p.challenge_id
+                WHERE " . implode(' AND ', $where) . "
+                GROUP BY p.place_lat, p.place_lng
+                ORDER BY n DESC, last_date DESC
+                LIMIT ?
+            ");
+            $stmt->execute($args);
+            return array_map(static fn(array $r): array => [
+                'id'            => 'area_' . $r['lat'] . '_' . $r['lng'],
+                'lat'           => (float) $r['lat'],
+                'lng'           => (float) $r['lng'],
+                'count'         => (int) $r['n'],
+                'lastProofDate' => $r['last_date'],
+                'cover'         => [
+                    'photoUrl' => $r['cover'],
+                    'thumbUrl' => R2Uploader::thumbProxy($r['cover']),
+                    'pinUrl'   => R2Uploader::pinProxy($r['cover']),
+                ],
+                'proofIds'      => array_values(array_filter(explode(',', trim((string) $r['ids'], '{}')))),
+            ], $stmt->fetchAll(PDO::FETCH_ASSOC));
+        }) ?? [];
+    }
+
     /**
      * The World map's city bubbles: every city with at least one spot (in a
      * theme), with its spot count, most spots first:

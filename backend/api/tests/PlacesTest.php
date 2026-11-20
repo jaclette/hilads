@@ -143,4 +143,25 @@ final class PlacesTest extends TestCase
         $this->assertSame(['place_id' => 'abc', 'distance_m' => 42, 'place_lat' => 10.5, 'place_lng' => 106.5,
                            'place_name' => 'Stall'], $f);
     }
+
+    public function testFuzzSnapsToTheCellCentre(): void
+    {
+        // Saigon, Paris, Oslo: never the exact point, always within the cell (~285 m from its centre at most).
+        foreach ([[10.776889, 106.700806], [48.856613, 2.352222], [59.913868, 10.752245], [-33.8688, 151.2093]] as [$lat, $lng]) {
+            [$fLat, $fLng] = Places::fuzz($lat, $lng);
+            $this->assertNotSame([$lat, $lng], [$fLat, $fLng]);
+            $this->assertLessThanOrEqual(300, Places::distanceM($lat, $lng, $fLat, $fLng));
+            // A neighbour a few metres away in the same cell gets the very same point.
+            $this->assertSame([$fLat, $fLng], Places::fuzz($fLat + 0.0001, $fLng + 0.0001));
+        }
+    }
+
+    public function testPrecisionOf(): void
+    {
+        $this->assertSame('area', Places::precisionOf(['locationPrecision' => 'area']));
+        $this->assertSame('city', Places::precisionOf(['locationPrecision' => 'city']));
+        $this->assertSame('exact', Places::precisionOf(['locationPrecision' => 'exact']));
+        $this->assertNull(Places::precisionOf(['locationPrecision' => 'street']));
+        $this->assertNull(Places::precisionOf([]));
+    }
 }

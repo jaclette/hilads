@@ -75,6 +75,32 @@ final class Places
         return $key !== null && $key !== DailyThemes::SPECIAL;
     }
 
+    /** Photo location precision (2026-11-20): exact = a spot; area = a ~400 m cell; city = no position. */
+    public const PRECISIONS = ['exact', 'area', 'city'];
+    /** The area cell's side, in degrees of latitude (~400 m). */
+    public const AREA_CELL_DEG = 0.0036;
+
+    /** The precision a proof body asks for, or null (an app from before the choice: the old rules). */
+    public static function precisionOf(array $body): ?string
+    {
+        $p = $body['locationPrecision'] ?? null;
+        return is_string($p) && in_array($p, self::PRECISIONS, true) ? $p : null;
+    }
+
+    /**
+     * A position rounded to the centre of its ~400 m cell (squares: the longitude step
+     * widens with the latitude). Every photo in a cell gets the same point, so nothing
+     * finer than the cell is ever stored or shown.
+     */
+    public static function fuzz(float $lat, float $lng): array
+    {
+        $step = self::AREA_CELL_DEG;
+        $cLat = (floor($lat / $step) + 0.5) * $step;
+        $lngStep = $step / max(0.05, cos(deg2rad($cLat)));
+        $cLng = (floor($lng / $lngStep) + 0.5) * $lngStep;
+        return [round(max(-90.0, min(90.0, $cLat)), 6), round(max(-180.0, min(180.0, $cLng)), 6)];
+    }
+
     /** True when the body uses the V3 place format (sent by the app from 1.8.0). */
     public static function usesNewFormat(array $body): bool
     {

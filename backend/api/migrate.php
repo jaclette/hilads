@@ -4813,6 +4813,14 @@ JSON, true, 512, JSON_THROW_ON_ERROR);
     echo "  ERR dw World Hello Day: " . $e->getMessage() . "\n";
 }
 
+// ── Photo location privacy (2026-11-20) ──────────────────────────────────
+// A Daily photo's location, chosen by its author: exact (its spot, as before), area (only a
+// position rounded to a ~400 m cell is stored, no place) or city (no position at all).
+// NULL = posted before the choice existed (an exact spot, or no place).
+// Reversal: ALTER TABLE daily_proofs DROP COLUMN location_precision.
+run($pdo, "ALTER TABLE daily_proofs ADD COLUMN IF NOT EXISTS location_precision TEXT CHECK (location_precision IN ('exact', 'area', 'city'))", 'daily_proofs.location_precision');
+run($pdo, "CREATE INDEX IF NOT EXISTS idx_daily_proofs_area ON daily_proofs (place_lat, place_lng) WHERE location_precision = 'area' AND moderation_status = 'approved'", 'idx_daily_proofs_area');
+
 // ── Photo watch (2026-11-20) ─────────────────────────────────────────────
 // Every published photo (Daily, chat, profile photo) for Back office › Photos
 // and the admin's "new photo" push (PhotoWatch). Reversal: DROP TABLE photo_watch.

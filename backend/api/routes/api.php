@@ -12768,6 +12768,27 @@ function dailyPlaceFields(array $user, array $challenge, array $body, array $fie
 {
     $theme = DailyThemes::effective($challenge['theme'] ?? null, (string) $challenge['challenge_date']);
 
+    // Photo location privacy (2026-11-20): GPS is never required. Area: only the ~400 m cell of
+    // the position is stored (no place; no position = city); city: no position at all. Both count
+    // for the city (the proof's city is the user's current city), never a spot. Exact: the rules below.
+    $precision = Places::precisionOf($body);
+    if ($precision === 'area' || $precision === 'city') {
+        $fields = array_merge($fields, ['place_id' => null, 'distance_m' => null,
+                                        'place_lat' => null, 'place_lng' => null, 'place_name' => null]);
+        $pos = $body['position'] ?? null;
+        if ($precision === 'area' && is_array($pos) && is_numeric($pos['lat'] ?? null) && is_numeric($pos['lng'] ?? null)
+            && abs((float) $pos['lat']) <= 90 && abs((float) $pos['lng']) <= 180) {
+            [$fields['place_lat'], $fields['place_lng']] = Places::fuzz((float) $pos['lat'], (float) $pos['lng']);
+        } else {
+            $precision = 'city';
+        }
+        $fields['location_precision'] = $precision;
+        return $fields;
+    }
+    if ($precision === 'exact') {
+        $fields['location_precision'] = 'exact';
+    }
+
     if (!Places::usesNewFormat($body)) {
         if (array_key_exists('place_lat', $fields)) {
             $fields['place_id']   = null;
@@ -13887,6 +13908,8 @@ $router->add('GET', '/api/v1/map', function () {
     Response::json([
         'spots'     => array_slice($spots, 0, Spots::PIN_LIMIT),
         'truncated' => count($spots) > Spots::PIN_LIMIT,
+        // Photos posted "around my neighborhood": one soft area per ~400 m cell, never a person's spot.
+        'areas'     => Spots::areas($scope + ($theme !== null ? ['theme' => $theme] : [])),
         'plans'     => $plans,
         // V3-07: where to centre the map for the city.
         'city'      => $city !== null

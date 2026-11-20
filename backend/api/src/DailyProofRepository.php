@@ -21,6 +21,28 @@ final class DailyProofRepository
         'home_price_amount', 'home_price_currency', 'home_line',
     ];
 
+    /**
+     * daily_proofs.location_precision exists (php migrate.php, 2026-11-20): until then the code
+     * works as before (no precision written or read), so a deploy never breaks posting. Cached.
+     */
+    public static function hasPrecision(): bool
+    {
+        static $known = null;
+        if ($known !== null) {
+            return $known;
+        }
+        $r = Cache::remember('daily_proofs_has_precision_v1', 300, static function (): array {
+            try {
+                $n = Database::pdo()->query("SELECT count(*) FROM information_schema.columns
+                    WHERE table_name = 'daily_proofs' AND column_name = 'location_precision'")->fetchColumn();
+                return ['ok' => (int) $n > 0];
+            } catch (\Throwable) {
+                return ['ok' => false];
+            }
+        });
+        return $known = (bool) ($r['ok'] ?? false);
+    }
+
     private const SELECT = "
         SELECT p.*,
                dc.challenge_date, dc.theme AS challenge_theme, dc.compare_type, dc.compare_unit_i18n,
@@ -146,6 +168,7 @@ final class DailyProofRepository
         // Every proof carries a currency (SPEC 10.5): the price's, else its city's.
         $currency = $fields['price_currency'] ?? ($cityId !== null ? Currencies::forCity($cityId) : null);
 
+        $precision = self::hasPrecision();
         $stmt = Database::pdo()->prepare("
             INSERT INTO daily_proofs (
                 id, challenge_id, user_id, city_id, photo_url, selfie_url, caption,
@@ -153,8 +176,8 @@ final class DailyProofRepository
                 place_id, distance_m,
                 answer_text, answer_number, answer_minutes,
                 home_city_id, home_city_name, home_country, home_answer_text, home_answer_number, home_answer_minutes,
-                home_price_amount, home_price_currency, home_line, photo_hash, selfie_hash
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
+                home_price_amount, home_price_currency, home_line, " . ($precision ? 'location_precision, ' : '') . "photo_hash, selfie_hash
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, " . ($precision ? '?, ' : '') . "
                       (SELECT hash FROM image_hashes WHERE name = substring(?::text from '[^/]+$')),
                       (SELECT hash FROM image_hashes WHERE name = substring(?::text from '[^/]+$')))
             ON CONFLICT DO NOTHING
@@ -180,6 +203,7 @@ final class DailyProofRepository
             $fields['place_id'] ?? null,
             $fields['distance_m'] ?? null,
             ...array_map(static fn(string $c) => $fields[$c] ?? null, self::COMPARE_COLUMNS),
+            ...($precision ? [$fields['location_precision'] ?? null] : []),
             // The placeholders, computed at upload (image_hashes); else the tick fills them.
             $fields['photo_url'],
             $fields['selfie_url'] ?? null,
@@ -192,7 +216,7 @@ final class DailyProofRepository
     public static function update(string $id, array $fields): ?array
     {
         $allowed = ['photo_url', 'selfie_url', 'caption', 'price_amount', 'price_currency', 'place_lat', 'place_lng', 'place_name',
-                    'place_id', 'distance_m', ...self::COMPARE_COLUMNS];
+                    'place_id', 'distance_m', ...(self::hasPrecision() ? ['location_precision'] : []), ...self::COMPARE_COLUMNS];
         $sets = [];
         $args = [];
         foreach ($allowed as $col) {
@@ -738,9 +762,12 @@ final class DailyProofRepository
                 : null,
             // The proof's currency, with or without a price (its city's by default).
             'currency'         => $row['price_currency'] !== null ? trim((string) $row['price_currency']) : null,
-            'place'            => $row['place_lat'] !== null
+            // Never for a photo whose author hid its spot (area: only the Map shows its ~400 m cell; city: nothing).
+            'place'            => $row['place_lat'] !== null && !in_array($row['location_precision'] ?? null, ['area', 'city'], true)
                 ? ['lat' => (float) $row['place_lat'], 'lng' => (float) $row['place_lng'], 'name' => $row['place_name']]
                 : null,
+            // exact | area | city (null: posted before the choice).
+            'locationPrecision' => $row['location_precision'] ?? null,
             // V3-02: the Hilads place (spot) the proof is attached to.
             'spot'             => ($row['place_id'] ?? null) !== null
                 ? ['id' => $row['place_id'], 'name' => $row['spot_name'], 'inReview' => ($row['spot_status'] ?? null) === 'pending']
