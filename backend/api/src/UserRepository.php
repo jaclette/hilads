@@ -125,6 +125,14 @@ class UserRepository
             $values[] = time();
             $values[] = $id;
 
+            // A new profile photo goes to Back office › Photos (PhotoWatch).
+            $newPhoto = !empty($fields['profile_photo_url']) && class_exists('PhotoWatch');
+            if ($newPhoto) {
+                $prev = Database::pdo()->prepare('SELECT profile_photo_url FROM users WHERE id = ?');
+                $prev->execute([$id]);
+                $newPhoto = $prev->fetchColumn() !== $fields['profile_photo_url'];
+            }
+
             $stmt = Database::pdo()->prepare(
                 'UPDATE users SET ' . implode(', ', $sets) . ' WHERE id = ?'
             );
@@ -136,6 +144,13 @@ class UserRepository
                     throw new \RuntimeException('username_taken');
                 }
                 throw $e;
+            }
+            if ($newPhoto) {
+                $user = self::findById($id);
+                if ($user !== null) {
+                    PhotoWatch::published('avatar', $id, (string) $fields['profile_photo_url'], $user, null);
+                }
+                return $user;
             }
         }
 

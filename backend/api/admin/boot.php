@@ -126,6 +126,9 @@ if ($uri === '/admin' || $uri === '/admin/') {
     $messageId = $m[1];
     require __DIR__ . '/message_hard_delete.php';
 
+} elseif ($uri === '/admin/photos') {
+    require __DIR__ . '/photos.php';
+
 } elseif ($uri === '/admin/arrivals') {
     require __DIR__ . '/arrivals.php';
 

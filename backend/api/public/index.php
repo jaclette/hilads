@@ -90,6 +90,7 @@ if (str_starts_with($uri, '/admin')) {
     require_once __DIR__ . '/../src/MonthlyRankService.php';
     // Campaign auto-share posts a message as @hilads into the city / World channel.
     require_once __DIR__ . '/../src/MessageRepository.php';
+    require_once __DIR__ . '/../src/PhotoWatch.php';
     require_once __DIR__ . '/../src/WorldRepository.php';
     require_once __DIR__ . '/../src/DailyClock.php';
     require_once __DIR__ . '/../src/DailyRules.php';
@@ -233,6 +234,7 @@ require_once __DIR__ . '/../src/WorldCities.php';
 require_once __DIR__ . '/../src/CityAdmin.php';
 require_once __DIR__ . '/../src/PresenceRepository.php';
 require_once __DIR__ . '/../src/MessageRepository.php';
+    require_once __DIR__ . '/../src/PhotoWatch.php';
 require_once __DIR__ . '/../src/WorldRepository.php';
 require_once __DIR__ . '/../src/MentionService.php';
 require_once __DIR__ . '/../src/EventRepository.php';

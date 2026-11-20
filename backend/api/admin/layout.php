@@ -262,6 +262,7 @@ function admin_nav(string $current = ''): void
             '/admin/worlds'     => '🌍 Worlds',
             '/admin/cities'     => 'Cities',
             '/admin/messages'=> 'Messages',
+            '/admin/photos'  => 'Photos',
             '/admin/arrivals'=> 'Arrivals',
             '/admin/reports' => 'Reports',
             '/admin/bans'    => 'Bans',
@@ -278,6 +279,9 @@ function admin_nav(string $current = ''): void
             $badge  = $href === '/admin/daily' && $pending > 0
                 ? ' <span class="nav-count" title="Proposals waiting">' . $pending . '</span>' : '';
             $to = $href;
+            if ($href === '/admin/photos' && class_exists('PhotoWatch') && ($newPhotos = PhotoWatch::unseenCount()) > 0) {
+                $badge = ' <span class="nav-count" title="Photos not checked yet">' . min($newPhotos, 99) . ($newPhotos > 99 ? '+' : '') . '</span>';
+            }
             if ($href === '/admin/cities' && $newCities > 0) {
                 $to    = '/admin/cities?view=auto';
                 $badge = ' <span class="nav-count" title="New cities created automatically">' . min($newCities, 99) . ($newCities > 99 ? '+' : '') . '</span>';

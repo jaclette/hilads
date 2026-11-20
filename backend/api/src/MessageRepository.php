@@ -762,6 +762,22 @@ class MessageRepository
             VALUES (?, ?, 'image', ?, ?, ?, ?, '', ?)
         ")->execute([$id, self::dbKey($channelId), $guestId, $userId, $nickname, $imageUrl, $challengeAcceptanceId]);
 
+        // Back office › Photos and the admin's push. Direct messages never come here (conversation_messages).
+        if (class_exists('PhotoWatch')) {
+            try {
+                $ch = Database::pdo()->prepare("SELECT c.type, c.name, u.username, u.is_fake FROM channels c LEFT JOIN users u ON u.id = ? WHERE c.id = ?");
+                $ch->execute([$userId, self::dbKey($channelId)]);
+                $c = $ch->fetch(PDO::FETCH_ASSOC) ?: [];
+                $label = ['city' => 'chat', 'event' => 'Hi plan', 'topic' => 'Hi now', 'challenge' => 'challenge', 'world' => 'World chat'][$c['type'] ?? ''] ?? 'chat';
+                $where = ($c['type'] ?? '') === 'world' ? $label : trim(($c['name'] ?? '') . ' ' . $label);
+                PhotoWatch::published('chat', $id, $imageUrl,
+                    ['id' => $userId, 'guest_id' => $guestId, 'nickname' => $nickname, 'username' => $c['username'] ?? null, 'is_fake' => $c['is_fake'] ?? false],
+                    $where);
+            } catch (\Throwable $e) {
+                error_log('[photo-watch] chat ' . $id . ': ' . $e->getMessage());
+            }
+        }
+
         return [
             'id'        => $id,
             'channelId' => $channelId,

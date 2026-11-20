@@ -14041,6 +14041,15 @@ $router->add('POST', '/api/v1/daily/proofs', function () {
     DailyCompare::rememberHomeCity($user['id'], $fields);
     $proof = dailyAfterProofWrite($proof['id']);
     apiLog('daily', 'proof created', ['proof' => $proof['id'], 'user' => $user['id'], 'challenge' => $challenge['id']]);
+    // Represent your city (SPEC 9.16): the city's first proof of the day ("You put Saigon on the world map today.").
+    $cityFirst = false;
+    try {
+        $cityFirst = DailyPresence::isFirstOfDay($proof, true);
+    } catch (\Throwable $e) {
+        error_log('[daily] first of day failed: ' . $e->getMessage());
+    }
+    // The player has their answer now; the pushes go out after it (they took seconds, in the request).
+    Response::jsonAndContinue(['proof' => DailyProofRepository::format($proof, $user['id']), 'cityFirstToday' => $cityFirst], 201);
     // Everyone hears it, every photo, right away: "📸 Linh just played in Saigon!" over the challenge.
     if (($proof['moderation_status'] ?? null) === 'approved') {
         try {
@@ -14049,14 +14058,12 @@ $router->add('POST', '/api/v1/daily/proofs', function () {
             error_log('[daily] new photo push failed: ' . $e->getMessage());
         }
     }
-    // Represent your city (SPEC 9.16): the city's first proof of the day ("You put Saigon on the world map today.").
-    $cityFirst = false;
-    try {
-        $cityFirst = DailyPresence::isFirstOfDay($proof, true);
-    } catch (\Throwable $e) {
-        error_log('[daily] first of day failed: ' . $e->getMessage());
+    // Back office › Photos and the admin's push (the selfie too: it is published with the photo).
+    PhotoWatch::published('daily', $proof['id'], (string) $proof['photo_url'], $user, $proof['city_name'] ?? null);
+    if (!empty($proof['selfie_url'])) {
+        PhotoWatch::published('daily', $proof['id'], (string) $proof['selfie_url'], $user, $proof['city_name'] ?? null);
     }
-    Response::json(['proof' => DailyProofRepository::format($proof, $user['id']), 'cityFirstToday' => $cityFirst], 201);
+    exit;
 });
 
 // PATCH /api/v1/daily/proofs/{id} - edit my proof while its challenge is active.
@@ -14094,6 +14101,10 @@ $router->add('PATCH', '/api/v1/daily/proofs/{id}', function (array $params) {
     $updated = dailyAfterProofWrite($proof['id']);
     if (isset($fields['photo_url']) && $fields['photo_url'] !== $proof['photo_url']) {
         dailyDeletePhoto($proof['photo_url']);
+        PhotoWatch::published('daily', $proof['id'], (string) $fields['photo_url'], $user, $updated['city_name'] ?? null);
+    }
+    if (!empty($fields['selfie_url']) && $fields['selfie_url'] !== ($proof['selfie_url'] ?? null)) {
+        PhotoWatch::published('daily', $proof['id'], (string) $fields['selfie_url'], $user, $updated['city_name'] ?? null);
     }
     // A replaced or removed selfie (dual photo) goes from storage too.
     if (array_key_exists('selfie_url', $fields) && ($proof['selfie_url'] ?? null) !== null && $fields['selfie_url'] !== $proof['selfie_url']) {
