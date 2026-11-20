@@ -1,8 +1,9 @@
 import * as Application from 'expo-application';
 import Constants from 'expo-constants';
 import { Platform } from 'react-native';
+import * as Updates from 'expo-updates';
 
-/** The installed app's version ("1.8.0"): the store build's own, else app.json's (no OTA in this app). */
+/** The installed app's version ("1.8.0"): the store build's own, else app.json's (OTA updates never change it). */
 export const APP_BUILD_VERSION: string =
   Application.nativeApplicationVersion ?? Constants.expoConfig?.version ?? '0.0.0';
 
@@ -30,4 +31,20 @@ export function isOlderVersion(version: string | null | undefined, than: string 
     if (a[i] !== b[i]) return a[i] < b[i];
   }
   return false;
+}
+
+/**
+ * What this phone really runs, for Settings and the debug screen: the store version and
+ * build, then the update it launched ("built-in" = the store bundle, no update applied).
+ * Ex. "v2.2.1 (305) · update 01a1f851 · Nov 20". Not translated: it is read back to support.
+ */
+export function appVersionLabel(): string {
+  const build = Application.nativeBuildVersion;
+  let update = 'built-in';
+  if (!Updates.isEmbeddedLaunch && Updates.updateId) {
+    const at = Updates.createdAt;
+    update = `update ${Updates.updateId.slice(0, 8)}`
+      + (at ? ` · ${at.toLocaleDateString('en', { month: 'short', day: 'numeric' })}` : '');
+  }
+  return `v${APP_BUILD_VERSION}${build ? ` (${build})` : ''} · ${update}`;
 }

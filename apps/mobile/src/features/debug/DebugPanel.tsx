@@ -9,7 +9,8 @@ import { useApp } from '@/context/AppContext';
 import { socket } from '@/lib/socket';
 import { clearIdentity } from '@/lib/identity';
 import { clearToken } from '@/services/session';
-import { Space, FontSizes, Spacing, Radius, API_URL, WS_URL, APP_VERSION, type ThemeColors } from '@/constants';
+import { appVersionLabel } from '@/lib/appVersion';
+import { Space, FontSizes, Spacing, Radius, API_URL, WS_URL, type ThemeColors } from '@/constants';
 import { useThemedStyles } from '@/context/ThemeContext';
 import { setSeasonalPreview } from '@/features/event/seasonal';
 
@@ -75,7 +76,7 @@ export function DebugPanel() {
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
       <Text style={styles.heading}>App</Text>
       <View style={styles.card}>
-        <Row label="Version"     value={APP_VERSION} />
+        <Row label="Version"     value={appVersionLabel()} />
         <Row label="API"         value={API_URL} />
         <Row label="WS"          value={WS_URL} />
         <Row label="WS status"   value={wsConnected ? 'Connected' : 'Disconnected'} />

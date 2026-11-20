@@ -243,10 +243,12 @@ function DailyProofScreenContent() {
   useEffect(() => {
     let alive = true;
     (async () => {
+      let stage = 'load';   // which call failed, in the alert's technical line
+      const tag = <T,>(name: string, job: Promise<T>) => job.catch((e: unknown) => { stage = name; throw e; });
       try {
         let [d, p, config] = await Promise.all([
-          fetchDailyToday(city?.channelId),
-          edit ? fetchDailyProof(edit) : Promise.resolve(null),
+          tag('load:today', fetchDailyToday(city?.channelId)),
+          edit ? tag('load:proof', fetchDailyProof(edit)) : Promise.resolve(null),
           // The dual photo switch, known before the camera opens (a failure or 3 s without an answer: off).
           Promise.race([fetchAppConfig().catch(() => null), new Promise<null>(r => setTimeout(() => r(null), 3000))]),
         ]);
@@ -279,8 +281,14 @@ function DailyProofScreenContent() {
           setStep('photo');
           autoCamera.current = true;
         }
-      } catch {
-        if (alive) Alert.alert(t('errors.generic'));
+      } catch (err) {
+        // The screen can't open (no challenge, no camera): a short technical line and Sentry,
+        // so a screenshot from a player says which call failed and why.
+        Sentry.captureException(err, { tags: { where: 'daily_proof_load', stage } });
+        const why = err instanceof ApiError ? `HTTP ${err.status}`
+                  : err instanceof Error ? `${err.name}: ${err.message || '(no message)'}`
+                  : String(err);
+        if (alive) Alert.alert(t('errors.generic'), `v4 · ${stage} · ${why}`.slice(0, 200));
       } finally {
         if (alive) setLoading(false);
       }

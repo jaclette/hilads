@@ -64,7 +64,6 @@ if (!process.env.EXPO_PUBLIC_API_URL) {
   console.error('[env] CRITICAL: EXPO_PUBLIC_API_URL is not set - all API calls will fail on device!');
 }
 
-export const APP_VERSION = '1.0.0';
 
 // ── Design tokens - aligned with web app ──────────────────────────────────────
 // Web source: apps/web/src/index.css CSS variables

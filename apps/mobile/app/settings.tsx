@@ -22,12 +22,13 @@ import { setCurrentCity } from '@/api/channels';
 import { isLegend as accountIsLegend } from '@/lib/canCreateEvent';
 import { LeaderboardCityPickerSheet } from '@/features/challenge/LeaderboardCityPickerSheet';
 import { localizeCityName , shortCityName } from '@/i18n/cityName';
-import { Space, Border, FontSizes, Spacing, Radius, APP_VERSION, type ThemeColors } from '@/constants';
+import { Space, Border, FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { Avatar, Button, Card, Chip, CityFlag, ListRow, RowGroup, Screen, ScreenHeader, SectionTitle, TextField } from '@/ui';
 import { LanguageRow } from '@/features/settings/LanguageRow';
 import { DirectionsRow } from '@/features/settings/DirectionsRow';
 import { PhotoLocationRow } from '@/features/settings/PhotoLocationRow';
+import { appVersionLabel } from '@/lib/appVersion';
 import { ModePicker } from '@/features/profile/ModePicker';
 import { VIBE_ICONS } from '@/features/profile/vibes';
 import { HomeCityPicker } from '@/features/compare/HomeCityPicker';
@@ -514,7 +515,7 @@ export default function SettingsScreen() {
 
         {/* Version - tap 5 times for the debug screen */}
         <TouchableOpacity onPress={handleVersionTap} activeOpacity={1} style={styles.versionWrap}>
-          <Text style={styles.version}>v{APP_VERSION}</Text>
+          <Text style={styles.version} selectable>{appVersionLabel()}</Text>
         </TouchableOpacity>
         {/* GeoNames (CC BY 4.0) asks for credit: the city base behind placement and search. */}
         <Text style={styles.credit} onPress={() => Linking.openURL('https://www.geonames.org')}>{t('cityDataCredit')}</Text>
