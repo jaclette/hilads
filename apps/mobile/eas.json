@@ -16,6 +16,7 @@
         "EXPO_PUBLIC_WS_URL": "ws://10.0.2.2:8081",
         "SENTRY_DISABLE_AUTO_UPLOAD": "true",
         "EXPO_PUBLIC_USE_RN_FETCH": "1",
+        "EXPO_PUBLIC_SENTRY_DSN": "https://e412e65d7165009c7d8023cf3a7afd58@o4511143247740928.ingest.de.sentry.io/4511143263928400",
         "EXPO_PUBLIC_META_APP_ID": "1453047050110540"
       }
     },
@@ -32,6 +33,7 @@
         "EXPO_PUBLIC_BASE_URL": "https://hilads.live",
         "SENTRY_DISABLE_AUTO_UPLOAD": "true",
         "EXPO_PUBLIC_USE_RN_FETCH": "1",
+        "EXPO_PUBLIC_SENTRY_DSN": "https://e412e65d7165009c7d8023cf3a7afd58@o4511143247740928.ingest.de.sentry.io/4511143263928400",
         "EXPO_PUBLIC_META_APP_ID": "1453047050110540"
       }
     },
@@ -48,6 +50,7 @@
         "EXPO_PUBLIC_BASE_URL": "https://hilads.live",
         "SENTRY_DISABLE_AUTO_UPLOAD": "true",
         "EXPO_PUBLIC_USE_RN_FETCH": "1",
+        "EXPO_PUBLIC_SENTRY_DSN": "https://e412e65d7165009c7d8023cf3a7afd58@o4511143247740928.ingest.de.sentry.io/4511143263928400",
         "EXPO_PUBLIC_META_APP_ID": "1453047050110540"
       }
     }
