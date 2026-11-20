@@ -923,5 +923,24 @@
     "mapNoCity": "Putting your photo on the map 🌍",
     "almost": "Almost there… 🎉",
     "done": "Done! 🎉"
+  },
+  "where": {
+    "title": "Where should your photo show?",
+    "exact": "Exact spot",
+    "exactSub": "Pinned on the place · best for a public café, bar or restaurant",
+    "area": "Neighborhood",
+    "areaSub": "Your exact spot stays private · shown around your neighborhood",
+    "city": "City only",
+    "citySub": "Counts for {{city}} · not shown on the Map",
+    "citySubNoName": "Counts for your city · not shown on the Map",
+    "locationOff": "Location is off: your photo will count for {{city}}, not shown on the Map.",
+    "locationOffNoName": "Location is off: your photo will count for your city, not shown on the Map.",
+    "settingHint": "You can change the default in Settings › Photo location.",
+    "settingTitle": "Photo location",
+    "settingBody": "Where your Daily photos show on the Map. You can still change it on each photo.",
+    "continue": "Continue",
+    "noPositionBody": "We can't find your position to pin the spot. You can still post it for your city.",
+    "postForCity": "Post for {{city}}",
+    "postCityOnly": "Post for my city"
   }
 }

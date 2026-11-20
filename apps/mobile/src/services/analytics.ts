@@ -156,6 +156,7 @@ export type AnalyticsEvent =
   | 'map_first_spot_tapped'
   | 'map_view_switched'
   | 'map_city_bubble_tapped'
+  | 'map_area_tapped'        // a neighborhood photo area on the Map (props: count)
   | 'map_list_sorted'
   | 'spot_opened'
   // V3-08: the place-based proof (SPEC 9.13)

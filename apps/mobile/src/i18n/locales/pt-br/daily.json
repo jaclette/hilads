@@ -964,5 +964,24 @@
     "mapNoCity": "Colocando sua foto no mapa 🌍",
     "almost": "Quase lá… 🎉",
     "done": "Pronto! 🎉"
+  },
+  "where": {
+    "title": "Onde sua foto vai aparecer?",
+    "exact": "Lugar exato",
+    "exactSub": "Fixada no lugar · ideal para um café, bar ou restaurante",
+    "area": "Bairro",
+    "areaSub": "Seu lugar exato fica privado · mostrada pela região do seu bairro",
+    "city": "Só a cidade",
+    "citySub": "Conta para {{city}} · não aparece no mapa",
+    "citySubNoName": "Conta para sua cidade · não aparece no mapa",
+    "locationOff": "A localização está desligada: sua foto vai contar para {{city}}, sem aparecer no mapa.",
+    "locationOffNoName": "A localização está desligada: sua foto vai contar para sua cidade, sem aparecer no mapa.",
+    "settingHint": "Você pode mudar o padrão em Configurações › Local das fotos.",
+    "settingTitle": "Local das fotos",
+    "settingBody": "Onde suas fotos do Daily aparecem no mapa. Você ainda pode mudar em cada foto.",
+    "continue": "Continuar",
+    "noPositionBody": "Não encontramos sua localização para fixar o lugar. Você ainda pode postar para sua cidade.",
+    "postForCity": "Postar para {{city}}",
+    "postCityOnly": "Postar para minha cidade"
   }
 }

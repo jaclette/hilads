@@ -881,5 +881,24 @@
     "mapNoCity": "正在把你的照片放上地圖 🌍",
     "almost": "快好了… 🎉",
     "done": "完成！🎉"
+  },
+  "where": {
+    "title": "你的照片要顯示在哪裡？",
+    "exact": "確切地點",
+    "exactSub": "釘在地點上 · 適合咖啡廳、酒吧或餐廳",
+    "area": "附近區域",
+    "areaSub": "你的確切位置保持私密 · 只顯示在你所在街區附近",
+    "city": "僅城市",
+    "citySub": "計入{{city}} · 不顯示在地圖上",
+    "citySubNoName": "計入你的城市 · 不顯示在地圖上",
+    "locationOff": "定位已關閉：你的照片將計入{{city}}，不會顯示在地圖上。",
+    "locationOffNoName": "定位已關閉：你的照片將計入你的城市，不會顯示在地圖上。",
+    "settingHint": "你可以在 設定 › 照片位置 中更改預設值。",
+    "settingTitle": "照片位置",
+    "settingBody": "你的 Daily 照片在地圖上的顯示方式。每張照片仍可單獨更改。",
+    "continue": "繼續",
+    "noPositionBody": "無法取得你的位置來標記地點。你仍然可以為你的城市發布。",
+    "postForCity": "為{{city}}發布",
+    "postCityOnly": "為我的城市發布"
   }
 }

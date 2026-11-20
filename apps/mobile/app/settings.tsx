@@ -27,6 +27,7 @@ import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { Avatar, Button, Card, Chip, CityFlag, ListRow, RowGroup, Screen, ScreenHeader, SectionTitle, TextField } from '@/ui';
 import { LanguageRow } from '@/features/settings/LanguageRow';
 import { DirectionsRow } from '@/features/settings/DirectionsRow';
+import { PhotoLocationRow } from '@/features/settings/PhotoLocationRow';
 import { ModePicker } from '@/features/profile/ModePicker';
 import { VIBE_ICONS } from '@/features/profile/vibes';
 import { HomeCityPicker } from '@/features/compare/HomeCityPicker';
@@ -489,6 +490,7 @@ export default function SettingsScreen() {
           />
           <LanguageRow divider />
           <DirectionsRow divider />
+          <PhotoLocationRow divider />
           {/* Every push setting (was only behind the ⚙️ of Notifications). */}
           {!isGuest && (
             <ListRow icon="notifications-outline" title={t('settings.title', { ns: 'notifications' })} divider

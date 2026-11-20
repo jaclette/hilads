@@ -21,7 +21,9 @@ import { useDailyToday } from '@/hooks/useDaily';
 import { requestFeatureLocation } from '@/lib/geoFeature';
 import { CITY_ZOOM, MAP_STYLE, MIN_ZOOM, WORLD_HIDDEN_LAYERS, WORLD_MIN_ZOOM, WORLD_ZOOM, setupMapbox } from '@/lib/mapbox';
 import { openDirections } from '@/lib/directions';
-import { fetchMap, fetchMapCities, fetchSpot, searchSpots, type Bbox, type MapCity, type PlanPin, type Spot } from '@/api/spots';
+import { fetchMap, fetchMapCities, fetchSpot, searchSpots, type Bbox, type MapArea, type MapCity, type PlanPin, type Spot } from '@/api/spots';
+import { fetchDailyProofsByIds } from '@/api/daily';
+import { openPhotoFeed } from '@/features/daily/openFeed';
 import { THEME_KEYS, isPlaceTheme, themeName } from '@/features/daily/themes';
 import { meters, pinLabel } from '@/features/today/format';
 import { ThemeIcon } from '@/ui/ThemeIcon';
@@ -174,6 +176,8 @@ export default function MapScreen() {
     if (k && PLACE_THEMES.includes(k)) setThemeFilter(k);
   }, [params.theme]);
   const [spots, setSpots]       = useState<Spot[]>([]);
+  // Photos shown "around my neighborhood": soft ~400 m areas, never a person's spot.
+  const [areas, setAreas]       = useState<MapArea[]>([]);
   const [plans, setPlans]       = useState<PlanPin[]>([]);
   const [center, setCenter]     = useState<[number, number] | null>(null);
   // The city's spots as [sw, ne] (first load): where to look without my position.
@@ -242,8 +246,8 @@ export default function MapScreen() {
       if (!alive) return;
       if (d.city) setCenter([d.city.lng, d.city.lat]);
       if (themeFilter === null) setCityFrame(spotsFrame(d.spots));
-      setCityEmpty(themeFilter === null && d.spots.length === 0);
-      if (!lastBbox.current) { setSpots(d.spots); setPlans(scope === 'city' ? d.plans : []); }
+      setCityEmpty(themeFilter === null && d.spots.length === 0 && (d.areas ?? []).length === 0);
+      if (!lastBbox.current) { setSpots(d.spots); setAreas(d.areas ?? []); setPlans(scope === 'city' ? d.plans : []); }
       setLoaded(true);
     }).catch(() => { if (alive) setLoaded(true); });
     return () => { alive = false; };
@@ -345,7 +349,7 @@ export default function MapScreen() {
     // The whole world: the bubbles say it, no pins to load.
     if (scope === 'world' && bbox[2] - bbox[0] > 40) return;
     fetchMap({ bbox, cityId: scope === 'city' ? cityId : null, theme: themeFilter })
-      .then(d => { setSpots(d.spots); setPlans(scope === 'city' ? d.plans : []); })
+      .then(d => { setSpots(d.spots); setAreas(d.areas ?? []); setPlans(scope === 'city' ? d.plans : []); })
       .catch(() => {});
   }, [cityId, scope, themeFilter]);
 
@@ -482,22 +486,42 @@ export default function MapScreen() {
     })),
   }), [spots, selected?.id, i18n.language, worldView, todayOnly, todayDate, themeFilter]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // The pin photos (216 px PNGs, drawn at 72 pt).
-  const pinImages = useMemo(() => Object.fromEntries(
-    spots.filter(s => s.cover.pinUrl).map(s => [`pin-${s.id}`, { url: `${s.cover.pinUrl}&s=216`, scale: 3 }]),
-  ), [spots]);
+  // The pin photos (216 px PNGs, drawn at 72 pt), the areas' covers too.
+  const pinImages = useMemo(() => Object.fromEntries([
+    ...spots.filter(s => s.cover.pinUrl).map(s => [`pin-${s.id}`, { url: `${s.cover.pinUrl}&s=216`, scale: 3 }]),
+    ...areas.filter(a => a.cover.pinUrl).map(a => [`pin-${a.id}`, { url: `${a.cover.pinUrl}&s=216`, scale: 3 }]),
+  ]), [spots, areas]);
+
+  // The neighborhood areas (Today: today's photos only; none with Plans or in the World view).
+  const shownAreas = useMemo(
+    () => (plansOnly || worldView ? [] : todayOnly ? areas.filter(a => !!todayDate && a.lastProofDate === todayDate) : areas),
+    [plansOnly, worldView, todayOnly, areas, todayDate],
+  );
+  const areaShape = useMemo<GeoJSON.FeatureCollection>(() => ({
+    type: 'FeatureCollection',
+    features: shownAreas.map(a => ({
+      type: 'Feature', id: a.id, geometry: { type: 'Point', coordinates: [a.lng, a.lat] },
+      properties: { id: a.id, count: a.count, img: a.cover.pinUrl ? `pin-${a.id}` : '' },
+    })),
+  }), [shownAreas]);
+  const onAreaPress = (e: { features: GeoJSON.Feature[] }) => {
+    const a = areas.find(x => x.id === e.features[0]?.properties?.id);
+    if (!a || a.proofIds.length === 0) return;
+    track('map_area_tapped', { count: a.count });
+    fetchDailyProofsByIds(a.proofIds).then(proofs => openPhotoFeed(proofs, null, 'map_area')).catch(() => {});
+  };
 
   if (!hasToken) {
     return <View style={[styles.container, styles.center]}><Text style={styles.muted}>{t('map.noToken')}</Text></View>;
   }
 
-  const showEmpty = loaded && cityEmpty && scope === 'city' && !selected && spots.length === 0 && !plansOnly;
+  const showEmpty = loaded && cityEmpty && scope === 'city' && !selected && spots.length === 0 && areas.length === 0 && !plansOnly;
   // The list shares the map's state: the search hits (in the theme) or the area's spots.
   const listSpots = plansOnly ? [] : results !== null ? results.filter(s => themeFilter === null || themeFilter === SPECIAL || s.themes.includes(themeFilter)) : shown;
   const bboxCentre: [number, number] | null = lastBbox.current
     ? [(lastBbox.current[0] + lastBbox.current[2]) / 2, (lastBbox.current[1] + lastBbox.current[3]) / 2] : center;
   // Zoomed into a place with no spot (the city has some): "Nothing here yet. Be the pioneer 📍".
-  const emptyArea = loaded && scope === 'city' && !cityEmpty && !worldView && shown.length === 0 && results === null && !plansOnly;
+  const emptyArea = loaded && scope === 'city' && !cityEmpty && !worldView && shown.length === 0 && shownAreas.length === 0 && results === null && !plansOnly;
 
   // 🎲 Surprise me: fly to a random good spot of the area (a photo and some likes first) and open its card.
   const surprise = () => {
@@ -535,6 +559,22 @@ export default function MapScreen() {
         {DEFAULT_STYLE && <FillLayer id="water" existing style={{ fillColor: PALETTE[uiTheme === 'dark' ? 'dark' : 'light'].water }} />}
         {DEFAULT_STYLE && <FillLayer id="landuse" existing style={{ fillColor: PALETTE[uiTheme === 'dark' ? 'dark' : 'light'].park, fillOpacity: 0.9 }} />}
 
+        {/* Neighborhood photos: a soft circle the size of their ~400 m area (never a pin on a spot),
+            its cover photo and count in the middle; under the spots. */}
+        <ShapeSource id="areas" shape={areaShape} hitbox={{ width: 28, height: 28 }} onPress={onAreaPress}>
+          <CircleLayer id="area-fill" style={{
+            circleRadius: ['interpolate', ['exponential', 2], ['zoom'], 10, 10, 13, 14, 15, 48, 18, 384] as never,
+            circleColor: colors.primary, circleOpacity: 0.16, circleStrokeColor: colors.primary, circleStrokeOpacity: 0.55, circleStrokeWidth: 1.5,
+          }} />
+          <SymbolLayer id="area-photos" filter={['!=', ['get', 'img'], '']} minZoomLevel={12} style={{
+            iconImage: ['get', 'img'], iconSize: PHOTO_ICON_SIZE * 0.85, iconAllowOverlap: true, iconIgnorePlacement: true, iconOpacity: 0.95,
+          }} />
+          <SymbolLayer id="area-count" minZoomLevel={12} style={{
+            textField: ['case', ['>', ['get', 'count'], 1], ['concat', '📷 ', ['to-string', ['get', 'count']]], '📷'] as never,
+            textSize: 12, textColor: colors.text, textHaloColor: colors.bg2, textHaloWidth: 1.5,
+            textOffset: [0, 2.4], textAllowOverlap: true, textIgnorePlacement: true,
+          }} />
+        </ShapeSource>
         <ShapeSource id="spots" ref={sourceRef} shape={shape} cluster clusterRadius={44} clusterMaxZoomLevel={15} hitbox={PIN_HITBOX} onPress={onSourcePress}
                      clusterProperties={CLUSTER_PROPS}>
           {/* Clusters look like a little stack: a second disc peeking out behind. */}

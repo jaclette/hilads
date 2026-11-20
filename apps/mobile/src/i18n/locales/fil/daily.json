@@ -923,5 +923,24 @@
     "mapNoCity": "Inilalagay ang photo mo sa mapa 🌍",
     "almost": "Malapit na… 🎉",
     "done": "Tapos na! 🎉"
+  },
+  "where": {
+    "title": "Saan ipapakita ang photo mo?",
+    "exact": "Eksaktong lugar",
+    "exactSub": "Naka-pin sa lugar · bagay sa café, bar o restaurant",
+    "area": "Kapitbahayan",
+    "areaSub": "Pribado ang eksaktong lugar mo · ipapakita sa paligid ng kapitbahayan mo",
+    "city": "Lungsod lang",
+    "citySub": "Bibilang para sa {{city}} · hindi lalabas sa Mapa",
+    "citySubNoName": "Bibilang para sa lungsod mo · hindi lalabas sa Mapa",
+    "locationOff": "Naka-off ang location: bibilang ang photo mo para sa {{city}}, hindi lalabas sa Mapa.",
+    "locationOffNoName": "Naka-off ang location: bibilang ang photo mo para sa lungsod mo, hindi lalabas sa Mapa.",
+    "settingHint": "Mababago mo ang default sa Settings › Lokasyon ng photo.",
+    "settingTitle": "Lokasyon ng photo",
+    "settingBody": "Kung saan lalabas sa Mapa ang mga Daily photo mo. Mababago mo pa rin ito sa bawat photo.",
+    "continue": "Tuloy",
+    "noPositionBody": "Hindi namin makita ang posisyon mo para i-pin ang lugar. Puwede mo pa rin itong i-post para sa lungsod mo.",
+    "postForCity": "I-post para sa {{city}}",
+    "postCityOnly": "I-post para sa lungsod ko"
   }
 }

@@ -923,5 +923,24 @@
     "mapNoCity": "Dein Foto kommt auf die Karte 🌍",
     "almost": "Fast geschafft… 🎉",
     "done": "Fertig! 🎉"
+  },
+  "where": {
+    "title": "Wo soll dein Foto erscheinen?",
+    "exact": "Genauer Ort",
+    "exactSub": "Auf dem Ort angepinnt · ideal für ein Café, eine Bar oder ein Restaurant",
+    "area": "Viertel",
+    "areaSub": "Dein genauer Ort bleibt privat · angezeigt rund um dein Viertel",
+    "city": "Nur Stadt",
+    "citySub": "Zählt für {{city}} · nicht auf der Karte",
+    "citySubNoName": "Zählt für deine Stadt · nicht auf der Karte",
+    "locationOff": "Standort ist aus: Dein Foto zählt für {{city}} und erscheint nicht auf der Karte.",
+    "locationOffNoName": "Standort ist aus: Dein Foto zählt für deine Stadt und erscheint nicht auf der Karte.",
+    "settingHint": "Die Voreinstellung änderst du unter Einstellungen › Foto-Standort.",
+    "settingTitle": "Foto-Standort",
+    "settingBody": "Wo deine Daily-Fotos auf der Karte erscheinen. Du kannst es bei jedem Foto ändern.",
+    "continue": "Weiter",
+    "noPositionBody": "Wir finden deinen Standort nicht, um den Ort anzupinnen. Du kannst es trotzdem für deine Stadt posten.",
+    "postForCity": "Für {{city}} posten",
+    "postCityOnly": "Für meine Stadt posten"
   }
 }

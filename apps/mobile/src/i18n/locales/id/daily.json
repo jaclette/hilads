@@ -881,5 +881,24 @@
     "mapNoCity": "Menaruh fotomu di peta 🌍",
     "almost": "Hampir selesai… 🎉",
     "done": "Selesai! 🎉"
+  },
+  "where": {
+    "title": "Di mana fotomu ditampilkan?",
+    "exact": "Lokasi tepat",
+    "exactSub": "Dipasang di tempatnya · cocok untuk kafe, bar, atau restoran",
+    "area": "Lingkungan",
+    "areaSub": "Lokasi tepatmu tetap privat · ditampilkan di sekitar lingkunganmu",
+    "city": "Kota saja",
+    "citySub": "Dihitung untuk {{city}} · tidak tampil di Peta",
+    "citySubNoName": "Dihitung untuk kotamu · tidak tampil di Peta",
+    "locationOff": "Lokasi mati: fotomu dihitung untuk {{city}}, tidak tampil di Peta.",
+    "locationOffNoName": "Lokasi mati: fotomu dihitung untuk kotamu, tidak tampil di Peta.",
+    "settingHint": "Kamu bisa mengubah bawaannya di Pengaturan › Lokasi foto.",
+    "settingTitle": "Lokasi foto",
+    "settingBody": "Tempat foto Daily-mu tampil di Peta. Kamu tetap bisa mengubahnya di tiap foto.",
+    "continue": "Lanjut",
+    "noPositionBody": "Kami tidak bisa menemukan posisimu untuk memasang lokasinya. Kamu tetap bisa mempostingnya untuk kotamu.",
+    "postForCity": "Posting untuk {{city}}",
+    "postCityOnly": "Posting untuk kotaku"
   }
 }

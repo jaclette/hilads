@@ -881,5 +881,24 @@
     "mapNoCity": "사진을 지도에 올리는 중 🌍",
     "almost": "거의 다 됐어… 🎉",
     "done": "완료! 🎉"
+  },
+  "where": {
+    "title": "사진을 어디에 보여줄까?",
+    "exact": "정확한 장소",
+    "exactSub": "장소에 핀 고정 · 카페, 바, 식당에 딱 맞아",
+    "area": "동네",
+    "areaSub": "정확한 위치는 비공개 · 동네 근처로 표시돼",
+    "city": "도시만",
+    "citySub": "{{city}}에 집계 · 지도에 표시 안 됨",
+    "citySubNoName": "내 도시에 집계 · 지도에 표시 안 됨",
+    "locationOff": "위치가 꺼져 있어: 사진은 {{city}}에 집계되고 지도에는 표시되지 않아.",
+    "locationOffNoName": "위치가 꺼져 있어: 사진은 내 도시에 집계되고 지도에는 표시되지 않아.",
+    "settingHint": "기본값은 설정 › 사진 위치에서 바꿀 수 있어.",
+    "settingTitle": "사진 위치",
+    "settingBody": "Daily 사진이 지도에 표시되는 방식이야. 사진마다 바꿀 수도 있어.",
+    "continue": "계속",
+    "noPositionBody": "장소를 고정할 위치를 찾지 못했어. 그래도 내 도시에 올릴 수 있어.",
+    "postForCity": "{{city}}에 올리기",
+    "postCityOnly": "내 도시에 올리기"
   }
 }

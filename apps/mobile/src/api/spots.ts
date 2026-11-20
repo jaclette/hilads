@@ -43,8 +43,21 @@ export interface PlanPin {
   participantCount: number;
 }
 
+/** Photos posted "around my neighborhood": one soft area per ~400 m cell (never a person's spot). */
+export interface MapArea {
+  id:            string;
+  lat:           number;
+  lng:           number;
+  count:         number;
+  lastProofDate: string | null;
+  cover:         { photoUrl: string | null; thumbUrl: string | null; pinUrl: string | null };
+  proofIds:      string[];
+}
+
 export interface MapData {
   spots:     Spot[];
+  /** Absent from a server before photo location privacy. */
+  areas?:    MapArea[];
   truncated: boolean;
   plans:     PlanPin[];
   city:      { id: number; name: string; lat: number; lng: number } | null;

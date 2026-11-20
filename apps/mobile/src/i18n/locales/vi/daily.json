@@ -881,5 +881,24 @@
     "mapNoCity": "Đang đưa ảnh của bạn lên bản đồ 🌍",
     "almost": "Sắp xong rồi… 🎉",
     "done": "Xong rồi! 🎉"
+  },
+  "where": {
+    "title": "Ảnh của bạn hiện ở đâu?",
+    "exact": "Đúng địa điểm",
+    "exactSub": "Ghim tại địa điểm · hợp với quán cà phê, quán bar, nhà hàng",
+    "area": "Khu vực lân cận",
+    "areaSub": "Vị trí chính xác của bạn được giữ riêng tư · hiện quanh khu bạn ở",
+    "city": "Chỉ thành phố",
+    "citySub": "Tính cho {{city}} · không hiện trên Bản đồ",
+    "citySubNoName": "Tính cho thành phố của bạn · không hiện trên Bản đồ",
+    "locationOff": "Định vị đang tắt: ảnh của bạn sẽ được tính cho {{city}}, không hiện trên Bản đồ.",
+    "locationOffNoName": "Định vị đang tắt: ảnh của bạn sẽ được tính cho thành phố của bạn, không hiện trên Bản đồ.",
+    "settingHint": "Bạn có thể đổi mặc định trong Cài đặt › Vị trí ảnh.",
+    "settingTitle": "Vị trí ảnh",
+    "settingBody": "Nơi ảnh Daily của bạn hiện trên Bản đồ. Bạn vẫn có thể đổi cho từng ảnh.",
+    "continue": "Tiếp tục",
+    "noPositionBody": "Không tìm được vị trí của bạn để ghim địa điểm. Bạn vẫn có thể đăng cho thành phố của mình.",
+    "postForCity": "Đăng cho {{city}}",
+    "postCityOnly": "Đăng cho thành phố của tôi"
   }
 }

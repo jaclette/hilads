@@ -874,6 +874,8 @@ export interface DailyProof {
   /** The proof's currency, with or without a price (its city's by default). */
   currency?:        string | null;
   place:            { lat: number; lng: number; name: string | null } | null;
+  /** Where its author chose to show it (null: posted before the choice). */
+  locationPrecision?: 'exact' | 'area' | 'city' | null;
   /** The proof's challenge in the viewer's language, for a proof seen on its own (shared link, viewer). */
   context?:         { theme: DailyTheme | null; special?: DailySpecial | null; question: string | null; text: string } | null;
   /** The answer to the challenge's question (SPEC 10.2), and Back home (10.4). */
@@ -1262,6 +1264,8 @@ export interface DailyProofInput {
   spotId?:   string;
   newPlace?: { name: string };
   position?: { lat: number; lng: number };
+  /** Photo location privacy: exact (a spot), area (around the neighborhood: only its ~400 m cell is stored), city (not on the Map). */
+  locationPrecision?: 'exact' | 'area' | 'city';
   /** V4: the answer ("Prost!", 37, "19:30") and Back home; null clears on an edit. */
   answer?:   string | number | null;
   backHome?: {

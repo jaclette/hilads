@@ -964,5 +964,24 @@
     "mapNoCity": "Metto la tua foto sulla mappa 🌍",
     "almost": "Quasi fatto… 🎉",
     "done": "Fatto! 🎉"
+  },
+  "where": {
+    "title": "Dove deve apparire la tua foto?",
+    "exact": "Posto esatto",
+    "exactSub": "Fissata sul posto · ideale per un bar, un locale o un ristorante",
+    "area": "Quartiere",
+    "areaSub": "Il tuo posto esatto resta privato · mostrata nella zona del tuo quartiere",
+    "city": "Solo la città",
+    "citySub": "Conta per {{city}} · non sulla mappa",
+    "citySubNoName": "Conta per la tua città · non sulla mappa",
+    "locationOff": "La posizione è disattivata: la tua foto conterà per {{city}}, senza apparire sulla mappa.",
+    "locationOffNoName": "La posizione è disattivata: la tua foto conterà per la tua città, senza apparire sulla mappa.",
+    "settingHint": "Puoi cambiare l'impostazione predefinita in Impostazioni › Posizione delle foto.",
+    "settingTitle": "Posizione delle foto",
+    "settingBody": "Dove appaiono sulla mappa le tue foto del Daily. Puoi sempre cambiarlo per ogni foto.",
+    "continue": "Continua",
+    "noPositionBody": "Non troviamo la tua posizione per fissare il posto. Puoi comunque pubblicarla per la tua città.",
+    "postForCity": "Pubblica per {{city}}",
+    "postCityOnly": "Pubblica per la mia città"
   }
 }

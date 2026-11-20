@@ -923,5 +923,24 @@
     "mapNoCity": "Je foto komt op de kaart 🌍",
     "almost": "Bijna klaar… 🎉",
     "done": "Klaar! 🎉"
+  },
+  "where": {
+    "title": "Waar moet je foto verschijnen?",
+    "exact": "Exacte plek",
+    "exactSub": "Vastgepind op de plek · ideaal voor een café, bar of restaurant",
+    "area": "Buurt",
+    "areaSub": "Je exacte plek blijft privé · getoond rond je buurt",
+    "city": "Alleen de stad",
+    "citySub": "Telt voor {{city}} · niet op de kaart",
+    "citySubNoName": "Telt voor je stad · niet op de kaart",
+    "locationOff": "Locatie staat uit: je foto telt voor {{city}} en staat niet op de kaart.",
+    "locationOffNoName": "Locatie staat uit: je foto telt voor je stad en staat niet op de kaart.",
+    "settingHint": "Je kunt de standaard wijzigen in Instellingen › Fotolocatie.",
+    "settingTitle": "Fotolocatie",
+    "settingBody": "Waar je Daily-foto's op de kaart verschijnen. Je kunt het per foto nog wijzigen.",
+    "continue": "Doorgaan",
+    "noPositionBody": "We kunnen je locatie niet vinden om de plek vast te pinnen. Je kunt hem toch posten voor je stad.",
+    "postForCity": "Posten voor {{city}}",
+    "postCityOnly": "Posten voor mijn stad"
   }
 }

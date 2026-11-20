@@ -34,6 +34,9 @@ import { defaultCurrency } from '@/features/daily/currency';
 import { dailyTrackProps } from '@/features/daily/track';
 import { isPlaceTheme } from '@/features/daily/themes';
 import { PublishProgress, type PublishPhase } from '@/features/daily/PublishProgress';
+import { WhereStep } from '@/features/proof/WhereStep';
+import { PRECISION_ICON, getPhotoPrecision, type PhotoPrecision } from '@/features/daily/photoLocation';
+import * as Location from 'expo-location';
 import { SharePanel, type SharePanelHandle } from '@/features/share/SharePanel';
 import { proofShare, representShare, type ShareContent } from '@/features/share/content';
 import { ShareSheet } from '@/features/share/ShareSheet';
@@ -77,7 +80,7 @@ function uploadShare(items: (Photo | null)[], progress: Record<string, number>):
   if (list.length === 0) return 1;
   return list.reduce((sum, p) => sum + (p.remoteUrl ? 1 : progress[p.uri] ?? 0), 0) / list.length;
 }
-type Step = 'place' | 'photo' | 'answer' | 'details' | 'home';
+type Step = 'where' | 'place' | 'photo' | 'answer' | 'details' | 'home';
 /** Back home's fields; answerSet = the answer was given (a time wheel always holds a value). */
 type HomeDraft = { answer: AnswerDraft; answerSet: boolean; amount: string; currency: string; line: string };
 type TooFar = { distanceM: number; radiusM: number };
@@ -159,6 +162,15 @@ function DailyProofScreenContent() {
     if (selfie && !selfie.remoteUrl) uploadOf(selfie).catch(() => {});
   }, [photo?.uri, selfie?.uri, cameraOpen, stickersOpen]); // eslint-disable-line react-hooks/exhaustive-deps
   const [tooFar, setTooFar]     = useState<TooFar | null>(null);
+  // Photo location privacy: where this photo shows (Settings' default; each post can change it).
+  // precisionChanged: an edit sends it only when changed. locationOff: no location permission.
+  const [precision, setPrecision] = useState<PhotoPrecision>('area');
+  const [precisionChanged, setPrecisionChanged] = useState(false);
+  const [locationOff, setLocationOff] = useState(false);
+  useEffect(() => {
+    getPhotoPrecision().then(p => setPrecision(prev => (precisionChanged ? prev : p)));
+    Location.getForegroundPermissionsAsync().then(r => setLocationOff(r.status === 'denied')).catch(() => {});
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
   const [answer, setAnswer]     = useState<AnswerDraft>(emptyDraft());
   const [home, setHome]         = useState<HomeCityRef | null>(account?.home_city_ref ?? null);
   const [homeDraft, setHomeDraft] = useState<HomeDraft>({ answer: emptyDraft(), answerSet: false, amount: '', currency: '', line: '' });
@@ -190,13 +202,16 @@ function DailyProofScreenContent() {
   const stepBack = (): boolean => {
     if (step === 'home') setStep('details');
     else if (step === 'details' && compare) setStep('answer');
-    else if ((step === 'details' || step === 'answer') && !original && needsPlace) setStep('place');
-    else if (step === 'place' && photo) setStep('photo');
+    else if ((step === 'details' || step === 'answer') && !original && needsPlace) setStep(precision === 'exact' ? 'place' : 'where');
+    else if (step === 'place') setStep('where');
+    else if (step === 'where' && photo && !original) setStep('photo');
+    else if (step === 'where' && original) setStep(compare ? 'answer' : 'details');
     else return false;
     return true;
   };
   const canStepBack = step === 'home' || (step === 'details' && !!compare)
-    || ((step === 'details' || step === 'answer') && !original && needsPlace) || (step === 'place' && !!photo);
+    || ((step === 'details' || step === 'answer') && !original && needsPlace) || step === 'place'
+    || (step === 'where' && (!!photo || !!original));
   const unsaved = !sent && !original && !!photo;
   // Next / Done on the raw fields (TextField has it built in).
   const captionRef = useRef<TextInputInstance>(null);
@@ -243,6 +258,8 @@ function DailyProofScreenContent() {
         if (!p && d.myProof && d.myProof.status !== 'removed') p = d.myProof;
         if (p) {
           setOriginal(p);
+          // Its location as posted (before the choice: a spot, else the city).
+          setPrecision(p.locationPrecision ?? (p.spot ? 'exact' : 'city'));
           setPhoto({ uri: p.photoUrl, mime: null, remoteUrl: p.photoUrl });
           setSelfie(p.selfieUrl ? { uri: p.selfieUrl, mime: null, remoteUrl: p.selfieUrl } : null);
           setCaption(p.caption ?? '');
@@ -329,8 +346,15 @@ function DailyProofScreenContent() {
     setPhoto(p);
     // Place themes: the place, suggested from where I am, comes right after the photo.
     // Retaking the photo from a later step stays on that step.
-    setStep(prev => (needsPlace && !place && !original ? 'place' : prev === 'photo' ? afterPlace : prev));
+    // Place themes: where it shows (exact spot, neighborhood, city) comes right after the photo.
+    setStep(prev => (needsPlace && !place && !original && prev === 'photo' ? 'where' : prev === 'photo' ? afterPlace : prev));
   };
+  /** The where step's choice: an exact spot goes on to the place; the others need none. */
+  const onWhere = () => {
+    if (precision === 'exact' && !place && !(original?.spot && !precisionChanged)) { setStep('place'); return; }
+    setStep(photo ? afterPlace : 'photo');
+  };
+  const pickPrecision = (p: PhotoPrecision) => { setPrecision(p); setPrecisionChanged(true); setTooFar(null); };
 
   const onPlace = (choice: PlaceChoice, pos: Position) => {
     setPlace(choice);
@@ -392,10 +416,11 @@ function DailyProofScreenContent() {
   };
 
   // ── Submit ───────────────────────────────────────────────────────────────
-  const submit = async (forcePosition = false, withHome = true) => {
+  const submit = async (forcePosition = false, withHome = true, precisionOverride?: PhotoPrecision) => {
     if (sending) return;
     if (!photo) { Alert.alert(t('proof.photoRequired')); return; }
-    if (needsPlace && !place && !original) { setStep('place'); return; }
+    const where: PhotoPrecision = precisionOverride ?? precision;
+    if (needsPlace && where === 'exact' && !place && !original) { setStep('place'); return; }
     if (!answerReady) { setStep('answer'); return; }
     const parsedAmount = parseAmount(amount);
     if (parsedAmount !== null && (!Number.isFinite(parsedAmount) || parsedAmount < 0 || !/^[A-Z]{3}$/.test(currency))) {
@@ -419,17 +444,34 @@ function DailyProofScreenContent() {
       // The position, the photo and the selfie at the same time (the uploads usually finished
       // in the background already); the failing one names the stage.
       const tag = <T,>(name: string, job: Promise<T>) => job.catch((e: unknown) => { stage = name; throw e; });
-      const needsPos = needsPlace && !!place;   // the place, in the V3 format (V3-02); an edit that keeps its place sends none
+      // The place, in the V3 format (V3-02), for an exact spot; an edit that keeps its place sends none.
+      // Neighborhood: a position if the phone gives one (the server keeps only its ~400 m cell), else the city.
+      const sendPrecision = needsPlace && (!original || precisionChanged || !!precisionOverride);
+      const needsPos = needsPlace && where === 'exact' && !!place;
+      const wantsArea = sendPrecision && where === 'area' && !locationOff;
       const [pos, photoUrl, selfieUrl] = await Promise.all([
-        needsPos ? tag('position', freshPosition(forcePosition)) : Promise.resolve(null),
+        needsPos ? tag('position', freshPosition(forcePosition))
+          : wantsArea ? requestFeatureLocation('challenge_proof').then(g => (g.ok && g.coords ? g.coords : null)).catch(() => null)
+          : Promise.resolve(null),
         tag('photo', uploadOf(photo)),
         selfie ? tag('selfie', uploadOf(selfie)) : Promise.resolve(null),
       ]);
       // The uploads are done: keep them if a retry is needed.
       if (!photo.remoteUrl) setPhoto({ ...photo, remoteUrl: photoUrl });
       if (selfie && !selfie.remoteUrl && selfieUrl) setSelfie({ ...selfie, remoteUrl: selfieUrl });
+      if (sendPrecision) input.locationPrecision = where;
+      if (wantsArea && pos) input.position = { lat: pos.lat, lng: pos.lng };
       if (needsPos && place) {
-        if (!pos) { Alert.alert(t('place.failedTitle'), t('place.failedBody')); return; }
+        if (!pos) {
+          // No dead end: the photo can still go out for the city, with no position at all.
+          const cityName = today?.here?.name ?? today?.city?.name ?? null;
+          Alert.alert(t('place.failedTitle'), t('where.noPositionBody'), [
+            { text: t('cancel'), style: 'cancel' },
+            { text: cityName ? t('where.postForCity', { city: shortCityName(cityName) }) : t('where.postCityOnly'),
+              onPress: () => { setPrecision('city'); setPrecisionChanged(true); setTimeout(() => submit(false, withHome, 'city'), 0); } },
+          ]);
+          return;
+        }
         input.position = { lat: pos.lat, lng: pos.lng };
         if (place.kind === 'spot') input.spotId = place.spot.id;
         else input.newPlace = { name: place.name };
@@ -596,6 +638,9 @@ function DailyProofScreenContent() {
         <View style={styles.center}><ActivityIndicator color={colors.primary} /></View>
       ) : closed ? (
         <View style={styles.center}><Text style={styles.muted}>{challenge ? t('proof.editOnlyActive') : t('errors.no_active_challenge')}</Text></View>
+      ) : step === 'where' ? (
+        <WhereStep value={precision} onChange={pickPrecision} onContinue={onWhere} locationOff={locationOff}
+                   city={(today?.here?.name ?? today?.city?.name) ? shortCityName((today?.here?.name ?? today?.city?.name)!) : null} />
       ) : step === 'place' ? (
         <PlaceStep theme={themeKey === 'special' ? null : themeKey} onPicked={onPlace} />
       ) : step === 'answer' && compare ? (
@@ -724,15 +769,19 @@ function DailyProofScreenContent() {
             </View>
           )}
 
+          {/* Where it shows: the spot (exact), or around the neighborhood / the city only, with Change. */}
           {needsPlace && (
             <View style={styles.placeRow}>
-              <Ionicons name="location-outline" size={20} color={colors.primaryText} />
-              <Text style={styles.placeName} numberOfLines={1}>{placeName ?? t('place.none')}</Text>
-              <TouchableOpacity onPress={() => setStep('place')} accessibilityRole="button" hitSlop={8}>
+              <Ionicons name={precision === 'exact' ? 'location-outline' : PRECISION_ICON[precision]} size={20} color={colors.primaryText} />
+              <Text style={styles.placeName} numberOfLines={1}>
+                {precision === 'exact' ? (placeName ?? t('place.none')) : t(`where.${precision}`)}
+              </Text>
+              <TouchableOpacity onPress={() => setStep('where')} accessibilityRole="button" hitSlop={8} testID="where-change">
                 <Text style={styles.link}>{t('place.change')}</Text>
               </TouchableOpacity>
             </View>
           )}
+          {needsPlace && precision === 'area' && <Text style={styles.counter}>{t('where.areaSub')}</Text>}
 
           {tooFar && (
             <Card variant="tint" style={styles.tooFar} accessibilityRole="alert">

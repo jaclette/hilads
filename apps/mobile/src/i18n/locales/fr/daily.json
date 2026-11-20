@@ -964,5 +964,24 @@
     "mapNoCity": "On met ta photo sur la carte 🌍",
     "almost": "Presque fini… 🎉",
     "done": "C'est fait ! 🎉"
+  },
+  "where": {
+    "title": "Où ta photo doit-elle apparaître ?",
+    "exact": "Lieu exact",
+    "exactSub": "Épinglée sur le lieu · idéal pour un café, un bar ou un resto",
+    "area": "Quartier",
+    "areaSub": "Ton lieu exact reste privé · affichée autour de ton quartier",
+    "city": "Ville seulement",
+    "citySub": "Compte pour {{city}} · pas sur la carte",
+    "citySubNoName": "Compte pour ta ville · pas sur la carte",
+    "locationOff": "Localisation désactivée : ta photo comptera pour {{city}}, sans apparaître sur la carte.",
+    "locationOffNoName": "Localisation désactivée : ta photo comptera pour ta ville, sans apparaître sur la carte.",
+    "settingHint": "Tu peux changer le réglage par défaut dans Réglages › Lieu des photos.",
+    "settingTitle": "Lieu des photos",
+    "settingBody": "Où tes photos du Daily apparaissent sur la carte. Tu peux toujours le changer pour chaque photo.",
+    "continue": "Continuer",
+    "noPositionBody": "Impossible de trouver ta position pour épingler le lieu. Tu peux quand même la publier pour ta ville.",
+    "postForCity": "Publier pour {{city}}",
+    "postCityOnly": "Publier pour ma ville"
   }
 }
