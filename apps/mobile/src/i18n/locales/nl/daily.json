@@ -913,5 +913,15 @@
     "theirBest": "De beste uit {{city}}",
     "duels_one": "{{count}} duel",
     "duels_other": "{{count}} duels"
+  },
+  "publishing": {
+    "title": "Je foto wordt geplaatst",
+    "pack": "Je foto wordt ingepakt 📦",
+    "send": "Hij scheurt door de stad 🛵",
+    "polish": "De pixels worden gepoetst ✨",
+    "map": "{{city}} komt op de kaart 🌍",
+    "mapNoCity": "Je foto komt op de kaart 🌍",
+    "almost": "Bijna klaar… 🎉",
+    "done": "Klaar! 🎉"
   }
 }

@@ -954,5 +954,15 @@
     "duels_one": "{{count}} duello",
     "duels_other": "{{count}} duelli",
     "duels_many": "{{count}} duelli"
+  },
+  "publishing": {
+    "title": "Pubblico la tua foto",
+    "pack": "Impacchetto la tua foto 📦",
+    "send": "Attraversa la città 🛵",
+    "polish": "Lucido i pixel ✨",
+    "map": "Metto {{city}} sulla mappa 🌍",
+    "mapNoCity": "Metto la tua foto sulla mappa 🌍",
+    "almost": "Quasi fatto… 🎉",
+    "done": "Fatto! 🎉"
   }
 }

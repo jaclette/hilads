@@ -871,5 +871,15 @@
     "yours": "내 사진",
     "theirBest": "{{city}} 베스트",
     "duels_other": "{{count}}번의 대결"
+  },
+  "publishing": {
+    "title": "사진 올리는 중",
+    "pack": "사진 포장 중 📦",
+    "send": "도시를 가로지르는 중 🛵",
+    "polish": "픽셀 닦는 중 ✨",
+    "map": "{{city}}을(를) 지도에 올리는 중 🌍",
+    "mapNoCity": "사진을 지도에 올리는 중 🌍",
+    "almost": "거의 다 됐어… 🎉",
+    "done": "완료! 🎉"
   }
 }

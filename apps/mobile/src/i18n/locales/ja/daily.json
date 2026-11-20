@@ -871,5 +871,15 @@
     "yours": "あなたの写真",
     "theirBest": "{{city}}のベスト",
     "duels_other": "{{count}}戦"
+  },
+  "publishing": {
+    "title": "写真を投稿中",
+    "pack": "写真を梱包中 📦",
+    "send": "街をかけぬけ中 🛵",
+    "polish": "ピクセルをピカピカに ✨",
+    "map": "{{city}}を地図にのせています 🌍",
+    "mapNoCity": "写真を地図にのせています 🌍",
+    "almost": "もうすぐ… 🎉",
+    "done": "完了！🎉"
   }
 }

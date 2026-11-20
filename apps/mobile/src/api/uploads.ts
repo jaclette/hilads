@@ -50,6 +50,7 @@ async function downscaleForUpload(uri: string): Promise<{ uri: string; jpeg: boo
 export async function uploadFile(
   localUri: string,
   mimeType?: string | null,
+  onProgress?: (fraction: number) => void,   // 0..1 of the bytes sent (the publishing screen's bar)
 ): Promise<{ url: string; thumbUrl: string | null }> {
   console.log('[image-upload] upload start - uri:', localUri, 'mimeType:', mimeType ?? 'auto');
 
@@ -86,6 +87,9 @@ export async function uploadFile(
     xhr.open('POST', `${API_URL}/uploads`);
     for (const [k, v] of Object.entries(headers)) xhr.setRequestHeader(k, v);
     xhr.timeout = 60_000;
+    if (onProgress) {
+      xhr.upload.onprogress = (e) => { if (e.lengthComputable && e.total > 0) onProgress(Math.min(1, e.loaded / e.total)); };
+    }
     xhr.onload    = () => resolve({ status: xhr.status, text: xhr.responseText ?? '' });
     xhr.onerror   = () => reject(new Error('Upload network error'));
     xhr.ontimeout = () => reject(new Error('Upload timed out'));

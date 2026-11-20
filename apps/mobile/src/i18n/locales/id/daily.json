@@ -871,5 +871,15 @@
     "yours": "Punyamu",
     "theirBest": "Terbaik di {{city}}",
     "duels_other": "{{count}} duel"
+  },
+  "publishing": {
+    "title": "Fotomu sedang diunggah",
+    "pack": "Fotomu sedang dibungkus 📦",
+    "send": "Lagi melintasi kota 🛵",
+    "polish": "Pikselnya lagi dipoles ✨",
+    "map": "Menaruh {{city}} di peta 🌍",
+    "mapNoCity": "Menaruh fotomu di peta 🌍",
+    "almost": "Hampir selesai… 🎉",
+    "done": "Selesai! 🎉"
   }
 }

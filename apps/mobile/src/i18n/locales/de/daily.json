@@ -913,5 +913,15 @@
     "theirBest": "Das beste aus {{city}}",
     "duels_one": "{{count}} Duell",
     "duels_other": "{{count}} Duelle"
+  },
+  "publishing": {
+    "title": "Dein Foto wird veröffentlicht",
+    "pack": "Dein Foto wird eingepackt 📦",
+    "send": "Es düst durch die Stadt 🛵",
+    "polish": "Die Pixel werden poliert ✨",
+    "map": "{{city}} kommt auf die Karte 🌍",
+    "mapNoCity": "Dein Foto kommt auf die Karte 🌍",
+    "almost": "Fast geschafft… 🎉",
+    "done": "Fertig! 🎉"
   }
 }

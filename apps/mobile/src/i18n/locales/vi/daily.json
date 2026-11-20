@@ -871,5 +871,15 @@
     "yours": "Của bạn",
     "theirBest": "Đỉnh nhất {{city}}",
     "duels_other": "{{count}} trận"
+  },
+  "publishing": {
+    "title": "Đang đăng ảnh của bạn",
+    "pack": "Đang gói ảnh của bạn 📦",
+    "send": "Ảnh đang băng qua thành phố 🛵",
+    "polish": "Đang đánh bóng từng điểm ảnh ✨",
+    "map": "Đang đưa {{city}} lên bản đồ 🌍",
+    "mapNoCity": "Đang đưa ảnh của bạn lên bản đồ 🌍",
+    "almost": "Sắp xong rồi… 🎉",
+    "done": "Xong rồi! 🎉"
   }
 }

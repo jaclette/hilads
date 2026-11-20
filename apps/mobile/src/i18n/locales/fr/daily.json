@@ -954,5 +954,15 @@
     "duels_one": "{{count}} duel",
     "duels_other": "{{count}} duels",
     "duels_many": "{{count}} duels"
+  },
+  "publishing": {
+    "title": "Ta photo part en ligne",
+    "pack": "On emballe ta photo 📦",
+    "send": "Elle traverse la ville 🛵",
+    "polish": "On fait briller les pixels ✨",
+    "map": "On met {{city}} sur la carte 🌍",
+    "mapNoCity": "On met ta photo sur la carte 🌍",
+    "almost": "Presque fini… 🎉",
+    "done": "C'est fait ! 🎉"
   }
 }

@@ -913,5 +913,15 @@
     "theirBest": "Best ng {{city}}",
     "duels_one": "{{count}} duel",
     "duels_other": "{{count}} duels"
+  },
+  "publishing": {
+    "title": "Pino-post ang photo mo",
+    "pack": "Binabalot ang photo mo 📦",
+    "send": "Bumabiyahe sa siyudad 🛵",
+    "polish": "Pinapakinang ang pixels ✨",
+    "map": "Inilalagay ang {{city}} sa mapa 🌍",
+    "mapNoCity": "Inilalagay ang photo mo sa mapa 🌍",
+    "almost": "Malapit na… 🎉",
+    "done": "Tapos na! 🎉"
   }
 }

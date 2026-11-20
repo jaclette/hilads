@@ -871,5 +871,15 @@
     "yours": "你的",
     "theirBest": "{{city}} 最佳",
     "duels_other": "{{count}} 场对决"
+  },
+  "publishing": {
+    "title": "正在发布你的照片",
+    "pack": "正在打包你的照片 📦",
+    "send": "正在穿过城市 🛵",
+    "polish": "正在擦亮像素 ✨",
+    "map": "正在把{{city}}放上地图 🌍",
+    "mapNoCity": "正在把你的照片放上地图 🌍",
+    "almost": "马上就好… 🎉",
+    "done": "完成！🎉"
   }
 }

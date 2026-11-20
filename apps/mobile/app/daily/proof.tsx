@@ -33,6 +33,7 @@ import { distance } from '@/features/today/format';
 import { defaultCurrency } from '@/features/daily/currency';
 import { dailyTrackProps } from '@/features/daily/track';
 import { isPlaceTheme } from '@/features/daily/themes';
+import { PublishProgress, type PublishPhase } from '@/features/daily/PublishProgress';
 import { SharePanel, type SharePanelHandle } from '@/features/share/SharePanel';
 import { proofShare, representShare, type ShareContent } from '@/features/share/content';
 import { ShareSheet } from '@/features/share/ShareSheet';
@@ -69,6 +70,13 @@ const PROPOSE_NUDGE_KEY = 'hilads_daily_propose_nudge_at';
 const PROPOSE_NUDGE_EVERY_MS = 7 * 24 * 3600 * 1000;
 
 type Photo = { uri: string; mime: string | null; remoteUrl: string | null };
+
+/** How much of the photo (and selfie) is uploaded, 0..1: an uploaded one counts in full. */
+function uploadShare(items: (Photo | null)[], progress: Record<string, number>): number {
+  const list = items.filter((p): p is Photo => !!p);
+  if (list.length === 0) return 1;
+  return list.reduce((sum, p) => sum + (p.remoteUrl ? 1 : progress[p.uri] ?? 0), 0) / list.length;
+}
 type Step = 'place' | 'photo' | 'answer' | 'details' | 'home';
 /** Back home's fields; answerSet = the answer was given (a time wheel always holds a value). */
 type HomeDraft = { answer: AnswerDraft; answerSet: boolean; amount: string; currency: string; line: string };
@@ -128,6 +136,28 @@ function DailyProofScreenContent() {
   // Dual photo: the selfie taken right after the photo (null: the photo alone).
   const [selfie, setSelfie]     = useState<Photo | null>(null);
   const [sending, setSending]   = useState(false);
+  // Uploads by local uri: the photo and selfie start uploading as soon as they are final (camera and
+  // stickers closed), while the person picks the place and answers, so Post only waits for the proof.
+  const uploads = useRef(new Map<string, Promise<string>>());
+  // Each upload's progress (0..1) by local uri, and the publishing screen's phase (null: not publishing).
+  const [upProgress, setUpProgress] = useState<Record<string, number>>({});
+  const [publishing, setPublishing] = useState<PublishPhase | null>(null);
+  const uploadOf = (p: Photo): Promise<string> => {
+    if (p.remoteUrl) return Promise.resolve(p.remoteUrl);
+    let job = uploads.current.get(p.uri);
+    if (!job) {
+      const progress = (f: number) => setUpProgress(prev => (f < 1 && Math.abs((prev[p.uri] ?? 0) - f) < 0.05 ? prev : { ...prev, [p.uri]: f }));   // 5% steps
+      job = uploadFile(p.uri, p.mime, progress).then(r => { progress(1); return r.url; });
+      job.catch(() => uploads.current.delete(p.uri));   // a failed upload is tried again on Post
+      uploads.current.set(p.uri, job);
+    }
+    return job;
+  };
+  useEffect(() => {
+    if (cameraOpen || stickersOpen) return;
+    if (photo && !photo.remoteUrl) uploadOf(photo).catch(() => {});
+    if (selfie && !selfie.remoteUrl) uploadOf(selfie).catch(() => {});
+  }, [photo?.uri, selfie?.uri, cameraOpen, stickersOpen]); // eslint-disable-line react-hooks/exhaustive-deps
   const [tooFar, setTooFar]     = useState<TooFar | null>(null);
   const [answer, setAnswer]     = useState<AnswerDraft>(emptyDraft());
   const [home, setHome]         = useState<HomeCityRef | null>(account?.home_city_ref ?? null);
@@ -373,6 +403,7 @@ function DailyProofScreenContent() {
     }
 
     setSending(true);
+    setPublishing('upload');
     setTooFar(null);
     let stage = 'start';   // which step failed, in the alert's technical line
     try {
@@ -385,27 +416,30 @@ function DailyProofScreenContent() {
       const backHome = withHome && step === 'home' ? backHomeInput() : undefined;
       if (backHome) input.backHome = backHome;
       else if (withHome && step === 'home' && original?.backHome) input.backHome = null;
-      // The place, in the V3 format (V3-02). An edit that keeps its place sends none.
-      if (needsPlace && place) {
-        stage = 'position';
-        const pos = await freshPosition(forcePosition);
+      // The position, the photo and the selfie at the same time (the uploads usually finished
+      // in the background already); the failing one names the stage.
+      const tag = <T,>(name: string, job: Promise<T>) => job.catch((e: unknown) => { stage = name; throw e; });
+      const needsPos = needsPlace && !!place;   // the place, in the V3 format (V3-02); an edit that keeps its place sends none
+      const [pos, photoUrl, selfieUrl] = await Promise.all([
+        needsPos ? tag('position', freshPosition(forcePosition)) : Promise.resolve(null),
+        tag('photo', uploadOf(photo)),
+        selfie ? tag('selfie', uploadOf(selfie)) : Promise.resolve(null),
+      ]);
+      // The uploads are done: keep them if a retry is needed.
+      if (!photo.remoteUrl) setPhoto({ ...photo, remoteUrl: photoUrl });
+      if (selfie && !selfie.remoteUrl && selfieUrl) setSelfie({ ...selfie, remoteUrl: selfieUrl });
+      if (needsPos && place) {
         if (!pos) { Alert.alert(t('place.failedTitle'), t('place.failedBody')); return; }
         input.position = { lat: pos.lat, lng: pos.lng };
         if (place.kind === 'spot') input.spotId = place.spot.id;
         else input.newPlace = { name: place.name };
       }
-      stage = 'photo';
-      const photoUrl = photo.remoteUrl ?? (await uploadFile(photo.uri, photo.mime)).url;
       if (!original || photoUrl !== original.photoUrl) input.photoUrl = photoUrl;
-      // The upload is done: keep it if a retry is needed.
-      if (!photo.remoteUrl) setPhoto({ ...photo, remoteUrl: photoUrl });
       // The selfie, in the same post (atomic): sent when new, changed or removed.
-      stage = 'selfie';
-      const selfieUrl = selfie ? selfie.remoteUrl ?? (await uploadFile(selfie.uri, selfie.mime)).url : null;
-      if (selfie && !selfie.remoteUrl && selfieUrl) setSelfie({ ...selfie, remoteUrl: selfieUrl });
       if (original ? (original.selfieUrl ?? null) !== selfieUrl : selfieUrl !== null) input.selfieUrl = selfieUrl;
 
       stage = 'post';
+      setPublishing('post');
       let cityFirst = false;
       let saved: DailyProof;
       if (original) {
@@ -434,6 +468,9 @@ function DailyProofScreenContent() {
       // An existing spot shows on the map at once; a new place after review.
       const spot = saved.spot ?? null;
       const next = spot && !spot.inReview ? `/(tabs)/map?spot=${spot.id}&source=proof` : '/(tabs)/today';
+      // The bar's last beat at 100%, then the celebration (or back, for an edit).
+      setPublishing('done');
+      await new Promise(r => setTimeout(r, 450));
       if (original) { leaving.current = true; router.replace(next as never); return; }
       // "Propose a challenge" nudge (V2-06), at most once a week.
       const lastNudge = Number(await AsyncStorage.getItem(PROPOSE_NUDGE_KEY).catch(() => null)) || 0;
@@ -466,6 +503,7 @@ function DailyProofScreenContent() {
       Alert.alert(t('errors.generic'), `v3 · ${stage} · ${why}`.slice(0, 200));
     } finally {
       setSending(false);
+      setPublishing(null);
     }
   };
 
@@ -771,6 +809,16 @@ function DailyProofScreenContent() {
         onCapture={uri => { setAndroidCamera(false); setSelfie(null); gotPhoto({ uri, mime: 'image/jpeg', remoteUrl: null }); afterCapture(); }}
         onClose={() => setAndroidCamera(false)}
       />
+      {/* Publishing: the photo, the real progress and a cheerful line, full screen over the form. */}
+      {publishing && photo && (
+        <PublishProgress
+          photo={photo.uri}
+          selfie={selfie?.uri ?? null}
+          upload={uploadShare([photo, selfie], upProgress)}
+          phase={publishing}
+          city={today?.city?.name ? shortCityName(today.city.name) : null}
+        />
+      )}
     </SafeAreaView>
   );
 }

@@ -913,5 +913,15 @@
     "theirBest": "Best in {{city}}",
     "duels_one": "{{count}} duel",
     "duels_other": "{{count}} duels"
+  },
+  "publishing": {
+    "title": "Publishing your photo",
+    "pack": "Packing your photo 📦",
+    "send": "Sending it across town 🛵",
+    "polish": "Polishing the pixels ✨",
+    "map": "Putting {{city}} on the map 🌍",
+    "mapNoCity": "Putting your photo on the map 🌍",
+    "almost": "Almost there… 🎉",
+    "done": "Done! 🎉"
   }
 }
