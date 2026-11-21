@@ -226,8 +226,11 @@ function DailyProofScreenContent() {
   const homeCurrencyNext = useNextField(homeCurrencyRef);
   usePreventRemove(!!sent || canStepBack || unsaved, ({ data }) => {
     if (sent && !leaving.current) {
+      // Leave at once, then the push ask over the next screen: never wait on it (its token
+      // registration is network calls; awaiting them froze the sent screen on Android).
       leaving.current = true;
-      askFirstProofPush().finally(() => navigation.dispatch(data.action));
+      navigation.dispatch(data.action);
+      void askFirstProofPush();
       return;
     }
     if (leaving.current || stepBack()) {
@@ -559,16 +562,18 @@ function DailyProofScreenContent() {
 
   // In-context push ask after the first proof (AUDIT Q9), once, then go on.
   async function askFirstProofPush() {
-    const done = await AsyncStorage.getItem(FIRST_PROOF_KEY).catch(() => null);
-    if (!done) {
-      await AsyncStorage.setItem(FIRST_PROOF_KEY, '1').catch(() => {});
-      await askDailyPush('first_proof', identity?.guestId);
-    }
+    try {
+      const done = await AsyncStorage.getItem(FIRST_PROOF_KEY).catch(() => null);
+      if (!done) {
+        await AsyncStorage.setItem(FIRST_PROOF_KEY, '1').catch(() => {});
+        await askDailyPush('first_proof', identity?.guestId);
+      }
+    } catch { /* the push ask never breaks leaving */ }
   }
-  const afterProof = async (to: string) => {
-    await askFirstProofPush();
+  const afterProof = (to: string) => {
     leaving.current = true;
     router.replace(to as never);
+    void askFirstProofPush();
   };
   // The sent screen's close: back where the post started (the prevent-remove above asks
   // for push on the way), or Today when there's nothing behind it.

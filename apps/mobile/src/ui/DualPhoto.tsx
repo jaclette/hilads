@@ -94,7 +94,10 @@ export function DualPhoto({
   const [corner, setCorner] = useState(0);            // 0 top-left, 1 top-right, 2 bottom-left, 3 bottom-right
   const [selfieBig, setSelfieBig] = useState(false);
   const [tip, setTip] = useState(false);
-  const [loaded, setLoaded] = useState({ main: false, selfie: false });
+  // Swapped at least once: from then on the layers drop their placeholder and fade (a swap resizes
+  // a layer; Android would flash). Never changed before a swap: changing an expo-image's placeholder
+  // or transition while it loads left Android's picture blank (SDK 58, random empty cards).
+  const [swapped, setSwapped] = useState(false);
   // fit="screen": each picture's width / height once known (cover when close to the frame's, else contain).
   const [aspect, setAspect] = useState<{ main: number; selfie: number }>({ main: 0, selfie: 0 });
   useEffect(() => { setAspect({ main: 0, selfie: 0 }); }, [main.uri, selfie?.uri]);
@@ -164,7 +167,7 @@ export function DualPhoto({
 
   // Back to the photo when the pictures change (a recycled cell, the next story).
   useEffect(() => {
-    setSelfieBig(false); setCorner(0); setLoaded({ main: false, selfie: false }); drag.setValue({ x: 0, y: 0 });
+    setSelfieBig(false); setCorner(0); setSwapped(false); drag.setValue({ x: 0, y: 0 });
     anim.main.pop.setValue(1); anim.main.isInset.setValue(0);
     anim.selfie.pop.setValue(1); anim.selfie.isInset.setValue(1);
   }, [main.uri, selfie?.uri, drag, anim]);
@@ -188,6 +191,7 @@ export function DualPhoto({
     const next = !selfieBig;
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
     setSelfieBig(next);
+    setSwapped(true);
     const inset = next ? anim.main : anim.selfie;
     const big = next ? anim.selfie : anim.main;
     big.pop.stopAnimation(); big.pop.setValue(1); big.isInset.setValue(0);
@@ -262,12 +266,11 @@ export function DualPhoto({
             placeholder (a flash). Decoded once at full size, no placeholder nor fade once shown. */}
         <Reanimated.View style={[StyleSheet.absoluteFill, big ? zoomStyle : null]}>
           <Image source={{ uri: big ? bigUri(which, src.uri) : uriOf(which, src.uri) }}
-                 placeholder={big && sharp ? { uri: uriOf(which, src.uri) } : loaded[which] ? undefined : !thumbOnly ? { uri: thumbUrl(src.thumb ?? src.uri) } : src.hash ? { thumbhash: src.hash } : undefined}
+                 placeholder={big && sharp ? { uri: uriOf(which, src.uri) } : swapped ? undefined : !thumbOnly ? { uri: thumbUrl(src.thumb ?? src.uri) } : src.hash ? { thumbhash: src.hash } : undefined}
                  placeholderContentFit={big ? fitOf(which) : 'cover'} cachePolicy="memory-disk"
                  style={StyleSheet.absoluteFill} onError={() => fail(which)}
-                 contentFit={big ? fitOf(which) : 'cover'} transition={loaded[which] && !(big && sharp) ? 0 : big && sharp ? 150 : fade} allowDownscaling={false}
+                 contentFit={big ? fitOf(which) : 'cover'} transition={swapped && !(big && sharp) ? 0 : big && sharp ? 150 : fade} allowDownscaling={false}
                  onLoad={e => {
-                   if (!loaded[which]) setLoaded(l => ({ ...l, [which]: true }));
                    noteAspect(which, e.source.width, e.source.height);
                    if (which === 'main') onLoadMain?.({ width: e.source.width, height: e.source.height });
                  }} />

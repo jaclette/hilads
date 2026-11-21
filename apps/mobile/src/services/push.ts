@@ -317,7 +317,8 @@ export type DailyPushResult = 'granted' | 'denied' | 'dismissed' | 'already';
 export async function askDailyPush(source: 'first_proof' | 'banner' | 'remind_me', guestId?: string | null): Promise<DailyPushResult> {
   const t = (key: string) => i18n.t(key, { ns: 'daily' });
   if (await hasPushPermission()) {
-    await requestAndRegisterPush(guestId, { prompt: false }).catch(() => null);
+    // Re-register in the background: the token fetch and the POST are network calls, never awaited.
+    void requestAndRegisterPush(guestId, { prompt: false }).catch(() => null);
     return 'already';
   }
   const perm = await Notifications.getPermissionsAsync();

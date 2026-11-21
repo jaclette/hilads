@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import Animated, {
-  Easing, FadeIn, FadeOut, cancelAnimation, useAnimatedStyle, useReducedMotion, useSharedValue,
+  Easing, FadeIn, cancelAnimation, useAnimatedStyle, useReducedMotion, useSharedValue,
   withDelay, withRepeat, withSequence, withTiming,
 } from 'react-native-reanimated';
 import { useTranslation } from 'react-i18next';
@@ -85,7 +85,7 @@ export function PublishProgress({ photo, selfie, upload, phase, city }: {
       </View>
       <Text style={styles.pct}>{pct}%</Text>
       <View style={styles.lineBox}>
-        <Animated.Text key={key} entering={reduced ? undefined : FadeIn.duration(250)} exiting={reduced ? undefined : FadeOut.duration(150)}
+        <Animated.Text key={key} entering={reduced ? undefined : FadeIn.duration(250)} 
                        style={styles.line}>{line}</Animated.Text>
       </View>
       <View style={styles.dots}>
