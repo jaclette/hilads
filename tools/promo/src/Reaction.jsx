@@ -380,17 +380,24 @@ function TableScreen({ headline, detail, rows: allRows, source, highlight = [], 
   const gapAt = list.findIndex((r) => r.gap_before);          // the extra row's index (−1: none)
   const GAP = 0.45;                                              // the "• • •" separator, in rows
   const slots = Math.max(list.length + (gapAt >= 0 ? GAP : 0), 1);
+  // A podium alone (3 rows or fewer): proper steps, #1 clearly the tallest, as big as the space allows (below).
+  const podiumOnly = list.length === 0;
   const podiumAt = (ps) => {
     const d = (twoLineTitle ? [66, 56, 56] : [74, 62, 62]).map((x) => Math.round(x * ps));   // flag badges, 30% over their block
     const namePx = Math.max(22, Math.round(26 * ps)), valPx = Math.max(34, Math.round(44 * ps));
     const inner = namePx * 1.1 + valPx + 18;                                                // a block's name and value
-    const h = [0, 1, 2].map((i) => Math.round(d[i] * 0.3 + inner + [26, 12, 0][i] * ps));
+    const steps = podiumOnly ? [150, 80, 30] : [26, 12, 0];
+    const h = [0, 1, 2].map((i) => Math.round(d[i] * 0.3 + inner + steps[i] * ps));
     const podTop = titleEnd + 4 + 24 * ps;                                                  // the crown's room
     const podBase = podTop + d[0] * 0.7 + h[0];
     return { d, h, namePx, valPx, podTop, podBase, stride: Math.min(64, (srcTop - 10 - podBase - 12) / slots) };
   };
   let pod = podiumAt(1);
   for (let ps = 0.95; ps >= 0.6 && pod.stride < 40; ps -= 0.05) pod = podiumAt(ps);
+  if (podiumOnly) {
+    // As big as fits above the source line (up to 1.6×), a little air under it.
+    for (let ps = 1.6; ps > 1; ps -= 0.05) { const p = podiumAt(ps); if (p.podBase <= srcTop - 40) { pod = p; break; } }
+  }
   // Still tight (many rows, an extra row): a two-line header a little smaller (down to 56 px), then the podium again.
   for (let maxTwo = 68; maxTwo >= 56 && pod.stride < 38 && titleLines.length > 1; maxTwo -= 4) {
     ({ px: titlePx, lines: titleLines } = headerAt(maxTwo));
@@ -502,7 +509,8 @@ function TableScreen({ headline, detail, rows: allRows, source, highlight = [], 
         const rise = spr(at, { damping: 9, stiffness: 170, mass: 0.7 });
         const count = ease((frame - at - 4) / 22);
         const badge = spr(at + 6, { damping: 9, stiffness: 240, mass: 0.6 });
-        const color = flagColor(r.emoji);
+        // A podium alone: gold, silver and bronze steps (the flags stay on the badges); else the flag's color.
+        const color = podiumOnly ? (['#E8B200', '#AEB6C2', '#C47A3A'][Number(r.rank) - 1] ?? flagColor(r.emoji)) : flagColor(r.emoji);
         const light = luminance(color) > 0.62;
         const bh = h[ri];
         const dd = d[ri];
@@ -510,9 +518,12 @@ function TableScreen({ headline, detail, rows: allRows, source, highlight = [], 
         const blockTop = podBase - bh;
         const nm = fitName(r.country, pod.namePx, blockW - 20, pod.namePx * 1.2);
         const isFirst = r.rank === 1;
+        // A highlighted country on the podium (e.g. Vietnam on bronze): its step outlined in the accent color.
+        const hotStep = !isFirst && (r.highlight === true || hot.has(String(r.country).trim().toLowerCase()));
         return (
           <div key={`p${ri}`} style={{ opacity: frame >= at ? 1 : 0 }}>
             <div style={{ position: 'absolute', left: x, top: blockTop, width: blockW, height: bh, borderRadius: '22px 22px 10px 10px',
+                          ...(hotStep ? { outline: `5px solid ${TERRA}`, outlineOffset: 4 } : null),
                           background: `linear-gradient(180deg, ${mix(color, '#ffffff', 0.16)}, ${mix(color, '#000000', 0.14)})`,
                           boxShadow: `0 6px 0 ${mix(color, '#000000', 0.35)}`, transformOrigin: 'bottom center', transform: `scaleY(${Math.max(0, rise)})`,
                           display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-end', paddingBottom: 10,
