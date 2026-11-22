@@ -48,6 +48,9 @@ export const InboxRow = memo(function InboxRow({ item, onPress, onToggleRead, on
       rightThreshold={70}
       overshootLeft={false}
       overshootRight={false}
+      // An opaque ground under the row: an unread row's tint is translucent, and the swipe
+      // actions lie right behind it (SDK 58's swipeable keeps them laid out: they showed through).
+      childrenContainerStyle={{ backgroundColor: colors.bg }}
       renderLeftActions={() => (
         <View style={[styles.action, styles.actionLeft, { backgroundColor: colors.primary }]}>
           <Ionicons name={unread ? 'mail-open-outline' : 'mail-unread-outline'} size={20} color={colors.white} />
