@@ -74,7 +74,11 @@ final class DailyCompare
         $key   = self::cleanKey($in['key'] ?? null, "{$label}: key");
         $title = self::i18nField($in['title'] ?? null, self::QUESTION_MAX, self::QUESTION_TR_MAX, "{$label}: title");
         $price = null;
-        if (is_array($in['price'] ?? null) && (($in['price']['key'] ?? '') !== '' || ($in['price']['label'] ?? '') !== '')) {
+        // A price only when its key or one of its labels is filled: the back office always posts the label as
+        // {en, fr, …} (empty strings when there's no price), which used to count as a price and refuse the save.
+        $labelIn = $in['price']['label'] ?? '';
+        $hasLabel = is_array($labelIn) ? array_filter($labelIn, static fn($v) => is_string($v) && trim($v) !== '') !== [] : trim((string) $labelIn) !== '';
+        if (is_array($in['price'] ?? null) && (trim((string) ($in['price']['key'] ?? '')) !== '' || $hasLabel)) {
             $pKey   = self::cleanKey($in['price']['key'] ?? null, "{$label}: price.key");
             $pLabel = self::i18nField($in['price']['label'] ?? null, self::LABEL_MAX, self::LABEL_TR_MAX, "{$label}: price.label");
             if ($pKey === null || $pLabel === null) {
