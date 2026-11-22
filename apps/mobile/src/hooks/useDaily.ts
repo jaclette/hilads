@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { AppState } from 'react-native';
 import i18n from '@/i18n';
 import { useFocusEffect } from 'expo-router';
 import { useIsFocused } from 'expo-router/react-navigation';
@@ -7,6 +6,7 @@ import { readOffline, writeOffline } from '@/lib/offlineCache';
 import { fetchDailyArchive, fetchDailyBoard, fetchDailyCalendar, fetchDailySheet, fetchDailyToday } from '@/api/daily';
 import { useApp } from '@/context/AppContext';
 import { onDailyDropped } from '@/lib/dailyEvents';
+import { onFresh } from '@/lib/freshness';
 import { isGpsCity } from '@/lib/gpsCityCorrection';
 import { seedProofs, seedVotesLeft } from '@/features/daily/votes';
 import { setSeasonalEvent } from '@/features/event/seasonal';
@@ -199,15 +199,16 @@ function loadToday(e: TodayEntry, force: boolean): Promise<void> {
   return e.inflight;
 }
 
-// The app back in the foreground, or a drop announced (push / realtime): every city on screen fetches again.
+// The app back in the foreground, a push about new content, or a drop announced (realtime): every city
+// on screen fetches again (what's shown stays until the answer: stale-while-revalidate).
 let todayWatchers = 0;
 let offTodayGlobal: (() => void) | null = null;
 function watchTodayGlobal() {
   if (todayWatchers++ > 0) return;
   const reloadAll = () => todayStores.forEach(e => { if (e.listeners.size) loadToday(e, true); });
-  const sub = AppState.addEventListener('change', s => { if (s === 'active') reloadAll(); });
+  const offFresh = onFresh(reloadAll);
   const offDrop = onDailyDropped(reloadAll);
-  offTodayGlobal = () => { sub.remove(); offDrop?.(); };
+  offTodayGlobal = () => { offFresh(); offDrop?.(); };
 }
 function unwatchTodayGlobal() {
   if (--todayWatchers > 0) return;
@@ -282,6 +283,10 @@ export function useDailySheet(date: string, scope: 'world' | 'city', cityId: str
     load();
   }, [load]); // eslint-disable-line react-hooks/exhaustive-deps
   useFocusEffect(useCallback(() => { load(); }, [load]));
+  // Back in the foreground, or a push about new content: fetch again (the list stays on screen meanwhile).
+  const loadRef = useRef(load);
+  loadRef.current = load;
+  useEffect(() => onFresh(() => { loadRef.current(); }), []);
 
   const loadMore = useCallback(async () => {
     if (!sheet?.hasMore || loadingMore || sheet.nextBefore === null) return;

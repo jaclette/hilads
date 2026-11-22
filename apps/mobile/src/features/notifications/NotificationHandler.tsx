@@ -21,6 +21,7 @@ import { acceptInvitation, ignoreInvitation, acceptChallenge } from '@/api/chall
 import { track } from '@/services/analytics';
 import { requestWorldScopeOpen } from '@/lib/worldScopeOpen';
 import { parseSharedHiladsLink, sharedLinkRoute } from '@/lib/sharedLink';
+import { isContentPush, requestFresh } from '@/lib/freshness';
 
 // ── Cold-start notification - resolved at module load ─────────────────────────
 // Start this promise immediately when the module is first imported, BEFORE any
@@ -99,7 +100,15 @@ type NotifData = {
   inviterName?:     string;
   deepLink?:        string; // admin push broadcast - a raw in-app path to open on tap
   tab?:             string; // daily_morning / daily_reminder: "compare" once 2 countries answered
+  link?:            string; // the inbox's in-app deep link (server, NotificationCategory::deepLink): any type without a route here
+  proofId?:         string;
+  date?:            string;
 };
+
+/** The server's in-app link for this push (an in-app path only), else null. */
+function serverLink(data: NotifData): string | null {
+  return typeof data.link === 'string' && data.link.startsWith('/') ? data.link : null;
+}
 
 // Admin push broadcasts carry a raw path in data.deepLink (e.g. the "Deep link"
 // field on /admin/push) instead of a typed id. Normalize a slug-prefixed
@@ -374,6 +383,38 @@ function resolvePushRoute(data: NotifData): string | null {
       return proofId ? `/daily/${day}?source=push&proof=${encodeURIComponent(proofId)}&comment=${commentId ?? ''}` : '/notifications';
     }
 
+    case 'daily_vote':
+    case 'daily_twist_completed': {
+      // Someone liked my photo / did my Local Twist → that photo.
+      const day = data.date && /^\d{4}-\d{2}-\d{2}$/.test(data.date) ? data.date : 'today';
+      return data.proofId ? `/daily/${day}?source=push&proof=${encodeURIComponent(data.proofId)}` : '/notifications';
+    }
+
+    case 'daily_admin':
+      // The admin's "New photo published": a Daily photo opens on it (older pushes: the inbox).
+      return data.proofId ? `/daily/photos?source=push&proof=${encodeURIComponent(data.proofId)}` : '/notifications';
+
+    case 'daily_result':
+      // Yesterday's results → Ranks › Photos › Yesterday.
+      return serverLink(data) ?? '/ranks?tab=photos&period=yesterday&source=push';
+
+    case 'daily_rank':
+      // A rank-up → the weekly players (the server's link has the scope and city).
+      return serverLink(data) ?? '/ranks?tab=players&period=week&source=push';
+
+    case 'daily_local_pass':
+      // A new stamp → the Passport.
+      return '/(tabs)/passport';
+
+    case 'city_here':
+    case 'world_arrival':
+      // @here in my city / a friend landed somewhere → the chat.
+      return '/(tabs)/chat';
+
+    case 'join_request_accepted':
+      if (data.topicId) return `/topic/${data.topicId}`;
+      return serverLink(data) ?? '/notifications';
+
     case 'daily_digest': {
       // The digest can arrive the day after (cap reached) → its own date.
       const date = (data as { date?: string }).date;
@@ -384,8 +425,9 @@ function resolvePushRoute(data: NotifData): string | null {
       // Any other challenge_* notification that carries a challengeId still
       // opens the challenge rather than dead-ending.
       if (data.challengeId) return `/challenge/${data.challengeId}`;
-      // Admin push broadcast with a "Deep link" path (no typed id) → open it.
-      return deepLinkRoute(data);
+      // Admin push broadcast with a "Deep link" path (no typed id) → open it; else the server's
+      // in-app link (the inbox's), else the inbox itself: a tap never just reopens the app where it was.
+      return deepLinkRoute(data) ?? serverLink(data) ?? '/notifications';
   }
 }
 
@@ -424,6 +466,8 @@ export function NotificationHandler() {
     // Foreground received listener - logs incoming notifications while app is open
     const receivedSub = Notifications.addNotificationReceivedListener(notification => {
       const data = notification.request.content.data as NotifData;
+      // A new photo, vote, comment or result while the app is open: the lists it belongs to fetch again.
+      if (isContentPush(data.type)) requestFresh('push');
       const sentByMe = !!data.senderUserId && data.senderUserId === activeScreen.accountId;
       console.log('[notif] foreground notification received:',
         notification.request.content.title,
@@ -441,6 +485,9 @@ export function NotificationHandler() {
     // background→foreground taps correctly see booting=false and navigate directly.
     const sub = Notifications.addNotificationResponseReceivedListener(response => {
       const data  = response.notification.request.content.data as NotifData;
+      // Tapped from the background: the lists behind the screen it opens fetch again too (Today's
+      // photos, the sheets, the ranks), so going back never shows the old list.
+      if (isContentPush(data.type)) requestFresh('push');
 
       // Action button tapped (Join / Accept / Decline) → run its side-effect,
       // then navigate to the route it returns (Join → event, Accept → hangout).

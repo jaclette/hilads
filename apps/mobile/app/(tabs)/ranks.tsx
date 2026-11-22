@@ -2,7 +2,7 @@ import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ActivityIndicator, FlatList, Pressable, RefreshControl, ScrollView, Text, View, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Image } from 'expo-image';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import * as Haptics from 'expo-haptics';
 import { Space, Radius, Type, Gutter, IconSize, type ThemeColors } from '@/constants';
@@ -21,6 +21,7 @@ import { thumbUrl } from '@/lib/imageThumb';
 import { handOffList } from '@/lib/prefetch';
 import { canAccessProfile } from '@/lib/profileAccess';
 import { track } from '@/services/analytics';
+import { onFresh } from '@/lib/freshness';
 import {
   fetchRanks, type CitiesRanks, type PhotosRanks, type PlayersRanks, type RanksPeriod, type RanksScope, type RanksTab,
 } from '@/api/ranks';
@@ -92,6 +93,7 @@ function RanksContent() {
   }, [params.tab, params.period, params.scope, setScope]);
   useEffect(() => { if (!PERIODS[tab].includes(period)) setPeriod('today'); }, [tab]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  const loadedAt = useRef(0);
   const load = useCallback(async () => {
     setFailed(false);
     const asked = key;
@@ -99,12 +101,19 @@ function RanksContent() {
       const o = { period, scope: scopeNow, cityId };
       const next = tab === 'players' ? await fetchRanks('players', o) : tab === 'cities' ? await fetchRanks('cities', o) : await fetchRanks('photos', o);
       ranksCache.set(asked, next);
+      loadedAt.current = Date.now();
       setResp({ key: asked, data: next });
     } catch {
       setFailed(true);
     }
   }, [tab, period, scopeNow, cityId, key]);
   useEffect(() => { load(); track('ranks_viewed', { tab, period, scope: scopeNow }); }, [load]); // eslint-disable-line react-hooks/exhaustive-deps
+  // The tab kept on screen (frozen while away): back on it after 30 s, back in the foreground, or a
+  // push about new content: fetch again, the ranking stays shown meanwhile (stale-while-revalidate).
+  const loadRef = useRef(load);
+  loadRef.current = load;
+  useFocusEffect(useCallback(() => { if (loadedAt.current && Date.now() - loadedAt.current > 30_000) loadRef.current(); }, []));
+  useEffect(() => onFresh(() => { loadRef.current(); }), []);
 
   const onRefresh = async () => { setRefreshing(true); await load(); setRefreshing(false); };
   const pick = <T,>(set: (v: T) => void, v: T) => { Haptics.selectionAsync().catch(() => {}); set(v); };

@@ -127,6 +127,8 @@ final class NotificationCategory
             in_array($type, ['daily_vote', 'daily_twist_completed'], true) && !empty($data['proofId'])
                 => '/daily/' . ($data['date'] ?? 'today') . '?' . $q(['proof' => $data['proofId']]),
             $type === 'daily_twist_picked'                        => '/daily/twist',
+            // The admin's "New photo published": a Daily photo opens on it; anything else in the inbox.
+            $type === 'daily_admin' && !empty($data['proofId'])   => '/daily/photos?' . $q(['proof' => $data['proofId']]),
             $type === 'daily_result'                              => '/ranks?' . $q(['tab' => 'photos', 'period' => 'yesterday']),
             // A city rank-up opens that city's weekly players (scope city + its id); a world one, the World.
             $type === 'daily_rank'                                => '/ranks?' . $q(['tab' => 'players', 'period' => 'week',

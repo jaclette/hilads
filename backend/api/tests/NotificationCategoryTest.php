@@ -62,6 +62,9 @@ final class NotificationCategoryTest extends TestCase
         $this->assertSame('/event/e1', NotificationCategory::deepLink('event_join', ['eventId' => 'e1']));
         $this->assertSame('/user/u9', NotificationCategory::deepLink('profile_view', ['viewerId' => 'u9']));
         $this->assertStringStartsWith('/ranks?', NotificationCategory::deepLink('daily_result', ['date' => '2026-11-05']));
+        // The admin's "New photo published" opens the Daily photo (2026-11-22); a chat or profile photo has none.
+        $this->assertSame('/daily/photos?proof=p7', NotificationCategory::deepLink('daily_admin', ['url' => '/admin/photos', 'proofId' => 'p7']));
+        $this->assertNull(NotificationCategory::deepLink('daily_admin', ['url' => '/admin/photos']));
     }
 
     public function testQuietHours(): void

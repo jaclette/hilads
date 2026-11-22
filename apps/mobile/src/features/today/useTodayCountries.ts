@@ -1,9 +1,10 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useFocusEffect } from 'expo-router';
 import { useApp } from '@/context/AppContext';
 import { fetchDailyTodayCountries } from '@/api/daily';
 import { seedProofs } from '@/features/daily/votes';
 import { useHere } from '@/hooks/useDaily';
+import { onFresh } from '@/lib/freshness';
 import type { DailyCityGroup, DailyToday, DailyTodayCountries } from '@/types';
 
 let last: DailyTodayCountries | null = null;
@@ -16,7 +17,9 @@ export function lastCountries(): DailyTodayCountries | null { return last; }
  * Today's photos by city and by country (GET /daily/today/countries), loaded
  * once for the whole tab: the hero's live strip and the compare section read
  * the same list, so they never disagree ("first photos" vs "nobody played").
- * Reloads on focus and on pull-to-refresh ($refreshKey).
+ * Reloads on focus, on pull-to-refresh ($refreshKey), and when the app comes back
+ * to the foreground or a push about new content arrives or is tapped (the tab
+ * keeps its focus then: no focus event; a frozen tab updates on return).
  */
 export function useTodayCountries(today: DailyToday | null, refreshKey: number): DailyTodayCountries | null {
   const { account, identity } = useApp();
@@ -42,6 +45,9 @@ export function useTodayCountries(today: DailyToday | null, refreshKey: number):
   }, [challenge?.id, challenge?.isActive, here?.id, today?.city?.id, guestId, key]); // eslint-disable-line react-hooks/exhaustive-deps
   useFocusEffect(useCallback(() => { load(); }, [load]));
   useEffect(() => { if (refreshKey > 0) load(true); }, [refreshKey]); // eslint-disable-line react-hooks/exhaustive-deps
+  const loadRef = useRef(load);
+  loadRef.current = load;
+  useEffect(() => onFresh(() => { loadRef.current(true); }), []);
   return challenge ? data : null;
 }
 

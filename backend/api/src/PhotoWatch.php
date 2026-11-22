@@ -33,14 +33,14 @@ final class PhotoWatch
                 VALUES (?, ?, ?, ?, ?, ?, ?)
             ")->execute([$source, $refId, $url, $author['id'] ?? null, $author['guest_id'] ?? null,
                          mb_substr($who, 0, 60), $where !== null ? mb_substr($where, 0, 80) : null]);
-            self::alert($source, $who, $where, $author['id'] ?? null);
+            self::alert($source, $who, $where, $author['id'] ?? null, $refId);
         } catch (\Throwable $e) {
             error_log('[photo-watch] ' . $source . ' ' . $refId . ': ' . $e->getMessage());
         }
     }
 
     /** The admin push, at most one every ALERT_EVERY seconds, counting the photos not yet seen. */
-    private static function alert(string $source, string $who, ?string $where, ?string $authorId): void
+    private static function alert(string $source, string $who, ?string $where, ?string $authorId, ?string $refId = null): void
     {
         $adminId = trim((string) getenv('ADMIN_TEST_USER_ID'));
         // Never about my own photos.
@@ -55,7 +55,9 @@ final class PhotoWatch
         };
         $body = $who . ($where !== null && $where !== '' ? " in {$where}" : '') . " · {$what}"
               . ($n > 1 ? " · {$n} new" : '');
-        NotificationRepository::createUnchecked($adminId, 'daily_admin', 'New photo published', $body, ['url' => '/admin/photos'], 'en');
+        // A Daily photo carries its id: the app opens that photo (NotificationCategory::deepLink).
+        $data = ['url' => '/admin/photos'] + ($source === 'daily' && $refId !== null && $refId !== '' ? ['proofId' => $refId] : []);
+        NotificationRepository::createUnchecked($adminId, 'daily_admin', 'New photo published', $body, $data, 'en');
     }
 
     /** Reports from different people that hide a chat photo until the admin decides (as Daily photos). */

@@ -102,8 +102,10 @@ class NotificationRepository
             // Web push (browser VAPID) - fire-and-forget
             PushService::send($userId, $type, $title, $body, self::pushUrl($type, $data), self::pushTag($type, $data), $data);
 
-            // Native push (iOS/Android via Expo) - fire-and-forget
-            MobilePushService::send($userId, $type, $title, $body, $data);
+            // Native push (iOS/Android via Expo) - fire-and-forget. `link`: the inbox's in-app deep link,
+            // so the app can open any type it has no route of its own for (an older app ignores it).
+            $link = NotificationCategory::deepLink($type, $data);
+            MobilePushService::send($userId, $type, $title, $body, $link !== null && !isset($data['link']) ? $data + ['link' => $link] : $data);
         }
 
         return $notif;
