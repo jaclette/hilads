@@ -24,6 +24,8 @@ final class DwReaction
 {
     public const FORMATS = ['slides', 'reaction'];
     public const MAX_ROWS = 20;
+    /** Extra rows at most (highlighted countries further down, after the top, each with its real rank). */
+    public const MAX_EXTRA = 4;
     public const VIDEO_SECONDS = 11;     // classic: the ranking 8 s (the headline big alone 1.5 s, all shown by 4.1 s, then still), the closing slide 3 s
     public const QUIZ_SECONDS = 13.5;    // quiz: the quiz question alone 1 s, 3, 2, 1 (1 s each) until 4 s, the ranking until 10.5 s, the closing slide 3 s
     /** classic (the headline hook) or quiz (the quiz question and a countdown, then the reveal); classic when absent. */
@@ -120,6 +122,18 @@ final class DwReaction
         if (isset($c['extra_row']) && trim((string) $c['extra_row']) !== '' && !self::extraRowOk($c, (string) $c['extra_row'])) {
             $errors[] = '"extra_row" must be a country of the rows below the top ' . self::SHOWN_ROWS . ' (it is shown after them, highlighted).';
         }
+        if (isset($c['extra_rows'])) {
+            $list = $c['extra_rows'];
+            if (!is_array($list) || !array_is_list($list) || count($list) > self::MAX_EXTRA) {
+                $errors[] = '"extra_rows" must be a list of at most ' . self::MAX_EXTRA . ' countries.';
+            } else {
+                foreach ($list as $x) {
+                    if (!is_string($x) || !self::extraRowOk($c, $x)) {
+                        $errors[] = '"extra_rows": ' . json_encode($x, JSON_UNESCAPED_UNICODE) . ' must be a country of the rows below the top ' . self::SHOWN_ROWS . '.';
+                    }
+                }
+            }
+        }
         if (isset($c['clip_speed']) && !self::clipSpeedOk($c['clip_speed'])) {
             $errors[] = '"clip_speed" is a number from 0.5 to 3 (1.5: slow-motion footage played 1.5× faster).';
         }
@@ -153,8 +167,8 @@ final class DwReaction
 
     /**
      * The ranking's rules: 1 to 20 rows ranked 1, 2, 3… (equal values share the rank above), one unit, a value each, no country
-     * twice; then at most one extra row further down (a highlighted country outside the
-     * top, with its real rank). [errors, warnings]. Pure.
+     * twice; then up to MAX_EXTRA extra rows further down (highlighted countries outside the
+     * top, with their real ranks, in rank order). [errors, warnings]. Pure.
      */
     public static function checkRows(mixed $rows, array $highlight = []): array
     {
@@ -168,7 +182,7 @@ final class DwReaction
         $group = 0;         // the current rank
         $same = 0;          // rows with it so far
         $next = 1;          // the rank a new row takes: $group + $same (competition ranking: 6, 6, 8…)
-        $lastJump = false;  // the last row is an extra one further down (no separator)
+        $extras = 0;        // the last rows that are extra ones further down (no separator)
         foreach ($rows as $i => $r) {
             $n = $i + 1;
             if (!is_array($r)) {
@@ -184,14 +198,16 @@ final class DwReaction
             } elseif ((int) $rank === $next || ((int) $rank > $next && $i > 0 && !empty($r['gap_before']))) {
                 // 1, 2, 3…, or further down after a "…" separator (gap_before: the cheapest ones under the dearest).
                 [$group, $same] = [(int) $rank, 1];
-            } elseif ($i === count($rows) - 1 && (int) $rank > $next) {
-                // The extra row: its real rank, further down.
-                $lastJump = true;
+            } elseif ((int) $rank > $next && ($extras > 0 || $i >= count($rows) - self::MAX_EXTRA)
+                      && ($extras > 0 || self::trailingJumps($rows, $i))) {
+                // An extra row: its real rank, further down (every row after it is one too).
+                $extras++;
+                [$group, $same] = [(int) $rank, 1];
                 if (empty($r['highlight']) && !in_array(mb_strtolower($country), array_map('mb_strtolower', $highlight), true)) {
                     $warn[] = "Row {$n} ({$country}, #{$rank}) is outside the top " . ($next - 1) . ': only a highlighted country (' . implode(', ', $highlight) . ') is added that way.';
                 }
             } else {
-                $errors[] = "Row {$n}: rank {$rank}, expected {$next} (the ranks go 1, 2, 3…; a row further down needs \"gap_before\" (a \"…\" separator above it), or is one extra last row).";
+                $errors[] = "Row {$n}: rank {$rank}, expected {$next} (the ranks go 1, 2, 3…; a row further down needs \"gap_before\" (a \"…\" separator above it), or is one of the extra last rows).";
             }
             $next = $group + $same;
             if ($i === 0 && !empty($r['gap_before'])) {
@@ -216,8 +232,8 @@ final class DwReaction
             $units[$unit] = true;
             $countries[] = mb_strtolower($country);
         }
-        if (count($rows) - ($lastJump ? 1 : 0) > self::MAX_ROWS) {
-            $errors[] = 'At most ' . self::MAX_ROWS . ' rows (' . count($rows) . '), plus one extra last row.';
+        if (count($rows) - $extras > self::MAX_ROWS) {
+            $errors[] = 'At most ' . self::MAX_ROWS . ' rows (' . count($rows) . '), plus ' . self::MAX_EXTRA . ' extra last rows.';
         }
         if (count($units) > 1) {
             $errors[] = 'Every row needs the same unit (one source, one definition): ' . implode(', ', array_keys($units)) . '.';
@@ -226,7 +242,7 @@ final class DwReaction
             $errors[] = 'A country appears twice.';
         }
         if ($errors === []) {
-            $values = array_map(static fn($r) => (float) $r['value'], array_slice($rows, 0, count($rows) - ($lastJump ? 1 : 0)));
+            $values = array_map(static fn($r) => (float) $r['value'], array_slice($rows, 0, count($rows) - $extras));
             $sorted = $values;
             rsort($sorted);
             if ($values !== $sorted) {
@@ -239,6 +255,17 @@ final class DwReaction
             }
         }
         return [$errors, $warn];
+    }
+
+    /** Rows $from to the end each rank further down than the one before (the extra rows block). Pure. */
+    private static function trailingJumps(array $rows, int $from): bool
+    {
+        for ($j = $from + 1; $j < count($rows); $j++) {
+            if (!is_numeric($rows[$j]['rank'] ?? null) || !is_numeric($rows[$j - 1]['rank'] ?? null) || (int) $rows[$j]['rank'] <= (int) $rows[$j - 1]['rank'] + 1) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /** A row tied with the one above: the same rank and the same value. Pure. */
@@ -302,6 +329,9 @@ final class DwReaction
             if (isset($c[$f])) {
                 $c[$f] = trim((string) $c[$f]);
             }
+        }
+        if (isset($c['extra_rows']) && is_array($c['extra_rows'])) {
+            $c['extra_rows'] = array_values(array_map(static fn($x) => trim((string) $x), $c['extra_rows']));
         }
         $c['hashtags'] = array_values(array_map(static fn($t) => '#' . ltrim(trim((string) $t), '#'), $c['hashtags'] ?? []));
         $c['warnings'] = array_values(array_map('strval', $c['warnings'] ?? []));

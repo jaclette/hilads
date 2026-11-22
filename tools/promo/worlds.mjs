@@ -55,6 +55,11 @@ const pngOnly = args.includes('--png-only');
 const clipSpeedArg = args.includes('--clip-speed') ? args[args.indexOf('--clip-speed') + 1] : null;
 // --extra-row "<country>" --detail "<banner>": a reaction topic's extra highlighted row and banner, to try before saving them.
 const extraArg = args.includes('--extra-row') ? args[args.indexOf('--extra-row') + 1] : null;
+// --top <n> --extra-rows "A,B": a reaction topic's shown rows (10 by default, 20 at most) and extra highlighted rows, to try.
+const topArg = args.includes('--top') ? Number(args[args.indexOf('--top') + 1]) : null;
+const extraRowsArg = args.includes('--extra-rows') ? args[args.indexOf('--extra-rows') + 1].split(',').map((x) => x.trim()).filter(Boolean) : null;
+// --frames "1,3,5": with --png-only, stills of the reaction video at those seconds too (frame-<s>s.png), to preview.
+const framesArg = args.includes('--frames') ? args[args.indexOf('--frames') + 1].split(',').map(Number).filter((x) => x >= 0) : [];
 const detailArg = args.includes('--detail') ? args[args.indexOf('--detail') + 1] : null;
 const upload = !args.includes('--no-upload') && !args.includes('--png-only') && !fileArg;
 const dates = args.filter((a) => /^\d{4}-\d{2}-\d{2}$/.test(a));
@@ -161,7 +166,7 @@ async function screenFromContent(c) {
     clip = { url: pick.url, credit: `Video: ${hit.user} / Pixabay` };
   }
   return { headline: c.headline ?? '', detail: c.detail ?? '', rows: c.rows ?? [], highlight: ['Vietnam'], valueFormat: c.value_format ?? null,
-           question: c.outro_question ?? null, cta: c.cta_line ?? null, extraRow: c.extra_row ?? null, mode: c.mode ?? 'classic', quiz: c.quiz_question ?? null, topic: c.topic ?? null, cardBg: c.card_bg ?? null, accent: c.headline_accent ?? null,
+           question: c.outro_question ?? null, cta: c.cta_line ?? null, extraRow: c.extra_row ?? null, top: c.top ?? null, extraRows: c.extra_rows ?? null, mode: c.mode ?? 'classic', quiz: c.quiz_question ?? null, topic: c.topic ?? null, cardBg: c.card_bg ?? null, accent: c.headline_accent ?? null,
            source: `${label ? `${label} · ` : ''}Source${(c.source ?? '').includes(', ') ? 's' : ''}: ${c.source ?? ''}`, clip, seconds: 8 };
 }
 
@@ -367,6 +372,8 @@ async function renderReaction(data, { work, pub, out }) {
                        topic: s.topic ?? data.content?.topic ?? data.title ?? null,
                        cta: ctaArg ?? s.cta ?? data.content?.cta_line ?? null,
                        extraRow: extraArg ?? s.extraRow ?? data.content?.extra_row ?? null,
+                       top: topArg ?? s.top ?? data.content?.top ?? null,
+                       extraRows: extraRowsArg ?? s.extraRows ?? data.content?.extra_rows ?? null,
                        layout: layoutArg ?? s.layout ?? data.content?.layout ?? 'animated',
                        mode: modeArg ?? s.mode ?? data.content?.mode ?? 'classic', quiz: quizArg ?? s.quiz ?? data.content?.quiz_question ?? null,
                        // The card's color and the headline's accent words (also read from the content, before the API sends them);
@@ -395,6 +402,9 @@ async function renderReaction(data, { work, pub, out }) {
   }
   await renderStill({ composition, serveUrl, output: pngs[quiz ? 1 : 0], inputProps, frame: lastRanking });
   await renderStill({ composition, serveUrl, output: pngs[quiz ? 2 : 1], inputProps, frame: composition.durationInFrames - 1 });
+  for (const sec of framesArg) {
+    await renderStill({ composition, serveUrl, output: `${base}-frame-${sec}s.png`, inputProps, frame: Math.min(composition.durationInFrames - 1, Math.round(sec * composition.fps)) });
+  }
   console.log(`  saved: ${base}.mp4 and ${pngs.map((f) => path.basename(f).slice(-6)).join(', ')}`);
   await rm(work, { recursive: true, force: true });
   await rm(serveUrl, { recursive: true, force: true }).catch(() => {});

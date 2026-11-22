@@ -303,8 +303,17 @@ final class DwReactionTest extends TestCase
         [, $warn] = DwReaction::checkRows($rows, ['Vietnam']);
         $this->assertNotEmpty(array_filter($warn, fn($w) => str_contains($w, 'only a highlighted country')));
 
-        $rows[] = ['rank' => 40, 'country' => 'Laos', 'flag' => '🇱🇦', 'value' => 50.0, 'unit' => 'L'];
-        $this->assertNotEmpty(DwReaction::checkRows($rows, ['Vietnam'])[0], 'only one extra row, the last');
+        // Several extra rows (2026-11-22): each further down than the one before, at most MAX_EXTRA.
+        $rows[3]['country'] = 'Vietnam';
+        $rows[] = ['rank' => 40, 'country' => 'Laos', 'flag' => '🇱🇦', 'value' => 50.0, 'unit' => 'L', 'highlight' => true];
+        $this->assertSame([], DwReaction::checkRows($rows, ['Vietnam'])[0], 'a second extra row, further down');
+        $bad = $rows;
+        $bad[] = ['rank' => 38, 'country' => 'Peru', 'flag' => '🇵🇪', 'value' => 51.0, 'unit' => 'L', 'highlight' => true];
+        $this->assertNotEmpty(DwReaction::checkRows($bad, ['Vietnam'])[0], 'extra rows go down the ranking');
+        foreach ([['Peru', '🇵🇪', 45], ['Chile', '🇨🇱', 50], ['Cuba', '🇨🇺', 55]] as [$name, $flag, $rank]) {
+            $rows[] = ['rank' => $rank, 'country' => $name, 'flag' => $flag, 'value' => 40.0 - $rank / 10, 'unit' => 'L', 'highlight' => true];
+        }
+        $this->assertNotEmpty(DwReaction::checkRows($rows, ['Vietnam'])[0], 'at most ' . DwReaction::MAX_EXTRA . ' extra rows');
     }
 
     public function testWordLimitsAreWarnings(): void

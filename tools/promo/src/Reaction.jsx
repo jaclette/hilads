@@ -300,20 +300,22 @@ function StaticTableScreen({ headline, detail, rows: allRows, source, highlight 
 }
 
 function TableScreen({ headline, detail, rows: allRows, source, highlight = [], clip, valueFormat = null, cardBg = null, accent = null,
-                       mode = 'classic', quiz = null, guessStill = false, extraRow = null }) {
+                       mode = 'classic', quiz = null, guessStill = false, extraRow = null, top: topIn = null, extraRows = null }) {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
   const bg = cardColor(cardBg);
   const spr = (delay, config = { damping: 12, stiffness: 200, mass: 0.7 }) => spring({ frame: frame - delay, fps, config });
   const hot = new Set(highlight.map((h) => h.trim().toLowerCase()));
 
-  // At most 10 countries (the first 10 rows, as ranked by the source); more: "Top 10" in the source line.
-  // extraRow: one country further down (e.g. Vietnam #49), shown after the top 10 under a "• • •" separator, highlighted.
-  const extraName = String(extraRow ?? '').trim().toLowerCase();
-  const extra = extraName ? allRows.slice(MAX_ROWS).find((r) => String(r.country).trim().toLowerCase() === extraName) : null;
-  const rows = [...allRows.slice(0, MAX_ROWS), ...(extra ? [{ ...extra, gap_before: true, highlight: true }] : [])];
-  const cut = allRows.length > MAX_ROWS;
-  const sourceLine = cut ? `Top ${MAX_ROWS} · ${source}` : source;
+  // The first `top` countries (10 by default, as ranked by the source); more: "Top N" in the source line.
+  // extraRow / extraRows: countries further down (e.g. Vietnam #49), shown after the top under one "• • •" separator,
+  // highlighted, in their rank order.
+  const top = Math.max(3, Math.min(20, Number(topIn) || MAX_ROWS));
+  const extraNames = [...(Array.isArray(extraRows) ? extraRows : []), extraRow].map((x) => String(x ?? '').trim().toLowerCase()).filter(Boolean);
+  const extras = allRows.slice(top).filter((r) => extraNames.includes(String(r.country).trim().toLowerCase()));
+  const rows = [...allRows.slice(0, top), ...extras.map((r, i) => ({ ...r, gap_before: i === 0, highlight: true }))];
+  const cut = allRows.length > top;
+  const sourceLine = cut ? `Top ${top} · ${source}` : source;
 
   // Values as the source gives them (81, 79.2), "ratio" (4.0, 45), "one_decimal" (52.0), "two_decimals" (4.60), prices $9.04, percentages all
   // with one decimal as soon as one has it; a short unit (%, L) on each value, a long one ("servings") in the source line.
