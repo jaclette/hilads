@@ -7,7 +7,7 @@ import { AppState } from 'react-native';
  * Frozen tabs (freezeOnBlur) still hear it: their state updates and shows on
  * return. `reason` lets a listener skip what doesn't concern it.
  */
-export type FreshReason = 'foreground' | 'push';
+export type FreshReason = 'foreground' | 'push' | 'post';
 type Listener = (reason: FreshReason) => void;
 
 const listeners = new Set<Listener>();

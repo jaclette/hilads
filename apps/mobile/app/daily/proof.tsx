@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { holdScreen } from '@/lib/celebrationQueue';
 import {
   ActivityIndicator, Alert, Platform, ScrollView,
   Text, TextInput, TouchableOpacity, View, StyleSheet,
@@ -199,6 +200,9 @@ function DailyProofScreenContent() {
   // leaves it (after the first-proof push ask).
   const navigation = useNavigation();
   const leaving = useRef(false);
+  // Leaving after a post: the prevent-remove guard off (state), then the navigation (effect below).
+  const [left, setLeft] = useState(false);
+  const leaveTo = useRef<{ to: string; how: 'dismiss' | 'replace' } | null>(null);
   const stepBack = (): boolean => {
     if (step === 'home') setStep('details');
     else if (step === 'details' && compare) setStep('answer');
@@ -224,15 +228,10 @@ function DailyProofScreenContent() {
   const currencyNext = useNextField(currencyRef);
   const homeAmountNext = useNextField(homeAmountRef);
   const homeCurrencyNext = useNextField(homeCurrencyRef);
-  usePreventRemove(!!sent || canStepBack || unsaved, ({ data }) => {
-    if (sent && !leaving.current) {
-      // Leave at once, then the push ask over the next screen: never wait on it (its token
-      // registration is network calls; awaiting them froze the sent screen on Android).
-      leaving.current = true;
-      navigation.dispatch(data.action);
-      void askFirstProofPush();
-      return;
-    }
+  // After a post, every way out (X, Android back, iOS swipe) leaves the whole flow for Today
+  // (leaveAfterPost): the guard turns off first (`left`), so it never fights the navigation.
+  usePreventRemove(!left && (!!sent || canStepBack || unsaved), ({ data }) => {
+    if (sent) { leaveAfterPost('/(tabs)/today', 'dismiss'); return; }
     if (leaving.current || stepBack()) {
       if (leaving.current) navigation.dispatch(data.action);
       return;
@@ -561,26 +560,38 @@ function DailyProofScreenContent() {
   };
 
   // In-context push ask after the first proof (AUDIT Q9), once, then go on.
+  // Once the next screen has settled (an alert presented during a transition can attach to the
+  // screen going away), and holding the screen meanwhile: the reward popup waits for it.
   async function askFirstProofPush() {
+    const release = holdScreen('first_proof_push');
     try {
       const done = await AsyncStorage.getItem(FIRST_PROOF_KEY).catch(() => null);
       if (!done) {
         await AsyncStorage.setItem(FIRST_PROOF_KEY, '1').catch(() => {});
+        await new Promise(r => setTimeout(r, 700));
         await askDailyPush('first_proof', identity?.guestId);
       }
-    } catch { /* the push ask never breaks leaving */ }
+    } catch { /* the push ask never breaks leaving */ } finally { release(); }
   }
-  const afterProof = (to: string) => {
+  // Leaving after a post, once: Today (dismissTo: the whole photo flow is closed, never an empty
+  // route behind it; from a cold-start deep link it replaces the screen), or a next screen
+  // (Compare, the map, Propose) in its place.
+  function leaveAfterPost(to: string, how: 'dismiss' | 'replace') {
+    if (leaving.current) return;
     leaving.current = true;
-    router.replace(to as never);
+    leaveTo.current = { to, how };
+    setLeft(true);
+  }
+  useEffect(() => {
+    if (!left || !leaveTo.current) return;
+    const { to, how } = leaveTo.current;
+    leaveTo.current = null;
+    if (how === 'dismiss') router.dismissTo(to as never);
+    else router.replace(to as never);
     void askFirstProofPush();
-  };
-  // The sent screen's close: back where the post started (the prevent-remove above asks
-  // for push on the way), or Today when there's nothing behind it.
-  const closeSent = () => {
-    if (navigation.canGoBack()) navigation.goBack();
-    else afterProof('/(tabs)/today');
-  };
+  }, [left]); // eslint-disable-line react-hooks/exhaustive-deps
+  const afterProof = (to: string) => leaveAfterPost(to, 'replace');
+  const closeSent = () => leaveAfterPost('/(tabs)/today', 'dismiss');
 
   const challenge = today?.challenge ?? null;
 

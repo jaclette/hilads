@@ -1,4 +1,4 @@
-import { useEffect, useSyncExternalStore } from 'react';
+import { useEffect, useState, useSyncExternalStore } from 'react';
 
 /**
  * One celebration at a time (2026-11-07). The app's victory popups (the points
@@ -39,14 +39,24 @@ const shown = new Set<string>();   // on screen: keeps its turn through its own 
  * (first in line, nothing holding the screen, on a tab). Once on screen it keeps
  * the turn until `wants` goes false (closed) or it unmounts, which passes it on.
  */
+const SETTLE_MS = 800;
+
 export function useCelebrationTurn(id: string, wants: boolean, onTab = true): boolean {
+  // Back on a tab: only once it has settled (a native modal presented during the screen's
+  // transition, e.g. closing the photo flow, could stay as a dark backdrop that takes every touch).
+  const [settled, setSettled] = useState(onTab);
+  useEffect(() => {
+    if (!onTab) { setSettled(false); return; }
+    const t = setTimeout(() => setSettled(true), SETTLE_MS);
+    return () => clearTimeout(t);
+  }, [onTab]);
   useEffect(() => {
     if (!wants) return;
     if (!line.includes(id)) { line = [...line, id]; emit(); }
     return () => { line = line.filter(x => x !== id); shown.delete(id); emit(); };
   }, [id, wants]);
   useSyncExternalStore(subscribe, () => version);
-  const turn = wants && line[0] === id && (shown.has(id) || (holds.size === 0 && onTab));
+  const turn = wants && line[0] === id && (shown.has(id) || (holds.size === 0 && onTab && settled));
   if (turn) shown.add(id);
   return turn;
 }

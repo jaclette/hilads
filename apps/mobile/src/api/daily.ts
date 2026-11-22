@@ -2,6 +2,7 @@ import i18n from '@/i18n';
 import { api, ApiError } from './client';
 import type { MentionSuggestion } from './mentions';
 import { requestScoreCelebration } from '@/lib/celebrationQueue';
+import { requestFresh } from '@/lib/freshness';
 import type {
   DailyBoard, DailyCompared, DailyRates, DailyTour,
   NearbyPlace,
@@ -152,6 +153,8 @@ export async function createDailyProof(input: DailyProofInput): Promise<{ proof:
   const r = await api.post<{ proof: DailyProof; cityFirstToday?: boolean }>('/daily/proofs', input);
   // Its points: the reward screen shows once the photo flow is closed (it waits for a tab).
   requestScoreCelebration();
+  // Today's photos, the sheets and the ranks fetch again: back on Today, the new photo is there.
+  requestFresh('post');
   return { proof: r.proof, cityFirstToday: !!r.cityFirstToday };
 }
 
