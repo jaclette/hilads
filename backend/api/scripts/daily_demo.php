@@ -63,6 +63,8 @@ foreach ([
     'NotificationI18n', 'BotAccountService', 'NotificationPreferencesRepository', 'PushService', 'MobilePushService',
     'NotificationRepository', 'DailyClock', 'DailyRules', 'DailyProofRepository', 'DailyChallengeRepository',
     'DailyAdminService', 'DailyCards', 'DailyPushes', 'DailyDrop', 'DailyVotes', 'DailyResults', 'DailyPoints',
+    // Scoring v2: the rules and switches (AppConfig: app_settings), seasons, invites.
+    'AppConfig', 'Scoring', 'DailySeasons', 'Invites',
     'MonthlyRankService', 'DailyTwistProposals', 'DailyI18n', 'DailyPushText', 'DailyLeaderboard', 'DailyThemes', 'DailySpecials', 'DailyPresence', 'AnalyticsService', 'CityNames', 'Currencies', 'DailyCompare', 'DailyBoard', 'DailyTour', 'DailyIndex', 'DailyLocalPass', 'DailyProposals', 'DailyDemo', 'DailyNotify',
 ] as $class) {
     require_once __DIR__ . "/../src/{$class}.php";

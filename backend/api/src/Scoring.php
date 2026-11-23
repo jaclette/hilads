@@ -29,7 +29,16 @@ final class Scoring
      */
     public static function since(): ?string
     {
-        $v = class_exists('AppConfig') ? (AppConfig::settings()['scoring_v2_since'] ?? null) : null;
+        if (class_exists('AppConfig')) {
+            $v = AppConfig::settings()['scoring_v2_since'] ?? null;
+        } else {
+            // A script that did not load AppConfig: read the setting itself (never the old rules by mistake).
+            try {
+                $v = Database::pdo()->query("SELECT value FROM app_settings WHERE key = 'scoring_v2_since'")->fetchColumn() ?: null;
+            } catch (\Throwable) {
+                $v = null;
+            }
+        }
         $v ??= self::config()['switch_date'] ?? null;
         return is_string($v) && preg_match('/^\d{4}-\d{2}-\d{2}$/', $v) ? $v : null;
     }
