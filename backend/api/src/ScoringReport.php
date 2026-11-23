@@ -233,7 +233,7 @@ final class ScoringReport
         $shared = $pdo->query("
             SELECT u.guest_id, count(*) AS accounts,
                    string_agg(coalesce(u.username, u.id), ', ' ORDER BY u.created_at) AS usernames,
-                   min(u.created_at)::text AS first, max(u.created_at)::text AS last
+                   to_char(to_timestamp(min(u.created_at)), 'YYYY-MM-DD') AS first, to_char(to_timestamp(max(u.created_at)), 'YYYY-MM-DD') AS last
             FROM users u
             WHERE u.guest_id IS NOT NULL AND u.guest_id <> '' AND u.deleted_at IS NULL AND NOT u.is_demo
             GROUP BY u.guest_id HAVING count(*) > 1
@@ -252,7 +252,7 @@ final class ScoringReport
                 SELECT voter_user_id, sum(n) AS total, max(n) AS top FROM likes GROUP BY voter_user_id
             )
             SELECT vu.username AS voter, au.username AS author, l.n AS likes, t.total,
-                   round(100.0 * l.n / t.total) AS share, vu.created_at::text AS voter_since
+                   round(100.0 * l.n / t.total) AS share, to_char(to_timestamp(vu.created_at), 'YYYY-MM-DD') AS voter_since
             FROM totals t
             JOIN likes l  ON l.voter_user_id = t.voter_user_id AND l.n = t.top
             JOIN users vu ON vu.id = t.voter_user_id
