@@ -102,7 +102,19 @@
       "rankUp": "▲ You climbed to #{{rank}} in {{where}}",
       "landedMany_one": "{{count}} new player landed in {{city}} today",
       "landedMany_other": "{{count}} new players landed in {{city}} today",
-      "rankUpWorld": "▲ You climbed to #{{rank}} in the world"
+      "rankUpWorld": "▲ You climbed to #{{rank}} in the world",
+      "rankUpSeason": "▲ You climbed to #{{rank}} in {{where}} this season",
+      "rankUpWorldSeason": "▲ You climbed to #{{rank}} in the world this season",
+      "seasonMedal": "🏁 You finished #{{rank}} this season! Your medal is on your Passport",
+      "seasonResult_one": "🏁 Season over: you finished #{{rank}} with {{count}} pt",
+      "seasonResult_other": "🏁 Season over: you finished #{{rank}} with {{count}} pts",
+      "seasonEnding_one": "⏳ The season ends in {{count}} day: you're #{{rank}}",
+      "seasonEnding_other": "⏳ The season ends in {{count}} days: you're #{{rank}}",
+      "seasonEndingFirst_one": "⏳ The season ends in {{count}} day: you're #1, hold on!",
+      "seasonEndingFirst_other": "⏳ The season ends in {{count}} days: you're #1, hold on!",
+      "perfectWeek": "🔥 Perfect week! +{{points}}",
+      "friendJoined": "joined Hilads thanks to you 🤝 +{{points}} ({{count}}/{{max}})",
+      "crewBonus": "🎉 Your crew is complete! +{{points}}"
     },
     "empty": {
       "all": "No drama here. Go snap something 📸",

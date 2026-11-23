@@ -9,6 +9,7 @@ import { EulaPromptModal } from '@/features/auth/EulaPromptModal';
 import { AccountWelcome } from '@/features/onboarding/AccountWelcome';
 import { ScoreCelebrationLaunchGate } from '@/features/challenge/ScoreCelebrationLaunchGate';
 import { ChallengeResultLaunchGate } from '@/features/challenge/ChallengeResultLaunchGate';
+import { SeasonResultGate } from '@/features/scoring/SeasonResultGate';
 import { Stack, router, useRootNavigationState } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import * as SplashScreen from 'expo-splash-screen';
@@ -277,6 +278,8 @@ function RootLayoutInner() {
       {/* PR17 - "+X points!" popin once per cold start when the user has
           unacknowledged score_events. */}
       <ScoreCelebrationLaunchGate />
+      {/* Scoring v2: the season's results, once a month. */}
+      <SeasonResultGate />
     </>
   );
 }

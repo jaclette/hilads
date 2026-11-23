@@ -1,9 +1,10 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { View, Text, TouchableOpacity, ActivityIndicator, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { authSignup, checkUsernameAvailability } from '@/api/auth';
+import { pendingInvite, fetchInviter, clearPendingInvite, type Inviter } from '@/features/invites/invite';
 import { joinChannel } from '@/api/channels';
 import { useApp } from '@/context/AppContext';
 import { socket } from '@/lib/socket';
@@ -42,6 +43,17 @@ export default function SignUpScreen() {
   const [eula,     setEula]     = useState(false);
   const [loading,  setLoading]  = useState(false);
   const [error,    setError]    = useState<string | null>(null);
+  // Scoring v2: opened from a friend's invite link → "Invited by @minh", and the code goes with the sign-up.
+  const [invite,   setInvite]   = useState<{ code: string; inviter: Inviter | null } | null>(null);
+  useEffect(() => {
+    let alive = true;
+    pendingInvite().then(async code => {
+      if (!code) return;
+      const inviter = await fetchInviter(code);
+      if (alive) setInvite({ code, inviter });
+    });
+    return () => { alive = false; };
+  }, []);
 
   // Username availability - debounced check against the backend.
   type UStatus = 'idle' | 'checking' | 'available' | 'taken' | 'invalid';
@@ -86,7 +98,8 @@ export default function SignUpScreen() {
       // Pass guestId so the backend can merge existing guest events/data.
       // display_name == username (single identity field).
       const guestId = identity?.guestId ?? '';
-      const { user } = await authSignup(e, p, username, username, guestId, mode, true /* eulaAccepted */);
+      const { user } = await authSignup(e, p, username, username, guestId, mode, true /* eulaAccepted */, invite?.code ?? null);
+      clearPendingInvite();
       setAccount(user);
       setShowAccountWelcome(true);   // one-time congrats screen (rendered in the root layout)
       identifyUser(user.id, { account_type: 'registered', username: user.username ?? user.display_name });
@@ -143,7 +156,9 @@ export default function SignUpScreen() {
   }
 
   return (
-    <AuthScreen title={t('signUp.title')} subtitle={t('signUp.subtitle')} error={error}>
+    <AuthScreen title={t('signUp.title')}
+                subtitle={invite?.inviter ? t('signUp.invitedBy', { name: invite.inviter.username ? '@' + invite.inviter.username : invite.inviter.displayName ?? '' }) : t('signUp.subtitle')}
+                error={error}>
       <View style={styles.field}>
         <TextField
           label={t('signUp.username')}

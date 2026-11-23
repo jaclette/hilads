@@ -135,15 +135,21 @@
     "rivals": "Deine Rivalen",
     "rivalsEmpty": "Spiel ein paar Challenges, um deine ersten Rivalen zu treffen 🌍",
     "duels_one": "{{count}} Duell",
-    "duels_other": "{{count}} Duelle"
+    "duels_other": "{{count}} Duelle",
+    "seasonRank": "#{{rank}} diese Saison",
+    "seasonNone": "Spiel, um in die Saison einzusteigen"
   },
   "points": {
     "title": "So sammelst du Punkte",
-    "intro": "Daily-Challenge-Punkte zählen für das wöchentliche Most Local. Alle Punkte zählen für die Bestenliste aller Zeiten.",
+    "intro": "Punkte zählen in der Saisonrangliste und in deinen Gesamtpunkten.",
     "proof": "Foto posten",
     "vote": "Abstimmen (pro Challenge)",
     "top": "Welt-Top-3 des Tages",
-    "weekly": "Das wöchentliche Most Local startet jeden Montag neu."
+    "weekly": "Das wöchentliche Most Local startet jeden Montag neu.",
+    "week": "Perfekte Woche (alle 7 Tage)",
+    "friend": "Ein Freund, den du eingeladen hast, postet sein erstes Foto",
+    "crew": "Deine Crew ist komplett ({{count}} Freunde)",
+    "season": "Die Saisonrangliste startet am 1. jedes Monats neu."
   },
   "fieldBackHome": "Heimatstadt (Und bei dir zu Hause?)",
   "backHomePlaceholder": "Nicht festgelegt",
@@ -156,5 +162,30 @@
     "photos_other": "Fotos",
     "likes_one": "Like",
     "likes_other": "Likes"
+  },
+  "week": {
+    "title": "Perfekte Woche 🔥",
+    "points": "+{{points}}",
+    "days": "M,D,M,D,F,S,S",
+    "earned": "Perfekte Woche geschafft! +{{points}} 🔥",
+    "missed": "Diese Woche hast du einen Tag verpasst. Am Montag beginnt eine neue Woche.",
+    "left_one": "Noch {{count}} Tag für +{{points}}",
+    "left_other": "Noch {{count}} Tage für +{{points}}",
+    "a11y": "Perfekte Woche: {{done}} von {{total}} Tagen"
+  },
+  "crew": {
+    "title": "Bring deine Crew mit 🤝",
+    "text": "+{{friend}} für jeden Freund, dessen erstes Foto online geht, +{{crew}}, wenn diese Saison {{max}} dabei sind.",
+    "done": "Crew komplett diese Saison! +{{points}} 🎉",
+    "invite": "Freunde einladen",
+    "shareText": "Spiel mit mir auf Hilads: eine Foto-Challenge pro Tag, die ganze Welt spielt mit 📸 {{link}}",
+    "pending": "erstes Foto steht noch aus",
+    "pendingHint": "Ein Freund zählt, sobald sein erstes Foto online ist.",
+    "a11y": "{{count}} von {{max}} Freunden diese Saison",
+    "invitedBy": "Eingeladen von {{name}}"
+  },
+  "seasons": {
+    "medals": "Saisonmedaillen",
+    "medalA11y": "#{{rank}}, {{season}}, {{points}} Punkte"
   }
 }

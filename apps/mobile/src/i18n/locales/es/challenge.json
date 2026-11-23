@@ -419,7 +419,10 @@
       "streak": "Racha",
       "early": "Temprano",
       "stamp": "Sello",
-      "other": "Bonus"
+      "other": "Bonus",
+      "week": "Semana perfecta",
+      "friends": "Amigos",
+      "crew": "Crew"
     },
     "medal": {
       "city": "en {{city}}",
@@ -432,7 +435,11 @@
     "goal": {
       "pass": "{{gap}} pts para pasar a {{name}}",
       "streak": "🔥 Día {{day}} mañana",
-      "stamp": "🎟️ Próximo sello en {{city}}"
+      "stamp": "🎟️ Próximo sello en {{city}}",
+      "week_one": "🔥 Te falta {{count}} día para una semana perfecta",
+      "week_other": "🔥 Te faltan {{count}} días para una semana perfecta",
+      "crew_one": "🤝 Te falta {{count}} amigo para tu crew",
+      "crew_other": "🤝 Te faltan {{count}} amigos para tu crew"
     },
     "ranks": "🏆 Ver el ranking",
     "share": "📤 Compartir mi victoria",

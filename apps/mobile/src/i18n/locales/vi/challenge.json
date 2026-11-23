@@ -413,7 +413,10 @@
       "streak": "Chuỗi",
       "early": "Sớm",
       "stamp": "Con dấu",
-      "other": "Thưởng"
+      "other": "Thưởng",
+      "week": "Tuần hoàn hảo",
+      "friends": "Bạn bè",
+      "crew": "Hội"
     },
     "medal": {
       "city": "ở {{city}}",
@@ -426,7 +429,11 @@
     "goal": {
       "pass": "Còn {{gap}} điểm để vượt {{name}}",
       "streak": "🔥 Ngày {{day}} vào ngày mai",
-      "stamp": "🎟️ Con dấu tiếp theo ở {{city}}"
+      "stamp": "🎟️ Con dấu tiếp theo ở {{city}}",
+      "week_one": "🔥 Còn {{count}} ngày nữa là Tuần hoàn hảo",
+      "week_other": "🔥 Còn {{count}} ngày nữa là Tuần hoàn hảo",
+      "crew_one": "🤝 Còn {{count}} người bạn nữa là đủ hội",
+      "crew_other": "🤝 Còn {{count}} người bạn nữa là đủ hội"
     },
     "ranks": "🏆 Xem bảng xếp hạng",
     "share": "📤 Chia sẻ chiến thắng",

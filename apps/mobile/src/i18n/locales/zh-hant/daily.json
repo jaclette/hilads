@@ -145,7 +145,8 @@
       "rate_limited": "嘗試太多次了，請稍等一下。",
       "own_proof": "不能投給自己的照片。",
       "not_found": "這張照片已不存在。",
-      "generic": "出了點問題，再試一次。"
+      "generic": "出了點問題，再試一次。",
+      "play_first": "先發今天的照片，才能幫別人按讚。"
     },
     "voteFor": "投給{{city}}",
     "prompt": "為你喜歡的照片投票",
@@ -300,7 +301,8 @@
     "pending": "審核中",
     "missed": "未完成",
     "none": "沒有挑戰",
-    "keep": "今天參加，保住連續紀錄"
+    "keep": "今天參加，保住連續紀錄",
+    "perfectNudge": "今天玩一局就能完成完美一週 🔥 +{{points}}"
   },
   "calendar": {
     "title": "我的 Daily Challenge",
@@ -803,7 +805,8 @@
       "today": "今天",
       "yesterday": "昨天",
       "week": "本週",
-      "alltime": "歷來"
+      "alltime": "歷來",
+      "season": "本賽季"
     },
     "scope": {
       "city": "我的城市",
@@ -828,7 +831,12 @@
       "playerCrown_one": "你是第 2 名，只差 {{count}} 分就能奪冠！👑",
       "playerCrown_other": "你是第 2 名，只差 {{count}} 分就能奪冠！👑",
       "playerClimb_one": "你是第 {{rank}} 名，再要 {{count}} 分就能升到第 {{next}} 名 ⬆️",
-      "playerClimb_other": "你是第 {{rank}} 名，再要 {{count}} 分就能升到第 {{next}} 名 ⬆️"
+      "playerClimb_other": "你是第 {{rank}} 名，再要 {{count}} 分就能升到第 {{next}} 名 ⬆️",
+      "seasonLead": "你是本賽季第 1 名！守住王冠 👑",
+      "seasonBehind_one": "你本賽季排第 {{rank}}，落後 {{name}} {{count}} 分",
+      "seasonBehind_other": "你本賽季排第 {{rank}}，落後 {{name}} {{count}} 分",
+      "seasonTied": "你本賽季排第 {{rank}}，與 {{name}} 同分",
+      "seasonNone": "今天玩一局就能加入本賽季 🙋"
     },
     "city": {
       "lineTop": "{{city}} 領先！🏁",
@@ -866,7 +874,11 @@
       "city": "你的城市放這裡？🌍",
       "invite": "🎯 誰能拿下第 {{rank}} 名？邀請朋友",
       "empty": "這個位置還沒人拿下"
-    }
+    },
+    "seasonEnds_one": "賽季還剩 {{count}} 天結束",
+    "seasonEnds_other": "賽季還剩 {{count}} 天結束",
+    "seasonEndsAt": "賽季結束於 {{date}}",
+    "preSeason": "季前賽 · 首個賽季 {{date}}"
   },
   "rivals": {
     "title": "你 vs {{city}}",
@@ -927,12 +939,17 @@
       "likesText": "按讚本身不加分：它們決定誰進入前 3 名。",
       "place1": "第 1 名",
       "place2": "第 2 名",
-      "place3": "第 3 名"
+      "place3": "第 3 名",
+      "weekTitle": "完美一週",
+      "weekText": "週一到週日，每天都玩。",
+      "inviteTitle": "找朋友來",
+      "inviteText_one": "每位朋友發出第一張照片就加分（每賽季最多 {{count}} 位）。小隊集齊再得 +{{crew}}。",
+      "inviteText_other": "每位朋友發出第一張照片就加分（每賽季最多 {{count}} 位）。小隊集齊再得 +{{crew}}。"
     },
     "collectTitle": "收集與炫耀",
     "collect": {
       "streakTitle": "保持連續紀錄",
-      "streakText": "每天參加，讓連續紀錄越來越長。它會顯示在你的護照上，只為榮耀（沒有積分）。",
+      "streakText": "每天玩就能讓它變長，它會顯示在你的護照上；積分來自完美一週。",
       "passTitle": "印章與 Local Pass",
       "passText": "每個主題一枚印章。在同一座城市玩完全部 7 個主題，就能獲得那座城市的 Local Pass。"
     },
@@ -942,7 +959,7 @@
       "dropText": "新的主題挑戰同時發給全世界的每個人。",
       "playTitle": "參加",
       "playText": "在倒數結束前，在你的城市拍下照片。",
-      "voteTitle": "投票",
+      "voteTitle": "按讚",
       "voteText": "替你喜歡的照片按讚，來自每一座城市。",
       "resultsTitle": "結果",
       "resultsText": "下一次發布時：冠軍加冕、積分結算、排名更新。"
@@ -950,7 +967,14 @@
     "cta": "📸 參加今天的挑戰",
     "ctaPlayed": "🌍 看看全世界怎麼玩",
     "foot": "以上為目前積分。規則隨時都在這裡。",
-    "plus": "+{{count}}"
+    "plus": "+{{count}}",
+    "seasonsTitle": "賽季",
+    "seasons": {
+      "title": "每個月一場新比賽",
+      "text": "排行榜在每月 1 日重新開始。你的歷史總分永遠不會歸零：那是你的榮耀。",
+      "ends": "本賽季結束於 {{date}}",
+      "pre": "季前賽：首個賽季於 {{date}} 開始"
+    }
   },
   "a11y": {
     "likes_one": "{{count}} 個讚",
@@ -958,5 +982,15 @@
     "likes_other": "{{count}} 個讚",
     "points_other": "{{count}} 分",
     "rank": "第 {{rank}} 名"
+  },
+  "season": {
+    "resultsKicker": "{{season}} · 賽季結果",
+    "medalTitle": "你拿下第 {{rank}} 名！🎉",
+    "rankTitle_one": "你在 {{count}} 位玩家中排第 {{rank}}",
+    "rankTitle_other": "你在 {{count}} 位玩家中排第 {{rank}}",
+    "stats": "積分：{{points}} · 參與天數：{{days}} · 登上頒獎台：{{podiums}}",
+    "newSeason": "新賽季開始了，所有人從 0 分重新出發。",
+    "play": "📸 玩今天的挑戰",
+    "close": "關閉"
   }
 }

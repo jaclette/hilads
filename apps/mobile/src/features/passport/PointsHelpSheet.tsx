@@ -3,28 +3,34 @@ import { useTranslation } from 'react-i18next';
 import { Space, FontSizes, type ThemeColors } from '@/constants';
 import { useThemedStyles } from '@/context/ThemeContext';
 import { Button, Sheet, SheetScrollView, SheetTitle } from '@/ui';
-
-// The three ways to earn Daily Challenge points (DailyPoints::EARNING_KINDS,
-// values in score_rules). Keep in step if a value changes.
-const ROWS: [string, number | string][] = [['proof', 10], ['vote', 2], ['top', '30 / 20 / 10']];
+import { useScoringPoints } from '@/features/scoring/points';
 
 /** "How to earn points" (SPEC 9.2): a help sheet opened from Passport. */
 export function PointsHelpSheet({ visible, onClose }: { visible: boolean; onClose: () => void }) {
   const styles = useThemedStyles(makeStyles);
   const { t } = useTranslation('me');
+  // Scoring v2: the server's values (GET /daily/points), never hardcoded.
+  const p = useScoringPoints();
+  const rows: [string, string][] = [
+    ['proof', `+${p.proof}`],
+    ['top', p.top.map(n => `+${n}`).join(' / ')],
+    ['week', `+${p.perfectWeek ?? 30}`],
+    ['friend', `+${p.friendJoined ?? 10}`],
+    ['crew', `+${p.crewBonus ?? 50}`],
+  ];
   return (
     <Sheet visible={visible} onClose={onClose} closeLabel={t('passport.close')} style={styles.sheet}>
       <SheetTitle>{t('points.title')}</SheetTitle>
       <Text style={styles.intro}>{t('points.intro')}</Text>
       <SheetScrollView style={styles.list}>
-        {ROWS.map(([key, pts]) => (
+        {rows.map(([key, pts]) => (
           <View key={key} style={styles.row}>
-            <Text style={styles.label}>{t(`points.${key}`)}</Text>
-            <Text style={styles.pts}>+{pts}</Text>
+            <Text style={styles.label}>{t(`points.${key}`, { count: p.crewSize ?? 5 })}</Text>
+            <Text style={styles.pts}>{pts}</Text>
           </View>
         ))}
       </SheetScrollView>
-      <Text style={styles.note}>{t('points.weekly')}</Text>
+      <Text style={styles.note}>{t('points.season')}</Text>
       <Button label={t('passport.gotIt')} onPress={onClose} style={styles.cta} />
     </Sheet>
   );

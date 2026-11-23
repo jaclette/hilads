@@ -1228,6 +1228,13 @@ export interface DailyUserStats {
   memberSince?:    number | null;
   /** The cities (not mine) compared with my photos, the most shared first (12 at most). */
   comparedCities?: { id: number; name: string | null; country: string | null; duels?: number }[];   // duels: shared challenges (V6)
+  /** Scoring v2: season medals (top 3 of a finished season), newest first. */
+  seasonMedals?: { season: string; rank: number; points: number }[];
+  /** Scoring v2: this week's Perfect week (Monday to Sunday), null before v2 is live. */
+  week?: { done: number; missed: number; left: number; total: number; earned: boolean; points: number; from: string;
+           days: ('done' | 'missed' | 'today' | 'next' | 'off')[] } | null;
+  /** Scoring v2: who invited this player ("Invited by @minh"). */
+  invitedBy?: { id: string; username: string | null; displayName: string | null; photoUrl: string | null } | null;
 }
 
 /** GET /daily/calendar: per day, its theme, whether it was published and my proof's status. */

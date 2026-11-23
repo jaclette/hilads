@@ -416,7 +416,10 @@
       "streak": "Streak",
       "early": "Maaga",
       "stamp": "Stamp",
-      "other": "Bonus"
+      "other": "Bonus",
+      "week": "Perfect week",
+      "friends": "Mga kaibigan",
+      "crew": "Crew"
     },
     "medal": {
       "city": "sa {{city}}",
@@ -429,7 +432,11 @@
     "goal": {
       "pass": "{{gap}} pts para malampasan si {{name}}",
       "streak": "🔥 Day {{day}} bukas",
-      "stamp": "🎟️ Susunod na stamp sa {{city}}"
+      "stamp": "🎟️ Susunod na stamp sa {{city}}",
+      "week_one": "🔥 {{count}} araw na lang para sa Perfect week",
+      "week_other": "🔥 {{count}} araw na lang para sa Perfect week",
+      "crew_one": "🤝 {{count}} kaibigan na lang para sa crew mo",
+      "crew_other": "🤝 {{count}} kaibigan na lang para sa crew mo"
     },
     "ranks": "🏆 Tingnan ang ranking",
     "share": "📤 I-share ang panalo ko",

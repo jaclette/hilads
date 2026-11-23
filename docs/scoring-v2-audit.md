@@ -279,7 +279,18 @@ Original plan:
   - `vote_requires_play` is checked in `DailyVotes::guard()` and returns a clear 403 (`play_first`). The apps show "Post today's photo to like".
 - The fair-play section of Admin › Scoring gets the install-id and IP-hash groups and invite bursts from P3.
 
-### P5 – app
+### P5 – app — DONE
+
+- Built as planned. Specifics:
+  - World › Players periods are now **This season** (default) and **All time**; old links with today / week land on the season.
+  - Rank-up notifications follow the season.
+  - The Passport's week card became the season rank card; it adds the Perfect week dots, the crew card, season medals and "Invited by".
+  - Invite sharing uses the system share sheet with the `/today?ref=` link.
+  - The install id comes from the iOS Keychain (SecureStore) and Android's `getAndroidId()`.
+  - Every scoring value is read from `/daily/points`.
+- Celebrations: each friend and the crew bonus come through the existing victory modal (chips "Friends" / "Crew"); the season results screen is `SeasonResultGate`.
+
+Original plan:
 
 - **How it works,** from `/daily/points`:
   - Play.

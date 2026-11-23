@@ -419,7 +419,10 @@
       "streak": "Série",
       "early": "Cedo",
       "stamp": "Carimbo",
-      "other": "Bónus"
+      "other": "Bónus",
+      "week": "Semana perfeita",
+      "friends": "Amigos",
+      "crew": "Crew"
     },
     "medal": {
       "city": "em {{city}}",
@@ -432,7 +435,11 @@
     "goal": {
       "pass": "{{gap}} pts para passar {{name}}",
       "streak": "🔥 Dia {{day}} amanhã",
-      "stamp": "🎟️ Próximo carimbo em {{city}}"
+      "stamp": "🎟️ Próximo carimbo em {{city}}",
+      "week_one": "🔥 Falta {{count}} dia para a semana perfeita",
+      "week_other": "🔥 Faltam {{count}} dias para a semana perfeita",
+      "crew_one": "🤝 Falta {{count}} amigo para a tua crew",
+      "crew_other": "🤝 Faltam {{count}} amigos para a tua crew"
     },
     "ranks": "🏆 Ver a classificação",
     "share": "📤 Partilhar a minha vitória",

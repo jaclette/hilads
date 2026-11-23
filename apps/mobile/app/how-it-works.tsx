@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { ScrollView, Text, View, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
@@ -8,36 +8,27 @@ import { useApp } from '@/context/AppContext';
 import { Button, Card, Screen, ScreenHeader } from '@/ui';
 import { ACCENTS, tint } from '@/ui/joy';
 import { RankMedal } from '@/features/daily/RankMedal';
-import { fetchDailyPoints, type DailyPoints } from '@/api/daily';
+import { useScoringPoints, seasonEnd, seasonStart } from '@/features/scoring/points';
 import { useDailyToday } from '@/hooks/useDaily';
 import { track } from '@/services/analytics';
 
 /**
  * How Hilads works (docs/mockups/hilads_how_it_works_mockup.html), opened from World's
- * "How it works" button: a real screen. The points are the server's (GET /daily/points:
- * score_rules, the kinds that still earn since 2026-10-22: a photo, voting, the World top 3);
- * until they arrive, the values the server seeds. Likes rank the photos, they earn nothing
- * themselves; the streak, the stamps and the Local Pass are collected, without points.
+ * "How it works" button: a real screen. Scoring v2 ("Play, Win, Invite"): the points are
+ * the server's config (GET /daily/points), until they arrive the values it ships with.
+ * Play (+10), Win (the World top 3), Perfect week, Invite friends; likes give no points,
+ * they decide the top 3. Seasons: the ranking starts over every month, all time stays.
  */
-const SEED: DailyPoints = { proof: 10, vote: 2, top: [30, 20, 10], minVotesToWin: 1 };
-let cached: DailyPoints | null = null;
 
 export default function HowItWorksScreen() {
   const styles = useThemedStyles(makeStyles);
   const router = useRouter();
-  const { t } = useTranslation('daily');
+  const { t, i18n } = useTranslation('daily');
   const { account, city } = useApp();
   const today = useDailyToday(city?.channelId);
-  const [pts, setPts] = useState<DailyPoints>(cached ?? SEED);
+  const pts = useScoringPoints();
 
-  useEffect(() => {
-    track('how_it_works_viewed');
-    fetchDailyPoints().then(p => {
-      if (!p || typeof p.proof !== 'number' || !Array.isArray(p.top)) return;
-      cached = p;
-      setPts(p);
-    }).catch(() => {});
-  }, []);
+  useEffect(() => { track('how_it_works_viewed'); }, []);
 
   const played = !!today.data?.hasProof;
   const play = () => {
@@ -49,10 +40,12 @@ export default function HowItWorksScreen() {
 
   const earn = [
     { emoji: '📸', title: t('rules.earn.photoTitle'), text: t('rules.earn.photoText'), value: plus(pts.proof), places: null },
-    { emoji: '🗳️', title: t('rules.earn.voteTitle'), text: t('rules.earn.voteText'), value: plus(pts.vote), places: null },
     // The top 3: one line per place (medal, 1st / 2nd / 3rd, its points), not one pill.
     { emoji: '👑', title: t('rules.earn.topTitle'), text: t('rules.earn.topText', { count: pts.minVotesToWin }), value: null,
       places: pts.top.map((n, i) => ({ rank: i + 1, label: t(`rules.earn.place${i + 1}`), value: plus(n) })) },
+    { emoji: '🔥', title: t('rules.earn.weekTitle'), text: t('rules.earn.weekText'), value: plus(pts.perfectWeek ?? 30), places: null },
+    { emoji: '🤝', title: t('rules.earn.inviteTitle'),
+      text: t('rules.earn.inviteText', { count: pts.invitesPerSeason ?? 5, crew: pts.crewBonus ?? 50 }), value: plus(pts.friendJoined ?? 10), places: null },
     { emoji: '❤️', title: t('rules.earn.likesTitle'), text: t('rules.earn.likesText'), value: null, places: null },
   ];
   const collect = [
@@ -119,6 +112,25 @@ export default function HowItWorksScreen() {
           </Card>
         ))}
 
+        {/* Seasons: the ranking starts over every month; all time is for the glory. */}
+        <Text style={styles.section} accessibilityRole="header">{t('rules.seasonsTitle')}</Text>
+        <Card style={styles.rule}>
+          <View accessible style={styles.ruleRow}>
+            <View style={[styles.bubble, { backgroundColor: tint(ACCENTS[1], 0.22) }]}><Text style={styles.bubbleEmoji}>🏁</Text></View>
+            <View style={styles.ruleBody}>
+              <Text style={styles.ruleTitle}>{t('rules.seasons.title')}</Text>
+              <Text style={styles.ruleText}>{t('rules.seasons.text')}</Text>
+              {!!pts.season && (
+                <Text style={styles.seasonEnd}>
+                  {pts.season.pre
+                    ? t('rules.seasons.pre', { date: seasonStart(pts.season, i18n.language) })
+                    : t('rules.seasons.ends', { date: seasonEnd(pts.season, i18n.language) })}
+                </Text>
+              )}
+            </View>
+          </View>
+        </Card>
+
         <Text style={styles.section} accessibilityRole="header">{t('rules.raceTitle')}</Text>
         <Card style={styles.race}>
           {race.map((s, i) => (
@@ -162,6 +174,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   ruleBody:    { flex: 1, gap: Space.xxs },
   ruleTitle:   { ...Type.label, color: c.text },
   ruleText:    { ...Type.body, color: c.muted },
+  seasonEnd:   { ...Type.caption, fontWeight: '700', color: c.text, marginTop: Space.xxs },
   pill:        { paddingHorizontal: Space.md, minHeight: 32, borderRadius: Radius.control, backgroundColor: c.primaryTint, alignItems: 'center', justifyContent: 'center', maxWidth: 120 },
   pillText:    { ...Type.caption, fontWeight: '800', color: c.primaryOnTint, textAlign: 'center' },
   race:        { padding: Space.md },

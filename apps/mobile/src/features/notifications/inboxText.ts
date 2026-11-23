@@ -52,8 +52,24 @@ export function rowText(item: InboxItem, t: TFn): RowText {
   if (item.type === 'daily_result') return { parts: [{ text: t('inbox.row.result'), bold: true }], quote: item.body };
   if (item.type === 'daily_local_pass') return plain(t('inbox.row.localPass', { city }));
   if (item.type === 'daily_rank') {
-    return plain(d.scope === 'world' ? t('inbox.row.rankUpWorld', { rank: d.rank }) : t('inbox.row.rankUp', { rank: d.rank, where: city }));
+    // Scoring v2: rank-ups are in this season's ranking (period: 'season'); older rows were weekly.
+    const season = d.period === 'season';
+    return plain(d.scope === 'world'
+      ? t(season ? 'inbox.row.rankUpWorldSeason' : 'inbox.row.rankUpWorld', { rank: d.rank })
+      : t(season ? 'inbox.row.rankUpSeason' : 'inbox.row.rankUp', { rank: d.rank, where: city }));
   }
+  // Scoring v2: seasons and the new rewards.
+  if (item.type === 'daily_season_result') {
+    return plain(d.variant === 'medal' ? t('inbox.row.seasonMedal', { rank: d.rank }) : t('inbox.row.seasonResult', { rank: d.rank, count: d.points ?? 0 }));
+  }
+  if (item.type === 'daily_season_ending') {
+    return plain(d.rank === 1 ? t('inbox.row.seasonEndingFirst', { count: d.days ?? 3 }) : t('inbox.row.seasonEnding', { count: d.days ?? 3, rank: d.rank }));
+  }
+  if (item.type === 'daily_perfect_week') return plain(t('inbox.row.perfectWeek', { points: d.points ?? 30 }));
+  if (item.type === 'daily_friend_joined') {
+    return { parts: [{ text: d.name ?? (d.username ? '@' + d.username : ''), bold: true }, { text: ' ' + t('inbox.row.friendJoined', { points: d.points ?? 10, count: d.count ?? 1, max: d.max ?? 5 }), bold: false }], quote: null };
+  }
+  if (item.type === 'daily_crew_bonus') return plain(t('inbox.row.crewBonus', { points: d.points ?? 50, max: d.max ?? 5 }));
 
   // Comments on Daily photos: the same line as the Today card and the push (commentLine), the actor's name in bold.
   if (COMMENT_TYPES.includes(item.type)) {

@@ -51,6 +51,8 @@ export async function authSignup(
   mode: string | null = null,
   /** Required by the backend (Apple G1.2 EULA gate). Caller must collect explicit consent. */
   eulaAccepted: boolean = false,
+  /** Scoring v2: the invite link's code that opened the app, if any. */
+  inviteCode: string | null = null,
 ): Promise<{ user: User }> {
   const res = await api.post<{ user: User; token?: string }>('/auth/signup', {
     email,
@@ -60,6 +62,7 @@ export async function authSignup(
     guest_id:      guestId,
     mode,
     eula_accepted: eulaAccepted,
+    ...(inviteCode ? { invite_code: inviteCode } : {}),
   });
   if (res.token) {
     setAuthToken(res.token);

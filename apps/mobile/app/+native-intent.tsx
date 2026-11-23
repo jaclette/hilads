@@ -1,3 +1,4 @@
+import { captureInvite } from '@/features/invites/invite';
 // Expo Router deep-link path rewriter. Runs for EVERY incoming deep link
 // (iOS universal links, Android app links, and the hilads:// custom scheme)
 // before the router resolves a route.
@@ -31,6 +32,8 @@ function rewriteToday(prefix: string, pathOnly: string, suffix: string): string 
 
 export function redirectSystemPath({ path }: { path: string; initial: boolean }): string {
   try {
+    // Scoring v2: an invite link (…/today?ref=CODE) - keep the code for sign-up, record the open.
+    captureInvite(path);
     // hilads://today[?…] (custom scheme: "today" parses as the host, and the
     // router reads the host as the first path segment → hilads://daily/today).
     const custom = path.match(/^hilads:\/\/today\/?(?:\?(.*))?$/i);

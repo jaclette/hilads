@@ -416,7 +416,10 @@
       "streak": "Reeks",
       "early": "Vroeg",
       "stamp": "Stempel",
-      "other": "Bonus"
+      "other": "Bonus",
+      "week": "Perfecte week",
+      "friends": "Vrienden",
+      "crew": "Crew"
     },
     "medal": {
       "city": "in {{city}}",
@@ -429,7 +432,11 @@
     "goal": {
       "pass": "{{gap}} ptn om {{name}} in te halen",
       "streak": "🔥 Morgen dag {{day}}",
-      "stamp": "🎟️ Volgende stempel in {{city}}"
+      "stamp": "🎟️ Volgende stempel in {{city}}",
+      "week_one": "🔥 Nog {{count}} dag voor een perfecte week",
+      "week_other": "🔥 Nog {{count}} dagen voor een perfecte week",
+      "crew_one": "🤝 Nog {{count}} vriend voor je crew",
+      "crew_other": "🤝 Nog {{count}} vrienden voor je crew"
     },
     "ranks": "🏆 Bekijk de ranglijst",
     "share": "📤 Deel mijn winst",

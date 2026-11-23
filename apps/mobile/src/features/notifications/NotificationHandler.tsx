@@ -399,8 +399,18 @@ function resolvePushRoute(data: NotifData): string | null {
       return serverLink(data) ?? '/ranks?tab=photos&period=yesterday&source=push';
 
     case 'daily_rank':
-      // A rank-up → the weekly players (the server's link has the scope and city).
-      return serverLink(data) ?? '/ranks?tab=players&period=week&source=push';
+      // A rank-up → this season's players (the server's link has the period, scope and city).
+      return serverLink(data) ?? '/ranks?tab=players&period=season&source=push';
+
+    // Scoring v2: the season's end and results → its players; the rewards → the Passport.
+    case 'daily_season_ending':
+      return '/ranks?tab=players&period=season&source=push';
+    case 'daily_season_result':
+      return '/ranks?tab=players&period=alltime&source=push';
+    case 'daily_perfect_week':
+    case 'daily_friend_joined':
+    case 'daily_crew_bonus':
+      return '/(tabs)/passport';
 
     case 'daily_local_pass':
       // A new stamp → the Passport.

@@ -135,15 +135,21 @@
     "rivals": "Your rivals",
     "rivalsEmpty": "Play a few challenges to meet your first rivals 🌍",
     "duels_one": "{{count}} duel",
-    "duels_other": "{{count}} duels"
+    "duels_other": "{{count}} duels",
+    "seasonRank": "#{{rank}} this season",
+    "seasonNone": "Play to enter this season"
   },
   "points": {
     "title": "How to earn points",
-    "intro": "Daily Challenge points count in the weekly Most Local. All points count all time.",
+    "intro": "Points count in this season's ranking and in your all-time total.",
     "proof": "Posting your photo",
     "vote": "Voting (per challenge)",
     "top": "World top 3 of the day",
-    "weekly": "The weekly Most Local resets every Monday."
+    "weekly": "The weekly Most Local resets every Monday.",
+    "week": "Perfect week (all 7 days)",
+    "friend": "A friend you invited posts their first photo",
+    "crew": "Your crew is complete ({{count}} friends)",
+    "season": "The season ranking starts over on the 1st of every month."
   },
   "fieldBackHome": "Home city (Back home)",
   "backHomePlaceholder": "Not set",
@@ -156,5 +162,30 @@
     "photos_other": "photos",
     "likes_one": "like",
     "likes_other": "likes"
+  },
+  "week": {
+    "title": "Perfect week 🔥",
+    "points": "+{{points}}",
+    "days": "M,T,W,T,F,S,S",
+    "earned": "Perfect week done! +{{points}} 🔥",
+    "missed": "A day was missed this week. A new week starts Monday.",
+    "left_one": "{{count}} more day to earn +{{points}}",
+    "left_other": "{{count}} more days to earn +{{points}}",
+    "a11y": "Perfect week: {{done}} of {{total}} days"
+  },
+  "crew": {
+    "title": "Bring your crew 🤝",
+    "text": "+{{friend}} for each friend whose first photo goes up, +{{crew}} when {{max}} have joined this season.",
+    "done": "Crew complete this season! +{{points}} 🎉",
+    "invite": "Invite friends",
+    "shareText": "Join me on Hilads: one photo challenge a day, the whole world plays 📸 {{link}}",
+    "pending": "first photo to come",
+    "pendingHint": "A friend counts once their first photo is up.",
+    "a11y": "{{count}} of {{max}} friends this season",
+    "invitedBy": "Invited by {{name}}"
+  },
+  "seasons": {
+    "medals": "Season medals",
+    "medalA11y": "#{{rank}}, {{season}}, {{points}} points"
   }
 }

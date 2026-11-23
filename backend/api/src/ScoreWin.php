@@ -268,7 +268,8 @@ final class ScoreWin
     /**
      * A player's Perfect week in progress, the week of $today: done = the week's days with a
      * photo so far, missed = past days of the week without one, left = days still to play
-     * (today included when not played yet), total = 7, earned = the +30 is in.
+     * (today included when not played yet), total = 7, earned = the +30 is in, days = Monday to
+     * Sunday: 'done' | 'missed' | 'today' (not played yet) | 'next' (to come) | 'off' (no challenge).
      */
     public static function weekProgress(string $userId, string $today): ?array
     {
@@ -284,11 +285,21 @@ final class ScoreWin
         $done = 0;
         $missed = 0;
         $playedToday = false;
+        $byDate = [];
         foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $r) {
             $played = DailyProofRepository::bool($r['played']);
+            $byDate[$r['date']] = $played;
             if ($played) $done++;
             elseif ($r['date'] < $today) $missed++;
             if ($r['date'] === $today) $playedToday = $played;
+        }
+        $days = [];
+        $d = new DateTimeImmutable($monday);
+        for ($i = 0; $i < 7; $i++, $d = $d->modify('+1 day')) {
+            $date = $d->format('Y-m-d');
+            $days[] = $date > $today ? 'next'
+                : (!array_key_exists($date, $byDate) ? 'off'
+                : ($byDate[$date] ? 'done' : ($date === $today ? 'today' : 'missed')));
         }
         $daysAfter = (int) (new DateTimeImmutable($sunday))->diff(new DateTimeImmutable($today))->days;
         $stmt = Database::pdo()->prepare("
@@ -297,6 +308,6 @@ final class ScoreWin
         ");
         $stmt->execute([$userId, $monday, $sunday]);
         return ['done' => $done, 'missed' => $missed, 'left' => $daysAfter + ($playedToday ? 0 : 1), 'total' => 7,
-                'earned' => $stmt->fetchColumn() !== false];
+                'earned' => $stmt->fetchColumn() !== false, 'days' => $days];
     }
 }

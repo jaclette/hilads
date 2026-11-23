@@ -415,7 +415,10 @@
       "streak": "Streak",
       "early": "Early",
       "stamp": "Stamp",
-      "other": "Bonus"
+      "other": "Bonus",
+      "week": "Perfect week",
+      "friends": "Friends",
+      "crew": "Crew"
     },
     "medal": {
       "city": "in {{city}}",
@@ -428,7 +431,11 @@
     "goal": {
       "pass": "{{gap}} pts to pass {{name}}",
       "streak": "🔥 Day {{day}} tomorrow",
-      "stamp": "🎟️ Next stamp in {{city}}"
+      "stamp": "🎟️ Next stamp in {{city}}",
+      "week_one": "🔥 {{count}} more day for a Perfect week",
+      "week_other": "🔥 {{count}} more days for a Perfect week",
+      "crew_one": "🤝 {{count}} friend to go for your crew",
+      "crew_other": "🤝 {{count}} friends to go for your crew"
     },
     "ranks": "🏆 See the ranking",
     "share": "📤 Share my win",

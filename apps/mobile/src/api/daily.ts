@@ -340,8 +340,17 @@ export async function withdrawTwistProposal(): Promise<void> {
   await api.delete('/daily/twist-proposal');
 }
 
-/** The points the Daily Challenge awards (GET /daily/points, score_rules): the "How it works" screen. */
-export type DailyPoints = { proof: number; vote: number; top: [number, number, number]; minVotesToWin: number };
+/** A season (scoring v2): the calendar month of the challenges; ends at the drop of the 1st (endsAt, ISO UTC). */
+export type Season = { key: string; startsOn: string; endsOn: string; endsAt: string; daysLeft: number; pre: boolean };
+/**
+ * The scoring rules (GET /daily/points, config/scoring.php on the server): the "How it works" screen, the
+ * Passport's points sheet. The v2 fields are absent on an older server.
+ */
+export type DailyPoints = {
+  proof: number; vote: number; top: [number, number, number]; minVotesToWin: number;
+  v2?: boolean; perfectWeek?: number; friendJoined?: number; crewBonus?: number; invitesPerSeason?: number; crewSize?: number;
+  season?: Season;
+};
 export async function fetchDailyPoints(): Promise<DailyPoints> {
   return api.get<DailyPoints>('/daily/points');
 }

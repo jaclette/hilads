@@ -272,7 +272,10 @@ export interface ScoreWinMedal {
 export type ScoreWinGoal =
   | { type: 'pass'; scope: 'city' | 'world'; gap: number; username: string | null; displayName: string | null; progress: number }
   | { type: 'streak'; day: number; milestone: number; progress: number }
-  | { type: 'stamp'; done: number; total: number; city: { id: number; name: string; country: string | null } | null; progress: number };
+  | { type: 'stamp'; done: number; total: number; city: { id: number; name: string; country: string | null } | null; progress: number }
+  // Scoring v2 (sent to apps with X-Scoring: 2): a Perfect week in reach, a crew under way.
+  | { type: 'week'; done: number; total: number; left: number; points: number; progress: number }
+  | { type: 'crew'; done: number; total: number; left: number; points: number; progress: number };
 
 export interface ScoreWin {
   /** The Ranks period the reward lands in. */
@@ -282,7 +285,7 @@ export interface ScoreWin {
   challenge: DailyChallenge | null;
   /** My photo for it (the chip's thumbnail, the share card). */
   proof:     DailyProof | null;
-  sources:   { source: 'photo' | 'votes' | 'top' | 'streak' | 'early' | 'stamp' | 'other'; points: number }[];
+  sources:   { source: 'photo' | 'votes' | 'top' | 'week' | 'friends' | 'crew' | 'streak' | 'early' | 'stamp' | 'other'; points: number }[];
   medals:    ScoreWinMedal[];
   goal:      ScoreWinGoal | null;
 }

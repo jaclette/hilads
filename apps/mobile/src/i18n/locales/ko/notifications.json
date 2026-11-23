@@ -101,7 +101,19 @@
       "localPass": "🎟️ {{city}} Local Pass!",
       "rankUp": "▲ {{where}} {{rank}}위로 올랐어요",
       "landedMany_other": "오늘 {{city}}에 새 참가자 {{count}}명이 도착했어요",
-      "rankUpWorld": "▲ 세계 {{rank}}위로 올랐어요"
+      "rankUpWorld": "▲ 세계 {{rank}}위로 올랐어요",
+      "rankUpSeason": "▲ 이번 시즌 {{where}}에서 #{{rank}}로 올라갔어요",
+      "rankUpWorldSeason": "▲ 이번 시즌 전 세계 #{{rank}}로 올라갔어요",
+      "seasonMedal": "🏁 이번 시즌 #{{rank}}위로 마무리! 메달은 여권에 있어요",
+      "seasonResult_one": "🏁 시즌 종료: {{count}}점으로 #{{rank}}위",
+      "seasonResult_other": "🏁 시즌 종료: {{count}}점으로 #{{rank}}위",
+      "seasonEnding_one": "⏳ 시즌 종료까지 {{count}}일: 지금 #{{rank}}",
+      "seasonEnding_other": "⏳ 시즌 종료까지 {{count}}일: 지금 #{{rank}}",
+      "seasonEndingFirst_one": "⏳ 시즌 종료까지 {{count}}일: 지금 #1, 끝까지 지켜요!",
+      "seasonEndingFirst_other": "⏳ 시즌 종료까지 {{count}}일: 지금 #1, 끝까지 지켜요!",
+      "perfectWeek": "🔥 퍼펙트 위크! +{{points}}",
+      "friendJoined": "님이 당신 덕분에 Hilads에 합류 🤝 +{{points}} ({{count}}/{{max}})",
+      "crewBonus": "🎉 크루 완성! +{{points}}"
     },
     "empty": {
       "all": "조용하네요. 사진 찍으러 가 볼까요 📸",

@@ -211,7 +211,7 @@ export function ScoreCelebrationModal({ data, visible, onClose, onOpenRanks, onS
   const goalLeft = win.goal ? goalText(win, t) : null;
   const goalRight = !win.goal ? null
     : win.goal.type === 'streak' ? `${win.goal.day - 1} / ${win.goal.milestone}`
-    : win.goal.type === 'stamp' ? `${win.goal.done} / ${win.goal.total}` : null;
+    : win.goal.type === 'stamp' || win.goal.type === 'week' || win.goal.type === 'crew' ? `${win.goal.done} / ${win.goal.total}` : null;
 
   return (
     <Modal visible={visible} transparent statusBarTranslucent animationType="none" onRequestClose={close}>
@@ -335,6 +335,9 @@ function goalText(win: ScoreWin, t: TFn): string {
   const g = win.goal!;
   if (g.type === 'pass') return t('scoreWin.goal.pass', { gap: g.gap, name: g.username ? `@${g.username}` : (g.displayName ?? '') });
   if (g.type === 'streak') return t('scoreWin.goal.streak', { day: g.day });
+  // Scoring v2: "2 more days for a Perfect week 🔥", "2 friends to go 🤝".
+  if (g.type === 'week') return t('scoreWin.goal.week', { count: g.left, points: g.points });
+  if (g.type === 'crew') return t('scoreWin.goal.crew', { count: g.left, points: g.points });
   return t('scoreWin.goal.stamp', { city: shortCityName(g.city?.name ?? '') });
 }
 

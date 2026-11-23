@@ -101,7 +101,19 @@
       "localPass": "🎟️ Local Pass {{city}}!",
       "rankUp": "▲ Kamu naik ke #{{rank}} di {{where}}",
       "landedMany_other": "{{count}} pemain baru tiba di {{city}} hari ini",
-      "rankUpWorld": "▲ Kamu naik ke #{{rank}} dunia"
+      "rankUpWorld": "▲ Kamu naik ke #{{rank}} dunia",
+      "rankUpSeason": "▲ Kamu naik ke #{{rank}} di {{where}} musim ini",
+      "rankUpWorldSeason": "▲ Kamu naik ke #{{rank}} dunia musim ini",
+      "seasonMedal": "🏁 Kamu finis #{{rank}} musim ini! Medalimu ada di Paspor",
+      "seasonResult_one": "🏁 Musim selesai: kamu finis #{{rank}} dengan {{count}} poin",
+      "seasonResult_other": "🏁 Musim selesai: kamu finis #{{rank}} dengan {{count}} poin",
+      "seasonEnding_one": "⏳ Musim berakhir dalam {{count}} hari: kamu #{{rank}}",
+      "seasonEnding_other": "⏳ Musim berakhir dalam {{count}} hari: kamu #{{rank}}",
+      "seasonEndingFirst_one": "⏳ Musim berakhir dalam {{count}} hari: kamu #1, pertahankan!",
+      "seasonEndingFirst_other": "⏳ Musim berakhir dalam {{count}} hari: kamu #1, pertahankan!",
+      "perfectWeek": "🔥 Minggu sempurna! +{{points}}",
+      "friendJoined": "bergabung di Hilads berkat kamu 🤝 +{{points}} ({{count}}/{{max}})",
+      "crewBonus": "🎉 Krumu lengkap! +{{points}}"
     },
     "empty": {
       "all": "Belum ada apa-apa. Yuk foto sesuatu 📸",

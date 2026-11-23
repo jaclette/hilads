@@ -125,15 +125,21 @@
     "localSince": "Dân {{city}} từ {{date}}",
     "rivals": "Đối thủ của bạn",
     "rivalsEmpty": "Chơi vài thử thách để gặp đối thủ đầu tiên nha 🌍",
-    "duels_other": "{{count}} trận"
+    "duels_other": "{{count}} trận",
+    "seasonRank": "#{{rank}} mùa này",
+    "seasonNone": "Chơi để vào mùa giải"
   },
   "points": {
     "title": "Cách kiếm điểm",
-    "intro": "Điểm Daily Challenge tính vào Thổ địa tuần. Mọi điểm đều tính vào bảng mọi thời đại.",
+    "intro": "Điểm được tính vào bảng xếp hạng mùa này và tổng điểm mọi thời đại.",
     "proof": "Đăng ảnh",
     "vote": "Bình chọn (mỗi thử thách)",
     "top": "Top 3 thế giới trong ngày",
-    "weekly": "Thổ địa tuần tính lại từ đầu mỗi thứ Hai."
+    "weekly": "Thổ địa tuần tính lại từ đầu mỗi thứ Hai.",
+    "week": "Tuần hoàn hảo (đủ 7 ngày)",
+    "friend": "Một người bạn bạn mời đăng ảnh đầu tiên",
+    "crew": "Hội của bạn đủ người ({{count}} bạn)",
+    "season": "Bảng xếp hạng mùa giải bắt đầu lại vào ngày 1 mỗi tháng."
   },
   "fieldBackHome": "Thành phố quê nhà (Còn ở quê bạn?)",
   "backHomePlaceholder": "Chưa đặt",
@@ -143,5 +149,30 @@
     "cities_other": "thành phố",
     "photos_other": "ảnh",
     "likes_other": "lượt thích"
+  },
+  "week": {
+    "title": "Tuần hoàn hảo 🔥",
+    "points": "+{{points}}",
+    "days": "T2,T3,T4,T5,T6,T7,CN",
+    "earned": "Hoàn thành Tuần hoàn hảo! +{{points}} 🔥",
+    "missed": "Tuần này đã lỡ một ngày. Tuần mới bắt đầu vào thứ Hai.",
+    "left_one": "Còn {{count}} ngày để nhận +{{points}}",
+    "left_other": "Còn {{count}} ngày để nhận +{{points}}",
+    "a11y": "Tuần hoàn hảo: {{done}}/{{total}} ngày"
+  },
+  "crew": {
+    "title": "Rủ hội bạn 🤝",
+    "text": "+{{friend}} cho mỗi người bạn đăng ảnh đầu tiên, +{{crew}} khi đủ {{max}} người tham gia mùa này.",
+    "done": "Hội đã đủ người mùa này! +{{points}} 🎉",
+    "invite": "Mời bạn bè",
+    "shareText": "Chơi Hilads cùng mình nhé: mỗi ngày một thử thách ảnh, cả thế giới cùng chơi 📸 {{link}}",
+    "pending": "chưa đăng ảnh đầu tiên",
+    "pendingHint": "Một người bạn được tính khi đăng ảnh đầu tiên.",
+    "a11y": "{{count}}/{{max}} bạn mùa này",
+    "invitedBy": "Được {{name}} mời"
+  },
+  "seasons": {
+    "medals": "Huy chương mùa giải",
+    "medalA11y": "#{{rank}}, {{season}}, {{points}} điểm"
   }
 }

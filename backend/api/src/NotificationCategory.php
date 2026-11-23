@@ -137,7 +137,7 @@ final class NotificationCategory
             $type === 'daily_admin' && !empty($data['proofId'])   => '/daily/photos?' . $q(['proof' => $data['proofId']]),
             $type === 'daily_result'                              => '/ranks?' . $q(['tab' => 'photos', 'period' => 'yesterday']),
             // A city rank-up opens that city's weekly players (scope city + its id); a world one, the World.
-            $type === 'daily_rank'                                => '/ranks?' . $q(['tab' => 'players', 'period' => 'week',
+            $type === 'daily_rank'                                => '/ranks?' . $q(['tab' => 'players', 'period' => ($data['period'] ?? 'week') === 'season' ? 'season' : 'week',
                 'scope' => ($data['scope'] ?? 'world') === 'world' ? 'world' : 'city',
                 'cityId' => isset($data['cityId']) && preg_match('/^city_(\d+)$/', (string) $data['cityId'], $m) ? $m[1] : null]),
             $type === 'daily_local_pass'                          => '/(tabs)/passport',

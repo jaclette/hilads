@@ -30,13 +30,15 @@ import { medalColor, Movement, Podium, RaceBar, RankRow, YouBar, type PodiumGhos
 import { useScope } from '@/context/ScopeContext';
 import { IndexCarousel } from '@/features/index/IndexCarousel';
 import { RivalsBlock } from '@/features/ranks/RivalsBlock';
+import { seasonEnd, seasonStart } from '@/features/scoring/points';
 
 // The last answer of each view (segment, period, scope, city), in memory.
 const ranksCache = new Map<string, PlayersRanks | CitiesRanks | PhotosRanks>();
 
 const PERIODS: Record<RanksTab, RanksPeriod[]> = {
   photos:  ['today', 'yesterday', 'week', 'alltime'],
-  players: ['today', 'week', 'alltime'],
+  // Scoring v2: this season (the default, the ranking starts over every month) and all time (the glory).
+  players: ['season', 'alltime'],
   cities:  ['today', 'week', 'alltime'],
 };
 
@@ -57,7 +59,7 @@ export default function RanksScreen() {
 function RanksContent() {
   const styles = useThemedStyles(makeStyles);
   const { colors } = useTheme();
-  const { t } = useTranslation('daily');
+  const { t, i18n } = useTranslation('daily');
   const router = useRouter();
   const { city, account } = useApp();
   const params = useLocalSearchParams<{ tab?: string; period?: string; scope?: string; cityId?: string; focus?: string }>();
@@ -87,11 +89,12 @@ function RanksContent() {
   useEffect(() => {
     const tb = (['photos', 'players', 'cities'] as RanksTab[]).find(x => x === params.tab);
     if (tb) setTab(tb);
-    const pd = (['today', 'yesterday', 'week', 'alltime'] as RanksPeriod[]).find(x => x === params.period);
+    const pd = (['today', 'yesterday', 'week', 'season', 'alltime'] as RanksPeriod[]).find(x => x === params.period);
     if (pd) setPeriod(pd);
     if (params.scope === 'city' || params.scope === 'world') setScope(params.scope);
   }, [params.tab, params.period, params.scope, setScope]);
-  useEffect(() => { if (!PERIODS[tab].includes(period)) setPeriod('today'); }, [tab]); // eslint-disable-line react-hooks/exhaustive-deps
+  // A period the segment doesn't have (Players: today / week from an old link) → the segment's first.
+  useEffect(() => { if (!PERIODS[tab].includes(period)) setPeriod(PERIODS[tab][0]); }, [tab]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const loadedAt = useRef(0);
   const load = useCallback(async () => {
@@ -121,7 +124,12 @@ function RanksContent() {
   // The info line (today's photos: the time left to vote), on the left of the scope toggle.
   const endsAt = tab === 'photos' && period === 'today' ? (data as PhotosRanks | null)?.endsAt ?? null : null;
   const hours = endsAt ? Math.max(0, Math.floor((endsAt * 1000 - Date.now()) / 3_600_000)) : null;
-  const info = hours === null ? '' : hours > 0 ? t('ranks.timeLeft', { count: hours }) : t('ranks.timeLeftMin');
+  // This season's players: the days left (its end in the user's own time on the last day), or the pre-season.
+  const season = tab === 'players' && period === 'season' ? (data as PlayersRanks | null)?.season ?? null : null;
+  const info = season
+    ? season.pre ? t('ranks.preSeason', { date: seasonStart(season, i18n.language) })
+      : season.daysLeft > 1 ? t('ranks.seasonEnds', { count: season.daysLeft }) : t('ranks.seasonEndsAt', { date: seasonEnd(season, i18n.language) })
+    : hours === null ? '' : hours > 0 ? t('ranks.timeLeft', { count: hours }) : t('ranks.timeLeftMin');
   // An empty podium place sends to the camera (today's photos) or to Today.
   // An empty podium place depends on where I stand: a past period has nobody to call ("Nobody
   // took this spot"); today, before I've played: play (the camera, never the edit of a photo I
@@ -141,7 +149,8 @@ function RanksContent() {
     else router.navigate('/(tabs)/today' as never);
   };
   const ghost: PodiumGhost = (rank) => {
-    if (period !== 'today') return { label: t('ranks.ghost.empty'), icon: 'close-outline' };
+    // A past period has nobody to call; this season's players is still open: play.
+    if (period !== 'today' && !(tab === 'players' && period === 'season')) return { label: t('ranks.ghost.empty'), icon: 'close-outline' };
     if (tab === 'cities') return { label: t('ranks.ghost.city'), icon: 'flag-outline', onPress: tap('today', () => router.navigate('/(tabs)/today' as never)) };
     if (played) return { label: t('ranks.ghost.invite', { rank }), icon: 'person-add-outline', onPress: tap('invite', invite) };
     if (tab === 'photos') {
@@ -442,11 +451,17 @@ function PlayersView({ data, header, failed, refreshing, onRefresh, period, list
     lead: <View style={[styles.podiumAvatar, { borderColor: medalColor(colors, e.rank) }]}><Avatar uri={e.user.photoUrl} name={e.user.displayName ?? e.user.username ?? ''} size={56} /></View>,
   }));
   const me = data?.me ?? null;
+  // This season: "You're #2 this season, 15 pts behind @kitty_3" (gap = the points to pass them).
+  const behind = Math.max(0, (me?.gap ?? 1) - 1);
   const youText = me
-    ? me.rank === 1 ? t('ranks.you.lead')
+    ? period === 'season'
+      ? me.rank === 1 ? t('ranks.you.seasonLead')
+        : behind > 0 ? t('ranks.you.seasonBehind', { rank: me.rank, count: behind, name: me.next ? nameOf(me.next) : `#${me.rank - 1}` })
+        : t('ranks.you.seasonTied', { rank: me.rank, name: me.next ? nameOf(me.next) : `#${me.rank - 1}` })
+      : me.rank === 1 ? t('ranks.you.lead')
       : me.rank === 2 ? t('ranks.you.playerCrown', { count: Math.max(1, me.gap ?? 1) })
       : t('ranks.you.playerClimb', { rank: me.rank, count: Math.max(1, me.gap ?? 1), next: me.rank - 1 })
-    : t('ranks.you.none');
+    : period === 'season' ? t('ranks.you.seasonNone') : t('ranks.you.none');
   const rest = entries.slice(3);
 
   return (

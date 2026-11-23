@@ -145,7 +145,8 @@
       "rate_limited": "Thử nhiều quá rồi, đợi chút nhé.",
       "own_proof": "Bạn không tự bình chọn ảnh của mình được.",
       "not_found": "Ảnh này không còn nữa.",
-      "generic": "Có lỗi rồi. Thử lại nhé."
+      "generic": "Có lỗi rồi. Thử lại nhé.",
+      "play_first": "Đăng ảnh hôm nay để thích ảnh của người khác."
     },
     "voteFor": "Bình chọn cho {{city}}",
     "prompt": "Bình chọn những ảnh bạn thích",
@@ -300,7 +301,8 @@
     "pending": "Đang chờ duyệt",
     "missed": "Chưa chơi",
     "none": "Không có thử thách",
-    "keep": "Chơi hôm nay để giữ chuỗi"
+    "keep": "Chơi hôm nay để giữ chuỗi",
+    "perfectNudge": "Chơi hôm nay để hoàn thành Tuần hoàn hảo 🔥 +{{points}}"
   },
   "calendar": {
     "title": "Daily Challenge của tôi",
@@ -803,7 +805,8 @@
       "today": "Hôm nay",
       "yesterday": "Hôm qua",
       "week": "Tuần",
-      "alltime": "Mọi lúc"
+      "alltime": "Mọi lúc",
+      "season": "Mùa này"
     },
     "scope": {
       "city": "Thành phố của tôi",
@@ -828,7 +831,12 @@
       "playerCrown_one": "Bạn đang #2, chỉ cần {{count}} điểm nữa là giành vương miện! 👑",
       "playerCrown_other": "Bạn đang #2, chỉ cần {{count}} điểm nữa là giành vương miện! 👑",
       "playerClimb_one": "Bạn đang #{{rank}}, thêm {{count}} điểm để lên #{{next}} ⬆️",
-      "playerClimb_other": "Bạn đang #{{rank}}, thêm {{count}} điểm để lên #{{next}} ⬆️"
+      "playerClimb_other": "Bạn đang #{{rank}}, thêm {{count}} điểm để lên #{{next}} ⬆️",
+      "seasonLead": "Bạn đang #1 mùa này! Giữ vững ngôi vương 👑",
+      "seasonBehind_one": "Bạn đang #{{rank}} mùa này, kém {{name}} {{count}} điểm",
+      "seasonBehind_other": "Bạn đang #{{rank}} mùa này, kém {{name}} {{count}} điểm",
+      "seasonTied": "Bạn đang #{{rank}} mùa này, bằng điểm với {{name}}",
+      "seasonNone": "Chơi hôm nay để vào mùa giải 🙋"
     },
     "city": {
       "lineTop": "{{city}} đang dẫn đầu! 🏁",
@@ -866,7 +874,11 @@
       "city": "Thành phố của bạn ở đây? 🌍",
       "invite": "🎯 Ai giành hạng #{{rank}}? Mời bạn bè",
       "empty": "Chưa ai giành vị trí này"
-    }
+    },
+    "seasonEnds_one": "Mùa giải kết thúc sau {{count}} ngày",
+    "seasonEnds_other": "Mùa giải kết thúc sau {{count}} ngày",
+    "seasonEndsAt": "Mùa giải kết thúc {{date}}",
+    "preSeason": "Tiền mùa giải · mùa đầu tiên {{date}}"
   },
   "rivals": {
     "title": "Bạn vs {{city}}",
@@ -927,12 +939,17 @@
       "likesText": "Lượt thích không tự cho điểm: chúng quyết định ai vào top 3.",
       "place1": "Hạng nhất",
       "place2": "Hạng nhì",
-      "place3": "Hạng ba"
+      "place3": "Hạng ba",
+      "weekTitle": "Tuần hoàn hảo",
+      "weekText": "Chơi mỗi ngày, từ thứ Hai đến Chủ nhật.",
+      "inviteTitle": "Rủ bạn bè",
+      "inviteText_one": "Mỗi người bạn đăng ảnh đầu tiên (tối đa {{count}} người mỗi mùa). +{{crew}} khi hội của bạn đủ người.",
+      "inviteText_other": "Mỗi người bạn đăng ảnh đầu tiên (tối đa {{count}} người mỗi mùa). +{{crew}} khi hội của bạn đủ người."
     },
     "collectTitle": "Sưu tầm và khoe",
     "collect": {
       "streakTitle": "Giữ chuỗi",
-      "streakText": "Chơi mỗi ngày để kéo dài chuỗi. Chuỗi hiện trên hộ chiếu của bạn, cho vui thôi (không có điểm).",
+      "streakText": "Chơi mỗi ngày để tăng chuỗi. Chuỗi hiện trên Hộ chiếu của bạn; điểm đến từ Tuần hoàn hảo.",
       "passTitle": "Con dấu và Local Pass",
       "passText": "Mỗi chủ đề một con dấu. Chơi đủ 7 chủ đề ở cùng một thành phố để nhận Local Pass của thành phố đó."
     },
@@ -942,7 +959,7 @@
       "dropText": "Một thử thách mới theo chủ đề đến với mọi người, cùng lúc trên toàn thế giới.",
       "playTitle": "Chơi",
       "playText": "Chụp ảnh ở thành phố của bạn trước khi hết giờ.",
-      "voteTitle": "Bình chọn",
+      "voteTitle": "Thích",
       "voteText": "Thả tim những ảnh bạn thích, từ mọi thành phố.",
       "resultsTitle": "Kết quả",
       "resultsText": "Ở lần ra thử thách tiếp theo: trao vương miện, tính điểm, cập nhật thứ hạng."
@@ -950,7 +967,14 @@
     "cta": "📸 Chơi thử thách hôm nay",
     "ctaPlayed": "🌍 Xem cả thế giới chơi thế nào",
     "foot": "Điểm số như hiện tại. Luật chơi luôn ở đây.",
-    "plus": "+{{count}}"
+    "plus": "+{{count}}",
+    "seasonsTitle": "Mùa giải",
+    "seasons": {
+      "title": "Mỗi tháng một cuộc đua mới",
+      "text": "Bảng xếp hạng bắt đầu lại vào ngày 1 mỗi tháng. Tổng điểm mọi thời đại không bao giờ bị reset: đó là vinh quang của bạn.",
+      "ends": "Mùa này kết thúc {{date}}",
+      "pre": "Tiền mùa giải: mùa đầu tiên bắt đầu {{date}}"
+    }
   },
   "a11y": {
     "likes_one": "{{count}} lượt thích",
@@ -958,5 +982,15 @@
     "likes_other": "{{count}} lượt thích",
     "points_other": "{{count}} điểm",
     "rank": "hạng {{rank}}"
+  },
+  "season": {
+    "resultsKicker": "{{season}} · Kết quả mùa giải",
+    "medalTitle": "Bạn về #{{rank}}! 🎉",
+    "rankTitle_one": "Bạn về #{{rank}} trên {{count}} người chơi",
+    "rankTitle_other": "Bạn về #{{rank}} trên {{count}} người chơi",
+    "stats": "Điểm: {{points}} · Ngày chơi: {{days}} · Lần lên bục: {{podiums}}",
+    "newSeason": "Mùa giải mới bắt đầu. Mọi người về 0 điểm.",
+    "play": "📸 Chơi thử thách hôm nay",
+    "close": "Đóng"
   }
 }

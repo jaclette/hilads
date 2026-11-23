@@ -125,15 +125,21 @@
     "localSince": "{{date}} 起成为 {{city}} 本地人",
     "rivals": "你的对手",
     "rivalsEmpty": "玩几个挑战，认识你的第一批对手 🌍",
-    "duels_other": "{{count}} 场对决"
+    "duels_other": "{{count}} 场对决",
+    "seasonRank": "本赛季第 {{rank}} 名",
+    "seasonNone": "玩一局就能加入本赛季"
   },
   "points": {
     "title": "怎么赚积分",
-    "intro": "Daily Challenge 积分计入每周 Most Local，所有积分都计入历史榜。",
+    "intro": "积分计入本赛季排行榜和你的历史总分。",
     "proof": "发布照片",
     "vote": "投票（每个挑战）",
     "top": "当天全球前三",
-    "weekly": "每周 Most Local 每周一重置。"
+    "weekly": "每周 Most Local 每周一重置。",
+    "week": "完美一周（7 天全勤）",
+    "friend": "你邀请的朋友发出第一张照片",
+    "crew": "小队集齐（{{count}} 位朋友）",
+    "season": "赛季排行榜在每月 1 日重新开始。"
   },
   "fieldBackHome": "家乡（你家乡呢？）",
   "backHomePlaceholder": "未设置",
@@ -143,5 +149,30 @@
     "cities_other": "座城市",
     "photos_other": "张照片",
     "likes_other": "个赞"
+  },
+  "week": {
+    "title": "完美一周 🔥",
+    "points": "+{{points}}",
+    "days": "一,二,三,四,五,六,日",
+    "earned": "完美一周达成！+{{points}} 🔥",
+    "missed": "这周漏了一天。下周一重新开始。",
+    "left_one": "再玩 {{count}} 天就能拿 +{{points}}",
+    "left_other": "再玩 {{count}} 天就能拿 +{{points}}",
+    "a11y": "完美一周：{{done}}/{{total}} 天"
+  },
+  "crew": {
+    "title": "集结你的小队 🤝",
+    "text": "每位朋友发出第一张照片得 +{{friend}}，本赛季集齐 {{max}} 位再得 +{{crew}}。",
+    "done": "本赛季小队已集齐！+{{points}} 🎉",
+    "invite": "邀请朋友",
+    "shareText": "来 Hilads 和我一起玩：每天一个拍照挑战，全世界一起玩 📸 {{link}}",
+    "pending": "还没发第一张照片",
+    "pendingHint": "朋友发出第一张照片后才算数。",
+    "a11y": "本赛季 {{count}}/{{max}} 位朋友",
+    "invitedBy": "{{name}} 邀请"
+  },
+  "seasons": {
+    "medals": "赛季奖牌",
+    "medalA11y": "第 {{rank}} 名，{{season}}，{{points}} 分"
   }
 }

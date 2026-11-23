@@ -145,7 +145,8 @@
       "rate_limited": "Kebanyakan percobaan, tunggu sebentar ya.",
       "own_proof": "Kamu nggak bisa vote fotomu sendiri.",
       "not_found": "Foto ini sudah nggak tersedia.",
-      "generic": "Ada yang salah. Coba lagi."
+      "generic": "Ada yang salah. Coba lagi.",
+      "play_first": "Posting foto hari ini dulu untuk menyukai foto lainnya."
     },
     "voteFor": "Vote {{city}}",
     "prompt": "Vote foto yang kamu suka",
@@ -300,7 +301,8 @@
     "pending": "Menunggu ditinjau",
     "missed": "Terlewat",
     "none": "Nggak ada tantangan",
-    "keep": "Main hari ini biar tetap beruntun"
+    "keep": "Main hari ini biar tetap beruntun",
+    "perfectNudge": "Main hari ini untuk melengkapi minggu sempurnamu 🔥 +{{points}}"
   },
   "calendar": {
     "title": "Daily Challenge-ku",
@@ -803,7 +805,8 @@
       "today": "Hari ini",
       "yesterday": "Kemarin",
       "week": "Minggu",
-      "alltime": "Sepanjang masa"
+      "alltime": "Sepanjang masa",
+      "season": "Musim ini"
     },
     "scope": {
       "city": "Kotaku",
@@ -828,7 +831,12 @@
       "playerCrown_one": "Kamu #2, tinggal {{count}} poin lagi buat rebut mahkota! 👑",
       "playerCrown_other": "Kamu #2, tinggal {{count}} poin lagi buat rebut mahkota! 👑",
       "playerClimb_one": "Kamu #{{rank}}, {{count}} poin lagi buat naik ke #{{next}} ⬆️",
-      "playerClimb_other": "Kamu #{{rank}}, {{count}} poin lagi buat naik ke #{{next}} ⬆️"
+      "playerClimb_other": "Kamu #{{rank}}, {{count}} poin lagi buat naik ke #{{next}} ⬆️",
+      "seasonLead": "Kamu #1 musim ini! Pertahankan mahkotamu 👑",
+      "seasonBehind_one": "Kamu #{{rank}} musim ini, {{count}} poin di belakang {{name}}",
+      "seasonBehind_other": "Kamu #{{rank}} musim ini, {{count}} poin di belakang {{name}}",
+      "seasonTied": "Kamu #{{rank}} musim ini, seri dengan {{name}}",
+      "seasonNone": "Main hari ini untuk masuk musim ini 🙋"
     },
     "city": {
       "lineTop": "{{city}} memimpin balapan! 🏁",
@@ -866,7 +874,11 @@
       "city": "Kotamu di sini? 🌍",
       "invite": "🎯 Siapa ambil #{{rank}}? Ajak teman",
       "empty": "Belum ada yang ambil posisi ini"
-    }
+    },
+    "seasonEnds_one": "Musim berakhir dalam {{count}} hari",
+    "seasonEnds_other": "Musim berakhir dalam {{count}} hari",
+    "seasonEndsAt": "Musim berakhir {{date}}",
+    "preSeason": "Pra-musim · musim pertama {{date}}"
   },
   "rivals": {
     "title": "Kamu vs {{city}}",
@@ -927,12 +939,17 @@
       "likesText": "Suka nggak kasih poin sendiri: suka yang menentukan siapa masuk top 3.",
       "place1": "Juara 1",
       "place2": "Juara 2",
-      "place3": "Juara 3"
+      "place3": "Juara 3",
+      "weekTitle": "Minggu sempurna",
+      "weekText": "Main setiap hari, Senin sampai Minggu.",
+      "inviteTitle": "Ajak temanmu",
+      "inviteText_one": "Untuk setiap teman yang memposting foto pertamanya (maks. {{count}} per musim). +{{crew}} saat krumu lengkap.",
+      "inviteText_other": "Untuk setiap teman yang memposting foto pertamanya (maks. {{count}} per musim). +{{crew}} saat krumu lengkap."
     },
     "collectTitle": "Koleksi dan pamerkan",
     "collect": {
       "streakTitle": "Jaga beruntunmu",
-      "streakText": "Main tiap hari biar makin panjang. Muncul di paspormu, buat gengsi aja (tanpa poin).",
+      "streakText": "Main setiap hari untuk menambahnya. Muncul di Paspormu; poinnya dari minggu sempurna.",
       "passTitle": "Stempel dan Local Pass",
       "passText": "Satu stempel per tema. Main ketujuh tema di kota yang sama untuk dapat Local Pass kota itu."
     },
@@ -942,7 +959,7 @@
       "dropText": "Tantangan bertema baru datang buat semua orang, di saat yang sama di seluruh dunia.",
       "playTitle": "Main",
       "playText": "Foto di kotamu sebelum waktunya habis.",
-      "voteTitle": "Vote",
+      "voteTitle": "Suka",
       "voteText": "Kasih suka ke foto yang kamu suka, dari kota mana pun.",
       "resultsTitle": "Hasil",
       "resultsText": "Di peluncuran berikutnya: pemenang dinobatkan, poin dihitung, peringkat diperbarui."
@@ -950,7 +967,14 @@
     "cta": "📸 Main tantangan hari ini",
     "ctaPlayed": "🌍 Lihat gimana dunia bermain",
     "foot": "Poin seperti hari ini. Aturannya selalu ada di sini.",
-    "plus": "+{{count}}"
+    "plus": "+{{count}}",
+    "seasonsTitle": "Musim",
+    "seasons": {
+      "title": "Balapan baru setiap bulan",
+      "text": "Peringkat dimulai ulang setiap tanggal 1. Total sepanjang masamu tidak pernah direset: itulah kejayaanmu.",
+      "ends": "Musim ini berakhir {{date}}",
+      "pre": "Pra-musim: musim pertama dimulai {{date}}"
+    }
   },
   "a11y": {
     "likes_one": "{{count}} suka",
@@ -958,5 +982,15 @@
     "likes_other": "{{count}} suka",
     "points_other": "{{count}} poin",
     "rank": "peringkat {{rank}}"
+  },
+  "season": {
+    "resultsKicker": "{{season}} · Hasil musim",
+    "medalTitle": "Kamu finis #{{rank}}! 🎉",
+    "rankTitle_one": "Kamu finis #{{rank}} dari {{count}} pemain",
+    "rankTitle_other": "Kamu finis #{{rank}} dari {{count}} pemain",
+    "stats": "Poin: {{points}} · Hari bermain: {{days}} · Podium: {{podiums}}",
+    "newSeason": "Musim baru dimulai. Semua kembali ke 0.",
+    "play": "📸 Mainkan tantangan hari ini",
+    "close": "Tutup"
   }
 }

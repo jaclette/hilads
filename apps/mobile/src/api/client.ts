@@ -1,5 +1,6 @@
 import { API_URL } from '@/constants';
 import { appHeaders } from '@/lib/appVersion';
+import { installId } from '@/lib/installId';
 
 // ── Token store ───────────────────────────────────────────────────────────────
 // React Native fetch doesn't handle cookies automatically.
@@ -92,6 +93,10 @@ async function requestOnce<T = unknown>(
     'X-Themes-Rev': '4',
     // V4: this build asks the comparison question, so the API requires the answer on new proofs.
     'X-Compare': '1',
+    // Scoring v2: this build shows the Perfect week / friends / crew sources and goals.
+    'X-Scoring': '2',
+    // Scoring v2: this install, for one credited invite per phone (lib/installId).
+    ...(installId() ? { 'X-Install-Id': installId() as string } : {}),
     ...(extraHeaders as Record<string, string>),
   };
 

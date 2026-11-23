@@ -416,7 +416,10 @@
       "streak": "Serie",
       "early": "Früh",
       "stamp": "Stempel",
-      "other": "Bonus"
+      "other": "Bonus",
+      "week": "Perfekte Woche",
+      "friends": "Freunde",
+      "crew": "Crew"
     },
     "medal": {
       "city": "in {{city}}",
@@ -429,7 +432,11 @@
     "goal": {
       "pass": "{{gap}} Pkt. bis du {{name}} überholst",
       "streak": "🔥 Morgen Tag {{day}}",
-      "stamp": "🎟️ Nächster Stempel in {{city}}"
+      "stamp": "🎟️ Nächster Stempel in {{city}}",
+      "week_one": "🔥 Noch {{count}} Tag bis zur perfekten Woche",
+      "week_other": "🔥 Noch {{count}} Tage bis zur perfekten Woche",
+      "crew_one": "🤝 Noch {{count}} Freund für deine Crew",
+      "crew_other": "🤝 Noch {{count}} Freunde für deine Crew"
     },
     "ranks": "🏆 Rangliste ansehen",
     "share": "📤 Meinen Sieg teilen",

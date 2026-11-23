@@ -17,6 +17,7 @@ import { Confetti, themeColor, tint } from '@/ui/joy';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
 import type { DailyCalendar, DailyToday } from '@/types';
 import { RowGroup } from '@/ui';
+import { useScoringPoints } from '@/features/scoring/points';
 
 type Day = DailyCalendar['days'][number];
 type State = 'done' | 'pending' | 'missed' | 'today' | 'tomorrow' | 'later' | 'none';
@@ -48,6 +49,7 @@ export function TodayWeek({ today }: { today: DailyToday | null }) {
   const [burst, setBurst] = useState(false);
   // A seasonal event (teaser, live, recap): its days show its icon (Halloween: a pumpkin).
   const seasonal = useSeasonal();
+  const points = useScoringPoints();
   const dayIcon = (date: string, size: number, color: string, fallback: ReactNode) =>
     (isEventDay(seasonal, date) ? <SeasonalDayIcon themeKey={seasonal!.key} size={size} color={color} /> : fallback);
   const current = cal.data?.today ?? today?.challenge?.date ?? null;
@@ -78,6 +80,11 @@ export function TodayWeek({ today }: { today: DailyToday | null }) {
   const streak = streakNow;
   // Today not played yet and a streak worth keeping: say so under the week.
   const atRisk = !!account && !today?.myProof && !!today?.challenge?.isActive && (streak ?? 0) >= 2;
+  // Scoring v2: Sunday, today not played yet and every other day of the week played (6 / 7):
+  // "Play today to complete your Perfect week 🔥 +30".
+  const perfectWeekNudge = !!account && !!points.v2 && dow === 6 && !today?.myProof && !!today?.challenge?.isActive
+    && week.slice(0, 6).every(date => { const d = byDate.get(date); return !d?.published || d.myStatus === 'approved'; })
+    && week.slice(0, 6).some(date => byDate.get(date)?.myStatus === 'approved');
   const tomorrowColor = themeColor(today?.tomorrow?.special ? 'special' : (today?.tomorrow?.theme?.key ?? byDate.get(addDays(current, 1))?.theme?.key));
   const tomorrowTheme = today?.tomorrow?.theme ?? byDate.get(addDays(current, 1))?.theme ?? null;
   const tomorrowSpecial = today?.tomorrow?.special ?? byDate.get(addDays(current, 1))?.special ?? null;
@@ -162,7 +169,12 @@ export function TodayWeek({ today }: { today: DailyToday | null }) {
           <Text style={styles.peekText}>{t('today.tomorrow', { theme: themeName(tomorrowTheme.key, { special: tomorrowSpecial }) })}</Text>
         </View>
       )}
-      {atRisk && (
+      {perfectWeekNudge ? (
+        <View style={styles.risk} accessibilityLiveRegion="polite">
+          <Ionicons name="flame" size={15} color={colors.primaryText} />
+          <Text style={styles.riskText}>{t('week.perfectNudge', { points: points.perfectWeek ?? 30 })}</Text>
+        </View>
+      ) : atRisk && (
         <View style={styles.risk}>
           <Ionicons name="flame" size={15} color={colors.primaryText} />
           <Text style={styles.riskText}>{t('week.keep')}</Text>

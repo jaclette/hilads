@@ -155,7 +155,8 @@
       "rate_limited": "Demasiados intentos. Espera un momento.",
       "own_proof": "No puedes votar por tu propia foto.",
       "not_found": "Esta foto ya no está disponible.",
-      "generic": "Algo salió mal. Inténtalo de nuevo."
+      "generic": "Algo salió mal. Inténtalo de nuevo.",
+      "play_first": "Publica tu foto de hoy para dar like a las demás."
     },
     "voteFor": "Vota por {{city}}",
     "prompt": "Vota por las fotos que te encantan",
@@ -323,7 +324,8 @@
     "pending": "Pendiente de revisión",
     "missed": "Sin jugar",
     "none": "Sin reto",
-    "keep": "Juega hoy para mantener tu racha"
+    "keep": "Juega hoy para mantener tu racha",
+    "perfectNudge": "Juega hoy para completar tu semana perfecta 🔥 +{{points}}"
   },
   "calendar": {
     "title": "Mis Daily Challenges",
@@ -876,7 +878,8 @@
       "today": "Hoy",
       "yesterday": "Ayer",
       "week": "Semana",
-      "alltime": "Histórico"
+      "alltime": "Histórico",
+      "season": "Esta temporada"
     },
     "scope": {
       "city": "Mi ciudad",
@@ -901,7 +904,12 @@
       "playerCrown_one": "Eres #2, ¡solo {{count}} punto para llevarte la corona! 👑",
       "playerCrown_other": "Eres #2, ¡solo {{count}} puntos para llevarte la corona! 👑",
       "playerClimb_one": "Eres #{{rank}}, {{count}} punto para subir al #{{next}} ⬆️",
-      "playerClimb_other": "Eres #{{rank}}, {{count}} puntos para subir al #{{next}} ⬆️"
+      "playerClimb_other": "Eres #{{rank}}, {{count}} puntos para subir al #{{next}} ⬆️",
+      "seasonLead": "¡Vas #1 esta temporada! Defiende tu corona 👑",
+      "seasonBehind_one": "Vas #{{rank}} esta temporada, a {{count}} pt de {{name}}",
+      "seasonBehind_other": "Vas #{{rank}} esta temporada, a {{count}} pts de {{name}}",
+      "seasonTied": "Vas #{{rank}} esta temporada, empatado con {{name}}",
+      "seasonNone": "Juega hoy para entrar en la temporada 🙋"
     },
     "city": {
       "lineTop": "¡{{city}} lidera la carrera! 🏁",
@@ -947,7 +955,11 @@
       "city": "¿Tu ciudad aquí? 🌍",
       "invite": "🎯 ¿Quién se lleva el #{{rank}}? Invita a alguien",
       "empty": "Nadie tomó este puesto"
-    }
+    },
+    "seasonEnds_one": "La temporada termina en {{count}} día",
+    "seasonEnds_other": "La temporada termina en {{count}} días",
+    "seasonEndsAt": "La temporada termina {{date}}",
+    "preSeason": "Pretemporada · primera temporada {{date}}"
   },
   "rivals": {
     "title": "Tú vs {{city}}",
@@ -1010,12 +1022,17 @@
       "likesText": "Los me gusta no dan puntos por sí solos: deciden quién entra en el top 3.",
       "place1": "1.º",
       "place2": "2.º",
-      "place3": "3.º"
+      "place3": "3.º",
+      "weekTitle": "Semana perfecta",
+      "weekText": "Juega cada día, de lunes a domingo.",
+      "inviteTitle": "Trae a tus amigos",
+      "inviteText_one": "Por cada amigo que publica su primera foto (hasta {{count}} por temporada). +{{crew}} cuando tu crew está completo.",
+      "inviteText_other": "Por cada amigo que publica su primera foto (hasta {{count}} por temporada). +{{crew}} cuando tu crew está completo."
     },
     "collectTitle": "Colecciona y presume",
     "collect": {
       "streakTitle": "Mantén tu racha",
-      "streakText": "Juega cada día para alargarla. Se ve en tu pasaporte, solo por la gloria (sin puntos).",
+      "streakText": "Juega cada día para hacerla crecer. Se ve en tu Pasaporte; los puntos vienen de la semana perfecta.",
       "passTitle": "Sellos y Local Pass",
       "passText": "Un sello por tema. Juega los 7 temas en la misma ciudad para conseguir su Local Pass."
     },
@@ -1025,7 +1042,7 @@
       "dropText": "Llega un nuevo reto temático para todos, al mismo tiempo en todo el mundo.",
       "playTitle": "Juega",
       "playText": "Haz tu foto en tu ciudad antes de que acabe el tiempo.",
-      "voteTitle": "Vota",
+      "voteTitle": "Like",
       "voteText": "Dale me gusta a las fotos que te encanten, de todas las ciudades.",
       "resultsTitle": "Resultados",
       "resultsText": "En el siguiente lanzamiento: ganadores coronados, puntos contados, rankings al día."
@@ -1033,7 +1050,14 @@
     "cta": "📸 Juega el reto de hoy",
     "ctaPlayed": "🌍 Mira cómo jugó el mundo",
     "foot": "Puntos tal como están hoy. Las reglas siempre están aquí.",
-    "plus": "+{{count}}"
+    "plus": "+{{count}}",
+    "seasonsTitle": "Temporadas",
+    "seasons": {
+      "title": "Una nueva carrera cada mes",
+      "text": "La clasificación empieza de cero el día 1 de cada mes. Tu total histórico nunca se reinicia: es tu gloria.",
+      "ends": "Esta temporada termina {{date}}",
+      "pre": "Pretemporada: la primera temporada empieza {{date}}"
+    }
   },
   "a11y": {
     "likes_one": "{{count}} me gusta",
@@ -1041,5 +1065,15 @@
     "likes_other": "{{count}} me gusta",
     "points_other": "{{count}} puntos",
     "rank": "puesto {{rank}}"
+  },
+  "season": {
+    "resultsKicker": "{{season}} · Resultados de la temporada",
+    "medalTitle": "¡Terminas #{{rank}}! 🎉",
+    "rankTitle_one": "Terminas #{{rank}} de {{count}} jugador",
+    "rankTitle_other": "Terminas #{{rank}} de {{count}} jugadores",
+    "stats": "Puntos: {{points}} · Días jugados: {{days}} · Podios: {{podiums}}",
+    "newSeason": "Empieza una nueva temporada. Todos vuelven a 0.",
+    "play": "📸 Juega el reto de hoy",
+    "close": "Cerrar"
   }
 }

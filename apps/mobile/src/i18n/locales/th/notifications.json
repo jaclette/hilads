@@ -101,7 +101,19 @@
       "localPass": "🎟️ Local Pass ของ{{city}}!",
       "rankUp": "▲ คุณขึ้นเป็นอันดับ {{rank}} ใน{{where}}",
       "landedMany_other": "วันนี้มีผู้เล่นใหม่ {{count}} คนมาถึง{{city}}",
-      "rankUpWorld": "▲ คุณขึ้นเป็นอันดับ {{rank}} ของโลก"
+      "rankUpWorld": "▲ คุณขึ้นเป็นอันดับ {{rank}} ของโลก",
+      "rankUpSeason": "▲ ซีซันนี้คุณขึ้นเป็นอันดับ #{{rank}} ใน{{where}}",
+      "rankUpWorldSeason": "▲ ซีซันนี้คุณขึ้นเป็นอันดับ #{{rank}} ของโลก",
+      "seasonMedal": "🏁 ซีซันนี้คุณจบอันดับ #{{rank}}! เหรียญอยู่ในพาสปอร์ตแล้ว",
+      "seasonResult_one": "🏁 จบซีซัน: คุณได้อันดับ #{{rank}} ด้วย {{count}} แต้ม",
+      "seasonResult_other": "🏁 จบซีซัน: คุณได้อันดับ #{{rank}} ด้วย {{count}} แต้ม",
+      "seasonEnding_one": "⏳ อีก {{count}} วันซีซันจะจบ: ตอนนี้คุณอันดับ #{{rank}}",
+      "seasonEnding_other": "⏳ อีก {{count}} วันซีซันจะจบ: ตอนนี้คุณอันดับ #{{rank}}",
+      "seasonEndingFirst_one": "⏳ อีก {{count}} วันซีซันจะจบ: ตอนนี้คุณอันดับ #1 รักษาไว้!",
+      "seasonEndingFirst_other": "⏳ อีก {{count}} วันซีซันจะจบ: ตอนนี้คุณอันดับ #1 รักษาไว้!",
+      "perfectWeek": "🔥 สัปดาห์สมบูรณ์แบบ! +{{points}}",
+      "friendJoined": "มาเล่น Hilads เพราะคุณชวน 🤝 +{{points}} ({{count}}/{{max}})",
+      "crewBonus": "🎉 แก๊งของคุณครบแล้ว! +{{points}}"
     },
     "empty": {
       "all": "ยังเงียบอยู่ ไปถ่ายรูปกันเลย 📸",

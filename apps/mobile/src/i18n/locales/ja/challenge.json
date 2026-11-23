@@ -413,7 +413,10 @@
       "streak": "連続",
       "early": "早め",
       "stamp": "スタンプ",
-      "other": "ボーナス"
+      "other": "ボーナス",
+      "week": "パーフェクトウィーク",
+      "friends": "友だち",
+      "crew": "クルー"
     },
     "medal": {
       "city": "{{city}}で",
@@ -426,7 +429,11 @@
     "goal": {
       "pass": "あと{{gap}}ptで{{name}}を抜ける",
       "streak": "🔥 明日で{{day}}日目",
-      "stamp": "🎟️ {{city}}の次のスタンプ"
+      "stamp": "🎟️ {{city}}の次のスタンプ",
+      "week_one": "🔥 パーフェクトウィークまであと{{count}}日",
+      "week_other": "🔥 パーフェクトウィークまであと{{count}}日",
+      "crew_one": "🤝 クルー完成まであと{{count}}人",
+      "crew_other": "🤝 クルー完成まであと{{count}}人"
     },
     "ranks": "🏆 ランキングを見る",
     "share": "📤 勝利をシェア",

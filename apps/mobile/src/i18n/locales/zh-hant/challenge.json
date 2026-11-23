@@ -413,7 +413,10 @@
       "streak": "連續",
       "early": "提早",
       "stamp": "印章",
-      "other": "獎勵"
+      "other": "獎勵",
+      "week": "完美一週",
+      "friends": "朋友",
+      "crew": "小隊"
     },
     "medal": {
       "city": "在{{city}}",
@@ -426,7 +429,11 @@
     "goal": {
       "pass": "再得 {{gap}} 分超越 {{name}}",
       "streak": "🔥 明天第 {{day}} 天",
-      "stamp": "🎟️ {{city}}的下一個印章"
+      "stamp": "🎟️ {{city}}的下一個印章",
+      "week_one": "🔥 再玩 {{count}} 天就是完美一週",
+      "week_other": "🔥 再玩 {{count}} 天就是完美一週",
+      "crew_one": "🤝 再邀 {{count}} 位朋友就能集齊小隊",
+      "crew_other": "🤝 再邀 {{count}} 位朋友就能集齊小隊"
     },
     "ranks": "🏆 查看排行榜",
     "share": "📤 分享我的勝利",

@@ -103,7 +103,19 @@
       "landedMany_one": "{{count}} jugador nuevo llegó hoy a {{city}}",
       "landedMany_other": "{{count}} jugadores nuevos llegaron hoy a {{city}}",
       "landedMany_many": "{{count}} jugadores nuevos llegaron hoy a {{city}}",
-      "rankUpWorld": "▲ Subiste al #{{rank}} del mundo"
+      "rankUpWorld": "▲ Subiste al #{{rank}} del mundo",
+      "rankUpSeason": "▲ Subiste al #{{rank}} en {{where}} esta temporada",
+      "rankUpWorldSeason": "▲ Subiste al #{{rank}} del mundo esta temporada",
+      "seasonMedal": "🏁 ¡Terminas #{{rank}} esta temporada! Tu medalla está en tu Pasaporte",
+      "seasonResult_one": "🏁 Fin de temporada: terminas #{{rank}} con {{count}} pt",
+      "seasonResult_other": "🏁 Fin de temporada: terminas #{{rank}} con {{count}} pts",
+      "seasonEnding_one": "⏳ La temporada termina en {{count}} día: vas #{{rank}}",
+      "seasonEnding_other": "⏳ La temporada termina en {{count}} días: vas #{{rank}}",
+      "seasonEndingFirst_one": "⏳ La temporada termina en {{count}} día: vas #1, ¡aguanta!",
+      "seasonEndingFirst_other": "⏳ La temporada termina en {{count}} días: vas #1, ¡aguanta!",
+      "perfectWeek": "🔥 ¡Semana perfecta! +{{points}}",
+      "friendJoined": "se unió a Hilads gracias a ti 🤝 +{{points}} ({{count}}/{{max}})",
+      "crewBonus": "🎉 ¡Tu crew está completo! +{{points}}"
     },
     "empty": {
       "all": "Nada por aquí. Ve a sacar una foto 📸",

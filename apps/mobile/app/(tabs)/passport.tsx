@@ -21,11 +21,12 @@ import { useDailyToday } from '@/hooks/useDaily';
 import { fetchMyProposals, fetchUserDaily } from '@/api/daily';
 import { fetchUserFriends } from '@/api/users';
 import { fetchLeaderboard } from '@/api/leaderboard';
-import { fetchMySpots, fetchWeeklyRank } from '@/api/passport';
+import { fetchMySpots } from '@/api/passport';
 import { CityPage } from '@/features/passport/CityPage';
 import { SpecialStamps } from '@/features/passport/SpecialStamps';
 import { PioneerBadges } from '@/features/passport/PioneerBadges';
 import { PointsHelpSheet } from '@/features/passport/PointsHelpSheet';
+import { CrewCard, InvitedBy, SeasonMedals, WeekCard } from '@/features/passport/ScoringCards';
 import type { DailyLocalPassProgress, DailyUserStats } from '@/types';
 
 interface Counts { spots: number | null; proposals: number | null; friends: number | null; week: number | null; alltime: number | null }
@@ -89,7 +90,8 @@ export default function PassportScreen() {
       fetchMySpots(),
       fetchMyProposals(),
       fetchUserFriends(account.id, 1, 1),
-      fetchWeeklyRank(cityKey),
+      // Scoring v2: this season's rank (the leaderboard's "month" is the season, by challenge date).
+      fetchLeaderboard({ scope: cityKey ? 'city' : 'world', period: 'month', limit: 1, cityId: cityKey ?? undefined }),
       fetchLeaderboard({ scope: cityKey ? 'city' : 'world', period: 'alltime', limit: 1, cityId: cityKey ?? undefined }),
     ]).then(([st, sp, pr, fr, wk, at]) => {
       if (!alive) return;
@@ -100,7 +102,7 @@ export default function PassportScreen() {
         spots:     val(sp)?.length ?? prev?.counts.spots ?? null,
         proposals: p ? p.items.filter(x => x.status === 'pending').length : prev?.counts.proposals ?? null,
         friends:   val(fr)?.total ?? prev?.counts.friends ?? null,
-        week:      val(wk)?.rank ?? prev?.counts.week ?? null,
+        week:      val(wk)?.me?.rank ?? prev?.counts.week ?? null,
         alltime:   val(at)?.me?.rank ?? prev?.counts.alltime ?? null,
       };
       passportCache.set(cacheKey, { at: Date.now(), stats: s1, counts: c });
@@ -174,6 +176,7 @@ export default function PassportScreen() {
           since={since}
           stats={stats ? { cities: stats.citiesPlayed ?? null, photos: stats.photos ?? stats.completed, likes: stats.likesReceived ?? null } : null}
         />
+        {!!stats?.invitedBy && <InvitedBy by={stats.invitedBy} />}
 
         {/* Streak and weekly rank: two cards of one height, an icon disc, the title on two lines at most. */}
         <View style={styles.cards}>
@@ -184,18 +187,22 @@ export default function PassportScreen() {
             <Text style={styles.cardTitle} numberOfLines={2}>{t('streak', { ns: 'daily', count: streak })}</Text>
             <Text style={styles.cardSub} numberOfLines={1}>{t('passport.best', { count: stats?.bestStreak ?? 0 })}</Text>
           </Card>
-          {/* V6: opens Ranks › Players › This week. */}
+          {/* Scoring v2: this season's rank, opens Ranks › Players › This season. */}
           <Tappable style={styles.cardTap} accessibilityRole="button" testID="passport-week-rank"
-                    onPress={() => router.navigate(`/ranks?tab=players&period=week&scope=${cityKey ? 'city' : 'world'}` as never)}>
+                    onPress={() => router.navigate(`/ranks?tab=players&period=season&scope=${cityKey ? 'city' : 'world'}` as never)}>
             <Card style={[styles.card, styles.cardFill]}>
               <View style={[styles.cardDisc, { backgroundColor: tint(colors.medalGold, 0.28) }]}>
                 <Ionicons name="trophy" size={IconSize.md} color={colors.gold} />
               </View>
-              <Text style={styles.cardTitle} numberOfLines={2}>{counts.week ? t('passport.weekRank', { rank: counts.week }) : t('passport.weekNone')}</Text>
+              <Text style={styles.cardTitle} numberOfLines={2}>{counts.week ? t('passport.seasonRank', { rank: counts.week }) : t('passport.seasonNone')}</Text>
               <Text style={styles.cardSub} numberOfLines={1}>{cityName ? t('passport.mostLocalIn', { city: cityName }) : t('passport.mostLocalWorld')}</Text>
             </Card>
           </Tappable>
         </View>
+        {/* Scoring v2: this week's Perfect week, the crew, the season medals. */}
+        {!!stats?.week && <WeekCard week={stats.week} />}
+        <CrewCard />
+        {(stats?.seasonMedals?.length ?? 0) > 0 && <SeasonMedals medals={stats!.seasonMedals!} />}
         {/* Your rivals moved to World › Cities (UX audit: one place to compare cities). */}
         {progress.length > 1 ? (
           <View style={styles.pagesWrap}>

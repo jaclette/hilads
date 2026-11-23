@@ -321,14 +321,18 @@ final class Ranks
     // ── Rank-up notifications (Game) ────────────────────────────────────────
 
     /**
-     * After a challenge closed: players who climbed in their city's weekly
+     * After a challenge closed: players who climbed in their city's season
      * ranking thanks to it (and are in its top 10) get a "▲ You climbed to #3
-     * in Saigon" row. One per player, date and city (dedupe key). Returns rows written.
+     * in Saigon this season" row (scoring v2: the season's kinds, by challenge
+     * date). One per player, date and city (dedupe key). Returns rows written.
      */
     public static function notifyRankUps(array $challenge): int
     {
         $date = (string) $challenge['challenge_date'];
-        [$from, $to] = Spots::week($date);
+        $from = substr($date, 0, 7) . '-01';
+        $to   = $date;
+        $kinds = Scoring::config()['season_kinds'];
+        $in    = implode(',', array_fill(0, count($kinds), '?'));
         $n = 0;
         try {
             $stmt = Database::pdo()->prepare("SELECT DISTINCT city_id FROM score_events WHERE daily_challenge_id = ? AND city_id IS NOT NULL");
@@ -338,15 +342,14 @@ final class Ranks
                     SELECT se.user_id, sum(se.points) AS points,
                            coalesce(sum(se.points) FILTER (WHERE se.daily_challenge_id <> ?), 0) AS before
                     FROM score_events se
-                    JOIN score_rules r       ON r.kind = se.kind AND r.role = se.role AND r.counts_weekly
                     JOIN daily_challenges dc ON dc.id = se.daily_challenge_id
                     JOIN users u             ON u.id = se.user_id
-                    WHERE dc.challenge_date BETWEEN ?::date AND ?::date AND se.city_id = ?
+                    WHERE se.kind IN ({$in}) AND dc.challenge_date BETWEEN ?::date AND ?::date AND se.city_id = ?
                       AND u.deleted_at IS NULL AND NOT u.hidden_from_rankings
                     GROUP BY se.user_id
                     ORDER BY points DESC, se.user_id
                 ");
-                $q->execute([$challenge['id'], $from, $to, $cityId]);
+                $q->execute([$challenge['id'], ...$kinds, $from, $to, $cityId]);
                 $rows   = $q->fetchAll(PDO::FETCH_ASSOC);
                 $now    = self::rankBy($rows, 'user_id', 'points');
                 $sorted = $rows;
@@ -358,8 +361,8 @@ final class Ranks
                     if ($rank > 10 || ($before !== null && $before <= $rank)) continue;
                     if (!NotificationRepository::enabledFor((string) $userId, 'daily_rank')) continue;
                     $data = ['date' => $date, 'scope' => (string) $cityId, 'cityId' => (string) $cityId, 'cityName' => $name,
-                             'rank' => $rank, 'prevRank' => $before];
-                    $body = '▲ You climbed to #' . $rank . ' in ' . CityNames::short((string) $name) . ' this week';
+                             'rank' => $rank, 'prevRank' => $before, 'period' => 'season'];
+                    $body = '▲ You climbed to #' . $rank . ' in ' . CityNames::short((string) $name) . ' this season';
                     $n += NotificationRepository::createUnchecked((string) $userId, 'daily_rank', 'Most Local', $body, $data, null, false) !== [] ? 1 : 0;
                 }
             }

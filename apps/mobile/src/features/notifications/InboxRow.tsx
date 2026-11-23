@@ -16,7 +16,8 @@ import { rowText } from './inboxText';
 import { CATEGORY_EMOJI, categoryColor } from './categories';
 
 /** Game rows get a big emoji instead of an avatar. */
-const GAME_ICON: Record<string, string> = { daily_result: '🏆', daily_local_pass: '🎟️', daily_rank: '📈', daily_twist_completed: '🌀', daily_twist_picked: '🌀' };
+const GAME_ICON: Record<string, string> = { daily_result: '🏆', daily_local_pass: '🎟️', daily_rank: '📈', daily_twist_completed: '🌀', daily_twist_picked: '🌀',
+  daily_season_result: '🏁', daily_season_ending: '⏳', daily_perfect_week: '🔥', daily_friend_joined: '🤝', daily_crew_bonus: '🎉' };
 
 /**
  * One inbox item (V6): avatar (stacked when several people) with the

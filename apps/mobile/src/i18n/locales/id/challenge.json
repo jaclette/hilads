@@ -413,7 +413,10 @@
       "streak": "Beruntun",
       "early": "Awal",
       "stamp": "Stempel",
-      "other": "Bonus"
+      "other": "Bonus",
+      "week": "Minggu sempurna",
+      "friends": "Teman",
+      "crew": "Kru"
     },
     "medal": {
       "city": "di {{city}}",
@@ -426,7 +429,11 @@
     "goal": {
       "pass": "{{gap}} poin lagi untuk menyalip {{name}}",
       "streak": "🔥 Hari ke-{{day}} besok",
-      "stamp": "🎟️ Stempel berikutnya di {{city}}"
+      "stamp": "🎟️ Stempel berikutnya di {{city}}",
+      "week_one": "🔥 {{count}} hari lagi untuk minggu sempurna",
+      "week_other": "🔥 {{count}} hari lagi untuk minggu sempurna",
+      "crew_one": "🤝 {{count}} teman lagi untuk krumu",
+      "crew_other": "🤝 {{count}} teman lagi untuk krumu"
     },
     "ranks": "🏆 Lihat peringkat",
     "share": "📤 Bagikan kemenanganku",
