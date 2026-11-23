@@ -226,7 +226,7 @@ const CityCard = memo(function CityCard({ group, onOpen, pileColor, badge, faded
         <Tappable onPress={() => { if (!dragging.current) onOpen(group, p.id); }} onPressIn={() => prefetchProof(p)}
                   accessibilityRole="button" testID="mosaic-tile"
                           accessibilityLabel={[shortCityName(group.city.name), line, pile ? t('mosaic.players', { count: players }) : null,
-                                              swipeable ? t('stories.of', { index: front + 1, total: photos.length }) : null, String(likes),
+                                              swipeable ? t('stories.of', { index: front + 1, total: photos.length }) : null, t('a11y.likes', { count: likes }),
                                               comments ? t('comments.count', { count: comments }) : null].filter(Boolean).join(', ')}
                           accessibilityActions={swipeable ? [{ name: 'next', label: t('stories.next') }] : undefined}
                           onAccessibilityAction={e => { if (e.nativeEvent.actionName === 'next') runOnUI(fly)(1); }}>

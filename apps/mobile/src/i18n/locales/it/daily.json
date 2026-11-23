@@ -892,7 +892,16 @@
       "photo_one": "La tua migliore: #{{rank}} · {{count}} ❤️ al #{{next}}",
       "photo_other": "La tua migliore: #{{rank}} · {{count}} ❤️ al #{{next}}",
       "photoTop": "La tua migliore: #1 · nessuno sopra di te 👑",
-      "photoNone": "Nessuna tua foto è in classifica ❤️"
+      "photoNone": "Nessuna tua foto è in classifica ❤️",
+      "lead": "Sei #1! Difendi la tua corona 👑",
+      "photoCrown_one": "Sei #2, ti manca solo {{count}} ❤️ per la corona! 👑",
+      "photoCrown_other": "Sei #2, ti manca solo {{count}} ❤️ per la corona! 👑",
+      "photoClimb_one": "Sei #{{rank}}, {{count}} ❤️ per salire al #{{next}} ⬆️",
+      "photoClimb_other": "Sei #{{rank}}, {{count}} ❤️ per salire al #{{next}} ⬆️",
+      "playerCrown_one": "Sei #2, ti manca solo {{count}} punto per la corona! 👑",
+      "playerCrown_other": "Sei #2, ti mancano solo {{count}} punti per la corona! 👑",
+      "playerClimb_one": "Sei #{{rank}}, {{count}} punto per salire al #{{next}} ⬆️",
+      "playerClimb_other": "Sei #{{rank}}, {{count}} punti per salire al #{{next}} ⬆️"
     },
     "city": {
       "lineTop": "{{city}} guida la gara! 🏁",
@@ -983,5 +992,51 @@
     "noPositionBody": "Non troviamo la tua posizione per fissare il posto. Puoi comunque pubblicarla per la tua città.",
     "postForCity": "Pubblica per {{city}}",
     "postCityOnly": "Pubblica per la mia città"
+  },
+  "rules": {
+    "open": "Come funziona",
+    "title": "Come funziona Hilads 🎮",
+    "introTitle": "Una sfida. Il mondo intero.",
+    "introText": "Ogni giorno, la stessa sfida fotografica per tutti. Falla nella tua città, poi guarda come ha giocato il mondo.",
+    "earnTitle": "Guadagna punti",
+    "earn": {
+      "photoTitle": "Gioca la Daily Challenge",
+      "photoText": "Pubblica la tua foto prima che scada il tempo. Una foto al giorno.",
+      "voteTitle": "Vota",
+      "voteText": "Metti mi piace ad almeno una foto prima dei risultati. Una volta al giorno.",
+      "topTitle": "Vinci la giornata",
+      "topText": "Le 3 foto con più mi piace al mondo. In caso di parità, vince chi ha pubblicato prima.",
+      "likesTitle": "Ricevi mi piace",
+      "likesText": "I mi piace da soli non danno punti: decidono chi entra nella top 3."
+    },
+    "collectTitle": "Colleziona e fatti vedere",
+    "collect": {
+      "streakTitle": "Tieni la tua serie",
+      "streakText": "Gioca ogni giorno per allungarla. Si vede sul tuo passaporto, solo per la gloria (niente punti).",
+      "passTitle": "Timbri e Local Pass",
+      "passText": "Un timbro per tema. Gioca tutti e 7 i temi nella stessa città per ottenere il suo Local Pass."
+    },
+    "raceTitle": "La gara del giorno",
+    "race": {
+      "dropTitle": "Il lancio",
+      "dropText": "Arriva una nuova sfida a tema per tutti, nello stesso momento in tutto il mondo.",
+      "playTitle": "Gioca",
+      "playText": "Scatta la tua foto nella tua città prima che scada il tempo.",
+      "voteTitle": "Vota",
+      "voteText": "Metti mi piace alle foto che ami, da ogni città.",
+      "resultsTitle": "Risultati",
+      "resultsText": "Al lancio successivo: vincitori incoronati, punti contati, classifiche aggiornate."
+    },
+    "cta": "📸 Gioca la sfida di oggi",
+    "ctaPlayed": "🌍 Guarda come ha giocato il mondo",
+    "foot": "Punti come sono oggi. Le regole sono sempre qui.",
+    "plus": "+{{count}}"
+  },
+  "a11y": {
+    "likes_one": "{{count}} mi piace",
+    "points_one": "{{count}} punto",
+    "likes_other": "{{count}} mi piace",
+    "points_other": "{{count}} punti",
+    "rank": "{{rank}}° posto"
   }
 }

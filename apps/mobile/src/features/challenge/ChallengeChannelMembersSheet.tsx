@@ -129,7 +129,7 @@ export function ChallengeChannelMembersSheet({
             <Ionicons name="people-outline" size={20} color={colors.text} />
             <Text style={styles.title}>{t('members.countIn', { count: rows.length || count })}</Text>
           </View>
-          <TouchableOpacity onPress={onClose} hitSlop={12}>
+          <TouchableOpacity onPress={onClose} hitSlop={12} accessibilityRole="button" accessibilityLabel={t('close', { ns: 'common' })}>
             <Ionicons name="close" size={20} color={colors.muted} />
           </TouchableOpacity>
         </View>

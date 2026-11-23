@@ -856,7 +856,16 @@
       "photo_one": "Jouw beste: #{{rank}} · {{count}} ❤️ tot #{{next}}",
       "photo_other": "Jouw beste: #{{rank}} · {{count}} ❤️ tot #{{next}}",
       "photoTop": "Jouw beste: #1 · niemand boven je 👑",
-      "photoNone": "Nog geen foto van jou in de ranking ❤️"
+      "photoNone": "Nog geen foto van jou in de ranking ❤️",
+      "lead": "Je bent #1! Verdedig je kroon 👑",
+      "photoCrown_one": "Je bent #2, nog maar {{count}} ❤️ voor de kroon! 👑",
+      "photoCrown_other": "Je bent #2, nog maar {{count}} ❤️ voor de kroon! 👑",
+      "photoClimb_one": "Je bent #{{rank}}, nog {{count}} ❤️ naar #{{next}} ⬆️",
+      "photoClimb_other": "Je bent #{{rank}}, nog {{count}} ❤️ naar #{{next}} ⬆️",
+      "playerCrown_one": "Je bent #2, nog maar {{count}} punt voor de kroon! 👑",
+      "playerCrown_other": "Je bent #2, nog maar {{count}} punten voor de kroon! 👑",
+      "playerClimb_one": "Je bent #{{rank}}, nog {{count}} punt naar #{{next}} ⬆️",
+      "playerClimb_other": "Je bent #{{rank}}, nog {{count}} punten naar #{{next}} ⬆️"
     },
     "city": {
       "lineTop": "{{city}} leidt de race! 🏁",
@@ -942,5 +951,51 @@
     "noPositionBody": "We kunnen je locatie niet vinden om de plek vast te pinnen. Je kunt hem toch posten voor je stad.",
     "postForCity": "Posten voor {{city}}",
     "postCityOnly": "Posten voor mijn stad"
+  },
+  "rules": {
+    "open": "Zo werkt het",
+    "title": "Zo werkt Hilads 🎮",
+    "introTitle": "Eén challenge. De hele wereld.",
+    "introText": "Elke dag dezelfde fotochallenge voor iedereen. Doe hem in je stad en kijk dan hoe de wereld speelde.",
+    "earnTitle": "Verdien punten",
+    "earn": {
+      "photoTitle": "Speel de Daily Challenge",
+      "photoText": "Post je foto voordat de tijd om is. Eén foto per dag.",
+      "voteTitle": "Stemmen",
+      "voteText": "Like minstens één foto vóór de uitslag. Eén keer per dag.",
+      "topTitle": "Win de dag",
+      "topText": "De 3 foto's met de meeste likes ter wereld. Bij gelijkspel wint wie het eerst postte.",
+      "likesTitle": "Krijg likes",
+      "likesText": "Likes geven op zich geen punten: ze bepalen wie in de top 3 komt."
+    },
+    "collectTitle": "Verzamel en pronk",
+    "collect": {
+      "streakTitle": "Houd je reeks vast",
+      "streakText": "Speel elke dag om hem te laten groeien. Hij staat in je paspoort, puur voor de eer (geen punten).",
+      "passTitle": "Stempels & Local Pass",
+      "passText": "Eén stempel per thema. Speel alle 7 thema's in dezelfde stad om haar Local Pass te verdienen."
+    },
+    "raceTitle": "De dagelijkse race",
+    "race": {
+      "dropTitle": "De drop",
+      "dropText": "Er komt een nieuwe themachallenge voor iedereen, overal op hetzelfde moment.",
+      "playTitle": "Spelen",
+      "playText": "Maak je foto in je stad voordat de tijd om is.",
+      "voteTitle": "Stemmen",
+      "voteText": "Like de foto's die je mooi vindt, uit elke stad.",
+      "resultsTitle": "Uitslag",
+      "resultsText": "Bij de volgende drop: winnaars gekroond, punten geteld, ranglijsten bijgewerkt."
+    },
+    "cta": "📸 Speel de challenge van vandaag",
+    "ctaPlayed": "🌍 Bekijk hoe de wereld speelde",
+    "foot": "Punten zoals ze vandaag zijn. De regels staan hier altijd.",
+    "plus": "+{{count}}"
+  },
+  "a11y": {
+    "likes_one": "{{count}} like",
+    "points_one": "{{count}} punt",
+    "likes_other": "{{count}} likes",
+    "points_other": "{{count}} punten",
+    "rank": "plaats {{rank}}"
   }
 }

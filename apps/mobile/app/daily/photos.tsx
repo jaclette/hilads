@@ -379,7 +379,7 @@ function Slide({ proof, height, first, insetBottom, onProfile, onVoted, onShare,
     <View style={{ height }} onLayout={zoom.onLayout}>
       {/* The picture whole over a blurred copy of itself (DualPhoto fit="screen"), the photo or the selfie swapped big. */}
       <Pressable style={StyleSheet.absoluteFill} onPress={onTap} accessibilityRole="image"
-                 accessibilityLabel={[name, proof.city?.name, title].filter(Boolean).join(', ')} accessibilityHint={t('feed.doubleTap')}>
+                 accessibilityLabel={[name, proof.city?.name, title, t('a11y.likes', { count: state?.voteCount ?? proof.voteCount })].filter(Boolean).join(', ')} accessibilityHint={t('feed.doubleTap')}>
         <DualPhoto main={{ uri: proof.photoUrl, thumb: proof.thumbUrl, hash: proof.thumbHash }} selfie={selfieOf(proof)} style={StyleSheet.absoluteFill}
                    fit="screen" zoomStyle={zoom.style} sharp={zoom.zooming} insetTop={insetTop} />
       </Pressable>

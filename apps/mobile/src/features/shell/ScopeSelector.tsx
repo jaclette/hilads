@@ -59,7 +59,7 @@ export function ScopeSelector({ style, onPicked }: {
         accessibilityLabel={[t('scope.a11y', { scope: scope === 'world' ? label : cityName }), away && hereName ? t('scope.here', { city: hereName }) : null].filter(Boolean).join('. ')}
       >
         {scope === 'world' ? <Ionicons name="globe-outline" size={17} color={colors.text} /> : <CityFlag country={city?.country} />}
-        <Text style={styles.scopeText} numberOfLines={1}>{label}</Text>
+        <Text style={styles.scopeText} numberOfLines={1} maxFontSizeMultiplier={1.3}>{label}</Text>
         {away && <Ionicons name="navigate" size={13} color={colors.primaryText} testID="scope-away" />}
         <Ionicons name="chevron-down" size={18} color={colors.text} />
       </TouchableOpacity>

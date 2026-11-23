@@ -131,7 +131,7 @@ function CustomTabBar({ state, emitter, navigateToTab }: BottomTabBarProps) {
                 ? <CountBadge n={passportCount} />
                 : <TabBadge n={TAB_BADGE[tab.name] && !focused ? badges[TAB_BADGE[tab.name].key] : 0} count={!!TAB_BADGE[tab.name]?.count} />}
             </View>
-            <Text style={[styles.label, { color }, focused && styles.labelActive]} numberOfLines={1}>{label}</Text>
+            <Text style={[styles.label, { color }, focused && styles.labelActive]} numberOfLines={1} maxFontSizeMultiplier={1.4} adjustsFontSizeToFit minimumFontScale={0.8}>{label}</Text>
           </Pressable>
         );
       })}
@@ -144,7 +144,7 @@ function CountBadge({ n }: { n: number }) {
   const { colors } = useTheme();
   return (
     <View style={[styles.badge, { backgroundColor: colors.red, borderColor: colors.bg2 }]} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
-      <Text style={[styles.badgeText, { color: colors.white }]}>{badgeCount(n)}</Text>
+      <Text style={[styles.badgeText, { color: colors.bg }]} maxFontSizeMultiplier={1.3}>{badgeCount(n)}</Text>
     </View>
   );
 }
@@ -155,7 +155,7 @@ function TabBadge({ n, count }: { n: number; count: boolean }) {
   if (n <= 0) return null;
   return count ? (
     <View style={[styles.badge, { backgroundColor: colors.cta, borderColor: colors.bg2 }]}>
-      <Text style={[styles.badgeText, { color: colors.onCta }]}>{n > 9 ? '9+' : n}</Text>
+      <Text style={[styles.badgeText, { color: colors.onCta }]} maxFontSizeMultiplier={1.3}>{n > 9 ? '9+' : n}</Text>
     </View>
   ) : <View style={[styles.dot, { backgroundColor: colors.cta, borderColor: colors.bg2 }]} />;
 }

@@ -19,7 +19,7 @@ export function MessagesButton({ onPress }: { onPress: () => void }) {
     <Pressable onPress={onPress} style={styles.round} accessibilityRole="button" testID="header-messages"
                accessibilityLabel={n > 0 ? `${t('messages')}, ${n}` : t('messages')}>
       <Ionicons name={n > 0 ? 'chatbubble-ellipses' : 'chatbubble-ellipses-outline'} size={21} color={colors.text} />
-      {n > 0 && <View style={styles.badge}><Text style={styles.badgeText} numberOfLines={1}>{badgeCount(n)}</Text></View>}
+      {n > 0 && <View style={styles.badge}><Text style={styles.badgeText} numberOfLines={1} maxFontSizeMultiplier={1.3}>{badgeCount(n)}</Text></View>}
     </Pressable>
   );
 }
@@ -29,5 +29,5 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
                alignItems: 'center', justifyContent: 'center' },
   badge:     { position: 'absolute', top: -4, right: -4, minWidth: 20, height: 20, paddingHorizontal: Space.xs, borderRadius: 10,
                backgroundColor: c.red, borderWidth: 2, borderColor: c.bg, alignItems: 'center', justifyContent: 'center' },
-  badgeText: { fontSize: FontSizes.tiny, lineHeight: 14, fontWeight: '800', color: c.white },
+  badgeText: { fontSize: FontSizes.tiny, lineHeight: 14, fontWeight: '800', color: c.bg },
 });

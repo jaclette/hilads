@@ -35,7 +35,7 @@ export function Chip({ label, variant = 'tint', tone = 'primary', icon, theme, s
     const tc = selected && theme ? themeColor(theme) : null;
     const on = tc ? { backgroundColor: tc.fill, borderColor: tc.line ?? tc.fill } : null;
     return (
-      <Tappable style={[styles.filter, selected && styles.filterOn, on, style]} onPress={onPress} accessibilityRole="button"
+      <Tappable style={[styles.filter, selected && styles.filterOn, on, style]} onPress={onPress} hitSlop={{ top: 4, bottom: 4 }} accessibilityRole="button"
                 accessibilityState={{ selected }}>
         {!!theme && <ThemeIcon theme={theme} special={special} size={IconSize.sm} color={tc ? tc.onFill : selected ? colors.onSelected : colors.primaryText} />}
         <Text style={[styles.filterText, selected && styles.filterTextOn, tc && { color: tc.onFill }]}>{label}</Text>

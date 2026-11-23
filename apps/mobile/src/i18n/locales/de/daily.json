@@ -856,7 +856,16 @@
       "photo_one": "Dein bestes: #{{rank}} · {{count}} ❤️ bis #{{next}}",
       "photo_other": "Dein bestes: #{{rank}} · {{count}} ❤️ bis #{{next}}",
       "photoTop": "Dein bestes: #1 · niemand vor dir 👑",
-      "photoNone": "Noch keins deiner Fotos ist platziert ❤️"
+      "photoNone": "Noch keins deiner Fotos ist platziert ❤️",
+      "lead": "Du bist #1! Verteidige deine Krone 👑",
+      "photoCrown_one": "Du bist #2, nur noch {{count}} ❤️ bis zur Krone! 👑",
+      "photoCrown_other": "Du bist #2, nur noch {{count}} ❤️ bis zur Krone! 👑",
+      "photoClimb_one": "Du bist #{{rank}}, noch {{count}} ❤️ bis Platz #{{next}} ⬆️",
+      "photoClimb_other": "Du bist #{{rank}}, noch {{count}} ❤️ bis Platz #{{next}} ⬆️",
+      "playerCrown_one": "Du bist #2, nur noch {{count}} Punkt bis zur Krone! 👑",
+      "playerCrown_other": "Du bist #2, nur noch {{count}} Punkte bis zur Krone! 👑",
+      "playerClimb_one": "Du bist #{{rank}}, noch {{count}} Punkt bis Platz #{{next}} ⬆️",
+      "playerClimb_other": "Du bist #{{rank}}, noch {{count}} Punkte bis Platz #{{next}} ⬆️"
     },
     "city": {
       "lineTop": "{{city}} führt das Rennen an! 🏁",
@@ -942,5 +951,51 @@
     "noPositionBody": "Wir finden deinen Standort nicht, um den Ort anzupinnen. Du kannst es trotzdem für deine Stadt posten.",
     "postForCity": "Für {{city}} posten",
     "postCityOnly": "Für meine Stadt posten"
+  },
+  "rules": {
+    "open": "So funktioniert's",
+    "title": "So funktioniert Hilads 🎮",
+    "introTitle": "Eine Challenge. Die ganze Welt.",
+    "introText": "Jeden Tag dieselbe Foto-Challenge für alle. Mach sie in deiner Stadt und schau dann, wie die Welt gespielt hat.",
+    "earnTitle": "Punkte sammeln",
+    "earn": {
+      "photoTitle": "Spiel die Daily Challenge",
+      "photoText": "Poste dein Foto, bevor der Countdown abläuft. Ein Foto pro Tag.",
+      "voteTitle": "Abstimmen",
+      "voteText": "Like vor den Ergebnissen mindestens ein Foto. Einmal pro Tag.",
+      "topTitle": "Gewinn den Tag",
+      "topText": "Die 3 Fotos mit den meisten Likes weltweit. Bei Gleichstand gewinnt, wer zuerst gepostet hat.",
+      "likesTitle": "Likes bekommen",
+      "likesText": "Likes bringen allein keine Punkte: Sie entscheiden, wer in die Top 3 kommt."
+    },
+    "collectTitle": "Sammeln & angeben",
+    "collect": {
+      "streakTitle": "Halte deine Serie",
+      "streakText": "Spiel jeden Tag, damit sie wächst. Sie steht in deinem Reisepass, nur für den Ruhm (keine Punkte).",
+      "passTitle": "Stempel & Local Pass",
+      "passText": "Ein Stempel pro Thema. Spiel alle 7 Themen in derselben Stadt, um ihren Local Pass zu bekommen."
+    },
+    "raceTitle": "Das tägliche Rennen",
+    "race": {
+      "dropTitle": "Der Start",
+      "dropText": "Eine neue Themen-Challenge für alle, weltweit im selben Moment.",
+      "playTitle": "Spielen",
+      "playText": "Mach dein Foto in deiner Stadt, bevor der Countdown abläuft.",
+      "voteTitle": "Abstimmen",
+      "voteText": "Like die Fotos, die du liebst, aus jeder Stadt.",
+      "resultsTitle": "Ergebnisse",
+      "resultsText": "Beim nächsten Start: Gewinner gekürt, Punkte gezählt, Ranglisten aktualisiert."
+    },
+    "cta": "📸 Spiel die heutige Challenge",
+    "ctaPlayed": "🌍 Sieh, wie die Welt gespielt hat",
+    "foot": "Punkte, wie sie heute sind. Die Regeln findest du immer hier.",
+    "plus": "+{{count}}"
+  },
+  "a11y": {
+    "likes_one": "{{count}} Like",
+    "points_one": "{{count}} Punkt",
+    "likes_other": "{{count}} Likes",
+    "points_other": "{{count}} Punkte",
+    "rank": "Platz {{rank}}"
   }
 }

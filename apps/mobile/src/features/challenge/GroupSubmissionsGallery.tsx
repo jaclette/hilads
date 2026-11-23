@@ -126,7 +126,7 @@ export function GroupSubmissionsGallery({
               <Ionicons name="camera-outline" size={20} color={colors.text} />
               <Text style={styles.modalTitle}>{t('group.submissionsHeader', { count: subs.length, defaultValue: '{{count}} photos' })}</Text>
             </View>
-            <TouchableOpacity onPress={() => setOpen(false)} hitSlop={10} style={styles.modalClose}>
+            <TouchableOpacity onPress={() => setOpen(false)} hitSlop={12} style={styles.modalClose} accessibilityRole="button" accessibilityLabel={t('close', { ns: 'common' })}>
               <Ionicons name="close" size={20} color={colors.muted} />
             </TouchableOpacity>
           </View>

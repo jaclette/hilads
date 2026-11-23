@@ -12,6 +12,7 @@ import { Animated, Dimensions, Easing, StyleSheet, Text, View } from 'react-nati
 import { Ionicons } from '@expo/vector-icons';
 import { Space, FontSizes, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
+import { useReducedMotion } from '@/hooks/useReducedMotion';
 
 const { width: SCREEN_W, height: SCREEN_H } = Dimensions.get('window');
 type IconName = React.ComponentProps<typeof Ionicons>['name'];
@@ -39,7 +40,14 @@ export function CampaignCelebration({ onDone }: { onDone: () => void }) {
     })),
   ).current;
 
+  const reduced = useReducedMotion();
   useEffect(() => {
+    if (reduced) {
+      // Reduce Motion: the badge alone, shown then gone, no falling confetti.
+      badge.setValue(1);
+      const t = setTimeout(onDone, 1800);
+      return () => clearTimeout(t);
+    }
     const confetti = pieces.map(p =>
       Animated.timing(p.drive, {
         toValue: 1, duration: p.dur, delay: p.delay,

@@ -47,7 +47,9 @@ export function Movement({ rank, prevRank, show }: { rank: number; prevRank: num
 }
 
 /** `heart`: the value is a like count, drawn with the heart icon (never the ❤️ emoji). */
-export type PodiumItem = { key: string; rank: number; label: string; lead: ReactNode; value: number; format: (n: number) => string; onPress?: () => void; heart?: boolean };
+export type PodiumItem = { key: string; rank: number; label: string; lead: ReactNode; value: number; format: (n: number) => string; onPress?: () => void; heart?: boolean;
+  /** The value as a screen reader says it ("14 likes", "120 points"); else the formatted value. */
+  spoken?: string };
 /**
  * An empty podium place, per rank: an invitation ("Your photo here? 📸" → the camera; "🎯 Who
  * takes #3? Invite a friend" → the share sheet) or, for a past period, just "Nobody took this
@@ -91,7 +93,7 @@ function PodiumStep({ item, delay }: { item: PodiumItem; delay: number }) {
   const color = medalColor(colors, item.rank);
   return (
     <Tappable style={styles.step} onPress={item.onPress} disabled={!item.onPress} accessibilityRole="button"
-              accessibilityLabel={`#${item.rank} ${item.label}`}>
+              accessibilityLabel={`#${item.rank}, ${item.label}, ${item.spoken ?? item.format(item.value)}`}>
       <Animated.View style={[styles.lead, lead]}>
         {item.rank === 1 && <View style={styles.crown}><Crown size={30} fill={colors.medalGold} stroke={colors.onMedal} /></View>}
         {item.lead}
@@ -131,13 +133,15 @@ function GhostStep({ rank, ghost: make }: { rank: number; ghost: PodiumGhost }) 
 }
 
 /** A row from #4: rank, leading visual, name and sub line, movement, value pill. `mine`: highlighted. */
-export function RankRow({ rank, lead, title, sub, movement, value, mine, onPress, extra }: {
+export function RankRow({ rank, lead, title, sub, movement, value, spoken, mine, onPress, extra }: {
   rank: number; lead: ReactNode; title: string; sub?: ReactNode; movement?: ReactNode; value: string; mine?: boolean; onPress?: () => void; extra?: ReactNode;
+  /** The value as a screen reader says it ("120 points"); else `value`. */
+  spoken?: string;
 }) {
   const styles = useThemedStyles(makeStyles);
   return (
     <Tappable onPress={onPress} disabled={!onPress} style={[styles.row, mine && styles.rowMine]} accessibilityRole="button"
-              accessibilityLabel={`#${rank} ${title}, ${value}`}>
+              accessibilityLabel={`#${rank}, ${title}, ${spoken ?? value}`}>
       <Text style={styles.rank}>{rank}</Text>
       {lead}
       <View style={styles.rowBody}>

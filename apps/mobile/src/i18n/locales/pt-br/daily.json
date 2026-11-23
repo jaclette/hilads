@@ -892,7 +892,16 @@
       "photo_one": "Sua melhor: #{{rank}} · {{count}} ❤️ para o #{{next}}",
       "photo_other": "Sua melhor: #{{rank}} · {{count}} ❤️ para o #{{next}}",
       "photoTop": "Sua melhor: #1 · ninguém acima 👑",
-      "photoNone": "Nenhuma foto sua está no ranking ❤️"
+      "photoNone": "Nenhuma foto sua está no ranking ❤️",
+      "lead": "Você é o #1! Defenda sua coroa 👑",
+      "photoCrown_one": "Você é o #2, só {{count}} ❤️ pra pegar a coroa! 👑",
+      "photoCrown_other": "Você é o #2, só {{count}} ❤️ pra pegar a coroa! 👑",
+      "photoClimb_one": "Você é o #{{rank}}, {{count}} ❤️ pra subir pro #{{next}} ⬆️",
+      "photoClimb_other": "Você é o #{{rank}}, {{count}} ❤️ pra subir pro #{{next}} ⬆️",
+      "playerCrown_one": "Você é o #2, só {{count}} ponto pra pegar a coroa! 👑",
+      "playerCrown_other": "Você é o #2, só {{count}} pontos pra pegar a coroa! 👑",
+      "playerClimb_one": "Você é o #{{rank}}, {{count}} ponto pra subir pro #{{next}} ⬆️",
+      "playerClimb_other": "Você é o #{{rank}}, {{count}} pontos pra subir pro #{{next}} ⬆️"
     },
     "city": {
       "lineTop": "{{city}} lidera a corrida! 🏁",
@@ -983,5 +992,51 @@
     "noPositionBody": "Não encontramos sua localização para fixar o lugar. Você ainda pode postar para sua cidade.",
     "postForCity": "Postar para {{city}}",
     "postCityOnly": "Postar para minha cidade"
+  },
+  "rules": {
+    "open": "Como funciona",
+    "title": "Como o Hilads funciona 🎮",
+    "introTitle": "Um desafio. O mundo inteiro.",
+    "introText": "Todo dia, o mesmo desafio de foto para todo mundo. Faça na sua cidade e depois veja como o mundo jogou.",
+    "earnTitle": "Ganhe pontos",
+    "earn": {
+      "photoTitle": "Jogue o Daily Challenge",
+      "photoText": "Poste sua foto antes do tempo acabar. Uma foto por dia.",
+      "voteTitle": "Vote",
+      "voteText": "Curta pelo menos uma foto antes dos resultados. Uma vez por dia.",
+      "topTitle": "Ganhe o dia",
+      "topText": "As 3 fotos mais curtidas do mundo. Em caso de empate, quem postou primeiro fica na frente.",
+      "likesTitle": "Receba curtidas",
+      "likesText": "Curtidas não dão pontos sozinhas: elas decidem quem entra no top 3."
+    },
+    "collectTitle": "Colecione e se exiba",
+    "collect": {
+      "streakTitle": "Mantenha sua sequência",
+      "streakText": "Jogue todo dia pra aumentar. Ela aparece no seu passaporte, só pela glória (sem pontos).",
+      "passTitle": "Carimbos e Local Pass",
+      "passText": "Um carimbo por tema. Jogue os 7 temas na mesma cidade pra ganhar o Local Pass dela."
+    },
+    "raceTitle": "A corrida do dia",
+    "race": {
+      "dropTitle": "O lançamento",
+      "dropText": "Um novo desafio temático chega pra todo mundo, no mesmo momento no mundo inteiro.",
+      "playTitle": "Jogue",
+      "playText": "Tire sua foto na sua cidade antes do tempo acabar.",
+      "voteTitle": "Vote",
+      "voteText": "Curta as fotos que você ama, de todas as cidades.",
+      "resultsTitle": "Resultados",
+      "resultsText": "No próximo lançamento: vencedores coroados, pontos contados, rankings atualizados."
+    },
+    "cta": "📸 Jogue o desafio de hoje",
+    "ctaPlayed": "🌍 Veja como o mundo jogou",
+    "foot": "Pontos como estão hoje. As regras estão sempre aqui.",
+    "plus": "+{{count}}"
+  },
+  "a11y": {
+    "likes_one": "{{count}} curtida",
+    "points_one": "{{count}} ponto",
+    "likes_other": "{{count}} curtidas",
+    "points_other": "{{count}} pontos",
+    "rank": "{{rank}}º lugar"
   }
 }

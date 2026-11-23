@@ -892,7 +892,16 @@
       "photo_one": "Tu mejor: #{{rank}} · {{count}} ❤️ para el #{{next}}",
       "photo_other": "Tu mejor: #{{rank}} · {{count}} ❤️ para el #{{next}}",
       "photoTop": "Tu mejor: #1 · nadie por encima 👑",
-      "photoNone": "Ninguna de tus fotos está en el ranking ❤️"
+      "photoNone": "Ninguna de tus fotos está en el ranking ❤️",
+      "lead": "¡Eres #1! Defiende tu corona 👑",
+      "photoCrown_one": "Eres #2, ¡solo {{count}} ❤️ para llevarte la corona! 👑",
+      "photoCrown_other": "Eres #2, ¡solo {{count}} ❤️ para llevarte la corona! 👑",
+      "photoClimb_one": "Eres #{{rank}}, {{count}} ❤️ para subir al #{{next}} ⬆️",
+      "photoClimb_other": "Eres #{{rank}}, {{count}} ❤️ para subir al #{{next}} ⬆️",
+      "playerCrown_one": "Eres #2, ¡solo {{count}} punto para llevarte la corona! 👑",
+      "playerCrown_other": "Eres #2, ¡solo {{count}} puntos para llevarte la corona! 👑",
+      "playerClimb_one": "Eres #{{rank}}, {{count}} punto para subir al #{{next}} ⬆️",
+      "playerClimb_other": "Eres #{{rank}}, {{count}} puntos para subir al #{{next}} ⬆️"
     },
     "city": {
       "lineTop": "¡{{city}} lidera la carrera! 🏁",
@@ -983,5 +992,51 @@
     "noPositionBody": "No encontramos tu ubicación para fijar el lugar. Aún puedes publicarla para tu ciudad.",
     "postForCity": "Publicar para {{city}}",
     "postCityOnly": "Publicar para mi ciudad"
+  },
+  "rules": {
+    "open": "Cómo funciona",
+    "title": "Cómo funciona Hilads 🎮",
+    "introTitle": "Un reto. El mundo entero.",
+    "introText": "Cada día, el mismo reto de fotos para todos. Hazlo en tu ciudad y luego mira cómo jugó el mundo.",
+    "earnTitle": "Gana puntos",
+    "earn": {
+      "photoTitle": "Juega el Daily Challenge",
+      "photoText": "Publica tu foto antes de que acabe el tiempo. Una foto al día.",
+      "voteTitle": "Vota",
+      "voteText": "Dale me gusta a al menos una foto antes de los resultados. Una vez al día.",
+      "topTitle": "Gana el día",
+      "topText": "Las 3 fotos con más me gusta del mundo. En caso de empate, gana quien publicó primero.",
+      "likesTitle": "Consigue me gusta",
+      "likesText": "Los me gusta no dan puntos por sí solos: deciden quién entra en el top 3."
+    },
+    "collectTitle": "Colecciona y presume",
+    "collect": {
+      "streakTitle": "Mantén tu racha",
+      "streakText": "Juega cada día para alargarla. Se ve en tu pasaporte, solo por la gloria (sin puntos).",
+      "passTitle": "Sellos y Local Pass",
+      "passText": "Un sello por tema. Juega los 7 temas en la misma ciudad para conseguir su Local Pass."
+    },
+    "raceTitle": "La carrera del día",
+    "race": {
+      "dropTitle": "El lanzamiento",
+      "dropText": "Llega un nuevo reto temático para todos, al mismo tiempo en todo el mundo.",
+      "playTitle": "Juega",
+      "playText": "Haz tu foto en tu ciudad antes de que acabe el tiempo.",
+      "voteTitle": "Vota",
+      "voteText": "Dale me gusta a las fotos que te encanten, de todas las ciudades.",
+      "resultsTitle": "Resultados",
+      "resultsText": "En el siguiente lanzamiento: ganadores coronados, puntos contados, rankings al día."
+    },
+    "cta": "📸 Juega el reto de hoy",
+    "ctaPlayed": "🌍 Mira cómo jugó el mundo",
+    "foot": "Puntos tal como están hoy. Las reglas siempre están aquí.",
+    "plus": "+{{count}}"
+  },
+  "a11y": {
+    "likes_one": "{{count}} me gusta",
+    "points_one": "{{count}} punto",
+    "likes_other": "{{count}} me gusta",
+    "points_other": "{{count}} puntos",
+    "rank": "puesto {{rank}}"
   }
 }

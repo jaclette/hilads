@@ -819,7 +819,16 @@
       "photo_one": "내 최고 기록: #{{rank}} · #{{next}}까지 {{count}} ❤️",
       "photo_other": "내 최고 기록: #{{rank}} · #{{next}}까지 {{count}} ❤️",
       "photoTop": "내 최고 기록: #1 · 위에 아무도 없어요 👑",
-      "photoNone": "아직 순위에 오른 사진이 없어요 ❤️"
+      "photoNone": "아직 순위에 오른 사진이 없어요 ❤️",
+      "lead": "지금 1위예요! 왕관을 지켜요 👑",
+      "photoCrown_one": "지금 2위, ❤️ {{count}}개만 더 받으면 왕관이에요! 👑",
+      "photoCrown_other": "지금 2위, ❤️ {{count}}개만 더 받으면 왕관이에요! 👑",
+      "photoClimb_one": "지금 {{rank}}위, ❤️ {{count}}개 더 받으면 {{next}}위로 올라가요 ⬆️",
+      "photoClimb_other": "지금 {{rank}}위, ❤️ {{count}}개 더 받으면 {{next}}위로 올라가요 ⬆️",
+      "playerCrown_one": "지금 2위, {{count}}포인트만 더 모으면 왕관이에요! 👑",
+      "playerCrown_other": "지금 2위, {{count}}포인트만 더 모으면 왕관이에요! 👑",
+      "playerClimb_one": "지금 {{rank}}위, {{count}}포인트 더 모으면 {{next}}위로 올라가요 ⬆️",
+      "playerClimb_other": "지금 {{rank}}위, {{count}}포인트 더 모으면 {{next}}위로 올라가요 ⬆️"
     },
     "city": {
       "lineTop": "{{city}}가 레이스 선두예요! 🏁",
@@ -900,5 +909,51 @@
     "noPositionBody": "장소를 고정할 위치를 찾지 못했어. 그래도 내 도시에 올릴 수 있어.",
     "postForCity": "{{city}}에 올리기",
     "postCityOnly": "내 도시에 올리기"
+  },
+  "rules": {
+    "open": "참여 방법",
+    "title": "Hilads 참여 방법 🎮",
+    "introTitle": "챌린지 하나. 전 세계가 함께.",
+    "introText": "매일 모두에게 똑같은 사진 챌린지가 와요. 내 도시에서 찍고, 전 세계가 어떻게 참여했는지 봐요.",
+    "earnTitle": "포인트 모으기",
+    "earn": {
+      "photoTitle": "Daily Challenge 참여",
+      "photoText": "타이머가 끝나기 전에 사진을 올려요. 하루에 한 장.",
+      "voteTitle": "투표",
+      "voteText": "결과 발표 전에 사진 하나 이상에 좋아요를 눌러요. 하루에 한 번.",
+      "topTitle": "오늘의 우승",
+      "topText": "전 세계에서 좋아요를 가장 많이 받은 사진 3장. 동점이면 먼저 올린 사람이 앞서요.",
+      "likesTitle": "좋아요 받기",
+      "likesText": "좋아요 자체로는 포인트가 없어요. 누가 톱 3에 드는지 정해요."
+    },
+    "collectTitle": "모으고 자랑하기",
+    "collect": {
+      "streakTitle": "연속 기록 유지",
+      "streakText": "매일 참여해서 늘려 봐요. 여권에 표시돼요. 명예만 (포인트 없음).",
+      "passTitle": "스탬프와 Local Pass",
+      "passText": "테마마다 스탬프 하나. 같은 도시에서 7개 테마를 모두 하면 그 도시의 Local Pass를 받아요."
+    },
+    "raceTitle": "매일의 레이스",
+    "race": {
+      "dropTitle": "챌린지 공개",
+      "dropText": "새 테마 챌린지가 전 세계 모두에게 같은 순간에 도착해요.",
+      "playTitle": "참여",
+      "playText": "타이머가 끝나기 전에 내 도시에서 사진을 찍어요.",
+      "voteTitle": "투표",
+      "voteText": "마음에 드는 사진에 좋아요를 눌러요. 어느 도시든 좋아요.",
+      "resultsTitle": "결과",
+      "resultsText": "다음 공개 때: 우승자 발표, 포인트 집계, 순위 업데이트."
+    },
+    "cta": "📸 오늘의 챌린지 참여",
+    "ctaPlayed": "🌍 전 세계 참여 보기",
+    "foot": "현재 기준 포인트예요. 규칙은 언제든 여기서 볼 수 있어요.",
+    "plus": "+{{count}}"
+  },
+  "a11y": {
+    "likes_one": "좋아요 {{count}}개",
+    "points_one": "{{count}}포인트",
+    "likes_other": "좋아요 {{count}}개",
+    "points_other": "{{count}}포인트",
+    "rank": "{{rank}}위"
   }
 }

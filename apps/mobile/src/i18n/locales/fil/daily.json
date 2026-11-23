@@ -856,7 +856,16 @@
       "photo_one": "Pinakamaganda mo: #{{rank}} · {{count}} ❤️ papuntang #{{next}}",
       "photo_other": "Pinakamaganda mo: #{{rank}} · {{count}} ❤️ papuntang #{{next}}",
       "photoTop": "Pinakamaganda mo: #1 · walang nasa itaas mo 👑",
-      "photoNone": "Wala ka pang litrato sa ranking ❤️"
+      "photoNone": "Wala ka pang litrato sa ranking ❤️",
+      "lead": "Ikaw ang #1! Ipagtanggol ang korona mo 👑",
+      "photoCrown_one": "Ikaw ay #2, {{count}} ❤️ na lang para makuha ang korona! 👑",
+      "photoCrown_other": "Ikaw ay #2, {{count}} ❤️ na lang para makuha ang korona! 👑",
+      "photoClimb_one": "Ikaw ay #{{rank}}, {{count}} ❤️ para umakyat sa #{{next}} ⬆️",
+      "photoClimb_other": "Ikaw ay #{{rank}}, {{count}} ❤️ para umakyat sa #{{next}} ⬆️",
+      "playerCrown_one": "Ikaw ay #2, {{count}} point na lang para makuha ang korona! 👑",
+      "playerCrown_other": "Ikaw ay #2, {{count}} points na lang para makuha ang korona! 👑",
+      "playerClimb_one": "Ikaw ay #{{rank}}, {{count}} point para umakyat sa #{{next}} ⬆️",
+      "playerClimb_other": "Ikaw ay #{{rank}}, {{count}} points para umakyat sa #{{next}} ⬆️"
     },
     "city": {
       "lineTop": "Nangunguna ang {{city}}! 🏁",
@@ -942,5 +951,51 @@
     "noPositionBody": "Hindi namin makita ang posisyon mo para i-pin ang lugar. Puwede mo pa rin itong i-post para sa lungsod mo.",
     "postForCity": "I-post para sa {{city}}",
     "postCityOnly": "I-post para sa lungsod ko"
+  },
+  "rules": {
+    "open": "Paano ito gumagana",
+    "title": "Paano gumagana ang Hilads 🎮",
+    "introTitle": "Isang challenge. Buong mundo.",
+    "introText": "Araw-araw, iisang photo challenge para sa lahat. Gawin mo sa city mo, tapos tingnan kung paano naglaro ang mundo.",
+    "earnTitle": "Mag-ipon ng points",
+    "earn": {
+      "photoTitle": "Laruin ang Daily Challenge",
+      "photoText": "I-post ang photo mo bago maubos ang oras. Isang photo kada araw.",
+      "voteTitle": "Mag-vote",
+      "voteText": "Mag-like ng kahit isang photo bago lumabas ang results. Isang beses kada araw.",
+      "topTitle": "Manalo sa araw",
+      "topText": "Ang 3 pinaka-liked na photo sa buong mundo. Kapag tabla, panalo ang naunang nag-post.",
+      "likesTitle": "Makakuha ng likes",
+      "likesText": "Walang points ang likes mismo: sila ang nagdedesisyon kung sino ang top 3."
+    },
+    "collectTitle": "Mag-collect at magyabang",
+    "collect": {
+      "streakTitle": "Panatilihin ang streak mo",
+      "streakText": "Maglaro araw-araw para humaba ito. Makikita ito sa passport mo, para sa glory lang (walang points).",
+      "passTitle": "Stamps at Local Pass",
+      "passText": "Isang stamp kada theme. Laruin ang lahat ng 7 theme sa iisang city para makuha ang Local Pass nito."
+    },
+    "raceTitle": "Ang daily race",
+    "race": {
+      "dropTitle": "Ang drop",
+      "dropText": "May bagong themed challenge para sa lahat, sabay-sabay sa buong mundo.",
+      "playTitle": "Maglaro",
+      "playText": "Kunan ang photo mo sa city mo bago maubos ang oras.",
+      "voteTitle": "Mag-vote",
+      "voteText": "I-like ang mga photo na gusto mo, mula sa kahit anong city.",
+      "resultsTitle": "Results",
+      "resultsText": "Sa susunod na drop: kinoronahan ang winners, binilang ang points, in-update ang ranks."
+    },
+    "cta": "📸 Laruin ang challenge ngayon",
+    "ctaPlayed": "🌍 Tingnan kung paano naglaro ang mundo",
+    "foot": "Points ayon sa ngayon. Laging nandito ang rules.",
+    "plus": "+{{count}}"
+  },
+  "a11y": {
+    "likes_one": "{{count}} like",
+    "points_one": "{{count}} point",
+    "likes_other": "{{count}} likes",
+    "points_other": "{{count}} points",
+    "rank": "rank {{rank}}"
   }
 }

@@ -892,7 +892,16 @@
       "photo_one": "Ta meilleure : #{{rank}} · {{count}} ❤️ pour la #{{next}}",
       "photo_other": "Ta meilleure : #{{rank}} · {{count}} ❤️ pour la #{{next}}",
       "photoTop": "Ta meilleure : #1 · personne au-dessus 👑",
-      "photoNone": "Aucune de tes photos n’est classée ❤️"
+      "photoNone": "Aucune de tes photos n’est classée ❤️",
+      "lead": "Tu es #1 ! Défends ta couronne 👑",
+      "photoCrown_one": "Tu es #2, plus que {{count}} ❤️ pour prendre la couronne ! 👑",
+      "photoCrown_other": "Tu es #2, plus que {{count}} ❤️ pour prendre la couronne ! 👑",
+      "photoClimb_one": "Tu es #{{rank}}, {{count}} ❤️ pour monter à la place #{{next}} ⬆️",
+      "photoClimb_other": "Tu es #{{rank}}, {{count}} ❤️ pour monter à la place #{{next}} ⬆️",
+      "playerCrown_one": "Tu es #2, plus que {{count}} point pour prendre la couronne ! 👑",
+      "playerCrown_other": "Tu es #2, plus que {{count}} points pour prendre la couronne ! 👑",
+      "playerClimb_one": "Tu es #{{rank}}, {{count}} point pour monter à la place #{{next}} ⬆️",
+      "playerClimb_other": "Tu es #{{rank}}, {{count}} points pour monter à la place #{{next}} ⬆️"
     },
     "city": {
       "lineTop": "{{city}} mène la course ! 🏁",
@@ -983,5 +992,51 @@
     "noPositionBody": "Impossible de trouver ta position pour épingler le lieu. Tu peux quand même la publier pour ta ville.",
     "postForCity": "Publier pour {{city}}",
     "postCityOnly": "Publier pour ma ville"
+  },
+  "rules": {
+    "open": "Comment ça marche",
+    "title": "Comment marche Hilads 🎮",
+    "introTitle": "Un défi. Le monde entier.",
+    "introText": "Chaque jour, le même défi photo pour tout le monde. Prends-le en photo dans ta ville, puis découvre comment le monde a joué.",
+    "earnTitle": "Gagne des points",
+    "earn": {
+      "photoTitle": "Joue au Daily Challenge",
+      "photoText": "Publie ta photo avant la fin du compte à rebours. Une photo par jour.",
+      "voteTitle": "Vote",
+      "voteText": "Aime au moins une photo avant les résultats. Une fois par jour.",
+      "topTitle": "Remporte la journée",
+      "topText": "Les 3 photos les plus aimées du monde. En cas d'égalité, la première publiée passe devant.",
+      "likesTitle": "Reçois des j'aime",
+      "likesText": "Les j'aime ne rapportent pas de points en eux-mêmes : ils décident du top 3."
+    },
+    "collectTitle": "Collectionne et frime",
+    "collect": {
+      "streakTitle": "Garde ta série",
+      "streakText": "Joue chaque jour pour l'allonger. Elle s'affiche sur ton passeport, pour la gloire (sans points).",
+      "passTitle": "Tampons et Local Pass",
+      "passText": "Un tampon par thème. Joue les 7 thèmes dans la même ville pour gagner son Local Pass."
+    },
+    "raceTitle": "La course du jour",
+    "race": {
+      "dropTitle": "Le lancement",
+      "dropText": "Un nouveau défi à thème arrive pour tout le monde, au même moment partout.",
+      "playTitle": "Joue",
+      "playText": "Prends ta photo dans ta ville avant la fin du compte à rebours.",
+      "voteTitle": "Vote",
+      "voteText": "Aime les photos qui te plaisent, de toutes les villes.",
+      "resultsTitle": "Résultats",
+      "resultsText": "Au lancement suivant : gagnants couronnés, points comptés, classements à jour."
+    },
+    "cta": "📸 Joue au défi du jour",
+    "ctaPlayed": "🌍 Vois comment le monde a joué",
+    "foot": "Points tels qu'ils sont aujourd'hui. Les règles sont toujours ici.",
+    "plus": "+{{count}}"
+  },
+  "a11y": {
+    "likes_one": "{{count}} j'aime",
+    "points_one": "{{count}} point",
+    "likes_other": "{{count}} j'aime",
+    "points_other": "{{count}} points",
+    "rank": "{{rank}}e place"
   }
 }

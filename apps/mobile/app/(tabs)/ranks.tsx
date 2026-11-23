@@ -165,12 +165,20 @@ function RanksContent() {
           <Chip key={p} on={period === p} label={t(`ranks.period.${p}`)} onPress={() => pick(setPeriod, p)} />
         ))}
       </View>
-      {!!info && (
-        <View style={styles.infoRow}>
-          <Ionicons name="hourglass-outline" size={IconSize.sm} color={colors.muted} />
-          <Text style={styles.info} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.75}>{info}</Text>
-        </View>
-      )}
+      <View style={styles.infoBar}>
+        {!!info && (
+          <View style={styles.infoRow}>
+            <Ionicons name="hourglass-outline" size={IconSize.sm} color={colors.muted} accessibilityElementsHidden importantForAccessibility="no" />
+            <Text style={styles.info} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.75}>{info}</Text>
+          </View>
+        )}
+        {/* The rules: a real screen (points, stamps, the daily race). */}
+        <Tappable onPress={() => { track('how_it_works_opened', { tab }); router.push('/how-it-works' as never); }}
+                  style={styles.howBtn} accessibilityRole="button" accessibilityLabel={t('rules.open')} testID="ranks-how-it-works">
+          <Ionicons name="help-circle-outline" size={IconSize.md} color={colors.primaryText} accessibilityElementsHidden importantForAccessibility="no" />
+          <Text style={styles.howText} numberOfLines={1} maxFontSizeMultiplier={1.4}>{t('rules.open')}</Text>
+        </Tappable>
+      </View>
     </View>
   );
 
@@ -193,8 +201,8 @@ function RanksContent() {
 function Chip({ on, label, onPress }: { on: boolean; label: string; onPress: () => void }) {
   const styles = useThemedStyles(makeStyles);
   return (
-    <Tappable onPress={onPress} style={[styles.chip, on && styles.chipOn]} accessibilityRole="tab" accessibilityState={{ selected: on }} accessibilityLabel={label}>
-      <Text style={[styles.chipText, on && styles.chipTextOn]} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7}>{label}</Text>
+    <Tappable onPress={onPress} hitSlop={{ top: 4, bottom: 4 }} style={[styles.chip, on && styles.chipOn]} accessibilityRole="tab" accessibilityState={{ selected: on }} accessibilityLabel={label}>
+      <Text style={[styles.chipText, on && styles.chipTextOn]} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7} maxFontSizeMultiplier={1.4}>{label}</Text>
     </Tappable>
   );
 }
@@ -258,12 +266,16 @@ function PhotosView({ data, header, failed, refreshing, onRefresh, period, ghost
     key: i.proof.id, rank: i.rank, label: i.proof.user.username ? `@${i.proof.user.username}` : i.proof.user.displayName ?? '',
     lead: <Image source={{ uri: thumbUrl(i.proof.thumbUrl ?? i.proof.photoUrl) ?? undefined }} style={[styles.podiumPhoto, { borderColor: medalColor(colors, i.rank) }]} contentFit="cover" />,
     value: i.proof.voteCount, format: n => String(n), heart: true, onPress: () => open(proofs, i.proof),
+    spoken: t('a11y.likes', { count: i.proof.voteCount }),
   }));
 
   // The "You" bar: my best photo of the period and the likes it needs to pass the one above.
   const me = data?.me ?? null;
+  // One clear line: on top, one step from the crown, or how far to the next place.
   const youText = me
-    ? me.rank === 1 ? t('ranks.you.photoTop') : t('ranks.you.photo', { rank: me.rank, count: me.gap ?? 1, next: me.rank - 1 })
+    ? me.rank === 1 ? t('ranks.you.lead')
+      : me.rank === 2 ? t('ranks.you.photoCrown', { count: me.gap ?? 1 })
+      : t('ranks.you.photoClimb', { rank: me.rank, count: me.gap ?? 1, next: me.rank - 1 })
     : !account || (period === 'today' && !data?.played) ? t('ranks.you.none') : t('ranks.you.photoNone');
   const onYou = () => {
     if (!me) return;
@@ -346,6 +358,7 @@ const PhotoRankRow = memo(function PhotoRankRow({ item, mine, week, single, onPr
 }) {
   const styles = useThemedStyles(makeStyles);
   const { theme: mode, colors } = useTheme();
+  const { t } = useTranslation('daily');
   const p = item.proof;
   const theme = p.context?.theme?.key ?? null;
   // The theme's text color, not its fill: the peach ones (Taste, Only here, and the retired themes of
@@ -354,7 +367,8 @@ const PhotoRankRow = memo(function PhotoRankRow({ item, mine, week, single, onPr
   const who = p.user.username ? `@${p.user.username}` : p.user.displayName ?? '';
   return (
     <Tappable onPress={onPress} style={[styles.pRow, mine && styles.pRowMine]} accessibilityRole="button"
-              accessibilityLabel={`#${item.rank}, ${who}, ${p.voteCount} ❤️, ${p.commentCount ?? 0} 💬`}>
+              accessibilityLabel={[`#${item.rank}`, who, p.city?.name ? shortCityName(p.city.name) : null, t('a11y.likes', { count: p.voteCount }),
+                                  p.commentCount ? t('comments.count', { count: p.commentCount }) : null].filter(Boolean).join(', ')}>
       <View style={styles.pRankBox}>
         <Text style={styles.pRank} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.6}>{item.rank}</Text>
         {/* Week: since yesterday (▲2, ▼1, new), when the server sends it. */}
@@ -424,11 +438,14 @@ function PlayersView({ data, header, failed, refreshing, onRefresh, period, list
   const pts = (n: number) => t('ranks.pts', { count: n });
   const podium: PodiumItem[] = entries.slice(0, 3).map(e => ({
     key: e.user.id, rank: e.rank, label: nameOf(e.user), value: e.points, format: pts, onPress: () => onOpen(e.user.id),
+    spoken: t('a11y.points', { count: e.points }),
     lead: <View style={[styles.podiumAvatar, { borderColor: medalColor(colors, e.rank) }]}><Avatar uri={e.user.photoUrl} name={e.user.displayName ?? e.user.username ?? ''} size={56} /></View>,
   }));
   const me = data?.me ?? null;
   const youText = me
-    ? me.rank === 1 ? t('ranks.you.top') : t('ranks.you.player', { rank: me.rank, gap: me.gap ?? 0, name: me.next ? nameOf(me.next) : '' })
+    ? me.rank === 1 ? t('ranks.you.lead')
+      : me.rank === 2 ? t('ranks.you.playerCrown', { count: Math.max(1, me.gap ?? 1) })
+      : t('ranks.you.playerClimb', { rank: me.rank, count: Math.max(1, me.gap ?? 1), next: me.rank - 1 })
     : t('ranks.you.none');
   const rest = entries.slice(3);
 
@@ -445,7 +462,7 @@ function PlayersView({ data, header, failed, refreshing, onRefresh, period, list
         onScrollToIndexFailed={() => {}}
         renderItem={({ item: e }) => (
           <View style={styles.rowPad}>
-            <RankRow rank={e.rank} title={nameOf(e.user)} value={pts(e.points)} mine={me?.user.id === e.user.id} onPress={() => onOpen(e.user.id)}
+            <RankRow rank={e.rank} title={nameOf(e.user)} value={pts(e.points)} spoken={t('a11y.points', { count: e.points })} mine={me?.user.id === e.user.id} onPress={() => onOpen(e.user.id)}
                      movement={<Movement rank={e.rank} prevRank={e.prevRank} show={period !== 'today'} />}
                      lead={<Avatar uri={e.user.photoUrl} name={e.user.displayName ?? e.user.username ?? ''} size={40} />}
                      sub={<>
@@ -544,10 +561,15 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   flex:         { flex: 1 },
   controls:     { paddingHorizontal: Gutter, paddingTop: Space.sm, gap: Space.md },
   periods:      { flexDirection: 'row', gap: Space.sm },
-  infoRow:      { flexDirection: 'row', alignItems: 'center', gap: Space.xs, minHeight: 28 },
+  infoBar:      { flexDirection: 'row', alignItems: 'center', gap: Space.sm },
+  infoRow:      { flex: 1, flexDirection: 'row', alignItems: 'center', gap: Space.xs, minHeight: 28 },
+  // The rules button: a 44 pt tap target on the right of the info line.
+  howBtn:       { marginLeft: 'auto', flexDirection: 'row', alignItems: 'center', gap: Space.xs, minHeight: 44, paddingHorizontal: Space.md,
+                  borderRadius: Radius.control, backgroundColor: c.primaryTint },
+  howText:      { ...Type.caption, fontWeight: '800', color: c.primaryOnTint },
   info:         { flex: 1, minWidth: 0, ...Type.caption, color: c.muted },
   // The periods wear the shared selected state (design pass): peach, like the segments above them.
-  chip:         { flex: 1, minWidth: 0, alignItems: 'center', height: 36, paddingHorizontal: Space.sm, borderRadius: Radius.control, borderWidth: 1, borderColor: c.line, backgroundColor: c.bg2, justifyContent: 'center' },
+  chip:         { flex: 1, minWidth: 0, alignItems: 'center', minHeight: 36, paddingHorizontal: Space.sm, borderRadius: Radius.control, borderWidth: 1, borderColor: c.line, backgroundColor: c.bg2, justifyContent: 'center' },
   chipOn:       { backgroundColor: c.selected, borderColor: c.selected },
   chipText:     { ...Type.caption, fontWeight: '700', color: c.muted },
   chipTextOn:   { fontWeight: '800', color: c.onSelected },

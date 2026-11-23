@@ -15,6 +15,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { View, Animated, StyleSheet } from 'react-native';
 import { reactionEmitter, type ReactionType } from '@/lib/reactionEmitter';
+import { useReducedMotion } from '@/hooks/useReducedMotion';
 
 // ── Per-type config ───────────────────────────────────────────────────────────
 
@@ -213,9 +214,14 @@ interface Props {
 
 export function ReactionBurstOverlay({ messageId, isMine = false }: Props) {
   const [particles, setParticles] = useState<ParticleEntry[]>([]);
+  // Reduce Motion: no flying particles (the reaction itself still shows on the message).
+  const reduced = useReducedMotion();
+  const reducedRef = useRef(reduced);
+  reducedRef.current = reduced;
 
   useEffect(() => {
     return reactionEmitter.on(messageId, (type) => {
+      if (reducedRef.current) return;
       const cfg = CONFIGS[type];
       const burstId = ++_uid;
       const newParticles: ParticleEntry[] = Array.from({ length: cfg.count }, (_, i) => ({

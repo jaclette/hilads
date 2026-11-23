@@ -339,3 +339,9 @@ export async function editTwistProposal(text: string): Promise<DailyTwistProposa
 export async function withdrawTwistProposal(): Promise<void> {
   await api.delete('/daily/twist-proposal');
 }
+
+/** The points the Daily Challenge awards (GET /daily/points, score_rules): the "How it works" screen. */
+export type DailyPoints = { proof: number; vote: number; top: [number, number, number]; minVotesToWin: number };
+export async function fetchDailyPoints(): Promise<DailyPoints> {
+  return api.get<DailyPoints>('/daily/points');
+}

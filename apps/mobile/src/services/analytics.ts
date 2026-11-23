@@ -120,6 +120,7 @@ export type AnalyticsEvent =
   // V6
   | 'ranks_viewed'
   | 'ranks_ghost_tapped'
+  | 'how_it_works_opened' | 'how_it_works_viewed' | 'how_it_works_cta'
   | 'away_card_opened'
   | 'away_card_more'
   | 'photo_comment_inline'

@@ -33,7 +33,8 @@ export function DailyProofTile({ proof, onPress, compact = false, top = false }:
   const name = proof.user.displayName || proof.user.username || '';
   if (compact) return <CompactTile proof={proof} onPress={onPress} top={top} />;
   return (
-    <TouchableOpacity style={styles.tile} onPress={onPress} onPressIn={() => prefetchProof(proof)} activeOpacity={0.85} accessibilityRole="button" accessibilityLabel={`${name} ${proof.caption ?? ''}`}>
+    <TouchableOpacity style={styles.tile} onPress={onPress} onPressIn={() => prefetchProof(proof)} activeOpacity={0.85} accessibilityRole="button" accessibilityLabel={[name, proof.city?.name ?? null, proof.caption || null, t('a11y.likes', { count: proof.voteCount }),
+                        proof.worldRank !== null && proof.worldRank <= 3 ? t('a11y.rank', { rank: proof.worldRank }) : null].filter(Boolean).join(', ')}>
       {proof.selfieUrl
         ? <DualPhoto main={{ uri: proof.thumbUrl ?? proof.photoUrl, hash: proof.thumbHash }} selfie={selfieOf(proof)} style={styles.photo} inset="small" interactive={false} />
         : <Photo thumb={proof.thumbUrl} full={proof.photoUrl} hash={proof.thumbHash} style={styles.photo} contentFit="cover" transition={150} />}

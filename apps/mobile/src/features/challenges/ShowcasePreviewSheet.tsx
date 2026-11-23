@@ -113,7 +113,7 @@ export function ShowcasePreviewSheet({ item, onClose, onAvatar }: {
               >
                 {ordered.map((s, i) => (
                   <View key={s.id} style={{ width: carouselW }}>
-                    <Pressable onPress={() => setFullUri(s.media_url)}>
+                    <Pressable onPress={() => setFullUri(s.media_url)} accessibilityRole="imagebutton" accessibilityLabel={t('open', { ns: 'common' })}>
                       <ThumbImage uri={s.media_url} style={styles.carouselImg} />
                     </Pressable>
                     {winnerId && s.user_id === winnerId ? (
@@ -131,7 +131,7 @@ export function ShowcasePreviewSheet({ item, onClose, onAvatar }: {
               <View style={styles.counter}><Text style={styles.counterText}>{page + 1}/{ordered.length}</Text></View>
             </View>
           ) : hasProof ? (
-            <Pressable onPress={() => setFullUri(item.proof_media_url!)}>
+            <Pressable onPress={() => setFullUri(item.proof_media_url!)} accessibilityRole="imagebutton" accessibilityLabel={t('open', { ns: 'common' })}>
               <ThumbImage uri={item.proof_media_url!} style={styles.proof} />
             </Pressable>
           ) : null}

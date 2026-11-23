@@ -819,7 +819,16 @@
       "photo_one": "Ảnh tốt nhất của bạn: #{{rank}} · {{count}} ❤️ nữa lên #{{next}}",
       "photo_other": "Ảnh tốt nhất của bạn: #{{rank}} · {{count}} ❤️ nữa lên #{{next}}",
       "photoTop": "Ảnh tốt nhất của bạn: #1 · không ai trên bạn 👑",
-      "photoNone": "Chưa có ảnh nào của bạn được xếp hạng ❤️"
+      "photoNone": "Chưa có ảnh nào của bạn được xếp hạng ❤️",
+      "lead": "Bạn đang #1! Giữ vững vương miện nha 👑",
+      "photoCrown_one": "Bạn đang #2, chỉ cần {{count}} ❤️ nữa là giành vương miện! 👑",
+      "photoCrown_other": "Bạn đang #2, chỉ cần {{count}} ❤️ nữa là giành vương miện! 👑",
+      "photoClimb_one": "Bạn đang #{{rank}}, thêm {{count}} ❤️ để lên #{{next}} ⬆️",
+      "photoClimb_other": "Bạn đang #{{rank}}, thêm {{count}} ❤️ để lên #{{next}} ⬆️",
+      "playerCrown_one": "Bạn đang #2, chỉ cần {{count}} điểm nữa là giành vương miện! 👑",
+      "playerCrown_other": "Bạn đang #2, chỉ cần {{count}} điểm nữa là giành vương miện! 👑",
+      "playerClimb_one": "Bạn đang #{{rank}}, thêm {{count}} điểm để lên #{{next}} ⬆️",
+      "playerClimb_other": "Bạn đang #{{rank}}, thêm {{count}} điểm để lên #{{next}} ⬆️"
     },
     "city": {
       "lineTop": "{{city}} đang dẫn đầu! 🏁",
@@ -900,5 +909,51 @@
     "noPositionBody": "Không tìm được vị trí của bạn để ghim địa điểm. Bạn vẫn có thể đăng cho thành phố của mình.",
     "postForCity": "Đăng cho {{city}}",
     "postCityOnly": "Đăng cho thành phố của tôi"
+  },
+  "rules": {
+    "open": "Cách chơi",
+    "title": "Hilads chơi thế nào 🎮",
+    "introTitle": "Một thử thách. Cả thế giới.",
+    "introText": "Mỗi ngày, cùng một thử thách ảnh cho mọi người. Chụp ở thành phố của bạn, rồi xem cả thế giới chơi ra sao.",
+    "earnTitle": "Kiếm điểm",
+    "earn": {
+      "photoTitle": "Chơi Daily Challenge",
+      "photoText": "Đăng ảnh trước khi hết giờ. Mỗi ngày một ảnh.",
+      "voteTitle": "Bình chọn",
+      "voteText": "Thả tim ít nhất một ảnh trước khi có kết quả. Mỗi ngày một lần.",
+      "topTitle": "Thắng cả ngày",
+      "topText": "3 ảnh được thả tim nhiều nhất thế giới. Nếu bằng nhau, ai đăng trước thì xếp trên.",
+      "likesTitle": "Nhận lượt thích",
+      "likesText": "Lượt thích không tự cho điểm: chúng quyết định ai vào top 3."
+    },
+    "collectTitle": "Sưu tầm và khoe",
+    "collect": {
+      "streakTitle": "Giữ chuỗi",
+      "streakText": "Chơi mỗi ngày để kéo dài chuỗi. Chuỗi hiện trên hộ chiếu của bạn, cho vui thôi (không có điểm).",
+      "passTitle": "Con dấu và Local Pass",
+      "passText": "Mỗi chủ đề một con dấu. Chơi đủ 7 chủ đề ở cùng một thành phố để nhận Local Pass của thành phố đó."
+    },
+    "raceTitle": "Cuộc đua mỗi ngày",
+    "race": {
+      "dropTitle": "Ra thử thách",
+      "dropText": "Một thử thách mới theo chủ đề đến với mọi người, cùng lúc trên toàn thế giới.",
+      "playTitle": "Chơi",
+      "playText": "Chụp ảnh ở thành phố của bạn trước khi hết giờ.",
+      "voteTitle": "Bình chọn",
+      "voteText": "Thả tim những ảnh bạn thích, từ mọi thành phố.",
+      "resultsTitle": "Kết quả",
+      "resultsText": "Ở lần ra thử thách tiếp theo: trao vương miện, tính điểm, cập nhật thứ hạng."
+    },
+    "cta": "📸 Chơi thử thách hôm nay",
+    "ctaPlayed": "🌍 Xem cả thế giới chơi thế nào",
+    "foot": "Điểm số như hiện tại. Luật chơi luôn ở đây.",
+    "plus": "+{{count}}"
+  },
+  "a11y": {
+    "likes_one": "{{count}} lượt thích",
+    "points_one": "{{count}} điểm",
+    "likes_other": "{{count}} lượt thích",
+    "points_other": "{{count}} điểm",
+    "rank": "hạng {{rank}}"
   }
 }

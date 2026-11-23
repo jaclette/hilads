@@ -12852,6 +12852,19 @@ function dailyCommitPlace(array $user, array $fields): array
 }
 
 // GET /api/v1/daily/today?cityId= - today's challenge for the home card.
+// GET /api/v1/daily/points: the points the Daily Challenge awards today (score_rules, role daily), for the
+// app's "How it works" screen: only the kinds that still earn (DailyPoints::EARNING_KINDS). Public.
+$router->add('GET', '/api/v1/daily/points', function () {
+    $data = Cache::remember('daily_points_v1', 300, static fn(): array => [
+        'proof'         => DailyPoints::rule('daily_proof'),
+        'vote'          => DailyPoints::rule('daily_vote'),
+        'top'           => [DailyPoints::rule('daily_top1'), DailyPoints::rule('daily_top2'), DailyPoints::rule('daily_top3')],
+        'minVotesToWin' => DailyResults::MIN_VOTES_TO_WIN,
+    ]);
+    header('Cache-Control: public, max-age=300');
+    Response::json($data ?? []);
+});
+
 $router->add('GET', '/api/v1/daily/today', function () {
     $user = AuthService::currentUser();
     $scopeCityId = dailyCityParam($user);

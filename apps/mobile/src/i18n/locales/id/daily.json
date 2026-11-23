@@ -819,7 +819,16 @@
       "photo_one": "Terbaikmu: #{{rank}} · {{count}} ❤️ ke #{{next}}",
       "photo_other": "Terbaikmu: #{{rank}} · {{count}} ❤️ ke #{{next}}",
       "photoTop": "Terbaikmu: #1 · tak ada yang di atasmu 👑",
-      "photoNone": "Belum ada fotomu di peringkat ❤️"
+      "photoNone": "Belum ada fotomu di peringkat ❤️",
+      "lead": "Kamu #1! Pertahankan mahkotamu 👑",
+      "photoCrown_one": "Kamu #2, tinggal {{count}} ❤️ lagi buat rebut mahkota! 👑",
+      "photoCrown_other": "Kamu #2, tinggal {{count}} ❤️ lagi buat rebut mahkota! 👑",
+      "photoClimb_one": "Kamu #{{rank}}, {{count}} ❤️ lagi buat naik ke #{{next}} ⬆️",
+      "photoClimb_other": "Kamu #{{rank}}, {{count}} ❤️ lagi buat naik ke #{{next}} ⬆️",
+      "playerCrown_one": "Kamu #2, tinggal {{count}} poin lagi buat rebut mahkota! 👑",
+      "playerCrown_other": "Kamu #2, tinggal {{count}} poin lagi buat rebut mahkota! 👑",
+      "playerClimb_one": "Kamu #{{rank}}, {{count}} poin lagi buat naik ke #{{next}} ⬆️",
+      "playerClimb_other": "Kamu #{{rank}}, {{count}} poin lagi buat naik ke #{{next}} ⬆️"
     },
     "city": {
       "lineTop": "{{city}} memimpin balapan! 🏁",
@@ -900,5 +909,51 @@
     "noPositionBody": "Kami tidak bisa menemukan posisimu untuk memasang lokasinya. Kamu tetap bisa mempostingnya untuk kotamu.",
     "postForCity": "Posting untuk {{city}}",
     "postCityOnly": "Posting untuk kotaku"
+  },
+  "rules": {
+    "open": "Cara mainnya",
+    "title": "Cara main Hilads 🎮",
+    "introTitle": "Satu tantangan. Seluruh dunia.",
+    "introText": "Setiap hari, tantangan foto yang sama buat semua orang. Kerjakan di kotamu, lalu lihat gimana dunia bermain.",
+    "earnTitle": "Kumpulkan poin",
+    "earn": {
+      "photoTitle": "Main Daily Challenge",
+      "photoText": "Posting fotomu sebelum waktunya habis. Satu foto per hari.",
+      "voteTitle": "Vote",
+      "voteText": "Kasih suka ke minimal satu foto sebelum hasilnya keluar. Sekali sehari.",
+      "topTitle": "Menangkan hari ini",
+      "topText": "3 foto dengan suka terbanyak di dunia. Kalau seri, yang posting duluan di depan.",
+      "likesTitle": "Dapatkan suka",
+      "likesText": "Suka nggak kasih poin sendiri: suka yang menentukan siapa masuk top 3."
+    },
+    "collectTitle": "Koleksi dan pamerkan",
+    "collect": {
+      "streakTitle": "Jaga beruntunmu",
+      "streakText": "Main tiap hari biar makin panjang. Muncul di paspormu, buat gengsi aja (tanpa poin).",
+      "passTitle": "Stempel dan Local Pass",
+      "passText": "Satu stempel per tema. Main ketujuh tema di kota yang sama untuk dapat Local Pass kota itu."
+    },
+    "raceTitle": "Balapan harian",
+    "race": {
+      "dropTitle": "Peluncuran",
+      "dropText": "Tantangan bertema baru datang buat semua orang, di saat yang sama di seluruh dunia.",
+      "playTitle": "Main",
+      "playText": "Foto di kotamu sebelum waktunya habis.",
+      "voteTitle": "Vote",
+      "voteText": "Kasih suka ke foto yang kamu suka, dari kota mana pun.",
+      "resultsTitle": "Hasil",
+      "resultsText": "Di peluncuran berikutnya: pemenang dinobatkan, poin dihitung, peringkat diperbarui."
+    },
+    "cta": "📸 Main tantangan hari ini",
+    "ctaPlayed": "🌍 Lihat gimana dunia bermain",
+    "foot": "Poin seperti hari ini. Aturannya selalu ada di sini.",
+    "plus": "+{{count}}"
+  },
+  "a11y": {
+    "likes_one": "{{count}} suka",
+    "points_one": "{{count}} poin",
+    "likes_other": "{{count}} suka",
+    "points_other": "{{count}} poin",
+    "rank": "peringkat {{rank}}"
   }
 }

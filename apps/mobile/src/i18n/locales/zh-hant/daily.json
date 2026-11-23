@@ -819,7 +819,16 @@
       "photo_one": "你的最佳：第 {{rank}} 名 · 再 {{count}} ❤️ 到第 {{next}} 名",
       "photo_other": "你的最佳：第 {{rank}} 名 · 再 {{count}} ❤️ 到第 {{next}} 名",
       "photoTop": "你的最佳：第 1 名 · 沒人在你之上 👑",
-      "photoNone": "你還沒有照片上榜 ❤️"
+      "photoNone": "你還沒有照片上榜 ❤️",
+      "lead": "你是第 1 名！守住你的王冠 👑",
+      "photoCrown_one": "你是第 2 名，只差 {{count}} 個 ❤️ 就能奪冠！👑",
+      "photoCrown_other": "你是第 2 名，只差 {{count}} 個 ❤️ 就能奪冠！👑",
+      "photoClimb_one": "你是第 {{rank}} 名，再要 {{count}} 個 ❤️ 就能升到第 {{next}} 名 ⬆️",
+      "photoClimb_other": "你是第 {{rank}} 名，再要 {{count}} 個 ❤️ 就能升到第 {{next}} 名 ⬆️",
+      "playerCrown_one": "你是第 2 名，只差 {{count}} 分就能奪冠！👑",
+      "playerCrown_other": "你是第 2 名，只差 {{count}} 分就能奪冠！👑",
+      "playerClimb_one": "你是第 {{rank}} 名，再要 {{count}} 分就能升到第 {{next}} 名 ⬆️",
+      "playerClimb_other": "你是第 {{rank}} 名，再要 {{count}} 分就能升到第 {{next}} 名 ⬆️"
     },
     "city": {
       "lineTop": "{{city}} 領先！🏁",
@@ -900,5 +909,51 @@
     "noPositionBody": "無法取得你的位置來標記地點。你仍然可以為你的城市發布。",
     "postForCity": "為{{city}}發布",
     "postCityOnly": "為我的城市發布"
+  },
+  "rules": {
+    "open": "玩法說明",
+    "title": "Hilads 怎麼玩 🎮",
+    "introTitle": "一個挑戰，全世界一起。",
+    "introText": "每天，所有人都是同一個照片挑戰。在你的城市拍下來，再看看全世界怎麼玩。",
+    "earnTitle": "賺積分",
+    "earn": {
+      "photoTitle": "參加 Daily Challenge",
+      "photoText": "在倒數結束前發布照片。每天一張。",
+      "voteTitle": "投票",
+      "voteText": "在結果公布前至少替一張照片按讚。每天一次。",
+      "topTitle": "贏下今天",
+      "topText": "全球按讚最多的 3 張照片。如果票數相同，先發布的排在前面。",
+      "likesTitle": "獲得按讚",
+      "likesText": "按讚本身不加分：它們決定誰進入前 3 名。"
+    },
+    "collectTitle": "收集與炫耀",
+    "collect": {
+      "streakTitle": "保持連續紀錄",
+      "streakText": "每天參加，讓連續紀錄越來越長。它會顯示在你的護照上，只為榮耀（沒有積分）。",
+      "passTitle": "印章與 Local Pass",
+      "passText": "每個主題一枚印章。在同一座城市玩完全部 7 個主題，就能獲得那座城市的 Local Pass。"
+    },
+    "raceTitle": "每日競賽",
+    "race": {
+      "dropTitle": "挑戰發布",
+      "dropText": "新的主題挑戰同時發給全世界的每個人。",
+      "playTitle": "參加",
+      "playText": "在倒數結束前，在你的城市拍下照片。",
+      "voteTitle": "投票",
+      "voteText": "替你喜歡的照片按讚，來自每一座城市。",
+      "resultsTitle": "結果",
+      "resultsText": "下一次發布時：冠軍加冕、積分結算、排名更新。"
+    },
+    "cta": "📸 參加今天的挑戰",
+    "ctaPlayed": "🌍 看看全世界怎麼玩",
+    "foot": "以上為目前積分。規則隨時都在這裡。",
+    "plus": "+{{count}}"
+  },
+  "a11y": {
+    "likes_one": "{{count}} 個讚",
+    "points_one": "{{count}} 分",
+    "likes_other": "{{count}} 個讚",
+    "points_other": "{{count}} 分",
+    "rank": "第 {{rank}} 名"
   }
 }

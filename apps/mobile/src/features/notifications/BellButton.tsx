@@ -43,7 +43,7 @@ export function BellButton({ onPress }: { onPress: () => void }) {
       </Animated.View>
       {on && (
         <View style={styles.badge}>
-          <Text style={styles.badgeText} numberOfLines={1}>{total > 9 ? '9+' : total}</Text>
+          <Text style={styles.badgeText} numberOfLines={1} maxFontSizeMultiplier={1.3}>{total > 9 ? '9+' : total}</Text>
         </View>
       )}
     </Pressable>

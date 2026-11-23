@@ -113,7 +113,8 @@ export function ValidatePresenceSheet({ visible, participants, submitting, mode 
             <Text style={styles.rateLabel}>{t('group.rateMeet', { defaultValue: 'How was the meet?' })}</Text>
             <View style={styles.stars}>
               {[1, 2, 3, 4, 5].map(n => (
-                <TouchableOpacity key={n} onPress={() => setRating(n)} activeOpacity={0.7} hitSlop={{ top: 8, bottom: 8, left: 4, right: 4 }}>
+                <TouchableOpacity key={n} onPress={() => setRating(n)} activeOpacity={0.7} hitSlop={{ top: 8, bottom: 8, left: 4, right: 4 }}
+                                  accessibilityRole="button" accessibilityLabel={`${n}/5`} accessibilityState={{ selected: n <= rating }}>
                   <Ionicons
                     name={n <= rating ? 'star' : 'star-outline'}
                     size={32}

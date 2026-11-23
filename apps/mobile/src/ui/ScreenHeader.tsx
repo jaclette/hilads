@@ -46,7 +46,7 @@ export function ScreenHeader({ title, subtitle, art, variant = 'back', right, on
     // A tap on the header (outside the form) closes the keyboard (the keyboard rule).
     <Pressable style={styles.back} testID={testID} onPress={Keyboard.dismiss} accessible={false}>
       <IconButton icon="chevron-back" onPress={onBack ?? goBack} label={t('back')} testID="header-back" />
-      {title ? <Text style={[styles.title, compact && styles.titleCompact]} numberOfLines={1} accessibilityRole="header" testID="header-title">{title}</Text>
+      {title ? <Text style={[styles.title, compact && styles.titleCompact]} numberOfLines={2} maxFontSizeMultiplier={1.5} accessibilityRole="header" testID="header-title">{title}</Text>
              : <Text style={styles.spacer} testID="header-title"> </Text>}
       {right}
     </Pressable>

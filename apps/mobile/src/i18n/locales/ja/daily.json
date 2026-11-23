@@ -819,7 +819,16 @@
       "photo_one": "あなたのベスト：#{{rank}} · #{{next}}まであと{{count}} ❤️",
       "photo_other": "あなたのベスト：#{{rank}} · #{{next}}まであと{{count}} ❤️",
       "photoTop": "あなたのベスト：#1 · あなたより上はいません 👑",
-      "photoNone": "まだランクインした写真はありません ❤️"
+      "photoNone": "まだランクインした写真はありません ❤️",
+      "lead": "あなたが1位！王座を守ろう 👑",
+      "photoCrown_one": "今2位。あと{{count}}個の❤️で王座だよ！👑",
+      "photoCrown_other": "今2位。あと{{count}}個の❤️で王座だよ！👑",
+      "photoClimb_one": "今{{rank}}位。あと{{count}}個の❤️で{{next}}位に上がれるよ ⬆️",
+      "photoClimb_other": "今{{rank}}位。あと{{count}}個の❤️で{{next}}位に上がれるよ ⬆️",
+      "playerCrown_one": "今2位。あと{{count}}ポイントで王座だよ！👑",
+      "playerCrown_other": "今2位。あと{{count}}ポイントで王座だよ！👑",
+      "playerClimb_one": "今{{rank}}位。あと{{count}}ポイントで{{next}}位に上がれるよ ⬆️",
+      "playerClimb_other": "今{{rank}}位。あと{{count}}ポイントで{{next}}位に上がれるよ ⬆️"
     },
     "city": {
       "lineTop": "{{city}}がトップを独走中！🏁",
@@ -900,5 +909,51 @@
     "noPositionBody": "場所にピンを立てるための位置が見つかりません。都市の写真として投稿はできます。",
     "postForCity": "{{city}}に投稿",
     "postCityOnly": "自分の都市に投稿"
+  },
+  "rules": {
+    "open": "遊び方",
+    "title": "Hilads の遊び方 🎮",
+    "introTitle": "チャレンジはひとつ。世界中で。",
+    "introText": "毎日、みんな同じ写真チャレンジ。自分の街で撮って、世界がどう参加したか見てみよう。",
+    "earnTitle": "ポイントをためる",
+    "earn": {
+      "photoTitle": "Daily Challenge に参加",
+      "photoText": "タイマーが終わる前に写真を投稿しよう。1日1枚。",
+      "voteTitle": "投票",
+      "voteText": "結果発表の前に、写真を1枚以上いいねしよう。1日1回。",
+      "topTitle": "その日の勝者に",
+      "topText": "世界でいいねが多い写真トップ3。同数なら先に投稿した人が上。",
+      "likesTitle": "いいねをもらう",
+      "likesText": "いいね自体にポイントはないよ。トップ3を決めるのがいいね。"
+    },
+    "collectTitle": "集めて自慢しよう",
+    "collect": {
+      "streakTitle": "連続記録をキープ",
+      "streakText": "毎日参加して記録を伸ばそう。パスポートに表示されるよ。名誉だけ（ポイントなし）。",
+      "passTitle": "スタンプと Local Pass",
+      "passText": "テーマごとにスタンプ1つ。同じ街で7つのテーマを全部遊ぶと、その街の Local Pass がもらえるよ。"
+    },
+    "raceTitle": "毎日のレース",
+    "race": {
+      "dropTitle": "スタート",
+      "dropText": "新しいテーマのチャレンジが、世界中で同時にみんなに届くよ。",
+      "playTitle": "参加",
+      "playText": "タイマーが終わる前に、自分の街で写真を撮ろう。",
+      "voteTitle": "投票",
+      "voteText": "好きな写真にいいねしよう。どの街の写真でもOK。",
+      "resultsTitle": "結果",
+      "resultsText": "次のスタートで、勝者が決まり、ポイント集計、ランキング更新。"
+    },
+    "cta": "📸 今日のチャレンジに参加",
+    "ctaPlayed": "🌍 世界の参加を見る",
+    "foot": "現在のポイントです。ルールはいつでもここで見られます。",
+    "plus": "+{{count}}"
+  },
+  "a11y": {
+    "likes_one": "いいね{{count}}件",
+    "points_one": "{{count}}ポイント",
+    "likes_other": "いいね{{count}}件",
+    "points_other": "{{count}}ポイント",
+    "rank": "{{rank}}位"
   }
 }

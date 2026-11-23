@@ -255,7 +255,8 @@ export function ChallengeResultModal({
                   <Text style={styles.rateTitle}>{t('result.rateTitle', { defaultValue: 'Rate this challenge' })}</Text>
                   <View style={styles.rateStars}>
                     {[1, 2, 3, 4, 5].map(n => (
-                      <TouchableOpacity key={n} onPress={() => setHostStars(n)} activeOpacity={0.7} hitSlop={{ top: 6, bottom: 6, left: 3, right: 3 }}>
+                      <TouchableOpacity key={n} onPress={() => setHostStars(n)} activeOpacity={0.7} hitSlop={{ top: 7, bottom: 7, left: 3, right: 3 }}
+                                        accessibilityRole="button" accessibilityLabel={`${n}/5`} accessibilityState={{ selected: n <= hostStars }}>
                         <Ionicons name={n <= hostStars ? 'star' : 'star-outline'} size={30} color={n <= hostStars ? colors.gold : colors.line} />
                       </TouchableOpacity>
                     ))}

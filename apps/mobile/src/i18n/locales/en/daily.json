@@ -856,7 +856,16 @@
       "photo_one": "Your best: #{{rank}} · {{count}} ❤️ to #{{next}}",
       "photo_other": "Your best: #{{rank}} · {{count}} ❤️ to #{{next}}",
       "photoTop": "Your best: #1 · nobody above you 👑",
-      "photoNone": "None of your photos is ranked yet ❤️"
+      "photoNone": "None of your photos is ranked yet ❤️",
+      "lead": "You're #1! Defend your crown 👑",
+      "photoCrown_one": "You're #2, just {{count}} ❤️ to grab the crown! 👑",
+      "photoCrown_other": "You're #2, just {{count}} ❤️ to grab the crown! 👑",
+      "photoClimb_one": "You're #{{rank}}, {{count}} ❤️ to climb to #{{next}} ⬆️",
+      "photoClimb_other": "You're #{{rank}}, {{count}} ❤️ to climb to #{{next}} ⬆️",
+      "playerCrown_one": "You're #2, just {{count}} point to grab the crown! 👑",
+      "playerCrown_other": "You're #2, just {{count}} points to grab the crown! 👑",
+      "playerClimb_one": "You're #{{rank}}, {{count}} point to climb to #{{next}} ⬆️",
+      "playerClimb_other": "You're #{{rank}}, {{count}} points to climb to #{{next}} ⬆️"
     },
     "city": {
       "lineTop": "{{city}} leads the race! 🏁",
@@ -942,5 +951,51 @@
     "noPositionBody": "We can't find your position to pin the spot. You can still post it for your city.",
     "postForCity": "Post for {{city}}",
     "postCityOnly": "Post for my city"
+  },
+  "rules": {
+    "open": "How it works",
+    "title": "How Hilads works 🎮",
+    "introTitle": "One challenge. The whole world.",
+    "introText": "Every day, the same photo challenge for everyone. Snap it in your city, then see how the world played.",
+    "earnTitle": "Earn points",
+    "earn": {
+      "photoTitle": "Play the Daily Challenge",
+      "photoText": "Post your photo before the timer ends. One photo a day.",
+      "voteTitle": "Vote",
+      "voteText": "Like at least one photo before the results. Once a day.",
+      "topTitle": "Win the day",
+      "topText": "The 3 most-liked photos in the world. A tie goes to whoever posted first.",
+      "likesTitle": "Get likes",
+      "likesText": "Likes don't give points on their own: they decide who makes the top 3."
+    },
+    "collectTitle": "Collect & show off",
+    "collect": {
+      "streakTitle": "Keep your streak",
+      "streakText": "Play every day to grow it. It shows on your Passport, just for the glory (no points).",
+      "passTitle": "Stamps & Local Pass",
+      "passText": "One stamp per theme. Play all 7 themes in the same city to earn its Local Pass."
+    },
+    "raceTitle": "The daily race",
+    "race": {
+      "dropTitle": "The drop",
+      "dropText": "A new themed challenge lands for everyone, at the same moment worldwide.",
+      "playTitle": "Play",
+      "playText": "Snap your photo in your city before the timer ends.",
+      "voteTitle": "Vote",
+      "voteText": "Like the photos you love, from every city.",
+      "resultsTitle": "Results",
+      "resultsText": "At the next drop: winners crowned, points counted, ranks updated."
+    },
+    "cta": "📸 Play today's challenge",
+    "ctaPlayed": "🌍 See how the world played",
+    "foot": "Points as they are today. The rules are always here.",
+    "plus": "+{{count}}"
+  },
+  "a11y": {
+    "likes_one": "{{count}} like",
+    "points_one": "{{count}} point",
+    "likes_other": "{{count}} likes",
+    "points_other": "{{count}} points",
+    "rank": "rank {{rank}}"
   }
 }

@@ -27,7 +27,7 @@ export function Segmented<K extends string>({ options, value, onChange }: { opti
                     accessibilityRole="tab" accessibilityState={{ selected: on }}>
             {!!o.flag && <CityFlag country={o.flag} />}
             {!!o.icon && <Ionicons name={o.icon} size={IconSize.sm} color={on ? colors.onSelected : colors.muted} />}
-            <Text style={[styles.label, on && styles.labelOn]} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.75}>{o.label}</Text>
+            <Text style={[styles.label, on && styles.labelOn]} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.75} maxFontSizeMultiplier={1.3}>{o.label}</Text>
             {on && o.picker && <Ionicons name="chevron-down" size={IconSize.sm} color={colors.onSelected} />}
             {!on && !!o.badge && o.badge > 0 && <Text style={styles.badge}>{o.badge > 99 ? '99+' : o.badge}</Text>}
           </Tappable>
