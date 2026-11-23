@@ -268,7 +268,12 @@ Original plan:
 - **The friend's side:** sees "Invited by @minh" on sign-up and on their Passport.
 - **Android Play install referrer:** at the next store build (needs a native module). Until then Android also relies on the IP fallback.
 
-### P4 – fair play switches
+### P4 – fair play switches — DONE
+
+- Admin › Scoring: v2 status (live since / not live), the current season, the two switches (saved in app_settings), and a "Reset all scores to 0" card (type RESET; option: also delete past season results and medals). The dashboard's reset is the same action.
+- `vote_requires_play` → `DailyVotes::guard` answers 403 `play_first` ("Post today's photo to like the others.").
+
+Original plan:
 
 - `podium_min_photos` and `vote_requires_play`: in Admin › Scoring (stored in `app_settings`), **both off**.
   - `vote_requires_play` is checked in `DailyVotes::guard()` and returns a clear 403 (`play_first`). The apps show "Post today's photo to like".

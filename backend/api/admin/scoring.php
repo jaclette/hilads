@@ -70,7 +70,29 @@ admin_nav('/admin/scoring');
   @media (max-width: 900px) { .sc-grid { grid-template-columns: 1fr; } }
 </style>
 <main class="admin-main">
+  <?= flash_html() ?>
   <h1 class="page-title">Scoring v2 — simulation and fair play</h1>
+  <?php
+    $since    = Scoring::since();
+    $minNow   = (int) Scoring::switch('podium_min_photos');
+    $playNow  = (bool) Scoring::switch('vote_requires_play');
+    $seasonNow = Scoring::season(DailyClock::currentDate());
+  ?>
+  <div class="stats-row">
+    <div class="stat-card"><div class="stat-value" style="font-size:18px"><?= $since !== null ? 'Live since ' . $esc($since) : 'Not live' ?></div><div class="stat-label">v2 rules<?= $since === null ? ' (run php migrate.php)' : '' ?></div></div>
+    <div class="stat-card"><div class="stat-value" style="font-size:18px"><?= $esc($seasonNow['key']) ?><?= $seasonNow['pre'] ? ' (pre-season)' : '' ?></div><div class="stat-label">Season, ends <?= $esc($seasonNow['endsAt']) ?> · <?= (int) $seasonNow['daysLeft'] ?> days left</div></div>
+  </div>
+
+  <h2 class="sc-h2">Fair-play switches</h2>
+  <form method="post" action="/admin/scoring" class="toolbar" style="gap:16px">
+    <?= csrf_input() ?>
+    <label>Minimum photos worldwide for a full podium
+      <input type="number" name="podium_min_photos" min="0" max="1000" value="<?= $minNow ?>" style="width:80px;background:#1a1a1a;border:1px solid #2a2a2a;color:#e0e0e0;padding:6px;border-radius:6px">
+      <span class="sc-note">(0 = off; below it only 🥇 is paid)</span></label>
+    <label><input type="checkbox" name="vote_requires_play" value="1"<?= $playNow ? ' checked' : '' ?>> Play to like (only players who posted the day's photo can like it)</label>
+    <button class="btn btn-primary btn-sm" type="submit">Save switches</button>
+  </form>
+
   <p class="sc-note">
     Read-only: nothing is changed. Last <?= $days ?> closed challenges
     (<?= $esc($sim['window'][0]) ?> → <?= $esc($sim['window'][1]) ?>, <?= (int) $sim['days'] ?> published).
@@ -212,6 +234,24 @@ admin_nav('/admin/scoring');
       <tr><td>@<?= $esc($r['username']) ?></td><td class="num"><?= (int) $r['days'] ?></td><td class="num"><?= (int) $r['max_share'] ?> %</td><td><?= $esc($r['last_date']) ?></td></tr>
     <?php endforeach; ?>
   </tbody></table></div><?php endif; ?>
+
+  <div style="margin-top: 40px; padding: 16px; border: 1px solid rgba(248, 113, 113, 0.35); border-radius: 8px; background: rgba(248, 113, 113, 0.04); max-width: 900px;">
+    <h2 style="margin: 0 0 6px; font-size: 14px; color: #f87171; text-transform: uppercase; letter-spacing: 0.5px;">⚠️ Reset all scores to 0</h2>
+    <p class="sc-note" style="color:#aaa">
+      Every player goes back to 0 points: the whole points history is deleted (all time, this season, the week, Perfect weeks,
+      invite points) and every ranking starts empty (they refresh within a minute). Photos, likes, streaks, stamps and invitations
+      stay. Can't be undone.
+    </p>
+    <form method="POST" action="/admin/scores/reset-all" style="display:flex;gap:16px;align-items:center;flex-wrap:wrap"
+          onsubmit="return this.confirm_text.value === 'RESET' || (alert('Type RESET to confirm.'), false)">
+      <?= csrf_input() ?>
+      <input type="hidden" name="back" value="scoring">
+      <label><input type="checkbox" name="with_seasons" value="1"> Also delete past season results and medals</label>
+      <input type="text" name="confirm_text" placeholder="Type RESET" autocomplete="off"
+             style="width:120px;background:#1a1a1a;border:1px solid #7f1d1d;color:#e0e0e0;padding:6px;border-radius:6px">
+      <button type="submit" class="btn btn-danger btn-sm">Reset all scores to 0</button>
+    </form>
+  </div>
 </main>
 <?php
 admin_foot();

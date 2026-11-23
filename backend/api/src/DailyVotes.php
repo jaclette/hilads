@@ -247,5 +247,18 @@ final class DailyVotes
         if (!DailyClock::isActive((string) $proof['challenge_date'])) {
             throw new InvalidArgumentException('voting_closed');
         }
+        // Scoring v2 switch (off by default): only players who posted the day's photo can like it.
+        if (Scoring::switch('vote_requires_play') && !self::played((string) $proof['challenge_id'], (string) $user['id'])) {
+            throw new InvalidArgumentException('play_first');
+        }
+    }
+
+    /** The user has an approved photo on this challenge. */
+    public static function played(string $challengeId, string $userId): bool
+    {
+        $stmt = Database::pdo()->prepare("SELECT 1 FROM daily_proofs WHERE challenge_id = ? AND user_id = ? AND moderation_status = 'approved'
+                                          AND NOT is_seed AND NOT is_suggestion LIMIT 1");
+        $stmt->execute([$challengeId, $userId]);
+        return $stmt->fetchColumn() !== false;
     }
 }

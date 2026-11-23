@@ -129,6 +129,9 @@ if ($uri === '/admin' || $uri === '/admin/') {
 } elseif ($uri === '/admin/photos') {
     require __DIR__ . '/photos.php';
 
+} elseif ($uri === '/admin/scoring' && $method === 'POST') {
+    require __DIR__ . '/scoring_save.php';
+
 } elseif ($uri === '/admin/scoring') {
     require __DIR__ . '/scoring.php';
 

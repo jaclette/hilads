@@ -27,7 +27,15 @@ csrf_verify();
 // now, but the next rating insert would race with an existing rating
 // pair and we'd only get the debrief event if a fresh rating arrived.
 
-$pdo = Database::pdo();
+$pdo  = Database::pdo();
+$back = ($_POST['back'] ?? '') === 'scoring' ? '/admin/scoring' : '/admin';
+// Admin › Scoring asks to type RESET (the dashboard keeps its confirm dialog).
+if ($back === '/admin/scoring' && trim((string) ($_POST['confirm_text'] ?? '')) !== 'RESET') {
+    flash_set('error', 'Type RESET to confirm - nothing was changed.');
+    admin_redirect($back);
+}
+$withSeasons = !empty($_POST['with_seasons']);
+$seasons = 0;
 
 try {
     $pdo->beginTransaction();
@@ -47,15 +55,21 @@ try {
     // had a rank - clear them in the same transaction so the badge
     // surface stays consistent with the cleared ledger.
     MonthlyRankService::clearAll($pdo);
+    // Scoring v2: past season results and medals go too when asked (seasons are frozen
+    // again at the next month's end).
+    if ($withSeasons && (int) $pdo->query("SELECT count(*) FROM pg_tables WHERE tablename = 'season_results'")->fetchColumn() > 0) {
+        $seasons = (int) $pdo->exec("DELETE FROM season_results");
+        $pdo->exec("DELETE FROM seasons");
+    }
 
     $pdo->commit();
 } catch (\Throwable $e) {
     if ($pdo->inTransaction()) $pdo->rollBack();
     error_log('[admin-scores-reset] failed: ' . $e->getMessage());
     flash_set('error', 'Reset failed - check logs.');
-    admin_redirect('/admin');
+    admin_redirect($back);
 }
 
-error_log("[admin-scores-reset] wiped {$deleted} score_events + reset all user aggregates");
-flash_set('success', "All scores reset. Deleted {$deleted} score events.");
-admin_redirect('/admin');
+error_log("[admin-scores-reset] wiped {$deleted} score_events + reset all user aggregates" . ($withSeasons ? " + {$seasons} season results" : ''));
+flash_set('success', "All scores reset to 0. Deleted {$deleted} score events" . ($withSeasons ? " and {$seasons} season results" : '') . '.');
+admin_redirect($back);

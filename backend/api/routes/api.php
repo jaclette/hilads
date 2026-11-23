@@ -13494,6 +13494,8 @@ const DAILY_VOTE_ERRORS = [
     'not_found'     => [404, 'Proof not found'],
     'own_proof'     => [403, 'You cannot vote for your own proof.'],
     'voting_closed' => [409, 'Voting closed with the challenge.'],
+    // Scoring v2 switch vote_requires_play (Admin › Scoring): post today's photo to like today's photos.
+    'play_first'    => [403, "Post today's photo to like the others."],
     'vote_limit'    => [409, 'You already used your 3 votes for this challenge.'],
 ];
 
