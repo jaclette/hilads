@@ -44,5 +44,32 @@
       "happyNoCity": "🎃 Selamat Halloween!",
       "tonight": "Siapa yang mau keluar malam ini buat Halloween?"
     }
-  }
+  },
+  "hi": {
+    "title": "Hi {{city}} 👋",
+    "titleWorld": "Hi World 🌍",
+    "here_one": "{{count}} di sini sekarang",
+    "here_other": "{{count}} di sini sekarang",
+    "members_one": "{{count}} anggota",
+    "members_other": "{{count}} anggota",
+    "cities_one": "{{count}} kota",
+    "cities_other": "{{count}} kota",
+    "question": "Pertanyaan hari ini",
+    "answers_one": "{{count}} jawaban",
+    "answers_other": "{{count}} jawaban",
+    "firstAnswer": "Jadilah yang pertama menjawab",
+    "answer": "Jawab",
+    "planCreated": "{{name}} membuat rencana · {{title}}, {{when}}",
+    "unread_one": "{{count}} pesan baru",
+    "unread_other": "{{count}} pesan baru",
+    "newBelow_one": "{{count}} pesan baru di bawah",
+    "newBelow_other": "{{count}} pesan baru di bawah",
+    "latest": "Kembali ke pesan terbaru",
+    "going_one": "{{count}} ikut",
+    "going_other": "{{count}} ikut",
+    "morePlans_one": "{{count}} rencana lagi",
+    "morePlans_other": "{{count}} rencana lagi",
+    "join": "Ikut"
+  },
+  "actionBlock": "Blokir"
 }

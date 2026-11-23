@@ -152,7 +152,12 @@ class MessageRepository
      * @param limit     Page size (1-100, default 50).
      * @return array{ messages: array, hasMore: bool }
      */
-    public static function getByChannel(int|string $channelId, ?string $beforeId = null, int $limit = self::DEFAULT_LIMIT, bool $excludeJoins = false): array
+    /** The Hi chat (2026-11): only conversation rows; challenge cards and arrival / system lines are not shown. */
+    public const CHAT_FILTER = " AND (type IN ('text', 'image') OR (type = 'system' AND event IN ('hi_question', 'plan_created')))";
+    /** Older apps never get the Hi chat's own rows (they would render them as unknown system lines). */
+    public const LEGACY_FILTER = " AND NOT (type = 'system' AND event IN ('hi_question', 'plan_created'))";
+
+    public static function getByChannel(int|string $channelId, ?string $beforeId = null, int $limit = self::DEFAULT_LIMIT, bool $excludeJoins = false, bool $chatOnly = false): array
     {
         $dbChan = self::dbKey($channelId);
         $limit  = max(1, min(self::MAX_LIMIT, $limit));
@@ -163,6 +168,7 @@ class MessageRepository
         // separately (getRecentJoins) for the arrivals bar. No-op for
         // event/topic channels (they have no join rows).
         $joinFilter = $excludeJoins ? " AND NOT (type = 'system' AND event = 'join')" : '';
+        $joinFilter .= $chatOnly ? self::CHAT_FILTER : self::LEGACY_FILTER;
 
         // Fetch messages with a pure index scan - no JOIN inside the LIMIT subquery.
         // The LEFT JOIN to users for retroactive userId resolution is done as a separate

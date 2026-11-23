@@ -44,5 +44,32 @@
       "happyNoCity": "🎃 สุขสันต์วันฮาโลวีน!",
       "tonight": "คืนนี้ใครออกไปเที่ยวฮาโลวีนบ้าง?"
     }
-  }
+  },
+  "hi": {
+    "title": "Hi {{city}} 👋",
+    "titleWorld": "Hi World 🌍",
+    "here_one": "ตอนนี้อยู่ที่นี่ {{count}} คน",
+    "here_other": "ตอนนี้อยู่ที่นี่ {{count}} คน",
+    "members_one": "สมาชิก {{count}} คน",
+    "members_other": "สมาชิก {{count}} คน",
+    "cities_one": "{{count}} เมือง",
+    "cities_other": "{{count}} เมือง",
+    "question": "คำถามประจำวัน",
+    "answers_one": "{{count}} คำตอบ",
+    "answers_other": "{{count}} คำตอบ",
+    "firstAnswer": "เป็นคนแรกที่ตอบ",
+    "answer": "ตอบ",
+    "planCreated": "{{name}} สร้างแพลน · {{title}}, {{when}}",
+    "unread_one": "ข้อความใหม่ {{count}} ข้อความ",
+    "unread_other": "ข้อความใหม่ {{count}} ข้อความ",
+    "newBelow_one": "มีข้อความใหม่ {{count}} ข้อความด้านล่าง",
+    "newBelow_other": "มีข้อความใหม่ {{count}} ข้อความด้านล่าง",
+    "latest": "กลับไปที่ข้อความล่าสุด",
+    "going_one": "ไป {{count}} คน",
+    "going_other": "ไป {{count}} คน",
+    "morePlans_one": "อีก {{count}} แพลน",
+    "morePlans_other": "อีก {{count}} แพลน",
+    "join": "เข้าร่วม"
+  },
+  "actionBlock": "บล็อก"
 }

@@ -1690,9 +1690,7 @@ $router->add('GET', '/api/v1/users/{userId}', function (array $params) {
     $dto = array_merge(
         UserResource::fromUser($user, [], ['isFriend' => $isFriend]),
         [
-            'age'                  => isset($user['birth_year']) && $user['birth_year'] !== null
-                                       ? (int) date('Y') - (int) $user['birth_year']
-                                       : null,
+            // No age: never shown to others (2026-11-23); the owner sees it in their own settings.
             'homeCity'             => $user['home_city'] ?? null,
             'currentCity'          => $currentCityName,
             'currentCityCountry'   => $currentCityCountry,
@@ -3720,10 +3718,16 @@ $router->add('POST', '/api/v1/channels/{channelId}/bootstrap', function (array $
         // city they fill the window and bury real history. Recent arrivals are
         // merged back below (capped) so the arrivals bar still works.
         $tq5a        = microtime(true);
-        $msgResult   = MessageRepository::getByChannel($channelId, $beforeId ?: null, $limit, true);
+        // The rebuilt Hi screen (?chat=1): today's question posted first, chat rows only.
+        $hiChat      = HiQuestions::chatMode();
+        if ($hiChat && ($beforeId ?: null) === null) {
+            HiQuestions::ensure((int) $channelId, CityNames::short(CityRepository::findById((int) $channelId)['name'] ?? null));
+        }
+        $msgResult   = MessageRepository::getByChannel($channelId, $beforeId ?: null, $limit, true, $hiChat);
         $messages    = $msgResult['messages'];
+        if ($hiChat) HiQuestions::decorate($messages);
         $hasMore     = $msgResult['hasMore'];
-        if ($beforeId === null) {
+        if ($beforeId === null && !$hiChat) {
             $recentJoins = MessageRepository::getRecentJoins($channelId, 15);
             if (!empty($recentJoins)) {
                 $messages = array_merge($recentJoins, $messages);
@@ -3858,6 +3862,7 @@ $router->add('POST', '/api/v1/channels/{channelId}/bootstrap', function (array $
             'hasMore'             => $hasMore,
             'onlineUsers'         => [],
             'onlineCount'         => $onlineCount,
+            'hi' => !empty($hiChat) ? HiQuestions::header((int) $channelId) : null,
             'hasUnreadDMs'        => $hasUnreadDMs,
             'unreadNotifications' => $unreadNotifications,
             'currentUser'         => $currentUser,
@@ -3878,6 +3883,7 @@ $router->add('POST', '/api/v1/channels/{channelId}/bootstrap', function (array $
             'msgCount'     => count($messages),
             'badgeUsers'   => $lean ? 0 : count($msgUserIds),
             'onlineCount'  => $onlineCount,
+            'hi' => !empty($hiChat) ? HiQuestions::header((int) $channelId) : null,
             'elapsedMs'    => apiElapsedMs($startedAt),
             'phases_ms'    => [
                 'startup'   => round(($t0 - $startedAt) * 1000, 1),
@@ -4023,7 +4029,10 @@ $router->add('POST', '/api/v1/channels/{channelId}/heartbeat', function (array $
 $router->add('GET', '/api/v1/world/messages', function () {
     $beforeId = isset($_GET['before_id']) && is_string($_GET['before_id']) ? trim($_GET['before_id']) : null;
     $limit    = min(100, max(10, (int) ($_GET['limit'] ?? 50)));
-    $res = MessageRepository::getByChannel(WorldRepository::WORLD_ID, $beforeId ?: null, $limit, false);
+    $hiChat = HiQuestions::chatMode();
+    if ($hiChat && ($beforeId ?: null) === null) HiQuestions::ensure('world', null);
+    $res = MessageRepository::getByChannel(WorldRepository::WORLD_ID, $beforeId ?: null, $limit, false, $hiChat);
+    if ($hiChat) HiQuestions::decorate($res['messages']);
 
     // Enrich author badges + avatar thumbnail + home-country INLINE. The web
     // World client fetches these separately via /message-badges, but the native
@@ -4099,7 +4108,7 @@ $router->add('GET', '/api/v1/world/messages', function () {
         viewerBlockSet($reactViewerUserId, isValidGuestId($reactViewerGuestId) ? $reactViewerGuestId : null)
     );
 
-    Response::json(['messages' => $messages, 'hasMore' => $res['hasMore']]);
+    Response::json(['messages' => $messages, 'hasMore' => $res['hasMore']] + (!empty($hiChat) ? ['hi' => HiQuestions::header('world')] : []));
 });
 
 // Send a message to World. Bots rejected outright (defence-in-depth over the
@@ -4287,10 +4296,16 @@ $router->add('GET', '/api/v1/channels/{channelId}/messages', function (array $pa
         // Exclude "X just landed" join rows from the chat read (they otherwise
         // fill the window and bury real history in low-chat cities); merge a
         // capped set of recent arrivals back on the initial page for the bar.
-        $msgResult   = MessageRepository::getByChannel($channelId, $beforeId ?: null, $limit, true);
+        // The rebuilt Hi screen (?chat=1): today's question posted first, chat rows only.
+        $hiChat      = HiQuestions::chatMode();
+        if ($hiChat && ($beforeId ?: null) === null) {
+            HiQuestions::ensure((int) $channelId, CityNames::short(CityRepository::findById((int) $channelId)['name'] ?? null));
+        }
+        $msgResult   = MessageRepository::getByChannel($channelId, $beforeId ?: null, $limit, true, $hiChat);
         $messages    = $msgResult['messages'];
+        if ($hiChat) HiQuestions::decorate($messages);
         $hasMore     = $msgResult['hasMore'];
-        if ($beforeId === null) {
+        if ($beforeId === null && !$hiChat) {
             $recentJoins = MessageRepository::getRecentJoins($channelId, 15);
             if (!empty($recentJoins)) {
                 $messages = array_merge($recentJoins, $messages);
@@ -4422,6 +4437,7 @@ $router->add('GET', '/api/v1/channels/{channelId}/messages', function (array $pa
             'channelId'   => $channelId,
             'messages'    => count($messages),
             'onlineCount' => $onlineCount,
+            'hi' => !empty($hiChat) ? HiQuestions::header((int) $channelId) : null,
             'elapsedMs'   => apiElapsedMs($startedAt),
             'phases_ms'   => [
                 'msg_fetch'    => round(($tMsg1 - $tMsg0) * 1000, 1),
@@ -4435,6 +4451,7 @@ $router->add('GET', '/api/v1/channels/{channelId}/messages', function (array $pa
             'hasMore'     => $hasMore,
             'onlineUsers' => $onlineUsers,
             'onlineCount' => $onlineCount,
+            'hi' => !empty($hiChat) ? HiQuestions::header((int) $channelId) : null,
         ]);
     } catch (\Throwable $e) {
         apiLog('channel_messages', 'failure', [
@@ -5318,6 +5335,9 @@ $router->add('POST', '/api/v1/channels/{channelId}/events', function (array $par
         error_log("[event-create] FAILED: " . get_class($e) . ': ' . $e->getMessage() . ' in ' . $e->getFile() . ':' . $e->getLine());
         throw $e; // re-throw so global handler returns 500 - but now it's in the logs
     }
+
+    // The Hi chat's "🎉 maxime created a plan" line (read by the rebuilt Hi screen, ?chat=1).
+    HiQuestions::planCreated((int) $channelId, $event, (string) $nickname, $userId);
 
     // Broadcast new_event to WS room so in-app banners appear for all connected users.
     try {
@@ -13769,6 +13789,45 @@ $router->add('GET', '/api/v1/users/{userId}/daily', function (array $params) {
     ]);
 });
 
+// The player profile ("mini Passport", ProfileCard): the same access rule as GET /users/{id}
+// (a registered viewer, not blocked either way). Returns the target user row.
+function profileTarget(array $params): array
+{
+    $userId = $params['userId'] ?? '';
+    if (!preg_match('/^[a-f0-9]{32}$/', $userId)) Response::json(['error' => 'Invalid userId'], 400);
+    $viewer = AuthService::currentUser();
+    if ($viewer === null) Response::json(['error' => 'PROFILE_LOCKED', 'message' => 'Profile access requires registration'], 403);
+    $user = UserRepository::findById($userId);
+    if ($user === null || !empty($user['deleted_at'])
+        || in_array($user['id'], viewerBlockSet($viewer['id'], null)['user_ids'], true)) {
+        Response::json(['error' => 'User not found'], 404);
+    }
+    return [$user, $viewer];
+}
+
+// GET /api/v1/users/{userId}/card - the profile's game summary: daily wins, this season's
+// ranks (city + World, as World › Players), the crown, the first photos (best first), and the
+// viewer vs the player (score + the 3 latest duels; none on my own profile).
+$router->add('GET', '/api/v1/users/{userId}/card', function (array $params) {
+    [$user, $viewer] = profileTarget($params);
+    $out = ProfileCard::card($user['id'], $viewer['id']);
+    $out['duels'] = $viewer['id'] !== $user['id'] ? ProfileCard::duels($viewer['id'], $user['id'], 3) : null;
+    Response::json($out);
+});
+
+// GET /api/v1/users/{userId}/photos?offset= - the player's photos, best first, a page at a time ("See all").
+$router->add('GET', '/api/v1/users/{userId}/photos', function (array $params) {
+    [$user, $viewer] = profileTarget($params);
+    Response::json(ProfileCard::photos($user['id'], $viewer['id'], max(0, (int) ($_GET['offset'] ?? 0)), 30));
+});
+
+// GET /api/v1/users/{userId}/duels?offset= - every duel between the viewer and the player (the face-off).
+$router->add('GET', '/api/v1/users/{userId}/duels', function (array $params) {
+    [$user, $viewer] = profileTarget($params);
+    if ($viewer['id'] === $user['id']) Response::json(['me' => 0, 'them' => 0, 'total' => 0, 'duels' => [], 'nextOffset' => null]);
+    Response::json(ProfileCard::duels($viewer['id'], $user['id'], 20, max(0, (int) ($_GET['offset'] ?? 0))));
+});
+
 // GET /api/v1/me/invite - my invite link and this season's crew (the Passport's "Bring your crew" card).
 $router->add('GET', '/api/v1/me/invite', function () {
     $user = AuthService::requireAuth();
@@ -14375,8 +14434,10 @@ $router->add('POST', '/api/v1/messages/{id}/report', function (array $params) {
     ");
     $st->execute([(string) $params['id']]);
     $msg = $st->fetch(PDO::FETCH_ASSOC);
-    if (!$msg || $msg['type'] !== 'image' || $msg['image_url'] === null || $msg['deleted_at'] !== null) {
-        Response::json(['error' => 'Photo not found', 'code' => 'not_found'], 404);
+    // Photos, and since the Hi chat rebuild (2026-11-23) text messages too.
+    $isPhoto = $msg && $msg['type'] === 'image' && $msg['image_url'] !== null;
+    if (!$msg || (!$isPhoto && $msg['type'] !== 'text') || $msg['deleted_at'] !== null) {
+        Response::json(['error' => 'Message not found', 'code' => 'not_found'], 404);
     }
     if (($user !== null && $msg['user_id'] === $user['id']) || ($guestId !== null && $msg['guest_id'] === $guestId)) {
         Response::json(['error' => 'You cannot report your own photo.', 'code' => 'own_photo'], 422);
@@ -14399,6 +14460,11 @@ $router->add('POST', '/api/v1/messages/{id}/report', function (array $params) {
     $hidden = $count >= PhotoWatch::REPORT_HIDE_THRESHOLD;
     if ($hidden) {
         $pdo->prepare("UPDATE messages SET image_url = NULL, deleted_at = now() WHERE id = ? AND deleted_at IS NULL")->execute([$msg['id']]);
+    }
+    if (!$isPhoto) {
+        // A text message: hidden at the same threshold; listed in Admin › Reports via message_reports.
+        apiLog('chat', 'message reported', ['message' => $msg['id'], 'count' => $count, 'hidden' => $hidden, 'reason' => $reason]);
+        Response::json(['ok' => true, 'hidden' => $hidden], 201);
     }
     $label = ['city' => 'chat', 'event' => 'Hi plan', 'topic' => 'Hi now', 'challenge' => 'challenge', 'world' => 'World chat'][$msg['channel_type'] ?? ''] ?? 'chat';
     $where = ($msg['channel_type'] ?? '') === 'world' ? $label : trim(($msg['channel_name'] ?? '') . ' ' . $label);

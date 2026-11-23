@@ -44,5 +44,32 @@
       "happyNoCity": "🎃 万圣节快乐！",
       "tonight": "今晚谁出去过万圣节？"
     }
-  }
+  },
+  "hi": {
+    "title": "Hi {{city}} 👋",
+    "titleWorld": "Hi World 🌍",
+    "here_one": "{{count}} 人在线",
+    "here_other": "{{count}} 人在线",
+    "members_one": "{{count}} 位成员",
+    "members_other": "{{count}} 位成员",
+    "cities_one": "{{count}} 座城市",
+    "cities_other": "{{count}} 座城市",
+    "question": "今日问题",
+    "answers_one": "{{count}} 条回答",
+    "answers_other": "{{count}} 条回答",
+    "firstAnswer": "抢先回答",
+    "answer": "回答",
+    "planCreated": "{{name}} 创建了一个计划 · {{title}}，{{when}}",
+    "unread_one": "{{count}} 条新消息",
+    "unread_other": "{{count}} 条新消息",
+    "newBelow_one": "下面有 {{count}} 条新消息",
+    "newBelow_other": "下面有 {{count}} 条新消息",
+    "latest": "回到最新消息",
+    "going_one": "{{count}} 人参加",
+    "going_other": "{{count}} 人参加",
+    "morePlans_one": "还有 {{count}} 个计划",
+    "morePlans_other": "还有 {{count}} 个计划",
+    "join": "参加"
+  },
+  "actionBlock": "拉黑"
 }

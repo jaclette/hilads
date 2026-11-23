@@ -147,5 +147,32 @@
       "happyNoCity": "🎃 Fijne Halloween!",
       "tonight": "Wie gaat er vanavond uit voor Halloween?"
     }
-  }
+  },
+  "hi": {
+    "title": "Hi {{city}} 👋",
+    "titleWorld": "Hi World 🌍",
+    "here_one": "{{count}} nu hier",
+    "here_other": "{{count}} nu hier",
+    "members_one": "{{count}} lid",
+    "members_other": "{{count}} leden",
+    "cities_one": "{{count}} stad",
+    "cities_other": "{{count}} steden",
+    "question": "Vraag van de dag",
+    "answers_one": "{{count}} antwoord",
+    "answers_other": "{{count}} antwoorden",
+    "firstAnswer": "Antwoord als eerste",
+    "answer": "Antwoorden",
+    "planCreated": "{{name}} maakte een plan · {{title}}, {{when}}",
+    "unread_one": "{{count}} nieuw bericht",
+    "unread_other": "{{count}} nieuwe berichten",
+    "newBelow_one": "{{count}} nieuw bericht hieronder",
+    "newBelow_other": "{{count}} nieuwe berichten hieronder",
+    "latest": "Naar de nieuwste berichten",
+    "going_one": "{{count}} gaat",
+    "going_other": "{{count}} gaan",
+    "morePlans_one": "nog {{count}} plan",
+    "morePlans_other": "nog {{count}} plannen",
+    "join": "Meedoen"
+  },
+  "actionBlock": "Blokkeren"
 }

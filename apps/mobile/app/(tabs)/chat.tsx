@@ -23,7 +23,6 @@ import { useRouter, useFocusEffect } from 'expo-router';
 import { consumeCityFeedRefresh } from '@/lib/cityFeedRefresh';
 import { consumeWorldScopeOpen } from '@/lib/worldScopeOpen';
 import { useScope } from '@/context/ScopeContext';
-import { PeopleRow } from '@/features/chat/PeopleRow';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
@@ -42,7 +41,6 @@ import { ChatInput } from '@/features/chat/ChatInput';
 import { MessageActionSheet } from '@/features/chat/MessageActionSheet';
 import { ArrivalsSheet } from '@/features/chat/ArrivalsSheet';
 import * as Clipboard from 'expo-clipboard';
-import { DailyPinBar } from '@/features/daily/DailyPinBar';
 import { useDailyToday } from '@/hooks/useDaily';
 import { isDailyCard } from '@/lib/dailyEvents';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
@@ -52,6 +50,9 @@ import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { shareLink } from '@/lib/shareLink';
 import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 import { useEventFeature } from '@/features/event/seasonal';
+import { NextPlanRow, PlanLine, QuestionCard, ScrollToLatest, UnreadMarker } from '@/features/chat/HiRows';
+import { MessagesButton } from '@/features/messages/MessagesButton';
+import type { HiHeader } from '@/api/channels';
 
 // ── EventBannerStrip - ephemeral overlay above the input ─────────────────────
 // Appears when a new event is broadcast via WS. Auto-dismissed after 10 s.
@@ -114,6 +115,11 @@ export default function ChatTab() {
     bootstrapData,
   } = useApp();
   const nickname = account?.display_name ?? identity?.nickname ?? '';
+  // The Hi chat (2026-11-23 rebuild): the header's live counts, the unread marker, scroll-to-latest.
+  const [hiCounts, setHiCounts] = useState<HiHeader | null>(null);
+  const [unreadMark, setUnreadMark] = useState(0);
+  const [awayFromLatest, setAwayFromLatest] = useState(false);
+  const [newBelow, setNewBelow] = useState(0);
 
   // Online count - fallback "live now" until presence data arrives.
   //   presenceSnapshot   → sent only to US when we (re)join the room (initial value)
@@ -312,7 +318,10 @@ export default function ChatTab() {
 
   const loadFn = useCallback(
     (opts?: { beforeId?: string }) =>
-      channelScope === 'world' ? fetchWorldMessages(opts) : fetchMessages(channelId, opts),
+      (channelScope === 'world' ? fetchWorldMessages(opts) : fetchMessages(channelId, opts)).then(r => {
+        if (!opts?.beforeId && r.hi) setHiCounts(r.hi);
+        return r;
+      }),
     [channelId, channelScope],
   );
 
@@ -336,6 +345,8 @@ export default function ChatTab() {
   // Use pre-loaded data from the bootstrap endpoint if available for the current channel.
   // Only for the city scope - World has no bootstrap payload.
   const chatBootstrap = channelScope === 'city' && bootstrapData?.channelId === channelId ? bootstrapData : undefined;
+  // The header's counts from the boot payload when the first page came from it.
+  useEffect(() => { if (chatBootstrap?.hi) setHiCounts(h => h ?? chatBootstrap.hi ?? null); }, [chatBootstrap]);
 
   const { messages, loading, loadingOlder, hasMore, sending, error, clearError, sendText, sendImage, loadOlder, setMessageReactions, editMessage, deleteMessage, reload } = useMessages({
     channelId: activeChannelId,
@@ -355,6 +366,9 @@ export default function ChatTab() {
   useEffect(() => {
     if (firstScope.current) { firstScope.current = false; return; }
     const scope = channelScope;
+    // Where the unread ones start, until the next switch.
+    setUnreadMark(scope === 'world' ? worldUnread : cityUnread);
+    setHiCounts(null);
     if (scope === 'world') {
       track('world_channel_viewed');
       setWorldUnread(0);
@@ -396,6 +410,7 @@ export default function ChatTab() {
     fetchUnread([channelId, 'world'], identity.guestId).then(u => {
       setCityUnread(Math.min(u[String(channelId)] ?? 0, 999));
       setWorldUnread(Math.min(u.world ?? 0, 999));
+      setUnreadMark(m => m || Math.min((channelScope === 'world' ? u.world : u[String(channelId)]) ?? 0, 999));
     }).catch(() => {});
   }, [sessionId, identity?.guestId, channelId]);
 
@@ -503,83 +518,7 @@ export default function ChatTab() {
     }
   }, [messages, account, identity]);
 
-  function realMessageCount() {
-    return messagesRef.current.filter(m => m.type === 'text' || m.type === 'image').length;
-  }
-
-  function scheduleActivity(isFirst = false) {
-    if (activityTimerRef.current) clearTimeout(activityTimerRef.current);
-    const delay = isFirst ? 30_000 : 60_000 + Math.random() * 60_000;
-    activityTimerRef.current = setTimeout(() => {
-      if (!isActiveRef.current) return;
-      if (realMessageCount() < 3) {
-        const ambient = i18n.t('ambient', { ns: 'chat', returnObjects: true }) as string[];
-        const text = ambient[Math.floor(Math.random() * ambient.length)];
-        setPromptItems(prev => [...prev, {
-          id:        `act-${Date.now()}`,
-          type:      'activity' as const,
-          subtype:   'crowd',
-          content:   text,
-          nickname:  '',
-          createdAt: Date.now() / 1000,
-        }]);
-      }
-      scheduleActivity();
-    }, delay);
-  }
-
-  function schedulePrompts() {
-    const t1 = setTimeout(() => {
-      if (!isActiveRef.current || promptsShownRef.current.has('explore')) return;
-      if (realMessageCount() > 0) return; // only inject if feed is still empty
-      promptsShownRef.current.add('explore');
-      setPromptItems(prev => [...prev, {
-        id: `prompt-explore-${Date.now()}`, type: 'prompt' as const,
-        subtype: 'explore', content: i18n.t('promptExplore', { ns: 'chat' }), cta: i18n.t('promptExploreCta', { ns: 'chat' }),
-        nickname: '', createdAt: Date.now() / 1000,
-      }]);
-    }, 15_000);
-
-    const t2 = setTimeout(() => {
-      if (!isActiveRef.current || promptsShownRef.current.has('photo')) return;
-      if (realMessageCount() >= 3) return;
-      promptsShownRef.current.add('photo');
-      setPromptItems(prev => [...prev, {
-        id: `prompt-photo-${Date.now()}`, type: 'prompt' as const,
-        subtype: 'photo', content: i18n.t('promptPhoto', { ns: 'chat' }), cta: i18n.t('promptPhotoCta', { ns: 'chat' }),
-        nickname: '', createdAt: Date.now() / 1000,
-      }]);
-    }, 30_000);
-
-    const t3 = setTimeout(() => {
-      if (!isActiveRef.current || promptsShownRef.current.has('create-event')) return;
-      if (realMessageCount() >= 3) return;
-      promptsShownRef.current.add('create-event');
-      setPromptItems(prev => [...prev, {
-        id: `prompt-create-${Date.now()}`, type: 'prompt' as const,
-        subtype: 'create-event', content: i18n.t('promptCreate', { ns: 'chat' }), cta: i18n.t('promptCreateCta', { ns: 'chat' }),
-        nickname: '', createdAt: Date.now() / 1000,
-      }]);
-    }, 60_000);
-
-    promptTimersRef.current.push(t1, t2, t3);
-  }
-
-  // A reminder card finished fading (mount-guarded on the card) → drop it from
-  // the feed and pulse the NOW tab once. Removal alone reflows the list - no
-  // LayoutAnimation (unreliable on an inverted, virtualized list) and no animated
-  // height collapse (it crashed when the cell was removed mid-animation); a tiny
-  // non-animated reflow is the safe trade. The id lives in exactly one of the
-  // three arrays; filtering all three is harmless + simple.
-  // useCallback so the memoized renderItem (and React.memo'd rows) stay stable
-  // across the frequent presence/WS re-renders of this screen.
   const handleAutoDismiss = useCallback((id: string) => {
-    // Only the chat prompts (e.g. "Learn how challenges work") still
-    // ride the in-feed auto-dismiss path. The event / hangout /
-    // challenge pills are no longer rendered inline - they're folded
-    // into the single persistent activity counter above the FlatList -
-    // so dismissal there is moot. pulseNow() was the NOW tab's bump
-    // animation; both the pulse and its driver are gone.
     setPromptItems(prev => prev.some(p => p.id === id) ? prev.filter(p => p.id !== id) : prev);
   }, []);
 
@@ -611,8 +550,8 @@ export default function ChatTab() {
     promptTimersRef.current.forEach(clearTimeout);
     promptTimersRef.current = [];
 
-    scheduleActivity(true);
-    schedulePrompts();
+    // The Hi chat is a pure chat since 2026-11-23: no local prompts or ambient lines (the
+    // question of the day and the quick replies above the composer get a quiet chat going).
 
     return () => {
       isActiveRef.current = false;
@@ -660,9 +599,21 @@ export default function ChatTab() {
       // placeholder; private conversations keep it).
       && !m.deletedAt
     );
-    return [...chat, ...promptItems]
-      .sort((a, b) => toMs(b.createdAt) - toMs(a.createdAt));
-  }, [messages, promptItems]);
+    const sorted = chat.sort((a, b) => toMs(b.createdAt) - toMs(a.createdAt));
+    // The unread marker above the newest unread ones (a local row, never sent).
+    if (unreadMark > 0 && unreadMark < sorted.length) {
+      sorted.splice(unreadMark, 0, { type: 'unread_marker', localId: 'unread-marker', content: String(unreadMark),
+                                     createdAt: sorted[unreadMark - 1]?.createdAt } as unknown as Message);
+    }
+    return sorted;
+  }, [messages, unreadMark]);
+  // New messages while scrolled up: counted on the scroll-to-latest button.
+  const newestId = messages[messages.length - 1]?.id;
+  const prevNewest = useRef<string | undefined>(undefined);
+  useEffect(() => {
+    if (prevNewest.current && newestId && newestId !== prevNewest.current && awayFromLatest) setNewBelow(n => n + 1);
+    prevNewest.current = newestId;
+  }, [newestId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Counts that feed the persistent activity pills. Pulled from the
   // same state arrays we used to inject pills into the feed - we keep
@@ -785,6 +736,13 @@ export default function ChatTab() {
   // that changes on a presence tick - only message-list / highlight / handler
   // changes recompute it.
   const renderMessage = useCallback(({ item, index }: { item: Message; index: number }) => {
+    // The Hi chat's own rows: the question of the day, a plan created, the unread marker.
+    if ((item.type as string) === 'unread_marker') return <UnreadMarker count={Number(item.content ?? 0)} />;
+    if (item.type === 'system' && item.event === 'hi_question') {
+      return <QuestionCard message={item} world={channelScope === 'world'}
+                           onAnswer={() => { handleReply(item); track('hi_question_answer', { scope: channelScope }); }} />;
+    }
+    if (item.type === 'system' && item.event === 'plan_created') return <PlanLine message={item} />;
     const olderMsg = allMessages[index + 1]; // older (higher index in inverted list)
     const newerMsg = allMessages[index - 1]; // newer (lower index)
     const isGrouped =
@@ -875,24 +833,22 @@ export default function ChatTab() {
 
         {/* ── Header: "Hi" with a back button (a screen of the city since the UX audit, opened
             from Today; back returns there), share the city, private messages. ── */}
-        <ScreenHeader title={t('tabTitle')} right={
-          <View style={styles.headerButtons}>
-            <IconButton icon="share-outline" iconSize={20} label={t('shareCity')} onPress={async () => {
-              // Locale-prefixed URL (Option A) so the link preview (OG tags -
-              // all Android shares show) renders in the sharer's language.
-              const url     = buildCityUrl(city.slug);
-              const title   = t('shareTitle', { city: localizeCityName(city.name) });
-              const message = t('shareMessage', { city: localizeCityName(city.name) });
-              await shareLink({ title, message, url });
-            }} />
-            {/* Private messages, with the unread dot; a guest is asked to sign up. */}
-            <IconButton icon="chatbubbles-outline" iconSize={20} label={t('messages', { ns: 'common' })} badge={!!account && unreadDMs > 0} testID="hi-messages"
-                        onPress={() => {
-                          if (!account) { router.push('/auth-gate?reason=send_dm&returnTo=%2Fmessages' as never); return; }
-                          setUnreadDMs(0); clearEventChatCounts(); router.push('/messages');
-                        }} />
-          </View>
-        } />
+        {/* "Hi Saigon 👋" with the live presence ("12 here now · 348 members"), back, the DM inbox. */}
+        <ScreenHeader
+          title={channelScope === 'world' ? t('hi.titleWorld') : t('hi.title', { city: shortCityName(city.name) })}
+          subtitle={hiCounts ? [
+            (hiCounts.here ?? 0) > 0 ? t('hi.here', { count: hiCounts.here }) : null,
+            channelScope === 'world' ? ((hiCounts.cities ?? 0) > 0 ? t('hi.cities', { count: hiCounts.cities }) : null)
+              : ((hiCounts.members ?? 0) > 0 ? t('hi.members', { count: hiCounts.members }) : null),
+          ].filter(Boolean).join(' · ') || undefined : undefined}
+          right={
+            <View style={styles.headerButtons} testID="hi-messages">
+              <MessagesButton onPress={() => {
+                if (!account) { router.push('/auth-gate?reason=send_dm&returnTo=%2Fmessages' as never); return; }
+                router.push('/messages');
+              }} />
+            </View>
+          } />
 
         {/* ── City / World switch (the app-wide scope). Tapping the active city
             changes city. Symmetric unread badges. ── */}
@@ -907,16 +863,9 @@ export default function ChatTab() {
           />
         </View>
 
-        {/* ── People row (SPEC 9.6): only above the threshold. World shows its
-            arrivals from 3 on. ── */}
-        {channelScope === 'city' ? (
-          channelId ? <View style={styles.inset}><PeopleRow cityId={String(channelId)} onArrivals={() => setArrivalsSheetOpen(true)} /></View> : null
-        ) : worldArrivals.length >= 3 ? (
-          <View style={styles.inset}>
-            <TouchableOpacity style={styles.peopleChip} onPress={() => setShowWorldArrivals(true)} accessibilityRole="button">
-              <Text style={styles.peopleChipText}>{t('world.arrivals', { count: worldArrivals.length })}</Text>
-            </TouchableOpacity>
-          </View>
+        {/* The city's next plan in one row ("+N more" opens the plans list). */}
+        {channelScope === 'city' && channelId ? (
+          <View style={styles.inset}><NextPlanRow channelId={String(channelId)} guestId={identity?.guestId ?? null} nickname={nickname} /></View>
         ) : null}
 
       </View>
@@ -935,23 +884,7 @@ export default function ChatTab() {
         style={styles.flex}
         behavior="padding"
       >
-        {/* Today's Daily Challenge pinned on top of the city and World: slim once scrolled, a "You played" pill once played. */}
-        {!keyboardUp && <DailyPinBar data={daily.data} source="chat_pin" compact={pinCompact} />}
-        {channelScope === 'city' && quietCardOpen && (
-          <TouchableOpacity
-            style={styles.quietCard}
-            activeOpacity={0.85}
-            accessibilityRole="button"
-            onPress={() => {
-              track('quiet_city_card_tapped', { city_id: channelId });
-              quietCardDismissed.current = true;
-              setQuietCardOpen(false);
-              switchScope('world');
-            }}
-          >
-            <Text style={styles.quietCardText} numberOfLines={2}>{t('world.quietCard', { count: worldUnread })}</Text>
-          </TouchableOpacity>
-        )}
+        {/* Hi is a pure chat: no challenge pin, no quiet-city card (the question of the day keeps it going). */}
         {loading ? (
           <View style={styles.center}>
             <ActivityIndicator color={colors.primary} />
@@ -976,7 +909,12 @@ export default function ChatTab() {
             initialNumToRender={12}
             removeClippedSubviews
             contentContainerStyle={styles.listContent}
-            onScroll={e => { const up = e.nativeEvent.contentOffset.y > 60; setPinCompact(v => (v === up ? v : up)); }}
+            onScroll={e => {
+              const y = e.nativeEvent.contentOffset.y;
+              const away = y > 600;
+              setAwayFromLatest(v => (v === away ? v : away));
+              if (!away) setNewBelow(0);
+            }}
             scrollEventThrottle={100}
             keyboardShouldPersistTaps="handled"
             onEndReached={hasMore ? loadOlder : undefined}
@@ -998,6 +936,9 @@ export default function ChatTab() {
               </View>
             }
           />
+          {awayFromLatest && (
+            <ScrollToLatest count={newBelow} onPress={() => { flatListRef.current?.scrollToOffset({ offset: 0, animated: true }); setNewBelow(0); }} />
+          )}
           {/* Soft fade at the list's top edge, so a bubble cut by the scroll
               (only its timestamp left) reads as "more above". */}
           <View pointerEvents="none" style={styles.topFade}>
@@ -1007,14 +948,6 @@ export default function ChatTab() {
         )}
 
         {/* ── Ephemeral event banners - slide in above input, auto-dismissed ── */}
-        {eventBanners.map(banner => (
-          <EventBannerStrip
-            key={banner.id}
-            title={banner.title}
-            eventId={banner.id}
-            onDismiss={() => dismissBanner(banner.id)}
-          />
-        ))}
 
         {/* ── Guest @mention nudge - discreet, non-blocking signup prompt ── */}
         {mentionNudge && !account && (
@@ -1034,7 +967,7 @@ export default function ChatTab() {
 
         {/* A quiet city chat today: three ways to start, prefilled in the composer. An event's day
             (its chat chips on) shows its own, in any city chat. */}
-        {channelScope === 'city' && !keyboardUp && !loading && (quietToday || !!chatEvent) && (
+        {!keyboardUp && !loading && (quietToday || (channelScope === 'city' && !!chatEvent)) && (
           <QuickStart city={city?.name ? shortCityName(city.name) : null} themeKey={daily.data?.challenge?.theme?.key ?? null}
                       eventKey={chatEvent?.key ?? null} onPick={text => setPrefill({ text, key: Date.now() })} />
         )}

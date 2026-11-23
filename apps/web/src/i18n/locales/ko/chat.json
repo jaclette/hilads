@@ -44,5 +44,32 @@
       "happyNoCity": "🎃 해피 할로윈!",
       "tonight": "오늘 밤 할로윈 즐기러 나가는 사람 있어요?"
     }
-  }
+  },
+  "hi": {
+    "title": "Hi {{city}} 👋",
+    "titleWorld": "Hi World 🌍",
+    "here_one": "지금 {{count}}명",
+    "here_other": "지금 {{count}}명",
+    "members_one": "멤버 {{count}}명",
+    "members_other": "멤버 {{count}}명",
+    "cities_one": "도시 {{count}}곳",
+    "cities_other": "도시 {{count}}곳",
+    "question": "오늘의 질문",
+    "answers_one": "답변 {{count}}개",
+    "answers_other": "답변 {{count}}개",
+    "firstAnswer": "첫 답변을 남겨 보세요",
+    "answer": "답하기",
+    "planCreated": "{{name}} 님이 플랜을 만들었어요 · {{title}}, {{when}}",
+    "unread_one": "새 메시지 {{count}}개",
+    "unread_other": "새 메시지 {{count}}개",
+    "newBelow_one": "아래에 새 메시지 {{count}}개",
+    "newBelow_other": "아래에 새 메시지 {{count}}개",
+    "latest": "최신 메시지로",
+    "going_one": "{{count}}명 참여",
+    "going_other": "{{count}}명 참여",
+    "morePlans_one": "플랜 {{count}}개 더",
+    "morePlans_other": "플랜 {{count}}개 더",
+    "join": "참여"
+  },
+  "actionBlock": "차단"
 }

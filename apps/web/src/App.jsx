@@ -7,7 +7,7 @@ import { CityFlag, CityName } from './components/CityName'
 import HeaderArt from './components/HeaderArt'
 import { track, trackDeferred, identifyUser, setAnalyticsContext, resetAnalytics } from './lib/analytics'
 import { requestFeatureLocation } from './lib/gpsFeature'
-import { createGuestSession, resolveLocation, reverseGeocodeCountry, fetchMessages, fetchLeanMessages, sendMessage, fetchChannels, fetchMessageBadges, joinChannel, uploadImage, sendImageMessage, fetchEvents, fetchCityEvents, fetchCityTopics, fetchNowFeed, fetchUpcomingEvents, createTopic, fetchCityMembers, fetchCityAmbassadors, fetchEventMessages, sendEventMessage, sendEventImageMessage, fetchEventParticipants, fetchEventGoingList, toggleEventParticipation, authMe, authLogout, deleteAccount, createOrGetDirectConversation, fetchConversations, fetchConversationsUnread, markEventRead, fetchCityBySlug, fetchEventById, fetchTopicById, fetchChallengeById, fetchShowcaseItem, createChallenge, fetchCityChallenges, fetchEventInspiration, fetchUnreadCount, fetchMyEvents, deleteEvent, fetchUserEvents, fetchUserFriends, authForgotPassword, authValidateResetToken, authResetPassword, toggleChannelReaction, fetchCanCreateEvent, EventLimitReachedError, fetchHangoutParticipants, updateTopic, deleteTopic, setCurrentCity, editChannelMessage, deleteChannelMessage, editDmMessage, deleteDmMessage, fetchWorldMessages, sendWorldMessage, toggleWorldReaction, fetchWorldActivity, fetchWorldArrivals, markChannelRead, fetchUnread, fetchQuietContext, fetchDailyProofStates, prefetchDailyToday } from './api'
+import { createGuestSession, resolveLocation, reverseGeocodeCountry, fetchMessages, fetchLeanMessages, sendMessage, fetchChannels, fetchMessageBadges, joinChannel, uploadImage, sendImageMessage, fetchEvents, fetchCityEvents, fetchCityTopics, fetchNowFeed, fetchUpcomingEvents, createTopic, fetchCityMembers, fetchCityAmbassadors, fetchEventMessages, sendEventMessage, sendEventImageMessage, fetchEventParticipants, fetchEventGoingList, toggleEventParticipation, authMe, authLogout, deleteAccount, createOrGetDirectConversation, fetchConversations, fetchConversationsUnread, markEventRead, fetchCityBySlug, fetchEventById, fetchTopicById, fetchChallengeById, fetchShowcaseItem, createChallenge, fetchCityChallenges, fetchEventInspiration, fetchUnreadCount, fetchMyEvents, deleteEvent, fetchUserEvents, fetchUserFriends, authForgotPassword, authValidateResetToken, authResetPassword, toggleChannelReaction, fetchCanCreateEvent, EventLimitReachedError, fetchHangoutParticipants, updateTopic, deleteTopic, setCurrentCity, editChannelMessage, deleteChannelMessage, editDmMessage, deleteDmMessage, fetchWorldMessages, sendWorldMessage, toggleWorldReaction, fetchWorldActivity, fetchWorldArrivals, markChannelRead, fetchUnread, fetchQuietContext, fetchDailyProofStates, prefetchDailyToday , onHiHeader } from './api'
 import EventLimitReachedScreen from './components/EventLimitReachedScreen'
 import Lightbox from './components/Lightbox'
 import { ArrivalsBar, ArrivalsSheet } from './components/ArrivalsBar'
@@ -18,6 +18,7 @@ import { openAppModal } from './components/AppModal'
 import TodayScreen, { preloadTodayHero } from './components/today/TodayScreen'
 import { LogoHat, SeasonalDayIcon, TabGhost, useEventFeature, useSeasonalLive } from './components/event/seasonal'
 import PassportScreen from './components/passport/PassportScreen'
+import { NextPlanRow, PlanLine, QuestionCard, ScrollToLatest } from './components/chat/HiRows'
 import SeasonResultGate from './components/SeasonResultGate'
 import { FriendsScreen, MyPhotosScreen, MySpotsScreen } from './components/passport/FriendsScreens'
 import CalendarScreen from './components/daily/CalendarScreen'
@@ -850,6 +851,9 @@ function toFeedItem(m, staggerDelay, lastJoinAtRef = null) {
   if (m.type === 'system' && (m.event === 'daily_challenge' || m.event === 'daily_proof' || m.event === 'daily_proof_group')) {
     return { type: 'daily', subtype: m.event, id: m.id || `daily_${m.createdAt}`, payload: m.payload || {}, nickname: m.nickname, userId: m.userId ?? null, createdAt: m.createdAt }
   }
+  // The Hi chat's own rows: the question of the day, a plan created.
+  if (m.type === 'system' && m.event === 'hi_question') return { type: 'hi_question', id: m.id, content: m.content, payload: m.payload || {}, nickname: m.nickname, createdAt: m.createdAt }
+  if (m.type === 'system' && m.event === 'plan_created') return { type: 'plan_line', id: m.id, content: m.content, payload: m.payload || {}, nickname: m.nickname, createdAt: m.createdAt }
   // Guard: any other system message that slips through has no nickname - skip it rather than crash.
   if (m.type === 'system') {
     console.warn('[feed] unhandled system message - skipping:', m)
@@ -1122,6 +1126,10 @@ export default function App() {
   const [showEmoji, setShowEmoji] = useState(false)
   const [sending, setSending] = useState(false)
   const [replyingTo, setReplyingTo] = useState(null)   // { id, nickname, content, type }
+  // The Hi chat (2026-11-23): the header's live counts, scroll-to-latest.
+  const [hiCounts, setHiCounts] = useState({})
+  useEffect(() => onHiHeader((scope, hi) => setHiCounts(c => ({ ...c, [scope]: hi }))), [])
+  const [awayFromLatest, setAwayFromLatest] = useState(false)
   // Edit mode - { id, content, surface: 'channel'|'dm' } | null. Pre-fills the
   // input; handleSend dispatches to the right edit endpoint instead of sending
   // a new message. Reply and edit are mutually exclusive.
@@ -2510,6 +2518,7 @@ export default function App() {
     const handleScroll = () => {
       const dist = container.scrollHeight - container.scrollTop - container.clientHeight
       isNearBottomRef.current = dist < 150
+      setAwayFromLatest(dist > 600)
 
       // Toggle the event-header collapsed class once the user scrolls past a
       // small threshold. Using a ref-guarded setState avoids re-renders on
@@ -3202,9 +3211,8 @@ export default function App() {
       if (openScreenOnJoinRef.current === 'leaderboard')   { openRanks(ranksFromLeaderboard(leaderboardScope, leaderboardPeriod));  openScreenOnJoinRef.current = null }
 
       activeRef.current = true
-      scheduleActivity(true)
+      // Hi is a pure chat since 2026-11-23: no local prompts or ambient lines.
       promptsShownRef.current = new Set()
-      schedulePrompts()
 
       // ── Socket: real-time presence ───────────────────────────────────────────
       const socket = socketRef.current ?? createSocket()
@@ -4465,9 +4473,8 @@ export default function App() {
       }
 
       activeRef.current = true
-      scheduleActivity(true)
+      // Hi is a pure chat since 2026-11-23: no local prompts or ambient lines.
       promptsShownRef.current = new Set()
-      schedulePrompts()
 
       // Socket: join new room - existing handlers (set up in handleJoin) remain active
       socketRef.current?.joinRoom(newChannelId, sessionIdRef.current, activeNickname, accountRef.current?.id ?? null, accountRef.current?.mode ?? 'exploring', guestIdRef.current)
@@ -5453,8 +5460,15 @@ export default function App() {
                   <BackButton onClick={goToTodayTab} />
                   <HeaderArt kind="hi" />
                   <div className="tab-heading">
-                    <h1 className="chat-title">{t('tabTitle', { ns: 'chat' })}</h1>
-                    <p className="tab-subtitle">{t('subtitles.hi', { ns: 'common' })}</p>
+                    {/* "Hi Saigon 👋" with the live presence ("12 here now · 348 members"). */}
+                    <h1 className="chat-title">{channelScope === 'world' ? t('hi.titleWorld', { ns: 'chat' }) : t('hi.title', { ns: 'chat', city: city ? shortCityName(city.name) : '' })}</h1>
+                    <p className="tab-subtitle">{(() => {
+                      const h = hiCounts[channelScope === 'world' ? 'world' : 'city'] || {}
+                      return [
+                        h.here > 0 ? t('hi.here', { ns: 'chat', count: h.here }) : null,
+                        channelScope === 'world' ? (h.cities > 0 ? t('hi.cities', { ns: 'chat', count: h.cities }) : null) : (h.members > 0 ? t('hi.members', { ns: 'chat', count: h.members }) : null),
+                      ].filter(Boolean).join(' · ') || t('subtitles.hi', { ns: 'common' })
+                    })()}</p>
                   </div>
                   {city && (
                     <button type="button" className="v3-round" onClick={() => share(composeCityShare(city))} aria-label={t('shareCity', { ns: 'chat' })}>
@@ -5499,26 +5513,18 @@ export default function App() {
         {/* ── The app's Chat (W3, SPEC 9.6): the people row (only above the
             threshold; World shows its arrivals from 3 on), then today's Daily
             Challenge pinned in both scopes. ── */}
+        {/* The city's next plan in one row ("+N more" opens the plans list); Hi is a pure chat (no pin, no pills). */}
         {city && !activeEvent && channelScope === 'city' && channelId && (
-          <PeopleRow
-            cityId={channelId}
-            onHiNow={goToEventsTab}
-            onPlan={(id) => fetchEventById(id).then(d => { if (d?.event) handleSelectEvent(d.event) }).catch(() => {})}
-            onArrivals={() => setShowArrivalsSheet(true)}
-            onNearby={() => { setShowPeopleDrawer(true); setViewingProfile(null) }}
-          />
+          <NextPlanRow channelId={channelId} guestId={guest?.guestId ?? null} sessionId={sessionIdRef.current}
+                       onOpen={(id) => fetchEventById(id).then(d => { if (d?.event) handleSelectEvent(d.event) }).catch(() => {})}
+                       onAll={goToEventsTab} />
         )}
-        {city && channelScope === 'world' && worldArrivals.length >= 3 && (
-          <div className="people-row">
-            <button type="button" className="people-chip" onClick={() => setShowWorldArrivals(true)}>
-              {t('world.arrivals', { count: worldArrivals.length })}
-            </button>
-          </div>
-        )}
-        {city && !activeEvent && <DailyPinBar key={`${channelScope}:${channelId}`} compact={pinCompact} onToday={setDailyToday} />}
 
+        {awayFromLatest && !activeEvent && (
+          <ScrollToLatest count={0} onClick={() => { const c = messagesContainerRef.current; if (c) c.scrollTo({ top: c.scrollHeight, behavior: 'smooth' }) }} />
+        )}
         <div className="messages" ref={messagesContainerRef}>
-          {channelScope === 'city' && quietCardOpen && (
+          {false && quietCardOpen && (
             <button
               type="button"
               className="feed-quiet-card"
@@ -5558,6 +5564,13 @@ export default function App() {
             // Deleted messages disappear from city and World (no "Message deleted"
             // placeholder; private conversations keep it).
             if (item.deletedAt && !activeEvent) return null
+            if (item.type === 'hi_question') {
+              return <QuestionCard key={item.id} item={item} world={channelScope === 'world'}
+                                   onAnswer={() => setReplyingTo({ id: item.id, nickname: item.nickname || 'Hilads', content: item.content ?? '', type: 'text' })} />
+            }
+            if (item.type === 'plan_line') {
+              return <PlanLine key={item.id} item={item} onOpen={(id) => fetchEventById(id).then(d => { if (d?.event) handleSelectEvent(d.event) }).catch(() => {})} />
+            }
             if (item.type === 'daily') {
               return <DailyFeedCard key={item.id} item={item} t={t} onOpen={(params) => openDaily('challenge', { source: 'chat', ...params })} />
             }
@@ -6899,6 +6912,8 @@ export default function App() {
           onOpenHangout={(h) => { setViewingProfile(null); openHangout(h) }}
           onOpenChallenge={(c) => { setViewingProfile(null); setActiveChallenge(c) }}
           onOpenLightbox={setLightboxUrl}
+          preview={!!viewingProfile.preview}
+          onOpenPhotos={(list, proofId) => openDaily('photos', { list, proofId, source: 'profile' })}
           onSendDm={account ? async (targetUserId) => {
             try {
               const { conversation, otherUser } = await createOrGetDirectConversation(targetUserId)
@@ -6992,6 +7007,7 @@ export default function App() {
             if (['proposals', 'propose', 'challenge', 'stories', 'rivals'].includes(row)) openDaily(row, params)
             else if (row === 'alltime') { openRanks({ tab: 'players', period: 'alltime', scope: channelId ? 'city' : 'world' }) }
             else if (row === 'week') { openRanks({ tab: 'players', period: 'season', scope: channelId ? 'city' : 'world' }) }
+            else if (row === 'viewAsOthers' && account) { setViewingProfile({ userId: account.id, nickname: account.display_name ?? '', preview: true }) }
             else if (row === 'notifications') { setNotifOnly(null); setShowNotifications(true) }
             else if (row === 'messages') setShowConversations(true)
             else setPassportSub(row)

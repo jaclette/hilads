@@ -44,5 +44,32 @@
       "happyNoCity": "🎃 萬聖節快樂！",
       "tonight": "今晚誰要出去過萬聖節？"
     }
-  }
+  },
+  "hi": {
+    "title": "Hi {{city}} 👋",
+    "titleWorld": "Hi World 🌍",
+    "here_one": "{{count}} 人在線",
+    "here_other": "{{count}} 人在線",
+    "members_one": "{{count}} 位成員",
+    "members_other": "{{count}} 位成員",
+    "cities_one": "{{count}} 座城市",
+    "cities_other": "{{count}} 座城市",
+    "question": "今日問題",
+    "answers_one": "{{count}} 則回答",
+    "answers_other": "{{count}} 則回答",
+    "firstAnswer": "搶先回答",
+    "answer": "回答",
+    "planCreated": "{{name}} 建立了一個計畫 · {{title}}，{{when}}",
+    "unread_one": "{{count}} 則新訊息",
+    "unread_other": "{{count}} 則新訊息",
+    "newBelow_one": "下面有 {{count}} 則新訊息",
+    "newBelow_other": "下面有 {{count}} 則新訊息",
+    "latest": "回到最新訊息",
+    "going_one": "{{count}} 人參加",
+    "going_other": "{{count}} 人參加",
+    "morePlans_one": "還有 {{count}} 個計畫",
+    "morePlans_other": "還有 {{count}} 個計畫",
+    "join": "參加"
+  },
+  "actionBlock": "封鎖"
 }

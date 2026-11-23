@@ -44,5 +44,32 @@
       "happyNoCity": "🎃 ハッピーハロウィン！",
       "tonight": "今夜ハロウィンで出かける人いる？"
     }
-  }
+  },
+  "hi": {
+    "title": "Hi {{city}} 👋",
+    "titleWorld": "Hi World 🌍",
+    "here_one": "いま{{count}}人",
+    "here_other": "いま{{count}}人",
+    "members_one": "メンバー{{count}}人",
+    "members_other": "メンバー{{count}}人",
+    "cities_one": "{{count}}都市",
+    "cities_other": "{{count}}都市",
+    "question": "今日の質問",
+    "answers_one": "回答{{count}}件",
+    "answers_other": "回答{{count}}件",
+    "firstAnswer": "最初に答えよう",
+    "answer": "答える",
+    "planCreated": "{{name}}さんがプランを作成 · {{title}}、{{when}}",
+    "unread_one": "新着メッセージ{{count}}件",
+    "unread_other": "新着メッセージ{{count}}件",
+    "newBelow_one": "下に新着{{count}}件",
+    "newBelow_other": "下に新着{{count}}件",
+    "latest": "最新のメッセージへ",
+    "going_one": "{{count}}人参加",
+    "going_other": "{{count}}人参加",
+    "morePlans_one": "ほかに{{count}}件のプラン",
+    "morePlans_other": "ほかに{{count}}件のプラン",
+    "join": "参加"
+  },
+  "actionBlock": "ブロック"
 }

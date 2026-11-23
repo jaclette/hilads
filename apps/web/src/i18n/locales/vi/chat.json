@@ -44,5 +44,32 @@
       "happyNoCity": "🎃 Halloween vui vẻ!",
       "tonight": "Tối nay ai đi chơi Halloween?"
     }
-  }
+  },
+  "hi": {
+    "title": "Hi {{city}} 👋",
+    "titleWorld": "Hi World 🌍",
+    "here_one": "{{count}} người đang ở đây",
+    "here_other": "{{count}} người đang ở đây",
+    "members_one": "{{count}} thành viên",
+    "members_other": "{{count}} thành viên",
+    "cities_one": "{{count}} thành phố",
+    "cities_other": "{{count}} thành phố",
+    "question": "Câu hỏi hôm nay",
+    "answers_one": "{{count}} câu trả lời",
+    "answers_other": "{{count}} câu trả lời",
+    "firstAnswer": "Hãy là người trả lời đầu tiên",
+    "answer": "Trả lời",
+    "planCreated": "{{name}} đã tạo một kế hoạch · {{title}}, {{when}}",
+    "unread_one": "{{count}} tin nhắn mới",
+    "unread_other": "{{count}} tin nhắn mới",
+    "newBelow_one": "{{count}} tin nhắn mới bên dưới",
+    "newBelow_other": "{{count}} tin nhắn mới bên dưới",
+    "latest": "Về tin nhắn mới nhất",
+    "going_one": "{{count}} người tham gia",
+    "going_other": "{{count}} người tham gia",
+    "morePlans_one": "thêm {{count}} kế hoạch",
+    "morePlans_other": "thêm {{count}} kế hoạch",
+    "join": "Tham gia"
+  },
+  "actionBlock": "Chặn"
 }

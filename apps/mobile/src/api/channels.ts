@@ -186,6 +186,8 @@ export interface BootstrapResult {
   hasUnreadDMs:         boolean | null;  // null for guests
   unreadNotifications:  number | null;   // null for guests
   currentUser:          Record<string, unknown> | null;
+  /** The Hi header's live counts (chat=1). */
+  hi?:                  HiHeader | null;
 }
 
 /**
@@ -204,7 +206,8 @@ export async function bootstrapChannel(
   nickname: string,
   previousChannelId?: string,
 ): Promise<BootstrapResult> {
-  const data = await api.post<BootstrapResult>(`/channels/${channelId}/bootstrap`, {
+  // chat=1: the Hi chat's rows only (no challenge cards or arrival lines) and today's question.
+  const data = await api.post<BootstrapResult>(`/channels/${channelId}/bootstrap?chat=1`, {
     sessionId,
     guestId,
     nickname,
@@ -219,6 +222,7 @@ export async function bootstrapChannel(
     hasUnreadDMs:         data.hasUnreadDMs         ?? null,
     unreadNotifications:  data.unreadNotifications  ?? null,
     currentUser:          data.currentUser          ?? null,
+    hi:                   data.hi                   ?? null,
   };
 }
 
@@ -298,16 +302,20 @@ export async function fetchCityAmbassadors(channelId: string): Promise<CityAmbas
   }
 }
 
+/** The Hi header's live counts: a city {here, members}, the World {here, cities}. */
+export type HiHeader = { here?: number; members?: number; cities?: number };
+
 export async function fetchMessages(
   channelId: string,
   opts: { beforeId?: string; limit?: number } = {},
-): Promise<{ messages: Message[]; hasMore: boolean }> {
-  const q = new URLSearchParams({ limit: String(opts.limit ?? 50) });
+): Promise<{ messages: Message[]; hasMore: boolean; hi?: HiHeader | null }> {
+  // chat=1: the Hi chat (see bootstrapChannel); hi = the header's live counts.
+  const q = new URLSearchParams({ limit: String(opts.limit ?? 50), chat: '1' });
   if (opts.beforeId) q.set('before_id', opts.beforeId);
-  const data = await api.get<{ messages: Message[]; hasMore?: boolean }>(
+  const data = await api.get<{ messages: Message[]; hasMore?: boolean; hi?: HiHeader | null }>(
     `/channels/${channelId}/messages?${q}`,
   );
-  return { messages: data.messages ?? [], hasMore: data.hasMore ?? false };
+  return { messages: data.messages ?? [], hasMore: data.hasMore ?? false, hi: data.hi ?? null };
 }
 
 export async function sendMessage(

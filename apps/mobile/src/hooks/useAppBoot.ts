@@ -83,6 +83,7 @@ export function useAppBoot(): Result {
               hasMore:             boot.hasMore,
               hasUnreadDMs:        boot.hasUnreadDMs,
               unreadNotifications: boot.unreadNotifications,
+              hi:                  boot.hi ?? null,
             });
             if (boot.unreadNotifications !== null) setUnreadNotifications(boot.unreadNotifications);
           })
@@ -203,6 +204,7 @@ export function useAppBoot(): Result {
                         hasMore:             boot.hasMore,
                         hasUnreadDMs:        boot.hasUnreadDMs,
                         unreadNotifications: boot.unreadNotifications,
+                        hi:                  boot.hi ?? null,
                       });
                       if (boot.unreadNotifications !== null) setUnreadNotifications(boot.unreadNotifications);
                     }

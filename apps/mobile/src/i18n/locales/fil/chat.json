@@ -147,5 +147,32 @@
       "happyNoCity": "🎃 Happy Halloween!",
       "tonight": "Sino'ng lalabas ngayong gabi para sa Halloween?"
     }
-  }
+  },
+  "hi": {
+    "title": "Hi {{city}} 👋",
+    "titleWorld": "Hi World 🌍",
+    "here_one": "{{count}} narito ngayon",
+    "here_other": "{{count}} narito ngayon",
+    "members_one": "{{count}} member",
+    "members_other": "{{count}} members",
+    "cities_one": "{{count}} lungsod",
+    "cities_other": "{{count}} lungsod",
+    "question": "Tanong ng araw",
+    "answers_one": "{{count}} sagot",
+    "answers_other": "{{count}} sagot",
+    "firstAnswer": "Ikaw ang unang sumagot",
+    "answer": "Sumagot",
+    "planCreated": "Gumawa si {{name}} ng plano · {{title}}, {{when}}",
+    "unread_one": "{{count}} bagong mensahe",
+    "unread_other": "{{count}} bagong mensahe",
+    "newBelow_one": "{{count}} bagong mensahe sa ibaba",
+    "newBelow_other": "{{count}} bagong mensahe sa ibaba",
+    "latest": "Bumalik sa pinakabagong mensahe",
+    "going_one": "{{count}} pupunta",
+    "going_other": "{{count}} pupunta",
+    "morePlans_one": "{{count}} pang plano",
+    "morePlans_other": "{{count}} pang plano",
+    "join": "Sumali"
+  },
+  "actionBlock": "I-block"
 }

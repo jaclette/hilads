@@ -12,7 +12,7 @@ import { SeasonalHeaderDecor } from '@/features/event/SeasonalArt';
  * Screen header. "back" (pushed screens): round back button and the title.
  * "tab" (a tab's own header): the large title, no back. `right` holds the
  * header's buttons. `compact` uses the smaller title (long names, a spot).
- * `subtitle` (tab only): a one-line muted line under the title, two lines at
+ * `subtitle` (a tab's, or under a back header's title): a one-line muted line under the title, two lines at
  * most on small screens (SPEC 9.1). `art` (tab only): the screen's line
  * drawing on the header's right, left of its buttons (decorative).
  */
@@ -46,7 +46,13 @@ export function ScreenHeader({ title, subtitle, art, variant = 'back', right, on
     // A tap on the header (outside the form) closes the keyboard (the keyboard rule).
     <Pressable style={styles.back} testID={testID} onPress={Keyboard.dismiss} accessible={false}>
       <IconButton icon="chevron-back" onPress={onBack ?? goBack} label={t('back')} testID="header-back" />
-      {title ? <Text style={[styles.title, compact && styles.titleCompact]} numberOfLines={2} maxFontSizeMultiplier={1.5} accessibilityRole="header" testID="header-title">{title}</Text>
+      {title && subtitle ? (
+        // A live line under the title (the Hi chat: "12 here now · 348 members").
+        <View style={styles.titleBox}>
+          <Text style={[styles.title, compact && styles.titleCompact]} numberOfLines={1} maxFontSizeMultiplier={1.5} accessibilityRole="header" testID="header-title">{title}</Text>
+          <Text style={styles.subtitle} numberOfLines={1} maxFontSizeMultiplier={1.4}>{subtitle}</Text>
+        </View>
+      ) : title ? <Text style={[styles.title, compact && styles.titleCompact]} numberOfLines={2} maxFontSizeMultiplier={1.5} accessibilityRole="header" testID="header-title">{title}</Text>
              : <Text style={styles.spacer} testID="header-title"> </Text>}
       {right}
     </Pressable>
@@ -55,6 +61,7 @@ export function ScreenHeader({ title, subtitle, art, variant = 'back', right, on
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
   back:         { flexDirection: 'row', alignItems: 'center', gap: Space.md, paddingHorizontal: Spacing.md, paddingVertical: Space.sm },
+  titleBox:     { flex: 1 },
   title:        { flex: 1, fontSize: FontSizes.lg, fontWeight: '800', color: c.text },
   titleCompact: { fontSize: FontSizes.md, fontWeight: '800' },
   spacer:       { flex: 1 },

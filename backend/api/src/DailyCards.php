@@ -24,6 +24,9 @@ declare(strict_types=1);
  */
 final class DailyCards
 {
+    /** Post challenge / photo cards into the chat channels (off since the Hi chat rebuild, 2026-11-23). */
+    public const POST_TO_CHAT = false;
+
     public const EVENT_PROOF    = 'daily_proof';
     public const EVENT_GROUP    = 'daily_proof_group';
     public const FLOOD_PER_HOUR = 6;   // individual proof cards per channel and clock hour
@@ -143,6 +146,9 @@ final class DailyCards
      */
     public static function postProof(array $proof): void
     {
+        // Hi is a pure chat since 2026-11-23: challenge photos live in Today / World, not in the
+        // chat channels. Past cards stay in the database (older apps still show them).
+        if (!self::POST_TO_CHAT) return;
         $stmt = Database::pdo()->prepare("SELECT text_i18n FROM daily_challenges WHERE id = ?");
         $stmt->execute([$proof['challenge_id']]);
         $text    = json_decode((string) $stmt->fetchColumn(), true)['en'] ?? '';
@@ -383,6 +389,7 @@ final class DailyCards
      */
     public static function postChallenge(array $challenge): int
     {
+        if (!self::POST_TO_CHAT) return 0;   // Hi is a pure chat (see postProof)
         $hilads   = self::hiladsId();
         $content  = "🔥 Today's Daily Challenge: " . (json_decode((string) $challenge['text_i18n'], true)['en'] ?? '');
         $channels = array_merge(['world'], DailyRules::liveCityIds());

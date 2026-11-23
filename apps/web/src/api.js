@@ -156,22 +156,41 @@ export async function fetchMessages(channelId, { beforeId, limit } = {}) {
 // Used as one half of the parallel join+messages critical path.
 // Badges are enriched deferred via fetchMessageBadges after first render.
 export async function fetchLeanMessages(channelId, { beforeId, limit = 50 } = {}) {
-  const params = new URLSearchParams({ lean: '1', limit: String(limit) })
+  // chat=1: the Hi chat's rows only (no challenge cards / arrival lines) and today's question.
+  const params = new URLSearchParams({ lean: '1', limit: String(limit), chat: '1' })
   if (beforeId) params.set('before_id', beforeId)
   const res = await fetch(`${BASE}/channels/${channelId}/messages?${params}`, {
     credentials: 'include',
   })
   if (!res.ok) throw new Error('Failed to fetch messages')
-  return res.json() // { messages, hasMore }
+  const data = await res.json() // { messages, hasMore, hi? }
+  if (!beforeId && data.hi) emitHiHeader('city', data.hi)
+  return data
+}
+
+// The Hi header's live counts (city: here + members, World: here + cities), from the chat fetches.
+const hiListeners = new Set()
+function emitHiHeader(scope, hi) { hiListeners.forEach(fn => { try { fn(scope, hi) } catch { /* listener */ } }) }
+export function onHiHeader(fn) { hiListeners.add(fn); return () => hiListeners.delete(fn) }
+
+/** The city's upcoming plans with participant counts (the Hi chat's next-plan row). */
+export async function fetchChannelPlans(channelId) {
+  // The plans of the next 7 days (not only today's).
+  const res = await fetch(`${BASE}/channels/${channelId}/events/upcoming`, { credentials: 'include' })
+  if (!res.ok) return []
+  const data = await res.json()
+  return data.events ?? (Array.isArray(data) ? data : [])
 }
 
 // ── World channel (global companion channel) ────────────────────────────────
 export async function fetchWorldMessages({ beforeId, limit = 50 } = {}) {
-  const params = new URLSearchParams({ limit: String(limit) })
+  const params = new URLSearchParams({ limit: String(limit), chat: '1' })
   if (beforeId) params.set('before_id', beforeId)
   const res = await fetch(`${BASE}/world/messages?${params}`, { credentials: 'include' })
   if (!res.ok) throw new Error('Failed to fetch world messages')
-  return res.json() // { messages, hasMore }
+  const data = await res.json() // { messages, hasMore, hi? }
+  if (!beforeId && data.hi) emitHiHeader('world', data.hi)
+  return data
 }
 
 export async function sendWorldMessage(guestId, nickname, content, mentions = null, replyToMessageId = null) {
@@ -310,7 +329,7 @@ export async function bootstrapChannel(channelId, sessionId, guestId, nickname, 
   if (previousChannelId) body.previousChannelId = previousChannelId
   // lean=1: skip badge enrichment + auth queries on the critical path.
   // Web fetches badges via fetchMessageBadges after first render.
-  const res = await fetch(`${BASE}/channels/${channelId}/bootstrap?lean=1`, {
+  const res = await fetch(`${BASE}/channels/${channelId}/bootstrap?lean=1&chat=1`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'X-Platform': 'web' },
     credentials: 'include',
@@ -318,6 +337,7 @@ export async function bootstrapChannel(channelId, sessionId, guestId, nickname, 
   })
   if (!res.ok) throw new Error('Failed to bootstrap channel')
   const data = await res.json()
+  if (data.hi) emitHiHeader('city', data.hi)
   return {
     joinMessage:         data.joinMessage         ?? null,
     messages:            data.messages            ?? [],
@@ -2584,4 +2604,32 @@ export function markSeasonSeen(season) {
   fetch(`${BASE}/me/season-result/seen`, {
     method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ season }),
   }).catch(() => {})
+}
+
+// ── Player profile ("mini Passport", ProfileCard on the server) ─────────────────
+
+/** Wins, this season's ranks, the best photos, me vs them: GET /users/{id}/card. */
+export async function fetchProfileCard(userId) {
+  const res = await fetch(`${BASE}/users/${encodeURIComponent(userId)}/card`, { credentials: 'include' })
+  if (!res.ok) throw Object.assign(new Error('card'), { status: res.status })
+  return res.json()
+}
+export async function fetchUserPhotos(userId, offset = 0) {
+  const res = await fetch(`${BASE}/users/${encodeURIComponent(userId)}/photos?offset=${offset}`, { credentials: 'include' })
+  if (!res.ok) throw new Error('photos')
+  return res.json()
+}
+export async function fetchUserDuels(userId, offset = 0) {
+  const res = await fetch(`${BASE}/users/${encodeURIComponent(userId)}/duels?offset=${offset}`, { credentials: 'include' })
+  if (!res.ok) throw new Error('duels')
+  return res.json()
+}
+/** Block a player (as the app): POST /blocks. */
+export async function submitBlock({ targetUserId, targetNickname }) {
+  const res = await fetch(`${BASE}/blocks`, {
+    method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ target_user_id: targetUserId, target_nickname: targetNickname ?? null }),
+  })
+  if (!res.ok) throw new Error('block')
+  return res.json()
 }

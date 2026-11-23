@@ -155,5 +155,32 @@
       "happyNoCity": "🎃 Buon Halloween!",
       "tonight": "Chi esce stasera per Halloween?"
     }
-  }
+  },
+  "hi": {
+    "title": "Hi {{city}} 👋",
+    "titleWorld": "Hi World 🌍",
+    "here_one": "{{count}} qui ora",
+    "here_other": "{{count}} qui ora",
+    "members_one": "{{count}} membro",
+    "members_other": "{{count}} membri",
+    "cities_one": "{{count}} città",
+    "cities_other": "{{count}} città",
+    "question": "Domanda del giorno",
+    "answers_one": "{{count}} risposta",
+    "answers_other": "{{count}} risposte",
+    "firstAnswer": "Rispondi per primo",
+    "answer": "Rispondi",
+    "planCreated": "{{name}} ha creato un piano · {{title}}, {{when}}",
+    "unread_one": "{{count}} nuovo messaggio",
+    "unread_other": "{{count}} nuovi messaggi",
+    "newBelow_one": "{{count}} nuovo messaggio sotto",
+    "newBelow_other": "{{count}} nuovi messaggi sotto",
+    "latest": "Torna agli ultimi messaggi",
+    "going_one": "{{count}} partecipa",
+    "going_other": "{{count}} partecipano",
+    "morePlans_one": "{{count}} altro piano",
+    "morePlans_other": "{{count}} altri piani",
+    "join": "Partecipa"
+  },
+  "actionBlock": "Blocca"
 }

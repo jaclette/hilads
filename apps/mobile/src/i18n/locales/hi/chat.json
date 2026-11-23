@@ -147,5 +147,32 @@
       "happyNoCity": "🎃 हैप्पी हैलोवीन!",
       "tonight": "आज रात हैलोवीन के लिए कौन बाहर जा रहा है?"
     }
-  }
+  },
+  "hi": {
+    "title": "Hi {{city}} 👋",
+    "titleWorld": "Hi World 🌍",
+    "here_one": "अभी {{count}} लोग यहाँ",
+    "here_other": "अभी {{count}} लोग यहाँ",
+    "members_one": "{{count}} सदस्य",
+    "members_other": "{{count}} सदस्य",
+    "cities_one": "{{count}} शहर",
+    "cities_other": "{{count}} शहर",
+    "question": "आज का सवाल",
+    "answers_one": "{{count}} जवाब",
+    "answers_other": "{{count}} जवाब",
+    "firstAnswer": "सबसे पहले जवाब दें",
+    "answer": "जवाब दें",
+    "planCreated": "{{name}} ने एक प्लान बनाया · {{title}}, {{when}}",
+    "unread_one": "{{count}} नया मैसेज",
+    "unread_other": "{{count}} नए मैसेज",
+    "newBelow_one": "नीचे {{count}} नया मैसेज",
+    "newBelow_other": "नीचे {{count}} नए मैसेज",
+    "latest": "नए मैसेज पर जाएँ",
+    "going_one": "{{count}} जा रहे हैं",
+    "going_other": "{{count}} जा रहे हैं",
+    "morePlans_one": "{{count}} और प्लान",
+    "morePlans_other": "{{count}} और प्लान",
+    "join": "जुड़ें"
+  },
+  "actionBlock": "ब्लॉक करें"
 }

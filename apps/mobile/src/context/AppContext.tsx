@@ -27,6 +27,8 @@ export interface BootstrapData {
   hasMore:              boolean;
   hasUnreadDMs:         boolean | null;
   unreadNotifications:  number | null;
+  /** The Hi header's live counts (here, members). */
+  hi?:                  { here?: number; members?: number; cities?: number } | null;
 }
 
 // Matches web geoState values exactly:

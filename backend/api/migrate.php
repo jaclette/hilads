@@ -4970,6 +4970,24 @@ run($pdo, "
 run($pdo, "CREATE INDEX IF NOT EXISTS idx_user_devices_install ON user_devices (install_id) WHERE install_id <> ''", 'idx_user_devices_install');
 run($pdo, "CREATE INDEX IF NOT EXISTS idx_user_devices_ip ON user_devices (ip_hash) WHERE ip_hash <> ''", 'idx_user_devices_ip');
 
+// ── Hi chat rebuild (2026-11-23): the question of the day ──────────────────
+// hi_questions: Admin › Hi questions (scope city | world, {city} = the channel's
+// city, position = the rotation order); empty = HiQuestions' defaults. One posted
+// question per channel and day (the unique index below).
+// Reversal: DROP TABLE hi_questions; DROP INDEX uq_messages_hi_question.
+run($pdo, "
+    CREATE TABLE IF NOT EXISTS hi_questions (
+        id         SERIAL      PRIMARY KEY,
+        scope      TEXT        NOT NULL CHECK (scope IN ('city', 'world')),
+        text       TEXT        NOT NULL,
+        active     BOOLEAN     NOT NULL DEFAULT true,
+        position   INT         NOT NULL DEFAULT 0,
+        created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+    )
+", 'hi_questions');
+run($pdo, "CREATE UNIQUE INDEX IF NOT EXISTS uq_messages_hi_question ON messages (channel_id, (payload->>'date'))
+            WHERE type = 'system' AND event = 'hi_question'", 'uq_messages_hi_question');
+
 // ── Self-heal monthly rank columns ────────────────────────────────────────
 // The denormalised users.monthly_rank_* columns are kept fresh by
 // route-level recalc hooks fired after each scoring action. If any

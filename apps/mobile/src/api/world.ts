@@ -1,16 +1,18 @@
 import { api } from './client';
 import type { Message } from '@/types';
 import type { MentionInput } from './mentions';
+import type { HiHeader } from './channels';
 
 // ── World channel (global companion channel) ────────────────────────────────
 
 export async function fetchWorldMessages(
   opts: { beforeId?: string; limit?: number } = {},
-): Promise<{ messages: Message[]; hasMore: boolean }> {
-  const q = new URLSearchParams({ limit: String(opts.limit ?? 50) });
+): Promise<{ messages: Message[]; hasMore: boolean; hi?: HiHeader | null }> {
+  // chat=1: the Hi chat's rows only and today's question; hi = the header's live counts.
+  const q = new URLSearchParams({ limit: String(opts.limit ?? 50), chat: '1' });
   if (opts.beforeId) q.set('before_id', opts.beforeId);
-  const data = await api.get<{ messages: Message[]; hasMore?: boolean }>(`/world/messages?${q}`);
-  return { messages: data.messages ?? [], hasMore: data.hasMore ?? false };
+  const data = await api.get<{ messages: Message[]; hasMore?: boolean; hi?: HiHeader | null }>(`/world/messages?${q}`);
+  return { messages: data.messages ?? [], hasMore: data.hasMore ?? false, hi: data.hi ?? null };
 }
 
 export async function sendWorldMessage(
