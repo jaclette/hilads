@@ -398,7 +398,8 @@
         "rate_limited": "Ang dami nang try - saglit lang.",
         "own_proof": "Hindi mo puwedeng i-vote ang sarili mong photo.",
         "not_found": "Wala na ang photo na 'to.",
-        "generic": "May nangyaring mali. Subukan ulit."
+        "generic": "May nangyaring mali. Subukan ulit.",
+        "play_first": "I-post muna ang photo mo ngayon para ma-like ang iba."
       },
       "voteFor": "I-vote ang {{city}}",
       "validatedHint": "Kumpirmado ng isang local: may taga-rito na nag-vote sa photo na 'to."
@@ -495,7 +496,8 @@
     },
     "week": {
       "title": "Ngayong linggo",
-      "keep": "Maglaro ngayon para hindi maputol ang streak mo"
+      "keep": "Maglaro ngayon para hindi maputol ang streak mo",
+      "perfectNudge": "Maglaro ngayon para makumpleto ang Perfect week mo 🔥 +{{points}}"
     },
     "calendar": {
       "title": "Mga Daily Challenge ko",
@@ -789,7 +791,8 @@
         "today": "Ngayon",
         "yesterday": "Kahapon",
         "week": "Linggo",
-        "alltime": "All time"
+        "alltime": "All time",
+        "season": "Ngayong season"
       },
       "timeLeftMin": "Wala nang isang oras para mag-vote",
       "bestPerCity": "Best photo kada city",
@@ -801,7 +804,12 @@
         "photo_one": "Pinakamaganda mo: #{{rank}} · {{count}} ❤️ papuntang #{{next}}",
         "photo_other": "Pinakamaganda mo: #{{rank}} · {{count}} ❤️ papuntang #{{next}}",
         "photoTop": "Pinakamaganda mo: #1 · walang nasa itaas mo 👑",
-        "photoNone": "Wala ka pang litrato sa ranking ❤️"
+        "photoNone": "Wala ka pang litrato sa ranking ❤️",
+        "seasonLead": "Ikaw ang #1 ngayong season! Ipagtanggol ang korona mo 👑",
+        "seasonBehind_one": "Ikaw ay #{{rank}} ngayong season, {{count}} pt ang layo kay {{name}}",
+        "seasonBehind_other": "Ikaw ay #{{rank}} ngayong season, {{count}} pts ang layo kay {{name}}",
+        "seasonTied": "Ikaw ay #{{rank}} ngayong season, tabla kay {{name}}",
+        "seasonNone": "Maglaro ngayon para makasali sa season 🙋"
       },
       "city": {
         "lineTop": "Nangunguna ang {{city}}! 🏁",
@@ -835,7 +843,11 @@
         "city": "Lungsod mo rito? 🌍",
         "invite": "🎯 Sino ang kukuha ng #{{rank}}? Mag-imbita ng kaibigan",
         "empty": "Walang kumuha ng puwestong ito"
-      }
+      },
+      "seasonEnds_one": "Matatapos ang season sa loob ng {{count}} araw",
+      "seasonEnds_other": "Matatapos ang season sa loob ng {{count}} araw",
+      "seasonEndsAt": "Matatapos ang season sa {{date}}",
+      "preSeason": "Pre-season · unang season {{date}}"
     },
     "rivals": {
       "title": "Ikaw vs {{city}}",
@@ -850,6 +862,16 @@
       "theirBest": "Best ng {{city}}",
       "duels_one": "{{count}} duel",
       "duels_other": "{{count}} duels"
+    },
+    "season": {
+      "resultsKicker": "{{season}} · Resulta ng season",
+      "medalTitle": "Natapos ka sa #{{rank}}! 🎉",
+      "rankTitle_one": "Natapos ka sa #{{rank}} sa {{count}} player",
+      "rankTitle_other": "Natapos ka sa #{{rank}} sa {{count}} players",
+      "stats": "Points: {{points}} · Araw na naglaro: {{days}} · Podium: {{podiums}}",
+      "newSeason": "Magsisimula na ang bagong season. Balik sa 0 ang lahat.",
+      "play": "📸 Laruin ang challenge ngayon",
+      "close": "Isara"
     }
   },
   "scoreWin": {
@@ -867,7 +889,10 @@
       "streak": "Streak",
       "early": "Maaga",
       "stamp": "Stamp",
-      "other": "Bonus"
+      "other": "Bonus",
+      "week": "Perfect week",
+      "friends": "Mga kaibigan",
+      "crew": "Crew"
     },
     "medal": {
       "city": "sa {{city}}",
@@ -880,7 +905,11 @@
     "goal": {
       "pass": "{{gap}} pts para malampasan si {{name}}",
       "streak": "🔥 Day {{day}} bukas",
-      "stamp": "🎟️ Susunod na stamp sa {{city}}"
+      "stamp": "🎟️ Susunod na stamp sa {{city}}",
+      "week_one": "🔥 {{count}} araw na lang para sa Perfect week",
+      "week_other": "🔥 {{count}} araw na lang para sa Perfect week",
+      "crew_one": "🤝 {{count}} kaibigan na lang para sa crew mo",
+      "crew_other": "🤝 {{count}} kaibigan na lang para sa crew mo"
     },
     "ranks": "🏆 Tingnan ang ranking",
     "share": "📤 I-share ang panalo ko",

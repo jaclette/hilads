@@ -266,6 +266,15 @@ export function renderToday(data, locale, prefixed) {
     KEEP.forEach(function (k) { var v = sp.get(k); if (v) { pass.set(k, v); sup[k] = v; } });
     if (Object.keys(sup).length) { try { posthog.register(sup); } catch (e) {} }
     $('cta-web').setAttribute('href', '/?auth=signup' + (pass.toString() ? '&' + pass.toString() : ''));
+    // Scoring v2: an invite link (?ref=CODE). The open is recorded (a store install loses the
+    // link: the API matches the sign-up to this click by network), and the app gets the code.
+    var REF = /^[A-Za-z0-9]{5,12}$/.test(sp.get('ref') || '') ? sp.get('ref') : null;
+    if (REF) {
+      try {
+        fetch(B.api + '/api/v1/invites/click', { method: 'POST', keepalive: true,
+          headers: { 'Content-Type': 'application/json', 'X-Platform': 'web' }, body: JSON.stringify({ code: REF }) });
+      } catch (e) {}
+    }
 
     /* ── Countdown (same format as the app: 5h 07m / 12m / 40s) ───────────── */
     function countdown(sec){
@@ -291,9 +300,10 @@ export function renderToday(data, locale, prefixed) {
     var isAndroid = /android/i.test(ua), isMobile = /android|iphone|ipad|ipod/i.test(ua);
     var IN_APP_RE = /\\b(Zalo|FBAN|FBAV|FB_IAB|Instagram|Line\\/|MicroMessenger|Snapchat|Twitter|TikTok|KAKAOTALK)\\b/i;
     if (isAndroid) $('stores').insertBefore($('cta-android'), $('cta-ios'));
+    var refQ = REF ? '?ref=' + REF : '';
     var appUrl = isAndroid
-      ? 'intent://today#Intent;scheme=hilads;package=com.hilads.app;S.browser_fallback_url=' + encodeURIComponent(location.href) + ';end'
-      : 'hilads://today';
+      ? 'intent://today' + refQ + '#Intent;scheme=hilads;package=com.hilads.app;S.browser_fallback_url=' + encodeURIComponent(location.href) + ';end'
+      : 'hilads://today' + refQ;
     if (isMobile) {
       $('cta-open').setAttribute('href', appUrl);
       $('cta-open').hidden = false;

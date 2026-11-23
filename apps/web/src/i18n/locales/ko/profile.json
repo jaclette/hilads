@@ -147,15 +147,21 @@
       "localSince": "{{date}}부터 {{city}} 현지인",
       "rivals": "내 라이벌",
       "rivalsEmpty": "챌린지를 몇 번 하면 첫 라이벌을 만날 수 있어요 🌍",
-      "duels_other": "{{count}}번의 대결"
+      "duels_other": "{{count}}번의 대결",
+      "seasonRank": "이번 시즌 #{{rank}}",
+      "seasonNone": "플레이하고 이번 시즌에 참가하세요"
     },
     "points": {
       "title": "포인트 받는 법",
-      "intro": "Daily Challenge 포인트는 주간 Most Local에 반영돼요. 모든 포인트는 역대 순위에 반영돼요.",
+      "intro": "점수는 이번 시즌 랭킹과 통산 점수에 모두 반영돼요.",
       "proof": "사진 올리기",
       "vote": "투표 (챌린지마다)",
       "top": "오늘의 세계 Top 3",
-      "weekly": "주간 Most Local은 매주 월요일에 초기화돼요."
+      "weekly": "주간 Most Local은 매주 월요일에 초기화돼요.",
+      "week": "퍼펙트 위크 (7일 모두)",
+      "friend": "초대한 친구가 첫 사진을 올림",
+      "crew": "크루 완성 (친구 {{count}}명)",
+      "season": "시즌 랭킹은 매달 1일에 새로 시작해요."
     },
     "tabFriends": "친구",
     "friendRequests": "친구 요청",
@@ -181,6 +187,31 @@
       "cities_other": "개 도시",
       "photos_other": "장",
       "likes_other": "좋아요"
+    },
+    "week": {
+      "title": "퍼펙트 위크 🔥",
+      "points": "+{{points}}",
+      "days": "월,화,수,목,금,토,일",
+      "earned": "퍼펙트 위크 달성! +{{points}} 🔥",
+      "missed": "이번 주 하루를 놓쳤어요. 월요일에 새 주가 시작돼요.",
+      "left_one": "{{count}}일 더 하면 +{{points}}",
+      "left_other": "{{count}}일 더 하면 +{{points}}",
+      "a11y": "퍼펙트 위크: {{total}}일 중 {{done}}일"
+    },
+    "crew": {
+      "title": "크루를 모아요 🤝",
+      "text": "친구가 첫 사진을 올릴 때마다 +{{friend}}, 이번 시즌 {{max}}명이 모이면 +{{crew}}.",
+      "done": "이번 시즌 크루 완성! +{{points}} 🎉",
+      "invite": "친구 초대",
+      "shareText": "Hilads에서 같이 해요: 매일 하나의 사진 챌린지, 전 세계가 함께해요 📸 {{link}}",
+      "pending": "첫 사진 대기 중",
+      "pendingHint": "친구는 첫 사진을 올리면 카운트돼요.",
+      "a11y": "이번 시즌 친구 {{count}}/{{max}}명",
+      "invitedBy": "{{name}} 님의 초대"
+    },
+    "seasons": {
+      "medals": "시즌 메달",
+      "medalA11y": "#{{rank}}, {{season}}, {{points}}점"
     }
   },
   "friendReq": {

@@ -11,7 +11,8 @@ import { track } from './analytics'
 export async function shareLink({ type, path, text, source }) {
   const lang = i18n.language
   const lp = lang && lang !== DEFAULT_LOCALE && SUPPORTED.includes(lang) ? `/${lang}` : ''
-  const url = channel => `${window.location.origin}${lp}${path}?utm_source=${channel}&utm_medium=share`
+  // A path may carry its own query (an invite: /today?ref=CODE).
+  const url = channel => `${window.location.origin}${lp}${path}${path.includes('?') ? '&' : '?'}utm_source=${channel}&utm_medium=share`
   const props = { content_type: type, source }
   track('share_started', props)
   if (navigator.share) {

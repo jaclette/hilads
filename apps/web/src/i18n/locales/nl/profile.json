@@ -155,15 +155,21 @@
       "rivals": "Je rivalen",
       "rivalsEmpty": "Speel een paar challenges om je eerste rivalen te ontmoeten 🌍",
       "duels_one": "{{count}} duel",
-      "duels_other": "{{count}} duels"
+      "duels_other": "{{count}} duels",
+      "seasonRank": "#{{rank}} dit seizoen",
+      "seasonNone": "Speel om in het seizoen te komen"
     },
     "points": {
       "title": "Zo verdien je punten",
-      "intro": "Daily Challenge-punten tellen voor de wekelijkse Most Local. Alle punten tellen voor het klassement aller tijden.",
+      "intro": "Punten tellen mee in de ranglijst van het seizoen en in je totaal aller tijden.",
       "proof": "Je foto posten",
       "vote": "Stemmen (per challenge)",
       "top": "Wereldwijde top 3 van de dag",
-      "weekly": "De wekelijkse Most Local begint elke maandag opnieuw."
+      "weekly": "De wekelijkse Most Local begint elke maandag opnieuw.",
+      "week": "Perfecte week (alle 7 dagen)",
+      "friend": "Een vriend die je uitnodigde plaatst zijn eerste foto",
+      "crew": "Je crew is compleet ({{count}} vrienden)",
+      "season": "De seizoensranglijst begint op de 1e van elke maand opnieuw."
     },
     "tabFriends": "Vrienden",
     "friendRequests": "Vriendschapsverzoeken",
@@ -193,6 +199,31 @@
       "photos_other": "foto's",
       "likes_one": "like",
       "likes_other": "likes"
+    },
+    "week": {
+      "title": "Perfecte week 🔥",
+      "points": "+{{points}}",
+      "days": "M,D,W,D,V,Z,Z",
+      "earned": "Perfecte week gehaald! +{{points}} 🔥",
+      "missed": "Je hebt deze week een dag gemist. Maandag begint een nieuwe week.",
+      "left_one": "Nog {{count}} dag voor +{{points}}",
+      "left_other": "Nog {{count}} dagen voor +{{points}}",
+      "a11y": "Perfecte week: {{done}} van {{total}} dagen"
+    },
+    "crew": {
+      "title": "Neem je crew mee 🤝",
+      "text": "+{{friend}} voor elke vriend van wie de eerste foto online komt, +{{crew}} als er dit seizoen {{max}} meedoen.",
+      "done": "Crew compleet dit seizoen! +{{points}} 🎉",
+      "invite": "Vrienden uitnodigen",
+      "shareText": "Speel met me mee op Hilads: elke dag een foto-challenge, de hele wereld doet mee 📸 {{link}}",
+      "pending": "eerste foto komt nog",
+      "pendingHint": "Een vriend telt zodra zijn eerste foto online staat.",
+      "a11y": "{{count}} van {{max}} vrienden dit seizoen",
+      "invitedBy": "Uitgenodigd door {{name}}"
+    },
+    "seasons": {
+      "medals": "Seizoensmedailles",
+      "medalA11y": "#{{rank}}, {{season}}, {{points}} punten"
     }
   },
   "friendReq": {

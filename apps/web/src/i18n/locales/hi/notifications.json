@@ -82,7 +82,19 @@
       "rankUp": "▲ आप {{where}} में #{{rank}} पर पहुंचे",
       "landedMany_one": "आज {{count}} नया खिलाड़ी {{city}} पहुंचा",
       "landedMany_other": "आज {{count}} नए खिलाड़ी {{city}} पहुंचे",
-      "rankUpWorld": "▲ आप दुनिया में #{{rank}} पर पहुंचे"
+      "rankUpWorld": "▲ आप दुनिया में #{{rank}} पर पहुंचे",
+      "rankUpSeason": "▲ इस सीज़न आप {{where}} में #{{rank}} पर पहुँचे",
+      "rankUpWorldSeason": "▲ इस सीज़न आप दुनिया में #{{rank}} पर पहुँचे",
+      "seasonMedal": "🏁 इस सीज़न आप #{{rank}} पर रहे! आपका मेडल पासपोर्ट में है",
+      "seasonResult_one": "🏁 सीज़न ख़त्म: आप {{count}} पॉइंट के साथ #{{rank}} पर रहे",
+      "seasonResult_other": "🏁 सीज़न ख़त्म: आप {{count}} पॉइंट्स के साथ #{{rank}} पर रहे",
+      "seasonEnding_one": "⏳ सीज़न {{count}} दिन में ख़त्म: आप #{{rank}} पर हैं",
+      "seasonEnding_other": "⏳ सीज़न {{count}} दिनों में ख़त्म: आप #{{rank}} पर हैं",
+      "seasonEndingFirst_one": "⏳ सीज़न {{count}} दिन में ख़त्म: आप #1 पर हैं, डटे रहिए!",
+      "seasonEndingFirst_other": "⏳ सीज़न {{count}} दिनों में ख़त्म: आप #1 पर हैं, डटे रहिए!",
+      "perfectWeek": "🔥 परफ़ेक्ट वीक! +{{points}}",
+      "friendJoined": "आपकी वजह से Hilads से जुड़े 🤝 +{{points}} ({{count}}/{{max}})",
+      "crewBonus": "🎉 आपका क्रू पूरा हो गया! +{{points}}"
     },
     "empty": {
       "all": "यहां सब शांत है। चलिए एक फ़ोटो लेते हैं 📸",

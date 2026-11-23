@@ -80,7 +80,19 @@
       "localPass": "🎟️ {{city}}のLocal Pass！",
       "rankUp": "▲ {{where}}で{{rank}}位にアップ",
       "landedMany_other": "今日{{city}}に新しい参加者が{{count}}人",
-      "rankUpWorld": "▲ 世界で{{rank}}位にアップ"
+      "rankUpWorld": "▲ 世界で{{rank}}位にアップ",
+      "rankUpSeason": "▲ 今シーズン、{{where}}で #{{rank}} に上がった",
+      "rankUpWorldSeason": "▲ 今シーズン、世界で #{{rank}} に上がった",
+      "seasonMedal": "🏁 今シーズン #{{rank}} でフィニッシュ！メダルはパスポートに",
+      "seasonResult_one": "🏁 シーズン終了：{{count}} pt で #{{rank}}",
+      "seasonResult_other": "🏁 シーズン終了：{{count}} pt で #{{rank}}",
+      "seasonEnding_one": "⏳ シーズン終了まであと{{count}}日：いま #{{rank}}",
+      "seasonEnding_other": "⏳ シーズン終了まであと{{count}}日：いま #{{rank}}",
+      "seasonEndingFirst_one": "⏳ シーズン終了まであと{{count}}日：いま #1、キープしよう！",
+      "seasonEndingFirst_other": "⏳ シーズン終了まであと{{count}}日：いま #1、キープしよう！",
+      "perfectWeek": "🔥 パーフェクトウィーク！+{{points}}",
+      "friendJoined": "があなたの招待でHiladsに参加 🤝 +{{points}}（{{count}}/{{max}}）",
+      "crewBonus": "🎉 クルーがそろった！+{{points}}"
     },
     "empty": {
       "all": "静かだね。写真を撮りに行こう 📸",

@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { useTranslation, Trans } from 'react-i18next'
-import { authSignup, authLogin, checkUsernameAvailability } from '../api'
+import { authSignup, authLogin, checkUsernameAvailability, fetchInviter } from '../api'
+import { pendingInvite, clearPendingInvite } from '../lib/invite'
 import BackButton from './BackButton'
 import Icon from './Icon'
 
@@ -12,6 +13,12 @@ const MODES = [
 export default function AuthScreen({ guestId, guestNickname, onSuccess, onBack, onForgotPassword, initialTab = 'signup' }) {
   const { t } = useTranslation('auth')
   const [tab, setTab]         = useState(initialTab) // 'signup' | 'login'
+  // Scoring v2: arrived from a friend's invite link → "Invited by @minh".
+  const [inviter, setInviter] = useState(null)
+  useEffect(() => {
+    const code = pendingInvite()
+    if (code) fetchInviter(code).then(setInviter)
+  }, [])
   const [email, setEmail]     = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
@@ -61,8 +68,9 @@ export default function AuthScreen({ guestId, guestNickname, onSuccess, onBack, 
     setLoading(true)
     try {
       const data = tab === 'signup'
-        ? await authSignup(email, password, username, username, guestId, mode, true /* eulaAccepted */)
+        ? await authSignup(email, password, username, username, guestId, mode, true /* eulaAccepted */, pendingInvite())
         : await authLogin(email, password)
+      if (tab === 'signup') clearPendingInvite()
       onSuccess(data.user, tab === 'signup')
     } catch (err) {
       setError(err.message)
@@ -93,6 +101,9 @@ export default function AuthScreen({ guestId, guestNickname, onSuccess, onBack, 
         <form className="auth-form" onSubmit={handleSubmit}>
           {tab === 'signup' && (
             <>
+              {inviter && (
+                <p className="auth-invited">{t('invitedBy', { name: inviter.username ? '@' + inviter.username : inviter.displayName ?? '' })}</p>
+              )}
 
               <div className="modal-field">
                 <label className="modal-label">{t('fields.username')}</label>

@@ -10,6 +10,7 @@ import { posthogOff, posthogReady } from './lib/posthogQueue'
 import { captureUtm } from './lib/utm'
 import { initTheme } from './lib/theme'
 import { installKeyboardViewport } from './lib/keyboardViewport'
+import { captureInviteRef } from './lib/invite'
 
 // Crawler / bot / link-previewer short-circuit. The prerender already shipped
 // the SSR HTML (title, meta, hreflang, JSON-LD, body) that bots index - running
@@ -75,6 +76,8 @@ else {
 // Capture ad UTM/click-ids from the entry URL as PostHog super properties so the
 // whole landing→join funnel is attributable to the creative that drove the click.
 captureUtm()
+// Scoring v2: an invite link's ?ref=CODE, kept for the sign-up.
+captureInviteRef()
 
 if (import.meta.env.VITE_SENTRY_DSN) {
     Sentry.init({

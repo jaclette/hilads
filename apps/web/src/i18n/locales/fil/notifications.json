@@ -82,7 +82,19 @@
       "rankUp": "▲ Umakyat ka sa #{{rank}} sa {{where}}",
       "landedMany_one": "{{count}} bagong player ang dumating sa {{city}} ngayon",
       "landedMany_other": "{{count}} bagong players ang dumating sa {{city}} ngayon",
-      "rankUpWorld": "▲ Umakyat ka sa #{{rank}} sa mundo"
+      "rankUpWorld": "▲ Umakyat ka sa #{{rank}} sa mundo",
+      "rankUpSeason": "▲ Umakyat ka sa #{{rank}} sa {{where}} ngayong season",
+      "rankUpWorldSeason": "▲ Umakyat ka sa #{{rank}} sa mundo ngayong season",
+      "seasonMedal": "🏁 Natapos ka sa #{{rank}} ngayong season! Nasa Passport mo na ang medalya",
+      "seasonResult_one": "🏁 Tapos na ang season: #{{rank}} ka na may {{count}} pt",
+      "seasonResult_other": "🏁 Tapos na ang season: #{{rank}} ka na may {{count}} pts",
+      "seasonEnding_one": "⏳ Matatapos ang season sa loob ng {{count}} araw: #{{rank}} ka",
+      "seasonEnding_other": "⏳ Matatapos ang season sa loob ng {{count}} araw: #{{rank}} ka",
+      "seasonEndingFirst_one": "⏳ Matatapos ang season sa loob ng {{count}} araw: #1 ka, kapit lang!",
+      "seasonEndingFirst_other": "⏳ Matatapos ang season sa loob ng {{count}} araw: #1 ka, kapit lang!",
+      "perfectWeek": "🔥 Perfect week! +{{points}}",
+      "friendJoined": "ay sumali sa Hilads dahil sa iyo 🤝 +{{points}} ({{count}}/{{max}})",
+      "crewBonus": "🎉 Kumpleto na ang crew mo! +{{points}}"
     },
     "empty": {
       "all": "Walang drama dito. Mag-snap ka na 📸",

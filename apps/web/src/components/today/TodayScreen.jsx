@@ -8,6 +8,7 @@ import { deviceStore, themeName } from '../map/spotsShared'
 import { openAppModal } from '../AppModal'
 import { themeIcon } from '../../lib/icons'
 import Icon from '../Icon'
+import { useScoringPoints } from '../passport/ScoringCards'
 import WhileAwayCard from '../notifications/WhileAwayCard'
 import { ResultsCard } from '../ranks/ResultsCard'
 import TodayCountries, { todayCities, useTodayCountries } from './TodayCountries'
@@ -340,6 +341,7 @@ function Week({ today }) {
     setBump(b => b + 1)
   }, [streak])
 
+  const points = useScoringPoints()
   const current = cal?.today ?? today?.challenge?.date ?? null
   if (!current) return null
   const dow = (new Date(`${current}T12:00:00Z`).getUTCDay() + 6) % 7
@@ -348,6 +350,10 @@ function Week({ today }) {
   const week = Array.from({ length: 7 }, (_, i) => addDays(monday, i))
   // Today not played yet and a streak worth keeping: say so under the week.
   const atRisk = !!account && !today?.myProof && !!today?.challenge?.isActive && (streak ?? 0) >= 2
+  // Scoring v2: Sunday, today not played yet, every other day of the week played (6 / 7).
+  const perfectWeekNudge = !!account && !!points.v2 && dow === 6 && !today?.myProof && !!today?.challenge?.isActive
+    && week.slice(0, 6).every(date => { const d = byDate.get(date); return !d?.published || d.myStatus === 'approved' })
+    && week.slice(0, 6).some(date => byDate.get(date)?.myStatus === 'approved')
   const tomorrowTheme = today?.tomorrow?.theme ?? byDate.get(addDays(current, 1))?.theme ?? null
   const tomorrowSpecial = today?.tomorrow?.special ?? byDate.get(addDays(current, 1))?.special ?? null
 
@@ -415,7 +421,9 @@ function Week({ today }) {
           {dayIcon(addDays(current, 1), 16, <Icon name={themeIcon(tomorrowTheme.key, tomorrowSpecial)} size={16} />)}{t('today.tomorrow', { theme: themeName(tomorrowTheme.key, { special: tomorrowSpecial }) })}
         </p>
       )}
-      {atRisk && <p className="week-keep"><Icon name="flame" size={15} />{t('week.keep')}</p>}
+      {perfectWeekNudge
+        ? <p className="week-keep" role="status"><Icon name="flame" size={15} />{t('week.perfectNudge', { points: points.perfectWeek ?? 30 })}</p>
+        : atRisk && <p className="week-keep"><Icon name="flame" size={15} />{t('week.keep')}</p>}
       {/* Locals of a live city only: tomorrow's Local Twist, until its deadline in their local time. */}
       {today?.twistProposal && (today.twistProposal.open || today.twistProposal.status) && (
         <div className="link-rows">

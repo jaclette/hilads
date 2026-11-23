@@ -311,7 +311,11 @@ Original plan:
 - **Notification texts and deep links** for the five new types.
 - 19 locales (brand terms in English, tu in French, plurals and ordinals).
 
-### P6 – web parity
+### P6 – web parity — DONE
+
+Ranks (season / all time, days left, You bar), the victory modal's goals, the Passport (season rank, Perfect week dots, crew card with the invite link, medals, "Invited by", the points sheet from `/daily/points`), the Sunday nudge on Today, the inbox texts and links, the season results sheet, the sign-up's "Invited by" and `invite_code` (the `/today` landing records the click, passes `?ref=` to the sign-up and to the app). The web has no separate "How it works" screen: its points sheet holds the rules.
+
+Original plan:
 
 The same on the web:
 

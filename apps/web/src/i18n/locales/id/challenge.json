@@ -389,7 +389,8 @@
         "rate_limited": "Kebanyakan percobaan, tunggu sebentar ya.",
         "own_proof": "Kamu nggak bisa vote fotomu sendiri.",
         "not_found": "Foto ini sudah nggak tersedia.",
-        "generic": "Ada yang salah. Coba lagi."
+        "generic": "Ada yang salah. Coba lagi.",
+        "play_first": "Posting foto hari ini dulu untuk menyukai foto lainnya."
       },
       "voteFor": "Vote {{city}}",
       "validatedHint": "Divalidasi warga lokal: seseorang yang tinggal di sini memberi vote untuk foto ini."
@@ -483,7 +484,8 @@
     },
     "week": {
       "title": "Minggu ini",
-      "keep": "Main hari ini biar tetap beruntun"
+      "keep": "Main hari ini biar tetap beruntun",
+      "perfectNudge": "Main hari ini untuk melengkapi minggu sempurnamu 🔥 +{{points}}"
     },
     "calendar": {
       "title": "Daily Challenge-ku",
@@ -766,7 +768,8 @@
         "today": "Hari ini",
         "yesterday": "Kemarin",
         "week": "Minggu",
-        "alltime": "Sepanjang masa"
+        "alltime": "Sepanjang masa",
+        "season": "Musim ini"
       },
       "timeLeftMin": "Sisa kurang dari satu jam untuk vote",
       "bestPerCity": "Foto terbaik tiap kota",
@@ -777,7 +780,12 @@
         "none": "Main hari ini biar masuk papan 🙋",
         "photo_other": "Terbaikmu: #{{rank}} · {{count}} ❤️ ke #{{next}}",
         "photoTop": "Terbaikmu: #1 · tak ada yang di atasmu 👑",
-        "photoNone": "Belum ada fotomu di peringkat ❤️"
+        "photoNone": "Belum ada fotomu di peringkat ❤️",
+        "seasonLead": "Kamu #1 musim ini! Pertahankan mahkotamu 👑",
+        "seasonBehind_one": "Kamu #{{rank}} musim ini, {{count}} poin di belakang {{name}}",
+        "seasonBehind_other": "Kamu #{{rank}} musim ini, {{count}} poin di belakang {{name}}",
+        "seasonTied": "Kamu #{{rank}} musim ini, seri dengan {{name}}",
+        "seasonNone": "Main hari ini untuk masuk musim ini 🙋"
       },
       "city": {
         "lineTop": "{{city}} memimpin balapan! 🏁",
@@ -806,7 +814,11 @@
         "city": "Kotamu di sini? 🌍",
         "invite": "🎯 Siapa ambil #{{rank}}? Ajak teman",
         "empty": "Belum ada yang ambil posisi ini"
-      }
+      },
+      "seasonEnds_one": "Musim berakhir dalam {{count}} hari",
+      "seasonEnds_other": "Musim berakhir dalam {{count}} hari",
+      "seasonEndsAt": "Musim berakhir {{date}}",
+      "preSeason": "Pra-musim · musim pertama {{date}}"
     },
     "rivals": {
       "title": "Kamu vs {{city}}",
@@ -820,6 +832,16 @@
       "yours": "Punyamu",
       "theirBest": "Terbaik di {{city}}",
       "duels_other": "{{count}} duel"
+    },
+    "season": {
+      "resultsKicker": "{{season}} · Hasil musim",
+      "medalTitle": "Kamu finis #{{rank}}! 🎉",
+      "rankTitle_one": "Kamu finis #{{rank}} dari {{count}} pemain",
+      "rankTitle_other": "Kamu finis #{{rank}} dari {{count}} pemain",
+      "stats": "Poin: {{points}} · Hari bermain: {{days}} · Podium: {{podiums}}",
+      "newSeason": "Musim baru dimulai. Semua kembali ke 0.",
+      "play": "📸 Mainkan tantangan hari ini",
+      "close": "Tutup"
     }
   },
   "scoreWin": {
@@ -837,7 +859,10 @@
       "streak": "Beruntun",
       "early": "Awal",
       "stamp": "Stempel",
-      "other": "Bonus"
+      "other": "Bonus",
+      "week": "Minggu sempurna",
+      "friends": "Teman",
+      "crew": "Kru"
     },
     "medal": {
       "city": "di {{city}}",
@@ -850,7 +875,11 @@
     "goal": {
       "pass": "{{gap}} poin lagi untuk menyalip {{name}}",
       "streak": "🔥 Hari ke-{{day}} besok",
-      "stamp": "🎟️ Stempel berikutnya di {{city}}"
+      "stamp": "🎟️ Stempel berikutnya di {{city}}",
+      "week_one": "🔥 {{count}} hari lagi untuk minggu sempurna",
+      "week_other": "🔥 {{count}} hari lagi untuk minggu sempurna",
+      "crew_one": "🤝 {{count}} teman lagi untuk krumu",
+      "crew_other": "🤝 {{count}} teman lagi untuk krumu"
     },
     "ranks": "🏆 Lihat peringkat",
     "share": "📤 Bagikan kemenanganku",

@@ -136,8 +136,12 @@ export default function ScoreCelebrationModal({ data, visible, onClose, onOpenRa
   const goalLeft = !g ? null
     : g.type === 'pass' ? t('scoreWin.goal.pass', { gap: g.gap, name: g.username ? `@${g.username}` : (g.displayName ?? '') })
     : g.type === 'streak' ? t('scoreWin.goal.streak', { day: g.day })
+    // Scoring v2: "2 more days for a Perfect week", "2 friends to go".
+    : g.type === 'week' ? t('scoreWin.goal.week', { count: g.left, points: g.points })
+    : g.type === 'crew' ? t('scoreWin.goal.crew', { count: g.left, points: g.points })
     : t('scoreWin.goal.stamp', { city: shortCityName(g.city?.name ?? '') })
-  const goalRight = !g ? null : g.type === 'streak' ? `${g.day - 1} / ${g.milestone}` : g.type === 'stamp' ? `${g.done} / ${g.total}` : null
+  const goalRight = !g ? null : g.type === 'streak' ? `${g.day - 1} / ${g.milestone}`
+    : ['stamp', 'week', 'crew'].includes(g.type) ? `${g.done} / ${g.total}` : null
   const digits = String(totalPts).length
 
   return (

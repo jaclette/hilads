@@ -398,7 +398,8 @@
         "rate_limited": "Te veel pogingen - wacht even.",
         "own_proof": "Je kunt niet op je eigen foto stemmen.",
         "not_found": "Deze foto is niet meer beschikbaar.",
-        "generic": "Er ging iets mis. Probeer het opnieuw."
+        "generic": "Er ging iets mis. Probeer het opnieuw.",
+        "play_first": "Plaats je foto van vandaag om die van anderen te liken."
       },
       "voteFor": "Stem op {{city}}",
       "validatedHint": "Bevestigd door een local: iemand die hier woont, stemde op deze foto."
@@ -495,7 +496,8 @@
     },
     "week": {
       "title": "Deze week",
-      "keep": "Speel vandaag om je reeks vast te houden"
+      "keep": "Speel vandaag om je reeks vast te houden",
+      "perfectNudge": "Speel vandaag om je perfecte week af te maken 🔥 +{{points}}"
     },
     "calendar": {
       "title": "Mijn Daily Challenges",
@@ -789,7 +791,8 @@
         "today": "Vandaag",
         "yesterday": "Gisteren",
         "week": "Week",
-        "alltime": "Aller tijden"
+        "alltime": "Aller tijden",
+        "season": "Dit seizoen"
       },
       "timeLeftMin": "Nog minder dan een uur om te stemmen",
       "bestPerCity": "Beste foto per stad",
@@ -801,7 +804,12 @@
         "photo_one": "Jouw beste: #{{rank}} · {{count}} ❤️ tot #{{next}}",
         "photo_other": "Jouw beste: #{{rank}} · {{count}} ❤️ tot #{{next}}",
         "photoTop": "Jouw beste: #1 · niemand boven je 👑",
-        "photoNone": "Nog geen foto van jou in de ranking ❤️"
+        "photoNone": "Nog geen foto van jou in de ranking ❤️",
+        "seasonLead": "Je staat #1 dit seizoen! Verdedig je kroon 👑",
+        "seasonBehind_one": "Je staat #{{rank}} dit seizoen, {{count}} pt achter {{name}}",
+        "seasonBehind_other": "Je staat #{{rank}} dit seizoen, {{count}} ptn achter {{name}}",
+        "seasonTied": "Je staat #{{rank}} dit seizoen, gelijk met {{name}}",
+        "seasonNone": "Speel vandaag om in het seizoen te komen 🙋"
       },
       "city": {
         "lineTop": "{{city}} leidt de race! 🏁",
@@ -835,7 +843,11 @@
         "city": "Jouw stad hier? 🌍",
         "invite": "🎯 Wie pakt #{{rank}}? Nodig iemand uit",
         "empty": "Niemand pakte deze plek"
-      }
+      },
+      "seasonEnds_one": "Het seizoen eindigt over {{count}} dag",
+      "seasonEnds_other": "Het seizoen eindigt over {{count}} dagen",
+      "seasonEndsAt": "Het seizoen eindigt {{date}}",
+      "preSeason": "Voorseizoen · eerste seizoen {{date}}"
     },
     "rivals": {
       "title": "Jij vs {{city}}",
@@ -850,6 +862,16 @@
       "theirBest": "De beste uit {{city}}",
       "duels_one": "{{count}} duel",
       "duels_other": "{{count}} duels"
+    },
+    "season": {
+      "resultsKicker": "{{season}} · Seizoensuitslag",
+      "medalTitle": "Je eindigt op #{{rank}}! 🎉",
+      "rankTitle_one": "Je eindigt op #{{rank}} van {{count}} speler",
+      "rankTitle_other": "Je eindigt op #{{rank}} van {{count}} spelers",
+      "stats": "Punten: {{points}} · Dagen gespeeld: {{days}} · Podiums: {{podiums}}",
+      "newSeason": "Er begint een nieuw seizoen. Iedereen staat weer op 0.",
+      "play": "📸 Speel de challenge van vandaag",
+      "close": "Sluiten"
     }
   },
   "scoreWin": {
@@ -867,7 +889,10 @@
       "streak": "Reeks",
       "early": "Vroeg",
       "stamp": "Stempel",
-      "other": "Bonus"
+      "other": "Bonus",
+      "week": "Perfecte week",
+      "friends": "Vrienden",
+      "crew": "Crew"
     },
     "medal": {
       "city": "in {{city}}",
@@ -880,7 +905,11 @@
     "goal": {
       "pass": "{{gap}} ptn om {{name}} in te halen",
       "streak": "🔥 Morgen dag {{day}}",
-      "stamp": "🎟️ Volgende stempel in {{city}}"
+      "stamp": "🎟️ Volgende stempel in {{city}}",
+      "week_one": "🔥 Nog {{count}} dag voor een perfecte week",
+      "week_other": "🔥 Nog {{count}} dagen voor een perfecte week",
+      "crew_one": "🤝 Nog {{count}} vriend voor je crew",
+      "crew_other": "🤝 Nog {{count}} vrienden voor je crew"
     },
     "ranks": "🏆 Bekijk de ranglijst",
     "share": "📤 Deel mijn winst",

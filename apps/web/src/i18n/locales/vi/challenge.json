@@ -389,7 +389,8 @@
         "rate_limited": "Thử nhiều quá rồi, đợi chút nhé.",
         "own_proof": "Bạn không tự bình chọn ảnh của mình được.",
         "not_found": "Ảnh này không còn nữa.",
-        "generic": "Có lỗi rồi. Thử lại nhé."
+        "generic": "Có lỗi rồi. Thử lại nhé.",
+        "play_first": "Đăng ảnh hôm nay để thích ảnh của người khác."
       },
       "voteFor": "Bình chọn cho {{city}}",
       "validatedHint": "Dân địa phương xác nhận: một người sống ở đây đã bình chọn ảnh này."
@@ -483,7 +484,8 @@
     },
     "week": {
       "title": "Tuần này",
-      "keep": "Chơi hôm nay để giữ chuỗi"
+      "keep": "Chơi hôm nay để giữ chuỗi",
+      "perfectNudge": "Chơi hôm nay để hoàn thành Tuần hoàn hảo 🔥 +{{points}}"
     },
     "calendar": {
       "title": "Daily Challenge của tôi",
@@ -766,7 +768,8 @@
         "today": "Hôm nay",
         "yesterday": "Hôm qua",
         "week": "Tuần",
-        "alltime": "Mọi lúc"
+        "alltime": "Mọi lúc",
+        "season": "Mùa này"
       },
       "timeLeftMin": "Còn chưa tới một giờ để bình chọn",
       "bestPerCity": "Ảnh đỉnh nhất mỗi thành phố",
@@ -777,7 +780,12 @@
         "none": "Chơi hôm nay để lên bảng nha 🙋",
         "photo_other": "Ảnh tốt nhất của bạn: #{{rank}} · {{count}} ❤️ nữa lên #{{next}}",
         "photoTop": "Ảnh tốt nhất của bạn: #1 · không ai trên bạn 👑",
-        "photoNone": "Chưa có ảnh nào của bạn được xếp hạng ❤️"
+        "photoNone": "Chưa có ảnh nào của bạn được xếp hạng ❤️",
+        "seasonLead": "Bạn đang #1 mùa này! Giữ vững ngôi vương 👑",
+        "seasonBehind_one": "Bạn đang #{{rank}} mùa này, kém {{name}} {{count}} điểm",
+        "seasonBehind_other": "Bạn đang #{{rank}} mùa này, kém {{name}} {{count}} điểm",
+        "seasonTied": "Bạn đang #{{rank}} mùa này, bằng điểm với {{name}}",
+        "seasonNone": "Chơi hôm nay để vào mùa giải 🙋"
       },
       "city": {
         "lineTop": "{{city}} đang dẫn đầu! 🏁",
@@ -806,7 +814,11 @@
         "city": "Thành phố của bạn ở đây? 🌍",
         "invite": "🎯 Ai giành hạng #{{rank}}? Mời bạn bè",
         "empty": "Chưa ai giành vị trí này"
-      }
+      },
+      "seasonEnds_one": "Mùa giải kết thúc sau {{count}} ngày",
+      "seasonEnds_other": "Mùa giải kết thúc sau {{count}} ngày",
+      "seasonEndsAt": "Mùa giải kết thúc {{date}}",
+      "preSeason": "Tiền mùa giải · mùa đầu tiên {{date}}"
     },
     "rivals": {
       "title": "Bạn vs {{city}}",
@@ -820,6 +832,16 @@
       "yours": "Của bạn",
       "theirBest": "Đỉnh nhất {{city}}",
       "duels_other": "{{count}} trận"
+    },
+    "season": {
+      "resultsKicker": "{{season}} · Kết quả mùa giải",
+      "medalTitle": "Bạn về #{{rank}}! 🎉",
+      "rankTitle_one": "Bạn về #{{rank}} trên {{count}} người chơi",
+      "rankTitle_other": "Bạn về #{{rank}} trên {{count}} người chơi",
+      "stats": "Điểm: {{points}} · Ngày chơi: {{days}} · Lần lên bục: {{podiums}}",
+      "newSeason": "Mùa giải mới bắt đầu. Mọi người về 0 điểm.",
+      "play": "📸 Chơi thử thách hôm nay",
+      "close": "Đóng"
     }
   },
   "scoreWin": {
@@ -837,7 +859,10 @@
       "streak": "Chuỗi",
       "early": "Sớm",
       "stamp": "Con dấu",
-      "other": "Thưởng"
+      "other": "Thưởng",
+      "week": "Tuần hoàn hảo",
+      "friends": "Bạn bè",
+      "crew": "Hội"
     },
     "medal": {
       "city": "ở {{city}}",
@@ -850,7 +875,11 @@
     "goal": {
       "pass": "Còn {{gap}} điểm để vượt {{name}}",
       "streak": "🔥 Ngày {{day}} vào ngày mai",
-      "stamp": "🎟️ Con dấu tiếp theo ở {{city}}"
+      "stamp": "🎟️ Con dấu tiếp theo ở {{city}}",
+      "week_one": "🔥 Còn {{count}} ngày nữa là Tuần hoàn hảo",
+      "week_other": "🔥 Còn {{count}} ngày nữa là Tuần hoàn hảo",
+      "crew_one": "🤝 Còn {{count}} người bạn nữa là đủ hội",
+      "crew_other": "🤝 Còn {{count}} người bạn nữa là đủ hội"
     },
     "ranks": "🏆 Xem bảng xếp hạng",
     "share": "📤 Chia sẻ chiến thắng",

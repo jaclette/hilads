@@ -94,7 +94,7 @@ function RanksContent() {
     if (params.scope === 'city' || params.scope === 'world') setScope(params.scope);
   }, [params.tab, params.period, params.scope, setScope]);
   // A period the segment doesn't have (Players: today / week from an old link) → the segment's first.
-  useEffect(() => { if (!PERIODS[tab].includes(period)) setPeriod(PERIODS[tab][0]); }, [tab]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { if (!PERIODS[tab].includes(period)) setPeriod(PERIODS[tab][0]); }, [tab, period]);
 
   const loadedAt = useRef(0);
   const load = useCallback(async () => {

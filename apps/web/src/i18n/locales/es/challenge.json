@@ -407,7 +407,8 @@
         "rate_limited": "Demasiados intentos. Espera un momento.",
         "own_proof": "No puedes votar por tu propia foto.",
         "not_found": "Esta foto ya no está disponible.",
-        "generic": "Algo salió mal. Inténtalo de nuevo."
+        "generic": "Algo salió mal. Inténtalo de nuevo.",
+        "play_first": "Publica tu foto de hoy para dar like a las demás."
       },
       "voteFor": "Vota por {{city}}",
       "validatedHint": "Validada por alguien local: una persona que vive aquí votó por esta foto."
@@ -506,7 +507,8 @@
     },
     "week": {
       "title": "Esta semana",
-      "keep": "Juega hoy para mantener tu racha"
+      "keep": "Juega hoy para mantener tu racha",
+      "perfectNudge": "Juega hoy para completar tu semana perfecta 🔥 +{{points}}"
     },
     "calendar": {
       "title": "Mis Daily Challenges",
@@ -811,7 +813,8 @@
         "today": "Hoy",
         "yesterday": "Ayer",
         "week": "Semana",
-        "alltime": "Histórico"
+        "alltime": "Histórico",
+        "season": "Esta temporada"
       },
       "timeLeftMin": "Queda menos de una hora para votar",
       "bestPerCity": "Mejor foto por ciudad",
@@ -823,7 +826,12 @@
         "photo_one": "Tu mejor: #{{rank}} · {{count}} ❤️ para el #{{next}}",
         "photo_other": "Tu mejor: #{{rank}} · {{count}} ❤️ para el #{{next}}",
         "photoTop": "Tu mejor: #1 · nadie por encima 👑",
-        "photoNone": "Ninguna de tus fotos está en el ranking ❤️"
+        "photoNone": "Ninguna de tus fotos está en el ranking ❤️",
+        "seasonLead": "¡Vas #1 esta temporada! Defiende tu corona 👑",
+        "seasonBehind_one": "Vas #{{rank}} esta temporada, a {{count}} pt de {{name}}",
+        "seasonBehind_other": "Vas #{{rank}} esta temporada, a {{count}} pts de {{name}}",
+        "seasonTied": "Vas #{{rank}} esta temporada, empatado con {{name}}",
+        "seasonNone": "Juega hoy para entrar en la temporada 🙋"
       },
       "city": {
         "lineTop": "¡{{city}} lidera la carrera! 🏁",
@@ -861,7 +869,11 @@
         "city": "¿Tu ciudad aquí? 🌍",
         "invite": "🎯 ¿Quién se lleva el #{{rank}}? Invita a alguien",
         "empty": "Nadie tomó este puesto"
-      }
+      },
+      "seasonEnds_one": "La temporada termina en {{count}} día",
+      "seasonEnds_other": "La temporada termina en {{count}} días",
+      "seasonEndsAt": "La temporada termina {{date}}",
+      "preSeason": "Pretemporada · primera temporada {{date}}"
     },
     "rivals": {
       "title": "Tú vs {{city}}",
@@ -877,6 +889,16 @@
       "duels_one": "{{count}} duelo",
       "duels_other": "{{count}} duelos",
       "duels_many": "{{count}} duelos"
+    },
+    "season": {
+      "resultsKicker": "{{season}} · Resultados de la temporada",
+      "medalTitle": "¡Terminas #{{rank}}! 🎉",
+      "rankTitle_one": "Terminas #{{rank}} de {{count}} jugador",
+      "rankTitle_other": "Terminas #{{rank}} de {{count}} jugadores",
+      "stats": "Puntos: {{points}} · Días jugados: {{days}} · Podios: {{podiums}}",
+      "newSeason": "Empieza una nueva temporada. Todos vuelven a 0.",
+      "play": "📸 Juega el reto de hoy",
+      "close": "Cerrar"
     }
   },
   "scoreWin": {
@@ -894,7 +916,10 @@
       "streak": "Racha",
       "early": "Temprano",
       "stamp": "Sello",
-      "other": "Bonus"
+      "other": "Bonus",
+      "week": "Semana perfecta",
+      "friends": "Amigos",
+      "crew": "Crew"
     },
     "medal": {
       "city": "en {{city}}",
@@ -907,7 +932,11 @@
     "goal": {
       "pass": "{{gap}} pts para pasar a {{name}}",
       "streak": "🔥 Día {{day}} mañana",
-      "stamp": "🎟️ Próximo sello en {{city}}"
+      "stamp": "🎟️ Próximo sello en {{city}}",
+      "week_one": "🔥 Te falta {{count}} día para una semana perfecta",
+      "week_other": "🔥 Te faltan {{count}} días para una semana perfecta",
+      "crew_one": "🤝 Te falta {{count}} amigo para tu crew",
+      "crew_other": "🤝 Te faltan {{count}} amigos para tu crew"
     },
     "ranks": "🏆 Ver el ranking",
     "share": "📤 Compartir mi victoria",

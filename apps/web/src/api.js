@@ -1149,7 +1149,8 @@ export async function fetchMyAcceptances() {
  */
 export async function fetchScoreCelebration() {
   try {
-    const res = await fetch(`${BASE}/me/score-celebration`, { credentials: 'include' })
+    // X-Scoring: 2 - this web shows the Perfect week / friends / crew sources and goals.
+    const res = await fetch(`${BASE}/me/score-celebration`, { credentials: 'include', headers: { 'X-Scoring': '2' } })
     if (!res.ok) return { points: 0 }
     return await res.json().catch(() => ({ points: 0 }))
   } catch {
@@ -1409,12 +1410,14 @@ export async function fetchMentionSuggestions(context, id, q) {
 
 // ── Auth & profile ────────────────────────────────────────────────────────────
 
-export async function authSignup(email, password, displayName, username, guestId, mode = null, eulaAccepted = false) {
+export async function authSignup(email, password, displayName, username, guestId, mode = null, eulaAccepted = false, inviteCode = null) {
   const res = await fetch(`${BASE}/auth/signup`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', 'X-Platform': 'web' },
     credentials: 'include',
-    body: JSON.stringify({ email, password, display_name: displayName, username, guest_id: guestId, mode, eula_accepted: eulaAccepted }),
+    // Scoring v2: the invite link's code (lib/invite), credited once the first photo is approved.
+    body: JSON.stringify({ email, password, display_name: displayName, username, guest_id: guestId, mode, eula_accepted: eulaAccepted,
+                           ...(inviteCode ? { invite_code: inviteCode } : {}) }),
   })
   const data = await res.json()
   if (!res.ok) throw new Error(data.error || 'Signup failed')
@@ -2542,4 +2545,43 @@ export async function fetchMySpots() {
 export async function fetchWeeklyRank(cityId) {
   const params = cityId ? { scope: 'city', cityId: cityNum(cityId), limit: 1 } : { scope: 'world', limit: 1 }
   return (await daily('GET', '/leaderboard/week', { params })).me
+}
+
+// ── Scoring v2 (docs/scoring-v2-audit.md) ─────────────────────────────────────
+
+/** Every scoring value and this season (GET /daily/points): never hardcoded. */
+export async function fetchDailyPoints() {
+  const res = await fetch(`${BASE}/daily/points`)
+  if (!res.ok) throw new Error('points')
+  return res.json()
+}
+
+/** Who sends an invite link ("Invited by @minh"), else null. */
+export async function fetchInviter(code) {
+  try {
+    const res = await fetch(`${BASE}/invites/${encodeURIComponent(code)}`)
+    if (!res.ok) return null
+    return (await res.json()).inviter ?? null
+  } catch { return null }
+}
+
+/** My invite link and this season's crew (the Passport's "Bring your crew"). */
+export async function fetchCrew() {
+  const res = await fetch(`${BASE}/me/invite`, { credentials: 'include' })
+  if (!res.ok) throw new Error('crew')
+  return res.json()
+}
+
+/** My finished season's result not celebrated yet, else null; and mark it seen. */
+export async function fetchSeasonResult() {
+  try {
+    const res = await fetch(`${BASE}/me/season-result`, { credentials: 'include' })
+    if (!res.ok) return null
+    return (await res.json()).result ?? null
+  } catch { return null }
+}
+export function markSeasonSeen(season) {
+  fetch(`${BASE}/me/season-result/seen`, {
+    method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ season }),
+  }).catch(() => {})
 }

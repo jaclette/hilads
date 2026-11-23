@@ -80,7 +80,19 @@
       "localPass": "🎟️ Local Pass {{city}}!",
       "rankUp": "▲ Bạn lên hạng #{{rank}} ở {{where}}",
       "landedMany_other": "Hôm nay có {{count}} người chơi mới tới {{city}}",
-      "rankUpWorld": "▲ Bạn lên hạng #{{rank}} thế giới"
+      "rankUpWorld": "▲ Bạn lên hạng #{{rank}} thế giới",
+      "rankUpSeason": "▲ Bạn đã lên #{{rank}} ở {{where}} mùa này",
+      "rankUpWorldSeason": "▲ Bạn đã lên #{{rank}} thế giới mùa này",
+      "seasonMedal": "🏁 Bạn về #{{rank}} mùa này! Huy chương đã có trong Hộ chiếu",
+      "seasonResult_one": "🏁 Hết mùa: bạn về #{{rank}} với {{count}} điểm",
+      "seasonResult_other": "🏁 Hết mùa: bạn về #{{rank}} với {{count}} điểm",
+      "seasonEnding_one": "⏳ Mùa giải kết thúc sau {{count}} ngày: bạn đang #{{rank}}",
+      "seasonEnding_other": "⏳ Mùa giải kết thúc sau {{count}} ngày: bạn đang #{{rank}}",
+      "seasonEndingFirst_one": "⏳ Mùa giải kết thúc sau {{count}} ngày: bạn đang #1, giữ vững nhé!",
+      "seasonEndingFirst_other": "⏳ Mùa giải kết thúc sau {{count}} ngày: bạn đang #1, giữ vững nhé!",
+      "perfectWeek": "🔥 Tuần hoàn hảo! +{{points}}",
+      "friendJoined": "đã tham gia Hilads nhờ bạn 🤝 +{{points}} ({{count}}/{{max}})",
+      "crewBonus": "🎉 Hội của bạn đã đủ người! +{{points}}"
     },
     "empty": {
       "all": "Chưa có gì cả. Đi chụp ảnh nào 📸",

@@ -155,15 +155,21 @@
       "rivals": "Mga rival mo",
       "rivalsEmpty": "Maglaro ng ilang challenge para makilala ang mga unang rival mo 🌍",
       "duels_one": "{{count}} duel",
-      "duels_other": "{{count}} duels"
+      "duels_other": "{{count}} duels",
+      "seasonRank": "#{{rank}} ngayong season",
+      "seasonNone": "Maglaro para makasali sa season"
     },
     "points": {
       "title": "Paano makakuha ng points",
-      "intro": "Pasok sa weekly Most Local ang Daily Challenge points. Lahat ng points ay pasok sa all time.",
+      "intro": "Kasama ang points sa ranking ng season at sa all-time total mo.",
       "proof": "Pag-post ng photo mo",
       "vote": "Pag-vote (kada challenge)",
       "top": "World top 3 ng araw",
-      "weekly": "Nire-reset ang weekly Most Local tuwing Lunes."
+      "weekly": "Nire-reset ang weekly Most Local tuwing Lunes.",
+      "week": "Perfect week (lahat ng 7 araw)",
+      "friend": "Nag-post ng unang photo ang kaibigang inimbita mo",
+      "crew": "Kumpleto na ang crew mo ({{count}} kaibigan)",
+      "season": "Nagsisimula ulit ang ranking ng season tuwing ika-1 ng buwan."
     },
     "tabFriends": "Mga kaibigan",
     "friendRequests": "Friend requests",
@@ -193,6 +199,31 @@
       "photos_other": "photos",
       "likes_one": "like",
       "likes_other": "likes"
+    },
+    "week": {
+      "title": "Perfect week 🔥",
+      "points": "+{{points}}",
+      "days": "L,M,M,H,B,S,L",
+      "earned": "Tapos ang Perfect week! +{{points}} 🔥",
+      "missed": "May araw na na-miss ngayong linggo. Bagong linggo sa Lunes.",
+      "left_one": "{{count}} araw pa para sa +{{points}}",
+      "left_other": "{{count}} araw pa para sa +{{points}}",
+      "a11y": "Perfect week: {{done}} sa {{total}} araw"
+    },
+    "crew": {
+      "title": "Buuin ang crew mo 🤝",
+      "text": "+{{friend}} sa bawat kaibigang mag-post ng unang photo, +{{crew}} kapag {{max}} na ang sumali ngayong season.",
+      "done": "Kumpleto ang crew ngayong season! +{{points}} 🎉",
+      "invite": "Mag-imbita ng kaibigan",
+      "shareText": "Sumali ka sa akin sa Hilads: isang photo challenge kada araw, buong mundo ang naglalaro 📸 {{link}}",
+      "pending": "wala pang unang photo",
+      "pendingHint": "Bibilang ang kaibigan kapag naka-post na ang unang photo niya.",
+      "a11y": "{{count}} sa {{max}} kaibigan ngayong season",
+      "invitedBy": "Inimbitahan ni {{name}}"
+    },
+    "seasons": {
+      "medals": "Mga medalya ng season",
+      "medalA11y": "#{{rank}}, {{season}}, {{points}} points"
     }
   },
   "friendReq": {

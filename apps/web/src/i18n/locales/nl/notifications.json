@@ -82,7 +82,19 @@
       "rankUp": "▲ Je bent gestegen naar #{{rank}} in {{where}}",
       "landedMany_one": "{{count}} nieuwe speler is vandaag in {{city}} geland",
       "landedMany_other": "{{count}} nieuwe spelers zijn vandaag in {{city}} geland",
-      "rankUpWorld": "▲ Je bent gestegen naar #{{rank}} wereldwijd"
+      "rankUpWorld": "▲ Je bent gestegen naar #{{rank}} wereldwijd",
+      "rankUpSeason": "▲ Je bent dit seizoen gestegen naar #{{rank}} in {{where}}",
+      "rankUpWorldSeason": "▲ Je bent dit seizoen gestegen naar #{{rank}} in de wereld",
+      "seasonMedal": "🏁 Je eindigt het seizoen op #{{rank}}! Je medaille staat in je Paspoort",
+      "seasonResult_one": "🏁 Seizoen voorbij: je eindigt op #{{rank}} met {{count}} pt",
+      "seasonResult_other": "🏁 Seizoen voorbij: je eindigt op #{{rank}} met {{count}} ptn",
+      "seasonEnding_one": "⏳ Het seizoen eindigt over {{count}} dag: je staat #{{rank}}",
+      "seasonEnding_other": "⏳ Het seizoen eindigt over {{count}} dagen: je staat #{{rank}}",
+      "seasonEndingFirst_one": "⏳ Het seizoen eindigt over {{count}} dag: je staat #1, hou vol!",
+      "seasonEndingFirst_other": "⏳ Het seizoen eindigt over {{count}} dagen: je staat #1, hou vol!",
+      "perfectWeek": "🔥 Perfecte week! +{{points}}",
+      "friendJoined": "doet mee op Hilads dankzij jou 🤝 +{{points}} ({{count}}/{{max}})",
+      "crewBonus": "🎉 Je crew is compleet! +{{points}}"
     },
     "empty": {
       "all": "Niks aan de hand. Ga een foto maken 📸",

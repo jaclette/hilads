@@ -398,7 +398,8 @@
         "rate_limited": "Too many tries - wait a moment.",
         "own_proof": "You can't vote for your own photo.",
         "not_found": "This photo is no longer available.",
-        "generic": "Something went wrong. Try again."
+        "generic": "Something went wrong. Try again.",
+        "play_first": "Post today's photo to like the others."
       },
       "voteFor": "Vote for {{city}}",
       "validatedHint": "Validated by a local: someone who lives here voted for this photo."
@@ -495,7 +496,8 @@
     },
     "week": {
       "title": "This week",
-      "keep": "Play today to keep your streak"
+      "keep": "Play today to keep your streak",
+      "perfectNudge": "Play today to complete your Perfect week 🔥 +{{points}}"
     },
     "calendar": {
       "title": "My Daily Challenges",
@@ -789,7 +791,8 @@
         "today": "Today",
         "yesterday": "Yesterday",
         "week": "Week",
-        "alltime": "All time"
+        "alltime": "All time",
+        "season": "This season"
       },
       "timeLeftMin": "Less than an hour left to vote",
       "bestPerCity": "Best photo per city",
@@ -801,7 +804,12 @@
         "photo_one": "Your best: #{{rank}} · {{count}} ❤️ to #{{next}}",
         "photo_other": "Your best: #{{rank}} · {{count}} ❤️ to #{{next}}",
         "photoTop": "Your best: #1 · nobody above you 👑",
-        "photoNone": "None of your photos is ranked yet ❤️"
+        "photoNone": "None of your photos is ranked yet ❤️",
+        "seasonLead": "You're #1 this season! Defend your crown 👑",
+        "seasonBehind_one": "You're #{{rank}} this season, {{count}} pt behind {{name}}",
+        "seasonBehind_other": "You're #{{rank}} this season, {{count}} pts behind {{name}}",
+        "seasonTied": "You're #{{rank}} this season, level with {{name}}",
+        "seasonNone": "Play today to enter this season 🙋"
       },
       "city": {
         "lineTop": "{{city}} leads the race! 🏁",
@@ -835,7 +843,11 @@
         "city": "Your city here? 🌍",
         "invite": "🎯 Who takes #{{rank}}? Invite a friend",
         "empty": "Nobody took this spot"
-      }
+      },
+      "seasonEnds_one": "Season ends in {{count}} day",
+      "seasonEnds_other": "Season ends in {{count}} days",
+      "seasonEndsAt": "Season ends {{date}}",
+      "preSeason": "Pre-season · first season {{date}}"
     },
     "rivals": {
       "title": "You vs {{city}}",
@@ -850,6 +862,16 @@
       "theirBest": "Best in {{city}}",
       "duels_one": "{{count}} duel",
       "duels_other": "{{count}} duels"
+    },
+    "season": {
+      "resultsKicker": "{{season}} · Season results",
+      "medalTitle": "You finished #{{rank}}! 🎉",
+      "rankTitle_one": "You finished #{{rank}} of {{count}} player",
+      "rankTitle_other": "You finished #{{rank}} of {{count}} players",
+      "stats": "Points: {{points}} · Days played: {{days}} · Podiums: {{podiums}}",
+      "newSeason": "A new season starts now. Everyone is back to 0.",
+      "play": "📸 Play today's challenge",
+      "close": "Close"
     }
   },
   "scoreWin": {
@@ -867,7 +889,10 @@
       "streak": "Streak",
       "early": "Early",
       "stamp": "Stamp",
-      "other": "Bonus"
+      "other": "Bonus",
+      "week": "Perfect week",
+      "friends": "Friends",
+      "crew": "Crew"
     },
     "medal": {
       "city": "in {{city}}",
@@ -880,7 +905,11 @@
     "goal": {
       "pass": "{{gap}} pts to pass {{name}}",
       "streak": "🔥 Day {{day}} tomorrow",
-      "stamp": "🎟️ Next stamp in {{city}}"
+      "stamp": "🎟️ Next stamp in {{city}}",
+      "week_one": "🔥 {{count}} more day for a Perfect week",
+      "week_other": "🔥 {{count}} more days for a Perfect week",
+      "crew_one": "🤝 {{count}} friend to go for your crew",
+      "crew_other": "🤝 {{count}} friends to go for your crew"
     },
     "ranks": "🏆 See the ranking",
     "share": "📤 Share my win",

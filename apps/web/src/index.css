@@ -12292,3 +12292,34 @@ html[data-event="halloween"] { --header-art: #FFA552; --header-art-opacity: 0.28
 
 /* The full-screen chat photo's Report flag (someone else's photo): top-left, Close stays top-right. */
 .lightbox-report { right: auto; left: 18px; }
+
+/* Scoring v2: "Invited by @minh" on the sign-up form. */
+.auth-invited { margin: 0 0 12px; text-align: center; color: var(--muted, #888); font-weight: 600; }
+
+/* Scoring v2 on the Passport (components/passport/ScoringCards.jsx). */
+.pp-v2-card { display: flex; flex-direction: column; gap: 10px; padding: 14px 16px; border-radius: 20px; background: var(--bg2, #fff); border: 1px solid var(--line, rgba(0,0,0,.08)); }
+.pp-v2-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.pp-v2-pill { padding: 4px 12px; border-radius: 999px; background: var(--primary-tint, rgba(255,122,60,.14)); font-weight: 800; font-size: 13px; }
+.pp-v2-pill--gold { background: var(--gold-tint, rgba(212,160,23,.2)); }
+.pp-v2-count { font-weight: 800; }
+.pp-v2-dots { display: flex; justify-content: space-between; }
+.pp-v2-day { display: flex; flex-direction: column; align-items: center; gap: 4px; flex: 1; font-size: 12px; }
+.pp-v2-dot { width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--line, rgba(0,0,0,.12)); display: inline-flex; align-items: center; justify-content: center; }
+.pp-v2-dot--done { background: var(--cta, #FF7A3C); border-color: var(--cta, #FF7A3C); color: #fff; }
+.pp-v2-dot--today { border: 2px solid var(--cta, #FF7A3C); }
+.pp-v2-dot--missed { background: var(--bg3, rgba(0,0,0,.05)); color: var(--muted); }
+.pp-v2-dot--off { opacity: .4; }
+.pp-v2-bar { height: 8px; border-radius: 4px; background: var(--bg3, rgba(0,0,0,.06)); overflow: hidden; }
+.pp-v2-bar i { display: block; height: 8px; border-radius: 4px; background: var(--cta, #FF7A3C); }
+.pp-v2-bar i.gold { background: var(--gold, #D4A017); }
+.pp-v2-friends { display: flex; flex-wrap: wrap; gap: 12px; }
+.pp-v2-friend { display: flex; flex-direction: column; align-items: center; gap: 4px; width: 64px; font-size: 12px; opacity: .6; }
+.pp-v2-friend.on { opacity: 1; }
+.pp-v2-medals { display: flex; flex-wrap: wrap; gap: 12px; }
+.pp-v2-medal { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; }
+.pp-v2-invited { text-align: center; margin: 0; }
+.season-result-card { align-items: center; text-align: center; gap: 10px; display: flex; flex-direction: column; }
+.season-result-kicker { text-transform: uppercase; letter-spacing: .6px; font-size: 12px; margin: 0; }
+.season-result-rank { font-size: 56px; font-weight: 900; margin: 0; color: var(--primary-text, var(--cta)); }
+.season-result-place { display: flex; align-items: center; gap: 8px; align-self: stretch; text-align: left; }
+.season-result-place strong { flex: 1; }

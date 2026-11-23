@@ -18,6 +18,7 @@ import { openAppModal } from './components/AppModal'
 import TodayScreen, { preloadTodayHero } from './components/today/TodayScreen'
 import { LogoHat, SeasonalDayIcon, TabGhost, useEventFeature, useSeasonalLive } from './components/event/seasonal'
 import PassportScreen from './components/passport/PassportScreen'
+import SeasonResultGate from './components/SeasonResultGate'
 import { FriendsScreen, MyPhotosScreen, MySpotsScreen } from './components/passport/FriendsScreens'
 import CalendarScreen from './components/daily/CalendarScreen'
 import { ProposeScreen, TwistScreen, ProposalsScreen } from './components/daily/ProposalScreens'
@@ -4014,7 +4015,7 @@ export default function App() {
   function openLeaderboardFromProfile(scope) {
     setViewingProfile(null)
     setShowProfileDrawer(false)
-    openRanks({ tab: 'players', period: 'week', scope: scope === 'world' ? 'world' : 'city' })
+    openRanks({ tab: 'players', period: 'season', scope: scope === 'world' ? 'world' : 'city' })
   }
 
   // Open a shared internal link (from a feed CTA) in-app - no full navigation.
@@ -4111,7 +4112,7 @@ export default function App() {
   function goToRanksTab() { openRanks({ ...ranksParams, focus: null }) }
   // An old leaderboard link (scope city / cities / world, period month / alltime) → its Ranks segment.
   const ranksFromLeaderboard = (scope, period) => ({
-    tab: scope === 'cities' ? 'cities' : 'players', period: period === 'alltime' ? 'alltime' : 'week', scope: scope === 'world' ? 'world' : 'city',
+    tab: scope === 'cities' ? 'cities' : 'players', period: period === 'alltime' ? 'alltime' : scope === 'cities' ? 'week' : 'season', scope: scope === 'world' ? 'world' : 'city',
   })
 
   function changeCityFilter(f) {
@@ -5200,7 +5201,7 @@ export default function App() {
               <button
                 type="button"
                 className="header-city-leaderboard"
-                onClick={() => openRanks({ tab: 'players', period: 'week', scope: 'city' })}
+                onClick={() => openRanks({ tab: 'players', period: 'season', scope: 'city' })}
                 aria-label={
                   myCityRank
                     ? t('leaderboard.chip.ranked', { rank: myCityRank, ns: 'challenge' })
@@ -5238,7 +5239,14 @@ export default function App() {
       // V6: yesterday's results → the ranking of that day's photos, on mine (a little confetti).
       openRanks({ tab: 'photos', period: 'yesterday', focus: 'me' })
     } else if (notif.type === 'daily_rank') {
-      openRanks({ tab: 'players', period: 'week', scope: d.scope === 'world' ? 'world' : 'city' })
+      openRanks({ tab: 'players', period: 'season', scope: d.scope === 'world' ? 'world' : 'city' })
+    } else if (notif.type === 'daily_season_ending') {
+      // Scoring v2: the season's end → this season's players; its results → all time.
+      openRanks({ tab: 'players', period: 'season', scope: 'world' })
+    } else if (notif.type === 'daily_season_result') {
+      openRanks({ tab: 'players', period: 'alltime', scope: 'world' })
+    } else if (['daily_perfect_week', 'daily_friend_joined', 'daily_crew_bonus'].includes(notif.type)) {
+      goToMeTab()
     } else if (notif.type === 'daily_local_pass') {
       goToMeTab()
     } else if (notif.type === 'dm_message') {
@@ -6983,7 +6991,7 @@ export default function App() {
           onOpen={(row, params) => {
             if (['proposals', 'propose', 'challenge', 'stories', 'rivals'].includes(row)) openDaily(row, params)
             else if (row === 'alltime') { openRanks({ tab: 'players', period: 'alltime', scope: channelId ? 'city' : 'world' }) }
-            else if (row === 'week') { openRanks({ tab: 'players', period: 'week', scope: channelId ? 'city' : 'world' }) }
+            else if (row === 'week') { openRanks({ tab: 'players', period: 'season', scope: channelId ? 'city' : 'world' }) }
             else if (row === 'notifications') { setNotifOnly(null); setShowNotifications(true) }
             else if (row === 'messages') setShowConversations(true)
             else setPassportSub(row)
@@ -7484,6 +7492,9 @@ export default function App() {
         onOpenRanks={({ tab, period, scope }) => openRanks({ tab, period, scope })}
         onToast={(msg) => { setSuccessToast({ msg }); setTimeout(() => setSuccessToast(null), 2500) }}
       />
+
+      {/* Scoring v2: the season's results, once a month. */}
+      <SeasonResultGate account={account} onPlay={() => openDaily('challenge', { source: 'season_result' })} />
 
       {/* Desktop-only sidebar - always rendered to preserve 3-column layout */}
       <aside className="online-sidebar">

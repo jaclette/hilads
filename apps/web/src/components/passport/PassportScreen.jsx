@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { LogoHat, setSeasonalEvent } from '../event/seasonal'
-import { fetchDailyToday, fetchLeaderboard, fetchMyProposals, fetchMySpots, fetchUserDaily, fetchUserFriends, fetchWeeklyRank } from '../../api'
+import { fetchDailyToday, fetchLeaderboard, fetchMyProposals, fetchMySpots, fetchUserDaily, fetchUserFriends } from '../../api'
+import { CrewCard, InvitedBy, SeasonMedals, WeekCard, useScoringPoints } from './ScoringCards'
 import { shortCityName } from '../../i18n/cityName'
 import { CityFlag } from '../CityName'
 import { thumbUrl } from '../../lib/imageThumb'
@@ -18,8 +19,6 @@ import { useNotifCounts } from '../../lib/notifCounts'
 // Each stamp sits at its own slight angle, like a real passport (passport.html).
 const ROTATION = [-6, 5, -3, 7, -5, 4, -7]
 
-// The three ways to earn Daily Challenge points, same rows as the app's sheet.
-const POINTS = [['proof', 10], ['vote', 2], ['top', '30 / 20 / 10']]
 
 const ROW = { display: 'inline-flex', alignItems: 'center', gap: 'var(--sp-8)' }
 
@@ -62,7 +61,9 @@ export default function PassportScreen({ account, guestName, guestMode, cityId, 
     fetchMySpots().then(s => set({ spots: s.length })).catch(() => {})
     fetchMyProposals(i18n.language).then(p => set({ proposals: p.items.filter(x => x.status === 'pending').length })).catch(() => {})
     fetchUserFriends(account.id, { page: 1, limit: 1 }).then(f => set({ friends: f.total })).catch(() => {})
-    fetchWeeklyRank(cityKey).then(r => set({ week: r?.rank ?? null })).catch(() => {})
+    // Scoring v2: this season's rank (the leaderboard's "month" is the season, by challenge date).
+    fetchLeaderboard({ scope: cityKey ? 'city' : 'world', period: 'month', limit: 1, cityId: cityKey ?? undefined })
+      .then(r => set({ week: r?.me?.rank ?? null })).catch(() => {})
     fetchLeaderboard({ scope: cityKey ? 'city' : 'world', period: 'alltime', limit: 1, cityId: cityKey ?? undefined })
       .then(r => set({ alltime: r?.me?.rank ?? null })).catch(() => {})
     return () => { alive = false }
@@ -135,6 +136,7 @@ export default function PassportScreen({ account, guestName, guestMode, cityId, 
                   photo={account.thumbAvatarUrl ?? account.profile_photo_url ?? null} mode={account.mode ?? null}
                   city={home ? shortCityName(home.name ?? '') : city} country={home ? home.country : cityCountry} since={since}
                   stats={stats ? { cities: stats.citiesPlayed ?? null, photos: stats.photos ?? stats.completed ?? null, likes: stats.likesReceived ?? null } : null} />
+        {stats?.invitedBy && <InvitedBy by={stats.invitedBy} />}
 
         <div className="pp-cards">
           <div className="pp-card">
@@ -144,10 +146,14 @@ export default function PassportScreen({ account, guestName, guestMode, cityId, 
           </div>
           <button type="button" className="pp-card pp-card--tap tappable" onClick={() => onOpen('week')}>
             <span className="pp-card-disc pp-card-disc--rank"><Icon name="trophy-outline" size={20} /></span>
-            <span className="pp-card-title">{counts.week ? t('passport.weekRank', { rank: counts.week }) : t('passport.weekNone')}</span>
+            <span className="pp-card-title">{counts.week ? t('passport.seasonRank', { rank: counts.week }) : t('passport.seasonNone')}</span>
             <span className="dc-muted pp-ellipsis">{city ? t('passport.mostLocalIn', { city }) : t('passport.mostLocalWorld')}</span>
           </button>
         </div>
+        {/* Scoring v2: this week's Perfect week, the crew, the season medals. */}
+        {stats?.week && <WeekCard week={stats.week} />}
+        <CrewCard />
+        {(stats?.seasonMedals?.length ?? 0) > 0 && <SeasonMedals medals={stats.seasonMedals} />}
         {/* Your rivals moved to World › Cities (UX audit: one place to compare cities). */}
         {progress.length > 0 && (
           <div className="pp-pages-wrap">
@@ -358,9 +364,12 @@ function Row({ label, value = '', icon = null, tone = null, leading = null, onCl
   )
 }
 
-/** "How to earn points": the 9 ways, as in the app's sheet. */
+/** "How to earn points" (scoring v2): the server's values, as in the app's sheet. */
 function PointsSheet({ onClose }) {
   const { t } = usePp()
+  const p = useScoringPoints()
+  const POINTS = [['proof', `+${p.proof}`], ['top', p.top.map(n => `+${n}`).join(' / ')], ['week', `+${p.perfectWeek ?? 30}`],
+                  ['friend', `+${p.friendJoined ?? 10}`], ['crew', `+${p.crewBonus ?? 50}`]]
   return (
     <div className="v3-sheet-wrap" role="dialog" aria-modal="true" aria-label={t('points.title')}>
       <button type="button" className="v3-sheet-scrim" onClick={onClose} aria-label={t('passport.close')} />
@@ -370,10 +379,10 @@ function PointsSheet({ onClose }) {
         <p className="dc-muted">{t('points.intro')}</p>
         <div className="pp-points-list">
           {POINTS.map(([key, pts]) => (
-            <div key={key} className="pp-points-row"><span>{t(`points.${key}`)}</span><strong>+{pts}</strong></div>
+            <div key={key} className="pp-points-row"><span>{t(`points.${key}`, { count: p.crewSize ?? 5 })}</span><strong>{pts}</strong></div>
           ))}
         </div>
-        <p className="dc-muted">{t('points.weekly')}</p>
+        <p className="dc-muted">{t('points.season')}</p>
         <button type="button" className="today-cta dc-full btn-primary" onClick={onClose}>{t('passport.gotIt')}</button>
       </div>
     </div>

@@ -147,15 +147,21 @@
       "localSince": "Warga lokal {{city}} sejak {{date}}",
       "rivals": "Rivalmu",
       "rivalsEmpty": "Main beberapa tantangan buat ketemu rival pertamamu 🌍",
-      "duels_other": "{{count}} duel"
+      "duels_other": "{{count}} duel",
+      "seasonRank": "#{{rank}} musim ini",
+      "seasonNone": "Main untuk masuk musim ini"
     },
     "points": {
       "title": "Cara dapat poin",
-      "intro": "Poin Daily Challenge masuk ke Most Local mingguan. Semua poin masuk ke peringkat sepanjang masa.",
+      "intro": "Poin dihitung di peringkat musim ini dan total sepanjang masamu.",
       "proof": "Posting fotomu",
       "vote": "Vote (per tantangan)",
       "top": "Top 3 dunia hari itu",
-      "weekly": "Most Local mingguan direset tiap Senin."
+      "weekly": "Most Local mingguan direset tiap Senin.",
+      "week": "Minggu sempurna (7 hari penuh)",
+      "friend": "Teman yang kamu undang memposting foto pertamanya",
+      "crew": "Krumu lengkap ({{count}} teman)",
+      "season": "Peringkat musim dimulai ulang setiap tanggal 1."
     },
     "tabFriends": "Teman",
     "friendRequests": "Permintaan pertemanan",
@@ -181,6 +187,31 @@
       "cities_other": "kota",
       "photos_other": "foto",
       "likes_other": "suka"
+    },
+    "week": {
+      "title": "Minggu sempurna 🔥",
+      "points": "+{{points}}",
+      "days": "S,S,R,K,J,S,M",
+      "earned": "Minggu sempurna tercapai! +{{points}} 🔥",
+      "missed": "Ada satu hari terlewat minggu ini. Minggu baru dimulai hari Senin.",
+      "left_one": "{{count}} hari lagi untuk +{{points}}",
+      "left_other": "{{count}} hari lagi untuk +{{points}}",
+      "a11y": "Minggu sempurna: {{done}} dari {{total}} hari"
+    },
+    "crew": {
+      "title": "Kumpulkan krumu 🤝",
+      "text": "+{{friend}} untuk setiap teman yang memposting foto pertama, +{{crew}} saat {{max}} teman bergabung musim ini.",
+      "done": "Kru lengkap musim ini! +{{points}} 🎉",
+      "invite": "Undang teman",
+      "shareText": "Main bareng aku di Hilads: satu tantangan foto setiap hari, seluruh dunia ikut main 📸 {{link}}",
+      "pending": "foto pertama belum ada",
+      "pendingHint": "Teman dihitung begitu foto pertamanya diposting.",
+      "a11y": "{{count}} dari {{max}} teman musim ini",
+      "invitedBy": "Diundang oleh {{name}}"
+    },
+    "seasons": {
+      "medals": "Medali musim",
+      "medalA11y": "#{{rank}}, {{season}}, {{points}} poin"
     }
   },
   "friendReq": {

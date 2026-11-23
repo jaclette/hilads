@@ -407,7 +407,8 @@
         "rate_limited": "Troppi tentativi: aspetta un attimo.",
         "own_proof": "Non puoi votare la tua foto.",
         "not_found": "Questa foto non è più disponibile.",
-        "generic": "Qualcosa è andato storto. Riprova."
+        "generic": "Qualcosa è andato storto. Riprova.",
+        "play_first": "Pubblica la tua foto di oggi per mettere like alle altre."
       },
       "voteFor": "Vota {{city}}",
       "validatedHint": "Approvata da chi vive qui: una persona del posto ha votato questa foto."
@@ -506,7 +507,8 @@
     },
     "week": {
       "title": "Questa settimana",
-      "keep": "Gioca oggi per mantenere la tua serie"
+      "keep": "Gioca oggi per mantenere la tua serie",
+      "perfectNudge": "Gioca oggi per completare la tua settimana perfetta 🔥 +{{points}}"
     },
     "calendar": {
       "title": "Le mie Daily Challenge",
@@ -811,7 +813,8 @@
         "today": "Oggi",
         "yesterday": "Ieri",
         "week": "Settimana",
-        "alltime": "Di sempre"
+        "alltime": "Di sempre",
+        "season": "Questa stagione"
       },
       "timeLeftMin": "Manca meno di un'ora per votare",
       "bestPerCity": "Foto migliore per città",
@@ -823,7 +826,12 @@
         "photo_one": "La tua migliore: #{{rank}} · {{count}} ❤️ al #{{next}}",
         "photo_other": "La tua migliore: #{{rank}} · {{count}} ❤️ al #{{next}}",
         "photoTop": "La tua migliore: #1 · nessuno sopra di te 👑",
-        "photoNone": "Nessuna tua foto è in classifica ❤️"
+        "photoNone": "Nessuna tua foto è in classifica ❤️",
+        "seasonLead": "Sei #1 in questa stagione! Difendi la corona 👑",
+        "seasonBehind_one": "Sei #{{rank}} in questa stagione, a {{count}} punto da {{name}}",
+        "seasonBehind_other": "Sei #{{rank}} in questa stagione, a {{count}} punti da {{name}}",
+        "seasonTied": "Sei #{{rank}} in questa stagione, a pari punti con {{name}}",
+        "seasonNone": "Gioca oggi per entrare nella stagione 🙋"
       },
       "city": {
         "lineTop": "{{city}} guida la gara! 🏁",
@@ -861,7 +869,11 @@
         "city": "La tua città qui? 🌍",
         "invite": "🎯 Chi prende il #{{rank}}? Invita un amico",
         "empty": "Nessuno ha preso questo posto"
-      }
+      },
+      "seasonEnds_one": "La stagione finisce tra {{count}} giorno",
+      "seasonEnds_other": "La stagione finisce tra {{count}} giorni",
+      "seasonEndsAt": "La stagione finisce {{date}}",
+      "preSeason": "Pre-stagione · prima stagione {{date}}"
     },
     "rivals": {
       "title": "Tu vs {{city}}",
@@ -877,6 +889,16 @@
       "duels_one": "{{count}} duello",
       "duels_other": "{{count}} duelli",
       "duels_many": "{{count}} duelli"
+    },
+    "season": {
+      "resultsKicker": "{{season}} · Risultati della stagione",
+      "medalTitle": "Chiudi al #{{rank}}! 🎉",
+      "rankTitle_one": "Chiudi al #{{rank}} su {{count}} giocatore",
+      "rankTitle_other": "Chiudi al #{{rank}} su {{count}} giocatori",
+      "stats": "Punti: {{points}} · Giorni giocati: {{days}} · Podi: {{podiums}}",
+      "newSeason": "Inizia una nuova stagione. Tutti ripartono da 0.",
+      "play": "📸 Gioca la sfida di oggi",
+      "close": "Chiudi"
     }
   },
   "scoreWin": {
@@ -894,7 +916,10 @@
       "streak": "Serie",
       "early": "In anticipo",
       "stamp": "Timbro",
-      "other": "Bonus"
+      "other": "Bonus",
+      "week": "Settimana perfetta",
+      "friends": "Amici",
+      "crew": "Crew"
     },
     "medal": {
       "city": "a {{city}}",
@@ -907,7 +932,11 @@
     "goal": {
       "pass": "{{gap}} pt per superare {{name}}",
       "streak": "🔥 Giorno {{day}} domani",
-      "stamp": "🎟️ Prossimo timbro a {{city}}"
+      "stamp": "🎟️ Prossimo timbro a {{city}}",
+      "week_one": "🔥 Ancora {{count}} giorno per una settimana perfetta",
+      "week_other": "🔥 Ancora {{count}} giorni per una settimana perfetta",
+      "crew_one": "🤝 Ancora {{count}} amico per la tua crew",
+      "crew_other": "🤝 Ancora {{count}} amici per la tua crew"
     },
     "ranks": "🏆 Vedi la classifica",
     "share": "📤 Condividi la mia vittoria",

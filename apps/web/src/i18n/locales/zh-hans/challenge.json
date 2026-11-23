@@ -389,7 +389,8 @@
         "rate_limited": "尝试次数太多了，稍等一下。",
         "own_proof": "不能给自己的照片投票。",
         "not_found": "这张照片已不可用。",
-        "generic": "出了点问题，再试一次吧。"
+        "generic": "出了点问题，再试一次吧。",
+        "play_first": "先发今天的照片，才能给别人点赞。"
       },
       "voteFor": "投给 {{city}}",
       "validatedHint": "本地人认证：住在这里的人给这张照片投了票。"
@@ -483,7 +484,8 @@
     },
     "week": {
       "title": "本周",
-      "keep": "今天参加，继续连续打卡"
+      "keep": "今天参加，继续连续打卡",
+      "perfectNudge": "今天玩一局就能完成完美一周 🔥 +{{points}}"
     },
     "calendar": {
       "title": "我的 Daily Challenge",
@@ -766,7 +768,8 @@
         "today": "今天",
         "yesterday": "昨天",
         "week": "本周",
-        "alltime": "历史"
+        "alltime": "历史",
+        "season": "本赛季"
       },
       "timeLeftMin": "投票还剩不到一小时",
       "bestPerCity": "每座城市的最佳照片",
@@ -777,7 +780,12 @@
         "none": "今天出战就能上榜 🙋",
         "photo_other": "你的最佳：第 {{rank}} 名 · 再 {{count}} ❤️ 到第 {{next}} 名",
         "photoTop": "你的最佳：第 1 名 · 没人在你之上 👑",
-        "photoNone": "你还没有照片上榜 ❤️"
+        "photoNone": "你还没有照片上榜 ❤️",
+        "seasonLead": "你是本赛季第 1 名！守住王冠 👑",
+        "seasonBehind_one": "你本赛季排第 {{rank}}，落后 {{name}} {{count}} 分",
+        "seasonBehind_other": "你本赛季排第 {{rank}}，落后 {{name}} {{count}} 分",
+        "seasonTied": "你本赛季排第 {{rank}}，与 {{name}} 同分",
+        "seasonNone": "今天玩一局就能加入本赛季 🙋"
       },
       "city": {
         "lineTop": "{{city}} 领跑！🏁",
@@ -806,7 +814,11 @@
         "city": "你的城市放这里？🌍",
         "invite": "🎯 谁能拿下第 {{rank}} 名？邀请朋友",
         "empty": "这个位置还没人拿下"
-      }
+      },
+      "seasonEnds_one": "赛季还剩 {{count}} 天结束",
+      "seasonEnds_other": "赛季还剩 {{count}} 天结束",
+      "seasonEndsAt": "赛季结束于 {{date}}",
+      "preSeason": "季前赛 · 首个赛季 {{date}}"
     },
     "rivals": {
       "title": "你 vs {{city}}",
@@ -820,6 +832,16 @@
       "yours": "你的",
       "theirBest": "{{city}} 最佳",
       "duels_other": "{{count}} 场对决"
+    },
+    "season": {
+      "resultsKicker": "{{season}} · 赛季结果",
+      "medalTitle": "你获得第 {{rank}} 名！🎉",
+      "rankTitle_one": "你在 {{count}} 位玩家中排第 {{rank}}",
+      "rankTitle_other": "你在 {{count}} 位玩家中排第 {{rank}}",
+      "stats": "积分：{{points}} · 参与天数：{{days}} · 登上领奖台：{{podiums}}",
+      "newSeason": "新赛季开始了，所有人从 0 分重新出发。",
+      "play": "📸 玩今天的挑战",
+      "close": "关闭"
     }
   },
   "scoreWin": {
@@ -837,7 +859,10 @@
       "streak": "连续",
       "early": "提早",
       "stamp": "印章",
-      "other": "奖励"
+      "other": "奖励",
+      "week": "完美一周",
+      "friends": "朋友",
+      "crew": "小队"
     },
     "medal": {
       "city": "在{{city}}",
@@ -850,7 +875,11 @@
     "goal": {
       "pass": "再得 {{gap}} 分超过 {{name}}",
       "streak": "🔥 明天第 {{day}} 天",
-      "stamp": "🎟️ {{city}}的下一个印章"
+      "stamp": "🎟️ {{city}}的下一个印章",
+      "week_one": "🔥 再玩 {{count}} 天就是完美一周",
+      "week_other": "🔥 再玩 {{count}} 天就是完美一周",
+      "crew_one": "🤝 再邀 {{count}} 位朋友就能集齐小队",
+      "crew_other": "🤝 再邀 {{count}} 位朋友就能集齐小队"
     },
     "ranks": "🏆 查看排行榜",
     "share": "📤 分享我的胜利",

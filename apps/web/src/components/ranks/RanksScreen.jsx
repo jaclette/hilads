@@ -14,7 +14,12 @@ import { Confetti, FitText, MEDAL, Movement, Podium, RaceBar, RankRow, YouBar } 
 import { IndexCarousel } from '../daily/Comparisons'
 import RivalsBlock from './RivalsBlock'
 
-const PERIODS = { photos: ['today', 'yesterday', 'week', 'alltime'], players: ['today', 'week', 'alltime'], cities: ['today', 'week', 'alltime'] }
+// Scoring v2: players are ranked for this season (the default, it starts over every month) and all time.
+const PERIODS = { photos: ['today', 'yesterday', 'week', 'alltime'], players: ['season', 'alltime'], cities: ['today', 'week', 'alltime'] }
+
+/** When the season ends, in the visitor's own time. */
+const seasonEnd = (s) => { try { return new Date(s.endsAt).toLocaleString(i18n.language, { weekday: 'short', day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit' }) } catch { return s.endsAt } }
+const seasonStart = (s) => { try { return new Date(s.endsAt).toLocaleDateString(i18n.language, { day: 'numeric', month: 'short' }) } catch { return s.endsAt } }
 const GOLD = themeColor('sip')
 
 /**
@@ -52,7 +57,8 @@ export default function RanksScreen({ header, initial }) {
     if (initial.period) setPeriod(initial.period)
     if (initial.scope) setScope(initial.scope)
   }, [initial?.at]) // eslint-disable-line react-hooks/exhaustive-deps
-  useEffect(() => { if (!PERIODS[tab].includes(period)) setPeriod('today') }, [tab]) // eslint-disable-line react-hooks/exhaustive-deps
+  // A period the segment doesn't have (Players: today / week from an old link) → the segment's first.
+  useEffect(() => { if (!PERIODS[tab].includes(period)) setPeriod(PERIODS[tab][0]) }, [tab, period])
 
   useEffect(() => {
     let alive = true
@@ -67,7 +73,11 @@ export default function RanksScreen({ header, initial }) {
   // The info line (today's photos: the time left to vote).
   const endsAt = tab === 'photos' && period === 'today' ? data?.endsAt ?? null : null
   const hours = endsAt ? Math.max(0, Math.floor((endsAt * 1000 - Date.now()) / 3600000)) : null
-  const info = hours === null ? '' : hours > 0 ? t('ranks.timeLeft', { count: hours }) : t('ranks.timeLeftMin')
+  const season = tab === 'players' && period === 'season' ? data?.season ?? null : null
+  const info = season
+    ? season.pre ? t('ranks.preSeason', { date: seasonStart(season) })
+      : season.daysLeft > 1 ? t('ranks.seasonEnds', { count: season.daysLeft }) : t('ranks.seasonEndsAt', { date: seasonEnd(season) })
+    : hours === null ? '' : hours > 0 ? t('ranks.timeLeft', { count: hours }) : t('ranks.timeLeftMin')
   // An empty podium place (as the app): a past period has nobody to call ("Nobody took this spot");
   // today, before I've played: play (Today: the web has no camera); once I've played: invite a
   // friend (my photo's link, else today's challenge).
@@ -79,7 +89,7 @@ export default function RanksScreen({ header, initial }) {
     else shareLink({ type: 'today', path: '/today', text: i18n.t('shareLink.textToday', { ns: 'common', challenge: today?.challenge?.text ?? '' }), source: 'ranks_ghost' })
   }
   const ghost = (rank) => {
-    if (period !== 'today') return { label: t('ranks.ghost.empty'), icon: 'close' }
+    if (period !== 'today' && !(tab === 'players' && period === 'season')) return { label: t('ranks.ghost.empty'), icon: 'close' }
     if (tab === 'cities') return { label: t('ranks.ghost.city'), icon: 'flag-outline', onClick: tap('today', openToday) }
     if (played) return { label: t('ranks.ghost.invite', { rank }), icon: 'person-add-outline', onClick: tap('invite', invite) }
     return { label: t(tab === 'photos' ? 'ranks.ghost.photo' : 'ranks.ghost.player'), icon: 'camera-outline', onClick: tap('play', openToday) }
@@ -277,7 +287,14 @@ function Players({ data, failed, period, ghost }) {
     key: e.user.id, rank: e.rank, label: handle(e.user), value: e.points, format: pts, onClick: () => openProfile(e.user.id, e.user.displayName),
     lead: <span className="r6-podium-avatar" style={{ borderColor: MEDAL[e.rank - 1] }}><AvatarWithFlag userId={e.user.id} displayName={e.user.displayName ?? e.user.username} photoUrl={e.user.photoUrl} size={56} /></span>,
   }))
-  const you = me ? (me.rank === 1 ? t('ranks.you.top') : t('ranks.you.player', { rank: me.rank, gap: me.gap ?? 0, name: me.next ? handle(me.next) : '' })) : t('ranks.you.none')
+  // This season: "You're #2 this season, 15 pts behind @kitty_3".
+  const behind = Math.max(0, (me?.gap ?? 1) - 1)
+  const you = !me ? t(period === 'season' ? 'ranks.you.seasonNone' : 'ranks.you.none')
+    : period === 'season'
+      ? me.rank === 1 ? t('ranks.you.seasonLead')
+        : behind > 0 ? t('ranks.you.seasonBehind', { rank: me.rank, count: behind, name: me.next ? handle(me.next) : `#${me.rank - 1}` })
+        : t('ranks.you.seasonTied', { rank: me.rank, name: me.next ? handle(me.next) : `#${me.rank - 1}` })
+      : me.rank === 1 ? t('ranks.you.top') : t('ranks.you.player', { rank: me.rank, gap: me.gap ?? 0, name: me.next ? handle(me.next) : '' })
   return (
     <>
       {!entries.length && <Empty text={t('ranks.empty.players')} />}
