@@ -126,10 +126,22 @@ final class Invites
                 $via = 'ip';
             }
             if ($inviter['id'] === $newUserId) return null;
-            Database::pdo()->prepare("
+            $upd = Database::pdo()->prepare("
                 UPDATE users SET invited_by_user_id = ?, invited_via = ?, invited_at = now()
                 WHERE id = ? AND invited_by_user_id IS NULL
-            ")->execute([$inviter['id'], $via, $newUserId]);
+            ");
+            $upd->execute([$inviter['id'], $via, $newUserId]);
+            if ($upd->rowCount() === 1) {
+                // "Minh joined Hilads with your link 🎉" (step 2 of 3 for the inviter).
+                $stmt = Database::pdo()->prepare("SELECT username, display_name FROM users WHERE id = ?");
+                $stmt->execute([$newUserId]);
+                $f = $stmt->fetch(PDO::FETCH_ASSOC) ?: [];
+                self::notify((string) $inviter['id'], 'daily_friend_signed_up', [
+                    'friendId' => $newUserId, 'username' => $f['username'] ?? null,
+                    'name' => ($f['display_name'] ?? '') !== '' ? $f['display_name'] : ('@' . ($f['username'] ?? '')),
+                    'points' => Scoring::points('friend_joined'),
+                ]);
+            }
             return $inviter['id'];
         } catch (\Throwable $e) {
             error_log('[invites] attribute failed: ' . $e->getMessage());
@@ -287,7 +299,9 @@ final class Invites
             SELECT u.id, u.display_name, u.username, u.profile_thumb_photo_url AS thumb, u.invited_at,
                    EXISTS (SELECT 1 FROM score_events se JOIN daily_challenges dc ON dc.id = se.daily_challenge_id
                            WHERE se.user_id = ? AND se.kind = 'friend_joined' AND se.subject_user_id = u.id
-                             AND dc.challenge_date BETWEEN ?::date AND ?::date) AS credited
+                             AND dc.challenge_date BETWEEN ?::date AND ?::date) AS credited,
+                   EXISTS (SELECT 1 FROM daily_proofs p WHERE p.user_id = u.id AND p.moderation_status = 'approved'
+                             AND NOT p.is_demo AND NOT p.is_seed AND NOT p.is_suggestion) AS played
             FROM users u
             WHERE u.invited_by_user_id = ? AND u.deleted_at IS NULL
             ORDER BY u.invited_at DESC LIMIT 50
@@ -296,11 +310,22 @@ final class Invites
         $friends = array_map(static fn(array $r): array => [
             'id' => $r['id'], 'displayName' => $r['display_name'], 'username' => $r['username'],
             'photoUrl' => R2Uploader::thumbProxy($r['thumb']), 'credited' => DailyProofRepository::bool($r['credited']),
+            // joined (no photo yet) | credited (+10) | played (a photo, no credit: same phone, an older account, the season's cap)
+            'status'   => DailyProofRepository::bool($r['credited']) ? 'credited' : (DailyProofRepository::bool($r['played']) ? 'played' : 'joined'),
             'joinedAt' => $r['invited_at'] !== null ? strtotime((string) $r['invited_at']) : null,
         ], $stmt->fetchAll(PDO::FETCH_ASSOC));
         $max = (int) Scoring::config()['crew_size'];
+        // Link opens this season (anonymous until the friend signs up).
+        $clicks = 0;
+        try {
+            $c = Database::pdo()->prepare("SELECT count(*) FROM invite_clicks WHERE inviter_user_id = ? AND created_at >= ?::date");
+            $c->execute([$userId, $season['startsOn']]);
+            $clicks = (int) $c->fetchColumn();
+        } catch (\Throwable) { /* before the migration */ }
         return [
             'code'    => $code,
+            'clicks'  => $clicks,
+            'perSeason' => (int) Scoring::config()['invites_per_season'],
             'link'    => self::LINK_BASE . $code,
             'count'   => min($max, self::seasonCount($userId, $season, 'friend_joined')),
             'max'     => $max,

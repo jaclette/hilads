@@ -213,6 +213,51 @@
     "seasons": {
       "medals": "賽季獎牌",
       "medalA11y": "第 {{rank}} 名，{{season}}，{{points}} 分"
+    },
+    "invite": {
+      "title": "召集你的小隊",
+      "signedOutTitle": "和朋友一起玩",
+      "signedOutText": "建立帳號即可取得邀請連結，朋友加入時你還能賺積分。",
+      "signUp": "註冊",
+      "cardA11y": "你的邀請卡：{{name}} 邀請你加入 Hilads",
+      "cardTitle": "{{name}} 邀請你加入 Hilads",
+      "cardText": "每天一張照片。你的城市對決全世界 📸🌍",
+      "progressTitle": "本賽季",
+      "crewLine": "集齊 {{count}} 位朋友的小隊，獎勵 +{{points}}",
+      "step1Title": "分享你的連結",
+      "step1Text": "傳給還沒用 Hilads 的朋友。",
+      "step2Title": "朋友加入 Hilads",
+      "step2Text": "對方透過你的連結註冊後，會出現在下方。",
+      "step3Title": "對方發出第一張照片",
+      "step3Text": "照片通過審核後，你就能獲得積分。",
+      "bonus": "第 {{count}} 位朋友開始玩時 +{{points}}",
+      "friendsTitle": "你的朋友",
+      "error": "無法載入你的朋友。",
+      "retry": "重試",
+      "noFriends": "還沒有朋友。分享一下，第一位就來了 🤝",
+      "rules": "僅限新帳號，每位朋友一支手機，每賽季最多 {{count}} 位朋友。對方的第一張照片通過審核後積分入帳。",
+      "shareLine": "和我一起玩 Hilads：每天一張照片，我們的城市對決全世界 📸🌍",
+      "share": "分享我的邀請連結",
+      "copied": "已複製！",
+      "progress": "{{count}} / {{max}}",
+      "clicks_zero": "本賽季你的連結被打開了 {{count}} 次",
+      "clicks_one": "本賽季你的連結被打開了 {{count}} 次",
+      "clicks_two": "本賽季你的連結被打開了 {{count}} 次",
+      "clicks_few": "本賽季你的連結被打開了 {{count}} 次",
+      "clicks_many": "本賽季你的連結被打開了 {{count}} 次",
+      "clicks_other": "本賽季你的連結被打開了 {{count}} 次",
+      "channel": {
+        "whatsapp": "WhatsApp",
+        "zalo": "Zalo",
+        "messenger": "Messenger",
+        "copy_link": "複製連結",
+        "share_sheet": "更多"
+      },
+      "status": {
+        "joined": "已加入 · 等待第一張照片",
+        "played": "已玩 · 無積分（同一支手機或已達上限）",
+        "credited": "第一張照片已通過 · +{{points}}"
+      }
     }
   },
   "friendReq": {

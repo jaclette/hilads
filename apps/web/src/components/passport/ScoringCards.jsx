@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { fetchCrew, fetchDailyPoints } from '../../api'
 import { RankMedal } from '../daily/dailyShared'
-import { shareLink } from '../../lib/shareLink'
+import { track } from '../../lib/analytics'
 import AvatarWithFlag from '../AvatarWithFlag'
 import Icon from '../Icon'
 import i18n from '../../i18n'
@@ -51,15 +51,19 @@ export function WeekCard({ week }) {
   )
 }
 
-export function CrewCard() {
+export function CrewCard({ onOpen }) {
   const { t } = usePp()
   const [crew, setCrew] = useState(null)
   useEffect(() => { let alive = true; fetchCrew().then(c => { if (alive) setCrew(c) }).catch(() => {}); return () => { alive = false } }, [])
   if (!crew) return null
-  const invite = () => shareLink({ type: 'invite', path: `/today?ref=${crew.code}`, text: t('crew.shareText', { link: '' }).trim(), source: 'passport_crew' })
+  // "Bring your crew": the invite screen (share, shortcuts, the friends' statuses).
+  const invite = () => { track('invite_opened', { source: 'passport_crew' }); onOpen?.('invite') }
   return (
     <div className="pp-v2-card">
-      <div className="pp-v2-head"><strong>{t('crew.title')}</strong><span className="pp-v2-count" aria-label={t('crew.a11y', { count: crew.count, max: crew.max })}>{crew.count} / {crew.max}</span></div>
+      <button type="button" className="pp-v2-head pp-v2-head--tap" onClick={invite} aria-label={`${t('crew.title')}, ${t('crew.a11y', { count: crew.count, max: crew.max })}`}>
+        <strong>{t('crew.title')}</strong><span className="pp-v2-count">{crew.count} / {crew.max}</span>
+        <Icon name="chevron-forward" size={18} style={{ color: 'var(--muted2)' }} />
+      </button>
       <p className="dc-muted">{crew.bonus ? t('crew.done', { points: crew.points.crew }) : t('crew.text', { friend: crew.points.friend, crew: crew.points.crew, max: crew.max })}</p>
       <div className="pp-v2-bar" aria-hidden="true"><i style={{ width: `${Math.min(100, (crew.count / Math.max(1, crew.max)) * 100)}%` }} className={crew.bonus ? 'gold' : ''} /></div>
       {crew.friends.length > 0 && (

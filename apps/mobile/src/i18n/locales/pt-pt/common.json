@@ -22,7 +22,8 @@
     "f5": "Conhece locais e viajantes",
     "fc1": "Desafia os locais da tua cidade",
     "fc2": "Desafia outra cidade do outro lado do mundo",
-    "cta": "Vamos lá"
+    "cta": "Vamos lá",
+    "invited": "{{name}} convidou-te. Publica a tua primeira foto hoje e joguem juntos!"
   },
   "share": {
     "title": "Partilha alguma coisa",

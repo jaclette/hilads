@@ -103,8 +103,9 @@
       "seasonEndingFirst_many": "⏳ Сезон закончится через {{count}} дней: ты #1, держись!",
       "seasonEndingFirst_other": "⏳ Сезон закончится через {{count}} дня: ты #1, держись!",
       "perfectWeek": "🔥 Идеальная неделя! +{{points}}",
-      "friendJoined": "теперь в Hilads благодаря тебе 🤝 +{{points}} ({{count}}/{{max}})",
-      "crewBonus": "🎉 Твоя команда в сборе! +{{points}}"
+      "friendJoined": "выложил первое фото 🤝 +{{points}} ({{count}}/{{max}})",
+      "crewBonus": "🎉 Твоя команда в сборе! +{{points}}",
+      "friendSignedUp": "пришёл в Hilads по твоей ссылке 🎉 Его первое фото = +{{points}} тебе"
     },
     "empty": {
       "all": "Тут тихо. Сходи сфотографируй что-нибудь 📸",

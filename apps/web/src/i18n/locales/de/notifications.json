@@ -93,8 +93,9 @@
       "seasonEndingFirst_one": "⏳ Die Saison endet in {{count}} Tag: du bist #1, halt durch!",
       "seasonEndingFirst_other": "⏳ Die Saison endet in {{count}} Tagen: du bist #1, halt durch!",
       "perfectWeek": "🔥 Perfekte Woche! +{{points}}",
-      "friendJoined": "ist dank dir bei Hilads 🤝 +{{points}} ({{count}}/{{max}})",
-      "crewBonus": "🎉 Deine Crew ist komplett! +{{points}}"
+      "friendJoined": "hat das erste Foto gepostet 🤝 +{{points}} ({{count}}/{{max}})",
+      "crewBonus": "🎉 Deine Crew ist komplett! +{{points}}",
+      "friendSignedUp": "ist über deinen Link zu Hilads gekommen 🎉 Das erste Foto = +{{points}} für dich"
     },
     "empty": {
       "all": "Hier ist nichts los. Mach ein Foto 📸",

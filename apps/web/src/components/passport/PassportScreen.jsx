@@ -151,8 +151,8 @@ export default function PassportScreen({ account, guestName, guestMode, cityId, 
           </button>
         </div>
         {/* Scoring v2: this week's Perfect week, the crew, the season medals. */}
-        {stats?.week && <WeekCard week={stats.week} />}
-        <CrewCard />
+        {stats?.week && <div id="pp-week"><WeekCard week={stats.week} /></div>}
+        <CrewCard onOpen={onOpen} />
         {(stats?.seasonMedals?.length ?? 0) > 0 && <SeasonMedals medals={stats.seasonMedals} />}
         {/* Your rivals moved to World › Cities (UX audit: one place to compare cities). */}
         {progress.length > 0 && (
@@ -201,7 +201,12 @@ export default function PassportScreen({ account, guestName, guestMode, cityId, 
         <button type="button" className="dc-link pp-help" style={ROW} onClick={() => onOpen('viewAsOthers')}><Icon name="eye-outline" size={16} />{t('passport.viewAsOthers')}</button>
         <button type="button" className="dc-link pp-help" style={ROW} onClick={() => setHelp(true)}><Icon name="information-circle-outline" size={16} />{t('passport.howPoints')}</button>
       </div>
-      {help && <PointsSheet onClose={() => setHelp(false)} />}
+      {help && <PointsSheet onClose={() => setHelp(false)} onGo={(to) => {
+        setHelp(false)
+        // Perfect week → this week's card, just above; the others leave the Passport.
+        if (to === 'week-card') setTimeout(() => document.getElementById('pp-week')?.scrollIntoView({ behavior: 'smooth', block: 'center' }), 50)
+        else onOpen(to)
+      }} />}
     </div>
   )
 }
@@ -366,11 +371,13 @@ function Row({ label, value = '', icon = null, tone = null, leading = null, onCl
 }
 
 /** "How to earn points" (scoring v2): the server's values, as in the app's sheet. */
-function PointsSheet({ onClose }) {
+function PointsSheet({ onClose, onGo }) {
   const { t } = usePp()
   const p = useScoringPoints()
-  const POINTS = [['proof', `+${p.proof}`], ['top', p.top.map(n => `+${n}`).join(' / ')], ['week', `+${p.perfectWeek ?? 30}`],
-                  ['friend', `+${p.friendJoined ?? 10}`], ['crew', `+${p.crewBonus ?? 50}`]]
+  // A row with a destination is tappable (chevron): Play → Today, Win → this season's players,
+  // Perfect week → the week card, Invite → "Bring your crew".
+  const POINTS = [['proof', `+${p.proof}`, 'today'], ['top', p.top.map(n => `+${n}`).join(' / '), 'week'], ['week', `+${p.perfectWeek ?? 30}`, 'week-card'],
+                  ['friend', `+${p.friendJoined ?? 10}`, 'invite'], ['crew', `+${p.crewBonus ?? 50}`, 'invite']]
   return (
     <div className="v3-sheet-wrap" role="dialog" aria-modal="true" aria-label={t('points.title')}>
       <button type="button" className="v3-sheet-scrim" onClick={onClose} aria-label={t('passport.close')} />
@@ -379,8 +386,11 @@ function PointsSheet({ onClose }) {
         <p className="v3-sheet-title">{t('points.title')}</p>
         <p className="dc-muted">{t('points.intro')}</p>
         <div className="pp-points-list">
-          {POINTS.map(([key, pts]) => (
-            <div key={key} className="pp-points-row"><span>{t(`points.${key}`, { count: p.crewSize ?? 5 })}</span><strong>{pts}</strong></div>
+          {POINTS.map(([key, pts, to]) => (
+            <button key={key} type="button" className="pp-points-row pp-points-row--tap" onClick={() => onGo(to)}>
+              <span>{t(`points.${key}`, { count: p.crewSize ?? 5 })}</span><strong>{pts}</strong>
+              <Icon name="chevron-forward" size={16} style={{ color: 'var(--muted2)' }} />
+            </button>
           ))}
         </div>
         <p className="dc-muted">{t('points.season')}</p>

@@ -175,5 +175,50 @@
   "seasons": {
     "medals": "シーズンメダル",
     "medalA11y": "#{{rank}}、{{season}}、{{points}}ポイント"
+  },
+  "invite": {
+    "title": "仲間を呼ぼう",
+    "signedOutTitle": "友だちと一緒に遊ぼう",
+    "signedOutText": "アカウントを作ると招待リンクがもらえて、友だちが参加するとポイントがたまるよ。",
+    "signUp": "登録する",
+    "cardA11y": "招待カード：{{name}}さんがあなたをHiladsに招待",
+    "cardTitle": "{{name}}さんがあなたをHiladsに招待",
+    "cardText": "1日1枚の写真。あなたの街 vs 世界 📸🌍",
+    "progressTitle": "今シーズン",
+    "crewLine": "{{count}}人の仲間がそろうと +{{points}} ボーナス",
+    "step1Title": "リンクをシェア",
+    "step1Text": "まだHiladsを使っていない友だちに送ろう。",
+    "step2Title": "友だちがHiladsに参加",
+    "step2Text": "あなたのリンクから登録すると、下に表示されるよ。",
+    "step3Title": "友だちが最初の写真を投稿",
+    "step3Text": "承認されたら、あなたにポイント。",
+    "bonus": "{{count}}人目の友だちがプレイすると +{{points}}",
+    "friendsTitle": "あなたの友だち",
+    "error": "友だちを読み込めませんでした。",
+    "retry": "もう一度",
+    "noFriends": "まだ友だちはいないよ。シェアひとつで最初の1人 🤝",
+    "rules": "新規アカウントのみ、友だち1人につき端末1台、1シーズン最大{{count}}人まで。ポイントは最初の写真が承認されたときに入るよ。",
+    "shareLine": "一緒にHiladsで遊ぼう：1日1枚の写真で、私たちの街 vs 世界 📸🌍",
+    "share": "招待リンクをシェア",
+    "copied": "コピーしました！",
+    "progress": "{{count}} / {{max}}",
+    "clicks_zero": "今シーズン、リンクが{{count}}回開かれました",
+    "clicks_one": "今シーズン、リンクが{{count}}回開かれました",
+    "clicks_two": "今シーズン、リンクが{{count}}回開かれました",
+    "clicks_few": "今シーズン、リンクが{{count}}回開かれました",
+    "clicks_many": "今シーズン、リンクが{{count}}回開かれました",
+    "clicks_other": "今シーズン、リンクが{{count}}回開かれました",
+    "channel": {
+      "whatsapp": "WhatsApp",
+      "zalo": "Zalo",
+      "messenger": "Messenger",
+      "copy_link": "リンクをコピー",
+      "share_sheet": "その他"
+    },
+    "status": {
+      "joined": "参加済み · 最初の写真を待っています",
+      "played": "プレイ済み · ポイントなし（同じ端末または上限）",
+      "credited": "最初の写真が承認 · +{{points}}"
+    }
   }
 }

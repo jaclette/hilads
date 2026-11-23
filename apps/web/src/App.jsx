@@ -21,6 +21,7 @@ import PassportScreen from './components/passport/PassportScreen'
 import { NextPlanRow, PlanLine, QuestionCard, ScrollToLatest } from './components/chat/HiRows'
 import SeasonResultGate from './components/SeasonResultGate'
 import { FriendsScreen, MyPhotosScreen, MySpotsScreen } from './components/passport/FriendsScreens'
+import InviteScreen from './components/passport/InviteScreen'
 import CalendarScreen from './components/daily/CalendarScreen'
 import { ProposeScreen, TwistScreen, ProposalsScreen } from './components/daily/ProposalScreens'
 import { DailyContext, VoteButton, LocalPassBadge, seedStates, useHere, useOriginal, OriginalToggle, getLastToday } from './components/daily/dailyShared'
@@ -5252,8 +5253,12 @@ export default function App() {
       openRanks({ tab: 'players', period: 'season', scope: 'world' })
     } else if (notif.type === 'daily_season_result') {
       openRanks({ tab: 'players', period: 'alltime', scope: 'world' })
-    } else if (['daily_perfect_week', 'daily_friend_joined', 'daily_crew_bonus'].includes(notif.type)) {
+    } else if (notif.type === 'daily_perfect_week') {
       goToMeTab()
+    } else if (['daily_friend_signed_up', 'daily_friend_joined', 'daily_crew_bonus'].includes(notif.type)) {
+      // The invite steps → "Bring your crew".
+      goToMeTab()
+      setPassportSub('invite')
     } else if (notif.type === 'daily_local_pass') {
       goToMeTab()
     } else if (notif.type === 'dm_message') {
@@ -7010,6 +7015,8 @@ export default function App() {
             else if (row === 'viewAsOthers' && account) { setViewingProfile({ userId: account.id, nickname: account.display_name ?? '', preview: true }) }
             else if (row === 'notifications') { setNotifOnly(null); setShowNotifications(true) }
             else if (row === 'messages') setShowConversations(true)
+            else if (row === 'today') goToTodayTab()
+            else if (row === 'invite' && !account) setGateAuth({ tab: 'signup', action: 'passport' })
             else setPassportSub(row)
           }}
         />
@@ -7019,6 +7026,10 @@ export default function App() {
       )}
       {showProfileDrawer && passportSub === 'spots' && (
         <MySpotsScreen onBack={() => setPassportSub(null)} onOpenSpot={(id) => { goToMapTab(); setMapSpotId(id) }} />
+      )}
+      {showProfileDrawer && passportSub === 'invite' && account && (
+        <InviteScreen account={account} onBack={() => setPassportSub(null)}
+          onOpenProfile={(uid, name) => { setShowProfileDrawer(false); openProfile(uid, name) }} />
       )}
       {showProfileDrawer && passportSub === 'friends' && account && (
         <FriendsScreen

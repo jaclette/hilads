@@ -91,8 +91,9 @@
       "seasonEndingFirst_one": "⏳ Musim berakhir dalam {{count}} hari: kamu #1, pertahankan!",
       "seasonEndingFirst_other": "⏳ Musim berakhir dalam {{count}} hari: kamu #1, pertahankan!",
       "perfectWeek": "🔥 Minggu sempurna! +{{points}}",
-      "friendJoined": "bergabung di Hilads berkat kamu 🤝 +{{points}} ({{count}}/{{max}})",
-      "crewBonus": "🎉 Krumu lengkap! +{{points}}"
+      "friendJoined": "memposting foto pertamanya 🤝 +{{points}} ({{count}}/{{max}})",
+      "crewBonus": "🎉 Krumu lengkap! +{{points}}",
+      "friendSignedUp": "gabung ke Hilads lewat link-mu 🎉 Foto pertamanya = +{{points}} untukmu"
     },
     "empty": {
       "all": "Belum ada apa-apa. Yuk foto sesuatu 📸",

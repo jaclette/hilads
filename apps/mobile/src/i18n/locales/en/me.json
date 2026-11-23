@@ -188,5 +188,50 @@
   "seasons": {
     "medals": "Season medals",
     "medalA11y": "#{{rank}}, {{season}}, {{points}} points"
+  },
+  "invite": {
+    "title": "Bring your crew",
+    "signedOutTitle": "Play with your friends",
+    "signedOutText": "Create your account to get your invite link and earn points when friends join.",
+    "signUp": "Sign up",
+    "cardA11y": "Your invite card: {{name}} invites you to Hilads",
+    "cardTitle": "{{name}} invites you to Hilads",
+    "cardText": "One photo a day. Your city vs the world 📸🌍",
+    "progressTitle": "This season",
+    "crewLine": "Complete a crew of {{count}} friends for a +{{points}} bonus",
+    "step1Title": "Share your link",
+    "step1Text": "Send it to friends who aren't on Hilads yet.",
+    "step2Title": "Your friend joins Hilads",
+    "step2Text": "They sign up with your link and show up below.",
+    "step3Title": "They post their first photo",
+    "step3Text": "Once it's approved, you get the points.",
+    "bonus": "+{{points}} when your {{count}}th friend plays",
+    "friendsTitle": "Your friends",
+    "error": "Couldn't load your friends.",
+    "retry": "Try again",
+    "noFriends": "No friends yet. Your first one is a share away 🤝",
+    "rules": "New accounts only, one phone per friend, up to {{count}} friends per season. Points arrive when their first photo is approved.",
+    "shareLine": "Play Hilads with me: one photo a day, our city vs the world 📸🌍",
+    "share": "Share my invite link",
+    "copied": "Copied!",
+    "progress": "{{count}} / {{max}}",
+    "clicks_zero": "Your link was opened {{count}} times this season",
+    "clicks_one": "Your link was opened {{count}} time this season",
+    "clicks_two": "Your link was opened {{count}} times this season",
+    "clicks_few": "Your link was opened {{count}} times this season",
+    "clicks_many": "Your link was opened {{count}} times this season",
+    "clicks_other": "Your link was opened {{count}} times this season",
+    "channel": {
+      "whatsapp": "WhatsApp",
+      "zalo": "Zalo",
+      "messenger": "Messenger",
+      "copy_link": "Copy link",
+      "share_sheet": "More"
+    },
+    "status": {
+      "joined": "Joined · waiting for their first photo",
+      "played": "Played · no points (same phone or season limit)",
+      "credited": "First photo approved · +{{points}}"
+    }
   }
 }

@@ -175,5 +175,50 @@
   "seasons": {
     "medals": "Huy chương mùa giải",
     "medalA11y": "#{{rank}}, {{season}}, {{points}} điểm"
+  },
+  "invite": {
+    "title": "Rủ hội bạn",
+    "signedOutTitle": "Chơi cùng bạn bè",
+    "signedOutText": "Tạo tài khoản để có link mời và nhận điểm khi bạn bè tham gia.",
+    "signUp": "Đăng ký",
+    "cardA11y": "Thẻ mời của bạn: {{name}} mời bạn vào Hilads",
+    "cardTitle": "{{name}} mời bạn vào Hilads",
+    "cardText": "Mỗi ngày một bức ảnh. Thành phố của bạn so với thế giới 📸🌍",
+    "progressTitle": "Mùa này",
+    "crewLine": "Rủ đủ {{count}} người bạn để nhận thưởng +{{points}}",
+    "step1Title": "Chia sẻ link của bạn",
+    "step1Text": "Gửi cho những người bạn chưa có Hilads.",
+    "step2Title": "Bạn của bạn tham gia Hilads",
+    "step2Text": "Họ đăng ký bằng link của bạn và hiện ở bên dưới.",
+    "step3Title": "Họ đăng ảnh đầu tiên",
+    "step3Text": "Khi ảnh được duyệt, bạn nhận điểm.",
+    "bonus": "+{{points}} khi người bạn thứ {{count}} chơi",
+    "friendsTitle": "Bạn bè của bạn",
+    "error": "Không tải được danh sách bạn bè.",
+    "retry": "Thử lại",
+    "noFriends": "Chưa có bạn nào. Chỉ cần một lần chia sẻ 🤝",
+    "rules": "Chỉ tính tài khoản mới, mỗi người bạn một điện thoại, tối đa {{count}} bạn mỗi mùa. Điểm được cộng khi ảnh đầu tiên của họ được duyệt.",
+    "shareLine": "Chơi Hilads với mình nhé: mỗi ngày một bức ảnh, thành phố mình so với thế giới 📸🌍",
+    "share": "Chia sẻ link mời",
+    "copied": "Đã sao chép!",
+    "progress": "{{count}} / {{max}}",
+    "clicks_zero": "Link của bạn đã được mở {{count}} lần mùa này",
+    "clicks_one": "Link của bạn đã được mở {{count}} lần mùa này",
+    "clicks_two": "Link của bạn đã được mở {{count}} lần mùa này",
+    "clicks_few": "Link của bạn đã được mở {{count}} lần mùa này",
+    "clicks_many": "Link của bạn đã được mở {{count}} lần mùa này",
+    "clicks_other": "Link của bạn đã được mở {{count}} lần mùa này",
+    "channel": {
+      "whatsapp": "WhatsApp",
+      "zalo": "Zalo",
+      "messenger": "Messenger",
+      "copy_link": "Sao chép link",
+      "share_sheet": "Thêm"
+    },
+    "status": {
+      "joined": "Đã tham gia · chờ ảnh đầu tiên",
+      "played": "Đã chơi · không có điểm (cùng điện thoại hoặc đã đủ giới hạn)",
+      "credited": "Ảnh đầu tiên đã duyệt · +{{points}}"
+    }
   }
 }

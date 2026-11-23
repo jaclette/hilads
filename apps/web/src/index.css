@@ -12401,3 +12401,38 @@ html[data-event="halloween"] { --header-art: #FFA552; --header-art-opacity: 0.28
 .hi-join { background: var(--cta); color: #fff; border: none; border-radius: 999px; padding: 8px 14px; font-weight: 900; min-width: 56px; min-height: 36px; }
 .hi-join.on { background: var(--primary-tint); color: var(--text); }
 .hi-sub { margin: 0; font-size: 13px; color: var(--muted); }
+
+/* "Bring your crew" (InviteScreen.jsx, the app's /invite). The share card is the brand card, same in every theme. */
+.inv-body { display: flex; flex-direction: column; gap: 14px; padding-bottom: 24px; }
+.inv-card { position: relative; display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 20px; border-radius: 20px; background: linear-gradient(135deg, #FF8A4C, #E2562A); color: #fff; text-align: center; }
+.inv-card-brand { align-self: flex-start; font-weight: 900; font-size: 15px; }
+.inv-card-title { font-size: 20px; line-height: 1.25; }
+.inv-card-text { color: #FFF3EA; }
+.inv-card-link { margin-top: 4px; padding: 4px 14px; border-radius: 999px; background: rgba(255,255,255,.92); color: #C24E1C; font-weight: 900; font-size: 13px; }
+.inv-steps { gap: 0; }
+.inv-step { display: flex; gap: 12px; }
+.inv-rail { display: flex; flex-direction: column; align-items: center; width: 44px; flex-shrink: 0; }
+.inv-rail > i { flex: 1; width: 2px; min-height: 12px; margin: 2px 0; background: var(--line); }
+.inv-dot { width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; background: var(--primary-tint); }
+.inv-step-body { flex: 1; display: flex; flex-direction: column; gap: 2px; padding: 4px 0 14px; }
+.inv-step-head { display: flex; align-items: center; gap: 8px; }
+.inv-pill { padding: 2px 10px; border-radius: 999px; background: var(--primary-tint); color: var(--primary-on-tint); font-weight: 900; font-size: 13px; }
+.inv-bonus { margin: 0; padding: 8px 12px; border-radius: 12px; background: var(--gold-tint, rgba(212,160,23,.2)); font-weight: 800; font-size: 13px; text-align: center; color: var(--text); }
+.inv-friend { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+.inv-status { font-size: 13px; color: var(--muted2); }
+.inv-status.on { color: var(--green); font-weight: 700; }
+.inv-clicks { cursor: default; color: var(--muted2); }
+.inv-error { flex-direction: column; gap: 8px; padding: 16px; }
+.inv-small { text-align: center; font-size: 13px; }
+.inv-footer { position: sticky; bottom: 0; display: flex; flex-direction: column; gap: 10px; padding: 10px 16px calc(10px + env(safe-area-inset-bottom)); background: var(--bg); border-top: 1px solid var(--line); }
+.inv-shortcuts { display: flex; justify-content: center; gap: 20px; }
+.inv-shortcut { display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 64px; border: none; background: none; font: inherit; font-size: 13px; color: var(--text); cursor: pointer; }
+.inv-shortcut:disabled { opacity: .5; }
+.inv-shortcut-icon { width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: var(--bg3); color: var(--text); }
+.inv-shortcut--whatsapp .inv-shortcut-icon { background: #25D366; color: #fff; }
+.inv-shortcut--messenger .inv-shortcut-icon { background: #0084FF; color: #fff; }
+.pp-v2-head--tap { width: 100%; border: none; background: none; padding: 0; font: inherit; color: var(--text); cursor: pointer; text-align: left; min-height: 32px; }
+.pp-v2-head--tap strong { flex: 1; }
+.pp-points-row--tap { width: 100%; align-items: center; border-left: none; border-right: none; border-top: none; background: none; font: inherit; text-align: left; cursor: pointer; }
+.pp-points-row--tap span { flex: 1; }
+.account-welcome-invited { margin: 0 0 12px; padding: 10px 14px; border-radius: 14px; background: var(--primary-tint); color: var(--text); font-weight: 700; text-align: center; }

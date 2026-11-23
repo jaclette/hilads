@@ -9,9 +9,13 @@ import { api } from '@/api/client';
 const KEY = 'hilads_invite_code';
 
 export type Inviter = { username: string | null; displayName: string | null; photoUrl: string | null };
-export type CrewFriend = { id: string; displayName: string | null; username: string | null; photoUrl: string | null; credited: boolean; joinedAt: number | null };
+export type CrewFriend = { id: string; displayName: string | null; username: string | null; photoUrl: string | null; credited: boolean; joinedAt: number | null;
+  /** joined (no photo yet) | played (a photo, no points: same phone, the cap...) | credited (+10). */
+  status?: 'joined' | 'played' | 'credited' };
 export type Crew = {
   code: string; link: string; count: number; max: number; bonus: boolean; season: string;
+  /** Link opens this season; friends credited at most per season. */
+  clicks?: number; perSeason?: number;
   points: { friend: number; crew: number }; friends: CrewFriend[];
 };
 
@@ -32,6 +36,13 @@ export function captureInvite(url: string | null | undefined): void {
 export async function pendingInvite(): Promise<string | null> {
   try { return await AsyncStorage.getItem(KEY); } catch { return null; }
 }
+
+/** Who invited the account just created ("@minh invited you" on the welcome screen), for this run only. */
+let welcomeInviter: string | null = null;
+export function setWelcomeInviter(inviter: Inviter | null): void {
+  welcomeInviter = inviter ? (inviter.username ? '@' + inviter.username : inviter.displayName ?? null) : null;
+}
+export function getWelcomeInviter(): string | null { return welcomeInviter; }
 
 export function clearPendingInvite(): void {
   AsyncStorage.removeItem(KEY).catch(() => {});

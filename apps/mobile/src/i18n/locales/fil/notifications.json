@@ -113,8 +113,9 @@
       "seasonEndingFirst_one": "⏳ Matatapos ang season sa loob ng {{count}} araw: #1 ka, kapit lang!",
       "seasonEndingFirst_other": "⏳ Matatapos ang season sa loob ng {{count}} araw: #1 ka, kapit lang!",
       "perfectWeek": "🔥 Perfect week! +{{points}}",
-      "friendJoined": "ay sumali sa Hilads dahil sa iyo 🤝 +{{points}} ({{count}}/{{max}})",
-      "crewBonus": "🎉 Kumpleto na ang crew mo! +{{points}}"
+      "friendJoined": "ay nag-post ng unang photo 🤝 +{{points}} ({{count}}/{{max}})",
+      "crewBonus": "🎉 Kumpleto na ang crew mo! +{{points}}",
+      "friendSignedUp": "ay sumali sa Hilads gamit ang link mo 🎉 Unang photo niya = +{{points}} para sa'yo"
     },
     "empty": {
       "all": "Walang drama dito. Mag-snap ka na 📸",

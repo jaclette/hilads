@@ -27,7 +27,8 @@
     "f5": "Makipag-connect sa locals at biyahero",
     "fc1": "I-challenge ang locals sa city mo",
     "fc2": "I-challenge ang ibang city sa kabilang dulo ng mundo",
-    "cta": "Tara na"
+    "cta": "Tara na",
+    "invited": "Inimbitahan ka ni {{name}}. Mag-post ng unang photo mo ngayon at maglaro kayo nang sabay!"
   },
   "share": {
     "title": "Mag-share ng kahit ano",

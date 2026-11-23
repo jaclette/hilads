@@ -408,9 +408,12 @@ function resolvePushRoute(data: NotifData): string | null {
     case 'daily_season_result':
       return '/ranks?tab=players&period=alltime&source=push';
     case 'daily_perfect_week':
+      return '/(tabs)/passport?focus=week';
+    // The invite steps → "Bring your crew" (the friends and their status).
+    case 'daily_friend_signed_up':
     case 'daily_friend_joined':
     case 'daily_crew_bonus':
-      return '/(tabs)/passport';
+      return '/invite';
 
     case 'daily_local_pass':
       // A new stamp → the Passport.

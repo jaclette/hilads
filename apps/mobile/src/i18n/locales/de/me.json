@@ -188,5 +188,50 @@
   "seasons": {
     "medals": "Saisonmedaillen",
     "medalA11y": "#{{rank}}, {{season}}, {{points}} Punkte"
+  },
+  "invite": {
+    "title": "Hol deine Crew",
+    "signedOutTitle": "Spiel mit deinen Freunden",
+    "signedOutText": "Erstelle dein Konto, um deinen Einladungslink zu bekommen und Punkte zu sammeln, wenn Freunde dazukommen.",
+    "signUp": "Registrieren",
+    "cardA11y": "Deine Einladungskarte: {{name}} lädt dich zu Hilads ein",
+    "cardTitle": "{{name}} lädt dich zu Hilads ein",
+    "cardText": "Ein Foto am Tag. Deine Stadt gegen die Welt 📸🌍",
+    "progressTitle": "Diese Saison",
+    "crewLine": "Hol dir eine Crew aus {{count}} Freunden für +{{points}} Bonus",
+    "step1Title": "Teile deinen Link",
+    "step1Text": "Schick ihn Freunden, die noch nicht bei Hilads sind.",
+    "step2Title": "Dein Freund kommt zu Hilads",
+    "step2Text": "Er registriert sich über deinen Link und erscheint unten.",
+    "step3Title": "Das erste Foto ist da",
+    "step3Text": "Sobald es freigegeben ist, bekommst du die Punkte.",
+    "bonus": "+{{points}}, wenn dein {{count}}. Freund spielt",
+    "friendsTitle": "Deine Freunde",
+    "error": "Deine Freunde konnten nicht geladen werden.",
+    "retry": "Erneut versuchen",
+    "noFriends": "Noch keine Freunde. Der erste ist nur ein Teilen entfernt 🤝",
+    "rules": "Nur neue Konten, ein Handy pro Freund, bis zu {{count}} Freunde pro Saison. Die Punkte kommen, sobald das erste Foto freigegeben ist.",
+    "shareLine": "Spiel Hilads mit mir: ein Foto am Tag, unsere Stadt gegen die Welt 📸🌍",
+    "share": "Meinen Einladungslink teilen",
+    "copied": "Kopiert!",
+    "progress": "{{count}} / {{max}}",
+    "clicks_zero": "Dein Link wurde diese Saison {{count}}-mal geöffnet",
+    "clicks_one": "Dein Link wurde diese Saison {{count}}-mal geöffnet",
+    "clicks_two": "Dein Link wurde diese Saison {{count}}-mal geöffnet",
+    "clicks_few": "Dein Link wurde diese Saison {{count}}-mal geöffnet",
+    "clicks_many": "Dein Link wurde diese Saison {{count}}-mal geöffnet",
+    "clicks_other": "Dein Link wurde diese Saison {{count}}-mal geöffnet",
+    "channel": {
+      "whatsapp": "WhatsApp",
+      "zalo": "Zalo",
+      "messenger": "Messenger",
+      "copy_link": "Link kopieren",
+      "share_sheet": "Mehr"
+    },
+    "status": {
+      "joined": "Dabei · wartet aufs erste Foto",
+      "played": "Gespielt · keine Punkte (gleiches Handy oder Limit erreicht)",
+      "credited": "Erstes Foto freigegeben · +{{points}}"
+    }
   }
 }

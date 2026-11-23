@@ -27,7 +27,8 @@
     "f5": "Maak contact met locals en reizigers",
     "fc1": "Daag de locals in jouw stad uit",
     "fc2": "Daag een stad aan de andere kant van de wereld uit",
-    "cta": "Aan de slag"
+    "cta": "Aan de slag",
+    "invited": "{{name}} heeft je uitgenodigd. Plaats vandaag je eerste foto en speel samen!"
   },
   "share": {
     "title": "Deel iets",

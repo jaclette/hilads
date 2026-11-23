@@ -91,8 +91,9 @@
       "seasonEndingFirst_one": "⏳ อีก {{count}} วันซีซันจะจบ: ตอนนี้คุณอันดับ #1 รักษาไว้!",
       "seasonEndingFirst_other": "⏳ อีก {{count}} วันซีซันจะจบ: ตอนนี้คุณอันดับ #1 รักษาไว้!",
       "perfectWeek": "🔥 สัปดาห์สมบูรณ์แบบ! +{{points}}",
-      "friendJoined": "มาเล่น Hilads เพราะคุณชวน 🤝 +{{points}} ({{count}}/{{max}})",
-      "crewBonus": "🎉 แก๊งของคุณครบแล้ว! +{{points}}"
+      "friendJoined": "โพสต์รูปแรกแล้ว 🤝 +{{points}} ({{count}}/{{max}})",
+      "crewBonus": "🎉 แก๊งของคุณครบแล้ว! +{{points}}",
+      "friendSignedUp": "เข้าร่วม Hilads ผ่านลิงก์ของคุณ 🎉 รูปแรกของเพื่อน = +{{points}} สำหรับคุณ"
     },
     "empty": {
       "all": "ยังเงียบอยู่ ไปถ่ายรูปกันเลย 📸",

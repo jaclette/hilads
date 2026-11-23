@@ -22,7 +22,8 @@
     "f5": "Kenalan sama warga lokal dan pelancong",
     "fc1": "Tantang warga lokal di kotamu",
     "fc2": "Tantang kota lain di dunia",
-    "cta": "Yuk mulai"
+    "cta": "Yuk mulai",
+    "invited": "{{name}} mengundangmu. Posting foto pertamamu hari ini dan main bareng!"
   },
   "share": {
     "title": "Bagikan sesuatu",

@@ -1,11 +1,13 @@
 import { useTranslation } from 'react-i18next'
 import i18n from '../i18n'
 import Icon from './Icon'
+import { getWelcomeInviter } from '../lib/invite'
 
 // One-time congrats screen shown right after account creation (not login).
 // Friendly + emoji-forward, easy to dismiss (✕ or CTA).
 export default function AccountWelcome({ username, onClose }) {
   const { t } = useTranslation('common')
+  const inviter = getWelcomeInviter()   // invited by a friend: a warm line on top
   const features = [
     t('accountWelcome.fc1'),   // local challenge — the primary action
     t('accountWelcome.fc2'),   // international challenge
@@ -22,6 +24,7 @@ export default function AccountWelcome({ username, onClose }) {
         <div className="account-welcome-emoji" style={{ color: 'var(--primary-text)' }}><Icon name="sparkles-outline" size={48} /></div>
         <h2 className="account-welcome-title">{t('accountWelcome.title', { username })}</h2>
         <p className="account-welcome-subtitle">{t('accountWelcome.subtitle')}</p>
+        {inviter && <p className="account-welcome-invited">🤝 {t('accountWelcome.invited', { name: inviter })}</p>}
         <ul className="account-welcome-features">
           {features.map((f, i) => <li key={i}>{f}</li>)}
         </ul>

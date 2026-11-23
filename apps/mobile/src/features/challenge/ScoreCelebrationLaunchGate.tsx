@@ -94,6 +94,12 @@ export function ScoreCelebrationLaunchGate() {
     router.navigate(`/ranks?tab=${to.tab}&period=${to.period}&scope=${to.scope}` as never);
   }, [close, router]);
 
+  const openInvite = useCallback(() => {
+    track('invite_opened', { source: 'score_win' });
+    close();
+    router.navigate('/invite' as never);
+  }, [close, router]);
+
   const openShare = useCallback((win: ScoreWin, medal: ScoreWinMedal | null) => {
     if (!win.proof || !win.challenge) return;
     track('score_win_share', { medal: medal?.key ?? null, rank: medal?.rank ?? null });
@@ -107,7 +113,7 @@ export function ScoreCelebrationLaunchGate() {
 
   return (
     <>
-      <ScoreCelebrationModal data={data} visible={turn && data !== null && !sharing} onClose={close} onOpenRanks={openRanks} onShare={openShare} />
+      <ScoreCelebrationModal data={data} visible={turn && data !== null && !sharing} onClose={close} onOpenRanks={openRanks} onShare={openShare} onOpenInvite={openInvite} />
       {/* Closing the share sheet ends the reward too (it was already seen). */}
       <ShareSheet content={share} source="score_win" onClose={close} />
     </>

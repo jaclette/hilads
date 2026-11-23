@@ -27,7 +27,8 @@
     "f5": "Kết nối với dân địa phương và du khách",
     "fc1": "Thách dân địa phương ở thành phố của bạn",
     "fc2": "Thách một thành phố khác bên kia thế giới",
-    "cta": "Đi thôi"
+    "cta": "Đi thôi",
+    "invited": "{{name}} đã mời bạn. Đăng ảnh đầu tiên hôm nay và cùng chơi nhé!"
   },
   "share": {
     "title": "Chia sẻ gì đó",

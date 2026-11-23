@@ -52,6 +52,9 @@ export function rowText(item, t) {
     return plain(d.rank === 1 ? t('inbox.row.seasonEndingFirst', { count: d.days ?? 3 }) : t('inbox.row.seasonEnding', { count: d.days ?? 3, rank: d.rank }))
   }
   if (item.type === 'daily_perfect_week') return plain(t('inbox.row.perfectWeek', { points: d.points ?? 30 }))
+  if (item.type === 'daily_friend_signed_up') {
+    return { parts: [{ text: d.name ?? (d.username ? '@' + d.username : ''), bold: true }, { text: ' ' + t('inbox.row.friendSignedUp', { points: d.points ?? 10 }), bold: false }], quote: null }
+  }
   if (item.type === 'daily_friend_joined') {
     return { parts: [{ text: d.name ?? (d.username ? '@' + d.username : ''), bold: true }, { text: ' ' + t('inbox.row.friendJoined', { points: d.points ?? 10, count: d.count ?? 1, max: d.max ?? 5 }), bold: false }], quote: null }
   }

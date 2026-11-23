@@ -91,8 +91,9 @@
       "seasonEndingFirst_one": "⏳ 赛季还剩 {{count}} 天：你排第 1，坚持住！",
       "seasonEndingFirst_other": "⏳ 赛季还剩 {{count}} 天：你排第 1，坚持住！",
       "perfectWeek": "🔥 完美一周！+{{points}}",
-      "friendJoined": "因为你加入了 Hilads 🤝 +{{points}}（{{count}}/{{max}}）",
-      "crewBonus": "🎉 你的小队集齐了！+{{points}}"
+      "friendJoined": "发了第一张照片 🤝 +{{points}}（{{count}}/{{max}}）",
+      "crewBonus": "🎉 你的小队集齐了！+{{points}}",
+      "friendSignedUp": "通过你的链接加入了 Hilads 🎉 对方的第一张照片 = 你 +{{points}}"
     },
     "empty": {
       "all": "这里很安静。去拍张照片吧 📸",

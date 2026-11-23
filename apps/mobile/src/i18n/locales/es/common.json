@@ -22,7 +22,8 @@
     "f5": "Conecta con gente local y viajeros",
     "fc1": "Reta a la gente local de tu ciudad",
     "fc2": "Reta a otra ciudad del mundo",
-    "cta": "¡Vamos!"
+    "cta": "¡Vamos!",
+    "invited": "{{name}} te invitó. ¡Publica tu primera foto hoy y jueguen juntos!"
   },
   "share": {
     "title": "Comparte algo",

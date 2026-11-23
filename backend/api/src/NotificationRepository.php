@@ -170,7 +170,7 @@ class NotificationRepository
             'daily_rank'                                                => 'rank_push',
             // Scoring v2: seasons and rewards follow the ranks toggle.
             'daily_season_ending', 'daily_season_result', 'daily_perfect_week',
-            'daily_friend_joined', 'daily_crew_bonus'                   => 'rank_push',
+            'daily_friend_joined', 'daily_crew_bonus', 'daily_friend_signed_up' => 'rank_push',
             'daily_local_pass'                                          => 'stamp_push',
             default                                                     => null,
         };

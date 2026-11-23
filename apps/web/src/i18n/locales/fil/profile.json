@@ -225,6 +225,51 @@
     "seasons": {
       "medals": "Mga medalya ng season",
       "medalA11y": "#{{rank}}, {{season}}, {{points}} points"
+    },
+    "invite": {
+      "title": "Isama ang crew mo",
+      "signedOutTitle": "Maglaro kasama ang mga kaibigan",
+      "signedOutText": "Gumawa ng account para makuha ang invite link mo at makakuha ng points kapag sumali ang mga kaibigan.",
+      "signUp": "Mag-sign up",
+      "cardA11y": "Invite card mo: Iniimbitahan ka ni {{name}} sa Hilads",
+      "cardTitle": "Iniimbitahan ka ni {{name}} sa Hilads",
+      "cardText": "Isang photo bawat araw. Ang city mo vs ang mundo 📸🌍",
+      "progressTitle": "Ngayong season",
+      "crewLine": "Kumpletuhin ang crew na {{count}} kaibigan para sa +{{points}} bonus",
+      "step1Title": "I-share ang link mo",
+      "step1Text": "Ipadala sa mga kaibigang wala pa sa Hilads.",
+      "step2Title": "Sumali ang kaibigan mo sa Hilads",
+      "step2Text": "Nag-sign up siya gamit ang link mo at lalabas sa ibaba.",
+      "step3Title": "Nag-post siya ng unang photo",
+      "step3Text": "Kapag na-approve ito, sa'yo ang points.",
+      "bonus": "+{{points}} kapag naglaro ang ika-{{count}} mong kaibigan",
+      "friendsTitle": "Mga kaibigan mo",
+      "error": "Hindi ma-load ang mga kaibigan mo.",
+      "retry": "Subukan ulit",
+      "noFriends": "Wala pang kaibigan. Isang share lang ang layo ng una 🤝",
+      "rules": "Bagong account lang, isang phone bawat kaibigan, hanggang {{count}} kaibigan bawat season. Darating ang points kapag na-approve ang unang photo niya.",
+      "shareLine": "Laro tayo ng Hilads: isang photo bawat araw, ang city natin vs ang mundo 📸🌍",
+      "share": "I-share ang invite link ko",
+      "copied": "Nakopya!",
+      "progress": "{{count}} / {{max}}",
+      "clicks_zero": "Nabuksan ang link mo nang {{count}} beses ngayong season",
+      "clicks_one": "Nabuksan ang link mo nang {{count}} beses ngayong season",
+      "clicks_two": "Nabuksan ang link mo nang {{count}} beses ngayong season",
+      "clicks_few": "Nabuksan ang link mo nang {{count}} beses ngayong season",
+      "clicks_many": "Nabuksan ang link mo nang {{count}} beses ngayong season",
+      "clicks_other": "Nabuksan ang link mo nang {{count}} beses ngayong season",
+      "channel": {
+        "whatsapp": "WhatsApp",
+        "zalo": "Zalo",
+        "messenger": "Messenger",
+        "copy_link": "Kopyahin ang link",
+        "share_sheet": "Iba pa"
+      },
+      "status": {
+        "joined": "Sumali · hinihintay ang unang photo",
+        "played": "Naglaro · walang points (parehong phone o naabot ang limit)",
+        "credited": "Na-approve ang unang photo · +{{points}}"
+      }
     }
   },
   "friendReq": {

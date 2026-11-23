@@ -112,8 +112,9 @@
       "seasonEndingFirst_one": "⏳ Mùa giải kết thúc sau {{count}} ngày: bạn đang #1, giữ vững nhé!",
       "seasonEndingFirst_other": "⏳ Mùa giải kết thúc sau {{count}} ngày: bạn đang #1, giữ vững nhé!",
       "perfectWeek": "🔥 Tuần hoàn hảo! +{{points}}",
-      "friendJoined": "đã tham gia Hilads nhờ bạn 🤝 +{{points}} ({{count}}/{{max}})",
-      "crewBonus": "🎉 Hội của bạn đã đủ người! +{{points}}"
+      "friendJoined": "đã đăng ảnh đầu tiên 🤝 +{{points}} ({{count}}/{{max}})",
+      "crewBonus": "🎉 Hội của bạn đã đủ người! +{{points}}",
+      "friendSignedUp": "đã tham gia Hilads qua link của bạn 🎉 Ảnh đầu tiên của họ = +{{points}} cho bạn"
     },
     "empty": {
       "all": "Chưa có gì cả. Đi chụp ảnh nào 📸",

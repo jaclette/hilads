@@ -27,7 +27,8 @@
     "f5": "Lerne Locals und Reisende kennen",
     "fc1": "Fordere die Locals in deiner Stadt heraus",
     "fc2": "Fordere eine andere Stadt irgendwo auf der Welt heraus",
-    "cta": "Los geht's"
+    "cta": "Los geht's",
+    "invited": "{{name}} hat dich eingeladen. Poste heute dein erstes Foto und spielt zusammen!"
   },
   "share": {
     "title": "Teile was",

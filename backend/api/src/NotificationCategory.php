@@ -83,6 +83,7 @@ final class NotificationCategory
             'daily_season_ending' => isset($data['season']) ? "season_end:{$data['season']}" : null,
             'daily_perfect_week'  => isset($data['week']) ? "week:{$data['week']}" : null,
             'daily_friend_joined' => isset($data['friendId']) ? "friend_joined:{$data['friendId']}" : null,
+            'daily_friend_signed_up' => isset($data['friendId']) ? "friend_signed_up:{$data['friendId']}" : null,
             'daily_crew_bonus'    => isset($data['season']) ? "crew:{$data['season']}" : null,
             default         => null,
         };
@@ -145,7 +146,9 @@ final class NotificationCategory
             // (the season results screen opens by itself from /me/season-result).
             in_array($type, ['daily_season_ending', 'daily_season_result'], true)
                 => '/ranks?' . $q(['tab' => 'players', 'period' => $type === 'daily_season_result' ? 'alltime' : 'season']),
-            in_array($type, ['daily_perfect_week', 'daily_friend_joined', 'daily_crew_bonus'], true) => '/(tabs)/passport',
+            $type === 'daily_perfect_week' => '/(tabs)/passport',
+            // The invite steps open "Bring your crew" (its friends list and statuses).
+            in_array($type, ['daily_friend_signed_up', 'daily_friend_joined', 'daily_crew_bonus'], true) => '/invite',
             in_array($type, ['channel_message', 'city_join', 'city_here'], true) => '/(tabs)/chat',
             $type === 'friend_request_received'                   => '/friend-requests',
             in_array($type, ['friend_request_accepted', 'friend_added', 'profile_view'], true)

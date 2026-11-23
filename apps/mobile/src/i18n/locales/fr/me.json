@@ -201,5 +201,50 @@
   "seasons": {
     "medals": "Médailles de saison",
     "medalA11y": "#{{rank}}, {{season}}, {{points}} points"
+  },
+  "invite": {
+    "title": "Ramène ton crew",
+    "signedOutTitle": "Joue avec tes amis",
+    "signedOutText": "Crée ton compte pour avoir ton lien d'invitation et gagner des points quand tes amis arrivent.",
+    "signUp": "S'inscrire",
+    "cardA11y": "Ta carte d'invitation : {{name}} t'invite sur Hilads",
+    "cardTitle": "{{name}} t'invite sur Hilads",
+    "cardText": "Une photo par jour. Ta ville contre le monde 📸🌍",
+    "progressTitle": "Cette saison",
+    "crewLine": "Complète un crew de {{count}} amis pour un bonus de +{{points}}",
+    "step1Title": "Partage ton lien",
+    "step1Text": "Envoie-le à des amis qui ne sont pas encore sur Hilads.",
+    "step2Title": "Ton ami rejoint Hilads",
+    "step2Text": "Il s'inscrit avec ton lien et apparaît ci-dessous.",
+    "step3Title": "Il poste sa première photo",
+    "step3Text": "Dès qu'elle est validée, tu gagnes les points.",
+    "bonus": "+{{points}} quand ton {{count}}e ami joue",
+    "friendsTitle": "Tes amis",
+    "error": "Impossible de charger tes amis.",
+    "retry": "Réessayer",
+    "noFriends": "Pas encore d'amis. Le premier n'est qu'à un partage 🤝",
+    "rules": "Nouveaux comptes uniquement, un téléphone par ami, jusqu'à {{count}} amis par saison. Les points arrivent quand sa première photo est validée.",
+    "shareLine": "Joue à Hilads avec moi : une photo par jour, notre ville contre le monde 📸🌍",
+    "share": "Partager mon lien d'invitation",
+    "copied": "Copié !",
+    "progress": "{{count}} / {{max}}",
+    "clicks_zero": "Ton lien a été ouvert {{count}} fois cette saison",
+    "clicks_one": "Ton lien a été ouvert {{count}} fois cette saison",
+    "clicks_two": "Ton lien a été ouvert {{count}} fois cette saison",
+    "clicks_few": "Ton lien a été ouvert {{count}} fois cette saison",
+    "clicks_many": "Ton lien a été ouvert {{count}} fois cette saison",
+    "clicks_other": "Ton lien a été ouvert {{count}} fois cette saison",
+    "channel": {
+      "whatsapp": "WhatsApp",
+      "zalo": "Zalo",
+      "messenger": "Messenger",
+      "copy_link": "Copier le lien",
+      "share_sheet": "Plus"
+    },
+    "status": {
+      "joined": "Inscrit · attend sa première photo",
+      "played": "A joué · pas de points (même téléphone ou limite atteinte)",
+      "credited": "Première photo validée · +{{points}}"
+    }
   }
 }

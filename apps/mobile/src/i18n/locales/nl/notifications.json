@@ -113,8 +113,9 @@
       "seasonEndingFirst_one": "⏳ Het seizoen eindigt over {{count}} dag: je staat #1, hou vol!",
       "seasonEndingFirst_other": "⏳ Het seizoen eindigt over {{count}} dagen: je staat #1, hou vol!",
       "perfectWeek": "🔥 Perfecte week! +{{points}}",
-      "friendJoined": "doet mee op Hilads dankzij jou 🤝 +{{points}} ({{count}}/{{max}})",
-      "crewBonus": "🎉 Je crew is compleet! +{{points}}"
+      "friendJoined": "plaatste de eerste foto 🤝 +{{points}} ({{count}}/{{max}})",
+      "crewBonus": "🎉 Je crew is compleet! +{{points}}",
+      "friendSignedUp": "doet mee met Hilads via jouw link 🎉 De eerste foto = +{{points}} voor jou"
     },
     "empty": {
       "all": "Niks aan de hand. Ga een foto maken 📸",

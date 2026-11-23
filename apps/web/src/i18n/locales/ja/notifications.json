@@ -91,8 +91,9 @@
       "seasonEndingFirst_one": "⏳ シーズン終了まであと{{count}}日：いま #1、キープしよう！",
       "seasonEndingFirst_other": "⏳ シーズン終了まであと{{count}}日：いま #1、キープしよう！",
       "perfectWeek": "🔥 パーフェクトウィーク！+{{points}}",
-      "friendJoined": "があなたの招待でHiladsに参加 🤝 +{{points}}（{{count}}/{{max}}）",
-      "crewBonus": "🎉 クルーがそろった！+{{points}}"
+      "friendJoined": "さんが最初の写真を投稿 🤝 +{{points}}（{{count}}/{{max}}）",
+      "crewBonus": "🎉 クルーがそろった！+{{points}}",
+      "friendSignedUp": "さんがあなたのリンクからHiladsに参加 🎉 最初の写真であなたに +{{points}}"
     },
     "empty": {
       "all": "静かだね。写真を撮りに行こう 📸",

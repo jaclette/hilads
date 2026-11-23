@@ -27,7 +27,8 @@
     "f5": "Conecte-se com moradores e viajantes",
     "fc1": "Desafie a galera da sua cidade",
     "fc2": "Desafie outra cidade pelo mundo",
-    "cta": "Bora"
+    "cta": "Bora",
+    "invited": "{{name}} te convidou. Poste sua primeira foto hoje e joguem juntos!"
   },
   "share": {
     "title": "Compartilhe algo",

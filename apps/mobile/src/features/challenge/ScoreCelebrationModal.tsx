@@ -28,6 +28,8 @@ type Props = {
   onOpenRanks: (target: RanksTarget) => void;
   /** Share my win (absent: no photo to share). */
   onShare?: (win: ScoreWin, medal: ScoreWinMedal | null) => void;
+  /** "Bring your crew" (the crew goal, or a friend's points in this reward). */
+  onOpenInvite?: () => void;
 };
 
 /**
@@ -89,7 +91,7 @@ function useStep() { return useSharedValue(0); }
  * next goal's bar filling, and the two buttons. Light haptics on each step, a success one at the
  * end. A tap anywhere jumps to the end; with Reduce Motion everything is simply there.
  */
-export function ScoreCelebrationModal({ data, visible, onClose, onOpenRanks, onShare }: Props) {
+export function ScoreCelebrationModal({ data, visible, onClose, onOpenRanks, onShare, onOpenInvite }: Props) {
   const { t } = useTranslation('challenge');
   const reduced = useReducedMotion();
   const win = useMemo(() => (data ? winOf(data) : null), [data]);
@@ -209,6 +211,8 @@ export function ScoreCelebrationModal({ data, visible, onClose, onOpenRanks, onS
     || win.sources.map(s => t(`scoreWin.source.${s.source}`)).join(' · ');
   const best = [...medals].sort((a, b) => a.rank - b.rank)[0] ?? null;
   const goalLeft = win.goal ? goalText(win, t) : null;
+  // The crew goal (or a friend's points in this reward) opens "Bring your crew".
+  const inviteGoal = !!onOpenInvite && (win.goal?.type === 'crew' || win.sources.some(s => s.source === 'friends' || s.source === 'crew'));
   const goalRight = !win.goal ? null
     : win.goal.type === 'streak' ? `${win.goal.day - 1} / ${win.goal.milestone}`
     : win.goal.type === 'stamp' || win.goal.type === 'week' || win.goal.type === 'crew' ? `${win.goal.done} / ${win.goal.total}` : null;
@@ -291,10 +295,12 @@ export function ScoreCelebrationModal({ data, visible, onClose, onOpenRanks, onS
             {/* The next goal. */}
             {goalLeft && (
               <Animated.View style={[styles.goal, goalStyle]}>
-                <View style={styles.goalRow}>
+                <Pressable style={styles.goalRow} disabled={!inviteGoal} onPress={onOpenInvite}
+                           accessibilityRole={inviteGoal ? 'button' : undefined} testID="win-goal">
                   <Text style={styles.goalText} numberOfLines={2}>{goalLeft}</Text>
                   {!!goalRight && <Text style={styles.goalCount}>{goalRight}</Text>}
-                </View>
+                  {inviteGoal && <Text style={styles.goalCount} accessibilityElementsHidden importantForAccessibility="no">›</Text>}
+                </Pressable>
                 <View style={styles.bar}>
                   <Animated.View style={[styles.barFill, barStyle]}>
                     <LinearGradient colors={[W.orange, W.terra]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={StyleSheet.absoluteFill} />

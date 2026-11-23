@@ -213,6 +213,51 @@
     "seasons": {
       "medals": "시즌 메달",
       "medalA11y": "#{{rank}}, {{season}}, {{points}}점"
+    },
+    "invite": {
+      "title": "크루를 모아요",
+      "signedOutTitle": "친구와 함께 플레이해요",
+      "signedOutText": "계정을 만들면 초대 링크를 받고, 친구가 들어오면 포인트를 얻어요.",
+      "signUp": "가입하기",
+      "cardA11y": "초대 카드: {{name}} 님이 Hilads에 초대해요",
+      "cardTitle": "{{name}} 님이 Hilads에 초대해요",
+      "cardText": "하루 한 장의 사진. 내 도시 vs 세계 📸🌍",
+      "progressTitle": "이번 시즌",
+      "crewLine": "친구 {{count}}명으로 크루를 완성하면 +{{points}} 보너스",
+      "step1Title": "링크 공유하기",
+      "step1Text": "아직 Hilads를 안 쓰는 친구에게 보내세요.",
+      "step2Title": "친구가 Hilads에 가입",
+      "step2Text": "내 링크로 가입하면 아래에 표시돼요.",
+      "step3Title": "친구가 첫 사진을 올려요",
+      "step3Text": "사진이 승인되면 포인트를 받아요.",
+      "bonus": "{{count}}번째 친구가 플레이하면 +{{points}}",
+      "friendsTitle": "내 친구",
+      "error": "친구 목록을 불러오지 못했어요.",
+      "retry": "다시 시도",
+      "noFriends": "아직 친구가 없어요. 공유 한 번이면 첫 친구가 와요 🤝",
+      "rules": "새 계정만, 친구 한 명당 휴대폰 한 대, 시즌당 최대 {{count}}명. 친구의 첫 사진이 승인되면 포인트가 들어와요.",
+      "shareLine": "나랑 Hilads 하자: 하루 한 장의 사진, 우리 도시 vs 세계 📸🌍",
+      "share": "초대 링크 공유하기",
+      "copied": "복사됨!",
+      "progress": "{{count}} / {{max}}",
+      "clicks_zero": "이번 시즌 내 링크가 {{count}}번 열렸어요",
+      "clicks_one": "이번 시즌 내 링크가 {{count}}번 열렸어요",
+      "clicks_two": "이번 시즌 내 링크가 {{count}}번 열렸어요",
+      "clicks_few": "이번 시즌 내 링크가 {{count}}번 열렸어요",
+      "clicks_many": "이번 시즌 내 링크가 {{count}}번 열렸어요",
+      "clicks_other": "이번 시즌 내 링크가 {{count}}번 열렸어요",
+      "channel": {
+        "whatsapp": "WhatsApp",
+        "zalo": "Zalo",
+        "messenger": "Messenger",
+        "copy_link": "링크 복사",
+        "share_sheet": "더보기"
+      },
+      "status": {
+        "joined": "가입함 · 첫 사진을 기다리는 중",
+        "played": "플레이함 · 포인트 없음 (같은 휴대폰 또는 한도 도달)",
+        "credited": "첫 사진 승인 · +{{points}}"
+      }
     }
   },
   "friendReq": {

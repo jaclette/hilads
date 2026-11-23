@@ -14,6 +14,13 @@ export function pendingInvite() {
   try { return sessionStorage.getItem(KEY) } catch { return null }
 }
 
+// Who invited the account just created ("@minh invited you" on the welcome screen), this page load only.
+let welcomeInviter = null
+export function setWelcomeInviter(inviter) {
+  welcomeInviter = inviter ? (inviter.username ? '@' + inviter.username : inviter.displayName ?? null) : null
+}
+export function getWelcomeInviter() { return welcomeInviter }
+
 export function clearPendingInvite() {
   try { sessionStorage.removeItem(KEY) } catch { /* storage off */ }
 }

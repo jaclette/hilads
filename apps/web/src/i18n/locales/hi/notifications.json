@@ -93,8 +93,9 @@
       "seasonEndingFirst_one": "⏳ सीज़न {{count}} दिन में ख़त्म: आप #1 पर हैं, डटे रहिए!",
       "seasonEndingFirst_other": "⏳ सीज़न {{count}} दिनों में ख़त्म: आप #1 पर हैं, डटे रहिए!",
       "perfectWeek": "🔥 परफ़ेक्ट वीक! +{{points}}",
-      "friendJoined": "आपकी वजह से Hilads से जुड़े 🤝 +{{points}} ({{count}}/{{max}})",
-      "crewBonus": "🎉 आपका क्रू पूरा हो गया! +{{points}}"
+      "friendJoined": "ने पहली फ़ोटो पोस्ट की 🤝 +{{points}} ({{count}}/{{max}})",
+      "crewBonus": "🎉 आपका क्रू पूरा हो गया! +{{points}}",
+      "friendSignedUp": "आपके लिंक से Hilads से जुड़े 🎉 उनकी पहली फ़ोटो = आपको +{{points}}"
     },
     "empty": {
       "all": "यहां सब शांत है। चलिए एक फ़ोटो लेते हैं 📸",

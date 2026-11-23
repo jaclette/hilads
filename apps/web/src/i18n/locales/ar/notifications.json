@@ -113,8 +113,9 @@
       "seasonEndingFirst_many": "⏳ الأيام المتبقية في الموسم: {{count}}. أنت #1، حافظ عليه!",
       "seasonEndingFirst_other": "⏳ الأيام المتبقية في الموسم: {{count}}. أنت #1، حافظ عليه!",
       "perfectWeek": "🔥 أسبوع مثالي! +{{points}}",
-      "friendJoined": "انضم إلى Hilads بفضلك 🤝 +{{points}} ({{count}}/{{max}})",
-      "crewBonus": "🎉 اكتمل فريقك! +{{points}}"
+      "friendJoined": "نشر صورته الأولى 🤝 +{{points}} ({{count}}/{{max}})",
+      "crewBonus": "🎉 اكتمل فريقك! +{{points}}",
+      "friendSignedUp": "انضم إلى Hilads عبر رابطك 🎉 صورته الأولى = +{{points}} لك"
     },
     "empty": {
       "all": "لا شيء هنا. التقط صورة 📸",

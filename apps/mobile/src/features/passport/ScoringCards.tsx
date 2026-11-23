@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react';
-import { Share, Text, View, StyleSheet } from 'react-native';
-import { useFocusEffect } from 'expo-router';
+import { Pressable, Text, View, StyleSheet } from 'react-native';
+import { useFocusEffect, useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import { Space, Radius, Type, IconSize, type ThemeColors } from '@/constants';
@@ -62,6 +62,7 @@ export function CrewCard() {
   const styles = useThemedStyles(makeStyles);
   const { colors } = useTheme();
   const { t } = useTranslation('me');
+  const router = useRouter();
   const [crew, setCrew] = useState<Crew | null>(null);
   useFocusEffect(useCallback(() => {
     let alive = true;
@@ -69,21 +70,17 @@ export function CrewCard() {
     return () => { alive = false; };
   }, []));
   if (!crew) return null;
-  const invite = async () => {
-    track('share_started', { content_type: 'invite', source: 'passport_crew' });
-    try {
-      const r = await Share.share({ message: t('crew.shareText', { link: crew.link }), url: crew.link });
-      if (r.action === Share.sharedAction) track('share_completed', { content_type: 'invite', channel: r.activityType ?? 'system' });
-    } catch { /* cancelled */ }
-  };
+  // "Bring your crew": the invite screen (share, shortcuts, the friends' statuses).
+  const invite = () => { track('invite_opened', { source: 'passport_crew' }); router.push('/invite' as never); };
   const progress = Math.min(1, crew.count / Math.max(1, crew.max));
   const joined = crew.friends.slice(0, 8);
   return (
     <Card style={styles.card}>
-      <View style={styles.head}>
-        <Text style={styles.title} accessibilityRole="header">{t('crew.title')}</Text>
-        <Text style={styles.count} accessibilityLabel={t('crew.a11y', { count: crew.count, max: crew.max })}>{crew.count} / {crew.max}</Text>
-      </View>
+      <Pressable style={styles.head} onPress={invite} accessibilityRole="button" accessibilityLabel={`${t('crew.title')}, ${t('crew.a11y', { count: crew.count, max: crew.max })}`}>
+        <Text style={[styles.title, { flex: 1 }]} accessibilityRole="header">{t('crew.title')}</Text>
+        <Text style={styles.count}>{crew.count} / {crew.max}</Text>
+        <Ionicons name="chevron-forward" size={16} color={colors.muted} />
+      </Pressable>
       <Text style={styles.sub}>
         {crew.bonus ? t('crew.done', { points: crew.points.crew })
           : t('crew.text', { friend: crew.points.friend, crew: crew.points.crew, max: crew.max })}
@@ -145,7 +142,7 @@ export function InvitedBy({ by }: { by: NonNullable<DailyUserStats['invitedBy']>
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
   card:       { padding: Space.md, gap: Space.sm },
-  head:       { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: Space.sm },
+  head:       { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: Space.sm, minHeight: 32 },
   title:      { ...Type.label, color: c.text, flexShrink: 1 },
   count:      { ...Type.label, color: c.primaryText },
   sub:        { ...Type.body, color: c.muted },

@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { useTranslation, Trans } from 'react-i18next'
 import { authSignup, authLogin, checkUsernameAvailability, fetchInviter } from '../api'
-import { pendingInvite, clearPendingInvite } from '../lib/invite'
+import { pendingInvite, clearPendingInvite, setWelcomeInviter } from '../lib/invite'
 import BackButton from './BackButton'
 import Icon from './Icon'
 
@@ -70,7 +70,7 @@ export default function AuthScreen({ guestId, guestNickname, onSuccess, onBack, 
       const data = tab === 'signup'
         ? await authSignup(email, password, username, username, guestId, mode, true /* eulaAccepted */, pendingInvite())
         : await authLogin(email, password)
-      if (tab === 'signup') clearPendingInvite()
+      if (tab === 'signup') { setWelcomeInviter(inviter); clearPendingInvite() }
       onSuccess(data.user, tab === 'signup')
     } catch (err) {
       setError(err.message)

@@ -27,7 +27,8 @@
     "f5": "Rencontre des locaux et des voyageurs",
     "fc1": "Lance un défi aux gens de ta ville",
     "fc2": "Défie une autre ville dans le monde",
-    "cta": "C'est parti"
+    "cta": "C'est parti",
+    "invited": "{{name}} t'a invité. Poste ta première photo aujourd'hui et jouez ensemble !"
   },
   "share": {
     "title": "Partage quelque chose",

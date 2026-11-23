@@ -4,7 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { authSignup, checkUsernameAvailability } from '@/api/auth';
-import { pendingInvite, fetchInviter, clearPendingInvite, type Inviter } from '@/features/invites/invite';
+import { pendingInvite, fetchInviter, clearPendingInvite, setWelcomeInviter, type Inviter } from '@/features/invites/invite';
 import { joinChannel } from '@/api/channels';
 import { useApp } from '@/context/AppContext';
 import { socket } from '@/lib/socket';
@@ -100,6 +100,7 @@ export default function SignUpScreen() {
       const guestId = identity?.guestId ?? '';
       const { user } = await authSignup(e, p, username, username, guestId, mode, true /* eulaAccepted */, invite?.code ?? null);
       clearPendingInvite();
+      setWelcomeInviter(invite?.inviter ?? null);
       setAccount(user);
       setShowAccountWelcome(true);   // one-time congrats screen (rendered in the root layout)
       identifyUser(user.id, { account_type: 'registered', username: user.username ?? user.display_name });

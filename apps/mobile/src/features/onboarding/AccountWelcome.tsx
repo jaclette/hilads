@@ -11,6 +11,7 @@ import { useTranslation } from 'react-i18next';
 import { Space, FontSizes, Radius, Spacing, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { Button, Card, IconButton } from '@/ui';
+import { getWelcomeInviter } from '@/features/invites/invite';
 
 interface Props {
   visible:  boolean;
@@ -23,6 +24,8 @@ export function AccountWelcome({ visible, username, onClose }: Props) {
   const { colors } = useTheme();
   const insets = useSafeAreaInsets();
   const { t } = useTranslation('common');
+  // Invited by a friend: a warm line on top ("@minh invited you 🤝").
+  const inviter = visible ? getWelcomeInviter() : null;
 
   const features: { icon: React.ComponentProps<typeof Ionicons>['name']; text: string }[] = [
     { icon: 'flame-outline',       text: t('accountWelcome.fc1') },   // local challenge — the primary action
@@ -49,6 +52,11 @@ export function AccountWelcome({ visible, username, onClose }: Props) {
           <View style={styles.party}><Ionicons name="sparkles-outline" size={36} color={colors.primaryOnTint} /></View>
           <Text style={styles.title}>{t('accountWelcome.title', { username })}</Text>
           <Text style={styles.subtitle}>{t('accountWelcome.subtitle')}</Text>
+          {!!inviter && (
+            <Card variant="tint" style={styles.invited}>
+              <Text style={styles.invitedText}>🤝 {t('accountWelcome.invited', { name: inviter })}</Text>
+            </Card>
+          )}
 
           <View style={styles.features}>
             {features.map((f, i) => (
@@ -78,6 +86,8 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   party: { width: 80, height: 80, borderRadius: Radius.full, backgroundColor: c.primaryTint, alignItems: 'center', justifyContent: 'center', marginBottom: Spacing.sm },
   title: { fontSize: FontSizes.title, fontWeight: '800', color: c.text, textAlign: 'center', letterSpacing: -0.5 },
   subtitle: { fontSize: FontSizes.md, color: c.muted, textAlign: 'center', marginBottom: Spacing.sm },
+  invited: { alignSelf: 'stretch', paddingVertical: Space.md, paddingHorizontal: Space.lg },
+  invitedText: { fontSize: FontSizes.md, fontWeight: '700', color: c.text, textAlign: 'center', lineHeight: 22 },
   features: { alignSelf: 'stretch', gap: Spacing.md, marginTop: Spacing.sm },
   feature: { flexDirection: 'row', alignItems: 'center', gap: Space.md, paddingVertical: Space.lg, paddingHorizontal: Space.lg },
   featureText: { flex: 1, fontSize: FontSizes.md, fontWeight: '500', color: c.text, lineHeight: 24 },

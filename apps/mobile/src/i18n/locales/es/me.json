@@ -201,5 +201,50 @@
   "seasons": {
     "medals": "Medallas de temporada",
     "medalA11y": "#{{rank}}, {{season}}, {{points}} puntos"
+  },
+  "invite": {
+    "title": "Trae a tu crew",
+    "signedOutTitle": "Juega con tus amigos",
+    "signedOutText": "Crea tu cuenta para tener tu enlace de invitación y ganar puntos cuando tus amigos se unan.",
+    "signUp": "Registrarse",
+    "cardA11y": "Tu tarjeta de invitación: {{name}} te invita a Hilads",
+    "cardTitle": "{{name}} te invita a Hilads",
+    "cardText": "Una foto al día. Tu ciudad contra el mundo 📸🌍",
+    "progressTitle": "Esta temporada",
+    "crewLine": "Completa un crew de {{count}} amigos para un bonus de +{{points}}",
+    "step1Title": "Comparte tu enlace",
+    "step1Text": "Envíalo a amigos que aún no están en Hilads.",
+    "step2Title": "Tu amigo se une a Hilads",
+    "step2Text": "Se registra con tu enlace y aparece abajo.",
+    "step3Title": "Publica su primera foto",
+    "step3Text": "Cuando se aprueba, ganas los puntos.",
+    "bonus": "+{{points}} cuando juegue tu amigo n.º {{count}}",
+    "friendsTitle": "Tus amigos",
+    "error": "No se pudieron cargar tus amigos.",
+    "retry": "Reintentar",
+    "noFriends": "Aún no hay amigos. El primero está a un solo envío 🤝",
+    "rules": "Solo cuentas nuevas, un teléfono por amigo, hasta {{count}} amigos por temporada. Los puntos llegan cuando se aprueba su primera foto.",
+    "shareLine": "Juega a Hilads conmigo: una foto al día, nuestra ciudad contra el mundo 📸🌍",
+    "share": "Compartir mi enlace",
+    "copied": "¡Copiado!",
+    "progress": "{{count}} / {{max}}",
+    "clicks_zero": "Tu enlace se abrió {{count}} veces esta temporada",
+    "clicks_one": "Tu enlace se abrió {{count}} vez esta temporada",
+    "clicks_two": "Tu enlace se abrió {{count}} veces esta temporada",
+    "clicks_few": "Tu enlace se abrió {{count}} veces esta temporada",
+    "clicks_many": "Tu enlace se abrió {{count}} veces esta temporada",
+    "clicks_other": "Tu enlace se abrió {{count}} veces esta temporada",
+    "channel": {
+      "whatsapp": "WhatsApp",
+      "zalo": "Zalo",
+      "messenger": "Messenger",
+      "copy_link": "Copiar enlace",
+      "share_sheet": "Más"
+    },
+    "status": {
+      "joined": "Se unió · esperando su primera foto",
+      "played": "Jugó · sin puntos (mismo teléfono o límite alcanzado)",
+      "credited": "Primera foto aprobada · +{{points}}"
+    }
   }
 }

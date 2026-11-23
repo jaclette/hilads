@@ -213,6 +213,51 @@
     "seasons": {
       "medals": "Medali musim",
       "medalA11y": "#{{rank}}, {{season}}, {{points}} poin"
+    },
+    "invite": {
+      "title": "Ajak kru-mu",
+      "signedOutTitle": "Main bareng teman",
+      "signedOutText": "Buat akun untuk dapat link undangan dan poin saat teman bergabung.",
+      "signUp": "Daftar",
+      "cardA11y": "Kartu undanganmu: {{name}} mengajakmu ke Hilads",
+      "cardTitle": "{{name}} mengajakmu ke Hilads",
+      "cardText": "Satu foto sehari. Kotamu lawan dunia 📸🌍",
+      "progressTitle": "Musim ini",
+      "crewLine": "Lengkapi kru {{count}} teman untuk bonus +{{points}}",
+      "step1Title": "Bagikan link-mu",
+      "step1Text": "Kirim ke teman yang belum ada di Hilads.",
+      "step2Title": "Temanmu gabung ke Hilads",
+      "step2Text": "Dia daftar lewat link-mu dan muncul di bawah.",
+      "step3Title": "Dia memposting foto pertamanya",
+      "step3Text": "Setelah disetujui, kamu dapat poinnya.",
+      "bonus": "+{{points}} saat teman ke-{{count}} main",
+      "friendsTitle": "Teman-temanmu",
+      "error": "Gagal memuat teman-temanmu.",
+      "retry": "Coba lagi",
+      "noFriends": "Belum ada teman. Yang pertama cuma sejauh satu kali bagikan 🤝",
+      "rules": "Hanya akun baru, satu ponsel per teman, maksimal {{count}} teman per musim. Poin masuk saat foto pertamanya disetujui.",
+      "shareLine": "Main Hilads bareng aku: satu foto sehari, kota kita lawan dunia 📸🌍",
+      "share": "Bagikan link undanganku",
+      "copied": "Tersalin!",
+      "progress": "{{count}} / {{max}}",
+      "clicks_zero": "Link-mu dibuka {{count}} kali musim ini",
+      "clicks_one": "Link-mu dibuka {{count}} kali musim ini",
+      "clicks_two": "Link-mu dibuka {{count}} kali musim ini",
+      "clicks_few": "Link-mu dibuka {{count}} kali musim ini",
+      "clicks_many": "Link-mu dibuka {{count}} kali musim ini",
+      "clicks_other": "Link-mu dibuka {{count}} kali musim ini",
+      "channel": {
+        "whatsapp": "WhatsApp",
+        "zalo": "Zalo",
+        "messenger": "Messenger",
+        "copy_link": "Salin tautan",
+        "share_sheet": "Lainnya"
+      },
+      "status": {
+        "joined": "Sudah gabung · menunggu foto pertama",
+        "played": "Sudah main · tanpa poin (ponsel sama atau batas tercapai)",
+        "credited": "Foto pertama disetujui · +{{points}}"
+      }
     }
   },
   "friendReq": {

@@ -1,7 +1,8 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { ScrollView, Text, View, StyleSheet, useWindowDimensions } from 'react-native';
+import type { ScrollViewInstance } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useFocusEffect, useRouter } from 'expo-router';
+import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { Space, Radius, Spacing, Type, IconSize, type ThemeColors, type ThemeName } from '@/constants';
@@ -59,6 +60,9 @@ export default function PassportScreen() {
   const { t } = useTranslation('me');
   const router = useRouter();
   const { width } = useWindowDimensions();
+  const { focus } = useLocalSearchParams<{ focus?: string }>();
+  const scroller = useRef<ScrollViewInstance>(null);
+  const focused = useRef(false);
   const { account, identity, city } = useApp();
   const unreadMessages = useUnreadMessages();   // the same count as the tab badge and the header button
   // The inbox (UX audit option B): notifications and private messages live here, Hi being no longer a tab.
@@ -166,7 +170,7 @@ export default function PassportScreen() {
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
       {header}
-      <ScrollView contentContainerStyle={styles.body}>
+      <ScrollView ref={scroller} contentContainerStyle={styles.body}>
         <Identity
           name={account.username ? `@${account.username}` : account.display_name}
           photo={account.thumbAvatarUrl ?? account.profile_photo_url ?? null}
@@ -200,7 +204,12 @@ export default function PassportScreen() {
           </Tappable>
         </View>
         {/* Scoring v2: this week's Perfect week, the crew, the season medals. */}
-        {!!stats?.week && <WeekCard week={stats.week} />}
+        {!!stats?.week && (
+          // "?focus=week" (How it works › Perfect week) scrolls to this card once it's laid out.
+          <View onLayout={e => { if (focus === 'week' && !focused.current) { focused.current = true; scroller.current?.scrollTo({ y: Math.max(0, e.nativeEvent.layout.y - 12), animated: true }); } }}>
+            <WeekCard week={stats.week} />
+          </View>
+        )}
         <CrewCard />
         {(stats?.seasonMedals?.length ?? 0) > 0 && <SeasonMedals medals={stats!.seasonMedals!} />}
         {/* Your rivals moved to World › Cities (UX audit: one place to compare cities). */}

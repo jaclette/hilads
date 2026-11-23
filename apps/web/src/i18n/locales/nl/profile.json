@@ -225,6 +225,51 @@
     "seasons": {
       "medals": "Seizoensmedailles",
       "medalA11y": "#{{rank}}, {{season}}, {{points}} punten"
+    },
+    "invite": {
+      "title": "Breng je crew mee",
+      "signedOutTitle": "Speel met je vrienden",
+      "signedOutText": "Maak je account aan voor je uitnodigingslink en verdien punten als vrienden meedoen.",
+      "signUp": "Aanmelden",
+      "cardA11y": "Je uitnodigingskaart: {{name}} nodigt je uit voor Hilads",
+      "cardTitle": "{{name}} nodigt je uit voor Hilads",
+      "cardText": "Eén foto per dag. Jouw stad tegen de wereld 📸🌍",
+      "progressTitle": "Dit seizoen",
+      "crewLine": "Maak een crew van {{count}} vrienden compleet voor +{{points}} bonus",
+      "step1Title": "Deel je link",
+      "step1Text": "Stuur hem naar vrienden die nog niet op Hilads zitten.",
+      "step2Title": "Je vriend komt op Hilads",
+      "step2Text": "Die meldt zich aan via je link en verschijnt hieronder.",
+      "step3Title": "De eerste foto staat online",
+      "step3Text": "Zodra die is goedgekeurd, krijg jij de punten.",
+      "bonus": "+{{points}} als je {{count}}e vriend speelt",
+      "friendsTitle": "Je vrienden",
+      "error": "Je vrienden konden niet worden geladen.",
+      "retry": "Opnieuw proberen",
+      "noFriends": "Nog geen vrienden. De eerste is maar één keer delen ver 🤝",
+      "rules": "Alleen nieuwe accounts, één telefoon per vriend, tot {{count}} vrienden per seizoen. De punten komen als de eerste foto is goedgekeurd.",
+      "shareLine": "Speel Hilads met me: één foto per dag, onze stad tegen de wereld 📸🌍",
+      "share": "Mijn uitnodigingslink delen",
+      "copied": "Gekopieerd!",
+      "progress": "{{count}} / {{max}}",
+      "clicks_zero": "Je link is dit seizoen {{count}} keer geopend",
+      "clicks_one": "Je link is dit seizoen {{count}} keer geopend",
+      "clicks_two": "Je link is dit seizoen {{count}} keer geopend",
+      "clicks_few": "Je link is dit seizoen {{count}} keer geopend",
+      "clicks_many": "Je link is dit seizoen {{count}} keer geopend",
+      "clicks_other": "Je link is dit seizoen {{count}} keer geopend",
+      "channel": {
+        "whatsapp": "WhatsApp",
+        "zalo": "Zalo",
+        "messenger": "Messenger",
+        "copy_link": "Link kopiëren",
+        "share_sheet": "Meer"
+      },
+      "status": {
+        "joined": "Aangemeld · wacht op de eerste foto",
+        "played": "Gespeeld · geen punten (zelfde telefoon of limiet bereikt)",
+        "credited": "Eerste foto goedgekeurd · +{{points}}"
+      }
     }
   },
   "friendReq": {
