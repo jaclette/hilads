@@ -137,7 +137,8 @@
     "duels_one": "{{count}} Duell",
     "duels_other": "{{count}} Duelle",
     "seasonRank": "#{{rank}} diese Saison",
-    "seasonNone": "Spiel, um in die Saison einzusteigen"
+    "seasonNone": "Spiel, um in die Saison einzusteigen",
+    "viewAsOthers": "So sehen mich andere"
   },
   "points": {
     "title": "So sammelst du Punkte",

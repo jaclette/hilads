@@ -165,7 +165,8 @@
       "duels_other": "{{count}} duelos",
       "duels_many": "{{count}} duelos",
       "seasonRank": "#{{rank}} nesta temporada",
-      "seasonNone": "Joga para entrares na temporada"
+      "seasonNone": "Joga para entrares na temporada",
+      "viewAsOthers": "Ver como os outros me veem"
     },
     "points": {
       "title": "Como ganhar pontos",

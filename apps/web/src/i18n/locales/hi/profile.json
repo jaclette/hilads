@@ -157,7 +157,8 @@
       "duels_one": "{{count}} मुकाबला",
       "duels_other": "{{count}} मुकाबले",
       "seasonRank": "इस सीज़न #{{rank}}",
-      "seasonNone": "सीज़न में आने के लिए खेलें"
+      "seasonNone": "सीज़न में आने के लिए खेलें",
+      "viewAsOthers": "देखें दूसरे मुझे कैसे देखते हैं"
     },
     "points": {
       "title": "पॉइंट कैसे कमाएँ",

@@ -127,7 +127,8 @@
     "rivalsEmpty": "チャレンジをいくつか遊んで、最初のライバルに出会おう 🌍",
     "duels_other": "{{count}}戦",
     "seasonRank": "今シーズン #{{rank}}",
-    "seasonNone": "プレイして今シーズンに参加しよう"
+    "seasonNone": "プレイして今シーズンに参加しよう",
+    "viewAsOthers": "ほかの人からの見え方を確認"
   },
   "points": {
     "title": "ポイントのもらい方",

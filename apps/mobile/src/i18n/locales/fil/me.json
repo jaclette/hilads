@@ -137,7 +137,8 @@
     "duels_one": "{{count}} duel",
     "duels_other": "{{count}} duels",
     "seasonRank": "#{{rank}} ngayong season",
-    "seasonNone": "Maglaro para makasali sa season"
+    "seasonNone": "Maglaro para makasali sa season",
+    "viewAsOthers": "Tingnan kung paano ako nakikita ng iba"
   },
   "points": {
     "title": "Paano makakuha ng points",

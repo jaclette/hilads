@@ -137,7 +137,8 @@
     "duels_one": "{{count}} duel",
     "duels_other": "{{count}} duels",
     "seasonRank": "#{{rank}} dit seizoen",
-    "seasonNone": "Speel om in het seizoen te komen"
+    "seasonNone": "Speel om in het seizoen te komen",
+    "viewAsOthers": "Bekijk hoe anderen me zien"
   },
   "points": {
     "title": "Zo verdien je punten",

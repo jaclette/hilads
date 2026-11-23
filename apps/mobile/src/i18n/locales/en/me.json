@@ -137,7 +137,8 @@
     "duels_one": "{{count}} duel",
     "duels_other": "{{count}} duels",
     "seasonRank": "#{{rank}} this season",
-    "seasonNone": "Play to enter this season"
+    "seasonNone": "Play to enter this season",
+    "viewAsOthers": "View as others see me"
   },
   "points": {
     "title": "How to earn points",

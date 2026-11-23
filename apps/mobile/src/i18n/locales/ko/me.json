@@ -127,7 +127,8 @@
     "rivalsEmpty": "챌린지를 몇 번 하면 첫 라이벌을 만날 수 있어요 🌍",
     "duels_other": "{{count}}번의 대결",
     "seasonRank": "이번 시즌 #{{rank}}",
-    "seasonNone": "플레이하고 이번 시즌에 참가하세요"
+    "seasonNone": "플레이하고 이번 시즌에 참가하세요",
+    "viewAsOthers": "다른 사람에게 보이는 내 모습"
   },
   "points": {
     "title": "포인트 받는 법",

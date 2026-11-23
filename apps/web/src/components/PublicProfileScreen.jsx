@@ -1,786 +1,278 @@
-import { thumbUrl } from '../lib/imageThumb'
-import { useState, useEffect, useRef } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import i18n from '../i18n'
-import { localizeCityName } from '../i18n/cityName'
-import { fetchPublicProfile, fetchUserEvents, fetchUserHangouts, fetchUserChallenges, fetchUserFriends, sendFriendRequest, acceptFriendRequest, cancelFriendRequest, removeFriend, fetchUserVibes, postVibe, submitReport, fetchReportStatus, DuplicateReportError } from '../api'
-
-import { cityFlag } from '../cityMeta'
-import { badgeLabel } from '../badgeMeta'
+import { shortCityName } from '../i18n/cityName'
+import {
+  fetchPublicProfile, fetchUserDaily, fetchProfileCard, fetchUserPhotos, fetchUserDuels, fetchUserFriends, fetchUserEvents,
+  sendFriendRequest, acceptFriendRequest, cancelFriendRequest, removeFriend, submitReport, fetchReportStatus, DuplicateReportError, submitBlock,
+} from '../api'
 import BackButton from './BackButton'
-import ProfileRankRow from './ProfileRankRow'
 import Icon from './Icon'
-import { CHALLENGE_TYPE_ICONS, TOPIC_ICONS, VIBE_ICONS, eventIcon } from '../lib/icons'
+import AvatarWithFlag from './AvatarWithFlag'
+import { FlagSticker, themeColor } from './joy/Joy'
+import { RankMedal } from './daily/dailyShared'
+import { CityPage, PioneerBadges, SpecialStamps } from './passport/PassportScreen'
+import { SeasonMedals } from './passport/ScoringCards'
+import { themeName } from './map/spotsShared'
+import { useBackLayer } from '../lib/backLayers'
+import { track } from '../lib/analytics'
 
-// ── Avatar palette ────────────────────────────────────────────────────────────
-
-const AVATAR_PALETTES = [
-  ['#7c6aff', '#c084fc'], ['#ff6a9f', '#fb7185'], ['#22d3ee', '#38bdf8'],
-  ['#4ade80', '#34d399'], ['#fb923c', '#fbbf24'], ['#f472b6', '#e879f9'],
-  ['#818cf8', '#60a5fa'], ['#2dd4bf', '#a3e635'],
-]
-
-function avatarColors(name) {
-  const hash = (name || '?').split('').reduce((acc, ch) => acc + ch.charCodeAt(0), 0)
-  return AVATAR_PALETTES[hash % AVATAR_PALETTES.length]
-}
-
-// ── Constants ─────────────────────────────────────────────────────────────────
-
-const BADGE_MICROCOPY = {
-  ghost:   'Just browsing',
-  fresh:   'Just landed',
-  regular: 'Shows up often',
-  host:    'Makes it happen',
-}
-
-const MODE_META = {
-  local:     { icon: 'location-outline', label: 'Local'     },
-  exploring: { icon: 'compass-outline',  label: 'Exploring' },
-}
-
-const VIBE_META = {
-  party:       { icon: VIBE_ICONS.party,       label: 'Party'       },
-  board_games: { icon: VIBE_ICONS.board_games, label: 'Board Games' },
-  coffee:      { icon: VIBE_ICONS.coffee,      label: 'Coffee'       },
-  music:       { icon: VIBE_ICONS.music,       label: 'Music'        },
-  food:        { icon: VIBE_ICONS.food,        label: 'Food'         },
-  chill:       { icon: VIBE_ICONS.chill,       label: 'Chill'        },
-}
-
-// ── Component ─────────────────────────────────────────────────────────────────
-
-
-export default function PublicProfileScreen({ userId, account, guest, onBack, onSendDm, onViewProfile, onOpenLightbox, onOpenHangout, onOpenChallenge, onOpenLeaderboard }) {
+/**
+ * A player's profile, the "mini Passport" (as the app's features/profile/PlayerProfile,
+ * docs/mockups/hilads_profile_mockup.html): the wavy cover, who they are, this season, stamps,
+ * photos (best first), you vs them, plans they host; Message and the friendship in a sticky bar,
+ * report / block in the ⋯ menu. `preview`: my own profile as others see it.
+ */
+export default function PublicProfileScreen({ userId, account, onBack, onSendDm, onOpenPhotos, preview = false }) {
   const { t } = useTranslation('publicProfile')
-  const [user,       setUser]       = useState(null)
-  const [events,     setEvents]     = useState([])
-  const [hangouts,   setHangouts]   = useState([])
-  const [challenges,      setChallenges]      = useState([])
-  const [challengeSubTab, setChallengeSubTab] = useState('all') // 'all' | 'local' | 'international'
-  const [friends,    setFriends]    = useState([])
-  const [error,      setError]      = useState(null)
-  const [dmBusy,       setDmBusy]       = useState(false)
-  // 4-state machine: none | pending_out | pending_in | friend.
-  // Driven by isFriend + pendingFriendRequest from the profile payload, plus
-  // WS events that flip the state when the other user acts.
-  const [friendState,     setFriendState]     = useState('none')
-  const [pendingReqId,    setPendingReqId]    = useState(null)
-  const [friendBusy,      setFriendBusy]      = useState(false)
-  const [confirmUnfriend, setConfirmUnfriend] = useState(false)
-  const [confirmCancelReq, setConfirmCancelReq] = useState(false)
-  const [vibes,        setVibes]        = useState([])
-  const [vibeScore,    setVibeScore]    = useState(null)
-  const [vibeCount,    setVibeCount]    = useState(0)
-  const [myVibe,       setMyVibe]       = useState(null)
-  const [vibeBusy,     setVibeBusy]     = useState(false)
-  const [vibeRating,   setVibeRating]   = useState(0)
-  const [vibeMessage,  setVibeMessage]  = useState('')
-  const [showVibeForm, setShowVibeForm] = useState(false)
-  const [showReportForm,  setShowReportForm]  = useState(false)
-  const [reportReason,    setReportReason]    = useState('')
-  const [reportBusy,      setReportBusy]      = useState(false)
-  const [reportSent,      setReportSent]      = useState(false)
-  const [reportError,     setReportError]     = useState(null)
-  const [existingReport,  setExistingReport]  = useState(null) // { id, created_at, status } | null
-  const [activeTab, setActiveTab] = useState('hangouts')
+  const tp = (k, o) => t(`p2.${k}`, o)
+  const isSelf = account?.id === userId
+  const showActions = !preview && !isSelf && !!account
+  const [user, setUser] = useState(null)
+  const [stats, setStats] = useState(null)
+  const [card, setCard] = useState(null)
+  const [friends, setFriends] = useState(null)
+  const [plans, setPlans] = useState([])
+  const [failed, setFailed] = useState(null)
+  const [friendState, setFriendState] = useState('none')
+  const [reqId, setReqId] = useState(null)
+  const [busy, setBusy] = useState(false)
+  const [menu, setMenu] = useState(false)
+  const [report, setReport] = useState(false)
+  const [reported, setReported] = useState(false)
+  const [reason, setReason] = useState('')
+  const [sheet, setSheet] = useState(null)   // 'photos' | 'duels'
+  useBackLayer(menu || report || sheet !== null, () => { setMenu(false); setReport(false); setSheet(null) })
 
-  const profileVibeCountRef = useRef(0)
+  const load = useCallback(() => {
+    setFailed(null)
+    fetchPublicProfile(userId).then(({ user: u }) => {
+      setUser(u)
+      if (u.isFriend) { setFriendState('friend'); setReqId(null) }
+      else if (u.pendingFriendRequest) { setFriendState(u.pendingFriendRequest.direction === 'outgoing' ? 'pending_out' : 'pending_in'); setReqId(u.pendingFriendRequest.id) }
+      else { setFriendState('none'); setReqId(null) }
+    }).catch(() => setFailed('gone'))
+    fetchUserDaily(userId, i18n.language).then(setStats).catch(() => {})
+    fetchProfileCard(userId).then(setCard).catch(() => {})
+    fetchUserFriends(userId, { page: 1, limit: 1 }).then(f => setFriends(f.total ?? null)).catch(() => {})
+    fetchUserEvents(userId).then(r => {
+      const now = Date.now() / 1000
+      const evs = r?.events ?? r ?? []
+      setPlans(evs.filter(e => e.created_by === userId && (e.ends_at ?? e.starts_at) > now).slice(0, 3))
+    }).catch(() => {})
+    if (showActions) fetchReportStatus({ targetUserId: userId }).then(r => setReported(!!r?.reported)).catch(() => {})
+    track('viewed_profile', { self: isSelf, preview, platform_surface: 'web' })
+  }, [userId, showActions, isSelf, preview])
+  useEffect(() => { load() }, [load])
 
-  useEffect(() => {
-    setUser(null)
-    setEvents([])
-    setFriends([])
-    setError(null)
-    setFriendState('none')
-    setPendingReqId(null)
-    setConfirmUnfriend(false)
-    setConfirmCancelReq(false)
-    setVibes([])
-    setVibeScore(null)
-    setVibeCount(0)
-    setMyVibe(null)
-    setVibeRating(0)
-    setVibeMessage('')
-    setShowVibeForm(false)
-    setChallenges([])
-    setActiveTab('challenges')
-    setExistingReport(null)
-    setShowReportForm(false)
-    profileVibeCountRef.current = 0
-
-    // Preflight: has the viewer already reported this user?
-    if (userId !== account?.id) {
-      fetchReportStatus({
-        guestId: account ? undefined : guest?.guestId,
-        targetUserId: userId,
-      })
-        .then(r => setExistingReport(r?.reported ? (r.existing_report ?? null) : null))
-        .catch(() => {})
-    }
-
-    fetchPublicProfile(userId)
-      .then(data => {
-        setUser(data.user)
-        // Derive friend state from the payload - see /apps/mobile/app/user/[id].tsx
-        // for the same logic on native.
-        if (data.user?.isFriend) {
-          setFriendState('friend')
-          setPendingReqId(null)
-        } else if (data.user?.pendingFriendRequest) {
-          setFriendState(data.user.pendingFriendRequest.direction === 'outgoing' ? 'pending_out' : 'pending_in')
-          setPendingReqId(data.user.pendingFriendRequest.id)
-        } else {
-          setFriendState('none')
-          setPendingReqId(null)
-        }
-        const vc = data.user?.vibeCount ?? 0
-        profileVibeCountRef.current = vc
-        if (data.user?.vibeScore != null) setVibeScore(data.user.vibeScore)
-        if (vc != null) setVibeCount(vc)
-      })
-      .catch(() => setError(t('loadError')))
-
-    fetchUserEvents(userId)
-      .then(data => setEvents(data.events ?? []))
-      .catch(() => {})
-
-    fetchUserHangouts(userId)
-      .then(data => setHangouts(data.hangouts ?? []))
-      .catch(() => {})
-
-    fetchUserChallenges(userId)
-      .then(data => setChallenges(data.challenges ?? []))
-      .catch(() => {})
-  }, [userId])
-
-  useEffect(() => {
-    if (!user) return
-    const id = userId
-
-    fetchUserFriends(id)
-      .then(data => { if (userId === id) setFriends(data.friends ?? []) })
-      .catch(() => {})
-
-    if (profileVibeCountRef.current > 0) {
-      fetchUserVibes(id)
-        .then(data => {
-          if (userId !== id) return
-          setVibes(data.vibes ?? [])
-          setVibeScore(data.score)
-          setVibeCount(data.count ?? 0)
-          setMyVibe(data.myVibe ?? null)
-          if (data.myVibe) {
-            setVibeRating(data.myVibe.rating)
-            setVibeMessage(data.myVibe.message ?? '')
-          }
-        })
-        .catch(() => {})
-    }
-  }, [user?.id]) // eslint-disable-line react-hooks/exhaustive-deps
-
-  async function handleSendDm() {
-    if (!onSendDm || dmBusy) return
-    setDmBusy(true)
-    try { await onSendDm(userId) } finally { setDmBusy(false) }
+  const handle = user?.username ? `@${user.username}` : user?.displayName ?? ''
+  const run = async (fn) => { setBusy(true); try { await fn() } catch { /* unchanged */ } finally { setBusy(false) } }
+  const friendPress = () => {
+    if (!user || busy) return
+    if (friendState === 'friend') { if (window.confirm(t('actions.unfriend') + ' ' + handle + '?')) run(async () => { await removeFriend(user.id); setFriendState('none') }) }
+    else if (friendState === 'pending_out') { if (window.confirm(t('actions.cancelRequest') + '?')) run(async () => { if (reqId) await cancelFriendRequest(reqId); setFriendState('none'); setReqId(null) }) }
+    else if (friendState === 'pending_in') run(async () => { if (reqId) await acceptFriendRequest(reqId); setFriendState('friend'); setReqId(null) })
+    else run(async () => {
+      const r = await sendFriendRequest(user.id)
+      if (r.friend) { setFriendState('friend'); setReqId(null) } else if (r.request) { setFriendState('pending_out'); setReqId(r.request.id) }
+    })
+  }
+  const block = async () => {
+    setMenu(false)
+    if (!user || !window.confirm(i18n.t('blockTitle', { ns: 'dm', name: handle, defaultValue: `Block ${handle}?` }))) return
+    try { await submitBlock({ targetUserId: user.id, targetNickname: user.displayName }); onBack() } catch { /* stays */ }
+  }
+  const sendReport = async () => {
+    if (reason.trim().length < 10) return
+    try { await submitReport({ reason, targetUserId: userId, targetNickname: user?.displayName }); setReported(true); setReport(false) }
+    catch (e) { if (e instanceof DuplicateReportError) { setReported(true); setReport(false) } }
   }
 
-  async function handleFriendToggle() {
-    if (!account || friendBusy) return
-
-    if (friendState === 'friend') {
-      // Two-step unfriend (existing UX)
-      if (!confirmUnfriend) { setConfirmUnfriend(true); return }
-      setFriendBusy(true)
-      try {
-        await removeFriend(userId)
-        setFriendState('none')
-        setConfirmUnfriend(false)
-      } catch { /* ignore */ }
-      finally { setFriendBusy(false) }
-      return
-    }
-
-    if (friendState === 'pending_out') {
-      // Two-step cancel for the pending outgoing request
-      if (!confirmCancelReq) { setConfirmCancelReq(true); return }
-      if (!pendingReqId) return
-      setFriendBusy(true)
-      try {
-        await cancelFriendRequest(pendingReqId)
-        setFriendState('none')
-        setPendingReqId(null)
-        setConfirmCancelReq(false)
-      } catch { /* ignore */ }
-      finally { setFriendBusy(false) }
-      return
-    }
-
-    if (friendState === 'pending_in') {
-      if (!pendingReqId) return
-      setFriendBusy(true)
-      try {
-        await acceptFriendRequest(pendingReqId)
-        setFriendState('friend')
-        setPendingReqId(null)
-      } catch { /* ignore */ }
-      finally { setFriendBusy(false) }
-      return
-    }
-
-    // friendState === 'none' - send a fresh request. Server may auto-accept
-    // on mutual add (returns friend: true), in which case we skip the
-    // "Request sent" intermediate state.
-    setFriendBusy(true)
-    try {
-      const result = await sendFriendRequest(userId)
-      if (result.friend) {
-        setFriendState('friend')
-        setPendingReqId(null)
-      } else if (result.request) {
-        setFriendState('pending_out')
-        setPendingReqId(result.request.id)
-      }
-    } catch { /* ignore */ }
-    finally { setFriendBusy(false) }
+  if (failed) {
+    return (
+      <div className="full-page pp2">
+        <div className="pp2-nav"><BackButton onClick={onBack} /></div>
+        <div className="pp2-empty pp2-empty--page"><p className="pp2-empty-title">{tp('goneTitle')}</p><p className="dc-muted">{tp('goneBody')}</p>
+          <button type="button" className="today-cta btn-primary" onClick={load}>{tp('retry')}</button></div>
+      </div>
+    )
   }
 
-  async function handleSubmitVibe() {
-    if (vibeBusy || vibeRating === 0) return
-    setVibeBusy(true)
-    try {
-      await postVibe(userId, { rating: vibeRating, message: vibeMessage.trim() || undefined })
-      const fresh = await fetchUserVibes(userId)
-      setVibes(fresh.vibes ?? [])
-      setVibeScore(fresh.score)
-      setVibeCount(fresh.count ?? 0)
-      setMyVibe(fresh.myVibe ?? null)
-      setShowVibeForm(false)
-    } catch { /* ignore */ }
-    finally { setVibeBusy(false) }
-  }
-
-  async function handleSubmitReport(e) {
-    e.preventDefault()
-    const reason = reportReason.trim()
-    if (reason.length < 10 || reportBusy) return
-    setReportBusy(true)
-    setReportError(null)
-    try {
-      await submitReport({
-        reason,
-        guestId:        account ? undefined : guest?.guestId,
-        targetUserId:   userId,
-        targetNickname: user?.displayName,
-      })
-      setReportSent(true)
-      setReportReason('')
-      setTimeout(() => { setShowReportForm(false); setReportSent(false) }, 2500)
-    } catch (err) {
-      if (err instanceof DuplicateReportError) {
-        setExistingReport(err.existing)
-        setReportReason('')
-      } else {
-        setReportError(err?.message ?? t('report.error'))
-      }
-    } finally {
-      setReportBusy(false)
-    }
-  }
-
-  const name     = user?.displayName ?? '?'
-  const [c1, c2] = avatarColors(name)
-  // First badge that carries microcopy → one sub-line under the meta row.
-  const heroMicroKey = (user?.badges ?? []).find(k => BADGE_MICROCOPY[k]) ?? null
-  const vibe     = user?.vibe && VIBE_META[user.vibe] ? user.vibe : null
-  const mode     = user?.mode && MODE_META[user.mode] ? user.mode : null
-  const now      = Date.now() / 1000
-
-  // Legend = user has ambassador picks
-  const hasPicks = !!(user?.ambassadorPicks && Object.keys(user.ambassadorPicks).length > 0)
-
-  // Challenges placed before Hangouts/Events to mirror the NOW filter rhythm
-  // - the primary entity sits first.
-  const tabs = [
-    { key: 'challenges' },
-    { key: 'hangouts' },
-    { key: 'events'   },
-    { key: 'friends'  },
-    { key: 'vibes'    },
-    ...(hasPicks ? [{ key: 'picks' }] : []),
-  ]
+  const home = stats?.homeCity ?? null
+  const cityName = home?.name ? shortCityName(home.name) : user?.currentCity ? shortCityName(user.currentCity) : null
+  const cityCountry = home?.country ?? user?.currentCityCountry ?? null
+  const streak = stats?.currentStreak ?? 0
+  const since = stats?.memberSince ? new Date(stats.memberSince * 1000).toLocaleDateString(i18n.language, { month: 'long', year: 'numeric' }) : null
+  const photos = card?.photos?.items ?? []
+  const passes = [...(stats?.localPassProgress ?? [])].sort((a, b) => Number(b.earned) - Number(a.earned) || b.done - a.done)
+  const pass = passes[0] ?? null
+  const openPhoto = (list, id) => onOpenPhotos?.(list, id)
+  const duels = card?.duels ?? null
 
   return (
-    <div className="full-page pub-profile-page">
+    <div className="full-page pp2">
+      <div className="pp2-scroll">
+        <div className="pp2-cover">
+          <svg viewBox="0 0 330 26" preserveAspectRatio="none" aria-hidden="true"><path d="M0 18 C60 28 110 2 170 8 C230 13 270 26 330 12 L330 27 L0 27Z" /></svg>
+        </div>
+        <div className="pp2-nav">
+          <BackButton onClick={onBack} />
+          {preview && <span className="pp2-preview"><Icon name="eye-outline" size={14} />{tp('previewBanner')}</span>}
+          {showActions && <button type="button" className="pp2-navbtn" aria-label={t('actions.reportTitle')} onClick={() => setMenu(true)}><Icon name="ellipsis-horizontal" size={20} /></button>}
+        </div>
 
-      {/* ── Header ── */}
-      <div className="page-header">
-        <BackButton onClick={onBack} />
-        <span className="page-title">{t('title')}</span>
+        <div className="pp2-head">
+          <div className="pp2-avatar">
+            {user ? <AvatarWithFlag userId={user.id} displayName={user.displayName} photoUrl={user.avatarUrl ?? user.thumbAvatarUrl} size={86} /> : <span className="pp2-skel pp2-skel--av" />}
+            {card?.crown && <span className="pp2-crown" role="img" aria-label={tp('crownA11y')}>👑</span>}
+          </div>
+          {user ? <h1 className="pp2-name">{handle}</h1> : <span className="pp2-skel pp2-skel--name" />}
+          <div className="pp2-tags">
+            {cityName && <span className="pp2-tag"><FlagSticker country={cityCountry} size={16} />{cityName}</span>}
+            {user?.mode && <span className={`pp2-tag${user.mode === 'local' ? ' pp2-tag--local' : ''}`}>{i18n.t(user.mode === 'local' ? 'dc.local' : 'dc.traveler', { ns: 'challenge', defaultValue: user.mode === 'local' ? 'Local' : 'Traveler' })}</span>}
+            {streak > 0 && <span className="pp2-tag">🔥 {i18n.t('dc.streak', { ns: 'challenge', count: streak })}</span>}
+          </div>
+          {since && <p className="pp2-since">{tp('since', { date: since })}</p>}
+          {friends > 0 && <p className="pp2-since">{tp('friends', { count: friends })}</p>}
+          {stats?.invitedBy && <p className="pp2-since">{i18n.t('pp.crew.invitedBy', { ns: 'profile', name: stats.invitedBy.username ? '@' + stats.invitedBy.username : stats.invitedBy.displayName ?? '' })}</p>}
+        </div>
+
+        <div className="pp2-body">
+          <div className="pp2-stats">
+            {[[stats?.photos, 'photos'], [stats?.likesReceived, 'likes'], [card?.wins, 'wins']].map(([v, k]) => (
+              <div key={k} className="pp2-stat">{v !== undefined && v !== null ? <b>{v}</b> : <span className="pp2-skel pp2-skel--num" />}<span>{tp(k, { count: v ?? 0 })}</span></div>
+            ))}
+          </div>
+
+          {card && (card.season.city || card.season.world) && (<>
+            <h2 className="pp2-h">{card.season.pre ? tp('preSeason') : tp('season')}</h2>
+            <div className="pp2-ranks">
+              {card.season.city && <div className="pp2-rank pp2-rank--city"><b>#{card.season.city.rank}</b><div>{tp('inCity', { city: shortCityName(card.season.city.city.name ?? '') })}<span><FlagSticker country={card.season.city.city.country} size={12} /> {i18n.t('dc.ranks.pts', { ns: 'challenge', count: card.season.city.points })}</span></div></div>}
+              {card.season.world && <div className="pp2-rank pp2-rank--world"><b>#{card.season.world.rank}</b><div>{tp('world')}<span>🌍 {i18n.t('dc.ranks.pts', { ns: 'challenge', count: card.season.world.points })}</span></div></div>}
+            </div>
+          </>)}
+
+          {pass && pass.done > 0 && (<>
+            <h2 className="pp2-h">{tp('stamps')}<small>{tp('stampsOf', { done: pass.done, total: pass.total, city: shortCityName(pass.city.name ?? '') })}</small></h2>
+            <CityPage cityName={shortCityName(pass.city.name ?? '')} country={pass.city.country} themes={pass.themes} stamps={pass.stamps} total={pass.total} earned={pass.earned} todayTheme={null} tomorrowTheme={null} />
+          </>)}
+          {(stats?.specialStamps?.length ?? 0) > 0 && <SpecialStamps stamps={stats.specialStamps} />}
+          {(stats?.pioneerOf?.length ?? 0) > 0 && <PioneerBadges pioneers={stats.pioneerOf} />}
+          {(stats?.seasonMedals?.length ?? 0) > 0 && <SeasonMedals medals={stats.seasonMedals} />}
+
+          <h2 className="pp2-h">{tp('photosTitle')}
+            {card && card.photos.total > photos.length && <button type="button" className="pp2-more" onClick={() => setSheet('photos')}>{tp('seeAll', { n: card.photos.total })}</button>}</h2>
+          {!card ? <div className="pp2-grid">{[0, 1, 2].map(i => <span key={i} className="pp2-skel pp2-skel--tile" />)}</div>
+            : photos.length === 0 ? (
+              <div className="pp2-empty"><span aria-hidden="true">📸</span><p className="pp2-empty-title">{isSelf ? tp('noPhotosSelf') : tp('noPhotos', { name: handle })}</p><p className="dc-muted">{tp('noPhotosText')}</p></div>
+            ) : <PhotoGrid items={photos} onOpen={(id) => openPhoto(photos.map(p => p.proof), id)} tp={tp} />}
+
+          {!isSelf && !preview && duels && (<>
+            <h2 className="pp2-h">{tp('vsTitle', { name: handle })}{duels.total > 0 && <small>{tp('duels', { count: duels.total })}</small>}</h2>
+            {duels.total === 0 ? <div className="pp2-empty"><p className="dc-muted">{tp('noDuels')}</p></div> : (
+              <div className="pp2-vs">
+                <div className="pp2-score" aria-label={tp('scoreA11y', { me: duels.me, them: duels.them, name: handle })}>
+                  <b>{duels.me}</b><span>{tp('you')}</span><u>VS</u><span>{handle}</span><b>{duels.them}</b>
+                </div>
+                {duels.duels.map(d => <DuelRow key={d.date} duel={d} onOpen={() => openPhoto([d.mine, d.theirs], d.mine.id)} />)}
+                {duels.total > duels.duels.length && <button type="button" className="today-cta dc-full btn-secondary" onClick={() => setSheet('duels')}>{tp('seeAllDuels')}</button>}
+              </div>
+            )}
+          </>)}
+
+          {plans.length > 0 && (<>
+            <h2 className="pp2-h">{tp('plans')}</h2>
+            {plans.map(e => <div key={e.id} className="pp2-plan"><Icon name="calendar-outline" size={16} /><span className="pp-ellipsis">{e.title}</span>
+              <span className="dc-muted">{new Date(e.starts_at * 1000).toLocaleString(i18n.language, { weekday: 'short', hour: 'numeric', minute: '2-digit' })}</span></div>)}
+          </>)}
+        </div>
       </div>
 
-      {/* ── Loading / Error ── */}
-      {!user && !error && <p className="pub-profile-loading">{t('loading')}</p>}
-      {error && <p className="pub-profile-error-inline">{error}</p>}
-
-      {user && (
-        <>
-          {/* Identity + tab bar now live INSIDE the body so they scroll away
-              with the rest of the content; only the top header and the
-              bottom action bar stay pinned. Classes kept for minimal CSS
-              churn (the word 'sticky' in the class is now a misnomer). */}
-          <div className="pub-profile-body">
-
-          {/* Identity section */}
-          <div className="pub-profile-sticky-identity">
-
-            {/* Hero: avatar + name + badge + city */}
-            <div className="pub-profile-hero">
-              {/* Identity row: avatar left + name / badges / city right.
-                  Mirrors the mobile profile so the two stay aligned. */}
-              <div className="pub-profile-identity-row">
-                {user.avatarUrl
-                  ? <img
-                      className="pub-profile-avatar"
-                      src={thumbUrl(user.thumbAvatarUrl ?? user.avatarUrl)}
-                      alt={name}
-                      onClick={() => onOpenLightbox && onOpenLightbox(user.avatarUrl)}
-                    />
-                  : <span
-                      className="pub-profile-avatar pub-profile-avatar--initials"
-                      style={{ background: `linear-gradient(135deg, ${c1}, ${c2})` }}
-                    >
-                      {name[0].toUpperCase()}
-                    </span>
-                }
-                <div className="pub-profile-identity-info">
-                  <h2 className="pub-profile-name">{name}</h2>
-                  <div className="pub-profile-meta-row">
-                    {(user.badges ?? []).map(k => (
-                      <span key={k} className={`badge-pill badge-pill--${k}`}>{badgeLabel(k)}</span>
-                    ))}
-                    {user.currentCity && (
-                      <span className="pub-profile-meta-city">{cityFlag(user.currentCityCountry)} {localizeCityName(user.currentCity)}</span>
-                    )}
-                  </div>
-                  {heroMicroKey && (
-                    <span className="pub-profile-badge-micro">{t(`badgeMicro.${heroMicroKey}`)}</span>
-                  )}
-                </div>
-              </div>
-
-              {/* Monthly rank - full-width banner below the identity row
-                  (this user's rank in THEIR own current city + worldwide). */}
-              <ProfileRankRow
-                rank={user.monthlyRank ?? null}
-                cityName={user.currentCity ?? null}
-                cityCountry={user.currentCityCountry ?? null}
-                onOpenLeaderboard={onOpenLeaderboard}
-              />
-
-              {/* About me */}
-              {user.aboutMe && (
-                <p className="pub-profile-about">{user.aboutMe}</p>
-              )}
-            </div>
-
-            {/* Identity cards: vibe + mode */}
-            {(vibe || mode) && (
-              <div className="pub-profile-identity-cards">
-                {vibe && (
-                  <div className="pub-profile-identity-card">
-                    <span className="pub-profile-identity-card-icon" style={{ color: 'var(--primary-text)' }}><Icon name={VIBE_META[vibe].icon} size={24} /></span>
-                    <span className="pub-profile-identity-card-title">{t(`vibes.${vibe}`)}</span>
-                    <span className="pub-profile-identity-card-sub">{t(`vibeTaglines.${vibe}`)}</span>
-                  </div>
-                )}
-                {mode && (
-                  <div className="pub-profile-identity-card">
-                    <span className="pub-profile-identity-card-icon" style={{ color: mode === 'local' ? 'var(--local-text)' : 'var(--traveler-text)' }}><Icon name={MODE_META[mode].icon} size={24} /></span>
-                    <span className="pub-profile-identity-card-title">{t(`modes.${mode}`)}</span>
-                    <span className="pub-profile-identity-card-sub">
-                      {mode === 'local'
-                        ? ((user.homeCity || user.currentCity) ? t('modeSub.localIn', { city: localizeCityName(user.homeCity || user.currentCity) }) : t('modeSub.local'))
-                        : (user.currentCity ? t('modeSub.exploringIn', { city: localizeCityName(user.currentCity) }) : t('modeSub.exploring'))}
-                    </span>
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* Info rows: From + Age */}
-            {(user.homeCity || user.age != null) && (
-              <div className="pub-profile-info-rows">
-                {user.homeCity && (
-                  <div className="pub-profile-info-row">
-                    <span className="pub-profile-info-label">{t('from')}</span>
-                    <span className="pub-profile-info-value">{user.homeCity}</span>
-                  </div>
-                )}
-                {user.age != null && (
-                  <div className="pub-profile-info-row">
-                    <span className="pub-profile-info-label">{t('age')}</span>
-                    <span className="pub-profile-info-value">{user.age}</span>
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* Tab bar */}
-            <div className="profile-tabs pub-profile-tabs-bar">
-              {tabs.map(tab => (
-                <button
-                  key={tab.key}
-                  className={`profile-tab-pill${activeTab === tab.key ? ' profile-tab-pill--active' : ''}`}
-                  onClick={() => setActiveTab(tab.key)}
-                >
-                  {t(`tabs.${tab.key}`)}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Tab content - continues inside pub-profile-body below */}
-
-            {/* Challenges tab */}
-            {activeTab === 'challenges' && (() => {
-              const filteredChallenges = challengeSubTab === 'all'
-                ? challenges
-                : challenges.filter(c => (c.mode ?? 'local') === challengeSubTab)
-              return (
-                <div className="pub-profile-events">
-                  {/* Mode sub-tabs - All / Local / International. */}
-                  <div className="challenge-type-chips" role="tablist" aria-label={t('modeFilter.label', { ns: 'challenge' })} style={{ padding: '0 0 var(--sp-8)' }}>
-                    {[
-                      { key: 'all',           icon: 'sparkles-outline' },
-                      { key: 'local',         icon: 'location-outline' },
-                      { key: 'international', icon: 'globe-outline' },
-                    ].map(({ key, icon }) => (
-                      <button
-                        key={key}
-                        type="button"
-                        role="tab"
-                        aria-selected={challengeSubTab === key}
-                        className={`challenge-type-chip${challengeSubTab === key ? ' challenge-type-chip--active' : ''}`}
-                        onClick={() => setChallengeSubTab(key)}
-                      >
-                        <Icon name={icon} size={15} />
-                        <span>{key === 'all'
-                          ? t('modeFilter.all', { ns: 'challenge' })
-                          : t(`mode.${key}`,    { ns: 'challenge' })}</span>
-                      </button>
-                    ))}
-                  </div>
-
-                  {filteredChallenges.length === 0
-                    ? <p className="pub-profile-tab-empty">{t('empty.challenges')}</p>
-                    : filteredChallenges.map(c => (
-                        <div
-                          key={c.id}
-                          className="pub-profile-event-row"
-                          onClick={() => onOpenChallenge ? onOpenChallenge(c) : undefined}
-                          style={{ cursor: onOpenChallenge ? 'pointer' : 'default' }}
-                        >
-                          <span className="pub-profile-event-icon"><Icon name={CHALLENGE_TYPE_ICONS[c.challenge_type] ?? 'flame-outline'} size={20} /></span>
-                          <div className="pub-profile-event-info">
-                            <span className="pub-profile-event-title">
-                              {(c.mode ?? 'local') === 'international' && <Icon name="globe-outline" size={14} style={{ marginRight: 'var(--sp-4)' }} />}{c.title}
-                            </span>
-                            {c.status === 'validated' && (
-                              <span className="pub-profile-event-live">{t('validatedBadge', { ns: 'challenge' })}</span>
-                            )}
-                            {c.is_owner && <span className="profile-host-tag">{t('host')}</span>}
-                          </div>
-                        </div>
-                      ))
-                  }
-                </div>
-              )
-            })()}
-
-            {/* Events tab */}
-            {activeTab === 'hangouts' && (
-              <div className="pub-profile-events">
-                {hangouts.length === 0
-                  ? <p className="pub-profile-tab-empty">{t('empty.hangouts')}</p>
-                  : hangouts.map(h => (
-                      <div
-                        key={h.id}
-                        className="pub-profile-event-row"
-                        onClick={() => onOpenHangout ? onOpenHangout(h) : undefined}
-                        style={{ cursor: onOpenHangout ? 'pointer' : 'default' }}
-                      >
-                        <span className="pub-profile-event-icon"><Icon name={TOPIC_ICONS[h.category] ?? 'chatbubble-outline'} size={20} /></span>
-                        <div className="pub-profile-event-info">
-                          <span className="pub-profile-event-title">{h.title}</span>
-                          {h.is_owner && <span className="profile-host-tag">{t('host')}</span>}
-                        </div>
-                      </div>
-                    ))
-                }
-              </div>
-            )}
-
-            {activeTab === 'events' && (
-              <div className="pub-profile-events">
-                {events.length === 0
-                  ? <p className="pub-profile-tab-empty">{t('empty.events')}</p>
-                  : events.map(ev => {
-                      const isLive = ev.starts_at <= now && ev.expires_at > now
-                      return (
-                        <div key={ev.id} className="pub-profile-event-row">
-                          <span className="pub-profile-event-icon"><Icon name={eventIcon(ev.event_type)} size={20} /></span>
-                          <div className="pub-profile-event-info">
-                            <span className="pub-profile-event-title">{ev.title}</span>
-                            {isLive && <span className="pub-profile-event-live">{t('live')}</span>}
-                            {!isLive && ev.is_past && <span className="pub-profile-event-past">{t('past')}</span>}
-                          </div>
-                        </div>
-                      )
-                    })
-                }
-              </div>
-            )}
-
-            {/* Friends tab */}
-            {activeTab === 'friends' && (
-              <div className="pub-profile-friends">
-                {friends.length === 0
-                  ? <p className="pub-profile-tab-empty">{t('empty.friends')}</p>
-                  : friends.map(f => {
-                      const [fc1, fc2] = avatarColors(f.displayName || '?')
-                      return (
-                        <div
-                          key={f.id}
-                          className="pub-profile-friend-row"
-                          onClick={() => onViewProfile ? onViewProfile(f.id, f.displayName) : undefined}
-                          style={{ cursor: onViewProfile ? 'pointer' : 'default' }}
-                        >
-                          {f.avatarUrl
-                            ? <img loading="lazy" className="pub-profile-friend-avatar" src={thumbUrl(f.thumbAvatarUrl ?? f.avatarUrl)} alt={f.displayName} />
-                            : <span
-                                className="pub-profile-friend-avatar pub-profile-friend-avatar--initials"
-                                style={{ background: `linear-gradient(135deg, ${fc1}, ${fc2})` }}
-                              >
-                                {(f.displayName || '?')[0].toUpperCase()}
-                              </span>
-                          }
-                          <div className="pub-profile-friend-info">
-                            <span className="pub-profile-friend-name">{f.displayName}</span>
-                            {f.badges?.[0] && <span className="pub-profile-friend-badge">{badgeLabel(f.badges[0])}</span>}
-                          </div>
-                        </div>
-                      )
-                    })
-                }
-              </div>
-            )}
-
-            {/* Vibes tab */}
-            {activeTab === 'vibes' && (
-              <>
-                {vibeCount > 0 && (
-                  <div className="pub-profile-vibe-score">
-                    <div className="pub-profile-vibe-stars">
-                      {[1,2,3,4,5].map(s => (
-                        <span key={s} className={s <= Math.round(vibeScore) ? 'vibe-star vibe-star--on' : 'vibe-star'}><Icon name="star" size={22} /></span>
-                      ))}
-                    </div>
-                    <span className="pub-profile-vibe-avg">{t('vibesTab.score', { score: vibeScore?.toFixed(1) })}</span>
-                    <span className="pub-profile-vibe-count">{t('vibesTab.basedOn', { count: vibeCount })}</span>
-                  </div>
-                )}
-
-                {account && userId !== account?.id && (
-                  <div className="pub-profile-vibe-cta">
-                    {!showVibeForm ? (
-                      <button className="pub-profile-vibe-btn" onClick={() => setShowVibeForm(true)}>
-                        {myVibe ? t('vibesTab.updateNote', { rating: myVibe.rating }) : t('vibesTab.leaveNote')}
-                      </button>
-                    ) : (
-                      <div className="pub-profile-vibe-form">
-                        <div className="pub-profile-vibe-form-stars">
-                          {[1,2,3,4,5].map(s => (
-                            <button key={s} className={`vibe-star-btn${vibeRating >= s ? ' on' : ''}`} onClick={() => setVibeRating(s)} aria-label={`${s}/5`}><Icon name="star" size={28} /></button>
-                          ))}
-                        </div>
-                        <textarea
-                          className="pub-profile-vibe-input"
-                          placeholder={t('vibesTab.placeholder')}
-                          value={vibeMessage}
-                          onChange={e => setVibeMessage(e.target.value)}
-                          maxLength={300}
-                          rows={2}
-                        />
-                        <div className="pub-profile-vibe-form-actions">
-                          <button className="pub-profile-vibe-cancel" onClick={() => { setShowVibeForm(false); setVibeRating(myVibe?.rating ?? 0); setVibeMessage(myVibe?.message ?? '') }}>{t('vibesTab.cancel')}</button>
-                          <button className="pub-profile-vibe-submit" onClick={handleSubmitVibe} disabled={vibeBusy || vibeRating === 0}>
-                            {vibeBusy ? t('vibesTab.sending') : t('vibesTab.sendNote')}
-                          </button>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                )}
-
-                <div className="pub-profile-vibes">
-                  {vibes.length > 0 ? (
-                    <>
-                      <p className="pub-profile-section-label">{t('vibesTab.notesLabel', { count: vibeCount })}</p>
-                      {vibes.map(v => {
-                        const [vc1, vc2] = avatarColors(v.authorName || '?')
-                        return (
-                          <div key={v.id} className="pub-profile-vibe-row">
-                            {v.authorPhoto
-                              ? <img className="pub-profile-vibe-avatar" src={v.authorPhoto} alt={v.authorName} />
-                              : <span
-                                  className="pub-profile-vibe-avatar pub-profile-vibe-avatar--initials"
-                                  style={{ background: `linear-gradient(135deg, ${vc1}, ${vc2})` }}
-                                >
-                                  {(v.authorName || '?')[0].toUpperCase()}
-                                </span>
-                            }
-                            <div className="pub-profile-vibe-content">
-                              <div className="pub-profile-vibe-header">
-                                <span className="pub-profile-vibe-author">{v.authorName}</span>
-                                <span className="pub-profile-vibe-rating" style={{ display: 'inline-flex', gap: 1 }}>{Array.from({ length: v.rating }, (_, i) => <Icon key={i} name="star" size={12} />)}</span>
-                              </div>
-                              {v.message && <p className="pub-profile-vibe-msg">{v.message}</p>}
-                            </div>
-                          </div>
-                        )
-                      })}
-                    </>
-                  ) : (
-                    <div className="pub-profile-vibes-empty">
-                      <p>{t('vibesTab.emptyTitle')}</p>
-                      <p>{t('vibesTab.emptySub')}</p>
-                    </div>
-                  )}
-                </div>
-              </>
-            )}
-
-            {/* City Picks tab - legend only */}
-            {activeTab === 'picks' && hasPicks && (
-              <div className="pub-profile-picks">
-                {user.ambassadorPicks.restaurant && (
-                  <div className="pub-profile-pick-card">
-                    <span className="pub-profile-pick-card-title">{t('picks.restaurant')}</span>
-                    <span className="pub-profile-pick-card-content">{user.ambassadorPicks.restaurant}</span>
-                  </div>
-                )}
-                {user.ambassadorPicks.spot && (
-                  <div className="pub-profile-pick-card">
-                    <span className="pub-profile-pick-card-title">{t('picks.spot')}</span>
-                    <span className="pub-profile-pick-card-content">{user.ambassadorPicks.spot}</span>
-                  </div>
-                )}
-                {user.ambassadorPicks.tip && (
-                  <div className="pub-profile-pick-card">
-                    <span className="pub-profile-pick-card-title">{t('picks.tip')}</span>
-                    <span className="pub-profile-pick-card-content">{user.ambassadorPicks.tip}</span>
-                  </div>
-                )}
-                {user.ambassadorPicks.story && (
-                  <div className="pub-profile-pick-card">
-                    <span className="pub-profile-pick-card-title">{t('picks.story')}</span>
-                    <span className="pub-profile-pick-card-content">{user.ambassadorPicks.story}</span>
-                  </div>
-                )}
-              </div>
-            )}
-
-          </div>
-        </>
-      )}
-
-      {/* ── Sticky action bar ── */}
-      {user && userId !== account?.id && (
-        <div className="pub-profile-sticky-bar">
-          {onSendDm && (
-            <button className="pub-profile-dm-btn btn-primary" onClick={handleSendDm} disabled={dmBusy}>
-              {!dmBusy && <Icon name="chatbubble-outline" size={20} />}{dmBusy ? t('actions.opening') : t('actions.message')}
-            </button>
-          )}
-          {account && !confirmUnfriend && !confirmCancelReq && (
-            <button
-              className={`pub-profile-friend-btn${(friendState === 'friend' || friendState === 'pending_out') ? ' pub-profile-friend-btn--active' : ''}`}
-              onClick={handleFriendToggle}
-              disabled={friendBusy}
-            >
-              {!friendBusy && <Icon name={friendState === 'friend' ? 'people-outline' : friendState === 'pending_out' ? 'time-outline' : 'person-add-outline'} size={20} />}
-              {friendBusy ? '…' :
-               friendState === 'friend'      ? t('actions.friend')        :
-               friendState === 'pending_out' ? t('actions.requestSent')   :
-               friendState === 'pending_in'  ? t('actions.acceptRequest') :
-                                                t('actions.addFriend')}
-            </button>
-          )}
-          {account && confirmUnfriend && (
-            <div className="pub-profile-unfriend-confirm">
-              <button className="pub-profile-unfriend-btn" onClick={handleFriendToggle} disabled={friendBusy}>
-                {friendBusy ? t('actions.removing') : t('actions.unfriend')}
-              </button>
-              <button className="pub-profile-unfriend-cancel" onClick={() => setConfirmUnfriend(false)} disabled={friendBusy}>
-                {t('actions.cancel')}
-              </button>
-            </div>
-          )}
-          {account && confirmCancelReq && (
-            <div className="pub-profile-unfriend-confirm">
-              <button className="pub-profile-unfriend-btn" onClick={handleFriendToggle} disabled={friendBusy}>
-                {friendBusy ? t('actions.cancelling') : t('actions.cancelRequest')}
-              </button>
-              <button className="pub-profile-unfriend-cancel" onClick={() => setConfirmCancelReq(false)} disabled={friendBusy}>
-                {t('actions.keep')}
-              </button>
-            </div>
-          )}
-          <button
-            className="pub-profile-report-btn"
-            onClick={() => { setShowReportForm(f => !f); setReportSent(false); setReportError(null) }}
-            title={t('actions.reportTitle')}
-            aria-label={t('actions.reportTitle')}
-          >
-            <Icon name="flag-outline" size={18} />
+      {showActions && user && (
+        <div className="pp2-bar">
+          <button type="button" className="today-cta btn-primary" onClick={() => onSendDm?.(user.id)}><Icon name="chatbubble-outline" size={18} />{tp('message')}</button>
+          <button type="button" className="today-cta btn-secondary" disabled={busy} onClick={friendPress}>
+            <Icon name={friendState === 'friend' ? 'checkmark-circle-outline' : friendState === 'pending_out' ? 'time-outline' : 'person-add-outline'} size={18} />
+            {friendState === 'friend' ? tp('friendsState') : friendState === 'pending_out' ? tp('requested') : friendState === 'pending_in' ? tp('accept') : tp('addFriend')}
           </button>
         </div>
       )}
 
-      {/* ── Inline report form ── */}
-      {user && userId !== account?.id && showReportForm && (
-        <div className="pub-profile-report-form-wrap">
-          {existingReport ? (
-            <p className="pub-profile-report-sent">
-              {t('report.existing', { date: new Date(existingReport.created_at).toLocaleDateString(i18n.language, { month: 'short', day: 'numeric', year: 'numeric' }) })}
-            </p>
-          ) : reportSent ? (
-            <p className="pub-profile-report-sent">{t('report.sent')}</p>
-          ) : (
-            <form className="pub-profile-report-form" onSubmit={handleSubmitReport}>
-              <textarea
-                className="pub-profile-report-textarea"
-                placeholder={t('report.placeholder')}
-                value={reportReason}
-                onChange={e => setReportReason(e.target.value)}
-                maxLength={500}
-                rows={3}
-                disabled={reportBusy}
-              />
-              {reportError && <p className="pub-profile-report-error">{reportError}</p>}
-              <div className="pub-profile-report-actions">
-                <button type="submit" className="pub-profile-report-submit" disabled={reportReason.trim().length < 10 || reportBusy}>
-                  {reportBusy ? t('report.sending') : t('report.submit')}
-                </button>
-                <button type="button" className="pub-profile-report-cancel" onClick={() => setShowReportForm(false)} disabled={reportBusy}>
-                  {t('report.cancel')}
-                </button>
-              </div>
-            </form>
-          )}
+      {menu && (
+        <div className="v3-sheet-wrap" role="dialog" aria-modal="true" aria-label={handle}>
+          <button type="button" className="v3-sheet-scrim" onClick={() => setMenu(false)} aria-label={t('actions.cancel')} />
+          <div className="v3-sheet">
+            <p className="v3-sheet-title">{handle}</p>
+            <button type="button" className="pp2-menu-row" disabled={reported} onClick={() => { setMenu(false); setReport(true) }}><Icon name="flag-outline" size={18} />{reported ? tp('reported') : tp('report')}</button>
+            <button type="button" className="pp2-menu-row pp2-menu-row--danger" onClick={block}><Icon name="ban-outline" size={18} />{tp('block')}</button>
+          </div>
         </div>
       )}
+      {report && (
+        <div className="v3-sheet-wrap" role="dialog" aria-modal="true" aria-label={t('actions.reportTitle')}>
+          <button type="button" className="v3-sheet-scrim" onClick={() => setReport(false)} aria-label={t('actions.cancel')} />
+          <div className="v3-sheet">
+            <p className="v3-sheet-title">{t('actions.reportTitle')}</p>
+            <textarea className="modal-input" rows={4} value={reason} onChange={e => setReason(e.target.value)} placeholder={t('report.placeholder')} />
+            <button type="button" className="today-cta dc-full btn-primary" disabled={reason.trim().length < 10} onClick={sendReport}>{t('report.submit')}</button>
+          </div>
+        </div>
+      )}
+      {sheet === 'photos' && <AllPhotos userId={userId} tp={tp} onClose={() => setSheet(null)} onOpen={openPhoto} />}
+      {sheet === 'duels' && <AllDuels userId={userId} handle={handle} tp={tp} onClose={() => setSheet(null)} onOpen={openPhoto} />}
+    </div>
+  )
+}
+
+function PhotoGrid({ items, onOpen, tp }) {
+  return (
+    <div className="pp2-grid">
+      {items.map(p => (
+        <button key={p.proof.id} type="button" className="pp2-tile" onClick={() => onOpen(p.proof.id)}
+                aria-label={[p.podium ? tp('podiumA11y', { rank: p.podium }) : null, `❤️ ${p.proof.voteCount}`].filter(Boolean).join(', ')}>
+          <img src={p.proof.thumbUrl ?? p.proof.photoUrl} alt="" loading="lazy" />
+          {p.podium && p.podium <= 3 && <span className="pp2-tile-medal"><RankMedal rank={p.podium} podium size={22} /></span>}
+          <em>❤️ {p.proof.voteCount}</em>
+        </button>
+      ))}
+    </div>
+  )
+}
+
+function DuelRow({ duel, onOpen }) {
+  const tc = themeColor(duel.theme)
+  return (
+    <button type="button" className="pp2-duel" onClick={onOpen} aria-label={themeName(duel.theme)}>
+      <span className="pp2-duel-ph"><img src={duel.mine.thumbUrl ?? duel.mine.photoUrl} alt="" loading="lazy" />{duel.winner === 'me' && <i>👑</i>}</span>
+      <span className="pp2-duel-mid"><b style={{ color: tc.light }}>{themeName(duel.theme)}</b><small>{duel.mine.voteCount} – {duel.theirs.voteCount}</small></span>
+      <span className="pp2-duel-ph"><img src={duel.theirs.thumbUrl ?? duel.theirs.photoUrl} alt="" loading="lazy" />{duel.winner === 'them' && <i>👑</i>}</span>
+    </button>
+  )
+}
+
+function AllPhotos({ userId, tp, onClose, onOpen }) {
+  const [items, setItems] = useState(null)
+  useEffect(() => { fetchUserPhotos(userId, 0).then(p => setItems(p.items)).catch(() => setItems([])) }, [userId])
+  return (
+    <div className="full-page pp2 pp2-sub">
+      <div className="pp2-subhead"><BackButton onClick={onClose} /><h1>{tp('photosTitle')}</h1></div>
+      <div className="pp2-body">{items === null ? <p className="dc-muted">…</p> : <PhotoGrid items={items} tp={tp} onOpen={(id) => onOpen(items.map(p => p.proof), id)} />}</div>
+    </div>
+  )
+}
+
+function AllDuels({ userId, handle, tp, onClose, onOpen }) {
+  const [data, setData] = useState(null)
+  useEffect(() => { fetchUserDuels(userId, 0).then(setData).catch(() => setData({ me: 0, them: 0, total: 0, duels: [] })) }, [userId])
+  return (
+    <div className="full-page pp2 pp2-sub">
+      <div className="pp2-subhead"><BackButton onClick={onClose} /><h1>{tp('vsTitle', { name: handle })}</h1></div>
+      <div className="pp2-body">
+        {data === null ? <p className="dc-muted">…</p> : (<>
+          <div className="pp2-score"><b>{data.me}</b><span>{tp('you')}</span><u>VS</u><span>{handle}</span><b>{data.them}</b></div>
+          {data.duels.map(d => <DuelRow key={d.date} duel={d} onOpen={() => onOpen([d.mine, d.theirs], d.mine.id)} />)}
+        </>)}
+      </div>
     </div>
   )
 }

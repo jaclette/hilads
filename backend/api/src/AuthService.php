@@ -654,7 +654,7 @@ class AuthService
             'id'                => $user['id'],
             'username'          => $user['username'] ?? null,
             'display_name'      => $user['display_name'],
-            'age'               => self::computeAge($user['birth_year'] ?? null),
+            // No age here: it is never shown to others (2026-11-23). ownFields adds it for the account itself.
             'profile_photo_url' => $user['profile_photo_url'],
             'home_city'         => $user['home_city'],
             // Back home's home city: {id, name, country} (id null for a city we don't have), or null.
@@ -694,6 +694,8 @@ class AuthService
         }
 
         return array_merge(self::publicFields($user), [
+            // Only the account itself sees its age (settings).
+            'age'               => self::computeAge($user['birth_year'] ?? null),
             'email'             => $user['email'],
             'guest_id'          => $user['guest_id']  ?? null,
             'is_verified'       => (bool) ($user['is_verified'] ?? false),

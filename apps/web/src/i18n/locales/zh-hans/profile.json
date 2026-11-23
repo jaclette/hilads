@@ -149,7 +149,8 @@
       "rivalsEmpty": "玩几个挑战，认识你的第一批对手 🌍",
       "duels_other": "{{count}} 场对决",
       "seasonRank": "本赛季第 {{rank}} 名",
-      "seasonNone": "玩一局就能加入本赛季"
+      "seasonNone": "玩一局就能加入本赛季",
+      "viewAsOthers": "查看别人眼中的我"
     },
     "points": {
       "title": "怎么赚积分",

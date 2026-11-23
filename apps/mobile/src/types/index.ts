@@ -435,7 +435,6 @@ export interface MonthlyRank {
 
 /** Public profile - UserDTO + profile-specific extensions. */
 export interface PublicProfile extends UserDTO {
-  age?:       number | null;
   homeCity?:  string | null;
   /** Live last-geolocated city name. Distinct from homeCity (user-edited). Drives the rank-row "in X" label. */
   currentCity?: string | null;

@@ -149,7 +149,8 @@
       "rivalsEmpty": "玩幾個挑戰，認識你的第一批對手 🌍",
       "duels_other": "{{count}} 場對決",
       "seasonRank": "本賽季第 {{rank}} 名",
-      "seasonNone": "玩一局就能加入本賽季"
+      "seasonNone": "玩一局就能加入本賽季",
+      "viewAsOthers": "查看別人眼中的我"
     },
     "points": {
       "title": "如何賺積分",

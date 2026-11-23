@@ -127,7 +127,8 @@
     "rivalsEmpty": "Chơi vài thử thách để gặp đối thủ đầu tiên nha 🌍",
     "duels_other": "{{count}} trận",
     "seasonRank": "#{{rank}} mùa này",
-    "seasonNone": "Chơi để vào mùa giải"
+    "seasonNone": "Chơi để vào mùa giải",
+    "viewAsOthers": "Xem như người khác thấy mình"
   },
   "points": {
     "title": "Cách kiếm điểm",

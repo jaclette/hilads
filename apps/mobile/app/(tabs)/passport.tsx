@@ -249,6 +249,8 @@ export default function PassportScreen() {
         </RowGroup>
 
         <Button icon="share-social-outline" label={t('passport.share')} onPress={sharePassport} testID="passport-share" />
+        {/* My profile as other players see it (the same screen, no actions). */}
+        <Button variant="link" icon="eye-outline" label={t('passport.viewAsOthers')} onPress={() => router.push(`/user/${account.id}?preview=1` as never)} style={styles.center} testID="passport-view-as-others" />
         <Button variant="link" icon="help-circle-outline" label={t('passport.howPoints')} onPress={() => setHelp(true)} style={styles.center} />
       </ScrollView>
       <PointsHelpSheet visible={help} onClose={() => setHelp(false)} />

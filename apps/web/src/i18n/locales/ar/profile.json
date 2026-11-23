@@ -189,7 +189,8 @@
       "duels_many": "{{count}} مواجهة",
       "duels_other": "{{count}} مواجهة",
       "seasonRank": "#{{rank}} هذا الموسم",
-      "seasonNone": "العب لتدخل هذا الموسم"
+      "seasonNone": "العب لتدخل هذا الموسم",
+      "viewAsOthers": "شاهد كيف يراني الآخرون"
     },
     "points": {
       "title": "كيف تكسب النقاط",

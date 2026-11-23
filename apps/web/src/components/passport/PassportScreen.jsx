@@ -198,6 +198,7 @@ export default function PassportScreen({ account, guestName, guestMode, cityId, 
         <button type="button" className="today-cta dc-full btn-primary" style={{ gap: 'var(--sp-8)' }} onClick={share}>
           <Icon name="share-social-outline" size={18} />{copied ? i18n.t('shareLink.copied', { ns: 'common' }) : t('passport.share')}
         </button>
+        <button type="button" className="dc-link pp-help" style={ROW} onClick={() => onOpen('viewAsOthers')}><Icon name="eye-outline" size={16} />{t('passport.viewAsOthers')}</button>
         <button type="button" className="dc-link pp-help" style={ROW} onClick={() => setHelp(true)}><Icon name="information-circle-outline" size={16} />{t('passport.howPoints')}</button>
       </div>
       {help && <PointsSheet onClose={() => setHelp(false)} />}
@@ -246,7 +247,7 @@ function Identity({ name, photo, mode, city, country, since = null, stats = null
  * missing ones dashed grey with their icon, then the Local Pass apart: a gold
  * row, the reward of the 7. "N of 7" counts the 7 themes only.
  */
-function CityPage({ cityName, country, themes, stamps, total = 7, earned, todayTheme, tomorrowTheme, onStamp }) {
+export function CityPage({ cityName, country, themes, stamps, total = 7, earned, todayTheme, tomorrowTheme, onStamp }) {
   const { t, i18n } = usePp()
   const have = new Set(themes)
   const todayMissing = todayTheme !== null && !have.has(todayTheme)
@@ -302,7 +303,7 @@ function CityPage({ cityName, country, themes, stamps, total = 7, earned, todayT
  * "Special stamps" (SPEC 9.15): one limited-edition stamp per special day with
  * an approved proof, apart from the city pages and never counted for the Local Pass.
  */
-function SpecialStamps({ stamps }) {
+export function SpecialStamps({ stamps }) {
   const { t, i18n } = usePp()
   return (
     <div className="pp-cpage">
@@ -327,7 +328,7 @@ function SpecialStamps({ stamps }) {
 }
 
 /** Pioneer badges (SPEC 9.16): "Pioneer of Saigon" for each city whose first approved proof ever is mine. */
-function PioneerBadges({ pioneers }) {
+export function PioneerBadges({ pioneers }) {
   const { t } = useTranslation('common')
   return (
     <div className="pp-cpage">

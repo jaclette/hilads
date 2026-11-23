@@ -173,7 +173,8 @@
       "duels_many": "{{count}} дуэлей",
       "duels_other": "{{count}} дуэли",
       "seasonRank": "#{{rank}} в этом сезоне",
-      "seasonNone": "Сыграй, чтобы попасть в сезон"
+      "seasonNone": "Сыграй, чтобы попасть в сезон",
+      "viewAsOthers": "Как меня видят другие"
     },
     "points": {
       "title": "Как заработать очки",

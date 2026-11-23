@@ -127,7 +127,8 @@
     "rivalsEmpty": "Main beberapa tantangan buat ketemu rival pertamamu 🌍",
     "duels_other": "{{count}} duel",
     "seasonRank": "#{{rank}} musim ini",
-    "seasonNone": "Main untuk masuk musim ini"
+    "seasonNone": "Main untuk masuk musim ini",
+    "viewAsOthers": "Lihat bagaimana orang lain melihatku"
   },
   "points": {
     "title": "Cara dapat poin",
