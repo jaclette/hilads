@@ -246,6 +246,7 @@ admin_nav('/admin/scoring');
           onsubmit="return this.confirm_text.value === 'RESET' || (alert('Type RESET to confirm.'), false)">
       <?= csrf_input() ?>
       <input type="hidden" name="back" value="scoring">
+      <label><input type="checkbox" name="keep_today" value="1"> Keep the points of today's challenge (players who already played today)</label>
       <label><input type="checkbox" name="with_seasons" value="1"> Also delete past season results and medals</label>
       <input type="text" name="confirm_text" placeholder="Type RESET" autocomplete="off"
              style="width:120px;background:#1a1a1a;border:1px solid #7f1d1d;color:#e0e0e0;padding:6px;border-radius:6px">

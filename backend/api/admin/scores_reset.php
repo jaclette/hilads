@@ -36,11 +36,28 @@ if ($back === '/admin/scoring' && trim((string) ($_POST['confirm_text'] ?? '')) 
 }
 $withSeasons = !empty($_POST['with_seasons']);
 $seasons = 0;
+// Keep the points earned on today's challenge under the v2 rules (players who already played
+// today keep their +10, tonight's close adds the podium); everything else goes.
+$keepToday = !empty($_POST['keep_today']);
+$kept = 0;
+$todayChallenge = $keepToday ? DailyChallengeRepository::findPublishedByDate(DailyClock::currentDate()) : null;
+if ($keepToday && $todayChallenge === null) {
+    flash_set('error', "No published challenge today - nothing was changed.");
+    admin_redirect($back);
+}
 
 try {
     $pdo->beginTransaction();
 
-    $deleted = $pdo->exec("DELETE FROM score_events");
+    if ($todayChallenge !== null) {
+        $kinds = Scoring::config()['season_kinds'];
+        $in    = implode(',', array_fill(0, count($kinds), '?'));
+        $del   = $pdo->prepare("DELETE FROM score_events WHERE NOT (daily_challenge_id IS NOT DISTINCT FROM ? AND kind IN ({$in}))");
+        $del->execute([$todayChallenge['id'], ...$kinds]);
+        $deleted = $del->rowCount();
+    } else {
+        $deleted = $pdo->exec("DELETE FROM score_events");
+    }
     $pdo->exec("
         UPDATE users
            SET score_alltime    = 0,
@@ -55,6 +72,17 @@ try {
     // had a rank - clear them in the same transaction so the badge
     // surface stays consistent with the cleared ledger.
     MonthlyRankService::clearAll($pdo);
+    // The kept rows (today's challenge): the cached totals from the ledger again.
+    if ($todayChallenge !== null) {
+        $kept = (int) $pdo->exec("
+            UPDATE users u SET score_alltime = t.pts, score_month = t.month_pts, score_month_ref = t.month_ref
+            FROM (SELECT user_id, sum(points) AS pts,
+                         coalesce(sum(points) FILTER (WHERE month_ref = to_char(now() AT TIME ZONE 'UTC', 'YYYY-MM')), 0) AS month_pts,
+                         to_char(now() AT TIME ZONE 'UTC', 'YYYY-MM') AS month_ref
+                  FROM score_events GROUP BY user_id) t
+            WHERE u.id = t.user_id
+        ");
+    }
     // Scoring v2: past season results and medals go too when asked (seasons are frozen
     // again at the next month's end).
     if ($withSeasons && (int) $pdo->query("SELECT count(*) FROM pg_tables WHERE tablename = 'season_results'")->fetchColumn() > 0) {
@@ -70,6 +98,11 @@ try {
     admin_redirect($back);
 }
 
-error_log("[admin-scores-reset] wiped {$deleted} score_events + reset all user aggregates" . ($withSeasons ? " + {$seasons} season results" : ''));
-flash_set('success', "All scores reset to 0. Deleted {$deleted} score events" . ($withSeasons ? " and {$seasons} season results" : '') . '.');
+if ($todayChallenge !== null) {
+    try { MonthlyRankService::recalcAll(); } catch (\Throwable) { /* ranks refresh on the next score change */ }
+}
+error_log("[admin-scores-reset] wiped {$deleted} score_events + reset all user aggregates" . ($withSeasons ? " + {$seasons} season results" : '')
+          . ($todayChallenge !== null ? " (kept today's points for {$kept} players)" : ''));
+flash_set('success', "All scores reset to 0. Deleted {$deleted} score events" . ($withSeasons ? " and {$seasons} season results" : '')
+          . ($todayChallenge !== null ? ", kept today's challenge points for {$kept} player(s)" : '') . '.');
 admin_redirect($back);
