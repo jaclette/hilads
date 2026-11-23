@@ -263,6 +263,7 @@ function admin_nav(string $current = ''): void
             '/admin/cities'     => 'Cities',
             '/admin/messages'=> 'Messages',
             '/admin/photos'  => 'Photos',
+            '/admin/scoring' => 'Scoring',
             '/admin/arrivals'=> 'Arrivals',
             '/admin/reports' => 'Reports',
             '/admin/bans'    => 'Bans',
