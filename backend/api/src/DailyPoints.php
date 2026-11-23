@@ -24,6 +24,12 @@ declare(strict_types=1);
  * city best, twist, proposal and Local Pass awards stop; the streak, the early
  * badge and the Local Pass stay, without points. Past rows are kept.
  *
+ * Scoring v2 (2026-11, docs/scoring-v2-audit.md, values in config/scoring.php):
+ * from the challenge dated Scoring::since() on, votes earn nothing, a Perfect
+ * week (a photo on every published challenge of a Mon–Sun week) earns
+ * perfect_week, and invites earn friend_joined / crew_bonus (P3). The podium
+ * pays only 🥇 on a day with fewer photos than the podium_min_photos switch.
+ *
  * Reversal: proof-linked rows carry daily_proof_id. Reject and admin removal
  * delete them, an owner delete cascades, and trg_score_event_daily_reverse
  * takes the points back off the user's totals.
@@ -32,14 +38,18 @@ final class DailyPoints
 {
     public const STREAK_CAP = 20;
     /** The only kinds that still earn points (see the class comment). */
-    public const EARNING_KINDS = ['daily_proof', 'daily_vote', 'daily_top1', 'daily_top2', 'daily_top3'];
+    public const EARNING_KINDS = ['daily_proof', 'daily_vote', 'daily_top1', 'daily_top2', 'daily_top3',
+                                  'perfect_week', 'friend_joined', 'crew_bonus'];
 
     /** @var array<string,int>|null */
     private static ?array $rules = null;
 
-    /** Points of a daily kind from score_rules (0 when missing). */
+    /** Points of a daily kind: config/scoring.php for the v2 kinds, else score_rules (0 when missing). */
     public static function rule(string $kind): int
     {
+        if (isset(Scoring::config()['points'][$kind])) {
+            return Scoring::points($kind);
+        }
         if (self::$rules === null) {
             self::$rules = [];
             $rows = Database::pdo()->query("SELECT kind, points FROM score_rules WHERE role = 'daily'")->fetchAll(PDO::FETCH_ASSOC);
@@ -82,10 +92,69 @@ final class DailyPoints
                             $proof['city_id'], $proof['id'], null)) {
             $awarded[] = 'early_proof';
         }
+        if (Scoring::isV2((string) $proof['challenge_date'])
+            && self::awardPerfectWeek($proof['user_id'], (string) $proof['challenge_date'], $proof['city_id'])) {
+            $awarded[] = 'perfect_week';
+        }
         if ($awarded !== [] && $recalcRanks) {
             MonthlyRankService::recalcAfterScoreChange($proof['user_id']);
         }
         return $awarded;
+    }
+
+    /**
+     * The Perfect week of the Mon–Sun week holding $date, once the week is over (its Sunday's
+     * challenge is today's or past) and from the switch week on: a photo (approved, real) on
+     * every published challenge of the week. Anchored on the week's last published challenge,
+     * so it is once per week and in the season of that day; not proof-linked (deleting one's
+     * own photo keeps it, moderation takes it back: revokeForModeration). Idempotent.
+     */
+    public static function awardPerfectWeek(string $userId, string $date, ?string $cityId): bool
+    {
+        [$monday, $sunday] = Scoring::week($date);
+        if (!Scoring::isV2($sunday) || DailyClock::currentDate() < $sunday) {
+            return false;
+        }
+        $stmt = Database::pdo()->prepare("
+            SELECT dc.id, dc.challenge_date::text AS date,
+                   EXISTS (SELECT 1 FROM daily_proofs p WHERE p.challenge_id = dc.id AND p.user_id = ?
+                             AND p.moderation_status = 'approved' AND NOT p.is_demo AND NOT p.is_seed AND NOT p.is_suggestion) AS played
+            FROM daily_challenges dc
+            WHERE dc.status = 'published' AND dc.challenge_date BETWEEN ?::date AND ?::date
+            ORDER BY dc.challenge_date
+        ");
+        $stmt->execute([$userId, $monday, $sunday]);
+        $days = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        if ($days === []) {
+            return false;
+        }
+        $played = [];
+        foreach ($days as $d) {
+            if (DailyProofRepository::bool($d['played'])) $played[$d['date']] = true;
+        }
+        if (Scoring::perfectWeeks(array_column($days, 'date'), $played, $sunday) === []) {
+            return false;
+        }
+        $anchor = end($days)['id'];
+        return self::insert($userId, $anchor, 'perfect_week', self::rule('perfect_week'), $cityId, null, null);
+    }
+
+    /**
+     * Moderation rejected or removed a photo: its own rows go (+10, podium: proof-linked,
+     * deleted by the caller) and so does the Perfect week of its week. Call inside the
+     * moderation transaction.
+     */
+    public static function revokePerfectWeek(string $userId, string $date): int
+    {
+        [$monday, $sunday] = Scoring::week($date);
+        $stmt = Database::pdo()->prepare("
+            DELETE FROM score_events se
+            USING daily_challenges dc
+            WHERE dc.id = se.daily_challenge_id AND se.user_id = ? AND se.kind = 'perfect_week'
+              AND dc.challenge_date BETWEEN ?::date AND ?::date
+        ");
+        $stmt->execute([$userId, $monday, $sunday]);
+        return $stmt->rowCount();
     }
 
     /**
@@ -95,7 +164,9 @@ final class DailyPoints
     public static function awardClose(string $challengeId, array $plan): array
     {
         $pdo    = Database::pdo();
-        $counts = ['proof_catchup' => 0, 'daily_vote' => 0, 'top' => 0, 'daily_city_best' => 0, 'daily_twist' => 0];
+        $counts = ['proof_catchup' => 0, 'daily_vote' => 0, 'top' => 0, 'daily_city_best' => 0, 'daily_twist' => 0, 'perfect_week' => 0];
+        $date   = (string) $pdo->query("SELECT challenge_date::text FROM daily_challenges WHERE id = " . $pdo->quote($challengeId))->fetchColumn();
+        $v2     = $date !== '' && Scoring::isV2($date);
 
         // Safety pass: approved proofs without their approval award.
         $stmt = $pdo->prepare("
@@ -112,7 +183,8 @@ final class DailyPoints
         }
 
         // Voters with at least one vote standing at the close (unvoting gave it back).
-        $votePts = self::rule('daily_vote');
+        // v2: likes give no points (past rows stay).
+        $votePts = $v2 ? 0 : self::rule('daily_vote');
         if ($votePts > 0) {
             $stmt = $pdo->prepare("
                 INSERT INTO score_events (id, user_id, role, kind, points, city_id, month_ref, daily_challenge_id)
@@ -129,7 +201,13 @@ final class DailyPoints
             $counts['daily_vote'] = $stmt->rowCount();
         }
 
-        foreach ($plan['world'] as $i => $row) {
+        // v2 switch podium_min_photos: a day with fewer photos worldwide pays only the first.
+        $world = $plan['world'];
+        $minPhotos = $v2 ? (int) Scoring::switch('podium_min_photos') : 0;
+        if ($minPhotos > 0 && (int) ($plan['photos'] ?? PHP_INT_MAX) < $minPhotos) {
+            $world = array_slice($world, 0, 1);
+        }
+        foreach ($world as $i => $row) {
             $kind = 'daily_top' . ($i + 1);
             if (self::insert($row['user_id'], $challengeId, $kind, self::rule($kind), $row['city_id'], $row['id'], null)) {
                 $counts['top']++;
@@ -152,6 +230,17 @@ final class DailyPoints
             if (self::insert($t['author_user_id'], $challengeId, 'daily_twist', self::rule('daily_twist'),
                              $t['city_id'], null, $t['id'])) {
                 $counts['daily_twist']++;
+            }
+        }
+
+        // Perfect weeks: the close of a week's last challenge checks everyone who played it
+        // (the approval already did; this catches a late approval or a rerun).
+        if ($v2 && $date === Scoring::week($date)[1]) {
+            $stmt = $pdo->prepare("SELECT DISTINCT user_id, city_id FROM daily_proofs
+                                   WHERE challenge_id = ? AND moderation_status = 'approved' AND NOT is_demo AND NOT is_seed AND NOT is_suggestion");
+            $stmt->execute([$challengeId]);
+            foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $p) {
+                if (self::awardPerfectWeek($p['user_id'], $date, $p['city_id'])) $counts['perfect_week']++;
             }
         }
 

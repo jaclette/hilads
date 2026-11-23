@@ -23,6 +23,24 @@ final class Scoring
         return (int) (self::config()['points'][$kind] ?? 0);
     }
 
+    /**
+     * The first challenge date under v2 (app_settings.scoring_v2_since, written by P1's
+     * migration), else the config's switch_date; null = v2 is not live yet (old rules).
+     */
+    public static function since(): ?string
+    {
+        $v = class_exists('AppConfig') ? (AppConfig::settings()['scoring_v2_since'] ?? null) : null;
+        $v ??= self::config()['switch_date'] ?? null;
+        return is_string($v) && preg_match('/^\d{4}-\d{2}-\d{2}$/', $v) ? $v : null;
+    }
+
+    /** True when a challenge of this date is scored with the v2 rules. */
+    public static function isV2(string $challengeDate): bool
+    {
+        $since = self::since();
+        return $since !== null && $challengeDate >= $since;
+    }
+
     /** A fair-play switch: the Admin › Scoring value (app_settings) when set, else the config default. */
     public static function switch(string $name): int|bool
     {
@@ -47,6 +65,28 @@ final class Scoring
         ));
         $paid = $minPhotos > 0 && count($rows) < $minPhotos ? 1 : 3;
         return array_slice($ranked, 0, $paid);
+    }
+
+    /**
+     * The season of a challenge date: its calendar month. It ends when its last challenge
+     * closes, at the drop of the 1st of the next month (02:00 UTC). pre = before
+     * config first_season (no medals). {key, startsOn, endsOn, endsAt (ISO UTC), daysLeft, pre}.
+     */
+    public static function season(string $date, ?DateTimeImmutable $now = null): array
+    {
+        $first = new DateTimeImmutable(substr($date, 0, 7) . '-01', new DateTimeZone('UTC'));
+        $next  = $first->modify('first day of next month');
+        $endsAt = DailyClock::dropAt($next->format('Y-m-d'));
+        $now  ??= new DateTimeImmutable('now', new DateTimeZone('UTC'));
+        $key  = $first->format('Y-m');
+        return [
+            'key'      => $key,
+            'startsOn' => $first->format('Y-m-d'),
+            'endsOn'   => $next->modify('-1 day')->format('Y-m-d'),
+            'endsAt'   => $endsAt->format('Y-m-d\TH:i:s\Z'),
+            'daysLeft' => max(0, (int) ceil(($endsAt->getTimestamp() - $now->getTimestamp()) / 86400)),
+            'pre'      => $key < (string) self::config()['first_season'],
+        ];
     }
 
     /** Monday and Sunday ('Y-m-d') of a date's week. */

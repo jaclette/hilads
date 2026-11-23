@@ -9,7 +9,7 @@ declare(strict_types=1);
  * - World top 3 by votes;
  * - every approved proof's rank within its city (scope = the city channel id);
  * - the best proof of each live city = its city rank 1.
- * Ties go to more votes from locals, then the earliest approval. Awards (top 3,
+ * Ties go to the first posted (rankProofs). Awards (top 3,
  * best of a city) need at least one vote; ranks within a city do not.
  * daily_results is rebuilt with delete + insert in one transaction, so a
  * rerun is idempotent (votes are frozen once the challenge closed).
@@ -66,7 +66,7 @@ final class DailyResults
                 $cityBest[$cityId] = $list[0];
             }
         }
-        return ['world' => $world, 'cities' => $cities, 'cityBest' => $cityBest];
+        return ['world' => $world, 'cities' => $cities, 'cityBest' => $cityBest, 'photos' => count($rows)];
     }
 
     /**
@@ -109,6 +109,8 @@ final class DailyResults
             FROM daily_proofs p
             JOIN users u ON u.id = p.user_id
             WHERE p.challenge_id = ? AND p.moderation_status = 'approved' AND NOT p.is_demo AND NOT p.is_seed AND NOT u.is_demo AND NOT p.is_suggestion
+              -- Admin and store review accounts take no place and no points (scoring v2).
+              AND NOT u.hidden_from_rankings AND NOT u.is_review
         ");
         $stmt->execute([$challengeId]);
         DailyRules::forgetLiveCities();

@@ -178,7 +178,7 @@ if ($origin !== null && in_array($origin, $allowedOrigins, true)) {
     header('Access-Control-Allow-Credentials: true');
 }
 
-header('Access-Control-Allow-Headers: Content-Type, X-Platform, X-Themes');
+header('Access-Control-Allow-Headers: Content-Type, X-Platform, X-Themes, X-Scoring');
 header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
 
 if ($method === 'OPTIONS') {

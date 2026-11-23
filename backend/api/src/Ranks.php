@@ -153,7 +153,7 @@ final class Ranks
                 JOIN channels ch         ON ch.id = p.city_id
                 LEFT JOIN cities c       ON c.channel_id = p.city_id
                 WHERE p.moderation_status = 'approved' AND NOT p.is_demo AND NOT p.is_seed AND NOT p.is_suggestion AND NOT u.is_demo
-                  AND p.city_id IS NOT NULL {$where}
+                  AND NOT u.hidden_from_rankings AND p.city_id IS NOT NULL {$where}
                 GROUP BY p.city_id, ch.name, c.country
                 ORDER BY photos DESC, likes DESC, players DESC, p.city_id
                 LIMIT 200
@@ -194,12 +194,12 @@ final class Ranks
 
     /**
      * The photos ranking of the period, best first: [{id, user_id, votes, comments, at}]. Ties
-     * (many photos have the same likes) are broken by comments, then the earliest posted, so
-     * every photo has one rank and the order never flips between two loads.
+     * (many photos have the same likes) go to the earliest posted, the podium's rule
+     * (DailyResults::rankProofs), so every photo has one rank and the order never flips.
      */
     public static function photoRows(string $period, ?string $cityId, string $today): array
     {
-        $key = 'ranks_photos_v3_' . md5("{$period}|{$cityId}|{$today}");
+        $key = 'ranks_photos_v4_' . md5("{$period}|{$cityId}|{$today}");
         return Cache::remember($key, self::CACHE_TTL, static function () use ($period, $cityId, $today): array {
             $dates = self::dates($period, $today);
             $args  = [];
@@ -231,7 +231,7 @@ final class Ranks
                 JOIN users u             ON u.id = p.user_id
                 WHERE p.moderation_status = 'approved' AND NOT p.is_demo AND NOT p.is_seed AND NOT p.is_suggestion AND NOT u.is_demo
                   AND NOT u.hidden_from_rankings AND p.vote_count > 0 {$where}
-                ORDER BY p.vote_count DESC, p.comment_count DESC, p.created_at ASC, p.id
+                ORDER BY p.vote_count DESC, p.created_at ASC, p.id
                 LIMIT 1000
             ");
             $stmt->execute(array_merge($sinceArgs, $args));
@@ -246,15 +246,15 @@ final class Ranks
     }
 
     /**
-     * Each photo's rank in yesterday's standing (week): the same order (likes, comments, earliest
-     * posted) on the likes and comments it had before today; [id => rank], a photo with no like
+     * Each photo's rank in yesterday's standing (week): the same order (likes, earliest
+     * posted) on the likes it had before today; [id => rank], a photo with no like
      * then left out (new). Empty when the rows carry no previous counts.
      */
     public static function photoPrevRanks(array $rows): array
     {
         $prev = array_values(array_filter($rows, static fn(array $r): bool => ($r['prev_votes'] ?? 0) > 0));
         usort($prev, static fn(array $a, array $b): int =>
-            [$b['prev_votes'], $b['prev_comments'], $a['at'], $a['id']] <=> [$a['prev_votes'], $a['prev_comments'], $b['at'], $b['id']]);
+            [$b['prev_votes'], $a['at'], $a['id']] <=> [$a['prev_votes'], $b['at'], $b['id']]);
         $out = [];
         foreach ($prev as $i => $r) $out[$r['id']] = $i + 1;
         return $out;
@@ -276,8 +276,8 @@ final class Ranks
             $gap = null;
             if ($i > 0) {
                 $above = $rows[$i - 1];
-                // Equal likes: mine passes with more comments, or the same comments and posted first.
-                $winsTie = $r['comments'] > $above['comments'] || ($r['comments'] === $above['comments'] && $r['at'] < $above['at']);
+                // Equal likes: mine passes when it was posted first.
+                $winsTie = $r['at'] < $above['at'];
                 $gap = max(1, $above['votes'] - $r['votes'] + ($winsTie ? 0 : 1));
             }
             return ['rank' => $i + 1, 'proofId' => $r['id'], 'votes' => $r['votes'], 'comments' => $r['comments'], 'gap' => $gap];

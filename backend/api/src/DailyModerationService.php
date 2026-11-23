@@ -150,6 +150,8 @@ final class DailyModerationService
                 WHERE id = ?
             ")->execute([$reason, $proofId]);
             $pdo->prepare("DELETE FROM score_events WHERE daily_proof_id = ?")->execute([$proofId]);
+            // Scoring v2: moderation also takes back the Perfect week of the photo's week.
+            DailyPoints::revokePerfectWeek((string) $before['user_id'], (string) $before['challenge_date']);
             $pdo->prepare("UPDATE daily_proof_reports SET status = 'reviewed' WHERE proof_id = ? AND status = 'open'")
                 ->execute([$proofId]);
             $pdo->commit();

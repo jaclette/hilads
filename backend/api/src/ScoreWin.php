@@ -29,7 +29,16 @@ final class ScoreWin
         'daily_proof' => 'photo', 'daily_vote' => 'votes',
         'daily_top1' => 'top', 'daily_top2' => 'top', 'daily_top3' => 'top',
         'daily_streak' => 'streak', 'early_proof' => 'early', 'local_pass' => 'stamp',
+        // Scoring v2: shown to apps that send X-Scoring: 2, "other" for older ones.
+        'perfect_week' => 'week', 'friend_joined' => 'friends', 'crew_bonus' => 'crew',
     ];
+    private const V2_SOURCES = ['week', 'friends', 'crew'];
+
+    /** The app knows the scoring v2 sources and goals (it sends X-Scoring: 2). */
+    public static function v2Client(): bool
+    {
+        return (int) ($_SERVER['HTTP_X_SCORING'] ?? 0) >= 2;
+    }
 
     /** A gap this small (points) makes "pass @x" the goal before the streak or a stamp. */
     private const CLOSE_GAP = 15;
@@ -62,9 +71,10 @@ final class ScoreWin
         $sources = [];
         foreach ($events as $e) {
             $src = self::SOURCES[$e['kind']] ?? 'other';
+            if (in_array($src, self::V2_SOURCES, true) && !self::v2Client()) $src = 'other';
             $sources[$src] = ($sources[$src] ?? 0) + (int) $e['points'];
         }
-        $order = ['photo', 'votes', 'top', 'streak', 'early', 'stamp', 'other'];
+        $order = ['photo', 'top', 'week', 'friends', 'crew', 'votes', 'streak', 'early', 'stamp', 'other'];
         $chips = [];
         foreach ($order as $src) {
             if (($sources[$src] ?? 0) > 0) $chips[] = ['source' => $src, 'points' => $sources[$src]];
@@ -217,6 +227,15 @@ final class ScoreWin
         $streak = DailyResults::currentStreak($userId);
         $challenge = DailyChallengeRepository::findPublishedByDate($today);
         $playedToday = $challenge !== null && ($p = DailyProofRepository::findMine((string) $challenge['id'], $userId)) !== null && $p['moderation_status'] === 'approved';
+
+        // Scoring v2: a Perfect week still within reach ("2 more days for a Perfect week").
+        if ($playedToday && self::v2Client() && Scoring::isV2(Scoring::week($today)[1])) {
+            $week = self::weekProgress($userId, $today);
+            if ($week !== null && !$week['earned'] && $week['missed'] === 0 && $week['left'] > 0) {
+                return ['type' => 'week', 'done' => $week['done'], 'total' => $week['total'], 'left' => $week['left'],
+                        'points' => Scoring::points('perfect_week'), 'progress' => round($week['done'] / max(1, $week['total']), 3)];
+            }
+        }
         if ($playedToday && $streak >= 1) {
             $milestone = $streak < 7 ? 7 : ($streak < 14 ? 14 : ($streak < 30 ? 30 : ($streak < 100 ? 100 : $streak + 1)));
             return ['type' => 'streak', 'day' => $streak + 1, 'milestone' => $milestone, 'progress' => round($streak / $milestone, 3)];
@@ -229,5 +248,40 @@ final class ScoreWin
             }
         }
         return $pass;
+    }
+
+    /**
+     * A player's Perfect week in progress, the week of $today: done = the week's days with a
+     * photo so far, missed = past days of the week without one, left = days still to play
+     * (today included when not played yet), total = 7, earned = the +30 is in.
+     */
+    public static function weekProgress(string $userId, string $today): ?array
+    {
+        [$monday, $sunday] = Scoring::week($today);
+        $stmt = Database::pdo()->prepare("
+            SELECT dc.challenge_date::text AS date,
+                   EXISTS (SELECT 1 FROM daily_proofs p WHERE p.challenge_id = dc.id AND p.user_id = ?
+                             AND p.moderation_status = 'approved' AND NOT p.is_demo AND NOT p.is_seed AND NOT p.is_suggestion) AS played
+            FROM daily_challenges dc
+            WHERE dc.status = 'published' AND dc.challenge_date BETWEEN ?::date AND ?::date
+        ");
+        $stmt->execute([$userId, $monday, $today]);
+        $done = 0;
+        $missed = 0;
+        $playedToday = false;
+        foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $r) {
+            $played = DailyProofRepository::bool($r['played']);
+            if ($played) $done++;
+            elseif ($r['date'] < $today) $missed++;
+            if ($r['date'] === $today) $playedToday = $played;
+        }
+        $daysAfter = (int) (new DateTimeImmutable($sunday))->diff(new DateTimeImmutable($today))->days;
+        $stmt = Database::pdo()->prepare("
+            SELECT 1 FROM score_events se JOIN daily_challenges dc ON dc.id = se.daily_challenge_id
+            WHERE se.user_id = ? AND se.kind = 'perfect_week' AND dc.challenge_date BETWEEN ?::date AND ?::date LIMIT 1
+        ");
+        $stmt->execute([$userId, $monday, $sunday]);
+        return ['done' => $done, 'missed' => $missed, 'left' => $daysAfter + ($playedToday ? 0 : 1), 'total' => 7,
+                'earned' => $stmt->fetchColumn() !== false];
     }
 }

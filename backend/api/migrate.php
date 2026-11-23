@@ -4858,6 +4858,52 @@ run($pdo, "CREATE TABLE IF NOT EXISTS message_reports (
     UNIQUE (message_id, reporter_key)
 )", 'message_reports');
 
+// ── Scoring v2, P1 (docs/scoring-v2-audit.md) ─────────────────────────────
+// New kinds: perfect_week (+30, a Mon–Sun week of photos, anchored on the week's
+// last published challenge), friend_joined (+10, an invited friend's first photo,
+// one per friend: subject_user_id) and crew_bonus (+50, the 5th friend of a season).
+// Values from config/scoring.php, synced into score_rules (counts_weekly, so the
+// period rankings count them). Votes stop earning from the challenge of the day
+// this runs (app_settings.scoring_v2_since, set once; past +2 rows stay).
+// Reversal: DELETE FROM score_events WHERE kind IN ('perfect_week','friend_joined','crew_bonus');
+// DELETE FROM app_settings WHERE key = 'scoring_v2_since'; restore the old CHECK and uq_score_events_daily.
+run($pdo, "ALTER TABLE score_events DROP CONSTRAINT IF EXISTS score_events_kind_check", 'score_events drop kind check (v2)');
+run($pdo, "
+    ALTER TABLE score_events
+    ADD CONSTRAINT score_events_kind_check
+    CHECK (kind IN ('accepted', 'meetup', 'debrief', 'ghost', 'date_locked', 'meet_bonus', 'challenge_created', 'challenge_first_taken', 'join', 'present', 'present_host', 'present_host_base', 'submission', 'winner', 'photo_host', 'daily_proof', 'daily_streak', 'daily_vote', 'daily_top1', 'daily_top2', 'daily_top3', 'daily_city_best', 'daily_twist', 'local_pass', 'proposal_selected', 'early_proof', 'perfect_week', 'friend_joined', 'crew_bonus'))
+", 'score_events kind check + v2 kinds');
+run($pdo, "ALTER TABLE score_events ADD COLUMN IF NOT EXISTS subject_user_id TEXT REFERENCES users(id) ON DELETE SET NULL", 'score_events.subject_user_id');
+// Two friends can join on the same day: friend_joined is unique per friend, not per challenge.
+run($pdo, "
+    DO \$\$ BEGIN
+        IF NOT EXISTS (SELECT 1 FROM pg_indexes WHERE indexname = 'uq_score_events_daily'
+                         AND indexdef LIKE '%friend_joined%') THEN
+            DROP INDEX IF EXISTS uq_score_events_daily;
+            CREATE UNIQUE INDEX uq_score_events_daily ON score_events (user_id, daily_challenge_id, kind)
+                WHERE daily_challenge_id IS NOT NULL AND kind <> 'friend_joined';
+        END IF;
+    END \$\$
+", 'uq_score_events_daily without friend_joined');
+run($pdo, "CREATE UNIQUE INDEX IF NOT EXISTS uq_score_events_friend ON score_events (user_id, subject_user_id)
+            WHERE kind = 'friend_joined'", 'uq_score_events_friend');
+// Admin and store review accounts: in no ranking (they already carry hidden_from_rankings
+// for admins; the review account joins them).
+run($pdo, "UPDATE users SET hidden_from_rankings = true WHERE is_review AND NOT hidden_from_rankings", 'review accounts hidden from rankings');
+require_once __DIR__ . '/src/Scoring.php';
+require_once __DIR__ . '/src/DailyClock.php';
+$scoringRule = $pdo->prepare("
+    INSERT INTO score_rules (kind, role, points, counts_weekly) VALUES (?, 'daily', ?, true)
+    ON CONFLICT (kind, role) DO UPDATE SET points = EXCLUDED.points, counts_weekly = true
+");
+foreach (Scoring::config()['points'] as $kind => $pts) {
+    $scoringRule->execute([$kind, $pts]);
+}
+echo "  ✓ score_rules synced from config/scoring.php\n";
+$pdo->prepare("INSERT INTO app_settings (key, value, updated_at, updated_by) VALUES ('scoring_v2_since', ?, now(), 'migrate')
+               ON CONFLICT (key) DO NOTHING")->execute([DailyClock::currentDate()]);
+echo "  ✓ scoring_v2_since = " . $pdo->query("SELECT value FROM app_settings WHERE key = 'scoring_v2_since'")->fetchColumn() . "\n";
+
 // ── Self-heal monthly rank columns ────────────────────────────────────────
 // The denormalised users.monthly_rank_* columns are kept fresh by
 // route-level recalc hooks fired after each scoring action. If any

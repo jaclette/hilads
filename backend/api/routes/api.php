@@ -12852,17 +12852,31 @@ function dailyCommitPlace(array $user, array $fields): array
 }
 
 // GET /api/v1/daily/today?cityId= - today's challenge for the home card.
-// GET /api/v1/daily/points: the points the Daily Challenge awards today (score_rules, role daily), for the
-// app's "How it works" screen: only the kinds that still earn (DailyPoints::EARNING_KINDS). Public.
+// GET /api/v1/daily/points: every value of the scoring rules (config/scoring.php, scoring v2) for the
+// app's "How it works" screen, the Passport and the victory modal, plus today's season. Public.
+// proof / vote / top / minVotesToWin keep their meaning for older apps (vote is 0 once v2 is live).
 $router->add('GET', '/api/v1/daily/points', function () {
-    $data = Cache::remember('daily_points_v1', 300, static fn(): array => [
-        'proof'         => DailyPoints::rule('daily_proof'),
-        'vote'          => DailyPoints::rule('daily_vote'),
-        'top'           => [DailyPoints::rule('daily_top1'), DailyPoints::rule('daily_top2'), DailyPoints::rule('daily_top3')],
-        'minVotesToWin' => DailyResults::MIN_VOTES_TO_WIN,
-    ]);
+    $today = DailyClock::currentDate();
+    $data = Cache::remember('daily_points_v2_' . $today, 300, static function () use ($today): array {
+        $cfg = Scoring::config();
+        $v2  = Scoring::isV2($today);
+        return [
+            'proof'            => DailyPoints::rule('daily_proof'),
+            'vote'             => $v2 ? 0 : DailyPoints::rule('daily_vote'),
+            'top'              => [DailyPoints::rule('daily_top1'), DailyPoints::rule('daily_top2'), DailyPoints::rule('daily_top3')],
+            'minVotesToWin'    => DailyResults::MIN_VOTES_TO_WIN,
+            'v2'               => $v2,
+            'perfectWeek'      => Scoring::points('perfect_week'),
+            'friendJoined'     => Scoring::points('friend_joined'),
+            'crewBonus'        => Scoring::points('crew_bonus'),
+            'invitesPerSeason' => (int) $cfg['invites_per_season'],
+            'crewSize'         => (int) $cfg['crew_size'],
+        ];
+    }) ?? [];
+    // The season is computed per request (daysLeft moves).
+    $data['season'] = Scoring::season($today);
     header('Cache-Control: public, max-age=300');
-    Response::json($data ?? []);
+    Response::json($data);
 });
 
 $router->add('GET', '/api/v1/daily/today', function () {

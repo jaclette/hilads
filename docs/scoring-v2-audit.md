@@ -181,7 +181,20 @@ New page **Admin › Scoring** with three sections:
 
 This gives the before/after numbers **before** any data change.
 
-### P1 – the new rules (backend)
+### P1 – the new rules (backend) — DONE
+
+Built as planned, with these specifics:
+
+- The switch date is written by the migration (`app_settings.scoring_v2_since` = the challenge date of the day `php migrate.php` runs). Until then the code keeps the old rules.
+- `rule()` reads config/scoring.php for the v2 kinds.
+- Review accounts are set `hidden_from_rankings`, so they leave every ranking that already filters admins; city rankings now filter it too.
+- Moderation reject / remove also revokes the Perfect week of the photo's week (`DailyPoints::revokePerfectWeek`).
+- New sources and the `week` goal reach only apps sending `X-Scoring: 2` (P5); older apps see "other".
+- `/daily/points` adds `v2, perfectWeek, friendJoined, crewBonus, invitesPerSeason, crewSize, season`; `vote` is 0 once v2 is live.
+- World › Photos and its movement/gap use the podium tie rule (likes, then posted first).
+- Not in P1 (season period, one total everywhere → P2; crew goal → P3; switches enforcement in likes → P4).
+
+Original plan:
 
 - **Migration:**
   - Add `perfect_week`, `friend_joined` and `crew_bonus` to the kind CHECK.

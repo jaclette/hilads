@@ -6,6 +6,8 @@ use PHPUnit\Framework\TestCase;
 
 require_once __DIR__ . '/../src/DailyResults.php';
 require_once __DIR__ . '/../src/Scoring.php';
+require_once __DIR__ . '/../src/DailyClock.php';
+require_once __DIR__ . '/../src/AppConfig.php';
 
 /** Scoring v2's pure rules: the config, the World podium, Perfect weeks. */
 final class ScoringTest extends TestCase
@@ -85,5 +87,49 @@ final class ScoringTest extends TestCase
     {
         $published = ['2026-11-30', '2026-12-01', '2026-12-02', '2026-12-03', '2026-12-04', '2026-12-05', '2026-12-06'];
         self::assertSame(['2026-12-06'], Scoring::perfectWeeks($published, array_fill_keys($published, true), '2026-12-06'));
+    }
+
+    protected function tearDown(): void
+    {
+        AppConfig::setSettings(null);
+    }
+
+    public function testV2StartsOnTheSwitchDate(): void
+    {
+        AppConfig::setSettings([]);
+        self::assertNull(Scoring::since());
+        self::assertFalse(Scoring::isV2('2026-11-30'));
+
+        AppConfig::setSettings(['scoring_v2_since' => '2026-11-24']);
+        self::assertFalse(Scoring::isV2('2026-11-23'));
+        self::assertTrue(Scoring::isV2('2026-11-24'));
+        self::assertTrue(Scoring::isV2('2026-12-01'));
+    }
+
+    public function testSwitchesDefaultOffAndFollowTheBackOffice(): void
+    {
+        AppConfig::setSettings([]);
+        self::assertSame(0, Scoring::switch('podium_min_photos'));
+        self::assertFalse(Scoring::switch('vote_requires_play'));
+        AppConfig::setSettings(['scoring_podium_min_photos' => '5', 'scoring_vote_requires_play' => '1']);
+        self::assertSame(5, Scoring::switch('podium_min_photos'));
+        self::assertTrue(Scoring::switch('vote_requires_play'));
+    }
+
+    public function testSeasonIsTheMonthEndingAtTheDropOfTheFirst(): void
+    {
+        $now = new DateTimeImmutable('2026-11-23 10:00:00', new DateTimeZone('UTC'));
+        $s = Scoring::season('2026-11-23', $now);
+        self::assertSame('2026-11', $s['key']);
+        self::assertSame('2026-11-01', $s['startsOn']);
+        self::assertSame('2026-11-30', $s['endsOn']);
+        self::assertSame('2026-12-01T02:00:00Z', $s['endsAt']);
+        self::assertSame(8, $s['daysLeft']);
+        self::assertTrue($s['pre']);
+
+        $d = Scoring::season('2026-12-31', new DateTimeImmutable('2026-12-31 12:00:00', new DateTimeZone('UTC')));
+        self::assertSame('2027-01-01T02:00:00Z', $d['endsAt']);
+        self::assertSame(1, $d['daysLeft']);
+        self::assertFalse($d['pre']);
     }
 }
