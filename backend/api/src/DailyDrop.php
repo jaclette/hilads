@@ -95,6 +95,9 @@ final class DailyDrop
                 $steps['voteFlags'] = ['status' => 'failed', 'error' => $e->getMessage()];
             }
 
+            // Scoring v2 seasons: the 1st freezes last month (medals, results); 3 days before the end, reminders.
+            $steps['season'] = DailySeasons::atDrop($date, $yesterday, $now);
+
             // The Hilads Index (SPEC 10.9): Monday's drop builds last week's cards. Never blocks the drop.
             if ((new DateTimeImmutable($date, new DateTimeZone('UTC')))->format('N') === '1') {
                 try {

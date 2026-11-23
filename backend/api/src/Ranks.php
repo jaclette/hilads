@@ -14,7 +14,7 @@ declare(strict_types=1);
 final class Ranks
 {
     public const CACHE_TTL = 45;
-    public const PERIODS   = ['today', 'yesterday', 'week', 'alltime'];
+    public const PERIODS   = ['today', 'yesterday', 'week', 'season', 'alltime'];
 
     /** Challenge dates of a period: [from, to], or null for all time. */
     public static function dates(string $period, string $today): ?array
@@ -24,6 +24,8 @@ final class Ranks
             'today'     => [$today, $today],
             'yesterday' => [$d->modify('-1 day')->format('Y-m-d'), $d->modify('-1 day')->format('Y-m-d')],
             'week'      => Spots::week($today),
+            // Scoring v2: the season = the calendar month of the challenge dates.
+            'season'    => [substr($today, 0, 7) . '-01', $today],
             default     => null,
         };
     }
@@ -42,17 +44,30 @@ final class Ranks
 
     // ── Players ─────────────────────────────────────────────────────────────
 
-    /** Every ranked player of the period: [{id, display_name, username, thumb, home_city_id, current_city_id, city_name, city_country, points, prev_points}], best first. */
+    /**
+     * Every ranked player of the period: [{id, display_name, username, thumb, home_city_id, current_city_id,
+     * city_name, city_country, points, prev_points, podiums, days}], best first. Ties: more podiums, then
+     * more days played, then the first to reach the score (scoring v2). The season counts the v2 kinds
+     * (config season_kinds: no votes); today / week the Daily kinds (counts_weekly); all time every kind.
+     */
     public static function playerRows(string $period, ?string $cityId, string $today): array
     {
-        $key = 'ranks_players_v1_' . md5("{$period}|{$cityId}|{$today}");
+        $key = 'ranks_players_v2_' . md5("{$period}|{$cityId}|{$today}");
         return Cache::remember($key, self::CACHE_TTL, static function () use ($period, $cityId, $today): array {
             $dates = self::dates($period, $today);
             $args  = [];
             $where = [];
             $join  = '';
             $prev  = "se.created_at < now() - interval '1 day'";
-            if ($dates !== null) {
+            if ($period === 'season') {
+                $kinds  = Scoring::config()['season_kinds'];
+                $join   = 'JOIN daily_challenges dc ON dc.id = se.daily_challenge_id';
+                $where[] = 'se.kind IN (' . implode(',', array_fill(0, count($kinds), '?')) . ')';
+                array_push($args, ...$kinds);
+                $where[] = 'dc.challenge_date BETWEEN ?::date AND ?::date';
+                array_push($args, $dates[0], $dates[1]);
+                $prev = 'dc.challenge_date < ?::date';
+            } elseif ($dates !== null) {
                 // Daily kinds only (as the weekly ranking), on the period's challenges.
                 $join   = 'JOIN score_rules r ON r.kind = se.kind AND r.role = se.role AND r.counts_weekly
                            JOIN daily_challenges dc ON dc.id = se.daily_challenge_id';
@@ -64,23 +79,26 @@ final class Ranks
                 $where[] = 'se.city_id = ?';
                 $args[]  = $cityId;
             }
-            $prevArgs = $period === 'week' ? [$today] : [];
+            $prevArgs = in_array($period, ['week', 'season'], true) ? [$today] : [];
             $stmt = Database::pdo()->prepare("
                 WITH totals AS (
                     SELECT se.user_id, sum(se.points) AS points,
-                           coalesce(sum(se.points) FILTER (WHERE {$prev}), 0) AS prev_points
+                           coalesce(sum(se.points) FILTER (WHERE {$prev}), 0) AS prev_points,
+                           count(*) FILTER (WHERE se.kind IN ('daily_top1', 'daily_top2', 'daily_top3')) AS podiums,
+                           count(DISTINCT se.daily_challenge_id) FILTER (WHERE se.kind = 'daily_proof') AS days,
+                           max(se.created_at) AS reached
                     FROM score_events se {$join}
                     " . ($where ? 'WHERE ' . implode(' AND ', $where) : '') . "
                     GROUP BY se.user_id
                 )
                 SELECT u.id, u.display_name, u.username, u.profile_thumb_photo_url AS thumb, u.home_city_id, u.current_city_id,
-                       ch.name AS city_name, c.country AS city_country, t.points, t.prev_points
+                       ch.name AS city_name, c.country AS city_country, t.points, t.prev_points, t.podiums, t.days
                 FROM totals t
                 JOIN users u          ON u.id = t.user_id
                 LEFT JOIN channels ch ON ch.id = u.current_city_id
                 LEFT JOIN cities c    ON c.channel_id = u.current_city_id
                 WHERE t.points > 0 AND u.deleted_at IS NULL AND NOT u.hidden_from_rankings AND NOT u.is_demo
-                ORDER BY t.points DESC, u.id ASC
+                ORDER BY t.points DESC, t.podiums DESC, t.days DESC, t.reached ASC, u.id ASC
                 LIMIT 2000
             ");
             $stmt->execute(array_merge($prevArgs, $args));
@@ -141,9 +159,9 @@ final class Ranks
             if ($dates !== null) {
                 $where = 'AND dc.challenge_date BETWEEN ?::date AND ?::date';
                 $args  = [$dates[0], $dates[1]];
-                $prev  = $period === 'week' ? 'dc.challenge_date < ?::date' : 'false';
+                $prev  = in_array($period, ['week', 'season'], true) ? 'dc.challenge_date < ?::date' : 'false';
             }
-            $prevArgs = $period === 'week' ? [$today] : [];
+            $prevArgs = in_array($period, ['week', 'season'], true) ? [$today] : [];
             $stmt = Database::pdo()->prepare("
                 SELECT p.city_id, ch.name, c.country, count(*) AS photos, count(DISTINCT p.user_id) AS players,
                        coalesce(sum(p.vote_count), 0) AS likes, count(*) FILTER (WHERE {$prev}) AS prev_photos

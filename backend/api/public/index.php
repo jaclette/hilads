@@ -147,6 +147,7 @@ if (str_starts_with($uri, '/admin')) {
     require_once __DIR__ . '/../src/DailyResults.php';
     require_once __DIR__ . '/../src/DailyPoints.php';
     require_once __DIR__ . '/../src/Scoring.php';
+    require_once __DIR__ . '/../src/DailySeasons.php';
     require_once __DIR__ . '/../src/ScoringReport.php';
     require_once __DIR__ . '/../src/DailyPromo.php';
     require_once __DIR__ . '/../admin/boot.php';
@@ -330,6 +331,7 @@ require_once __DIR__ . '/../src/DailyVotes.php';
 require_once __DIR__ . '/../src/DailyResults.php';
 require_once __DIR__ . '/../src/DailyPoints.php';
 require_once __DIR__ . '/../src/Scoring.php';
+require_once __DIR__ . '/../src/DailySeasons.php';
 require_once __DIR__ . '/../src/DailyPromo.php';
 
 $router = new Router();

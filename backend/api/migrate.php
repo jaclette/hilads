@@ -4904,6 +4904,34 @@ $pdo->prepare("INSERT INTO app_settings (key, value, updated_at, updated_by) VAL
                ON CONFLICT (key) DO NOTHING")->execute([DailyClock::currentDate()]);
 echo "  ✓ scoring_v2_since = " . $pdo->query("SELECT value FROM app_settings WHERE key = 'scoring_v2_since'")->fetchColumn() . "\n";
 
+// ── Scoring v2, P2: monthly seasons (DailySeasons) ─────────────────────────
+// seasons: one row per frozen season (the drop of the 1st freezes the month before).
+// season_results: every ranked player's final rank; rank <= 3 = a season medal;
+// seen_at = the app showed the results screen.
+// Reversal: DROP TABLE season_results; DROP TABLE seasons.
+run($pdo, "
+    CREATE TABLE IF NOT EXISTS seasons (
+        key        TEXT PRIMARY KEY,
+        starts_on  DATE NOT NULL,
+        ends_on    DATE NOT NULL,
+        players    INT,
+        frozen_at  TIMESTAMPTZ
+    )
+", 'seasons');
+run($pdo, "
+    CREATE TABLE IF NOT EXISTS season_results (
+        season   TEXT NOT NULL REFERENCES seasons(key) ON DELETE CASCADE,
+        user_id  TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        rank     INT  NOT NULL,
+        points   INT  NOT NULL,
+        podiums  INT  NOT NULL DEFAULT 0,
+        days     INT  NOT NULL DEFAULT 0,
+        seen_at  TIMESTAMPTZ,
+        PRIMARY KEY (season, user_id)
+    )
+", 'season_results');
+run($pdo, "CREATE INDEX IF NOT EXISTS idx_season_results_user ON season_results (user_id, season)", 'idx_season_results_user');
+
 // ── Self-heal monthly rank columns ────────────────────────────────────────
 // The denormalised users.monthly_rank_* columns are kept fresh by
 // route-level recalc hooks fired after each scoring action. If any

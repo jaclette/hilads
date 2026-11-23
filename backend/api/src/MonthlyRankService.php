@@ -75,46 +75,24 @@ class MonthlyRankService
             return $defaults;
         }
 
-        $cachedMonth    = (int) $row['score_month'];
-        $monthRef       = $row['score_month_ref'];
-        $cityId         = $row['current_city_id'];
-        $currentMonth   = gmdate('Y-m');
-        $effectiveMonth = ($monthRef === $currentMonth) ? $cachedMonth : 0;
-
-        $boundedRank = static function (string $whereExtra, array $bind) use ($pdo): ?int {
-            $cap = self::TOP_N_BOUNDED;
-            $sql = "
-                SELECT COUNT(*) FROM (
-                    SELECT 1 FROM users
-                    WHERE {$whereExtra} AND deleted_at IS NULL
-                    LIMIT " . ($cap + 1) . "
-                ) bounded
-            ";
-            $stmt = $pdo->prepare($sql);
-            $stmt->execute($bind);
-            $cnt = (int) $stmt->fetchColumn();
-            return $cnt < $cap ? $cnt + 1 : null;
+        // Scoring v2: one points total everywhere. "This month" is this season, from the
+        // same ledger sums as World › Players (Ranks: by challenge date, v2 kinds), so the
+        // profile row, the World tab and the Passport agree. score_month = season points.
+        $cityId = $row['current_city_id'];
+        $today  = DailyClock::currentDate();
+        $rankIn = static function (?string $scopeCity) use ($userId, $today): array {
+            $rows  = Ranks::playerRows('season', $scopeCity, $today);
+            $ranks = Ranks::rankBy($rows, 'id', 'points');
+            $rank  = $ranks[$userId] ?? null;
+            return [$rank !== null && $rank <= self::TOP_N_BOUNDED ? $rank : null, $rank !== null ? (int) $rows[$rank - 1]['points'] : 0];
         };
-
-        // Ordinal rank (must match the leaderboard list ordering
-        // `ORDER BY score_month DESC, id ASC`): a user ranks above me if they
-        // have a strictly higher score OR the same score AND a smaller id. Using
-        // only `score_month > :s` gave every tied user the same best-case rank,
-        // so the profile badge read better (#1/#3) than the user's actual list
-        // position (#2/#6). Tie-break on id ASC brings the two into agreement.
-        $globalRank = $boundedRank(
-            '(score_month > :s OR (score_month = :s AND id < :uid)) AND score_month_ref = :m',
-            ['s' => $effectiveMonth, 'm' => $currentMonth, 'uid' => $userId],
-        );
-        $cityRank = $cityId === null ? null : $boundedRank(
-            '(score_month > :s OR (score_month = :s AND id < :uid)) AND score_month_ref = :m AND current_city_id = :c',
-            ['s' => $effectiveMonth, 'm' => $currentMonth, 'uid' => $userId, 'c' => $cityId],
-        );
+        [$globalRank, $points] = $rankIn(null);
+        $cityRank = $cityId !== null ? $rankIn((string) $cityId)[0] : null;
 
         return [
             'city'        => $cityRank,
             'global'      => $globalRank,
-            'score_month' => $effectiveMonth,
+            'score_month' => $points,
             'has_city'    => $cityId !== null,
             'top_n'       => self::TOP_N_BOUNDED,
         ];

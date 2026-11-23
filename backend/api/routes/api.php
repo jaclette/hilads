@@ -10957,6 +10957,44 @@ $router->add('GET', '/api/v1/me/score-celebration', function () {
         ];
     }, $eventStmt->fetchAll(\PDO::FETCH_ASSOC) ?: []);
 
+    // Scoring v2: one points total everywhere. "Month" is this season and both totals and
+    // ranks come from the ledger by challenge date (as World › Players). My own totals are
+    // summed live (the rankings are cached 45 s and may not hold the reward yet).
+    try {
+        $todayV2  = DailyClock::currentDate();
+        $kindsV2  = Scoring::config()['season_kinds'];
+        $sumStmt  = Database::pdo()->prepare("
+            SELECT coalesce(sum(se.points), 0) AS alltime,
+                   coalesce(sum(se.points) FILTER (WHERE se.kind IN (" . implode(',', array_fill(0, count($kindsV2), '?')) . ")
+                        AND dc.challenge_date BETWEEN ?::date AND ?::date), 0) AS season
+            FROM score_events se LEFT JOIN daily_challenges dc ON dc.id = se.daily_challenge_id
+            WHERE se.user_id = ?
+        ");
+        $sumStmt->execute([...$kindsV2, substr($todayV2, 0, 7) . '-01', $todayV2, $callerId]);
+        $sums = $sumStmt->fetch(\PDO::FETCH_ASSOC);
+        $alltime        = (int) $sums['alltime'];
+        $effectiveMonth = (int) $sums['season'];
+        // $mine null: my points in that ranking's rows (a city counts the points earned there).
+        $rankV2 = static function (string $period, ?string $city, ?int $mine) use ($todayV2, $callerId, $TOP_N): ?int {
+            $rows = Ranks::playerRows($period, $city, $todayV2);
+            if ($mine === null) {
+                foreach ($rows as $r) if ($r['id'] === $callerId) $mine = (int) $r['points'];
+            }
+            if ((int) $mine <= 0) return null;
+            $rank = 1;
+            foreach ($rows as $r) {
+                if ($r['id'] !== $callerId && (int) $r['points'] > $mine) $rank++;
+            }
+            return $rank <= $TOP_N ? $rank : null;
+        };
+        $alltimeGlobalRank = $rankV2('alltime', null, $alltime);
+        $monthGlobalRank   = $rankV2('season', null, $effectiveMonth);
+        $alltimeCityRank   = $cityId !== null ? $rankV2('alltime', (string) $cityId, null) : null;
+        $monthCityRank     = $cityId !== null ? $rankV2('season', (string) $cityId, null) : null;
+    } catch (\Throwable $e) {
+        error_log('[score-celebration] v2 totals: ' . $e->getMessage());
+    }
+
     Response::json([
         'points'       => $totalPoints,
         'event_count'  => $eventCount,
@@ -11165,6 +11203,37 @@ $router->add('GET', '/api/v1/leaderboard', function () {
                 ], 400);
             }
         }
+    }
+
+    // Scoring v2: one points total everywhere. Players (world / city) read the same ledger sums
+    // as World › Players (Ranks, by challenge date): month = this season, alltime = all time.
+    // The city is where the points were earned, as in World › Players.
+    if ($scope !== 'cities') {
+        $rows  = Ranks::playerRows($period === 'month' ? 'season' : 'alltime', $scope === 'city' ? $cityId : null, DailyClock::currentDate());
+        $ranks = Ranks::rankBy($rows, 'id', 'points');
+        $entries = [];
+        foreach (array_slice($rows, $offset, $limit) as $i => $r) {
+            $entries[] = [
+                'rank'           => $offset + $i + 1,
+                'user_id'        => $r['id'],
+                'displayName'    => $r['display_name'],
+                'thumbAvatarUrl' => R2Uploader::thumbProxy($r['thumb']),
+                'points'         => (int) $r['points'],
+                'cityName'       => $r['city_name'] ?? null,
+                'cityCountry'    => $r['city_country'] ?? null,
+            ];
+        }
+        $mine = $callerId !== null && isset($ranks[$callerId]) ? $rows[$ranks[$callerId] - 1] : null;
+        Response::json([
+            'scope'     => $scope,
+            'period'    => $period,
+            'city_id'   => $scope === 'city' ? $cityId : null,
+            'month_ref' => $period === 'month' ? $currentMonth : null,
+            'limit'     => $limit,
+            'offset'    => $offset,
+            'entries'   => $entries,
+            'me'        => ['user_id' => $callerId, 'rank' => $mine !== null ? $ranks[$callerId] : null, 'points' => $mine !== null ? (int) $mine['points'] : 0],
+        ]);
     }
 
     $pdo = Database::pdo();
@@ -11569,6 +11638,8 @@ $router->add('GET', '/api/v1/ranks', function () {
         if ($cityId === null) $scope = 'world';
     }
     $base = ['tab' => $tab, 'period' => $period, 'scope' => $scope, 'cityId' => $cityId !== null ? (int) substr($cityId, 5) : null, 'date' => $today];
+    // Scoring v2: this season (key, end, days left, pre-season) for the season tab and its header.
+    if ($period === 'season') $base['season'] = Scoring::season($today);
 
     if ($tab === 'players') {
         if ($period === 'yesterday') $period = 'today';
@@ -11594,7 +11665,7 @@ $router->add('GET', '/api/v1/ranks', function () {
         foreach ($rows as $r) $byId[$r['id']] = DailyProofRepository::format($r, $user['id'] ?? null);
         return array_values(array_filter(array_map(static fn($id) => $byId[$id] ?? null, $ids)));
     };
-    // The ranking (likes, then comments, then the earliest posted), a page at a time: each
+    // The ranking (likes, then the earliest posted), a page at a time: each
     // photo keeps its rank in the whole ranking (a hidden author's photo leaves a gap, not a shift).
     $rows   = Ranks::photoRows($period, $cityId, $today);
     $limit  = max(1, min(50, (int) ($_GET['limit'] ?? 30)));
@@ -13679,7 +13750,31 @@ $router->add('GET', '/api/v1/users/{userId}/daily', function (array $params) {
         || in_array($user['id'], viewerBlockSet($viewer['id'], null)['user_ids'], true)) {
         Response::json(['error' => 'User not found'], 404);
     }
-    Response::json(DailyResults::userStats($user['id'], $viewer['id']));
+    // Scoring v2: season medals ([{season, rank, points}]) and this week's Perfect week progress.
+    $today = DailyClock::currentDate();
+    Response::json(DailyResults::userStats($user['id'], $viewer['id']) + [
+        'seasonMedals' => DailySeasons::medals($user['id']),
+        'week'         => Scoring::isV2(Scoring::week($today)[1])
+            ? (ScoreWin::weekProgress($user['id'], $today) ?? null) + ['points' => Scoring::points('perfect_week'), 'from' => Scoring::week($today)[0]]
+            : null,
+    ]);
+});
+
+// GET /api/v1/me/season-result - my latest finished season not celebrated yet (the app's
+// season results screen), else {result: null}. POST .../seen {season} - shown.
+$router->add('GET', '/api/v1/me/season-result', function () {
+    $user = AuthService::currentUser();
+    Response::json(['result' => $user !== null ? DailySeasons::unseenResult($user['id']) : null]);
+});
+$router->add('POST', '/api/v1/me/season-result/seen', function () {
+    $user = AuthService::requireAuth();
+    $body = Request::json();
+    $key  = (string) ($body['season'] ?? '');
+    if (!preg_match('/^\d{4}-\d{2}$/', $key)) {
+        Response::json(['error' => 'season must be YYYY-MM'], 400);
+    }
+    DailySeasons::markSeen($user['id'], $key);
+    Response::json(['ok' => true]);
 });
 
 // GET /api/v1/users/{userId}/daily/rivals/{cityId}?locale= - a face-off (V6): every challenge

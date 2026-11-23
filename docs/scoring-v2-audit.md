@@ -214,7 +214,12 @@ Original plan:
   - Old apps ignore unknown goals or sources and fall back to "other".
 - Unit tests: ScoreWinTest, plus new PerfectWeekTest and SeasonTest.
 
-### P2 – seasons (backend)
+### P2 – seasons (backend) — DONE
+
+- Built as planned: `Ranks` period `season`, the season tie-break for every player ranking, `DailySeasons` (freeze at the drop of the 1st, medals, `daily_season_result` / `daily_season_ending`), `daily_perfect_week` notification, `GET /me/season-result` + `POST /me/season-result/seen`, `seasonMedals` and `week` in `/users/{id}/daily`, notification texts in 19 locales (`NotificationI18n::SCORING`).
+- One total everywhere: `/leaderboard` (world / city), the profile rank row (`MonthlyRankService::ranksForUser`) and `/me/score-celebration` totals and ranks read the ledger by challenge date ("month" = this season). `/leaderboard?scope=cities` is unchanged (a sum per city, unused by the current apps).
+
+Original plan:
 
 - **Season = the calendar month of the challenge date.** Challenge days run 02:00 → 02:00 UTC, so the November season covers the Nov 1–30 challenges and **ends at the close of the Nov 30 challenge: Dec 1, 02:00 UTC** (Dec 1, 09:00 in Saigon). The UI says "Season ends Dec 1 · 02:00 UTC" and "N days left".
 - **`/ranks?tab=players&period=season`** (new period; old apps never ask for it).

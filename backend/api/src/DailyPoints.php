@@ -136,7 +136,20 @@ final class DailyPoints
             return false;
         }
         $anchor = end($days)['id'];
-        return self::insert($userId, $anchor, 'perfect_week', self::rule('perfect_week'), $cityId, null, null);
+        if (!self::insert($userId, $anchor, 'perfect_week', self::rule('perfect_week'), $cityId, null, null)) {
+            return false;
+        }
+        // "Perfect week! 🔥 +30" (never fails the award).
+        try {
+            if (NotificationRepository::enabledFor($userId, 'daily_perfect_week')) {
+                $data = ['week' => $monday, 'points' => self::rule('perfect_week')];
+                [$title, $body] = NotificationI18n::scoring('daily_perfect_week', 'en', $data);
+                NotificationRepository::createUnchecked($userId, 'daily_perfect_week', $title, $body, $data);
+            }
+        } catch (\Throwable $e) {
+            error_log('[points] perfect week notification failed: ' . $e->getMessage());
+        }
+        return true;
     }
 
     /**

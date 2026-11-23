@@ -20,6 +20,170 @@ final class NotificationI18n
 
     // [type][locale] => [titleTemplate, bodyTemplate|null]
     // bodyTemplate null ⇒ keep the caller's body (preview / proper nouns / no body).
+    // Scoring v2 (docs/scoring-v2-audit.md): [type][variant][locale] => [title, body]. The
+    // variant is $data['variant'] (else 'default'); 'en' is the source (call sites use
+    // NotificationI18n::scoring($type, 'en', $data)). Placeholders: {rank} {points} {gap}
+    // {prev} {days} {medal} {name} {count} {max}.
+    private const SCORING = [
+        'daily_season_result' => [
+            'medal' => [
+                'en'      => ["{medal} You finished #{rank} this season!", "Your season medal is on your Passport. A new season starts now."],
+                'fr'      => ["{medal} Tu finis #{rank} de la saison !", "Ta médaille de saison est sur ton Passeport. Une nouvelle saison commence."],
+                'vi'      => ["{medal} Bạn về #{rank} mùa này!", "Huy chương mùa đã có trong Hộ chiếu của bạn. Mùa mới bắt đầu rồi."],
+                'es'      => ["{medal} ¡Terminas #{rank} de la temporada!", "Tu medalla de temporada está en tu Pasaporte. Empieza una nueva temporada."],
+                'it'      => ["{medal} Chiudi la stagione al #{rank}!", "La tua medaglia di stagione è sul tuo Passaporto. Inizia una nuova stagione."],
+                'pt-br'   => ["{medal} Você terminou a temporada em #{rank}!", "Sua medalha da temporada está no seu Passaporte. Uma nova temporada começa agora."],
+                'pt-pt'   => ["{medal} Terminaste a temporada em #{rank}!", "A tua medalha da temporada está no teu Passaporte. Começa agora uma nova temporada."],
+                'de'      => ["{medal} Du beendest die Saison auf #{rank}!", "Deine Saisonmedaille ist in deinem Reisepass. Jetzt startet eine neue Saison."],
+                'nl'      => ["{medal} Je eindigt het seizoen op #{rank}!", "Je seizoensmedaille staat in je Paspoort. Er begint nu een nieuw seizoen."],
+                'zh-hans' => ["{medal} 本赛季你获得第 {rank} 名！", "赛季奖牌已放进你的护照。新赛季现在开始。"],
+                'zh-hant' => ["{medal} 本賽季你拿下第 {rank} 名！", "賽季獎牌已放進你的護照。新賽季現在開始。"],
+                'ja'      => ["{medal} 今シーズン #{rank} でフィニッシュ！", "シーズンメダルがパスポートに届いたよ。新しいシーズンがスタート。"],
+                'ko'      => ["{medal} 이번 시즌 #{rank}위로 마무리!", "시즌 메달이 여권에 추가됐어요. 새 시즌이 시작됐어요."],
+                'fil'     => ["{medal} Natapos mo ang season sa #{rank}!", "Nasa Passport mo na ang season medal mo. Magsisimula na ang bagong season."],
+                'th'      => ["{medal} ซีซันนี้คุณจบอันดับ #{rank}!", "เหรียญประจำซีซันอยู่ในพาสปอร์ตของคุณแล้ว ซีซันใหม่เริ่มแล้ว"],
+                'id'      => ["{medal} Kamu finis #{rank} musim ini!", "Medali musimmu sudah ada di Paspor. Musim baru dimulai sekarang."],
+                'hi'      => ["{medal} इस सीज़न आप #{rank} पर रहे!", "आपका सीज़न मेडल आपके पासपोर्ट में है। नया सीज़न अभी शुरू हुआ।"],
+                'ru'      => ["{medal} Ты закончил сезон на #{rank} месте!", "Медаль сезона уже в твоём паспорте. Начинается новый сезон."],
+                'ar'      => ["{medal} أنهيت الموسم في المركز #{rank}!", "ميدالية الموسم في جواز سفرك الآن. يبدأ موسم جديد."],
+            ],
+            'default' => [
+                'en'      => ["Season results", "You finished #{rank} with {points} pts. A new season starts now."],
+                'fr'      => ["Résultats de la saison", "Tu finis #{rank} avec {points} pts. Une nouvelle saison commence."],
+                'vi'      => ["Kết quả mùa giải", "Bạn về #{rank} với {points} điểm. Mùa mới bắt đầu rồi."],
+                'es'      => ["Resultados de la temporada", "Terminas #{rank} con {points} pts. Empieza una nueva temporada."],
+                'it'      => ["Risultati della stagione", "Chiudi al #{rank} con {points} punti. Inizia una nuova stagione."],
+                'pt-br'   => ["Resultados da temporada", "Você terminou em #{rank} com {points} pts. Uma nova temporada começa agora."],
+                'pt-pt'   => ["Resultados da temporada", "Terminaste em #{rank} com {points} pts. Começa agora uma nova temporada."],
+                'de'      => ["Saisonergebnis", "Du bist #{rank} mit {points} Pkt. Jetzt startet eine neue Saison."],
+                'nl'      => ["Seizoensuitslag", "Je eindigt op #{rank} met {points} ptn. Er begint nu een nieuw seizoen."],
+                'zh-hans' => ["赛季结果", "你以 {points} 分获得第 {rank} 名。新赛季现在开始。"],
+                'zh-hant' => ["賽季結果", "你以 {points} 分拿下第 {rank} 名。新賽季現在開始。"],
+                'ja'      => ["シーズン結果", "{points} pt で #{rank} でフィニッシュ。新しいシーズンがスタート。"],
+                'ko'      => ["시즌 결과", "{points}점으로 #{rank}위를 했어요. 새 시즌이 시작됐어요."],
+                'fil'     => ["Resulta ng season", "Natapos ka sa #{rank} na may {points} pts. Magsisimula na ang bagong season."],
+                'th'      => ["ผลซีซัน", "คุณจบอันดับ #{rank} ด้วย {points} แต้ม ซีซันใหม่เริ่มแล้ว"],
+                'id'      => ["Hasil musim", "Kamu finis #{rank} dengan {points} poin. Musim baru dimulai sekarang."],
+                'hi'      => ["सीज़न के नतीजे", "आप {points} पॉइंट्स के साथ #{rank} पर रहे। नया सीज़न अभी शुरू हुआ।"],
+                'ru'      => ["Итоги сезона", "Ты на #{rank} месте с {points} очками. Начинается новый сезон."],
+                'ar'      => ["نتائج الموسم", "أنهيت في المركز #{rank} بـ {points} نقطة. يبدأ موسم جديد."],
+            ],
+        ],
+        'daily_season_ending' => [
+            'first' => [
+                'en'      => ["Season ends in {days} days ⏳", "You're #1. Hold on to it!"],
+                'fr'      => ["Fin de saison dans {days} jours ⏳", "Tu es #1. Ne lâche rien !"],
+                'vi'      => ["Mùa giải kết thúc sau {days} ngày ⏳", "Bạn đang #1. Giữ vững nhé!"],
+                'es'      => ["La temporada acaba en {days} días ⏳", "Vas #1. ¡Que no te lo quiten!"],
+                'it'      => ["La stagione finisce tra {days} giorni ⏳", "Sei #1. Tieni duro!"],
+                'pt-br'   => ["A temporada acaba em {days} dias ⏳", "Você está em #1. Segura essa!"],
+                'pt-pt'   => ["A temporada acaba daqui a {days} dias ⏳", "Estás em #1. Não largues!"],
+                'de'      => ["Die Saison endet in {days} Tagen ⏳", "Du bist #1. Halt durch!"],
+                'nl'      => ["Het seizoen eindigt over {days} dagen ⏳", "Je staat #1. Hou vol!"],
+                'zh-hans' => ["赛季还剩 {days} 天 ⏳", "你现在排名第 1，守住它！"],
+                'zh-hant' => ["賽季還剩 {days} 天 ⏳", "你現在排第 1，守住它！"],
+                'ja'      => ["シーズン終了まであと{days}日 ⏳", "いま #1！このままキープしよう！"],
+                'ko'      => ["시즌 종료까지 {days}일 ⏳", "지금 #1이에요. 끝까지 지켜요!"],
+                'fil'     => ["{days} araw na lang ang season ⏳", "Ikaw ang #1. Panatilihin mo!"],
+                'th'      => ["อีก {days} วันซีซันจะจบ ⏳", "ตอนนี้คุณอันดับ #1 รักษาไว้ให้ได้!"],
+                'id'      => ["Musim berakhir dalam {days} hari ⏳", "Kamu #1. Pertahankan!"],
+                'hi'      => ["सीज़न {days} दिन में ख़त्म ⏳", "आप #1 पर हैं। बने रहिए!"],
+                'ru'      => ["До конца сезона {days} дн. ⏳", "Ты #1. Удержи позицию!"],
+                'ar'      => ["ينتهي الموسم خلال {days} أيام ⏳", "أنت في المركز #1. حافظ عليه!"],
+            ],
+            'default' => [
+                'en'      => ["Season ends in {days} days ⏳", "You're #{rank}, {gap} pts from #{prev}. Play every day to climb."],
+                'fr'      => ["Fin de saison dans {days} jours ⏳", "Tu es #{rank}, à {gap} pts du #{prev}. Joue chaque jour pour grimper."],
+                'vi'      => ["Mùa giải kết thúc sau {days} ngày ⏳", "Bạn đang #{rank}, cách #{prev} {gap} điểm. Chơi mỗi ngày để leo hạng."],
+                'es'      => ["La temporada acaba en {days} días ⏳", "Vas #{rank}, a {gap} pts del #{prev}. Juega cada día para subir."],
+                'it'      => ["La stagione finisce tra {days} giorni ⏳", "Sei #{rank}, a {gap} punti dal #{prev}. Gioca ogni giorno per salire."],
+                'pt-br'   => ["A temporada acaba em {days} dias ⏳", "Você está em #{rank}, a {gap} pts do #{prev}. Jogue todo dia para subir."],
+                'pt-pt'   => ["A temporada acaba daqui a {days} dias ⏳", "Estás em #{rank}, a {gap} pts do #{prev}. Joga todos os dias para subir."],
+                'de'      => ["Die Saison endet in {days} Tagen ⏳", "Du bist #{rank}, {gap} Pkt hinter #{prev}. Spiel jeden Tag, um aufzusteigen."],
+                'nl'      => ["Het seizoen eindigt over {days} dagen ⏳", "Je staat #{rank}, {gap} ptn achter #{prev}. Speel elke dag om te stijgen."],
+                'zh-hans' => ["赛季还剩 {days} 天 ⏳", "你排第 {rank}，离第 {prev} 还差 {gap} 分。每天玩就能往上爬。"],
+                'zh-hant' => ["賽季還剩 {days} 天 ⏳", "你排第 {rank}，離第 {prev} 還差 {gap} 分。每天玩就能往上爬。"],
+                'ja'      => ["シーズン終了まであと{days}日 ⏳", "いま #{rank}、#{prev} まであと {gap} pt。毎日プレイして上を目指そう。"],
+                'ko'      => ["시즌 종료까지 {days}일 ⏳", "지금 #{rank}, #{prev}까지 {gap}점. 매일 플레이해서 올라가요."],
+                'fil'     => ["{days} araw na lang ang season ⏳", "Ikaw ay #{rank}, {gap} pts mula sa #{prev}. Maglaro araw-araw para umakyat."],
+                'th'      => ["อีก {days} วันซีซันจะจบ ⏳", "คุณอันดับ #{rank} ห่าง #{prev} อยู่ {gap} แต้ม เล่นทุกวันเพื่อไต่อันดับ"],
+                'id'      => ["Musim berakhir dalam {days} hari ⏳", "Kamu #{rank}, {gap} poin dari #{prev}. Main tiap hari untuk naik."],
+                'hi'      => ["सीज़न {days} दिन में ख़त्म ⏳", "आप #{rank} पर हैं, #{prev} से {gap} पॉइंट्स पीछे। ऊपर चढ़ने के लिए रोज़ खेलें।"],
+                'ru'      => ["До конца сезона {days} дн. ⏳", "Ты #{rank}, до #{prev} — {gap} очк. Играй каждый день, чтобы подняться."],
+                'ar'      => ["ينتهي الموسم خلال {days} أيام ⏳", "أنت في المركز #{rank}، تفصلك {gap} نقطة عن #{prev}. العب كل يوم لتتقدّم."],
+            ],
+        ],
+        'daily_perfect_week' => [
+            'default' => [
+                'en'      => ["Perfect week! 🔥 +{points}", "You played all 7 days this week."],
+                'fr'      => ["Semaine parfaite ! 🔥 +{points}", "Tu as joué les 7 jours de la semaine."],
+                'vi'      => ["Tuần hoàn hảo! 🔥 +{points}", "Bạn đã chơi đủ 7 ngày trong tuần."],
+                'es'      => ["¡Semana perfecta! 🔥 +{points}", "Has jugado los 7 días de la semana."],
+                'it'      => ["Settimana perfetta! 🔥 +{points}", "Hai giocato tutti i 7 giorni della settimana."],
+                'pt-br'   => ["Semana perfeita! 🔥 +{points}", "Você jogou os 7 dias da semana."],
+                'pt-pt'   => ["Semana perfeita! 🔥 +{points}", "Jogaste os 7 dias da semana."],
+                'de'      => ["Perfekte Woche! 🔥 +{points}", "Du hast an allen 7 Tagen der Woche gespielt."],
+                'nl'      => ["Perfecte week! 🔥 +{points}", "Je hebt alle 7 dagen van de week gespeeld."],
+                'zh-hans' => ["完美一周！🔥 +{points}", "这周 7 天你天天都玩了。"],
+                'zh-hant' => ["完美一週！🔥 +{points}", "這週 7 天你天天都玩了。"],
+                'ja'      => ["パーフェクトウィーク！🔥 +{points}", "今週7日間ぜんぶプレイしたね。"],
+                'ko'      => ["퍼펙트 위크! 🔥 +{points}", "이번 주 7일 모두 플레이했어요."],
+                'fil'     => ["Perfect week! 🔥 +{points}", "Naglaro ka sa lahat ng 7 araw ngayong linggo."],
+                'th'      => ["สัปดาห์สมบูรณ์แบบ! 🔥 +{points}", "คุณเล่นครบทั้ง 7 วันในสัปดาห์นี้"],
+                'id'      => ["Minggu sempurna! 🔥 +{points}", "Kamu main 7 hari penuh minggu ini."],
+                'hi'      => ["परफ़ेक्ट वीक! 🔥 +{points}", "आपने इस हफ़्ते सातों दिन खेला।"],
+                'ru'      => ["Идеальная неделя! 🔥 +{points}", "Ты играл все 7 дней на этой неделе."],
+                'ar'      => ["أسبوع مثالي! 🔥 +{points}", "لعبت كل أيام الأسبوع السبعة."],
+            ],
+        ],
+        'daily_friend_joined' => [
+            'default' => [
+                'en'      => ["{name} joined Hilads 🤝 +{points}", "Your friend posted their first photo. {count}/{max} friends this season."],
+                'fr'      => ["{name} a rejoint Hilads 🤝 +{points}", "Ton ami a posté sa première photo. {count}/{max} amis cette saison."],
+                'vi'      => ["{name} đã tham gia Hilads 🤝 +{points}", "Bạn của bạn vừa đăng ảnh đầu tiên. {count}/{max} bạn mùa này."],
+                'es'      => ["{name} se unió a Hilads 🤝 +{points}", "Tu amigo publicó su primera foto. {count}/{max} amigos esta temporada."],
+                'it'      => ["{name} è entrato su Hilads 🤝 +{points}", "Il tuo amico ha pubblicato la sua prima foto. {count}/{max} amici in questa stagione."],
+                'pt-br'   => ["{name} entrou no Hilads 🤝 +{points}", "Seu amigo postou a primeira foto. {count}/{max} amigos nesta temporada."],
+                'pt-pt'   => ["{name} juntou-se ao Hilads 🤝 +{points}", "O teu amigo publicou a primeira foto. {count}/{max} amigos nesta temporada."],
+                'de'      => ["{name} ist bei Hilads 🤝 +{points}", "Dein Freund hat sein erstes Foto gepostet. {count}/{max} Freunde diese Saison."],
+                'nl'      => ["{name} doet mee met Hilads 🤝 +{points}", "Je vriend plaatste zijn eerste foto. {count}/{max} vrienden dit seizoen."],
+                'zh-hans' => ["{name} 加入了 Hilads 🤝 +{points}", "你的朋友发了第一张照片。本赛季 {count}/{max} 位朋友。"],
+                'zh-hant' => ["{name} 加入了 Hilads 🤝 +{points}", "你的朋友發了第一張照片。本賽季 {count}/{max} 位朋友。"],
+                'ja'      => ["{name}さんがHiladsに参加 🤝 +{points}", "友だちが初めての写真を投稿したよ。今シーズン {count}/{max} 人。"],
+                'ko'      => ["{name} 님이 Hilads에 합류 🤝 +{points}", "친구가 첫 사진을 올렸어요. 이번 시즌 {count}/{max}명."],
+                'fil'     => ["Sumali si {name} sa Hilads 🤝 +{points}", "Nag-post ang kaibigan mo ng unang photo. {count}/{max} kaibigan ngayong season."],
+                'th'      => ["{name} เข้าร่วม Hilads แล้ว 🤝 +{points}", "เพื่อนของคุณโพสต์รูปแรกแล้ว ซีซันนี้ {count}/{max} คน"],
+                'id'      => ["{name} gabung ke Hilads 🤝 +{points}", "Temanmu memposting foto pertamanya. {count}/{max} teman musim ini."],
+                'hi'      => ["{name} Hilads से जुड़े 🤝 +{points}", "आपके दोस्त ने अपनी पहली फ़ोटो पोस्ट की। इस सीज़न {count}/{max} दोस्त।"],
+                'ru'      => ["{name} теперь в Hilads 🤝 +{points}", "Твой друг выложил первое фото. {count}/{max} друзей в этом сезоне."],
+                'ar'      => ["انضم {name} إلى Hilads 🤝 +{points}", "نشر صديقك أول صورة له. {count}/{max} أصدقاء هذا الموسم."],
+            ],
+        ],
+        'daily_crew_bonus' => [
+            'default' => [
+                'en'      => ["Your crew is complete! 🎉 +{points}", "{max} friends joined you this season."],
+                'fr'      => ["Ton crew est au complet ! 🎉 +{points}", "{max} amis t'ont rejoint cette saison."],
+                'vi'      => ["Hội của bạn đã đủ! 🎉 +{points}", "{max} người bạn đã tham gia cùng bạn mùa này."],
+                'es'      => ["¡Tu crew está completo! 🎉 +{points}", "{max} amigos se unieron a ti esta temporada."],
+                'it'      => ["La tua crew è al completo! 🎉 +{points}", "{max} amici si sono uniti a te in questa stagione."],
+                'pt-br'   => ["Sua crew está completa! 🎉 +{points}", "{max} amigos entraram com você nesta temporada."],
+                'pt-pt'   => ["A tua crew está completa! 🎉 +{points}", "{max} amigos juntaram-se a ti nesta temporada."],
+                'de'      => ["Deine Crew ist komplett! 🎉 +{points}", "{max} Freunde sind dir diese Saison gefolgt."],
+                'nl'      => ["Je crew is compleet! 🎉 +{points}", "{max} vrienden deden dit seizoen met je mee."],
+                'zh-hans' => ["你的小队集齐了！🎉 +{points}", "本赛季有 {max} 位朋友加入了你。"],
+                'zh-hant' => ["你的小隊集齊了！🎉 +{points}", "本賽季有 {max} 位朋友加入了你。"],
+                'ja'      => ["クルーがそろった！🎉 +{points}", "今シーズン {max} 人の友だちが参加してくれたよ。"],
+                'ko'      => ["크루 완성! 🎉 +{points}", "이번 시즌 친구 {max}명이 함께했어요."],
+                'fil'     => ["Kumpleto na ang crew mo! 🎉 +{points}", "{max} kaibigan ang sumali sa iyo ngayong season."],
+                'th'      => ["แก๊งของคุณครบแล้ว! 🎉 +{points}", "ซีซันนี้มีเพื่อน {max} คนมาร่วมกับคุณ"],
+                'id'      => ["Kru kamu lengkap! 🎉 +{points}", "{max} teman bergabung denganmu musim ini."],
+                'hi'      => ["आपका क्रू पूरा हो गया! 🎉 +{points}", "इस सीज़न {max} दोस्त आपसे जुड़े।"],
+                'ru'      => ["Твоя команда в сборе! 🎉 +{points}", "{max} друзей присоединились к тебе в этом сезоне."],
+                'ar'      => ["اكتمل فريقك! 🎉 +{points}", "انضم إليك {max} أصدقاء هذا الموسم."],
+            ],
+        ],
+    ];
+
     private const T = [
         // Hilads campaign challenge push (2× points). {title} = the challenge
         // title (verbatim). Body ends with an "Are you in?" hook. English
@@ -605,7 +769,7 @@ final class NotificationI18n
     /** True if we have translations for this type - lets callers skip the locale lookup. */
     public static function isTranslatable(string $type): bool
     {
-        return $type === 'mention' || $type === 'friend_added' || isset(self::T[$type]);
+        return $type === 'mention' || $type === 'friend_added' || isset(self::T[$type]) || isset(self::SCORING[$type]);
     }
 
     /** @return array{0: ?string, 1: ?string} [title, body]; nulls mean "keep caller's text". */
@@ -636,6 +800,10 @@ final class NotificationI18n
             return [strtr($titleTpl, $params), null];
         }
 
+        if (isset(self::SCORING[$type])) {
+            return self::scoring($type, $locale, $data);
+        }
+
         // friend_added is a legacy alias for the accepted-request copy.
         if ($type === 'friend_added') $type = 'friend_request_accepted';
 
@@ -645,6 +813,23 @@ final class NotificationI18n
         $title = strtr($tpl[0], $params);
         $body  = $tpl[1] !== null ? strtr($tpl[1], $params) : null;
         return [$title, $body];
+    }
+
+    /**
+     * A scoring v2 notification's [title, body] in $locale ('en' = the source text), the variant
+     * from $data['variant']. [null, null] for an unknown type or locale.
+     */
+    public static function scoring(string $type, string $locale, array $data): array
+    {
+        $variants = self::SCORING[$type] ?? null;
+        if ($variants === null) return [null, null];
+        $tpl = ($variants[(string) ($data['variant'] ?? 'default')] ?? $variants['default'] ?? [])[$locale] ?? null;
+        if ($tpl === null) return [null, null];
+        $params = [];
+        foreach (['rank', 'points', 'gap', 'prev', 'days', 'medal', 'name', 'count', 'max'] as $k) {
+            $params['{' . $k . '}'] = (string) ($data[$k] ?? '');
+        }
+        return [strtr($tpl[0], $params), strtr($tpl[1], $params)];
     }
 
     /** Resolve the actor name from whichever data key the call site used. */
