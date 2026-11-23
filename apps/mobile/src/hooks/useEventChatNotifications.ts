@@ -38,7 +38,6 @@ import { useApp } from '@/context/AppContext';
 export function useEventChatNotifications() {
   const {
     identity,
-    setUnreadDMs,
     setEventChatPreview,
     eventChatPreviews,
     activeEventId,
@@ -91,12 +90,11 @@ export function useEventChatNotifications() {
         });
       }
 
+      // The messages badges count this chat through its preview (features/messages/unread.ts).
       setEventChatPreview(channelId, { count: newCount, preview, previewAt });
-      // Bump the global DM badge so the header icon lights up
-      setUnreadDMs(prev => prev + 1);
     };
 
     const off = socket.on('newEventMessage', handler);
     return off;
-  }, [setEventChatPreview, setUnreadDMs]);
+  }, [setEventChatPreview]);
 }

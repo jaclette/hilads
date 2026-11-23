@@ -14,6 +14,8 @@ import { patchNotifCounts, refreshNotifCounts, useNotifCounts } from '@/features
 import { markNotificationTypesRead } from '@/api/notifications';
 import { markTabFocus, markTabPress } from '@/lib/perfProbe';
 import { track } from '@/services/analytics';
+import { useApp } from '@/context/AppContext';
+import { badgeCount, useUnreadMessages } from '@/features/messages/unread';
 
 // V6 tab badges: what each tab's badge counts, and the notification types its visit marks read.
 // (Hi is no longer a tab: its mentions reach the bell and the inbox.)
@@ -70,7 +72,11 @@ function CustomTabBar({ state, emitter, navigateToTab }: BottomTabBarProps) {
     : current;
 
   // Opening a tab clears its badge (the notifications behind it are read).
-  const { badges } = useNotifCounts();
+  const { badges, total: unreadNotifs } = useNotifCounts();
+  const { account } = useApp();
+  const unreadMessages = useUnreadMessages();
+  // The Passport tab: everything unread behind its rows (Messages, Notifications), the same numbers as those rows.
+  const passportCount = account ? unreadMessages + unreadNotifs : 0;
   useEffect(() => {
     const b = activeTab ? TAB_BADGE[activeTab] : undefined;
     if (!b || !badges[b.key]) return;
@@ -120,12 +126,25 @@ function CustomTabBar({ state, emitter, navigateToTab }: BottomTabBarProps) {
             <View>
               {halloween && tab.name === 'today' ? <PumpkinIcon size={24} color={color} />
                 : <Ionicons name={tab.icon} size={IconSize.lg} color={color} />}
-              <TabBadge n={TAB_BADGE[tab.name] && !focused ? badges[TAB_BADGE[tab.name].key] : 0} count={!!TAB_BADGE[tab.name]?.count} />
+              {tab.name === 'passport' && passportCount > 0
+                // Passport: what's unread inside it (messages + notifications), a red count from every screen.
+                ? <CountBadge n={passportCount} />
+                : <TabBadge n={TAB_BADGE[tab.name] && !focused ? badges[TAB_BADGE[tab.name].key] : 0} count={!!TAB_BADGE[tab.name]?.count} />}
             </View>
             <Text style={[styles.label, { color }, focused && styles.labelActive]} numberOfLines={1}>{label}</Text>
           </Pressable>
         );
       })}
+    </View>
+  );
+}
+
+/** The Passport tab's red count ("3", "9+"): unread messages and notifications, the same red as the messages button. */
+function CountBadge({ n }: { n: number }) {
+  const { colors } = useTheme();
+  return (
+    <View style={[styles.badge, { backgroundColor: colors.red, borderColor: colors.bg2 }]} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
+      <Text style={[styles.badgeText, { color: colors.white }]}>{badgeCount(n)}</Text>
     </View>
   );
 }

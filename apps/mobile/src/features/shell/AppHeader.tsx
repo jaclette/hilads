@@ -14,23 +14,24 @@ import { useTranslation } from 'react-i18next';
 import { useApp } from '@/context/AppContext';
 import { Space, type ThemeColors } from '@/constants';
 import { useThemedStyles } from '@/context/ThemeContext';
-import { BrandMark, Button, IconButton } from '@/ui';
+import { BrandMark, Button } from '@/ui';
 import { ScopeSelector } from './ScopeSelector';
 import { LogoHat } from '@/features/event/SeasonalArt';
 import { BellButton } from '@/features/notifications/BellButton';
+import { MessagesButton } from '@/features/messages/MessagesButton';
 
 interface Props {
   /** Optional nodes injected before the messages / bell buttons. */
   rightExtra?: React.ReactNode;
-  /** Show the private messages button (Chat, SPEC 9.6). */
+  /** Show the private messages button next to the bell (members; on by default: DMs never buried in Passport). */
   messages?: boolean;
 }
 
-export function AppHeader({ rightExtra, messages = false }: Props) {
+export function AppHeader({ rightExtra, messages = true }: Props) {
   const styles = useThemedStyles(makeStyles);
   const router = useRouter();
   const { t } = useTranslation('common');
-  const { account, unreadDMs, setUnreadDMs, clearEventChatCounts } = useApp();
+  const { account } = useApp();
 
   return (
     <View style={styles.bar}>
@@ -41,10 +42,8 @@ export function AppHeader({ rightExtra, messages = false }: Props) {
 
       {rightExtra}
 
-      {messages && account && (
-        <IconButton icon="paper-plane-outline" iconSize={20} label={t('messages')} badge={unreadDMs > 0}
-                    onPress={() => { setUnreadDMs(0); clearEventChatCounts(); router.push('/messages'); }} />
-      )}
+      {/* Its count clears when the messages are read (the Messages list), never just on tap. */}
+      {messages && account && <MessagesButton onPress={() => router.push('/messages' as never)} />}
 
       {account ? (
         <BellButton onPress={() => router.push('/notifications' as never)} />

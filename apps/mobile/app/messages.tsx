@@ -208,12 +208,16 @@ export default function MessagesScreen() {
   const hasMountedRef = useRef(false);
   useFocusEffect(useCallback(() => {
     clearEventChatCounts();
-    setUnreadDMs(0);
     if (hasMountedRef.current) {
       reloadDMs();
     }
     hasMountedRef.current = true;
-  }, [reloadDMs, clearEventChatCounts, setUnreadDMs]));
+  }, [reloadDMs, clearEventChatCounts]));
+  // The badges (tab, header, Passport row) follow this list: its unread conversations, once loaded
+  // (and after Mark all read). Never zeroed just for opening the screen.
+  useEffect(() => {
+    if (!loadingDMs) setUnreadDMs(conversations.filter(c => c.has_unread).length);
+  }, [conversations, loadingDMs, setUnreadDMs]);
 
   const [events,      setEvents]      = useState<HiladsEvent[]>([]);
   const [loadingEvts, setLoadingEvts] = useState(false);

@@ -16,16 +16,17 @@
 import { useEffect } from 'react';
 import { socket } from '@/lib/socket';
 import { useApp } from '@/context/AppContext';
+import { requestDmUnreadRefresh } from '@/features/messages/unread';
 
 export function useGlobalNotifications() {
-  const { setUnreadDMs, setUnreadNotifications } = useApp();
+  const { setUnreadNotifications } = useApp();
 
   // notification / newNotification - global server broadcast
   // Route dm_message type → message badge; everything else → bell badge
   useEffect(() => {
     const handler = (data: Record<string, unknown>) => {
       if (data.type === 'dm_message') {
-        setUnreadDMs(prev => prev + 1);
+        requestDmUnreadRefresh();
       } else {
         setUnreadNotifications(prev => prev + 1);
       }
@@ -33,5 +34,5 @@ export function useGlobalNotifications() {
     const off1 = socket.on('notification',    handler);
     const off2 = socket.on('newNotification', handler);
     return () => { off1(); off2(); };
-  }, [setUnreadDMs, setUnreadNotifications]);
+  }, [setUnreadNotifications]);
 }

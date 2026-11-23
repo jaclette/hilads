@@ -1,3 +1,4 @@
+import { requestDmUnreadRefresh } from '@/features/messages/unread';
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { fetchDmMessages, sendDmMessage, sendDmImageMessage, markDmRead, editDmMessage as apiEditDmMessage, deleteDmMessage as apiDeleteDmMessage } from '@/api/conversations';
 import { uploadFile } from '@/api/uploads';
@@ -74,7 +75,7 @@ export function useDMThread(conversationId: string): Result {
         oldestIdRef.current = msgs.length > 0 ? msgs[0]?.id ?? null : null; // msgs ASC → [0] oldest
         setMessages([...msgs].reverse());
         setHasMore(more);
-        markDmRead(conversationId);
+        markDmRead(conversationId).then(requestDmUnreadRefresh).catch(() => {});
       } catch {
         if (!cancelled) setError('Failed to load messages');
       } finally {
@@ -92,7 +93,7 @@ export function useDMThread(conversationId: string): Result {
     const off = socket.on('newConversationMessage', (data) => {
       if (data.conversationId === conversationId && data.message) {
         addNew([data.message as DmMessage]);
-        markDmRead(conversationId);
+        markDmRead(conversationId).then(requestDmUnreadRefresh).catch(() => {});
       }
     });
 

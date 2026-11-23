@@ -10,13 +10,21 @@
  * On newConversationMessage for a subscribed conversation:
  *   - Own messages:          ignored (no self-unread)
  *   - Active DM thread open: ignored (useDMThread handles live append)
- *   - Otherwise:             increments global unreadDMs badge
+ *   - Otherwise:             the unread count is asked again (debounced)
+ *
+ * unreadDMs = the conversations with something unread, from the server
+ * (fetchConversations' has_unread): refetched on a new DM, a DM read
+ * (requestDmUnreadRefresh), and when the app comes back to the foreground or a
+ * push arrives (lib/freshness). Never counted up locally (one number for every
+ * badge: features/messages/unread.ts).
  */
 
 import { useEffect, useRef, useCallback } from 'react';
 import { socket } from '@/lib/socket';
 import { fetchConversations } from '@/api/conversations';
 import { useApp } from '@/context/AppContext';
+import { onFresh } from '@/lib/freshness';
+import { onDmUnreadRefresh } from '@/features/messages/unread';
 
 export function useGlobalDmNotifications() {
   const {
@@ -75,6 +83,18 @@ export function useGlobalDmNotifications() {
     }
   }, [account?.id, joinAll]);
 
+  // Ask the server again (a new DM, a DM read, back in the foreground, a push), at most once a second;
+  // joinAll also joins a conversation started since (its first message).
+  const refreshTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const refresh = useCallback(() => {
+    if (refreshTimer.current) clearTimeout(refreshTimer.current);
+    refreshTimer.current = setTimeout(() => { refreshTimer.current = null; joinAll(); }, 800);
+  }, [joinAll]);
+  useEffect(() => {
+    const offs = [onDmUnreadRefresh(refresh), onFresh(refresh)];
+    return () => { offs.forEach(off => off()); if (refreshTimer.current) clearTimeout(refreshTimer.current); };
+  }, [refresh]);
+
   // WS reconnect: re-join rooms from cache - no HTTP fetch needed.
   // The conversation list hasn't changed; the server just needs the joinDm signals again.
   useEffect(() => {
@@ -112,11 +132,11 @@ export function useGlobalDmNotifications() {
         return;
       }
 
-      if (__DEV__) console.log('[dmChat] unread++', { conversationId: conversationId.slice(0, 8) });
-      setUnreadDMs(prev => prev + 1);
+      if (__DEV__) console.log('[dmChat] new message, unread asked again', { conversationId: conversationId.slice(0, 8) });
+      refresh();
     };
 
     const off = socket.on('newConversationMessage', handler);
     return off;
-  }, [setUnreadDMs]);
+  }, [refresh]);
 }
