@@ -1007,7 +1007,10 @@
       "topTitle": "Ganha o dia",
       "topText": "As 3 fotos com mais gostos do mundo. Em caso de empate, ganha quem publicou primeiro.",
       "likesTitle": "Recebe gostos",
-      "likesText": "Os gostos não dão pontos sozinhos: decidem quem entra no top 3."
+      "likesText": "Os gostos não dão pontos sozinhos: decidem quem entra no top 3.",
+      "place1": "1.º",
+      "place2": "2.º",
+      "place3": "3.º"
     },
     "collectTitle": "Coleciona e exibe",
     "collect": {

@@ -924,7 +924,10 @@
       "topTitle": "赢下今天",
       "topText": "全球点赞最多的 3 张照片。如果票数相同，先发布的排在前面。",
       "likesTitle": "获得点赞",
-      "likesText": "点赞本身不加分：它们决定谁进入前 3 名。"
+      "likesText": "点赞本身不加分：它们决定谁进入前 3 名。",
+      "place1": "第 1 名",
+      "place2": "第 2 名",
+      "place3": "第 3 名"
     },
     "collectTitle": "收集与炫耀",
     "collect": {

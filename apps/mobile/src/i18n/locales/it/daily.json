@@ -1007,7 +1007,10 @@
       "topTitle": "Vinci la giornata",
       "topText": "Le 3 foto con più mi piace al mondo. In caso di parità, vince chi ha pubblicato prima.",
       "likesTitle": "Ricevi mi piace",
-      "likesText": "I mi piace da soli non danno punti: decidono chi entra nella top 3."
+      "likesText": "I mi piace da soli non danno punti: decidono chi entra nella top 3.",
+      "place1": "1º",
+      "place2": "2º",
+      "place3": "3º"
     },
     "collectTitle": "Colleziona e fatti vedere",
     "collect": {

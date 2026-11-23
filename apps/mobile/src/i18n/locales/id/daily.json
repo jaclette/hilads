@@ -924,7 +924,10 @@
       "topTitle": "Menangkan hari ini",
       "topText": "3 foto dengan suka terbanyak di dunia. Kalau seri, yang posting duluan di depan.",
       "likesTitle": "Dapatkan suka",
-      "likesText": "Suka nggak kasih poin sendiri: suka yang menentukan siapa masuk top 3."
+      "likesText": "Suka nggak kasih poin sendiri: suka yang menentukan siapa masuk top 3.",
+      "place1": "Juara 1",
+      "place2": "Juara 2",
+      "place3": "Juara 3"
     },
     "collectTitle": "Koleksi dan pamerkan",
     "collect": {

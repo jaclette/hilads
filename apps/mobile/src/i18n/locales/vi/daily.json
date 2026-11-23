@@ -924,7 +924,10 @@
       "topTitle": "Thắng cả ngày",
       "topText": "3 ảnh được thả tim nhiều nhất thế giới. Nếu bằng nhau, ai đăng trước thì xếp trên.",
       "likesTitle": "Nhận lượt thích",
-      "likesText": "Lượt thích không tự cho điểm: chúng quyết định ai vào top 3."
+      "likesText": "Lượt thích không tự cho điểm: chúng quyết định ai vào top 3.",
+      "place1": "Hạng nhất",
+      "place2": "Hạng nhì",
+      "place3": "Hạng ba"
     },
     "collectTitle": "Sưu tầm và khoe",
     "collect": {

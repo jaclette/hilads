@@ -1007,7 +1007,10 @@
       "topTitle": "Gana el día",
       "topText": "Las 3 fotos con más me gusta del mundo. En caso de empate, gana quien publicó primero.",
       "likesTitle": "Consigue me gusta",
-      "likesText": "Los me gusta no dan puntos por sí solos: deciden quién entra en el top 3."
+      "likesText": "Los me gusta no dan puntos por sí solos: deciden quién entra en el top 3.",
+      "place1": "1.º",
+      "place2": "2.º",
+      "place3": "3.º"
     },
     "collectTitle": "Colecciona y presume",
     "collect": {

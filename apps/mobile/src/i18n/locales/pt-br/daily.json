@@ -1007,7 +1007,10 @@
       "topTitle": "Ganhe o dia",
       "topText": "As 3 fotos mais curtidas do mundo. Em caso de empate, quem postou primeiro fica na frente.",
       "likesTitle": "Receba curtidas",
-      "likesText": "Curtidas não dão pontos sozinhas: elas decidem quem entra no top 3."
+      "likesText": "Curtidas não dão pontos sozinhas: elas decidem quem entra no top 3.",
+      "place1": "1º",
+      "place2": "2º",
+      "place3": "3º"
     },
     "collectTitle": "Colecione e se exiba",
     "collect": {

@@ -1007,7 +1007,10 @@
       "topTitle": "Remporte la journée",
       "topText": "Les 3 photos les plus aimées du monde. En cas d'égalité, la première publiée passe devant.",
       "likesTitle": "Reçois des j'aime",
-      "likesText": "Les j'aime ne rapportent pas de points en eux-mêmes : ils décident du top 3."
+      "likesText": "Les j'aime ne rapportent pas de points en eux-mêmes : ils décident du top 3.",
+      "place1": "1er",
+      "place2": "2e",
+      "place3": "3e"
     },
     "collectTitle": "Collectionne et frime",
     "collect": {

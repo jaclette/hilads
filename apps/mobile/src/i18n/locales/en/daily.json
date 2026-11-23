@@ -966,7 +966,10 @@
       "topTitle": "Win the day",
       "topText": "The 3 most-liked photos in the world. A tie goes to whoever posted first.",
       "likesTitle": "Get likes",
-      "likesText": "Likes don't give points on their own: they decide who makes the top 3."
+      "likesText": "Likes don't give points on their own: they decide who makes the top 3.",
+      "place1": "1st",
+      "place2": "2nd",
+      "place3": "3rd"
     },
     "collectTitle": "Collect & show off",
     "collect": {

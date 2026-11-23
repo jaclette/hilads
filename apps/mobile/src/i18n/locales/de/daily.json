@@ -966,7 +966,10 @@
       "topTitle": "Gewinn den Tag",
       "topText": "Die 3 Fotos mit den meisten Likes weltweit. Bei Gleichstand gewinnt, wer zuerst gepostet hat.",
       "likesTitle": "Likes bekommen",
-      "likesText": "Likes bringen allein keine Punkte: Sie entscheiden, wer in die Top 3 kommt."
+      "likesText": "Likes bringen allein keine Punkte: Sie entscheiden, wer in die Top 3 kommt.",
+      "place1": "1. Platz",
+      "place2": "2. Platz",
+      "place3": "3. Platz"
     },
     "collectTitle": "Sammeln & angeben",
     "collect": {

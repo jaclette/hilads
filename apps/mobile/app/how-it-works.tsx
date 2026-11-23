@@ -7,6 +7,7 @@ import { useThemedStyles } from '@/context/ThemeContext';
 import { useApp } from '@/context/AppContext';
 import { Button, Card, Screen, ScreenHeader } from '@/ui';
 import { ACCENTS, tint } from '@/ui/joy';
+import { RankMedal } from '@/features/daily/RankMedal';
 import { fetchDailyPoints, type DailyPoints } from '@/api/daily';
 import { useDailyToday } from '@/hooks/useDaily';
 import { track } from '@/services/analytics';
@@ -47,11 +48,12 @@ export default function HowItWorksScreen() {
   const plus = (n: number) => t('rules.plus', { count: n });
 
   const earn = [
-    { emoji: '📸', title: t('rules.earn.photoTitle'), text: t('rules.earn.photoText'), value: plus(pts.proof) },
-    { emoji: '🗳️', title: t('rules.earn.voteTitle'), text: t('rules.earn.voteText'), value: plus(pts.vote) },
-    { emoji: '👑', title: t('rules.earn.topTitle'), text: t('rules.earn.topText', { count: pts.minVotesToWin }),
-      value: pts.top.map(n => plus(n)).join(' / ') },
-    { emoji: '❤️', title: t('rules.earn.likesTitle'), text: t('rules.earn.likesText'), value: null },
+    { emoji: '📸', title: t('rules.earn.photoTitle'), text: t('rules.earn.photoText'), value: plus(pts.proof), places: null },
+    { emoji: '🗳️', title: t('rules.earn.voteTitle'), text: t('rules.earn.voteText'), value: plus(pts.vote), places: null },
+    // The top 3: one line per place (medal, 1st / 2nd / 3rd, its points), not one pill.
+    { emoji: '👑', title: t('rules.earn.topTitle'), text: t('rules.earn.topText', { count: pts.minVotesToWin }), value: null,
+      places: pts.top.map((n, i) => ({ rank: i + 1, label: t(`rules.earn.place${i + 1}`), value: plus(n) })) },
+    { emoji: '❤️', title: t('rules.earn.likesTitle'), text: t('rules.earn.likesText'), value: null, places: null },
   ];
   const collect = [
     { emoji: '🔥', title: t('rules.collect.streakTitle'), text: t('rules.collect.streakText') },
@@ -78,13 +80,28 @@ export default function HowItWorksScreen() {
         <Text style={styles.section} accessibilityRole="header">{t('rules.earnTitle')}</Text>
         {earn.map((r, i) => (
           <Card key={r.title} style={styles.rule}>
-            <View accessible accessibilityLabel={[r.title, r.text, r.value].filter(Boolean).join('. ')} style={styles.ruleRow}>
-              <View style={[styles.bubble, { backgroundColor: tint(ACCENTS[i % ACCENTS.length], 0.22) }]}><Text style={styles.bubbleEmoji}>{r.emoji}</Text></View>
-              <View style={styles.ruleBody}>
-                <Text style={styles.ruleTitle}>{r.title}</Text>
-                <Text style={styles.ruleText}>{r.text}</Text>
+            <View accessible style={styles.ruleCol}
+                  accessibilityLabel={[r.title, r.text, r.value, ...(r.places ?? []).map(p => `${p.label} ${p.value}`)].filter(Boolean).join('. ')}>
+              <View style={styles.ruleRow}>
+                <View style={[styles.bubble, { backgroundColor: tint(ACCENTS[i % ACCENTS.length], 0.22) }]}><Text style={styles.bubbleEmoji}>{r.emoji}</Text></View>
+                <View style={styles.ruleBody}>
+                  <Text style={styles.ruleTitle}>{r.title}</Text>
+                  <Text style={styles.ruleText}>{r.text}</Text>
+                </View>
+                {!!r.value && <View style={styles.pill}><Text style={styles.pillText}>{r.value}</Text></View>}
               </View>
-              {!!r.value && <View style={styles.pill}><Text style={styles.pillText}>{r.value}</Text></View>}
+              {/* The podium's places, the podium's medals (gold, silver, bronze). */}
+              {!!r.places && (
+                <View style={styles.places}>
+                  {r.places.map(p => (
+                    <View key={p.rank} style={styles.place}>
+                      <RankMedal rank={p.rank} podium size={32} />
+                      <Text style={styles.placeLabel} numberOfLines={1}>{p.label}</Text>
+                      <View style={styles.pill}><Text style={styles.pillText}>{p.value}</Text></View>
+                    </View>
+                  ))}
+                </View>
+              )}
             </View>
           </Card>
         ))}
@@ -134,7 +151,12 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   introText:   { ...Type.body, color: c.text, textAlign: 'center' },
   section:     { ...Type.title, color: c.text, marginTop: Space.md },
   rule:        { padding: Space.md },
+  ruleCol:     { gap: Space.md },
   ruleRow:     { flexDirection: 'row', alignItems: 'center', gap: Space.md },
+  // The top 3's lines, under the text, aligned with it (the bubble's width + the gap).
+  places:      { gap: Space.sm, paddingLeft: 48 + Space.md },
+  place:       { flexDirection: 'row', alignItems: 'center', gap: Space.md, minHeight: 36 },
+  placeLabel:  { flex: 1, ...Type.label, color: c.text },
   bubble:      { width: 48, height: 48, borderRadius: 24, alignItems: 'center', justifyContent: 'center' },
   bubbleEmoji: { fontSize: 24, lineHeight: 30 },
   ruleBody:    { flex: 1, gap: Space.xxs },

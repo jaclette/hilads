@@ -924,7 +924,10 @@
       "topTitle": "贏下今天",
       "topText": "全球按讚最多的 3 張照片。如果票數相同，先發布的排在前面。",
       "likesTitle": "獲得按讚",
-      "likesText": "按讚本身不加分：它們決定誰進入前 3 名。"
+      "likesText": "按讚本身不加分：它們決定誰進入前 3 名。",
+      "place1": "第 1 名",
+      "place2": "第 2 名",
+      "place3": "第 3 名"
     },
     "collectTitle": "收集與炫耀",
     "collect": {

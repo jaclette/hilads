@@ -966,7 +966,10 @@
       "topTitle": "Win de dag",
       "topText": "De 3 foto's met de meeste likes ter wereld. Bij gelijkspel wint wie het eerst postte.",
       "likesTitle": "Krijg likes",
-      "likesText": "Likes geven op zich geen punten: ze bepalen wie in de top 3 komt."
+      "likesText": "Likes geven op zich geen punten: ze bepalen wie in de top 3 komt.",
+      "place1": "1e",
+      "place2": "2e",
+      "place3": "3e"
     },
     "collectTitle": "Verzamel en pronk",
     "collect": {

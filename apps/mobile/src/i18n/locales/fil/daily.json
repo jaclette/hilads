@@ -966,7 +966,10 @@
       "topTitle": "Manalo sa araw",
       "topText": "Ang 3 pinaka-liked na photo sa buong mundo. Kapag tabla, panalo ang naunang nag-post.",
       "likesTitle": "Makakuha ng likes",
-      "likesText": "Walang points ang likes mismo: sila ang nagdedesisyon kung sino ang top 3."
+      "likesText": "Walang points ang likes mismo: sila ang nagdedesisyon kung sino ang top 3.",
+      "place1": "Ika-1",
+      "place2": "Ika-2",
+      "place3": "Ika-3"
     },
     "collectTitle": "Mag-collect at magyabang",
     "collect": {
