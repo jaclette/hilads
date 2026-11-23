@@ -7,6 +7,7 @@ import { Linking, LogBox } from 'react-native';
 import { acceptEula, updateProfile } from '@/api/auth';
 import { EulaPromptModal } from '@/features/auth/EulaPromptModal';
 import { AccountWelcome } from '@/features/onboarding/AccountWelcome';
+import { captureInstallReferrer } from '@/features/invites/invite';
 import { ScoreCelebrationLaunchGate } from '@/features/challenge/ScoreCelebrationLaunchGate';
 import { ChallengeResultLaunchGate } from '@/features/challenge/ChallengeResultLaunchGate';
 import { SeasonResultGate } from '@/features/scoring/SeasonResultGate';
@@ -49,6 +50,11 @@ if (process.env.EXPO_PUBLIC_SENTRY_DSN) {
   Sentry.init({
     dsn: process.env.EXPO_PUBLIC_SENTRY_DSN,
     environment: __DEV__ ? 'development' : 'production',
+    // A phone losing its connection: fetch rejects with "Network request failed" (or the API
+    // client's 15 s timeout aborts it), often in a background refresh nobody awaits. That is
+    // the network, not a bug, and its stack (one anonymous frame in the fetch polyfill) can't
+    // name the caller - an outage shows on the server's monitoring instead.
+    ignoreErrors: ['Network request failed', /^Aborted$/, 'AbortError'],
   });
 }
 
@@ -66,6 +72,9 @@ function RootLayoutInner() {
   const { colors, setTheme, theme } = useTheme();
   const [eulaSubmitting, setEulaSubmitting] = useState(false);
   const [eulaError, setEulaError] = useState<string | null>(null);
+
+  // Android: an invite code carried through the Play Store (install referrer), once per install.
+  useEffect(() => { void captureInstallReferrer(); }, []);
 
   // Reconcile the account's theme when it loads. A saved theme is the
   // cross-device source of truth → apply it (setTheme refreshes the local cache).

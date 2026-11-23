@@ -301,6 +301,9 @@ export function renderToday(data, locale, prefixed) {
     var IN_APP_RE = /\\b(Zalo|FBAN|FBAV|FB_IAB|Instagram|Line\\/|MicroMessenger|Snapchat|Twitter|TikTok|KAKAOTALK)\\b/i;
     if (isAndroid) $('stores').insertBefore($('cta-android'), $('cta-ios'));
     var refQ = REF ? '?ref=' + REF : '';
+    // Android without the app: Play keeps the link's referrer for the app's first launch
+    // (Play Install Referrer), so the invite survives the store install.
+    if (REF) $('cta-android').setAttribute('href', 'https://play.google.com/store/apps/details?id=com.hilads.app&referrer=' + encodeURIComponent('ref=' + REF + '&utm_source=invite&utm_medium=share'));
     var appUrl = isAndroid
       ? 'intent://today' + refQ + '#Intent;scheme=hilads;package=com.hilads.app;S.browser_fallback_url=' + encodeURIComponent(location.href) + ';end'
       : 'hilads://today' + refQ;

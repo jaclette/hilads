@@ -1,4 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as Application from 'expo-application';
+import { Platform } from 'react-native';
 import { api } from '@/api/client';
 
 /**
@@ -31,6 +33,30 @@ export function captureInvite(url: string | null | undefined): void {
   if (!code) return;
   AsyncStorage.setItem(KEY, code).catch(() => {});
   api.post('/invites/click', { code }).catch(() => {});
+}
+
+/**
+ * Android, first launch after a Play Store install: the store keeps the referrer of the link
+ * that led to it (the /today landing sends ref=CODE in Play's `referrer`), so an invite
+ * survives the store (Play Install Referrer API, via expo-application). Read once per install;
+ * a code already kept (the app was opened by the link) wins. Never throws.
+ */
+const REFERRER_DONE = 'hilads_install_referrer_done';
+export async function captureInstallReferrer(): Promise<void> {
+  if (Platform.OS !== 'android') return;
+  try {
+    if (await AsyncStorage.getItem(REFERRER_DONE)) return;
+    await AsyncStorage.setItem(REFERRER_DONE, '1');
+    if (await AsyncStorage.getItem(KEY)) return;
+    const referrer = await Promise.race([
+      Application.getInstallReferrerAsync(),
+      new Promise<string>(resolve => setTimeout(() => resolve(''), 5000)),
+    ]);
+    const m = /(?:^|&)ref=([A-Za-z0-9]{5,12})(?:&|$)/.exec(decodeURIComponent(referrer ?? ''));
+    if (m) await AsyncStorage.setItem(KEY, m[1].toUpperCase());
+  } catch {
+    // no Play Store (emulator, sideload) or the service is down: the same-network fallback stays
+  }
 }
 
 export async function pendingInvite(): Promise<string | null> {
