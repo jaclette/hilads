@@ -275,9 +275,51 @@ final class ScoringReport
         $stmt->execute([$from, $to]);
         $hiddenPodium = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
+        // Since P3: accounts per install id and per network, invite bursts, and invites
+        // attributed by network only (the same-IP fallback).
+        $installs = $networks = $bursts = $byIp = [];
+        try {
+            $installs = $pdo->query("
+                SELECT d.install_id, count(DISTINCT d.user_id) AS accounts,
+                       string_agg(DISTINCT coalesce(u.username, u.id), ', ') AS usernames
+                FROM user_devices d JOIN users u ON u.id = d.user_id AND u.deleted_at IS NULL
+                WHERE d.install_id <> ''
+                GROUP BY d.install_id HAVING count(DISTINCT d.user_id) > 1
+                ORDER BY accounts DESC LIMIT 50
+            ")->fetchAll(PDO::FETCH_ASSOC);
+            $networks = $pdo->query("
+                SELECT d.ip_hash, count(DISTINCT d.user_id) AS accounts,
+                       string_agg(DISTINCT coalesce(u.username, u.id), ', ') AS usernames
+                FROM user_devices d JOIN users u ON u.id = d.user_id AND u.deleted_at IS NULL
+                WHERE d.ip_hash <> '' AND d.last_seen > now() - interval '30 days'
+                GROUP BY d.ip_hash HAVING count(DISTINCT d.user_id) > 2
+                ORDER BY accounts DESC LIMIT 50
+            ")->fetchAll(PDO::FETCH_ASSOC);
+            $bursts = $pdo->query("
+                SELECT i.username AS inviter, date_trunc('hour', u.invited_at) AS hour, count(*) AS signups,
+                       string_agg(coalesce(u.username, u.id), ', ') AS friends
+                FROM users u JOIN users i ON i.id = u.invited_by_user_id
+                WHERE u.invited_at > now() - interval '30 days'
+                GROUP BY i.username, date_trunc('hour', u.invited_at) HAVING count(*) >= 3
+                ORDER BY hour DESC LIMIT 50
+            ")->fetchAll(PDO::FETCH_ASSOC);
+            $byIp = $pdo->query("
+                SELECT i.username AS inviter, coalesce(u.username, u.id) AS friend, u.invited_at::date::text AS day
+                FROM users u JOIN users i ON i.id = u.invited_by_user_id
+                WHERE u.invited_via = 'ip' AND u.invited_at > now() - interval '30 days'
+                ORDER BY u.invited_at DESC LIMIT 50
+            ")->fetchAll(PDO::FETCH_ASSOC);
+        } catch (\Throwable) {
+            // before the P3 migration
+        }
+
         return [
             'window'        => [$from, $to],
             'shared_device' => $shared,
+            'installs'      => $installs,
+            'networks'      => $networks,
+            'invite_bursts' => $bursts,
+            'invites_by_ip' => $byIp,
             'one_fan'       => $oneFan,
             'hidden_podium' => $hiddenPodium,
             'heavy_voters'  => DailyVotes::flaggedVoters($days),

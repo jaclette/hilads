@@ -236,7 +236,14 @@ Original plan:
 - **Pre-season (current month before `first_season`):** the same season ranking, flagged `pre: true`. The UI shows "Pre-season" and no medals are given.
 - `GET /users/{id}/daily` adds `seasonMedals: [{season, rank}]`, week progress `{done, total, earned}` and `crew {count, max, friends[]}`.
 
-### P3 – invites (backend + small app part)
+### P3 – invites (backend) — DONE
+
+- Built as planned (`Invites`, migration, `/me/invite`, `/invites/{code}`, `POST /invites/click`, signup `invite_code`, `X-Install-Id` recorded at signup / login / `/auth/me`, credit in `approveProof`, revoke in reject / remove, crew goal in the victory modal, Admin › Scoring device / network / burst / by-IP tables, 90-day prune at the drop).
+- Change from the plan: a shared **network** never blocks a credit (friends often sign up together on one Wi-Fi), it is only reported. Blocked: the friend's install is one of the inviter's, or an older account is on it.
+- IP hash key: env `IP_HASH_SALT` (set it on Render; without it a key derived from DATABASE_URL is used).
+- The app's link capture, install id header and screens are in P5.
+
+Original plan:
 
 - **`users.invite_code`:** short and stable, created lazily, never a username.
   - The link is **`https://hilads.live/today?ref=CODE`** (already an app link: no store build).

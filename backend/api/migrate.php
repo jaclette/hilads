@@ -4932,6 +4932,44 @@ run($pdo, "
 ", 'season_results');
 run($pdo, "CREATE INDEX IF NOT EXISTS idx_season_results_user ON season_results (user_id, season)", 'idx_season_results_user');
 
+// ── Scoring v2, P3: invitations (Invites) ──────────────────────────────────
+// users.invite_code: a user's stable code (made on first use); invited_by_user_id /
+// invited_via ('code' | 'ip') / invited_at: who brought this account. invite_clicks:
+// link opens (hashed IP, kept 90 days). user_devices: install id (X-Install-Id) and
+// hashed IP per account (one credited invite per device, the fair-play report).
+// Reversal: DROP TABLE user_devices; DROP TABLE invite_clicks;
+// ALTER TABLE users DROP COLUMN invite_code, DROP COLUMN invited_by_user_id, DROP COLUMN invited_via, DROP COLUMN invited_at.
+run($pdo, "ALTER TABLE users ADD COLUMN IF NOT EXISTS invite_code TEXT", 'users.invite_code');
+run($pdo, "CREATE UNIQUE INDEX IF NOT EXISTS uq_users_invite_code ON users (invite_code) WHERE invite_code IS NOT NULL", 'uq_users_invite_code');
+run($pdo, "ALTER TABLE users ADD COLUMN IF NOT EXISTS invited_by_user_id TEXT REFERENCES users(id) ON DELETE SET NULL", 'users.invited_by_user_id');
+run($pdo, "ALTER TABLE users ADD COLUMN IF NOT EXISTS invited_via TEXT", 'users.invited_via');
+run($pdo, "ALTER TABLE users ADD COLUMN IF NOT EXISTS invited_at TIMESTAMPTZ", 'users.invited_at');
+run($pdo, "CREATE INDEX IF NOT EXISTS idx_users_invited_by ON users (invited_by_user_id) WHERE invited_by_user_id IS NOT NULL", 'idx_users_invited_by');
+run($pdo, "
+    CREATE TABLE IF NOT EXISTS invite_clicks (
+        id               BIGSERIAL   PRIMARY KEY,
+        code             TEXT        NOT NULL,
+        inviter_user_id  TEXT        NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        ip_hash          TEXT,
+        platform         TEXT,
+        created_at       TIMESTAMPTZ NOT NULL DEFAULT now()
+    )
+", 'invite_clicks');
+run($pdo, "CREATE INDEX IF NOT EXISTS idx_invite_clicks_ip ON invite_clicks (ip_hash, created_at)", 'idx_invite_clicks_ip');
+run($pdo, "
+    CREATE TABLE IF NOT EXISTS user_devices (
+        user_id     TEXT        NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        install_id  TEXT        NOT NULL DEFAULT '',
+        ip_hash     TEXT        NOT NULL DEFAULT '',
+        platform    TEXT,
+        first_seen  TIMESTAMPTZ NOT NULL DEFAULT now(),
+        last_seen   TIMESTAMPTZ NOT NULL DEFAULT now(),
+        PRIMARY KEY (user_id, install_id, ip_hash)
+    )
+", 'user_devices');
+run($pdo, "CREATE INDEX IF NOT EXISTS idx_user_devices_install ON user_devices (install_id) WHERE install_id <> ''", 'idx_user_devices_install');
+run($pdo, "CREATE INDEX IF NOT EXISTS idx_user_devices_ip ON user_devices (ip_hash) WHERE ip_hash <> ''", 'idx_user_devices_ip');
+
 // ── Self-heal monthly rank columns ────────────────────────────────────────
 // The denormalised users.monthly_rank_* columns are kept fresh by
 // route-level recalc hooks fired after each scoring action. If any

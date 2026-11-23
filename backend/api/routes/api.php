@@ -1354,6 +1354,10 @@ $router->add('POST', '/api/v1/auth/signup', function () {
         mode:         isset($body['mode'])    && is_string($body['mode'])    ? $body['mode']    : null,
         eulaAccepted: true,
     );
+    // Scoring v2: who invited this account (the link's code, else a recent click from this network)
+    // and the device it signed up on.
+    Invites::recordDevice($user['id']);
+    Invites::attribute($user['id'], isset($body['invite_code']) && is_string($body['invite_code']) ? $body['invite_code'] : null);
 
     AnalyticsService::capture('user_registered', $user['id'], [
         'guest_id' => isset($body['guest_id']) ? $body['guest_id'] : null,
@@ -1383,6 +1387,7 @@ $router->add('POST', '/api/v1/auth/login', function () {
         'user_id'  => $user['id'],
         'is_guest' => false,
     ]);
+    Invites::recordDevice($user['id']);
 
     // _token is included so mobile clients can persist it directly (set-cookie
     // headers are not reliably accessible from React Native fetch on Android).
@@ -1418,6 +1423,7 @@ $router->add('POST', '/api/v1/auth/logout', function () {
 
 $router->add('GET', '/api/v1/auth/me', function () {
     $user = AuthService::requireAuth();
+    Invites::recordDevice($user['id']);
     $fields = AuthService::ownFields($user);
 
     // current_city: live source of truth for membership + notifications.
@@ -13754,10 +13760,34 @@ $router->add('GET', '/api/v1/users/{userId}/daily', function (array $params) {
     $today = DailyClock::currentDate();
     Response::json(DailyResults::userStats($user['id'], $viewer['id']) + [
         'seasonMedals' => DailySeasons::medals($user['id']),
+        'invitedBy'    => Invites::invitedBy($user['id']),
         'week'         => Scoring::isV2(Scoring::week($today)[1])
             ? (ScoreWin::weekProgress($user['id'], $today) ?? null) + ['points' => Scoring::points('perfect_week'), 'from' => Scoring::week($today)[0]]
             : null,
     ]);
+});
+
+// GET /api/v1/me/invite - my invite link and this season's crew (the Passport's "Bring your crew" card).
+$router->add('GET', '/api/v1/me/invite', function () {
+    $user = AuthService::requireAuth();
+    Response::json(Invites::crew($user['id']));
+});
+
+// GET /api/v1/invites/{code} - who sends this link ("Invited by @minh" on the sign-up screen). Public.
+$router->add('GET', '/api/v1/invites/{code}', function (array $params) {
+    enforceRateLimit('invite_lookup', 60, 600);
+    $inviter = Invites::inviter($params['code'] ?? '');
+    if ($inviter === null) Response::json(['error' => 'Unknown invite', 'code' => 'unknown_invite'], 404);
+    Response::json(['code' => Invites::normalize($params['code']), 'inviter' => [
+        'username' => $inviter['username'], 'displayName' => $inviter['display_name'], 'photoUrl' => R2Uploader::thumbProxy($inviter['thumb']),
+    ]]);
+});
+
+// POST /api/v1/invites/click {code} - an invite link was opened (web landing, or the app on it). Public.
+$router->add('POST', '/api/v1/invites/click', function () {
+    enforceRateLimit('invite_click', 30, 600);
+    $body = Request::json() ?? [];
+    Response::json(['ok' => Invites::recordClick((string) ($body['code'] ?? ''))]);
 });
 
 // GET /api/v1/me/season-result - my latest finished season not celebrated yet (the app's

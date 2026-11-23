@@ -166,7 +166,7 @@ admin_nav('/admin/scoring');
   </table></div>
 
   <h2 class="sc-h2">Fair play — to check by hand (nothing is blocked)</h2>
-  <p class="sc-note">Accounts per install id and per IP come once invites ship (P3): until then the device link is the app's guest id.</p>
+  <p class="sc-note">Devices: the app's install id (X-Install-Id) and hashed networks are recorded from the invites release on; older accounts show up once they open the app.</p>
 
   <h3 class="sc-h2" style="font-size:13px">Several accounts on one device (same guest id)</h3>
   <?php if ($fair['shared_device'] === []): ?><p class="sc-note">None.</p><?php else: ?>
@@ -175,6 +175,19 @@ admin_nav('/admin/scoring');
       <tr><td class="num"><?= (int) $r['accounts'] ?></td><td><?= $esc($r['usernames']) ?></td><td><?= $esc(substr((string) $r['first'], 0, 16)) ?></td><td><?= $esc(substr((string) $r['last'], 0, 16)) ?></td><td class="td-mono"><?= $esc(substr((string) $r['guest_id'], 0, 12)) ?>…</td></tr>
     <?php endforeach; ?>
   </tbody></table></div><?php endif; ?>
+
+  <?php foreach ([
+      'installs' => ['Several accounts on one install (same phone)', ['accounts' => 'Accounts', 'usernames' => 'Usernames']],
+      'networks' => ['Many accounts on one network (3+, last 30 days)', ['accounts' => 'Accounts', 'usernames' => 'Usernames']],
+      'invite_bursts' => ['Invite bursts (3+ friends signing up within an hour)', ['inviter' => 'Inviter', 'hour' => 'Hour', 'signups' => 'Signups', 'friends' => 'Friends']],
+      'invites_by_ip' => ['Invites credited by network only (no code: the same-IP fallback)', ['inviter' => 'Inviter', 'friend' => 'Friend', 'day' => 'Day']],
+  ] as $k => [$title, $cols]): ?>
+  <h3 class="sc-h2" style="font-size:13px"><?= $esc($title) ?></h3>
+  <?php if (($fair[$k] ?? []) === []): ?><p class="sc-note">None.</p><?php else: ?>
+  <div class="table-wrapper"><table><thead><tr><?php foreach ($cols as $c): ?><th><?= $esc($c) ?></th><?php endforeach; ?></tr></thead><tbody>
+    <?php foreach ($fair[$k] as $r): ?><tr><?php foreach (array_keys($cols) as $c): ?><td><?= $esc($r[$c] ?? '') ?></td><?php endforeach; ?></tr><?php endforeach; ?>
+  </tbody></table></div><?php endif; ?>
+  <?php endforeach; ?>
 
   <h3 class="sc-h2" style="font-size:13px">Likers who mostly like one player (≥ 5 likes, ≥ 80 % to one)</h3>
   <?php if ($fair['one_fan'] === []): ?><p class="sc-note">None.</p><?php else: ?>

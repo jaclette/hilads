@@ -241,6 +241,21 @@ final class ScoreWin
             return ['type' => 'streak', 'day' => $streak + 1, 'milestone' => $milestone, 'progress' => round($streak / $milestone, 3)];
         }
 
+        // Scoring v2: a crew under way ("2 friends to go"): at least one friend in, not complete.
+        if (self::v2Client() && Scoring::since() !== null) {
+            try {
+                $season = Scoring::season($today);
+                $max    = (int) Scoring::config()['crew_size'];
+                $count  = Invites::seasonCount($userId, $season, 'friend_joined');
+                if ($count > 0 && $count < $max) {
+                    return ['type' => 'crew', 'done' => $count, 'total' => $max, 'left' => $max - $count,
+                            'points' => Scoring::points('crew_bonus'), 'progress' => round($count / $max, 3)];
+                }
+            } catch (\Throwable) {
+                // before the migration
+            }
+        }
+
         if ($cityId !== null) {
             $lp = DailyLocalPass::progressIn($userId, $cityId);
             if (!$lp['earned'] && $lp['done'] > 0 && $lp['done'] < $lp['total']) {

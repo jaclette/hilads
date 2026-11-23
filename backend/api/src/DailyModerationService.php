@@ -118,6 +118,8 @@ final class DailyModerationService
         } catch (\Throwable $e) {
             error_log("[daily] points for proof {$proofId} failed: " . $e->getMessage());
         }
+        // Scoring v2: an invited friend's first photo credits their inviter (never throws).
+        Invites::onApprovedPhoto($after);
         // Evening digest of the votes it gets (idempotent; none once the challenge closed).
         try {
             if (DailyClock::isActive((string) $after['challenge_date'])) {
@@ -152,6 +154,7 @@ final class DailyModerationService
             $pdo->prepare("DELETE FROM score_events WHERE daily_proof_id = ?")->execute([$proofId]);
             // Scoring v2: moderation also takes back the Perfect week of the photo's week.
             DailyPoints::revokePerfectWeek((string) $before['user_id'], (string) $before['challenge_date']);
+            Invites::revokeForPhoto((string) $before['user_id'], (string) $before['challenge_id']);
             $pdo->prepare("UPDATE daily_proof_reports SET status = 'reviewed' WHERE proof_id = ? AND status = 'open'")
                 ->execute([$proofId]);
             $pdo->commit();
