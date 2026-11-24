@@ -4,6 +4,7 @@ import BackButton from '../BackButton'
 import AvatarWithFlag from '../AvatarWithFlag'
 import Icon from '../Icon'
 import HalongArt from './HalongArt'
+import { mediumUrl } from '../../lib/imageThumb'
 import { fetchContest, fetchContestRanking, fetchCrew, joinContest } from '../../api'
 import { shareLink } from '../../lib/shareLink'
 import { track } from '../../lib/analytics'
@@ -122,17 +123,16 @@ function SampleItinerary({ days }) {
   )
 }
 
-/** "A word from the founder" (Admin › Launch Season). */
+/** "A word from the founder": a personal note (the founder's photo as a tilted print, a letter, the signature). */
 function FounderWord({ f }) {
   const { t } = useT()
+  const sign = f.role ? `${f.name}, ${f.role}` : t('contest.founderSign', { name: f.name })
   return (
     <section className="ls-founder">
       <h2>{t('contest.founderTitle')}</h2>
-      <blockquote>“{f.message}”</blockquote>
-      <div className="ls-founder-sign">
-        <AvatarWithFlag userId={null} displayName={f.name} photoUrl={f.photo?.url ?? null} size={52} />
-        <span><strong>{f.name}</strong><small>{f.role || t('contest.founderRole')}</small></span>
-      </div>
+      {f.photo && <figure className="ls-founder-print"><img src={mediumUrl(f.photo.url) ?? f.photo.url} alt={f.name} loading="lazy" /></figure>}
+      <p className="ls-founder-letter">{f.message}</p>
+      <p className="ls-founder-sign">{!f.photo && <AvatarWithFlag userId={null} displayName={f.name} photoUrl={null} size={40} />}<span>{sign}</span></p>
     </section>
   )
 }

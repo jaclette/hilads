@@ -359,7 +359,7 @@
       "itSample": "Contoh rencana perjalanan: perjalanan sebenarnya direncanakan bersama pemenang.",
       "itDay": "Hari {{n}}",
       "founderTitle": "Pesan dari pendiri",
-      "founderRole": "Pendiri Hilads"
+      "founderSign": "{{name}}, pendiri Hilads"
     }
   },
   "friendReq": {

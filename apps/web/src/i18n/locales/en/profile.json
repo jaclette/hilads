@@ -371,7 +371,7 @@
       "itSample": "A sample itinerary: the real trip is planned together with the winner.",
       "itDay": "Day {{n}}",
       "founderTitle": "A word from the founder",
-      "founderRole": "Founder of Hilads"
+      "founderSign": "{{name}}, founder of Hilads"
     }
   },
   "friendReq": {

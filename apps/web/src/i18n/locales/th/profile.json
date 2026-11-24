@@ -359,7 +359,7 @@
       "itSample": "ตัวอย่างแผนการเดินทาง: ทริปจริงจะวางแผนร่วมกับผู้ชนะ",
       "itDay": "วันที่ {{n}}",
       "founderTitle": "ข้อความจากผู้ก่อตั้ง",
-      "founderRole": "ผู้ก่อตั้ง Hilads"
+      "founderSign": "{{name}} ผู้ก่อตั้ง Hilads"
     }
   },
   "friendReq": {

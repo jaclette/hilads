@@ -359,7 +359,7 @@
       "itSample": "旅程の一例です。実際の旅は優勝者と一緒に計画します。",
       "itDay": "{{n}}日目",
       "founderTitle": "創業者からのひとこと",
-      "founderRole": "Hilads 創業者"
+      "founderSign": "{{name}}（Hilads 創業者）"
     }
   },
   "friendReq": {

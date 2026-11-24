@@ -168,8 +168,10 @@ final class ContestTrip
     ];
 
     /** The founder block's draft (admin prefill only, never public until saved with a name). */
-    public const FOUNDER_DRAFT_EN = "I built Hilads because the best way to know a city is through the people who live in it. "
-        . "This season's winner is coming to my city: I'll be in Saigon to welcome you, show you my favourite spots and shoot a daily challenge with you.";
+    public const FOUNDER_DRAFT_EN = "Hey, I'm Jacques, a French guy who fell in love with Saigon and never left. "
+        . "I built Hilads on my own because I wanted to see the whole world through one simple photo a day. "
+        . "If you win, I'm not sending you a voucher: I'll pick you up in Saigon myself, take you to my favourite street-food spots, "
+        . "and we'll shoot a daily challenge together. Can't wait to meet you.";
 
     /** Normalized days: [{photo: entry|null, i18n: {locale: {title, text}}}] x DAYS (defaults where empty). */
     public static function days(array $season): array

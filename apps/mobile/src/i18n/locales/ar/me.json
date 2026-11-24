@@ -390,6 +390,6 @@
     "itSample": "برنامج مقترح: تُخطَّط الرحلة الحقيقية مع الفائز.",
     "itDay": "اليوم {{n}}",
     "founderTitle": "كلمة من المؤسس",
-    "founderRole": "مؤسس Hilads"
+    "founderSign": "{{name}}، مؤسس Hilads"
   }
 }

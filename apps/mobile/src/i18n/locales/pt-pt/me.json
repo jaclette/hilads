@@ -347,6 +347,6 @@
     "itSample": "Um roteiro de exemplo: a viagem real é planeada com quem vencer.",
     "itDay": "Dia {{n}}",
     "founderTitle": "Uma palavra do fundador",
-    "founderRole": "Fundador do Hilads"
+    "founderSign": "{{name}}, fundador do Hilads"
   }
 }

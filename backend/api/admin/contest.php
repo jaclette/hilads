@@ -443,7 +443,7 @@ admin_nav('/admin/launch-season');
     <div class="ls-inline" style="gap:16px;flex-wrap:wrap;margin:8px 0 0">
       <?php if ($founder['photo']): ?><img src="<?= $esc($founder['photo']['url']) ?>" alt="" style="width:64px;height:64px;border-radius:50%;object-fit:cover"><?php endif; ?>
       <form method="post" class="ls-inline"><?= csrf_input() ?><input type="hidden" name="do" value="founder_meta">
-        <input type="text" name="founder_name" value="<?= $esc($founder['name']) ?>" placeholder="Founder name (shown)"><input type="text" name="founder_role" value="<?= $esc($founder['role']) ?>" placeholder="Role (e.g. Founder of Hilads)"><button class="btn btn-secondary btn-sm">Save name</button></form>
+        <input type="text" name="founder_name" value="<?= $esc($founder['name']) ?>" placeholder="Founder name (shown)"><input type="text" name="founder_role" value="<?= $esc($founder['role']) ?>" placeholder="Role (empty = founder of Hilads, translated)"><button class="btn btn-secondary btn-sm">Save name</button></form>
       <form method="post" enctype="multipart/form-data" class="ls-inline"><?= csrf_input() ?><input type="hidden" name="do" value="founder_photo">
         <input type="file" name="photo" accept="image/jpeg,image/png,image/webp" required style="color:#aaa"><button class="btn btn-secondary btn-sm">Upload my photo</button></form>
       <span class="ls-muted"><?= $founder['name'] !== '' && ($founder['i18n']['en'] ?? '') !== '' ? '✓ Shown on the prize screen' : 'Hidden until a name and an English message are saved' ?></span>

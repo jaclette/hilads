@@ -383,7 +383,7 @@
       "itSample": "Un itinerario di esempio: il viaggio vero si organizza insieme al vincitore.",
       "itDay": "Giorno {{n}}",
       "founderTitle": "Due parole dal fondatore",
-      "founderRole": "Fondatore di Hilads"
+      "founderSign": "{{name}}, fondatore di Hilads"
     }
   },
   "friendReq": {

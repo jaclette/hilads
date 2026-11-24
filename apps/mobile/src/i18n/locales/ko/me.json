@@ -321,6 +321,6 @@
     "itSample": "예시 일정이에요. 실제 여행은 우승자와 함께 계획해요.",
     "itDay": "{{n}}일차",
     "founderTitle": "창업자의 한마디",
-    "founderRole": "Hilads 창업자"
+    "founderSign": "{{name}}, Hilads 창업자"
   }
 }

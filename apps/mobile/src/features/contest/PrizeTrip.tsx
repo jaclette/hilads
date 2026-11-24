@@ -50,20 +50,24 @@ export function SampleItinerary({ days }: { days: NonNullable<ContestSeason['iti
   );
 }
 
-/** "A word from the founder": photo, name, role, the message (Admin › Launch Season). */
+/**
+ * "A word from the founder": a personal note, not a promo card. The founder's own photo as a
+ * slightly tilted print, the message as a plain letter, then the signature (Admin › Launch Season).
+ */
 export function FounderWord({ founder }: { founder: NonNullable<ContestSeason['founder']> }) {
   const styles = useThemedStyles(makeStyles);
   const { t } = useTranslation('me');
+  const sign = founder.role ? `${founder.name}, ${founder.role}` : t('contest.founderSign', { name: founder.name });
   return (
-    <View style={styles.founder} accessible accessibilityLabel={`${t('contest.founderTitle')}. ${founder.name}. ${founder.message}`}>
+    <View style={styles.founder} accessible accessibilityLabel={`${t('contest.founderTitle')}. ${founder.message} ${sign}`}>
       <Text style={styles.h2} accessibilityRole="header">{t('contest.founderTitle')}</Text>
-      <Text style={styles.quote}>“{founder.message}”</Text>
+      {founder.photo
+        ? <View style={styles.print}><Image source={{ uri: mediumUrl(founder.photo.url) ?? founder.photo.url }} style={styles.printPhoto} contentFit="cover" /></View>
+        : null}
+      <Text style={styles.letter}>{founder.message}</Text>
       <View style={styles.sign}>
-        <Avatar uri={founder.photo?.url ?? null} name={founder.name} size={52} />
-        <View style={{ flex: 1 }}>
-          <Text style={styles.name}>{founder.name}</Text>
-          <Text style={styles.muted}>{founder.role || t('contest.founderRole')}</Text>
-        </View>
+        {!founder.photo && <Avatar uri={null} name={founder.name} size={40} />}
+        <Text style={styles.signText}>{sign}</Text>
       </View>
     </View>
   );
@@ -85,8 +89,12 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   day:      { ...Type.caption, fontWeight: '800', color: c.primaryText },
   title:    { ...Type.label, color: c.text },
   text:     { ...Type.body, color: c.text },
-  founder:  { gap: Space.sm, padding: Space.md, borderRadius: Radius.card, backgroundColor: c.primaryTint, marginTop: Space.sm },
-  quote:    { ...Type.body, fontSize: 16, lineHeight: 24, fontStyle: 'italic', color: c.text },
+  founder:  { gap: Space.md, padding: Space.md, borderRadius: Radius.card, backgroundColor: c.bg2, borderWidth: 1, borderColor: c.line, marginTop: Space.sm },
+  // A real print: white border, a thicker bottom edge, a slight tilt, a soft shadow (both themes).
+  print:    { alignSelf: 'center', width: '72%', maxWidth: 300, padding: 8, paddingBottom: 26, backgroundColor: '#FFFFFF', borderRadius: 4,
+              transform: [{ rotate: '-2deg' }], shadowColor: '#000', shadowOpacity: 0.18, shadowRadius: 10, shadowOffset: { width: 0, height: 4 }, elevation: 4 },
+  printPhoto: { width: '100%', aspectRatio: 4 / 5, borderRadius: 2 },
+  letter:   { ...Type.body, fontSize: 16, lineHeight: 25, color: c.text },
   sign:     { flexDirection: 'row', alignItems: 'center', gap: Space.sm },
-  name:     { ...Type.label, color: c.text },
+  signText: { ...Type.label, fontStyle: 'italic', color: c.primaryText, flexShrink: 1 },
 });

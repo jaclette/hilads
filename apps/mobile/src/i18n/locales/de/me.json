@@ -334,6 +334,6 @@
     "itSample": "Ein Beispiel-Reiseplan: Die echte Reise wird gemeinsam mit dem Gewinner geplant.",
     "itDay": "Tag {{n}}",
     "founderTitle": "Ein Wort vom Gründer",
-    "founderRole": "Gründer von Hilads"
+    "founderSign": "{{name}}, Gründer von Hilads"
   }
 }

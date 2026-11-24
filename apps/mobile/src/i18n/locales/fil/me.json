@@ -334,6 +334,6 @@
     "itSample": "Halimbawang itinerary: ang totoong trip ay pinaplano kasama ang nanalo.",
     "itDay": "Day {{n}}",
     "founderTitle": "Mensahe mula sa founder",
-    "founderRole": "Founder ng Hilads"
+    "founderSign": "{{name}}, founder ng Hilads"
   }
 }

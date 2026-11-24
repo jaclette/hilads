@@ -334,6 +334,6 @@
     "itSample": "Een voorbeeldreisplan: de echte reis plannen we samen met de winnaar.",
     "itDay": "Dag {{n}}",
     "founderTitle": "Een woord van de oprichter",
-    "founderRole": "Oprichter van Hilads"
+    "founderSign": "{{name}}, oprichter van Hilads"
   }
 }

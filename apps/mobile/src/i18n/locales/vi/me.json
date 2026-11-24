@@ -321,6 +321,6 @@
     "itSample": "Lịch trình tham khảo: chuyến đi thật sẽ được lên kế hoạch cùng người thắng.",
     "itDay": "Ngày {{n}}",
     "founderTitle": "Đôi lời từ nhà sáng lập",
-    "founderRole": "Nhà sáng lập Hilads"
+    "founderSign": "{{name}}, nhà sáng lập Hilads"
   }
 }

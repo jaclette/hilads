@@ -12629,8 +12629,8 @@ html[data-event="halloween"] { --header-art: #FFA552; --header-art-opacity: 0.28
 .ls-tl-card > div { padding: var(--sp-8) var(--sp-12); display: flex; flex-direction: column; gap: 2px; }
 .ls-tl-card small { color: var(--primary-text); font-weight: 800; }
 .ls-tl-card p { margin: 0; }
-.ls-founder { padding: var(--sp-16); border-radius: var(--r-card); background: var(--primary-tint); display: flex; flex-direction: column; gap: var(--sp-8); }
-.ls-founder blockquote { margin: 0; font-size: 16px; line-height: 1.5; font-style: italic; color: var(--text); }
-.ls-founder-sign { display: flex; align-items: center; gap: var(--sp-12); }
-.ls-founder-sign span { display: flex; flex-direction: column; }
-.ls-founder-sign small { color: var(--muted); }
+.ls-founder { padding: var(--sp-16); border-radius: var(--r-card); background: var(--bg2); border: 1px solid var(--line); display: flex; flex-direction: column; gap: var(--sp-16); }
+.ls-founder-print { align-self: center; width: 72%; max-width: 300px; margin: 4px 0; padding: 8px 8px 26px; background: #fff; border-radius: 4px; transform: rotate(-2deg); box-shadow: 0 4px 14px rgba(0,0,0,.18); }
+.ls-founder-print img { display: block; width: 100%; aspect-ratio: 4 / 5; object-fit: cover; border-radius: 2px; }
+.ls-founder-letter { margin: 0; font-size: 16px; line-height: 1.55; color: var(--text); }
+.ls-founder-sign { margin: 0; display: flex; align-items: center; gap: var(--sp-12); font-weight: 700; font-style: italic; color: var(--primary-text); }
