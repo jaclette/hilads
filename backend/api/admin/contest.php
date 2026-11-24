@@ -33,6 +33,29 @@ $dateField = static function (string $k): string {
     return $v;
 };
 
+// Tester picker: accounts matching what is typed (username first, then display name), as JSON.
+if (isset($_GET['suggest'])) {
+    $q = ltrim(trim((string) ($_GET['q'] ?? '')), '@');
+    $out = [];
+    if (mb_strlen($q) >= 2) {
+        $like = str_replace(['\\', '%', '_'], ['\\\\', '\\%', '\\_'], $q);
+        $stmt = $pdo->prepare("
+            SELECT u.username, u.display_name, u.home_country, to_timestamp(u.created_at)::date::text AS since,
+                   (SELECT count(*) FROM daily_proofs p WHERE p.user_id = u.id AND p.moderation_status = 'approved') AS photos
+            FROM users u
+            WHERE u.deleted_at IS NULL AND u.username IS NOT NULL AND NOT u.is_demo AND NOT u.is_fake
+              AND (u.username ILIKE ? OR u.display_name ILIKE ?)
+            ORDER BY (lower(u.username) = lower(?)) DESC, (u.username ILIKE ?) DESC, length(u.username)
+            LIMIT 8
+        ");
+        $stmt->execute([$like . '%', '%' . $like . '%', $q, $like . '%']);
+        $out = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+    header('Content-Type: application/json; charset=utf-8');
+    echo json_encode($out, JSON_UNESCAPED_UNICODE);
+    exit;
+}
+
 // ── Actions ────────────────────────────────────────────────────────────────
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     csrf_verify();
@@ -264,7 +287,50 @@ admin_nav('/admin/launch-season');
             <td class="td-actions"><form method="post" class="ls-inline"><?= csrf_input() ?><input type="hidden" name="do" value="tester_remove"><input type="hidden" name="user_id" value="<?= $esc($t['id']) ?>"><button class="btn btn-secondary btn-sm">Remove</button></form></td></tr>
         <?php endforeach; ?>
       </tbody></table></div>
-      <form method="post" class="ls-inline" style="margin-top:8px"><?= csrf_input() ?><input type="hidden" name="do" value="tester_add"><input type="text" name="username" placeholder="@username"><button class="btn btn-primary btn-sm">Add tester</button></form>
+      <form method="post" class="ls-inline" style="margin-top:8px;align-items:flex-start"><?= csrf_input() ?><input type="hidden" name="do" value="tester_add">
+        <span style="display:inline-flex;flex-direction:column;gap:4px">
+          <input type="text" name="username" id="ls-tester" placeholder="@username or name" list="ls-tester-list" autocomplete="off" required>
+          <datalist id="ls-tester-list"></datalist>
+          <span id="ls-tester-pick" class="ls-muted"></span>
+        </span>
+        <button class="btn btn-primary btn-sm" id="ls-tester-add" disabled>Add tester</button></form>
+      <script>
+      (function () {
+        var input = document.getElementById('ls-tester'), list = document.getElementById('ls-tester-list'),
+            pick = document.getElementById('ls-tester-pick'), add = document.getElementById('ls-tester-add'), rows = [], timer;
+        function line(r) {
+          return (r.display_name || '') + (r.home_country ? ' · ' + r.home_country : '') + ' · ' + r.photos + ' photos · since ' + r.since;
+        }
+        function check() {
+          var v = input.value.trim().replace(/^@/, '').toLowerCase();
+          var hit = rows.filter(function (r) { return r.username.toLowerCase() === v; })[0];
+          pick.textContent = hit ? '✓ @' + hit.username + ' — ' + line(hit) : (v.length >= 2 ? 'Pick an account from the list' : '');
+          pick.style.color = hit ? '#4ade80' : '';
+          add.disabled = !hit;
+        }
+        input.addEventListener('input', function () {
+          clearTimeout(timer);
+          check();
+          var q = input.value.trim().replace(/^@/, '');
+          if (q.length < 2) return;
+          timer = setTimeout(function () {
+            fetch('/admin/launch-season?suggest=1&q=' + encodeURIComponent(q), { credentials: 'same-origin' })
+              .then(function (r) { return r.json(); })
+              .then(function (data) {
+                rows = data;
+                list.innerHTML = '';
+                data.forEach(function (r) {
+                  var o = document.createElement('option');
+                  o.value = r.username;
+                  o.label = line(r);
+                  list.appendChild(o);
+                });
+                check();
+              }).catch(function () {});
+          }, 200);
+        });
+      })();
+      </script>
     <?php endif; ?>
     <h2 style="font-size:15px;color:#fff;margin-top:32px">New season</h2>
   <?php endif; ?>
