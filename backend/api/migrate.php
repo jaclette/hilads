@@ -5104,6 +5104,12 @@ run($pdo, "ALTER TABLE contest_seasons ADD COLUMN IF NOT EXISTS prize_i18n JSONB
 // Reversal: ALTER TABLE contest_seasons DROP COLUMN photos.
 run($pdo, "ALTER TABLE contest_seasons ADD COLUMN IF NOT EXISTS photos JSONB NOT NULL DEFAULT '[]'::jsonb", 'contest_seasons.photos');
 
+// Launch Season prize screen: the sample itinerary (7 days: photo + title/line per language) and
+// the founder's word (name, role, own photo, message per language). ContestTrip; empty = defaults
+// (itinerary) / hidden (founder). Reversal: ALTER TABLE contest_seasons DROP COLUMN itinerary, DROP COLUMN founder.
+run($pdo, "ALTER TABLE contest_seasons ADD COLUMN IF NOT EXISTS itinerary JSONB NOT NULL DEFAULT '[]'::jsonb", 'contest_seasons.itinerary');
+run($pdo, "ALTER TABLE contest_seasons ADD COLUMN IF NOT EXISTS founder JSONB NOT NULL DEFAULT '{}'::jsonb", 'contest_seasons.founder');
+
 // ── Self-heal monthly rank columns ────────────────────────────────────────
 // The denormalised users.monthly_rank_* columns are kept fresh by
 // route-level recalc hooks fired after each scoring action. If any

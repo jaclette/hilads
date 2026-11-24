@@ -13,6 +13,8 @@ import { CountdownBoard, countdownTarget } from '@/features/contest/Countdown';
 import { PrizePhotos } from '@/features/contest/PrizePhotos';
 import { LS } from '@/features/contest/HalongArt';
 import { useContestShare } from '@/features/contest/useContestShare';
+import { HowToWin } from '@/features/contest/HowToWin';
+import { FounderWord, SampleItinerary } from '@/features/contest/PrizeTrip';
 import { track } from '@/services/analytics';
 
 /**
@@ -64,6 +66,7 @@ export default function ContestPrizeScreen() {
           <PrizePhotos photos={s.photos ?? []} height={Math.min(560, Math.round(height * 0.58))}>
             <Text style={styles.kicker}>{s.name}</Text>
             <Text style={styles.title} accessibilityRole="header">{s.prize?.title || s.name}</Text>
+            <Text style={styles.winLine}>🏆 {t('contest.winLine')}</Text>
           </PrizePhotos>
           <View style={styles.body}>
             {!!s.prize?.subtitle && <Text style={styles.sub}>{s.prize.subtitle}</Text>}
@@ -75,6 +78,12 @@ export default function ContestPrizeScreen() {
               <View style={styles.metaCol}><Text style={styles.metaLabel}>{t('contest.passEnds')}</Text>
                 <Text style={styles.metaValue}>{contestDate(s.endDate, i18n.language)}</Text></View>
             </View>
+            <View style={styles.howCard}>
+              <Text style={styles.howTitle} accessibilityRole="header">{t('contest.howWinTitle')}</Text>
+              <HowToWin season={s} />
+            </View>
+            <SampleItinerary days={s.itinerary ?? []} />
+            {s.founder && <FounderWord founder={s.founder} />}
             <View style={styles.gift}>
               <Ionicons name="gift-outline" size={IconSize.md} color={colors.primaryText} />
               <Text style={[styles.muted, { flex: 1, color: colors.primaryOnTint }]}>{t('contest.launchGift')}</Text>
@@ -118,6 +127,9 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   title:     { ...Type.display, fontSize: 34, lineHeight: 39, letterSpacing: -0.6, color: '#FFFFFF' },
   body:      { paddingHorizontal: Gutter, paddingTop: Space.md, gap: Space.sm },
   sub:       { ...Type.label, color: c.primaryText },
+  winLine:   { ...Type.label, fontWeight: '800', color: '#FFFFFF' },
+  howCard:   { padding: Space.md, paddingBottom: 0, borderRadius: Radius.card, backgroundColor: c.bg2, borderWidth: 1, borderColor: c.line, gap: Space.sm, marginTop: Space.xs },
+  howTitle:  { ...Type.title, color: c.text },
   text:      { ...Type.body, fontSize: 16, lineHeight: 24, color: c.text },
   muted:     { ...Type.caption, color: c.muted },
   meta:      { flexDirection: 'row', gap: Space.sm, marginTop: Space.xs },

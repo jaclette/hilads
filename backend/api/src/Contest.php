@@ -430,6 +430,7 @@ final class Contest
         return [
             'prize' => self::prize($s, $locale),
             'photos' => class_exists('ContestPhotos') ? ContestPhotos::payload($s) : [],
+        ] + (class_exists('ContestTrip') ? ContestTrip::payload($s, $locale) : []) + [
             'id' => $s['id'], 'name' => $s['name'], 'isTest' => $s['is_test'], 'phase' => self::phase($s),
             'startDate' => $s['start_date'], 'endDate' => $s['end_date'], 'finalWeekStart' => $s['final_week_start'],
             // The real moments (the daily drop, ISO UTC) for the countdowns: the season starts at its first

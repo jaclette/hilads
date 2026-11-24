@@ -151,6 +151,7 @@ if (str_starts_with($uri, '/admin')) {
     require_once __DIR__ . '/../src/Invites.php';
     require_once __DIR__ . '/../src/Contest.php';
     require_once __DIR__ . '/../src/ContestPhotos.php';
+    require_once __DIR__ . '/../src/ContestTrip.php';
     require_once __DIR__ . '/../src/ProfileCard.php';
     require_once __DIR__ . '/../src/HiQuestions.php';
 require_once __DIR__ . '/../src/HiQuestions.php';
@@ -341,6 +342,7 @@ require_once __DIR__ . '/../src/DailySeasons.php';
 require_once __DIR__ . '/../src/Invites.php';
 require_once __DIR__ . '/../src/Contest.php';
 require_once __DIR__ . '/../src/ContestPhotos.php';
+require_once __DIR__ . '/../src/ContestTrip.php';
 require_once __DIR__ . '/../src/ProfileCard.php';
 require_once __DIR__ . '/../src/HiQuestions.php';
 require_once __DIR__ . '/../src/DailyPromo.php';

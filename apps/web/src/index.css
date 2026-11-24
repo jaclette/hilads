@@ -12598,3 +12598,39 @@ html[data-event="halloween"] { --header-art: #FFA552; --header-art-opacity: 0.28
 .ls-see-all { display: inline-flex; align-items: center; justify-content: center; gap: 4px; min-height: 44px; border: 0; background: none; font: inherit; font-weight: 800;
   color: var(--primary-text); cursor: pointer; }
 .ls-pinned { position: sticky; bottom: 0; padding: var(--sp-4) var(--sp-16) var(--sp-16); background: var(--bg); border-top: 1px solid var(--line); }
+
+/* Clarity pass: how you win, head start badges. */
+.ls-photo-win { margin: 2px 0 0; color: #fff; font-weight: 800; font-size: 16px; }
+.ls-prize-row-win { font-size: var(--fs-sm); font-weight: 700; color: var(--text); }
+.ls-howwin-title { font-size: 20px; }
+.ls-steps { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--sp-12); }
+.ls-steps li { display: flex; gap: var(--sp-12); align-items: flex-start; }
+.ls-step-num { flex-shrink: 0; width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; background: var(--primary-tint); color: var(--primary-on-tint); font-weight: 900; }
+.ls-steps li.win .ls-step-num { background: var(--medal-gold); color: var(--on-medal); }
+.ls-step-body { display: flex; flex-direction: column; gap: 2px; }
+.ls-step-body strong { display: inline-flex; align-items: center; gap: 6px; color: var(--text); }
+.ls-step-body strong svg { color: var(--primary-text); }
+.ls-hs { display: inline-block; margin-left: 6px; padding: 1px 7px; border-radius: var(--r-chip); background: var(--gold-tint, rgba(212,160,23,.22)); color: var(--text); font-size: var(--fs-xs); font-weight: 800; white-space: nowrap; }
+.ls-step .ls-hs { margin-left: 0; }
+
+/* Prize screen: sample itinerary + founder. */
+.ls-trip h2, .ls-founder h2 { margin: 0; font-size: 20px; color: var(--text); }
+.ls-trip { display: flex; flex-direction: column; gap: var(--sp-8); }
+.ls-trip-sample { margin: 0; display: flex; gap: 6px; align-items: flex-start; }
+.ls-timeline { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+.ls-timeline li { display: flex; gap: var(--sp-12); position: relative; padding-bottom: var(--sp-12); }
+.ls-timeline li::before { content: ''; position: absolute; left: 6px; top: 22px; bottom: 0; width: 2px; background: var(--line); }
+.ls-timeline li:last-child::before { display: none; }
+.ls-tl-dot { flex-shrink: 0; width: 14px; height: 14px; margin-top: 14px; border-radius: 50%; background: var(--cta); box-shadow: 0 0 0 3px var(--primary-tint); }
+.ls-tl-card { flex: 1; min-width: 0; border-radius: var(--r-card); overflow: hidden; background: var(--surface); border: 1px solid var(--line); }
+.ls-tl-card figure { margin: 0; position: relative; }
+.ls-tl-card img { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
+.ls-tl-card figcaption { position: absolute; right: 6px; bottom: 4px; font-size: 10px; color: rgba(255,255,255,.85); text-shadow: 0 1px 3px rgba(0,0,0,.6); }
+.ls-tl-card > div { padding: var(--sp-8) var(--sp-12); display: flex; flex-direction: column; gap: 2px; }
+.ls-tl-card small { color: var(--primary-text); font-weight: 800; }
+.ls-tl-card p { margin: 0; }
+.ls-founder { padding: var(--sp-16); border-radius: var(--r-card); background: var(--primary-tint); display: flex; flex-direction: column; gap: var(--sp-8); }
+.ls-founder blockquote { margin: 0; font-size: 16px; line-height: 1.5; font-style: italic; color: var(--text); }
+.ls-founder-sign { display: flex; align-items: center; gap: var(--sp-12); }
+.ls-founder-sign span { display: flex; flex-direction: column; }
+.ls-founder-sign small { color: var(--muted); }

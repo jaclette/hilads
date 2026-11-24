@@ -13,6 +13,7 @@ import { PrizeCover } from '@/features/contest/PrizePhotos';
 import { CountdownBoard, countdownTarget } from '@/features/contest/Countdown';
 import { Podium, RankRow } from '@/features/contest/RankingParts';
 import { useContestShare } from '@/features/contest/useContestShare';
+import { HowToWin } from '@/features/contest/HowToWin';
 import { track } from '@/services/analytics';
 
 /**
@@ -80,10 +81,11 @@ export default function ContestScreen() {
       <ScrollView contentContainerStyle={styles.body}>
         {/* The prize in one row: the Prize screen. */}
         <Pressable style={({ pressed }) => [styles.prize, pressed && { opacity: 0.85 }]} onPress={() => router.push('/contest-prize' as never)}
-                   accessibilityRole="button" accessibilityLabel={`${s.prize?.title || s.name}. ${t('contest.seePrize')}`} testID="contest-prize-row">
+                   accessibilityRole="button" accessibilityLabel={`${s.prize?.title || s.name}. ${t('contest.winLine')} ${t('contest.seePrize')}`} testID="contest-prize-row">
           <View style={styles.prizeArt}><View style={StyleSheet.absoluteFill}><PrizeCover photos={s.photos} width="100%" height="100%" /></View></View>
           <View style={styles.prizeBody}>
-            <Text style={styles.prizeTitle} numberOfLines={2}>{s.prize?.title || s.name} ✈️</Text>
+            <Text style={styles.prizeTitle} numberOfLines={2}>{s.prize?.title || s.name}</Text>
+            <Text style={styles.winLine} numberOfLines={2}>{t('contest.winLine')}</Text>
             <Text style={styles.prizeLink}>{t('contest.seePrize')}</Text>
           </View>
           {s.isTest && <Text style={styles.test}>{t('contest.test')}</Text>}
@@ -177,8 +179,9 @@ export default function ContestScreen() {
           {!ranking ? <ActivityIndicator color={colors.muted} style={{ marginVertical: Space.md }} />
             : ranking.rows.length === 0 ? <Text style={styles.muted}>{t('contest.empty')}</Text> : (
               <>
-                <Podium rows={ranking.rows.slice(0, 3)} meId={account?.id ?? null} />
-                {mine && mine.rank > 3 && <RankRow row={mine} me />}
+                <Podium rows={ranking.rows.slice(0, 3)} meId={account?.id ?? null}
+                        bonusFor={row => final ? row.headstart : row.points > 0 && row.rank <= r.headstartTopN ? r.headstartTopN - row.rank + 1 : 0} />
+                {mine && mine.rank > 3 && <RankRow row={mine} me bonus={final ? mine.headstart : mine.points > 0 && mine.rank <= r.headstartTopN ? r.headstartTopN - mine.rank + 1 : 0} />}
               </>
             )}
           <Pressable onPress={() => router.push({ pathname: '/contest-ranking', params: { tab: final ? 'final' : 'season' } } as never)}
@@ -191,7 +194,7 @@ export default function ContestScreen() {
         <View style={styles.links}>
           <Pressable onPress={() => setHow(true)} accessibilityRole="button" hitSlop={8} style={styles.link}>
             <Ionicons name="help-circle-outline" size={IconSize.sm} color={colors.primaryText} />
-            <Text style={styles.linkText}>{t('contest.howTitle')}</Text>
+            <Text style={styles.linkText}>{t('contest.howWinTitle')}</Text>
           </Pressable>
           <Pressable onPress={() => Linking.openURL(s.rulesUrl)} accessibilityRole="link" hitSlop={8} style={styles.link}>
             <Text style={styles.linkText}>{t('contest.rulesShort')}</Text>
@@ -201,19 +204,9 @@ export default function ContestScreen() {
       </ScrollView>
 
       <Sheet visible={how} onClose={() => setHow(false)} closeLabel={t('back', { ns: 'common' })}>
-        <SheetTitle>{t('contest.howTitle')}</SheetTitle>
+        <SheetTitle>{t('contest.howWinTitle')}</SheetTitle>
         <View style={{ gap: Space.sm, paddingBottom: Space.md }}>
-          {([
-            ['camera-outline', t('contest.how1')],
-            ['heart-outline', t('contest.how2', { count: r.voteCap })],
-            ['people-outline', t('contest.how3', { points: r.referralPoints, min: r.referralMinPhotos, max: r.referralCap })],
-            ['flag-outline', t('contest.how4', { count: r.headstartTopN })],
-          ] as const).map(([icon, line]) => (
-            <View key={icon} style={styles.how}>
-              <Ionicons name={icon} size={IconSize.md} color={colors.primaryText} />
-              <Text style={[styles.text, { flex: 1 }]}>{line}</Text>
-            </View>
-          ))}
+          <HowToWin season={s} />
           <Pressable onPress={() => Linking.openURL(s.rulesUrl)} accessibilityRole="link" hitSlop={8} style={styles.link}>
             <Text style={styles.linkText}>{t('contest.rules')}</Text>
             <Ionicons name="open-outline" size={IconSize.sm} color={colors.primaryText} />
@@ -290,6 +283,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   prizeBody:  { flex: 1, paddingVertical: Space.sm, gap: 2 },
   prizeTitle: { ...Type.label, fontWeight: '800', color: c.text },
   prizeLink:  { ...Type.caption, fontWeight: '800', color: c.primaryText },
+  winLine:    { ...Type.caption, fontWeight: '700', color: c.text },
   // The unlock.
   unlockHead: { flexDirection: 'row', alignItems: 'baseline', gap: Space.xs, flexWrap: 'wrap' },
   unlockCount:{ ...Type.display, color: c.text },
@@ -334,5 +328,4 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   links:      { flexDirection: 'row', justifyContent: 'center', gap: Space.lg },
   link:       { flexDirection: 'row', alignItems: 'center', gap: Space.xs, minHeight: 44 },
   linkText:   { ...Type.label, fontWeight: '800', color: c.primaryText },
-  how:        { flexDirection: 'row', gap: Space.sm, alignItems: 'flex-start' },
 });

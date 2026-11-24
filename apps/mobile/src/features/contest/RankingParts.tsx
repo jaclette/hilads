@@ -9,7 +9,7 @@ import type { ContestRow } from './contest';
 /** The Launch Season ranking's parts (the home's preview, the full ranking screen). */
 
 /** The top 3: #2 · #1 · #3 on medal blocks, crown on #1, "You" on mine. */
-export function Podium({ rows, meId }: { rows: ContestRow[]; meId: string | null }) {
+export function Podium({ rows, meId, bonusFor }: { rows: ContestRow[]; meId: string | null; bonusFor?: (row: ContestRow) => number }) {
   const styles = useThemedStyles(makeStyles);
   const { colors } = useTheme();
   const { t } = useTranslation('me');
@@ -34,6 +34,7 @@ export function Podium({ rows, meId }: { rows: ContestRow[]; meId: string | null
             <Text style={styles.stepName} numberOfLines={1}>{name}</Text>
             <Text style={styles.muted} numberOfLines={1}>{t('contest.pts', { count: row.points })}</Text>
             {me && <Text style={styles.you}>{t('contest.youLabel')}</Text>}
+            {!!bonusFor && bonusFor(row) > 0 && <Text style={styles.hs}>{t('contest.hsBadge', { count: bonusFor(row) })}</Text>}
             <View style={[styles.block, { height: heights[place] ?? 40, backgroundColor: medal[place] ?? colors.line }]}>
               <Text style={styles.blockText}>{row.rank}</Text>
             </View>
@@ -44,13 +45,13 @@ export function Podium({ rows, meId }: { rows: ContestRow[]; meId: string | null
   );
 }
 
-export function RankRow({ row, me }: { row: ContestRow; me: boolean }) {
+export function RankRow({ row, me, bonus = 0 }: { row: ContestRow; me: boolean; bonus?: number }) {
   const styles = useThemedStyles(makeStyles);
   const { t } = useTranslation('me');
   const router = useRouter();
   const name = row.username ? '@' + row.username : row.displayName ?? '';
   const detail = [row.votes > 0 ? `${t('contest.votes')} ${row.votes}` : null, row.referral > 0 ? `${t('contest.referral')} ${row.referral}` : null,
-                  row.headstart > 0 ? `${t('contest.headstart')} ${row.headstart}` : null].filter(Boolean).join(' · ');
+                  ].filter(Boolean).join(' · ');
   return (
     <Pressable style={[styles.rankRow, me && styles.rankRowMe]} onPress={() => router.push({ pathname: '/user/[id]', params: { id: row.userId } })}
                accessibilityRole="button" accessibilityLabel={`#${row.rank} ${name}, ${t('contest.pts', { count: row.points })}`}>
@@ -60,6 +61,7 @@ export function RankRow({ row, me }: { row: ContestRow; me: boolean }) {
         <View style={styles.nameRow}>
           <Text style={[styles.text, { fontWeight: '700', flexShrink: 1 }]} numberOfLines={1}>{name}</Text>
           {me && <Text style={styles.you}>{t('contest.youLabel')}</Text>}
+          {bonus > 0 && <Text style={styles.hs}>{t('contest.hsBadge', { count: bonus })}</Text>}
         </View>
         {!!detail && <Text style={styles.muted} numberOfLines={1}>{detail}</Text>}
       </View>
@@ -84,6 +86,8 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   rankRow:    { flexDirection: 'row', alignItems: 'center', gap: Space.sm, paddingVertical: Space.sm, minHeight: 56 },
   rankRowMe:  { backgroundColor: c.primaryTint, borderRadius: Radius.control, marginHorizontal: -Space.sm, paddingHorizontal: Space.sm },
   rankNum:    { ...Type.label, fontWeight: '800', color: c.muted, width: 28, textAlign: 'center' },
-  nameRow:    { flexDirection: 'row', alignItems: 'center', gap: Space.xs },
+  nameRow:    { flexDirection: 'row', alignItems: 'center', gap: Space.xs, flexWrap: 'wrap' },
   rankPts:    { ...Type.label, fontWeight: '800', color: c.text },
+  hs:         { ...Type.caption, fontSize: 11, lineHeight: 15, fontWeight: '800', color: c.text, backgroundColor: c.goldTint, borderRadius: Radius.control,
+                paddingHorizontal: 7, paddingVertical: 1, overflow: 'hidden' },
 });

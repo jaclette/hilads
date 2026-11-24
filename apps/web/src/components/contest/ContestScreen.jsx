@@ -78,6 +78,68 @@ function useShare(data, account) {
   }
 }
 
+/** "How to win": the 3 steps of a season (a ranking, never a draw). */
+function HowToWin({ s }) {
+  const { t, i18n } = useT()
+  const r = s.rules
+  const steps = [
+    ['camera-outline', t('contest.step1Title', { date: shortDate(s.finalWeekStart, i18n.language) }), t('contest.step1Text', { cap: r.voteCap, points: r.referralPoints, min: r.referralMinPhotos })],
+    ['podium-outline', t('contest.step2Title', { count: r.headstartTopN }), t('contest.step2Text', { count: r.headstartTopN, date: shortDate(s.finalWeekStart, i18n.language) })],
+    ['trophy-outline', t('contest.step3Title'), t('contest.step3Text', { date: shortDate(s.endDate, i18n.language) })],
+  ]
+  return (
+    <ol className="ls-steps">
+      {steps.map(([icon, title, text], i) => (
+        <li key={i} className={i === 2 ? 'win' : ''}>
+          <span className="ls-step-num">{i + 1}</span>
+          <span className="ls-step-body"><strong><Icon name={icon} size={16} /> {title}</strong><span>{text}</span></span>
+        </li>
+      ))}
+    </ol>
+  )
+}
+
+/** "Your week in Vietnam": the sample itinerary as a timeline (Admin › Launch Season). */
+function SampleItinerary({ days }) {
+  const { t } = useT()
+  if (!days?.length) return null
+  return (
+    <section className="ls-trip">
+      <h2>{t('contest.itTitle')}</h2>
+      <p className="dc-muted ls-trip-sample"><Icon name="information-circle-outline" size={16} /> {t('contest.itSample')}</p>
+      <ol className="ls-timeline">
+        {days.map(d => (
+          <li key={d.day}>
+            <span className="ls-tl-dot" aria-hidden="true" />
+            <article className="ls-tl-card">
+              {d.photo && <figure><img src={d.photo.url} alt="" loading="lazy" />{d.photo.credit && <figcaption>© {d.photo.credit}</figcaption>}</figure>}
+              <div><small>{t('contest.itDay', { n: d.day })}</small><strong>{d.title}</strong>{d.text && <p>{d.text}</p>}</div>
+            </article>
+          </li>
+        ))}
+      </ol>
+    </section>
+  )
+}
+
+/** "A word from the founder" (Admin › Launch Season). */
+function FounderWord({ f }) {
+  const { t } = useT()
+  return (
+    <section className="ls-founder">
+      <h2>{t('contest.founderTitle')}</h2>
+      <blockquote>“{f.message}”</blockquote>
+      <div className="ls-founder-sign">
+        <AvatarWithFlag userId={null} displayName={f.name} photoUrl={f.photo?.url ?? null} size={52} />
+        <span><strong>{f.name}</strong><small>{f.role || t('contest.founderRole')}</small></span>
+      </div>
+    </section>
+  )
+}
+
+/** The head start a ranking row brings into the final week (season: what its rank would earn; final: what it has). */
+const bonusOf = (row, tab, topN) => tab === 'final' ? row.headstart : row.points > 0 && row.rank <= topN ? topN - row.rank + 1 : 0
+
 /** The season's photos (Admin › Launch Season › Photos) with page dots, else the illustration. */
 function PrizePhotos({ photos, children, short }) {
   const [page, setPage] = useState(0)
@@ -163,6 +225,7 @@ export function ContestPrize({ account, onBack, onOpenHome, onSignUp }) {
         <PrizePhotos photos={s.photos}>
           <small className="ls-kicker">{s.name}</small>
           <h1 className="ls-photo-title">{s.prize?.title || s.name}</h1>
+          <p className="ls-photo-win">🏆 {t('contest.winLine')}</p>
         </PrizePhotos>
         <div className="ls-prize-body">
           {s.prize?.subtitle && <p className="ls-prize-sub">{s.prize.subtitle}</p>}
@@ -172,6 +235,9 @@ export function ContestPrize({ account, onBack, onOpenHome, onSignUp }) {
             <span><small>{t('contest.passFinal')}</small><b>{final ? t('contest.passNow') : shortDate(s.finalWeekStart, i18n.language)}</b></span>
             <span><small>{t('contest.passEnds')}</small><b>{shortDate(s.endDate, i18n.language)}</b></span>
           </div>
+          <section className="pp-v2-card ls-card ls-howwin"><strong className="ls-howwin-title">{t('contest.howWinTitle')}</strong><HowToWin s={s} /></section>
+          <SampleItinerary days={s.itinerary} />
+          {s.founder && <FounderWord f={s.founder} />}
           <p className="ls-giftline"><Icon name="gift-outline" size={18} /> {t('contest.launchGift')}</p>
           <div className="ls-links">
             <a className="ls-link" href={s.rulesUrl.replace('https://hilads.live', '')} target="_blank" rel="noopener">{t('contest.rules')} <Icon name="open-outline" size={14} /></a>
@@ -220,7 +286,7 @@ export default function ContestScreen({ account, onBack, onOpenProfile, onOpenIn
       <div className="page-body dc-body ls-body">
         <button type="button" className="ls-prize-row" onClick={onOpenPrize}>
           <span className="ls-prize-row-art">{s.photos?.[0] ? <img src={s.photos[0].url} alt="" /> : <HalongArt />}</span>
-          <span className="ls-prize-row-body"><strong>{s.prize?.title || s.name} ✈️</strong><small>{t('contest.seePrize')}</small></span>
+          <span className="ls-prize-row-body"><strong>{s.prize?.title || s.name}</strong><span className="ls-prize-row-win">{t('contest.winLine')}</span><small>{t('contest.seePrize')}</small></span>
           {s.isTest && <span className="ls-test">{t('contest.test')}</span>}
           <Icon name="chevron-forward" size={18} />
         </button>
@@ -290,27 +356,18 @@ export default function ContestScreen({ account, onBack, onOpenProfile, onOpenIn
           {!ranking ? <div className="dc-center"><span className="wm-spinner" aria-hidden="true" /></div>
             : ranking.rows.length === 0 ? <p className="dc-muted">{t('contest.empty')}</p> : (
               <>
-                <Podium rows={ranking.rows.slice(0, 3)} meId={account?.id} t={t} onOpenProfile={onOpenProfile} />
-                {mine && mine.rank > 3 && <RankRow row={mine} me t={t} onOpenProfile={onOpenProfile} />}
+                <Podium rows={ranking.rows.slice(0, 3)} meId={account?.id} t={t} onOpenProfile={onOpenProfile} bonusFor={row => bonusOf(row, final ? 'final' : 'season', r.headstartTopN)} />
+                {mine && mine.rank > 3 && <RankRow row={mine} me t={t} onOpenProfile={onOpenProfile} bonus={bonusOf(mine, final ? 'final' : 'season', r.headstartTopN)} />}
               </>
             )}
           <button type="button" className="ls-see-all" onClick={() => onOpenRanking(final ? 'final' : 'season')}>{t('contest.seeRanking')} <Icon name="chevron-forward" size={16} /></button>
         </div>
 
         <div className="ls-links ls-links--center">
-          <button type="button" className="ls-link ls-link-btn" onClick={() => setHow(v => !v)} aria-expanded={how}><Icon name="help-circle-outline" size={16} /> {t('contest.howTitle')}</button>
+          <button type="button" className="ls-link ls-link-btn" onClick={() => setHow(v => !v)} aria-expanded={how}><Icon name="help-circle-outline" size={16} /> {t('contest.howWinTitle')}</button>
           <a className="ls-link" href={s.rulesUrl.replace('https://hilads.live', '')} target="_blank" rel="noopener">{t('contest.rulesShort')} <Icon name="open-outline" size={14} /></a>
         </div>
-        {how && (
-          <div className="pp-v2-card ls-card">
-            <ul className="ls-how">
-              <li><Icon name="camera-outline" size={20} /><span>{t('contest.how1')}</span></li>
-              <li><Icon name="heart-outline" size={20} /><span>{t('contest.how2', { count: r.voteCap })}</span></li>
-              <li><Icon name="people-outline" size={20} /><span>{t('contest.how3', { points: r.referralPoints, min: r.referralMinPhotos, max: r.referralCap })}</span></li>
-              <li><Icon name="flag-outline" size={20} /><span>{t('contest.how4', { count: r.headstartTopN })}</span></li>
-            </ul>
-          </div>
-        )}
+        {how && <div className="pp-v2-card ls-card"><HowToWin s={s} /></div>}
       </div>
     </div>
   )
@@ -325,6 +382,7 @@ export function ContestRanking({ account, onBack, onOpenProfile, initialTab = 's
   useEffect(() => { setRanking(null); fetchContestRanking(tab).then(setRanking).catch(() => setRanking({ rows: [], me: null, frozen: true })) }, [tab])
   useEffect(() => { track('contest_ranking_viewed', { tab }) }, [tab])
   const s = data?.season
+  const topN = s?.rules.headstartTopN ?? 0
   return (
     <div className="full-page dc-page">
       <Header title={t('contest.rankingTitle')} sub={s?.name} onBack={onBack} />
@@ -338,14 +396,15 @@ export function ContestRanking({ account, onBack, onOpenProfile, initialTab = 's
         {tab === 'final' && ranking && !ranking.frozen && s && (
           <p className="dc-muted">{t('contest.finalNotYet', { date: shortDate(s.finalWeekStart, i18n.language), count: s.rules.headstartTopN })}</p>
         )}
+        {tab === 'season' && s && s.rules.headstartTopN > 0 && <p className="dc-muted">{t('contest.hsHint', { count: s.rules.headstartTopN })}</p>}
         <div className="pp-v2-card ls-card">
           {!ranking && <div className="dc-center"><span className="wm-spinner" aria-hidden="true" /></div>}
           {ranking && ranking.rows.length === 0 && <p className="dc-muted">{t('contest.empty')}</p>}
-          {ranking && ranking.rows.length > 0 && <Podium rows={ranking.rows.slice(0, 3)} meId={account?.id} t={t} onOpenProfile={onOpenProfile} />}
-          {ranking?.rows.slice(3).map(row => <RankRow key={row.userId} row={row} me={row.userId === account?.id} t={t} onOpenProfile={onOpenProfile} />)}
+          {ranking && ranking.rows.length > 0 && <Podium rows={ranking.rows.slice(0, 3)} meId={account?.id} t={t} onOpenProfile={onOpenProfile} bonusFor={row => bonusOf(row, tab, topN)} />}
+          {ranking?.rows.slice(3).map(row => <RankRow key={row.userId} row={row} me={row.userId === account?.id} t={t} onOpenProfile={onOpenProfile} bonus={bonusOf(row, tab, topN)} />)}
         </div>
       </div>
-      {ranking?.me && <div className="ls-pinned"><RankRow row={ranking.me} me t={t} onOpenProfile={onOpenProfile} /></div>}
+      {ranking?.me && <div className="ls-pinned"><RankRow row={ranking.me} me t={t} onOpenProfile={onOpenProfile} bonus={bonusOf(ranking.me, tab, topN)} /></div>}
     </div>
   )
 }
@@ -372,7 +431,7 @@ function Tile({ label, value, total }) {
   return <span className={`ls-tile${total ? ' total' : ''}`}><b>{value}</b><small>{label}</small></span>
 }
 
-function Podium({ rows, meId, t, onOpenProfile }) {
+function Podium({ rows, meId, t, onOpenProfile, bonusFor }) {
   const order = [rows[1], rows[0], rows[2]]
   const cls = ['gold', 'silver', 'bronze']
   return (
@@ -389,6 +448,7 @@ function Podium({ rows, meId, t, onOpenProfile }) {
             <span className="ls-step-name">{name}</span>
             <span className="dc-muted">{t('contest.pts', { count: row.points })}</span>
             {row.userId === meId && <span className="ls-you">{t('contest.youLabel')}</span>}
+            {bonusFor && bonusFor(row) > 0 && <span className="ls-hs">{t('contest.hsBadge', { count: bonusFor(row) })}</span>}
             <span className="ls-block">{row.rank}</span>
           </button>
         )
@@ -397,16 +457,16 @@ function Podium({ rows, meId, t, onOpenProfile }) {
   )
 }
 
-function RankRow({ row, me, t, onOpenProfile }) {
+function RankRow({ row, me, t, onOpenProfile, bonus = 0 }) {
   const name = row.username ? '@' + row.username : row.displayName ?? ''
   const detail = [row.votes > 0 ? `${t('contest.votes')} ${row.votes}` : null, row.referral > 0 ? `${t('contest.referral')} ${row.referral}` : null,
-                  row.headstart > 0 ? `${t('contest.headstart')} ${row.headstart}` : null].filter(Boolean).join(' · ')
+                  ].filter(Boolean).join(' · ')
   return (
     <button type="button" className={`ls-row${me ? ' is-me' : ''}`} onClick={() => onOpenProfile(row.userId, row.displayName ?? row.username)}>
       <span className="ls-row-n">{row.rank}</span>
       <AvatarWithFlag userId={row.userId} displayName={row.displayName ?? row.username} photoUrl={row.photoUrl} size={38} />
       <span className="ls-row-body">
-        <span className="ls-row-name">{name}{me && <span className="ls-you">{t('contest.youLabel')}</span>}</span>
+        <span className="ls-row-name">{name}{me && <span className="ls-you">{t('contest.youLabel')}</span>}{bonus > 0 && <span className="ls-hs">{t('contest.hsBadge', { count: bonus })}</span>}</span>
         {detail && <span className="dc-muted">{detail}</span>}
       </span>
       <b className="ls-row-pts">{row.points}</b>

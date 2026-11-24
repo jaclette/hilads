@@ -120,9 +120,52 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 ->execute([json_encode($prize, JSON_UNESCAPED_UNICODE), $season['id']]);
             Contest::log($season['id'], 'prize', null, ['en' => $prize['en'], 'locales' => array_keys($prize)]);
             flash_set('success', 'Prize saved: the app and the web show it at their next refresh (no new app version required).');
+        } elseif ($season !== null && in_array($do, ['trip_text', 'founder_meta', 'founder_photo', 'day_photo_upload', 'day_photo_remove'], true)) {
+            $days = ContestTrip::days($season);
+            $founder = ContestTrip::founder($season);
+            $tl = in_array($_POST['tl'] ?? '', Contest::LOCALES, true) ? (string) $_POST['tl'] : 'en';
+            if ($do === 'trip_text') {
+                for ($d = 0; $d < ContestTrip::DAYS; $d++) {
+                    $title = trim((string) ($_POST['day_title'][$d] ?? ''));
+                    $text  = trim((string) ($_POST['day_text'][$d] ?? ''));
+                    if (mb_strlen($title) > 60 || mb_strlen($text) > 220) throw new InvalidArgumentException('Day ' . ($d + 1) . ': title 60 characters max, line 220.');
+                    if ($title === '' && $tl === 'en') throw new InvalidArgumentException('Day ' . ($d + 1) . ': the English title is required.');
+                    $days[$d]['i18n'][$tl] = ['title' => $title, 'text' => $text];
+                }
+                $msg = trim((string) ($_POST['founder_message'] ?? ''));
+                if (mb_strlen($msg) > 600) throw new InvalidArgumentException('Founder message: 600 characters max.');
+                $founder['i18n'][$tl] = $msg;
+            } elseif ($do === 'founder_meta') {
+                $founder['name'] = mb_substr(trim((string) ($_POST['founder_name'] ?? '')), 0, 60);
+                $founder['role'] = mb_substr(trim((string) ($_POST['founder_role'] ?? '')), 0, 60);
+            } elseif ($do === 'founder_photo') {
+                $founder['photo'] = ContestPhotos::importUpload($_FILES['photo'] ?? [], $founder['name'] ?: 'Hilads', '');
+            } else {
+                $d = (int) ($_POST['day'] ?? 0) - 1;
+                if ($d < 0 || $d >= ContestTrip::DAYS) throw new InvalidArgumentException('Unknown day.');
+                $days[$d]['photo'] = $do === 'day_photo_upload'
+                    ? ContestPhotos::importUpload($_FILES['photo'] ?? [], (string) ($_POST['credit'] ?? ''), '')
+                    : null;
+            }
+            $pdo->prepare("UPDATE contest_seasons SET itinerary = ?::jsonb, founder = ?::jsonb, updated_at = now() WHERE id = ?")
+                ->execute([json_encode($days, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES), json_encode($founder, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES), $season['id']]);
+            Contest::log($season['id'], $do, $tl);
+            flash_set('success', 'Saved: the prize screen shows it at its next refresh.');
+            $back = $url('seasons', ['tl' => $tl]) . '#trip';
         } elseif ($season !== null && in_array($do, ['photo_pixabay', 'photo_upload', 'photo_remove', 'photo_up', 'photo_caption'], true)) {
             $photos = ContestPhotos::of($season);
             $i = (int) ($_POST['i'] ?? -1);
+            $target = (string) ($_POST['target'] ?? 'photos');
+            if ($do === 'photo_pixabay' && preg_match('/^day([1-7])$/', $target, $tm)) {
+                $entry = ContestPhotos::importPixabay((string) ($_POST['large'] ?? ''), (string) ($_POST['page'] ?? ''), (string) ($_POST['user'] ?? ''), (string) ($_POST['caption'] ?? ''), (string) ($_POST['fallback'] ?? ''));
+                $days = ContestTrip::days($season);
+                $days[(int) $tm[1] - 1]['photo'] = $entry;
+                $pdo->prepare("UPDATE contest_seasons SET itinerary = ?::jsonb, updated_at = now() WHERE id = ?")
+                    ->execute([json_encode($days, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES), $season['id']]);
+                Contest::log($season['id'], 'day_photo_pixabay', $target);
+                flash_set('success', 'Photo set for ' . str_replace('day', 'day ', $target) . '.');
+                admin_redirect($url('seasons', ['q' => $_POST['q'] ?? null]) . '#trip');
+            }
             if ($do === 'photo_pixabay' || $do === 'photo_upload') {
                 if (count($photos) >= ContestPhotos::MAX) throw new InvalidArgumentException('Up to ' . ContestPhotos::MAX . ' photos: remove one first.');
                 $photos[] = $do === 'photo_pixabay'
@@ -345,6 +388,10 @@ admin_nav('/admin/launch-season');
             <div style="padding:6px;display:flex;flex-direction:column;gap:4px;font-size:11px">
               <span class="ls-muted"><?= $esc($h['user']) ?> · <a href="<?= $esc($h['page']) ?>" target="_blank" rel="noopener">Pixabay</a></span>
               <input type="text" name="caption" placeholder="Caption" style="width:100%">
+              <select name="target" style="width:100%;background:#1a1a1a;border:1px solid #2a2a2a;color:#eee;padding:3px;border-radius:4px">
+                <option value="photos">Prize photos</option>
+                <?php for ($d = 1; $d <= ContestTrip::DAYS; $d++): ?><option value="day<?= $d ?>">Itinerary · day <?= $d ?></option><?php endfor; ?>
+              </select>
               <button class="btn btn-primary btn-sm">Use this photo</button>
             </div>
           </form>
@@ -353,6 +400,54 @@ admin_nav('/admin/launch-season');
       </div>
       <p class="ls-muted">Pixabay Content License: free for commercial use, no attribution required (we credit the author anyway). Avoid photos with recognisable people or brands for promotion.</p>
     <?php endif; ?>
+
+    <?php
+    $tl = in_array($_GET['tl'] ?? '', Contest::LOCALES, true) ? (string) $_GET['tl'] : 'en';
+    $days = ContestTrip::days($season);
+    $founder = ContestTrip::founder($season);
+    $inp = 'width:100%;background:#1a1a1a;border:1px solid #2a2a2a;color:#eee;padding:5px 8px;border-radius:4px';
+    ?>
+    <h2 id="trip" style="font-size:15px;color:#fff;margin-top:24px">Sample itinerary &amp; founder</h2>
+    <p class="ls-muted">The prize screen's "Your week in Vietnam" (a sample, labelled so: the real trip is planned with the winner) and "A word from the founder" (shown only once a name and an English message are saved). Text per language (empty = English); a photo per day: a Pixabay pick (choose the day in the search results above) or your own upload.</p>
+    <div class="toolbar" style="gap:4px;flex-wrap:wrap">
+      <?php foreach (Contest::LOCALES as $l): ?><a class="btn btn-sm <?= $l === $tl ? 'btn-primary' : 'btn-secondary' ?>" href="<?= $esc($url('seasons', ['tl' => $l])) ?>#trip"><?= $esc($l) ?></a><?php endforeach; ?>
+    </div>
+    <div style="display:flex;flex-wrap:wrap;gap:10px;margin:8px 0">
+      <?php foreach ($days as $i => $d): ?>
+        <div style="width:180px;border:1px solid #2a2a2a;border-radius:8px;overflow:hidden;background:#161616;font-size:12px">
+          <?php if ($d['photo']): ?><img src="<?= $esc($d['photo']['url']) ?>" alt="" style="width:180px;height:100px;object-fit:cover;display:block"><?php else: ?><div style="height:100px;display:grid;place-items:center;color:#666">No photo</div><?php endif; ?>
+          <div style="padding:6px;display:flex;flex-direction:column;gap:4px">
+            <strong>Day <?= $i + 1 ?></strong>
+            <?php if ($d['photo']): ?><span class="ls-muted"><?= $esc($d['photo']['credit'] ?? '') ?> · <?= $esc($d['photo']['license'] ?? '') ?></span>
+              <form method="post" class="ls-inline"><?= csrf_input() ?><input type="hidden" name="do" value="day_photo_remove"><input type="hidden" name="day" value="<?= $i + 1 ?>"><button class="btn btn-secondary btn-sm">Remove photo</button></form>
+            <?php endif; ?>
+            <form method="post" enctype="multipart/form-data" style="display:flex;flex-direction:column;gap:4px"><?= csrf_input() ?><input type="hidden" name="do" value="day_photo_upload"><input type="hidden" name="day" value="<?= $i + 1 ?>">
+              <input type="file" name="photo" accept="image/jpeg,image/png,image/webp" required style="color:#aaa;width:100%"><input type="text" name="credit" placeholder="Credit" style="width:100%"><button class="btn btn-secondary btn-sm">Upload</button></form>
+          </div>
+        </div>
+      <?php endforeach; ?>
+    </div>
+    <form method="post" class="form-card" style="max-width:none">
+      <?= csrf_input() ?><input type="hidden" name="do" value="trip_text"><input type="hidden" name="tl" value="<?= $esc($tl) ?>">
+      <div class="table-wrapper"><table><thead><tr><th style="width:60px">Day</th><th>Title (60 max) · <?= $esc($tl) ?></th><th>Line (220 max)</th></tr></thead><tbody>
+        <?php foreach ($days as $i => $d): ?>
+          <tr><td><?= $i + 1 ?></td>
+            <td><input type="text" name="day_title[<?= $i ?>]" value="<?= $esc($d['i18n'][$tl]['title'] ?? '') ?>" maxlength="60" style="<?= $inp ?>"<?= $tl === 'ar' ? ' dir="rtl"' : '' ?>></td>
+            <td><input type="text" name="day_text[<?= $i ?>]" value="<?= $esc($d['i18n'][$tl]['text'] ?? '') ?>" maxlength="220" style="<?= $inp ?>"<?= $tl === 'ar' ? ' dir="rtl"' : '' ?>></td></tr>
+        <?php endforeach; ?>
+      </tbody></table></div>
+      <div class="form-group" style="margin-top:12px"><label>Founder message · <?= $esc($tl) ?> (600 max; empty = English<?= ($founder['i18n']['en'] ?? '') === '' ? '; a draft is prefilled, rewrite it in your words' : '' ?>)</label>
+        <textarea name="founder_message" rows="4" maxlength="600" style="<?= $inp ?>"<?= $tl === 'ar' ? ' dir="rtl"' : '' ?>><?= $esc($founder['i18n'][$tl] ?? ($tl === 'en' ? ContestTrip::FOUNDER_DRAFT_EN : '')) ?></textarea></div>
+      <div class="form-actions"><button class="btn btn-primary">Save itinerary &amp; message (<?= $esc($tl) ?>)</button></div>
+    </form>
+    <div class="ls-inline" style="gap:16px;flex-wrap:wrap;margin:8px 0 0">
+      <?php if ($founder['photo']): ?><img src="<?= $esc($founder['photo']['url']) ?>" alt="" style="width:64px;height:64px;border-radius:50%;object-fit:cover"><?php endif; ?>
+      <form method="post" class="ls-inline"><?= csrf_input() ?><input type="hidden" name="do" value="founder_meta">
+        <input type="text" name="founder_name" value="<?= $esc($founder['name']) ?>" placeholder="Founder name (shown)"><input type="text" name="founder_role" value="<?= $esc($founder['role']) ?>" placeholder="Role (e.g. Founder of Hilads)"><button class="btn btn-secondary btn-sm">Save name</button></form>
+      <form method="post" enctype="multipart/form-data" class="ls-inline"><?= csrf_input() ?><input type="hidden" name="do" value="founder_photo">
+        <input type="file" name="photo" accept="image/jpeg,image/png,image/webp" required style="color:#aaa"><button class="btn btn-secondary btn-sm">Upload my photo</button></form>
+      <span class="ls-muted"><?= $founder['name'] !== '' && ($founder['i18n']['en'] ?? '') !== '' ? '✓ Shown on the prize screen' : 'Hidden until a name and an English message are saved' ?></span>
+    </div>
 
     <h2 style="font-size:15px;color:#fff;margin-top:24px">Prize</h2>
     <p class="ls-muted">What the app and the web show as the hero (the Today card, the contest screen). Change it any time, e.g. to the souvenir prize if the player threshold isn't met. English is required; an empty language shows the English text.</p>

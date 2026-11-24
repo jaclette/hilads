@@ -9,6 +9,10 @@ export interface ContestSeason {
   prize?: { title: string; subtitle: string; description?: string };
   /** Real photos from Admin › Launch Season › Photos (Pixabay picks or our own), in order; empty = the illustration. */
   photos?: { url: string; caption: string; credit: string }[];
+  /** "Your week in Vietnam", a sample itinerary (Admin › Launch Season), in the app's language. */
+  itinerary?: { day: number; title: string; text: string; photo: { url: string; credit: string } | null }[];
+  /** "A word from the founder" (Admin), null until a name and a message are saved. */
+  founder?: { name: string; role: string; message: string; photo: { url: string } | null } | null;
   name: string;
   isTest: boolean;
   phase: ContestPhase;

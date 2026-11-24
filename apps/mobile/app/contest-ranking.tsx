@@ -41,6 +41,11 @@ export default function ContestRankingScreen() {
   const back = () => (router.canGoBack() ? router.back() : router.replace('/contest' as never));
   const s = data?.season;
   const mine = ranking?.me ?? null;
+  // The head start a row brings into the final week: in the season, the one its rank would earn
+  // (top N with points: N for #1 … 1 for #N); in the final week, the one it has.
+  const topN = s?.rules.headstartTopN ?? 0;
+  const bonusFor = (row: { rank: number; points: number; headstart: number }) =>
+    tab === 'final' ? row.headstart : row.points > 0 && row.rank <= topN ? topN - row.rank + 1 : 0;
   return (
     <Screen edges={['top', 'bottom']}>
       <ScreenHeader title={t('contest.rankingTitle')} subtitle={s?.name} onBack={back} testID="contest-ranking" />
@@ -50,18 +55,19 @@ export default function ContestRankingScreen() {
         {tab === 'final' && ranking && !ranking.frozen && s && (
           <Text style={styles.muted}>{t('contest.finalNotYet', { date: contestDate(s.finalWeekStart, i18n.language), count: s.rules.headstartTopN })}</Text>
         )}
+        {tab === 'season' && s && topN > 0 && <Text style={styles.muted}>{t('contest.hsHint', { count: topN })}</Text>}
         {failed ? <Text style={styles.muted}>{t('contest.error')}</Text> : !ranking ? <ActivityIndicator color={colors.muted} style={{ marginVertical: Space.lg }} /> : (
           <Card style={styles.card}>
             {ranking.rows.length === 0 && <Text style={styles.muted}>{t('contest.empty')}</Text>}
-            {ranking.rows.length > 0 && <Podium rows={ranking.rows.slice(0, 3)} meId={account?.id ?? null} />}
-            {ranking.rows.slice(3).map(row => <RankRow key={row.userId} row={row} me={row.userId === account?.id} />)}
+            {ranking.rows.length > 0 && <Podium rows={ranking.rows.slice(0, 3)} meId={account?.id ?? null} bonusFor={bonusFor} />}
+            {ranking.rows.slice(3).map(row => <RankRow key={row.userId} row={row} me={row.userId === account?.id} bonus={bonusFor(row)} />)}
           </Card>
         )}
       </ScrollView>
       {/* My row, always in sight. */}
       {mine && (
         <View style={styles.pinned}>
-          <RankRow row={mine} me />
+          <RankRow row={mine} me bonus={bonusFor(mine)} />
         </View>
       )}
     </Screen>
