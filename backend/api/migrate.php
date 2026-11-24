@@ -4988,6 +4988,112 @@ run($pdo, "
 run($pdo, "CREATE UNIQUE INDEX IF NOT EXISTS uq_messages_hi_question ON messages (channel_id, (payload->>'date'))
             WHERE type = 'system' AND event = 'hi_question'", 'uq_messages_hi_question');
 
+// ── Launch Season (2026-11-24): a time-limited contest on top of the game ──
+// A separate layer: it only reads daily_proofs / daily_votes / users and only writes
+// these contest_* tables (never score_events, never the users.score_* columns).
+// contest_seasons: the settings (Admin › Launch Season); status draft | running | ended,
+// paused hides it and closes joining; is_test = only contest_testers see it.
+// contest_participants: who joined (18+, country, rules version), referred_by = their
+// users.invited_by_user_id at join time. contest_invalidations: a photo or a vote that no
+// longer counts FOR THE CONTEST (the game keeps it). contest_headstart: the season top N
+// frozen at the final week. contest_rules: the public rules text per locale.
+// Reversal: DROP TABLE contest_admin_log, contest_rules, contest_testers, contest_headstart,
+// contest_invalidations, contest_participants, contest_seasons.
+run($pdo, "
+    CREATE TABLE IF NOT EXISTS contest_seasons (
+        id                       SERIAL      PRIMARY KEY,
+        name                     TEXT        NOT NULL,
+        start_date               DATE        NOT NULL,
+        end_date                 DATE        NOT NULL,
+        final_week_start         DATE        NOT NULL,
+        vote_cap_per_photo       INT         NOT NULL DEFAULT 20 CHECK (vote_cap_per_photo > 0),
+        referral_points          INT         NOT NULL DEFAULT 20 CHECK (referral_points >= 0),
+        referral_min_photos      INT         NOT NULL DEFAULT 5  CHECK (referral_min_photos >= 1),
+        referral_cap             INT         NOT NULL DEFAULT 10 CHECK (referral_cap >= 0),
+        headstart_top_n          INT         NOT NULL DEFAULT 10 CHECK (headstart_top_n >= 0),
+        prize_threshold_players  INT         NOT NULL DEFAULT 500 CHECK (prize_threshold_players > 0),
+        prize_threshold_photos   INT         NOT NULL DEFAULT 10 CHECK (prize_threshold_photos > 0),
+        is_test                  BOOLEAN     NOT NULL DEFAULT false,
+        status                   TEXT        NOT NULL DEFAULT 'draft' CHECK (status IN ('draft', 'running', 'ended')),
+        paused                   BOOLEAN     NOT NULL DEFAULT false,
+        headstart_frozen_at      TIMESTAMPTZ,
+        winner_user_id           TEXT        REFERENCES users(id) ON DELETE SET NULL,
+        winner_contacted_at      TIMESTAMPTZ,
+        winner_confirmed_at      TIMESTAMPTZ,
+        prize_sent_at            TIMESTAMPTZ,
+        created_at               TIMESTAMPTZ NOT NULL DEFAULT now(),
+        updated_at               TIMESTAMPTZ NOT NULL DEFAULT now(),
+        CHECK (start_date <= final_week_start AND final_week_start <= end_date)
+    )
+", 'contest_seasons');
+run($pdo, "
+    CREATE TABLE IF NOT EXISTS contest_participants (
+        season_id          INT         NOT NULL REFERENCES contest_seasons(id) ON DELETE CASCADE,
+        user_id            TEXT        NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        joined_at          TIMESTAMPTZ NOT NULL DEFAULT now(),
+        age_confirmed      BOOLEAN     NOT NULL,
+        country            CHAR(2)     NOT NULL,
+        rules_accepted_at  TIMESTAMPTZ NOT NULL,
+        rules_version      INT         NOT NULL DEFAULT 1,
+        referred_by        TEXT        REFERENCES users(id) ON DELETE SET NULL,
+        install_id         TEXT,
+        disqualified       BOOLEAN     NOT NULL DEFAULT false,
+        dq_reason          TEXT,
+        dq_at              TIMESTAMPTZ,
+        PRIMARY KEY (season_id, user_id)
+    )
+", 'contest_participants');
+run($pdo, "CREATE INDEX IF NOT EXISTS idx_contest_participants_user ON contest_participants (user_id)", 'idx_contest_participants_user');
+run($pdo, "
+    CREATE TABLE IF NOT EXISTS contest_invalidations (
+        id          BIGSERIAL   PRIMARY KEY,
+        season_id   INT         NOT NULL REFERENCES contest_seasons(id) ON DELETE CASCADE,
+        kind        TEXT        NOT NULL CHECK (kind IN ('photo', 'vote')),
+        target_id   TEXT        NOT NULL,
+        reason      TEXT        NOT NULL,
+        created_at  TIMESTAMPTZ NOT NULL DEFAULT now(),
+        undone_at   TIMESTAMPTZ
+    )
+", 'contest_invalidations');
+run($pdo, "CREATE UNIQUE INDEX IF NOT EXISTS uq_contest_invalidations_live ON contest_invalidations (season_id, kind, target_id) WHERE undone_at IS NULL", 'uq_contest_invalidations_live');
+run($pdo, "
+    CREATE TABLE IF NOT EXISTS contest_headstart (
+        season_id  INT  NOT NULL REFERENCES contest_seasons(id) ON DELETE CASCADE,
+        user_id    TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        rank       INT  NOT NULL,
+        points     INT  NOT NULL,
+        PRIMARY KEY (season_id, user_id)
+    )
+", 'contest_headstart');
+run($pdo, "
+    CREATE TABLE IF NOT EXISTS contest_testers (
+        season_id  INT  NOT NULL REFERENCES contest_seasons(id) ON DELETE CASCADE,
+        user_id    TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        PRIMARY KEY (season_id, user_id)
+    )
+", 'contest_testers');
+run($pdo, "
+    CREATE TABLE IF NOT EXISTS contest_rules (
+        season_id   INT         NOT NULL REFERENCES contest_seasons(id) ON DELETE CASCADE,
+        locale      TEXT        NOT NULL,
+        body        TEXT        NOT NULL,
+        is_final    BOOLEAN     NOT NULL DEFAULT false,
+        version     INT         NOT NULL DEFAULT 1,
+        updated_at  TIMESTAMPTZ NOT NULL DEFAULT now(),
+        PRIMARY KEY (season_id, locale)
+    )
+", 'contest_rules');
+run($pdo, "
+    CREATE TABLE IF NOT EXISTS contest_admin_log (
+        id          BIGSERIAL   PRIMARY KEY,
+        season_id   INT         REFERENCES contest_seasons(id) ON DELETE SET NULL,
+        action      TEXT        NOT NULL,
+        target      TEXT,
+        detail      JSONB       NOT NULL DEFAULT '{}'::jsonb,
+        created_at  TIMESTAMPTZ NOT NULL DEFAULT now()
+    )
+", 'contest_admin_log');
+
 // ── Self-heal monthly rank columns ────────────────────────────────────────
 // The denormalised users.monthly_rank_* columns are kept fresh by
 // route-level recalc hooks fired after each scoring action. If any

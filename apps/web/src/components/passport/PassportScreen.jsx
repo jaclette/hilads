@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import LaunchSeasonCard from '../contest/LaunchSeasonCard'
 import { useTranslation } from 'react-i18next'
 import { LogoHat, setSeasonalEvent } from '../event/seasonal'
 import { fetchDailyToday, fetchLeaderboard, fetchMyProposals, fetchMySpots, fetchUserDaily, fetchUserFriends } from '../../api'
@@ -152,6 +153,7 @@ export default function PassportScreen({ account, guestName, guestMode, cityId, 
         </div>
         {/* Scoring v2: this week's Perfect week, the crew, the season medals. */}
         {stats?.week && <div id="pp-week"><WeekCard week={stats.week} /></div>}
+        <LaunchSeasonCard onOpen={() => onOpen('contest')} />
         <CrewCard onOpen={onOpen} />
         {(stats?.seasonMedals?.length ?? 0) > 0 && <SeasonMedals medals={stats.seasonMedals} />}
         {/* Your rivals moved to World › Cities (UX audit: one place to compare cities). */}

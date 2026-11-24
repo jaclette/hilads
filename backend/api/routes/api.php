@@ -13851,6 +13851,48 @@ $router->add('POST', '/api/v1/invites/click', function () {
     Response::json(['ok' => Invites::recordClick((string) ($body['code'] ?? ''))]);
 });
 
+// ── Launch Season (Contest): a separate contest layer, never the permanent score ──
+// GET /api/v1/contest - the season I see (test seasons: testers only), the prize counter
+// and me (joined + my points, or whether I can join). {season: null} when none.
+$router->add('GET', '/api/v1/contest', function () {
+    $user = AuthService::currentUser();
+    Response::json(Contest::overview($user['id'] ?? null));
+});
+
+// POST /api/v1/contest/join {seasonId, ageConfirmed: true, country: 'FR', rulesAccepted: true}
+$router->add('POST', '/api/v1/contest/join', function () {
+    $user = AuthService::requireAuth('contest_join');
+    enforceRateLimit('contest_join', 10, 600);
+    $body   = Request::json() ?? [];
+    $season = Contest::visibleFor($user['id']);
+    if ($season === null || (int) ($body['seasonId'] ?? 0) !== $season['id']) {
+        Response::json(['error' => 'No Launch Season to join', 'code' => 'closed'], 409);
+    }
+    try {
+        $r = Contest::join($season, $user['id'], $body, Contest::isDevBuild());
+    } catch (InvalidArgumentException $e) {
+        $code = $e->getMessage();
+        Response::json(['error' => 'Cannot join', 'code' => $code], str_starts_with($code, 'invalid_') ? 400 : 403);
+    }
+    Response::json(['result' => $r] + Contest::overview($user['id']));
+});
+
+// GET /api/v1/contest/ranking?phase=season|final - the contest's own ranking (top 100 + me).
+$router->add('GET', '/api/v1/contest/ranking', function () {
+    $user = AuthService::currentUser();
+    $r = Contest::ranking($user['id'] ?? null, (string) ($_GET['phase'] ?? 'season'));
+    if ($r === null) Response::json(['error' => 'No Launch Season', 'code' => 'none'], 404);
+    Response::json($r);
+});
+
+// GET /api/v1/contest/rules?locale=fr&season=3 - the public rules (hilads.live/launch-season/rules). Public.
+$router->add('GET', '/api/v1/contest/rules', function () {
+    $locale = preg_match('/^[a-z]{2}(-[a-z]{2,4})?$/', (string) ($_GET['locale'] ?? '')) ? (string) $_GET['locale'] : 'en';
+    $season = isset($_GET['season']) && ctype_digit((string) $_GET['season']) ? (int) $_GET['season'] : null;
+    header('Cache-Control: public, max-age=60');
+    Response::json(Contest::rules($season, $locale));
+});
+
 // GET /api/v1/me/season-result - my latest finished season not celebrated yet (the app's
 // season results screen), else {result: null}. POST .../seen {season} - shown.
 $router->add('GET', '/api/v1/me/season-result', function () {

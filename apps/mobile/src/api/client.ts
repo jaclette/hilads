@@ -97,6 +97,8 @@ async function requestOnce<T = unknown>(
     'X-Scoring': '2',
     // Scoring v2: this install, for one credited invite per phone (lib/installId).
     ...(installId() ? { 'X-Install-Id': installId() as string } : {}),
+    // Launch Season: a dev build can only join a test season (never a real contest).
+    ...(__DEV__ ? { 'X-App-Build': 'dev' } : {}),
     ...(extraHeaders as Record<string, string>),
   };
 

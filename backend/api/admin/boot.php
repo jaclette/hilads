@@ -129,6 +129,12 @@ if ($uri === '/admin' || $uri === '/admin/') {
 } elseif ($uri === '/admin/photos') {
     require __DIR__ . '/photos.php';
 
+} elseif ($uri === '/admin/launch-season/export') {
+    require __DIR__ . '/contest_export.php';
+
+} elseif ($uri === '/admin/launch-season') {
+    require __DIR__ . '/contest.php';
+
 } elseif ($uri === '/admin/hi-questions') {
     require __DIR__ . '/hi_questions.php';
 

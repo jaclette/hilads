@@ -22,6 +22,7 @@ import { NextPlanRow, PlanLine, QuestionCard, ScrollToLatest } from './component
 import SeasonResultGate from './components/SeasonResultGate'
 import { FriendsScreen, MyPhotosScreen, MySpotsScreen } from './components/passport/FriendsScreens'
 import InviteScreen from './components/passport/InviteScreen'
+import ContestScreen from './components/contest/ContestScreen'
 import CalendarScreen from './components/daily/CalendarScreen'
 import { ProposeScreen, TwistScreen, ProposalsScreen } from './components/daily/ProposalScreens'
 import { DailyContext, VoteButton, LocalPassBadge, seedStates, useHere, useOriginal, OriginalToggle, getLastToday } from './components/daily/dailyShared'
@@ -6139,7 +6140,7 @@ export default function App() {
           <RanksScreen header={renderAppHeader()} initial={ranksParams} />
         )}
         {showToday && !showMap && !showProfileDrawer && !showLeaderboard && (
-          <TodayScreen header={renderAppHeader()} />
+          <TodayScreen header={renderAppHeader()} onOpenContest={() => { goToMeTab(); setPassportSub('contest') }} />
         )}
       </>
 
@@ -7026,6 +7027,12 @@ export default function App() {
       )}
       {showProfileDrawer && passportSub === 'spots' && (
         <MySpotsScreen onBack={() => setPassportSub(null)} onOpenSpot={(id) => { goToMapTab(); setMapSpotId(id) }} />
+      )}
+      {showProfileDrawer && passportSub === 'contest' && (
+        <ContestScreen account={account} onBack={() => setPassportSub(null)}
+          onOpenInvite={() => setPassportSub('invite')}
+          onSignUp={() => setGateAuth({ tab: 'signup', action: 'passport' })}
+          onOpenProfile={(uid, name) => { setShowProfileDrawer(false); openProfile(uid, name) }} />
       )}
       {showProfileDrawer && passportSub === 'invite' && account && (
         <InviteScreen account={account} onBack={() => setPassportSub(null)}

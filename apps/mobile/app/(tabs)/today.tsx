@@ -16,6 +16,7 @@ import { BrandLine } from '@/features/today/BrandLine';
 import { CityChatRow } from '@/features/today/CityChatRow';
 import { WhileAwayCard } from '@/features/notifications/WhileAwayCard';
 import { ResultsCard } from '@/features/ranks/ResultsCard';
+import { LaunchSeasonCard } from '@/features/contest/LaunchSeasonCard';
 import { SeasonalScope, SeasonalTeaser } from '@/features/event/SeasonalArt';
 
 /**
@@ -75,6 +76,8 @@ function TodayContent() {
         <View onLayout={e => { ticketBottom.current = e.nativeEvent.layout.y + e.nativeEvent.layout.height; }}>
           <TodayTicket data={daily.data} countries={countries} loading={daily.loading} error={daily.error} secondsLeft={daily.secondsLeft} visible={ticketVisible} onReload={daily.reload} />
         </View>
+        {/* The Launch Season contest, while one runs (its own layer, never the game's points). */}
+        <LaunchSeasonCard />
         {/* A seasonal event's countdown (teaser days). */}
         <SeasonalTeaser />
         {/* Around the world today: one card per city (the mosaic), "See all"; yesterday's best on an empty day. */}

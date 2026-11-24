@@ -8,17 +8,19 @@ import { Space, FontSizes, Spacing, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { Button, CityFlag, EmptyState, Sheet, SheetFlatList, TextField, SheetTitle } from '@/ui';
 import { FLAGS } from '@/ui/flags';
+import { COUNTRY_NAMES } from '@/i18n/countryNames';
 import type { City, HomeCityRef } from '@/types';
 
 const RESULT_CAP = 30;
 
-/** A country's name in the viewer's language when the engine knows it, else its code. */
-function countryName(code: string, locale: string): string {
+/** A country's name in the viewer's language when the engine knows it, else in English (COUNTRY_NAMES), else its code. */
+export function countryName(code: string, locale: string): string {
   try {
     const DN = (Intl as unknown as { DisplayNames?: new (l: string[], o: { type: string }) => { of: (c: string) => string | undefined } }).DisplayNames;
-    return (DN ? new DN([locale], { type: 'region' }).of(code) : undefined) ?? code;
+    const name = DN ? new DN([locale], { type: 'region' }).of(code) : undefined;
+    return name && name !== code ? name : COUNTRY_NAMES[code] ?? code;
   } catch {
-    return code;
+    return COUNTRY_NAMES[code] ?? code;
   }
 }
 

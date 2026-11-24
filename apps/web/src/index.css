@@ -12436,3 +12436,36 @@ html[data-event="halloween"] { --header-art: #FFA552; --header-art-opacity: 0.28
 .pp-points-row--tap { width: 100%; align-items: center; border-left: none; border-right: none; border-top: none; background: none; font: inherit; text-align: left; cursor: pointer; }
 .pp-points-row--tap span { flex: 1; }
 .account-welcome-invited { margin: 0 0 12px; padding: 10px 14px; border-radius: 14px; background: var(--primary-tint); color: var(--text); font-weight: 700; text-align: center; }
+
+/* ── Launch Season (phase 1: mechanics first; design pass in phase 2). Tokens only. ── */
+.ls-card { display: flex; align-items: center; gap: var(--sp-12); width: 100%; padding: var(--sp-12) var(--sp-16); min-height: 72px; border-radius: var(--r-card);
+  border: 1px solid var(--line); background: var(--primary-tint); color: var(--text); font-family: inherit; text-align: left; cursor: pointer; }
+.ls-card-emoji { font-size: 28px; }
+.ls-card-body { flex: 1; display: flex; flex-direction: column; gap: 2px; min-width: 0; font-size: var(--fs-sm); }
+.ls-card-body strong { color: var(--primary-on-tint); font-size: var(--fs-body); }
+.ls-card-cta { background: var(--cta); color: #fff; border-radius: var(--r-chip); padding: 0 var(--sp-16); line-height: 36px; font-weight: 800; font-size: var(--fs-sm); }
+.ls-test { margin-left: var(--sp-8); padding: 1px 6px; border-radius: var(--r-chip); background: var(--primary-on-tint); color: var(--primary-tint); font-size: var(--fs-xs); font-weight: 800; vertical-align: middle; }
+.ls-body { display: flex; flex-direction: column; gap: var(--sp-12); padding-bottom: 120px; }
+.ls-counter { font-size: var(--fs-title); color: var(--text); }
+.ls-split { display: flex; gap: var(--sp-8); }
+.ls-part { flex: 1; display: flex; flex-direction: column; align-items: center; padding: var(--sp-8) 0; border-radius: var(--r-chip); background: var(--primary-tint); color: var(--primary-on-tint); }
+.ls-part b { font-size: var(--fs-lg); }
+.ls-part.strong b { font-weight: 900; }
+.ls-part small { font-size: var(--fs-xs); }
+.ls-referrals { display: flex; flex-direction: column; gap: var(--sp-8); margin-top: var(--sp-8); }
+.ls-friend { display: flex; justify-content: space-between; gap: var(--sp-8); }
+.ls-ok { color: var(--green); }
+.ls-row-body { flex: 1; display: flex; flex-direction: column; min-width: 0; text-align: left; }
+.ls-how { margin: var(--sp-8) 0; padding-left: 18px; display: flex; flex-direction: column; gap: var(--sp-4); }
+.ls-link { display: inline-flex; align-items: center; gap: 4px; min-height: 44px; font-weight: 800; color: var(--primary-text, var(--primary)); }
+.ls-hero { font-size: 48px; text-align: center; }
+.ls-title { text-align: center; margin: 0; color: var(--text); }
+.ls-form { display: flex; flex-direction: column; gap: var(--sp-12); }
+.ls-check { display: flex; align-items: center; gap: var(--sp-12); min-height: 44px; font-size: var(--fs-body); color: var(--text); }
+.ls-check input { width: 22px; height: 22px; accent-color: var(--cta); }
+.ls-field { display: flex; flex-direction: column; gap: var(--sp-4); font-size: var(--fs-sm); color: var(--muted); }
+.ls-field select { min-height: 48px; border-radius: var(--r-chip); border: 1px solid var(--line); background: var(--surface); color: var(--text); padding: 0 var(--sp-12); font: inherit; }
+.ls-error { color: var(--warning); text-align: center; }
+.ls-body .leaderboard-row { width: 100%; border: 0; border-bottom: 1px solid var(--line); background: transparent; font: inherit; color: inherit; cursor: pointer; text-align: left; }
+.ls-body .leaderboard-row.is-me { background: var(--primary-tint); }
+.ls-body .leaderboard-row:last-child { border-bottom: 0; }

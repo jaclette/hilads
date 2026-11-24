@@ -2633,3 +2633,28 @@ export async function submitBlock({ targetUserId, targetNickname }) {
   if (!res.ok) throw new Error('block')
   return res.json()
 }
+
+/** Launch Season (a separate contest layer): the season I see, the counter and me. */
+export async function fetchContest() {
+  const res = await fetch(`${BASE}/contest`, { credentials: 'include' })
+  if (!res.ok) throw new Error('contest')
+  return res.json()
+}
+
+/** The contest's own ranking: phase 'season' (weeks 1…) or 'final'. */
+export async function fetchContestRanking(phase) {
+  const res = await fetch(`${BASE}/contest/ranking?phase=${encodeURIComponent(phase)}`, { credentials: 'include' })
+  if (!res.ok) throw new Error('contest_ranking')
+  return res.json()
+}
+
+/** Join once: 18+, a country, the rules accepted. Throws an Error whose message is the server's code. */
+export async function joinContest(seasonId, country) {
+  const res = await fetch(`${BASE}/contest/join`, {
+    method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ seasonId, country, ageConfirmed: true, rulesAccepted: true }),
+  })
+  const body = await res.json().catch(() => ({}))
+  if (!res.ok) throw new Error(body.code || 'contest_join')
+  return body
+}

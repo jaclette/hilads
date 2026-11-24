@@ -260,6 +260,7 @@ function admin_nav(string $current = ''): void
             '/admin/campaigns'  => '⚡ Campaigns',
             '/admin/daily'      => '🔥 Daily',
             '/admin/worlds'     => '🌍 Worlds',
+            '/admin/launch-season' => '🚀 Launch Season',
             '/admin/cities'     => 'Cities',
             '/admin/messages'=> 'Messages',
             '/admin/photos'  => 'Photos',

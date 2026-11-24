@@ -28,6 +28,7 @@ import { SpecialStamps } from '@/features/passport/SpecialStamps';
 import { PioneerBadges } from '@/features/passport/PioneerBadges';
 import { PointsHelpSheet } from '@/features/passport/PointsHelpSheet';
 import { CrewCard, InvitedBy, SeasonMedals, WeekCard } from '@/features/passport/ScoringCards';
+import { LaunchSeasonCard } from '@/features/contest/LaunchSeasonCard';
 import type { DailyLocalPassProgress, DailyUserStats } from '@/types';
 
 interface Counts { spots: number | null; proposals: number | null; friends: number | null; week: number | null; alltime: number | null }
@@ -210,6 +211,7 @@ export default function PassportScreen() {
             <WeekCard week={stats.week} />
           </View>
         )}
+        <LaunchSeasonCard />
         <CrewCard />
         {(stats?.seasonMedals?.length ?? 0) > 0 && <SeasonMedals medals={stats!.seasonMedals!} />}
         {/* Your rivals moved to World › Cities (UX audit: one place to compare cities). */}

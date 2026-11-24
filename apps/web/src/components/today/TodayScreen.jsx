@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import LaunchSeasonCard from '../contest/LaunchSeasonCard'
 import { useTranslation } from 'react-i18next'
 import { fetchDailyBoard, fetchDailyCalendar, fetchDailySheet, fetchDailyToday } from '../../api'
 import { shortCityName } from '../../i18n/cityName'
@@ -53,7 +54,7 @@ export function preloadTodayHero(data) {
   document.head.appendChild(link)
 }
 
-export default function TodayScreen({ header }) {
+export default function TodayScreen({ header, onOpenContest }) {
   const { i18n } = useDc()
   // A seasonal event's live look (Halloween...) re-colors the whole tab.
   const seasonalAttr = useSeasonalAttr()
@@ -97,6 +98,8 @@ export default function TodayScreen({ header }) {
         <ResultsCard account={account} />
         <Ticket data={data} countries={countries} loading={loading} />
         {/* A seasonal event's countdown (teaser days). */}
+        {/* The Launch Season contest, while one runs (its own layer, never the game's points). */}
+        <LaunchSeasonCard onOpen={onOpenContest} />
         <SeasonalTeaser />
         {/* Around the world today: one card per city (the mosaic), "See all"; yesterday's best on an empty day. */}
         <TodayCountries today={data} data={countries} />
