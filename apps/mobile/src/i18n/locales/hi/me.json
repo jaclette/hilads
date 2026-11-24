@@ -300,6 +300,30 @@
     "inviteTitle": "अपने दोस्तों को लाएँ",
     "inviteText": "आपके लिंक से जुड़कर {{count}} मंज़ूर फ़ोटो पोस्ट करने वाले हर दोस्त पर +{{points}} अंक।",
     "inviteStamp": "हर दोस्त",
-    "inviteProgress": "{{cap}} में से {{active}} दोस्त गिने गए"
+    "inviteProgress": "{{cap}} में से {{active}} दोस्त गिने गए",
+    "cdStarts": "उड़ान में बाकी",
+    "cdFinal": "फ़ाइनल वीक में बाकी",
+    "cdEnds": "खत्म होने में",
+    "cdDays": "दिन",
+    "cdHours": "घंटे",
+    "cdMin": "मिनट",
+    "cdSec": "सेकंड",
+    "dur": {
+      "dh": "{{d}} दिन {{h}} घंटे",
+      "hm": "{{h}} घंटे {{m}} मिनट",
+      "m": "{{m}} मिनट"
+    },
+    "startsIn": "{{time}} में शुरू",
+    "endsIn": "{{time}} में खत्म",
+    "share": "शेयर करें",
+    "shareRank": "मैं Hilads Launch Season में #{{rank}} हूँ। {{prize}}: मेरे साथ खेलें!",
+    "shareJoin": "मैं Hilads Launch Season में हूँ। {{prize}}: मेरे साथ खेलें!",
+    "shareCardIn": "मैं शामिल हूँ",
+    "shareCardJoin": "Hilads पर मेरे साथ खेलें",
+    "prizeYoureIn": "आप शामिल हैं · अपना स्कोर देखें",
+    "seePrize": "इनाम देखें",
+    "seeRanking": "पूरी रैंकिंग देखें",
+    "rankingTitle": "रैंकिंग",
+    "rulesShort": "नियम"
   }
 }

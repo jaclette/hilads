@@ -313,6 +313,30 @@
     "inviteTitle": "Ramène tes amis",
     "inviteText": "+{{points}} points pour chaque ami qui s'inscrit avec ton lien et poste {{count}} photos approuvées.",
     "inviteStamp": "par ami",
-    "inviteProgress": "{{active}} amis sur {{cap}} comptent"
+    "inviteProgress": "{{active}} amis sur {{cap}} comptent",
+    "cdStarts": "Décollage dans",
+    "cdFinal": "Dernière semaine dans",
+    "cdEnds": "Fin dans",
+    "cdDays": "jours",
+    "cdHours": "heures",
+    "cdMin": "min",
+    "cdSec": "s",
+    "dur": {
+      "dh": "{{d}} j {{h}} h",
+      "hm": "{{h}} h {{m}} min",
+      "m": "{{m}} min"
+    },
+    "startsIn": "Commence dans {{time}}",
+    "endsIn": "Fin dans {{time}}",
+    "share": "Partager",
+    "shareRank": "Je suis n° {{rank}} de la Launch Season Hilads. {{prize}} : viens jouer avec moi !",
+    "shareJoin": "Je participe à la Launch Season Hilads. {{prize}} : viens jouer avec moi !",
+    "shareCardIn": "J'y suis",
+    "shareCardJoin": "Rejoins-moi sur Hilads",
+    "prizeYoureIn": "T'es dans la course · Voir ton score",
+    "seePrize": "Voir le prix",
+    "seeRanking": "Voir tout le classement",
+    "rankingTitle": "Classement",
+    "rulesShort": "Règlement"
   }
 }

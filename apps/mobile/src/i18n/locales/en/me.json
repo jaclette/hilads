@@ -300,6 +300,30 @@
     "inviteTitle": "Bring your friends",
     "inviteText": "+{{points}} points for each friend who joins with your link and posts {{count}} approved photos.",
     "inviteStamp": "per friend",
-    "inviteProgress": "{{active}} of {{cap}} friends count"
+    "inviteProgress": "{{active}} of {{cap}} friends count",
+    "cdStarts": "Takes off in",
+    "cdFinal": "Final week in",
+    "cdEnds": "Ends in",
+    "cdDays": "days",
+    "cdHours": "hours",
+    "cdMin": "min",
+    "cdSec": "sec",
+    "dur": {
+      "dh": "{{d}}d {{h}}h",
+      "hm": "{{h}}h {{m}}m",
+      "m": "{{m}} min"
+    },
+    "startsIn": "Starts in {{time}}",
+    "endsIn": "Ends in {{time}}",
+    "share": "Share",
+    "shareRank": "I'm #{{rank}} in the Hilads Launch Season. {{prize}}: come play with me!",
+    "shareJoin": "I'm in the Hilads Launch Season. {{prize}}: come play with me!",
+    "shareCardIn": "I'm in",
+    "shareCardJoin": "Join me on Hilads",
+    "prizeYoureIn": "You're in · See your score",
+    "seePrize": "See the prize",
+    "seeRanking": "See full ranking",
+    "rankingTitle": "Ranking",
+    "rulesShort": "Rules"
   }
 }

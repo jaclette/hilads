@@ -109,16 +109,39 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             foreach (Contest::LOCALES as $l) {
                 $t  = trim((string) ($_POST['prize_title'][$l] ?? ''));
                 $st = trim((string) ($_POST['prize_subtitle'][$l] ?? ''));
-                if ($t === '' && $st === '') continue;
-                if ($t === '') throw new InvalidArgumentException("Prize ({$l}): a title is needed when there is a line.");
-                if (mb_strlen($t) > 60 || mb_strlen($st) > 140) throw new InvalidArgumentException("Prize ({$l}): title 60 characters max, line 140.");
-                $prize[$l] = ['title' => $t, 'subtitle' => $st];
+                $de = trim((string) ($_POST['prize_description'][$l] ?? ''));
+                if ($t === '' && $st === '' && $de === '') continue;
+                if ($t === '') throw new InvalidArgumentException("Prize ({$l}): a title is needed when there is a line or a description.");
+                if (mb_strlen($t) > 60 || mb_strlen($st) > 140 || mb_strlen($de) > 400) throw new InvalidArgumentException("Prize ({$l}): title 60 characters max, line 140, description 400.");
+                $prize[$l] = ['title' => $t, 'subtitle' => $st, 'description' => $de];
             }
             if (empty($prize['en'])) throw new InvalidArgumentException('The English prize title is required (other languages fall back to it).');
             $pdo->prepare("UPDATE contest_seasons SET prize_i18n = ?::jsonb, updated_at = now() WHERE id = ?")
                 ->execute([json_encode($prize, JSON_UNESCAPED_UNICODE), $season['id']]);
             Contest::log($season['id'], 'prize', null, ['en' => $prize['en'], 'locales' => array_keys($prize)]);
             flash_set('success', 'Prize saved: the app and the web show it at their next refresh (no new app version required).');
+        } elseif ($season !== null && in_array($do, ['photo_pixabay', 'photo_upload', 'photo_remove', 'photo_up', 'photo_caption'], true)) {
+            $photos = ContestPhotos::of($season);
+            $i = (int) ($_POST['i'] ?? -1);
+            if ($do === 'photo_pixabay' || $do === 'photo_upload') {
+                if (count($photos) >= ContestPhotos::MAX) throw new InvalidArgumentException('Up to ' . ContestPhotos::MAX . ' photos: remove one first.');
+                $photos[] = $do === 'photo_pixabay'
+                    ? ContestPhotos::importPixabay((string) ($_POST['large'] ?? ''), (string) ($_POST['page'] ?? ''), (string) ($_POST['user'] ?? ''), (string) ($_POST['caption'] ?? ''))
+                    : ContestPhotos::importUpload($_FILES['photo'] ?? [], (string) ($_POST['credit'] ?? ''), (string) ($_POST['caption'] ?? ''));
+            } elseif (!isset($photos[$i])) {
+                throw new InvalidArgumentException('Unknown photo.');
+            } elseif ($do === 'photo_remove') {
+                array_splice($photos, $i, 1);
+            } elseif ($do === 'photo_up' && $i > 0) {
+                [$photos[$i - 1], $photos[$i]] = [$photos[$i], $photos[$i - 1]];
+            } elseif ($do === 'photo_caption') {
+                $photos[$i]['caption'] = mb_substr(trim((string) ($_POST['caption'] ?? '')), 0, 60);
+            }
+            $pdo->prepare("UPDATE contest_seasons SET photos = ?::jsonb, updated_at = now() WHERE id = ?")
+                ->execute([json_encode(array_values($photos), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES), $season['id']]);
+            Contest::log($season['id'], $do, (string) $i, ['count' => count($photos)]);
+            flash_set('success', 'Photos saved: the app and the web show them at their next refresh.');
+            $back = $url('seasons', ['q' => $_POST['q'] ?? null]) . '#photos';
         } elseif ($season !== null && in_array($do, ['start', 'pause', 'resume', 'end', 'reopen'], true)) {
             $sql = match ($do) {
                 'start'  => "UPDATE contest_seasons SET status = 'running', paused = false, updated_at = now() WHERE id = ?",
@@ -276,15 +299,71 @@ admin_nav('/admin/launch-season');
   <?php if ($season !== null): ?>
     <h2 style="font-size:15px;color:#fff">Edit “<?= $esc($season['name']) ?>” <?= $badge($season) ?></h2>
     <?php $form($season); ?>
+    <h2 id="photos" style="font-size:15px;color:#fff;margin-top:24px">Photos</h2>
+    <p class="ls-muted">The prize screen's photos, in this order (the first one is also the cards' photo). Only photos we may use: a Pixabay pick (copied to our storage with its author and the Pixabay Content License) or your own upload. With no photo, the apps show the illustration.</p>
+    <?php $photos = ContestPhotos::of($season); ?>
+    <div style="display:flex;flex-wrap:wrap;gap:12px;margin:8px 0">
+      <?php foreach ($photos as $i => $ph): ?>
+        <div style="width:220px;border:1px solid #2a2a2a;border-radius:8px;overflow:hidden;background:#161616">
+          <img src="<?= $esc($ph['url']) ?>" alt="" style="width:220px;height:130px;object-fit:cover;display:block">
+          <div style="padding:8px;display:flex;flex-direction:column;gap:6px;font-size:12px">
+            <span class="ls-muted">#<?= $i + 1 ?> · <?= $esc($ph['credit']) ?> · <?php if ($ph['sourceUrl']): ?><a href="<?= $esc($ph['sourceUrl']) ?>" target="_blank" rel="noopener"><?= $esc($ph['license']) ?></a><?php else: ?><?= $esc($ph['license']) ?><?php endif; ?></span>
+            <form method="post" class="ls-inline"><?= csrf_input() ?><input type="hidden" name="do" value="photo_caption"><input type="hidden" name="i" value="<?= $i ?>">
+              <input type="text" name="caption" value="<?= $esc($ph['caption']) ?>" placeholder="Caption (e.g. Ha Long Bay)" style="width:130px"><button class="btn btn-secondary btn-sm">Save</button></form>
+            <div class="ls-inline">
+              <?php if ($i > 0): ?><form method="post" class="ls-inline"><?= csrf_input() ?><input type="hidden" name="do" value="photo_up"><input type="hidden" name="i" value="<?= $i ?>"><button class="btn btn-secondary btn-sm">← Move up</button></form><?php endif; ?>
+              <form method="post" class="ls-inline" onsubmit="return confirm('Remove this photo from the season?')"><?= csrf_input() ?><input type="hidden" name="do" value="photo_remove"><input type="hidden" name="i" value="<?= $i ?>"><button class="btn btn-danger btn-sm">Remove</button></form>
+            </div>
+          </div>
+        </div>
+      <?php endforeach; ?>
+      <?php if ($photos === []): ?><p class="no-results">No photo yet: the apps show the illustration.</p><?php endif; ?>
+    </div>
+    <form method="post" enctype="multipart/form-data" class="ls-inline" style="margin:8px 0;flex-wrap:wrap">
+      <?= csrf_input() ?><input type="hidden" name="do" value="photo_upload">
+      <input type="file" name="photo" accept="image/jpeg,image/png,image/webp" required style="color:#aaa">
+      <input type="text" name="caption" placeholder="Caption (optional)">
+      <input type="text" name="credit" placeholder="Credit (your name)">
+      <button class="btn btn-primary btn-sm">Upload my photo</button>
+    </form>
+    <?php $q = trim((string) ($_GET['q'] ?? '')); ?>
+    <form method="get" action="/admin/launch-season#photos" class="ls-inline" style="margin:8px 0">
+      <input type="hidden" name="tab" value="seasons"><input type="hidden" name="season" value="<?= $sid ?>">
+      <input type="text" name="q" value="<?= $esc($q) ?>" placeholder="Search Pixabay: ha long bay, hoi an lanterns…" style="width:280px">
+      <button class="btn btn-secondary btn-sm">Search Pixabay</button>
+      <?php if (!ContestPhotos::configured()): ?><span class="ls-muted">PIXABAY_API_KEY is not set here (it is on Render).</span><?php endif; ?>
+    </form>
+    <?php if ($q !== ''): ?>
+      <?php try { $hits = ContestPhotos::search($q); $hitErr = null; } catch (\Throwable $e) { $hits = []; $hitErr = $e->getMessage(); } ?>
+      <?php if ($hitErr): ?><p class="flash flash-error"><?= $esc($hitErr) ?></p><?php endif; ?>
+      <div style="display:flex;flex-wrap:wrap;gap:10px;margin:8px 0">
+        <?php foreach ($hits as $h): ?>
+          <form method="post" style="width:200px;border:1px solid #2a2a2a;border-radius:8px;overflow:hidden;background:#161616">
+            <?= csrf_input() ?><input type="hidden" name="do" value="photo_pixabay"><input type="hidden" name="q" value="<?= $esc($q) ?>">
+            <input type="hidden" name="large" value="<?= $esc($h['large']) ?>"><input type="hidden" name="page" value="<?= $esc($h['page']) ?>"><input type="hidden" name="user" value="<?= $esc($h['user']) ?>">
+            <img src="<?= $esc($h['preview']) ?>" alt="" style="width:200px;height:120px;object-fit:cover;display:block">
+            <div style="padding:6px;display:flex;flex-direction:column;gap:4px;font-size:11px">
+              <span class="ls-muted"><?= $esc($h['user']) ?> · <a href="<?= $esc($h['page']) ?>" target="_blank" rel="noopener">Pixabay</a></span>
+              <input type="text" name="caption" placeholder="Caption" style="width:100%">
+              <button class="btn btn-primary btn-sm">Use this photo</button>
+            </div>
+          </form>
+        <?php endforeach; ?>
+        <?php if ($hits === [] && !$hitErr): ?><p class="no-results">No photo found.</p><?php endif; ?>
+      </div>
+      <p class="ls-muted">Pixabay Content License: free for commercial use, no attribution required (we credit the author anyway). Avoid photos with recognisable people or brands for promotion.</p>
+    <?php endif; ?>
+
     <h2 style="font-size:15px;color:#fff;margin-top:24px">Prize</h2>
     <p class="ls-muted">What the app and the web show as the hero (the Today card, the contest screen). Change it any time, e.g. to the souvenir prize if the player threshold isn't met. English is required; an empty language shows the English text.</p>
     <form method="post" class="form-card" style="max-width:none">
       <?= csrf_input() ?><input type="hidden" name="do" value="save_prize">
-      <div class="table-wrapper"><table><thead><tr><th style="width:70px">Lang</th><th>Title (60 max)</th><th>Line under it (140 max)</th></tr></thead><tbody>
-        <?php foreach (Contest::LOCALES as $l): $p = $season['prize_i18n'][$l] ?? ['title' => '', 'subtitle' => '']; ?>
+      <div class="table-wrapper"><table><thead><tr><th style="width:70px">Lang</th><th>Title (60 max)</th><th>Line under it (140 max)</th><th>Prize screen description (400 max)</th></tr></thead><tbody>
+        <?php foreach (Contest::LOCALES as $l): $p = $season['prize_i18n'][$l] ?? ['title' => '', 'subtitle' => '', 'description' => '']; ?>
           <tr><td><?= $esc($l) ?></td>
             <td><input type="text" name="prize_title[<?= $esc($l) ?>]" value="<?= $esc($p['title'] ?? '') ?>" maxlength="60" style="width:100%;background:#1a1a1a;border:1px solid #2a2a2a;color:#eee;padding:5px 8px;border-radius:4px"<?= $l === 'en' ? ' required' : '' ?><?= $l === 'ar' ? ' dir="rtl"' : '' ?>></td>
-            <td><input type="text" name="prize_subtitle[<?= $esc($l) ?>]" value="<?= $esc($p['subtitle'] ?? '') ?>" maxlength="140" style="width:100%;background:#1a1a1a;border:1px solid #2a2a2a;color:#eee;padding:5px 8px;border-radius:4px"<?= $l === 'ar' ? ' dir="rtl"' : '' ?>></td></tr>
+            <td><input type="text" name="prize_subtitle[<?= $esc($l) ?>]" value="<?= $esc($p['subtitle'] ?? '') ?>" maxlength="140" style="width:100%;background:#1a1a1a;border:1px solid #2a2a2a;color:#eee;padding:5px 8px;border-radius:4px"<?= $l === 'ar' ? ' dir="rtl"' : '' ?>></td>
+            <td><textarea name="prize_description[<?= $esc($l) ?>]" maxlength="400" rows="2" style="width:100%;min-width:260px;background:#1a1a1a;border:1px solid #2a2a2a;color:#eee;padding:5px 8px;border-radius:4px"<?= $l === 'ar' ? ' dir="rtl"' : '' ?>><?= $esc($p['description'] ?? '') ?></textarea></td></tr>
         <?php endforeach; ?>
       </tbody></table></div>
       <div class="form-actions"><button class="btn btn-primary">Save prize</button></div>

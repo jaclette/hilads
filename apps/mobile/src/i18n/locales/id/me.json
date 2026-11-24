@@ -287,6 +287,30 @@
     "inviteTitle": "Ajak temanmu",
     "inviteText": "+{{points}} poin untuk setiap teman yang bergabung lewat tautanmu dan mengunggah {{count}} foto yang disetujui.",
     "inviteStamp": "per teman",
-    "inviteProgress": "{{active}} dari {{cap}} teman dihitung"
+    "inviteProgress": "{{active}} dari {{cap}} teman dihitung",
+    "cdStarts": "Berangkat dalam",
+    "cdFinal": "Minggu final dalam",
+    "cdEnds": "Berakhir dalam",
+    "cdDays": "hari",
+    "cdHours": "jam",
+    "cdMin": "mnt",
+    "cdSec": "dtk",
+    "dur": {
+      "dh": "{{d}} h {{h}} j",
+      "hm": "{{h}} j {{m}} m",
+      "m": "{{m}} mnt"
+    },
+    "startsIn": "Mulai dalam {{time}}",
+    "endsIn": "Berakhir dalam {{time}}",
+    "share": "Bagikan",
+    "shareRank": "Aku peringkat #{{rank}} di Hilads Launch Season. {{prize}}: ayo main bareng!",
+    "shareJoin": "Aku ikut Hilads Launch Season. {{prize}}: ayo main bareng!",
+    "shareCardIn": "Aku ikut",
+    "shareCardJoin": "Main bareng aku di Hilads",
+    "prizeYoureIn": "Kamu ikut · Lihat skormu",
+    "seePrize": "Lihat hadiah",
+    "seeRanking": "Lihat semua peringkat",
+    "rankingTitle": "Peringkat",
+    "rulesShort": "Aturan"
   }
 }

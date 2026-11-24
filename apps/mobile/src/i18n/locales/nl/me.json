@@ -300,6 +300,30 @@
     "inviteTitle": "Neem je vrienden mee",
     "inviteText": "+{{points}} punten voor elke vriend die via jouw link meedoet en {{count}} goedgekeurde foto's post.",
     "inviteStamp": "per vriend",
-    "inviteProgress": "{{active}} van {{cap}} vrienden tellen"
+    "inviteProgress": "{{active}} van {{cap}} vrienden tellen",
+    "cdStarts": "Vertrek over",
+    "cdFinal": "Laatste week over",
+    "cdEnds": "Eindigt over",
+    "cdDays": "dagen",
+    "cdHours": "uur",
+    "cdMin": "min",
+    "cdSec": "sec",
+    "dur": {
+      "dh": "{{d}} d {{h}} u",
+      "hm": "{{h}} u {{m}} min",
+      "m": "{{m}} min"
+    },
+    "startsIn": "Start over {{time}}",
+    "endsIn": "Eindigt over {{time}}",
+    "share": "Delen",
+    "shareRank": "Ik sta #{{rank}} in de Hilads Launch Season. {{prize}}: speel mee!",
+    "shareJoin": "Ik doe mee aan de Hilads Launch Season. {{prize}}: speel mee!",
+    "shareCardIn": "Ik doe mee",
+    "shareCardJoin": "Speel mee op Hilads",
+    "prizeYoureIn": "Je doet mee · Bekijk je score",
+    "seePrize": "Bekijk de prijs",
+    "seeRanking": "Volledige ranglijst",
+    "rankingTitle": "Ranglijst",
+    "rulesShort": "Reglement"
   }
 }

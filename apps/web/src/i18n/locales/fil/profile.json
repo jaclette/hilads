@@ -337,7 +337,31 @@
       "inviteTitle": "Isama ang friends mo",
       "inviteText": "+{{points}} points sa bawat friend na sumali gamit ang link mo at nag-post ng {{count}} approved photos.",
       "inviteStamp": "bawat friend",
-      "inviteProgress": "{{active}} sa {{cap}} friends ang bilang"
+      "inviteProgress": "{{active}} sa {{cap}} friends ang bilang",
+      "cdStarts": "Lilipad sa loob ng",
+      "cdFinal": "Huling linggo sa loob ng",
+      "cdEnds": "Matatapos sa loob ng",
+      "cdDays": "araw",
+      "cdHours": "oras",
+      "cdMin": "min",
+      "cdSec": "seg",
+      "dur": {
+        "dh": "{{d}}a {{h}}o",
+        "hm": "{{h}}o {{m}}m",
+        "m": "{{m}} min"
+      },
+      "startsIn": "Magsisimula sa loob ng {{time}}",
+      "endsIn": "Matatapos sa loob ng {{time}}",
+      "share": "I-share",
+      "shareRank": "#{{rank}} ako sa Hilads Launch Season. {{prize}}: laro tayo!",
+      "shareJoin": "Kasali ako sa Hilads Launch Season. {{prize}}: laro tayo!",
+      "shareCardIn": "Kasali ako",
+      "shareCardJoin": "Samahan mo ako sa Hilads",
+      "prizeYoureIn": "Kasali ka · Tingnan ang score mo",
+      "seePrize": "Tingnan ang premyo",
+      "seeRanking": "Buong ranking",
+      "rankingTitle": "Ranking",
+      "rulesShort": "Rules"
     }
   },
   "friendReq": {

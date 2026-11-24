@@ -12,6 +12,7 @@ import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { track } from '@/services/analytics';
 import { fetchDailyTodayProofs } from '@/api/daily';
 import { CARD_DP, ShareCard } from './ShareCard';
+import { ContestShareCard } from '@/features/contest/ContestShareCard';
 import { PROOF_CARD_DP, ProofCard, type ShareFormat, type ShareTemplate, type VersusPhoto } from './ProofCard';
 import { shareText, shareUrl, type ShareContent } from './content';
 import { IMAGE_CHANNELS, directChannels, shareTo, type ShareChannel } from './targets';
@@ -249,7 +250,10 @@ function SharePanel({ content, source, previewHeight = 300, compact = false }, r
   return (
     <View style={styles.wrap}>
       {/* The card at full size, scaled down to the preview: what gets captured. */}
-      {!proof ? scaled([{ k: 'card:story', dp: CARD_DP, node: (ref, onReady) => <ShareCard ref={ref} content={content} onReady={onReady} /> }]) : others === null ? (
+      {!proof ? scaled([{ k: 'card:story', dp: CARD_DP, node: (ref, onReady) => content.type === 'contest'
+        ? <ContestShareCard ref={ref} onReady={onReady} data={{ prize: content.text, subtitle: content.subtitle, when: content.when, username: content.username,
+                                                                 rank: content.rank, points: content.points, isTest: content.isTest, photoUrl: content.photoUrl }} />
+        : <ShareCard ref={ref} content={content} onReady={onReady} /> }]) : others === null ? (
         <View style={[styles.preview, styles.loading, { height: previewHeight, width: cardW }]}><ActivityIndicator /></View>
       ) : (
         <View onLayout={e => setPageW(e.nativeEvent.layout.width)}>

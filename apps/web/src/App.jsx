@@ -22,7 +22,7 @@ import { NextPlanRow, PlanLine, QuestionCard, ScrollToLatest } from './component
 import SeasonResultGate from './components/SeasonResultGate'
 import { FriendsScreen, MyPhotosScreen, MySpotsScreen } from './components/passport/FriendsScreens'
 import InviteScreen from './components/passport/InviteScreen'
-import ContestScreen from './components/contest/ContestScreen'
+import ContestScreen, { ContestPrize, ContestRanking } from './components/contest/ContestScreen'
 import CalendarScreen from './components/daily/CalendarScreen'
 import { ProposeScreen, TwistScreen, ProposalsScreen } from './components/daily/ProposalScreens'
 import { DailyContext, VoteButton, LocalPassBadge, seedStates, useHere, useOriginal, OriginalToggle, getLastToday } from './components/daily/dailyShared'
@@ -1076,6 +1076,7 @@ export default function App() {
   // Passport (W4): Settings behind the gear, and the screens behind its rows.
   const [showSettings, setShowSettings] = useState(false)
   const [passportSub, setPassportSub] = useState(null) // 'photos' | 'spots' | 'friends' | null
+  const [contestTab, setContestTab] = useState('season')   // the Launch Season full ranking's tab
   const [worldActivity, setWorldActivity] = useState(null) // { online, cities, crossCity }
   const [worldArrivals, setWorldArrivals] = useState([])   // global recent arrivals
   const [showWorldArrivals, setShowWorldArrivals] = useState(false)
@@ -6140,7 +6141,7 @@ export default function App() {
           <RanksScreen header={renderAppHeader()} initial={ranksParams} />
         )}
         {showToday && !showMap && !showProfileDrawer && !showLeaderboard && (
-          <TodayScreen header={renderAppHeader()} onOpenContest={() => { goToMeTab(); setPassportSub('contest') }} />
+          <TodayScreen header={renderAppHeader()} onOpenContest={(sub) => { goToMeTab(); setPassportSub(sub || 'contest') }} />
         )}
       </>
 
@@ -7028,9 +7029,19 @@ export default function App() {
       {showProfileDrawer && passportSub === 'spots' && (
         <MySpotsScreen onBack={() => setPassportSub(null)} onOpenSpot={(id) => { goToMapTab(); setMapSpotId(id) }} />
       )}
+      {showProfileDrawer && passportSub === 'contest-prize' && (
+        <ContestPrize account={account} onBack={() => setPassportSub(null)} onOpenHome={() => setPassportSub('contest')}
+          onSignUp={() => setGateAuth({ tab: 'signup', action: 'passport' })} />
+      )}
+      {showProfileDrawer && passportSub === 'contest-ranking' && (
+        <ContestRanking account={account} initialTab={contestTab} onBack={() => setPassportSub('contest')}
+          onOpenProfile={(uid, name) => { setShowProfileDrawer(false); openProfile(uid, name) }} />
+      )}
       {showProfileDrawer && passportSub === 'contest' && (
         <ContestScreen account={account} onBack={() => setPassportSub(null)}
           onOpenInvite={() => setPassportSub('invite')}
+          onOpenPrize={() => setPassportSub('contest-prize')}
+          onOpenRanking={(tab) => { setContestTab(tab); setPassportSub('contest-ranking') }}
           onSignUp={() => setGateAuth({ tab: 'signup', action: 'passport' })}
           onOpenProfile={(uid, name) => { setShowProfileDrawer(false); openProfile(uid, name) }} />
       )}

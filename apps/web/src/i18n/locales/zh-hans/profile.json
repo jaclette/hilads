@@ -325,7 +325,31 @@
       "inviteTitle": "带上你的好友",
       "inviteText": "每位通过你的链接加入并发布 {{count}} 张通过审核照片的好友，你得 +{{points}} 分。",
       "inviteStamp": "每位好友",
-      "inviteProgress": "{{cap}} 位好友中 {{active}} 位已计入"
+      "inviteProgress": "{{cap}} 位好友中 {{active}} 位已计入",
+      "cdStarts": "距起飞还有",
+      "cdFinal": "距决赛周还有",
+      "cdEnds": "距结束还有",
+      "cdDays": "天",
+      "cdHours": "时",
+      "cdMin": "分",
+      "cdSec": "秒",
+      "dur": {
+        "dh": "{{d}}天{{h}}小时",
+        "hm": "{{h}}小时{{m}}分",
+        "m": "{{m}}分钟"
+      },
+      "startsIn": "{{time}}后开始",
+      "endsIn": "{{time}}后结束",
+      "share": "分享",
+      "shareRank": "我在 Hilads Launch Season 排名第 {{rank}}。{{prize}}：来和我一起玩！",
+      "shareJoin": "我参加了 Hilads Launch Season。{{prize}}：来和我一起玩！",
+      "shareCardIn": "我已参加",
+      "shareCardJoin": "来 Hilads 和我一起玩",
+      "prizeYoureIn": "你已参加 · 查看得分",
+      "seePrize": "查看奖品",
+      "seeRanking": "查看完整排名",
+      "rankingTitle": "排名",
+      "rulesShort": "规则"
     }
   },
   "friendReq": {

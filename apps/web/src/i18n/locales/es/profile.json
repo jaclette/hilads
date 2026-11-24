@@ -349,7 +349,31 @@
       "inviteTitle": "Trae a tus amigos",
       "inviteText": "+{{points}} puntos por cada amigo que se una con tu enlace y publique {{count}} fotos aprobadas.",
       "inviteStamp": "por amigo",
-      "inviteProgress": "{{active}} de {{cap}} amigos cuentan"
+      "inviteProgress": "{{active}} de {{cap}} amigos cuentan",
+      "cdStarts": "Despega en",
+      "cdFinal": "Última semana en",
+      "cdEnds": "Termina en",
+      "cdDays": "días",
+      "cdHours": "horas",
+      "cdMin": "min",
+      "cdSec": "s",
+      "dur": {
+        "dh": "{{d}} d {{h}} h",
+        "hm": "{{h}} h {{m}} min",
+        "m": "{{m}} min"
+      },
+      "startsIn": "Empieza en {{time}}",
+      "endsIn": "Termina en {{time}}",
+      "share": "Compartir",
+      "shareRank": "Voy n.º {{rank}} en la Launch Season de Hilads. {{prize}}: ¡ven a jugar conmigo!",
+      "shareJoin": "Estoy en la Launch Season de Hilads. {{prize}}: ¡ven a jugar conmigo!",
+      "shareCardIn": "Estoy dentro",
+      "shareCardJoin": "Únete a mí en Hilads",
+      "prizeYoureIn": "Estás dentro · Ver tu puntuación",
+      "seePrize": "Ver el premio",
+      "seeRanking": "Ver la clasificación completa",
+      "rankingTitle": "Clasificación",
+      "rulesShort": "Bases"
     }
   },
   "friendReq": {

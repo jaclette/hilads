@@ -5099,6 +5099,11 @@ run($pdo, "
 // Reversal: ALTER TABLE contest_seasons DROP COLUMN prize_i18n.
 run($pdo, "ALTER TABLE contest_seasons ADD COLUMN IF NOT EXISTS prize_i18n JSONB NOT NULL DEFAULT '{}'::jsonb", 'contest_seasons.prize_i18n');
 
+// Launch Season: the season's photos (Admin › Launch Season › Photos: Pixabay picks copied to R2
+// with author + license, or our own uploads), [{url, caption, credit, source, sourceUrl, license}].
+// Reversal: ALTER TABLE contest_seasons DROP COLUMN photos.
+run($pdo, "ALTER TABLE contest_seasons ADD COLUMN IF NOT EXISTS photos JSONB NOT NULL DEFAULT '[]'::jsonb", 'contest_seasons.photos');
+
 // ── Self-heal monthly rank columns ────────────────────────────────────────
 // The denormalised users.monthly_rank_* columns are kept fresh by
 // route-level recalc hooks fired after each scoring action. If any

@@ -27,8 +27,8 @@ export default function LaunchSeasonCard({ onOpen }) {
     : t('contest.endsOn', { date: shortDate(s.endDate, i18n.language) })
 
   return (
-    <button type="button" className="ls-mini tappable" onClick={onOpen}>
-      <span className="ls-mini-art"><HalongArt /></span>
+    <button type="button" className="ls-mini tappable" onClick={() => onOpen(joined ? 'contest' : 'contest-prize')}>
+      <span className="ls-mini-art">{s.photos?.[0] ? <img src={s.photos[0].url} alt="" /> : <HalongArt />}</span>
       <span className="ls-mini-body">
         <span className="ls-mini-top">
           <strong>{prize} ✈️</strong>

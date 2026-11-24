@@ -6,13 +6,19 @@ export type ContestPhase = 'upcoming' | 'season' | 'final' | 'over';
 export interface ContestSeason {
   id: number;
   /** The prize, set per season in Admin › Launch Season (in the app's language, else English). */
-  prize?: { title: string; subtitle: string };
+  prize?: { title: string; subtitle: string; description?: string };
+  /** Real photos from Admin › Launch Season › Photos (Pixabay picks or our own), in order; empty = the illustration. */
+  photos?: { url: string; caption: string; credit: string }[];
   name: string;
   isTest: boolean;
   phase: ContestPhase;
   startDate: string;
   endDate: string;
   finalWeekStart: string;
+  /** The daily drops (ISO UTC) the season starts at, the final week starts at, it ends at (older API: absent). */
+  startsAt?: string | null;
+  finalAt?: string | null;
+  endsAt?: string | null;
   rules: { voteCap: number; referralPoints: number; referralMinPhotos: number; referralCap: number; headstartTopN: number };
   rulesUrl: string;
 }

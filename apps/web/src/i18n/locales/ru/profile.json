@@ -363,7 +363,31 @@
       "inviteTitle": "Позови друзей",
       "inviteText": "+{{points}} очков за каждого друга, который присоединится по твоей ссылке и опубликует {{count}} одобренных фото.",
       "inviteStamp": "за друга",
-      "inviteProgress": "Засчитано {{active}} из {{cap}} друзей"
+      "inviteProgress": "Засчитано {{active}} из {{cap}} друзей",
+      "cdStarts": "Вылет через",
+      "cdFinal": "Финал через",
+      "cdEnds": "Конец через",
+      "cdDays": "дн.",
+      "cdHours": "ч",
+      "cdMin": "мин",
+      "cdSec": "сек",
+      "dur": {
+        "dh": "{{d}} д {{h}} ч",
+        "hm": "{{h}} ч {{m}} мин",
+        "m": "{{m}} мин"
+      },
+      "startsIn": "Старт через {{time}}",
+      "endsIn": "Конец через {{time}}",
+      "share": "Поделиться",
+      "shareRank": "Я на {{rank}}-м месте в Hilads Launch Season. {{prize}}: играй со мной!",
+      "shareJoin": "Я участвую в Hilads Launch Season. {{prize}}: играй со мной!",
+      "shareCardIn": "Я участвую",
+      "shareCardJoin": "Играй со мной в Hilads",
+      "prizeYoureIn": "Ты участвуешь · Твой счёт",
+      "seePrize": "Смотреть приз",
+      "seeRanking": "Весь рейтинг",
+      "rankingTitle": "Рейтинг",
+      "rulesShort": "Правила"
     }
   },
   "friendReq": {

@@ -325,7 +325,31 @@
       "inviteTitle": "ชวนเพื่อนมาด้วย",
       "inviteText": "+{{points}} คะแนนต่อเพื่อนที่เข้าร่วมผ่านลิงก์ของคุณและโพสต์รูปที่ผ่านการอนุมัติ {{count}} รูป",
       "inviteStamp": "ต่อเพื่อน",
-      "inviteProgress": "นับแล้ว {{active}} จาก {{cap}} คน"
+      "inviteProgress": "นับแล้ว {{active}} จาก {{cap}} คน",
+      "cdStarts": "ออกเดินทางใน",
+      "cdFinal": "สัปดาห์สุดท้ายใน",
+      "cdEnds": "จบใน",
+      "cdDays": "วัน",
+      "cdHours": "ชม.",
+      "cdMin": "นาที",
+      "cdSec": "วิ",
+      "dur": {
+        "dh": "{{d}} วัน {{h}} ชม.",
+        "hm": "{{h}} ชม. {{m}} นาที",
+        "m": "{{m}} นาที"
+      },
+      "startsIn": "เริ่มในอีก {{time}}",
+      "endsIn": "จบในอีก {{time}}",
+      "share": "แชร์",
+      "shareRank": "ฉันอยู่อันดับ {{rank}} ใน Hilads Launch Season {{prize}}: มาเล่นด้วยกัน!",
+      "shareJoin": "ฉันเข้าร่วม Hilads Launch Season แล้ว {{prize}}: มาเล่นด้วยกัน!",
+      "shareCardIn": "ฉันเข้าร่วมแล้ว",
+      "shareCardJoin": "มาเล่น Hilads กับฉัน",
+      "prizeYoureIn": "คุณเข้าร่วมแล้ว · ดูคะแนน",
+      "seePrize": "ดูรางวัล",
+      "seeRanking": "ดูอันดับทั้งหมด",
+      "rankingTitle": "อันดับ",
+      "rulesShort": "กติกา"
     }
   },
   "friendReq": {

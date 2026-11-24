@@ -389,7 +389,31 @@
       "inviteTitle": "أحضر أصدقاءك",
       "inviteText": "‎+{{points}} نقطة عن كل صديق ينضم برابطك وينشر {{count}} صور مقبولة.",
       "inviteStamp": "لكل صديق",
-      "inviteProgress": "{{active}} من {{cap}} أصدقاء محسوبون"
+      "inviteProgress": "{{active}} من {{cap}} أصدقاء محسوبون",
+      "cdStarts": "الإقلاع بعد",
+      "cdFinal": "الأسبوع الأخير بعد",
+      "cdEnds": "ينتهي بعد",
+      "cdDays": "أيام",
+      "cdHours": "ساعات",
+      "cdMin": "د",
+      "cdSec": "ث",
+      "dur": {
+        "dh": "{{d}} ي {{h}} س",
+        "hm": "{{h}} س {{m}} د",
+        "m": "{{m}} د"
+      },
+      "startsIn": "يبدأ بعد {{time}}",
+      "endsIn": "ينتهي بعد {{time}}",
+      "share": "مشاركة",
+      "shareRank": "أنا في المركز #{{rank}} في Launch Season من Hilads. {{prize}}: تعال العب معي!",
+      "shareJoin": "أنا مشارك في Launch Season من Hilads. {{prize}}: تعال العب معي!",
+      "shareCardIn": "أنا مشارك",
+      "shareCardJoin": "العب معي على Hilads",
+      "prizeYoureIn": "أنت مشارك · اعرض نتيجتك",
+      "seePrize": "اعرض الجائزة",
+      "seeRanking": "الترتيب الكامل",
+      "rankingTitle": "الترتيب",
+      "rulesShort": "القواعد"
     }
   },
   "friendReq": {

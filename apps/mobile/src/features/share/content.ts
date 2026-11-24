@@ -38,6 +38,9 @@ export type ShareContent =
   /** My passport (V3 polish 6): my photo, @username, my city, my stamps there and my stats; links to Hilads. */
   | { type: 'passport'; photoUrl: string | null; theme: null; themeLabel?: null; text: string; city: City; username: string | null;
       stamps: DailyThemeKey[]; earned: boolean; stats: { cities: number; photos: number; likes: number } }
+  /** The Launch Season (contest): the prize, my rank / points or "I'm in", the deadline; links to my invite link (a friend who joins counts for me). */
+  | { type: 'contest'; photoUrl: string | null; theme: null; themeLabel?: null; text: string; city: null; link: string; isTest: boolean;
+      subtitle: string; when: string; username: string | null; rank: number | null; points: number | null }
   /** A comparison of the Hilads Index (SPEC 10.9): its question, then one line per city ("Saigon · €1.20"); links to its latest day. */
   | { type: 'index'; photoUrl: string | null; theme: ThemeKey | null; themeLabel?: string | null; date: string; text: string; city: null;
       lines: { country: string | null; city: string; value: string }[] };
@@ -90,6 +93,7 @@ export function representShare(challenge: DailyChallenge, city: NonNullable<City
  * the landing page says "@anh played for Saigon".
  */
 export function shareUrl(c: ShareContent): string {
+  if (c.type === 'contest') return c.link;
   const path = c.type === 'proof' ? `/p/${c.id}` : c.type === 'spot' ? `/s/${c.id}` : c.type === 'index' ? `/d/${c.date}`
     : c.type === 'passport' ? '/' : '/today';
   const url = `${BASE_URL}${sharePrefix()}${path}`;
@@ -107,6 +111,11 @@ export function proofUrl(id: string): string {
 /** The line that goes with the link (never containing it). */
 export function shareText(c: ShareContent): string {
   const t = (key: string, opts?: Record<string, unknown>) => i18n.t(`share.${key}`, { ns: 'daily', ...opts });
+  if (c.type === 'contest') {
+    return c.rank
+      ? i18n.t('contest.shareRank', { ns: 'me', rank: c.rank, prize: c.text })
+      : i18n.t('contest.shareJoin', { ns: 'me', prize: c.text });
+  }
   if (c.type === 'proof' && c.rankText) {
     // The points reward: "I'm #1 in Saigon today 🏆" before the usual line.
     return `${c.rankText} 🏆 ${shareText({ ...c, rankText: null })}`;

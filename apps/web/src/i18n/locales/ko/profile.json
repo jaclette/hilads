@@ -325,7 +325,31 @@
       "inviteTitle": "친구를 데려오세요",
       "inviteText": "내 링크로 가입해 승인된 사진 {{count}}장을 올린 친구 1명당 +{{points}}점.",
       "inviteStamp": "친구 1명당",
-      "inviteProgress": "친구 {{cap}}명 중 {{active}}명 인정"
+      "inviteProgress": "친구 {{cap}}명 중 {{active}}명 인정",
+      "cdStarts": "출발까지",
+      "cdFinal": "파이널까지",
+      "cdEnds": "종료까지",
+      "cdDays": "일",
+      "cdHours": "시간",
+      "cdMin": "분",
+      "cdSec": "초",
+      "dur": {
+        "dh": "{{d}}일 {{h}}시간",
+        "hm": "{{h}}시간 {{m}}분",
+        "m": "{{m}}분"
+      },
+      "startsIn": "{{time}} 후 시작",
+      "endsIn": "{{time}} 후 종료",
+      "share": "공유",
+      "shareRank": "Hilads Launch Season에서 {{rank}}위예요. {{prize}}: 같이 해요!",
+      "shareJoin": "Hilads Launch Season에 참가했어요. {{prize}}: 같이 해요!",
+      "shareCardIn": "참가 중",
+      "shareCardJoin": "Hilads에서 같이 해요",
+      "prizeYoureIn": "참가 중 · 내 점수 보기",
+      "seePrize": "상품 보기",
+      "seeRanking": "전체 순위 보기",
+      "rankingTitle": "순위",
+      "rulesShort": "규정"
     }
   },
   "friendReq": {

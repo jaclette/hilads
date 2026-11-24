@@ -6,17 +6,20 @@ import { Ionicons } from '@expo/vector-icons';
 import { Space, Gutter, Radius, Type, IconSize, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { useApp } from '@/context/AppContext';
-import { Avatar, Button, Card, Crown, Screen, ScreenHeader, Segmented } from '@/ui';
-import { contestDate, daysLeft, fetchContest, fetchContestRanking, type ContestOverview, type ContestRanking, type ContestRow, type ContestMeJoined } from '@/features/contest/contest';
-import { HalongArt, LS } from '@/features/contest/HalongArt';
+import { Button, Card, Screen, ScreenHeader, Sheet, SheetTitle } from '@/ui';
+import { contestDate, fetchContest, fetchContestRanking, type ContestOverview, type ContestRanking, type ContestMeJoined } from '@/features/contest/contest';
+import { LS } from '@/features/contest/HalongArt';
+import { PrizeCover } from '@/features/contest/PrizePhotos';
+import { CountdownBoard, countdownTarget } from '@/features/contest/Countdown';
+import { Podium, RankRow } from '@/features/contest/RankingParts';
+import { useContestShare } from '@/features/contest/useContestShare';
 import { track } from '@/services/analytics';
 
 /**
- * Launch Season, a boarding pass to the prize (docs/mockups/hilads_launch_season_mockup.html):
- * the prize first (Admin › Launch Season), the players' unlock as a flight path, my score as a
- * departure board, invites as a passport stamp, the season / final-week ranking as a podium,
- * how it works and the rules. Visual only: every number comes from GET /contest and
- * /contest/ranking. Event accents (LS) are fixed art colors; the rest follows the theme.
+ * Launch Season home, the essentials only: the prize in one row (to the Prize screen), the
+ * countdown, the players' unlock as a flight path, my score as a departure board (+ Share), the
+ * invites (+20 per friend), the top 3 with "See full ranking", and How it works / Rules as links.
+ * Every number comes from GET /contest and /contest/ranking; visual only.
  */
 export default function ContestScreen() {
   const styles = useThemedStyles(makeStyles);
@@ -26,25 +29,20 @@ export default function ContestScreen() {
   const { account } = useApp();
   const [data, setData] = useState<ContestOverview | null>(null);
   const [ranking, setRanking] = useState<ContestRanking | null>(null);
-  const [tab, setTab] = useState<'season' | 'final'>('season');
   const [failed, setFailed] = useState(false);
+  const [how, setHow] = useState(false);
+  const share = useContestShare(data);
 
   const load = useCallback(() => {
     setFailed(false);
     fetchContest(i18n.language).then(d => {
       setData(d);
       const phase = d.season?.phase === 'final' || d.season?.phase === 'over' ? 'final' : 'season';
-      setTab(phase);
       if (d.season) return fetchContestRanking(phase).then(setRanking);
     }).catch(() => setFailed(true));
   }, [i18n.language]);
   useFocusEffect(useCallback(() => { load(); track('contest_viewed', {}); }, [load]));
 
-  const pickTab = (k: 'season' | 'final') => {
-    setTab(k);
-    setRanking(null);
-    fetchContestRanking(k).then(setRanking).catch(() => setFailed(true));
-  };
   const back = () => (router.canGoBack() ? router.back() : router.replace('/(tabs)/today' as never));
   const s = data?.season;
 
@@ -70,86 +68,77 @@ export default function ContestScreen() {
   const final = s.phase === 'final' || s.phase === 'over';
   const phaseLine = t(`contest.phase.${s.phase}`, { date: contestDate(s.phase === 'upcoming' ? s.startDate : s.endDate, i18n.language) });
   const r = s.rules;
-  const prize = { title: s.prize?.title || s.name, subtitle: s.prize?.subtitle ?? '' };
-
-  // Points to the player just above me (the ranking shown).
+  const target = countdownTarget(s);
   const mine = ranking?.me ?? null;
   const above = mine && mine.rank > 1 ? ranking?.rows.find(x => x.rank === mine.rank - 1) : null;
   const behind = mine && above ? above.points - mine.points : null;
-
-  const joinCard = me && me.joined === false ? (
-    <Card style={styles.card}>
-      <Text style={styles.text}>{t('contest.joinText')}</Text>
-      {me.canJoin
-        ? <Button icon="rocket-outline" label={t('contest.join')} onPress={() => router.push('/contest-join' as never)} testID="contest-join" />
-        : <Text style={styles.muted}>{me.reason === 'closed' ? t('contest.closed') : t('contest.cantJoin')}</Text>}
-    </Card>
-  ) : !account ? (
-    <Card style={styles.card}>
-      <Text style={styles.text}>{t('contest.joinText')}</Text>
-      <Button icon="rocket-outline" label={t('contest.join')} onPress={() => router.push('/auth-gate?reason=contest&returnTo=%2Fcontest' as never)} />
-    </Card>
-  ) : null;
+  const rank = final ? joined?.finalRank : joined?.seasonRank;
 
   return (
     <Screen edges={['top', 'bottom']}>
       <ScreenHeader title={s.name} subtitle={phaseLine} onBack={back} testID="contest" />
       <ScrollView contentContainerStyle={styles.body}>
-        {/* The prize: a boarding pass. */}
-        <View style={styles.pass} accessible accessibilityRole="header"
-              accessibilityLabel={`${prize.title}. ${prize.subtitle}${s.isTest ? `. ${t('contest.test')}` : ''}`}>
-          <View style={styles.passArt}>
-            <View style={StyleSheet.absoluteFill}><HalongArt width="100%" height="100%" /></View>
-            {s.isTest && <Text style={styles.test}>{t('contest.test')}</Text>}
+        {/* The prize in one row: the Prize screen. */}
+        <Pressable style={({ pressed }) => [styles.prize, pressed && { opacity: 0.85 }]} onPress={() => router.push('/contest-prize' as never)}
+                   accessibilityRole="button" accessibilityLabel={`${s.prize?.title || s.name}. ${t('contest.seePrize')}`} testID="contest-prize-row">
+          <View style={styles.prizeArt}><View style={StyleSheet.absoluteFill}><PrizeCover photos={s.photos} width="100%" height="100%" /></View></View>
+          <View style={styles.prizeBody}>
+            <Text style={styles.prizeTitle} numberOfLines={2}>{s.prize?.title || s.name} ✈️</Text>
+            <Text style={styles.prizeLink}>{t('contest.seePrize')}</Text>
           </View>
-          <View style={styles.tear}>
-            <View style={[styles.notch, { left: -25 }]} />
-            <View style={[styles.notch, { right: -25 }]} />
-          </View>
-          <View style={styles.passBody}>
-            <Text style={styles.prizeTitle}>{prize.title}</Text>
-            {!!prize.subtitle && <Text style={styles.prizeSub}>{prize.subtitle}</Text>}
-            <View style={styles.meta}>
-              <Meta label={t('contest.passFinal')} value={final ? t('contest.passNow') : contestDate(s.finalWeekStart, i18n.language)} />
-              <Meta label={t('contest.passEnds')} value={contestDate(s.endDate, i18n.language)} />
-              <Meta label={t('contest.passDaysLeft')} value={String(daysLeft(s.endDate))} />
-            </View>
-            <Text style={[styles.muted, styles.gift]}>{t('contest.launchGift')}</Text>
-          </View>
-        </View>
+          {s.isTest && <Text style={styles.test}>{t('contest.test')}</Text>}
+          <Ionicons name="chevron-forward" size={IconSize.md} color={colors.muted} />
+        </Pressable>
 
-        {joinCard}
+        {me && me.joined === false && (
+          <Card style={styles.card}>
+            <Text style={styles.text}>{t('contest.joinText')}</Text>
+            {me.canJoin
+              ? <Button icon="rocket-outline" label={t('contest.join')} onPress={() => router.push('/contest-join' as never)} testID="contest-join" />
+              : <Text style={styles.muted}>{me.reason === 'closed' ? t('contest.closed') : t('contest.cantJoin')}</Text>}
+          </Card>
+        )}
+        {!account && (
+          <Card style={styles.card}>
+            <Text style={styles.text}>{t('contest.joinText')}</Text>
+            <Button icon="rocket-outline" label={t('contest.join')} onPress={() => router.push('/auth-gate?reason=contest&returnTo=%2Fcontest' as never)} />
+          </Card>
+        )}
 
-        {/* The unlock: players on their way, as a flight path. */}
+        {target && <CountdownBoard target={target} />}
         {data.counter && <Unlock players={data.counter.players} max={data.counter.threshold} photos={data.counter.photos} />}
 
         {joined && joined.disqualified && <Card style={styles.card}><Text style={styles.text}>{t('contest.dq')}</Text></Card>}
         {joined && joined.excluded && <Card style={styles.card}><Text style={styles.text}>{t('contest.excluded')}</Text></Card>}
 
-        {/* My score: a departure board. */}
+        {/* My score: a departure board, and Share. */}
         {joined && joined.points && !joined.disqualified && (
-          <View style={styles.board} accessible
-                accessibilityLabel={`${t(tab === 'final' ? 'contest.myFinalScore' : 'contest.myScore')}: ${tab === 'final' ? joined.points.final : joined.points.season}`}>
+          <View style={styles.board}>
             <View style={styles.boardHead}>
-              <Text style={styles.boardTitle}>{t(tab === 'final' ? 'contest.myFinalScore' : 'contest.myScore')}</Text>
-              {(tab === 'final' ? joined.finalRank : joined.seasonRank)
-                ? <View style={styles.tag}><View style={styles.tagHole} /><Text style={styles.tagText}>#{tab === 'final' ? joined.finalRank : joined.seasonRank}</Text></View>
+              <Text style={styles.boardTitle}>{t(final ? 'contest.myFinalScore' : 'contest.myScore')}</Text>
+              {rank ? <View style={styles.tag}><View style={styles.tagHole} /><Text style={styles.tagText}>#{rank}</Text></View>
                 : <Text style={styles.boardMuted}>{t('contest.notRanked')}</Text>}
             </View>
             <View style={styles.tiles}>
-              <Tile label={t('contest.votes')} value={tab === 'final' ? joined.points.finalVotes : joined.points.votes} />
+              <Tile label={t('contest.votes')} value={final ? joined.points.finalVotes : joined.points.votes} />
               <Tile label={t('contest.referral')} value={joined.points.referral} />
-              {tab === 'final' && <Tile label={t('contest.headstart')} value={joined.points.headstart} />}
-              <Tile label={t('contest.total')} value={tab === 'final' ? joined.points.final : joined.points.season} total />
+              {final && <Tile label={t('contest.headstart')} value={joined.points.headstart} />}
+              <Tile label={t('contest.total')} value={final ? joined.points.final : joined.points.season} total />
             </View>
-            <Text style={styles.boardMuted}>
-              {t('contest.photosDays', { photos: joined.photos ?? 0, days: joined.days ?? 0 })}
-              {behind !== null && above ? ` · ${t('contest.behind', { count: behind, rank: above.rank })}` : ''}
-            </Text>
+            <View style={styles.boardFoot}>
+              <Text style={[styles.boardMuted, { flex: 1 }]}>
+                {t('contest.photosDays', { photos: joined.photos ?? 0, days: joined.days ?? 0 })}
+                {behind !== null && above ? ` · ${t('contest.behind', { count: behind, rank: above.rank })}` : ''}
+              </Text>
+              <Pressable onPress={share.open} style={styles.shareBtn} accessibilityRole="button" hitSlop={6} testID="contest-share">
+                <Ionicons name="share-outline" size={IconSize.sm} color={LS.board} />
+                <Text style={styles.shareText}>{t('contest.share')}</Text>
+              </Pressable>
+            </View>
           </View>
         )}
 
-        {/* Invites: the growth lever, a passport stamp. */}
+        {/* Invites: +20 per friend. */}
         {joined && joined.referrals && !joined.disqualified && (
           <Card style={styles.card}>
             <View style={styles.invite}>
@@ -168,7 +157,7 @@ export default function ContestScreen() {
               ))}
             </View>
             <Text style={styles.muted}>{t('contest.inviteProgress', { active: Math.min(joined.referrals.active, joined.referrals.cap), cap: joined.referrals.cap })}</Text>
-            {joined.referrals.friends.map((f, i) => (
+            {joined.referrals.friends.slice(0, 3).map((f, i) => (
               <View key={(f.username ?? '') + i} style={styles.friend}>
                 <Text style={styles.text} numberOfLines={1}>@{f.username}</Text>
                 <Text style={[styles.muted, f.status === 'active' && { color: colors.green }]} numberOfLines={1}>
@@ -180,23 +169,40 @@ export default function ContestScreen() {
           </Card>
         )}
 
-        {/* The contest's own ranking: a podium, then the list. */}
-        <Segmented options={[{ key: 'season', label: t('contest.tabSeason') }, { key: 'final', label: t('contest.tabFinal') }]} value={tab} onChange={pickTab} />
-        {tab === 'final' && ranking && !ranking.frozen && (
-          <Text style={styles.muted}>{t('contest.finalNotYet', { date: contestDate(s.finalWeekStart, i18n.language), count: r.headstartTopN })}</Text>
-        )}
-        {!ranking ? <ActivityIndicator color={colors.muted} style={{ marginVertical: Space.lg }} /> : (
-          <Card style={styles.card}>
-            {ranking.rows.length === 0 && <Text style={styles.muted}>{t('contest.empty')}</Text>}
-            {ranking.rows.length > 0 && <Podium rows={ranking.rows.slice(0, 3)} meId={account?.id ?? null} />}
-            {ranking.rows.slice(3).map(row => <RankRow key={row.userId} row={row} me={row.userId === account?.id} />)}
-            {ranking.me && !ranking.rows.some(x => x.userId === ranking.me!.userId) && <RankRow row={ranking.me} me />}
-          </Card>
-        )}
-
-        {/* How it works + the full rules (public page). */}
+        {/* The top 3, then the full ranking. */}
         <Card style={styles.card}>
-          <Text style={styles.section} accessibilityRole="header">{t('contest.howTitle')}</Text>
+          <View style={styles.rankHead}>
+            <Text style={styles.section}>{t(final ? 'contest.tabFinal' : 'contest.tabSeason')}</Text>
+          </View>
+          {!ranking ? <ActivityIndicator color={colors.muted} style={{ marginVertical: Space.md }} />
+            : ranking.rows.length === 0 ? <Text style={styles.muted}>{t('contest.empty')}</Text> : (
+              <>
+                <Podium rows={ranking.rows.slice(0, 3)} meId={account?.id ?? null} />
+                {mine && mine.rank > 3 && <RankRow row={mine} me />}
+              </>
+            )}
+          <Pressable onPress={() => router.push({ pathname: '/contest-ranking', params: { tab: final ? 'final' : 'season' } } as never)}
+                     style={styles.seeAll} accessibilityRole="button" testID="contest-see-ranking">
+            <Text style={styles.linkText}>{t('contest.seeRanking')}</Text>
+            <Ionicons name="chevron-forward" size={IconSize.sm} color={colors.primaryText} />
+          </Pressable>
+        </Card>
+
+        <View style={styles.links}>
+          <Pressable onPress={() => setHow(true)} accessibilityRole="button" hitSlop={8} style={styles.link}>
+            <Ionicons name="help-circle-outline" size={IconSize.sm} color={colors.primaryText} />
+            <Text style={styles.linkText}>{t('contest.howTitle')}</Text>
+          </Pressable>
+          <Pressable onPress={() => Linking.openURL(s.rulesUrl)} accessibilityRole="link" hitSlop={8} style={styles.link}>
+            <Text style={styles.linkText}>{t('contest.rulesShort')}</Text>
+            <Ionicons name="open-outline" size={IconSize.sm} color={colors.primaryText} />
+          </Pressable>
+        </View>
+      </ScrollView>
+
+      <Sheet visible={how} onClose={() => setHow(false)} closeLabel={t('back', { ns: 'common' })}>
+        <SheetTitle>{t('contest.howTitle')}</SheetTitle>
+        <View style={{ gap: Space.sm, paddingBottom: Space.md }}>
           {([
             ['camera-outline', t('contest.how1')],
             ['heart-outline', t('contest.how2', { count: r.voteCap })],
@@ -212,19 +218,10 @@ export default function ContestScreen() {
             <Text style={styles.linkText}>{t('contest.rules')}</Text>
             <Ionicons name="open-outline" size={IconSize.sm} color={colors.primaryText} />
           </Pressable>
-        </Card>
-      </ScrollView>
+        </View>
+      </Sheet>
+      {share.sheet}
     </Screen>
-  );
-}
-
-function Meta({ label, value }: { label: string; value: string }) {
-  const styles = useThemedStyles(makeStyles);
-  return (
-    <View style={styles.metaCol} accessible accessibilityLabel={`${label}: ${value}`}>
-      <Text style={styles.metaLabel} numberOfLines={2}>{label}</Text>
-      <Text style={styles.metaValue} numberOfLines={1}>{value}</Text>
-    </View>
   );
 }
 
@@ -277,66 +274,6 @@ function Tile({ label, value, total }: { label: string; value: number; total?: b
   );
 }
 
-/** The top 3: #2 · #1 · #3 on medal blocks, crown on #1, "You" on mine. */
-function Podium({ rows, meId }: { rows: ContestRow[]; meId: string | null }) {
-  const styles = useThemedStyles(makeStyles);
-  const { colors } = useTheme();
-  const { t } = useTranslation('me');
-  const router = useRouter();
-  const medal = [colors.medalGold, colors.medalSilver, colors.medalBronze];
-  const heights = [88, 64, 48];
-  const order = [rows[1], rows[0], rows[2]];
-  return (
-    <View style={styles.podium}>
-      {order.map((row, i) => {
-        if (!row) return <View key={i} style={{ flex: 1 }} />;
-        const place = row.rank - 1;
-        const name = row.username ? '@' + row.username : row.displayName ?? '';
-        const me = row.userId === meId;
-        return (
-          <Pressable key={row.userId} style={[styles.step, place === 0 && { flex: 1.15 }]} onPress={() => router.push({ pathname: '/user/[id]', params: { id: row.userId } })}
-                     accessibilityRole="button" accessibilityLabel={`#${row.rank} ${name}, ${t('contest.pts', { count: row.points })}${me ? `, ${t('contest.youLabel')}` : ''}`}>
-            {place === 0 && <View style={styles.crown}><Crown size={24} /></View>}
-            <View style={[styles.ring, { borderColor: medal[place] ?? colors.line }]}>
-              <Avatar uri={row.photoUrl} name={row.displayName ?? row.username ?? ''} size={place === 0 ? 58 : 48} />
-            </View>
-            <Text style={styles.stepName} numberOfLines={1}>{name}</Text>
-            <Text style={styles.muted} numberOfLines={1}>{t('contest.pts', { count: row.points })}</Text>
-            {me && <Text style={styles.you}>{t('contest.youLabel')}</Text>}
-            <View style={[styles.block, { height: heights[place] ?? 40, backgroundColor: medal[place] ?? colors.line }]}>
-              <Text style={styles.blockText}>{row.rank}</Text>
-            </View>
-          </Pressable>
-        );
-      })}
-    </View>
-  );
-}
-
-function RankRow({ row, me }: { row: ContestRow; me: boolean }) {
-  const styles = useThemedStyles(makeStyles);
-  const { t } = useTranslation('me');
-  const router = useRouter();
-  const name = row.username ? '@' + row.username : row.displayName ?? '';
-  const detail = [row.votes > 0 ? `${t('contest.votes')} ${row.votes}` : null, row.referral > 0 ? `${t('contest.referral')} ${row.referral}` : null,
-                  row.headstart > 0 ? `${t('contest.headstart')} ${row.headstart}` : null].filter(Boolean).join(' · ');
-  return (
-    <Pressable style={[styles.rankRow, me && styles.rankRowMe]} onPress={() => router.push({ pathname: '/user/[id]', params: { id: row.userId } })}
-               accessibilityRole="button" accessibilityLabel={`#${row.rank} ${name}, ${t('contest.pts', { count: row.points })}`}>
-      <Text style={styles.rankNum}>{row.rank}</Text>
-      <Avatar uri={row.photoUrl} name={row.displayName ?? row.username ?? ''} size={38} />
-      <View style={{ flex: 1 }}>
-        <View style={styles.nameRow}>
-          <Text style={[styles.text, { fontWeight: '700', flexShrink: 1 }]} numberOfLines={1}>{name}</Text>
-          {me && <Text style={styles.you}>{t('contest.youLabel')}</Text>}
-        </View>
-        {!!detail && <Text style={styles.muted} numberOfLines={1}>{detail}</Text>}
-      </View>
-      <Text style={styles.rankPts}>{row.points}</Text>
-    </Pressable>
-  );
-}
-
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
   body:       { paddingHorizontal: Gutter, paddingBottom: Space.xxl, gap: Space.md },
   center:     { flex: 1, alignItems: 'center', justifyContent: 'center', gap: Space.md, padding: Gutter },
@@ -344,21 +281,15 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   section:    { ...Type.label, fontWeight: '800', color: c.text },
   text:       { ...Type.body, color: c.text, flexShrink: 1 },
   muted:      { ...Type.caption, color: c.muted },
-  test:       { position: 'absolute', top: Space.sm, right: Space.sm, ...Type.caption, fontSize: 11, lineHeight: 15, fontWeight: '800', color: '#FFFFFF',
-                backgroundColor: LS.lantern, borderRadius: Radius.control, paddingHorizontal: 8, paddingVertical: 2, overflow: 'hidden' },
-  // The boarding pass.
-  pass:       { borderRadius: Radius.hero, overflow: 'hidden', backgroundColor: c.bg2, borderWidth: 1, borderColor: c.line },
-  passArt:    { height: 180, overflow: 'hidden' },
-  tear:       { height: 0, borderTopWidth: 2, borderStyle: 'dashed', borderColor: c.ticketLine, marginHorizontal: 14 },
-  notch:      { position: 'absolute', top: -11, width: 20, height: 20, borderRadius: 10, backgroundColor: c.bg },
-  passBody:   { padding: Space.md, gap: Space.xs },
-  prizeTitle: { ...Type.display, fontSize: 30, lineHeight: 35, letterSpacing: -0.6, color: c.text },
-  prizeSub:   { ...Type.body, fontWeight: '700', color: c.primaryText },
-  meta:       { flexDirection: 'row', gap: Space.sm, marginTop: Space.sm },
-  metaCol:    { flex: 1 },
-  metaLabel:  { ...Type.caption, color: c.muted, fontWeight: '600' },
-  metaValue:  { ...Type.label, color: c.text },
-  gift:       { marginTop: Space.sm, paddingTop: Space.sm, borderTopWidth: 1, borderTopColor: c.line },
+  test:       { ...Type.caption, fontSize: 11, lineHeight: 15, fontWeight: '800', color: '#FFFFFF', backgroundColor: LS.lantern, borderRadius: Radius.control,
+                paddingHorizontal: 8, paddingVertical: 2, overflow: 'hidden' },
+  // The prize row.
+  prize:      { flexDirection: 'row', alignItems: 'center', gap: Space.sm, minHeight: 84, borderRadius: Radius.card, overflow: 'hidden',
+                backgroundColor: c.bg2, borderWidth: 1, borderColor: c.line, paddingRight: Space.sm },
+  prizeArt:   { width: 96, alignSelf: 'stretch', overflow: 'hidden' },
+  prizeBody:  { flex: 1, paddingVertical: Space.sm, gap: 2 },
+  prizeTitle: { ...Type.label, fontWeight: '800', color: c.text },
+  prizeLink:  { ...Type.caption, fontWeight: '800', color: c.primaryText },
   // The unlock.
   unlockHead: { flexDirection: 'row', alignItems: 'baseline', gap: Space.xs, flexWrap: 'wrap' },
   unlockCount:{ ...Type.display, color: c.text },
@@ -374,6 +305,9 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   boardHead:  { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', gap: Space.sm },
   boardTitle: { ...Type.label, color: LS.boardText, flexShrink: 1 },
   boardMuted: { ...Type.caption, color: LS.boardMuted },
+  boardFoot:  { flexDirection: 'row', alignItems: 'center', gap: Space.sm },
+  shareBtn:   { flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: LS.mango, borderRadius: Radius.control, paddingHorizontal: Space.sm, minHeight: 32 },
+  shareText:  { ...Type.caption, fontWeight: '800', color: LS.board },
   tag:        { flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: c.medalGold, borderTopLeftRadius: 6, borderBottomLeftRadius: 6,
                 borderTopRightRadius: 12, borderBottomRightRadius: 12, paddingLeft: 8, paddingRight: 12, paddingVertical: 4, transform: [{ rotate: '-4deg' }] },
   tagHole:    { width: 7, height: 7, borderRadius: 4, backgroundColor: LS.board },
@@ -384,33 +318,21 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   tileValue:  { fontSize: 28, lineHeight: 32, fontWeight: '800', color: LS.mango, fontVariant: ['tabular-nums'] },
   tileLabel:  { ...Type.caption, fontSize: 12, lineHeight: 15, color: LS.boardMuted, textAlign: 'center' },
   tileSplit:  { position: 'absolute', left: 0, right: 0, top: '50%', height: 1, backgroundColor: 'rgba(0,0,0,0.35)' },
-  // The invite stamp.
+  // Invites.
   invite:     { flexDirection: 'row', alignItems: 'center', gap: Space.md },
-  stamp:      { width: 76, height: 76, borderRadius: 38, borderWidth: 3, borderStyle: 'dashed', borderColor: c.green, alignItems: 'center', justifyContent: 'center',
+  stamp:      { width: 72, height: 72, borderRadius: 36, borderWidth: 3, borderStyle: 'dashed', borderColor: c.green, alignItems: 'center', justifyContent: 'center',
                 transform: [{ rotate: '-10deg' }], padding: 4 },
-  stampPts:   { fontSize: 24, lineHeight: 26, fontWeight: '800', color: c.green },
+  stampPts:   { fontSize: 22, lineHeight: 24, fontWeight: '800', color: c.green },
   stampSmall: { fontSize: 10, lineHeight: 12, fontWeight: '700', color: c.green, textAlign: 'center' },
   segments:   { flexDirection: 'row', gap: 4, marginTop: Space.xs },
   segment:    { flex: 1, height: 8, borderRadius: 4, backgroundColor: c.line },
   segmentOn:  { backgroundColor: c.green },
   friend:     { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: Space.sm },
-  // The podium + rows.
-  podium:     { flexDirection: 'row', alignItems: 'flex-end', gap: Space.sm, paddingTop: Space.md },
-  step:       { flex: 1, alignItems: 'center', gap: 2 },
-  crown:      { marginBottom: -2 },
-  ring:       { borderWidth: 3, borderRadius: 999, padding: 2 },
-  stepName:   { ...Type.caption, fontWeight: '800', color: c.text, maxWidth: '100%' },
-  block:      { alignSelf: 'stretch', marginTop: Space.xs, borderTopLeftRadius: 14, borderTopRightRadius: 14, borderBottomLeftRadius: 4, borderBottomRightRadius: 4,
-                alignItems: 'center', justifyContent: 'center' },
-  blockText:  { ...Type.title, color: c.onMedal },
-  you:        { ...Type.caption, fontSize: 11, lineHeight: 15, fontWeight: '800', color: c.onCta, backgroundColor: c.cta, borderRadius: Radius.control,
-                paddingHorizontal: 8, paddingVertical: 1, overflow: 'hidden' },
-  rankRow:    { flexDirection: 'row', alignItems: 'center', gap: Space.sm, paddingVertical: Space.sm, minHeight: 56 },
-  rankRowMe:  { backgroundColor: c.primaryTint, borderRadius: Radius.control, marginHorizontal: -Space.sm, paddingHorizontal: Space.sm },
-  rankNum:    { ...Type.label, fontWeight: '800', color: c.muted, width: 28, textAlign: 'center' },
-  nameRow:    { flexDirection: 'row', alignItems: 'center', gap: Space.xs },
-  rankPts:    { ...Type.label, fontWeight: '800', color: c.text },
-  how:        { flexDirection: 'row', gap: Space.sm, alignItems: 'flex-start' },
+  // Ranking preview + links.
+  rankHead:   { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  seeAll:     { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: Space.xs, minHeight: 44 },
+  links:      { flexDirection: 'row', justifyContent: 'center', gap: Space.lg },
   link:       { flexDirection: 'row', alignItems: 'center', gap: Space.xs, minHeight: 44 },
   linkText:   { ...Type.label, fontWeight: '800', color: c.primaryText },
+  how:        { flexDirection: 'row', gap: Space.sm, alignItems: 'flex-start' },
 });

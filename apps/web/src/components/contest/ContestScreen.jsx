@@ -4,7 +4,8 @@ import BackButton from '../BackButton'
 import AvatarWithFlag from '../AvatarWithFlag'
 import Icon from '../Icon'
 import HalongArt from './HalongArt'
-import { fetchContest, fetchContestRanking, joinContest } from '../../api'
+import { fetchContest, fetchContestRanking, fetchCrew, joinContest } from '../../api'
+import { shareLink } from '../../lib/shareLink'
 import { track } from '../../lib/analytics'
 
 const useT = () => useTranslation('profile', { keyPrefix: 'pp' })
@@ -21,70 +22,193 @@ function countryName(code, locale) {
 }
 
 const shortDate = (date, locale) => new Date(`${date}T12:00:00Z`).toLocaleDateString(locale, { day: 'numeric', month: 'short' })
-const daysLeft = (endDate) => Math.max(0, Math.ceil((new Date(`${endDate}T23:59:59Z`).getTime() - Date.now()) / 86400000))
 const reduced = () => typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
 
-/**
- * Launch Season (the app's /contest), a Passport sub-screen: a boarding pass to the prize
- * (Admin › Launch Season), the players' unlock as a flight path, my score as a departure board,
- * invites as a passport stamp, the season / final-week ranking as a podium, how it works and
- * the rules; joining (18+, country, rules) inline. Visual only: numbers from GET /contest.
- */
-export default function ContestScreen({ account, onBack, onOpenProfile, onOpenInvite, onSignUp }) {
-  const { t, i18n } = useT()
+/** The countdown of a season's phase: start (take-off), final week, end. */
+export function countdownTarget(s) {
+  const pick = s.phase === 'upcoming' ? { at: Date.parse(s.startsAt ?? ''), label: 'cdStarts' }
+    : s.phase === 'season' ? { at: Date.parse(s.finalAt ?? ''), label: 'cdFinal' }
+    : s.phase === 'final' ? { at: Date.parse(s.endsAt ?? ''), label: 'cdEnds' } : null
+  return pick && Number.isFinite(pick.at) ? pick : null
+}
+
+export function useNow(ms) {
+  const [now, setNow] = useState(() => Date.now())
+  useEffect(() => { const id = setInterval(() => setNow(Date.now()), ms); return () => clearInterval(id) }, [ms])
+  return now
+}
+
+export function shortLeft(msLeft, t) {
+  const m = Math.max(0, Math.floor(msLeft / 60000))
+  const d = Math.floor(m / 1440), h = Math.floor((m % 1440) / 60), mm = m % 60
+  if (d > 0) return t('contest.dur.dh', { d, h })
+  if (h > 0) return t('contest.dur.hm', { h, m: mm })
+  return t('contest.dur.m', { m: Math.max(1, mm) })
+}
+
+function CountdownBoard({ target }) {
+  const { t } = useT()
+  const now = useNow(1000)
+  const left = Math.max(0, Math.floor((target.at - now) / 1000))
+  const parts = [[Math.floor(left / 86400), t('contest.cdDays')], [Math.floor((left % 86400) / 3600), t('contest.cdHours')],
+                 [Math.floor((left % 3600) / 60), t('contest.cdMin')], [left % 60, t('contest.cdSec')]]
+  return (
+    <div className="ls-countdown" role="timer" aria-label={`${t(`contest.${target.label}`)} ${shortLeft(target.at - now, t)}`}>
+      <small>{t(`contest.${target.label}`)}</small>
+      <div className="ls-tiles">{parts.map(([v, u], i) => <span key={i} className="ls-tile"><b>{String(v).padStart(2, '0')}</b><small>{u}</small></span>)}</div>
+    </div>
+  )
+}
+
+/** Share: my invite link (a friend who joins counts for me) and the line; the web shares the link. */
+function useShare(data, account) {
+  const { t } = useT()
+  return async () => {
+    const s = data?.season
+    if (!s) return
+    let path = '/today'
+    if (account) { try { path = `/today?ref=${(await fetchCrew()).code}` } catch { /* plain link */ } }
+    path += `${path.includes('?') ? '&' : '?'}utm_campaign=launch_season`
+    const me = data.me?.joined ? data.me : null
+    const final = ['final', 'over'].includes(s.phase)
+    const rank = final ? me?.finalRank : me?.seasonRank
+    const prize = s.prize?.title || s.name
+    shareLink({ type: 'contest', path, source: 'launch_season',
+      text: rank ? t('contest.shareRank', { rank, prize }) : t('contest.shareJoin', { prize }) })
+  }
+}
+
+/** The season's photos (Admin › Launch Season › Photos) with page dots, else the illustration. */
+function PrizePhotos({ photos, children, short }) {
+  const [page, setPage] = useState(0)
+  const cur = photos?.[page]
+  return (
+    <div className={`ls-photos${short ? ' ls-photos--short' : ''}`}>
+      {photos?.length ? (
+        <div className="ls-photos-track" onScroll={e => setPage(Math.round(e.currentTarget.scrollLeft / Math.max(1, e.currentTarget.clientWidth)))}>
+          {photos.map((p, i) => <img key={p.url + i} src={p.url} alt={p.caption || ''} loading={i ? 'lazy' : 'eager'} />)}
+        </div>
+      ) : <HalongArt />}
+      <div className="ls-photos-shade" aria-hidden="true" />
+      <div className="ls-photos-bottom">
+        {children}
+        {photos?.length > 1 && <span className="ls-dots" aria-hidden="true">{photos.map((_, i) => <i key={i} className={i === page ? 'on' : ''} />)}</span>}
+        {cur && (cur.caption || cur.credit) && <small className="ls-credit">{[cur.caption, cur.credit ? `© ${cur.credit}` : ''].filter(Boolean).join(' · ')}</small>}
+      </div>
+    </div>
+  )
+}
+
+function useContest() {
+  const { i18n } = useT()
   const [data, setData] = useState(null)
   const [failed, setFailed] = useState(false)
-  const [tab, setTab] = useState('season')
-  const [ranking, setRanking] = useState(null)
-  const [joining, setJoining] = useState(false)
-
-  const loadRanking = useCallback((phase) => {
-    setRanking(null)
-    fetchContestRanking(phase).then(setRanking).catch(() => setFailed(true))
-  }, [])
   const load = useCallback(() => {
     setFailed(false)
-    fetchContest(i18n.language).then(d => {
-      setData(d)
-      if (!d.season) return
-      const phase = ['final', 'over'].includes(d.season.phase) ? 'final' : 'season'
-      setTab(phase)
-      loadRanking(phase)
-    }).catch(() => setFailed(true))
-  }, [loadRanking, i18n.language])
-  useEffect(() => { load(); track('contest_viewed', {}) }, [load])
+    fetchContest(i18n.language).then(setData).catch(() => setFailed(true))
+  }, [i18n.language])
+  useEffect(() => { load() }, [load])
+  return { data, failed, load }
+}
 
-  const s = data?.season
-  const me = data?.me
-  const header = (title, sub) => (
+function Header({ title, sub, onBack }) {
+  return (
     <div className="page-header">
-      <BackButton onClick={joining ? () => setJoining(false) : onBack} />
+      <BackButton onClick={onBack} />
       <span className="ls-head"><span className="page-title">{title}</span>{sub && <small>{sub}</small>}</span>
     </div>
   )
+}
 
-  if (failed || !s) {
-    return (
-      <div className="full-page dc-page">
-        {header(t('contest.title'))}
-        <div className="page-body dc-body dc-center">
-          {failed ? <><p className="dc-muted">{t('contest.error')}</p><button type="button" className="btn-secondary" onClick={load}>{t('contest.retry')}</button></>
-            : data ? <p className="dc-muted">{t('contest.closed')}</p> : <span className="wm-spinner" aria-hidden="true" />}
+function Empty({ data, failed, load, onBack }) {
+  const { t } = useT()
+  return (
+    <div className="full-page dc-page">
+      <Header title={t('contest.title')} onBack={onBack} />
+      <div className="page-body dc-body dc-center">
+        {failed ? <><p className="dc-muted">{t('contest.error')}</p><button type="button" className="btn-secondary" onClick={load}>{t('contest.retry')}</button></>
+          : data ? <p className="dc-muted">{t('contest.closed')}</p> : <span className="wm-spinner" aria-hidden="true" />}
+      </div>
+    </div>
+  )
+}
+
+/**
+ * The Launch Season's prize (the app's /contest-prize): the real photos, the prize and its
+ * description, the countdown, the dates, the launch-gift line, the rules, Share; a sticky Join
+ * (or "You're in", to the home).
+ */
+export function ContestPrize({ account, onBack, onOpenHome, onSignUp }) {
+  const { t, i18n } = useT()
+  const { data, failed, load } = useContest()
+  const [joining, setJoining] = useState(false)
+  const share = useShare(data, account)
+  useEffect(() => { track('contest_prize_viewed', {}) }, [])
+  const s = data?.season
+  if (!s) return <Empty data={data} failed={failed} load={load} onBack={onBack} />
+  if (joining) return <JoinForm season={s} suggested={data.me?.suggestedCountry} onBack={() => setJoining(false)} onDone={() => { setJoining(false); onOpenHome() }} />
+  const me = data.me
+  const target = countdownTarget(s)
+  const final = ['final', 'over'].includes(s.phase)
+  const cta = !account ? { label: t('contest.join'), go: onSignUp }
+    : me?.joined ? { label: t('contest.prizeYoureIn'), go: onOpenHome }
+    : me?.canJoin ? { label: t('contest.join'), go: () => setJoining(true) } : null
+  return (
+    <div className="full-page dc-page ls-prize-page">
+      <div className="page-body dc-body ls-body ls-body--flush">
+        <div className="ls-prize-top">
+          <BackButton onClick={onBack} />
+          {s.isTest && <span className="ls-test">{t('contest.test')}</span>}
+        </div>
+        <PrizePhotos photos={s.photos}>
+          <small className="ls-kicker">{s.name}</small>
+          <h1 className="ls-photo-title">{s.prize?.title || s.name}</h1>
+        </PrizePhotos>
+        <div className="ls-prize-body">
+          {s.prize?.subtitle && <p className="ls-prize-sub">{s.prize.subtitle}</p>}
+          {s.prize?.description && <p className="ls-desc">{s.prize.description}</p>}
+          {target && <CountdownBoard target={target} />}
+          <div className="ls-meta-boxes">
+            <span><small>{t('contest.passFinal')}</small><b>{final ? t('contest.passNow') : shortDate(s.finalWeekStart, i18n.language)}</b></span>
+            <span><small>{t('contest.passEnds')}</small><b>{shortDate(s.endDate, i18n.language)}</b></span>
+          </div>
+          <p className="ls-giftline"><Icon name="gift-outline" size={18} /> {t('contest.launchGift')}</p>
+          <div className="ls-links">
+            <a className="ls-link" href={s.rulesUrl.replace('https://hilads.live', '')} target="_blank" rel="noopener">{t('contest.rules')} <Icon name="open-outline" size={14} /></a>
+            <button type="button" className="ls-link ls-link-btn" onClick={share}><Icon name="share-outline" size={16} /> {t('contest.share')}</button>
+          </div>
         </div>
       </div>
-    )
-  }
+      {cta && <div className="inv-footer"><button type="button" className="today-cta dc-full btn-primary" onClick={cta.go}><Icon name={me?.joined ? 'trophy-outline' : 'rocket-outline'} size={18} />{cta.label}</button></div>}
+    </div>
+  )
+}
 
-  if (joining) {
-    return <JoinForm season={s} suggested={me?.suggestedCountry} header={header} onDone={() => { setJoining(false); load() }} />
-  }
+/**
+ * Launch Season home (the app's /contest), the essentials: the prize in one row, the countdown,
+ * the unlock, my score + Share, the invites, the top 3 + "See full ranking", How it works / Rules.
+ */
+export default function ContestScreen({ account, onBack, onOpenProfile, onOpenInvite, onSignUp, onOpenPrize, onOpenRanking }) {
+  const { t, i18n } = useT()
+  const { data, failed, load } = useContest()
+  const [ranking, setRanking] = useState(null)
+  const [joining, setJoining] = useState(false)
+  const [how, setHow] = useState(false)
+  const share = useShare(data, account)
+  const s = data?.season
+  const final = s ? ['final', 'over'].includes(s.phase) : false
+  useEffect(() => { track('contest_viewed', {}) }, [])
+  useEffect(() => { if (s) fetchContestRanking(final ? 'final' : 'season').then(setRanking).catch(() => {}) }, [s, final])
+
+  if (!s) return <Empty data={data} failed={failed} load={load} onBack={onBack} />
+  if (joining) return <JoinForm season={s} suggested={data.me?.suggestedCountry} onBack={() => setJoining(false)} onDone={() => { setJoining(false); load() }} />
 
   const r = s.rules
-  const prize = { title: s.prize?.title || s.name, subtitle: s.prize?.subtitle ?? '' }
-  const final = ['final', 'over'].includes(s.phase)
+  const me = data.me
   const joined = me?.joined ? me : null
   const pts = joined?.points
-  const rank = tab === 'final' ? joined?.finalRank : joined?.seasonRank
+  const rank = final ? joined?.finalRank : joined?.seasonRank
+  const target = countdownTarget(s)
   const phaseLine = t(`contest.phase.${s.phase}`, { date: shortDate(s.phase === 'upcoming' ? s.startDate : s.endDate, i18n.language) })
   const mine = ranking?.me ?? null
   const above = mine && mine.rank > 1 ? ranking?.rows.find(x => x.rank === mine.rank - 1) : null
@@ -92,23 +216,14 @@ export default function ContestScreen({ account, onBack, onOpenProfile, onOpenIn
 
   return (
     <div className="full-page dc-page">
-      {header(s.name, phaseLine)}
+      <Header title={s.name} sub={phaseLine} onBack={onBack} />
       <div className="page-body dc-body ls-body">
-        {/* The prize: a boarding pass. */}
-        <section className="ls-pass" aria-label={`${prize.title}. ${prize.subtitle}`}>
-          <div className="ls-pass-art"><HalongArt />{s.isTest && <span className="ls-test ls-test--art">{t('contest.test')}</span>}</div>
-          <div className="ls-tear" aria-hidden="true" />
-          <div className="ls-pass-body">
-            <h1 className="ls-prize">{prize.title}</h1>
-            {prize.subtitle && <p className="ls-prize-sub">{prize.subtitle}</p>}
-            <div className="ls-meta">
-              <span><small>{t('contest.passFinal')}</small><b>{final ? t('contest.passNow') : shortDate(s.finalWeekStart, i18n.language)}</b></span>
-              <span><small>{t('contest.passEnds')}</small><b>{shortDate(s.endDate, i18n.language)}</b></span>
-              <span><small>{t('contest.passDaysLeft')}</small><b>{daysLeft(s.endDate)}</b></span>
-            </div>
-            <p className="dc-muted ls-gift">{t('contest.launchGift')}</p>
-          </div>
-        </section>
+        <button type="button" className="ls-prize-row" onClick={onOpenPrize}>
+          <span className="ls-prize-row-art">{s.photos?.[0] ? <img src={s.photos[0].url} alt="" /> : <HalongArt />}</span>
+          <span className="ls-prize-row-body"><strong>{s.prize?.title || s.name} ✈️</strong><small>{t('contest.seePrize')}</small></span>
+          {s.isTest && <span className="ls-test">{t('contest.test')}</span>}
+          <Icon name="chevron-forward" size={18} />
+        </button>
 
         {me && me.joined === false && (
           <div className="pp-v2-card ls-card">
@@ -125,32 +240,31 @@ export default function ContestScreen({ account, onBack, onOpenProfile, onOpenIn
           </div>
         )}
 
+        {target && <CountdownBoard target={target} />}
         {data.counter && <Unlock {...data.counter} t={t} />}
 
         {joined?.disqualified && <div className="pp-v2-card ls-card"><p>{t('contest.dq')}</p></div>}
         {joined?.excluded && <div className="pp-v2-card ls-card"><p>{t('contest.excluded')}</p></div>}
 
-        {/* My score: a departure board. */}
         {pts && !joined.disqualified && (
           <section className="ls-board">
             <div className="ls-board-head">
-              <strong>{t(tab === 'final' ? 'contest.myFinalScore' : 'contest.myScore')}</strong>
+              <strong>{t(final ? 'contest.myFinalScore' : 'contest.myScore')}</strong>
               {rank ? <span className="ls-tag"><i />#{rank}</span> : <small>{t('contest.notRanked')}</small>}
             </div>
             <div className="ls-tiles">
-              <Tile label={t('contest.votes')} value={tab === 'final' ? pts.finalVotes : pts.votes} />
+              <Tile label={t('contest.votes')} value={final ? pts.finalVotes : pts.votes} />
               <Tile label={t('contest.referral')} value={pts.referral} />
-              {tab === 'final' && <Tile label={t('contest.headstart')} value={pts.headstart} />}
-              <Tile label={t('contest.total')} value={tab === 'final' ? pts.final : pts.season} total />
+              {final && <Tile label={t('contest.headstart')} value={pts.headstart} />}
+              <Tile label={t('contest.total')} value={final ? pts.final : pts.season} total />
             </div>
-            <small>
-              {t('contest.photosDays', { photos: joined.photos ?? 0, days: joined.days ?? 0 })}
-              {behind !== null && above ? ` · ${t('contest.behind', { count: behind, rank: above.rank })}` : ''}
-            </small>
+            <div className="ls-board-foot">
+              <small>{t('contest.photosDays', { photos: joined.photos ?? 0, days: joined.days ?? 0 })}{behind !== null && above ? ` · ${t('contest.behind', { count: behind, rank: above.rank })}` : ''}</small>
+              <button type="button" className="ls-share-btn" onClick={share}><Icon name="share-outline" size={14} />{t('contest.share')}</button>
+            </div>
           </section>
         )}
 
-        {/* Invites: a passport stamp. */}
         {joined?.referrals && !joined.disqualified && (
           <div className="pp-v2-card ls-card">
             <div className="ls-invite">
@@ -161,7 +275,7 @@ export default function ContestScreen({ account, onBack, onOpenProfile, onOpenIn
               {Array.from({ length: Math.min(joined.referrals.cap, 20) }).map((_, i) => <i key={i} className={i < joined.referrals.active ? 'on' : ''} />)}
             </div>
             <p className="dc-muted">{t('contest.inviteProgress', { active: Math.min(joined.referrals.active, joined.referrals.cap), cap: joined.referrals.cap })}</p>
-            {joined.referrals.friends.map((f, i) => (
+            {joined.referrals.friends.slice(0, 3).map((f, i) => (
               <div key={(f.username ?? '') + i} className="ls-friend">
                 <span>@{f.username}</span>
                 <span className={`dc-muted${f.status === 'active' ? ' ls-ok' : ''}`}>{t(`contest.friend.${f.status}`, { photos: f.photos, min: joined.referrals.minPhotos })}</span>
@@ -171,35 +285,67 @@ export default function ContestScreen({ account, onBack, onOpenProfile, onOpenIn
           </div>
         )}
 
-        {/* The contest's own ranking: a podium, then the list. */}
+        <div className="pp-v2-card ls-card">
+          <strong>{t(final ? 'contest.tabFinal' : 'contest.tabSeason')}</strong>
+          {!ranking ? <div className="dc-center"><span className="wm-spinner" aria-hidden="true" /></div>
+            : ranking.rows.length === 0 ? <p className="dc-muted">{t('contest.empty')}</p> : (
+              <>
+                <Podium rows={ranking.rows.slice(0, 3)} meId={account?.id} t={t} onOpenProfile={onOpenProfile} />
+                {mine && mine.rank > 3 && <RankRow row={mine} me t={t} onOpenProfile={onOpenProfile} />}
+              </>
+            )}
+          <button type="button" className="ls-see-all" onClick={() => onOpenRanking(final ? 'final' : 'season')}>{t('contest.seeRanking')} <Icon name="chevron-forward" size={16} /></button>
+        </div>
+
+        <div className="ls-links ls-links--center">
+          <button type="button" className="ls-link ls-link-btn" onClick={() => setHow(v => !v)} aria-expanded={how}><Icon name="help-circle-outline" size={16} /> {t('contest.howTitle')}</button>
+          <a className="ls-link" href={s.rulesUrl.replace('https://hilads.live', '')} target="_blank" rel="noopener">{t('contest.rulesShort')} <Icon name="open-outline" size={14} /></a>
+        </div>
+        {how && (
+          <div className="pp-v2-card ls-card">
+            <ul className="ls-how">
+              <li><Icon name="camera-outline" size={20} /><span>{t('contest.how1')}</span></li>
+              <li><Icon name="heart-outline" size={20} /><span>{t('contest.how2', { count: r.voteCap })}</span></li>
+              <li><Icon name="people-outline" size={20} /><span>{t('contest.how3', { points: r.referralPoints, min: r.referralMinPhotos, max: r.referralCap })}</span></li>
+              <li><Icon name="flag-outline" size={20} /><span>{t('contest.how4', { count: r.headstartTopN })}</span></li>
+            </ul>
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
+/** The full ranking (the app's /contest-ranking): Season / Final week, podium, everyone, my row pinned. */
+export function ContestRanking({ account, onBack, onOpenProfile, initialTab = 'season' }) {
+  const { t, i18n } = useT()
+  const { data } = useContest()
+  const [tab, setTab] = useState(initialTab)
+  const [ranking, setRanking] = useState(null)
+  useEffect(() => { setRanking(null); fetchContestRanking(tab).then(setRanking).catch(() => setRanking({ rows: [], me: null, frozen: true })) }, [tab])
+  useEffect(() => { track('contest_ranking_viewed', { tab }) }, [tab])
+  const s = data?.season
+  return (
+    <div className="full-page dc-page">
+      <Header title={t('contest.rankingTitle')} sub={s?.name} onBack={onBack} />
+      <div className="page-body dc-body ls-body">
         <div className="leaderboard-seg leaderboard-seg--primary" role="tablist">
           {['season', 'final'].map(k => (
             <button key={k} type="button" role="tab" aria-selected={tab === k} className={`leaderboard-seg-item${tab === k ? ' is-active' : ''}`}
-              onClick={() => { setTab(k); loadRanking(k) }}>{t(k === 'season' ? 'contest.tabSeason' : 'contest.tabFinal')}</button>
+              onClick={() => setTab(k)}>{t(k === 'season' ? 'contest.tabSeason' : 'contest.tabFinal')}</button>
           ))}
         </div>
-        {tab === 'final' && ranking && !ranking.frozen && (
-          <p className="dc-muted">{t('contest.finalNotYet', { date: shortDate(s.finalWeekStart, i18n.language), count: r.headstartTopN })}</p>
+        {tab === 'final' && ranking && !ranking.frozen && s && (
+          <p className="dc-muted">{t('contest.finalNotYet', { date: shortDate(s.finalWeekStart, i18n.language), count: s.rules.headstartTopN })}</p>
         )}
         <div className="pp-v2-card ls-card">
           {!ranking && <div className="dc-center"><span className="wm-spinner" aria-hidden="true" /></div>}
           {ranking && ranking.rows.length === 0 && <p className="dc-muted">{t('contest.empty')}</p>}
           {ranking && ranking.rows.length > 0 && <Podium rows={ranking.rows.slice(0, 3)} meId={account?.id} t={t} onOpenProfile={onOpenProfile} />}
           {ranking?.rows.slice(3).map(row => <RankRow key={row.userId} row={row} me={row.userId === account?.id} t={t} onOpenProfile={onOpenProfile} />)}
-          {ranking?.me && !ranking.rows.some(x => x.userId === ranking.me.userId) && <RankRow row={ranking.me} me t={t} onOpenProfile={onOpenProfile} />}
-        </div>
-
-        <div className="pp-v2-card ls-card">
-          <strong>{t('contest.howTitle')}</strong>
-          <ul className="ls-how">
-            <li><Icon name="camera-outline" size={20} /><span>{t('contest.how1')}</span></li>
-            <li><Icon name="heart-outline" size={20} /><span>{t('contest.how2', { count: r.voteCap })}</span></li>
-            <li><Icon name="people-outline" size={20} /><span>{t('contest.how3', { points: r.referralPoints, min: r.referralMinPhotos, max: r.referralCap })}</span></li>
-            <li><Icon name="flag-outline" size={20} /><span>{t('contest.how4', { count: r.headstartTopN })}</span></li>
-          </ul>
-          <a className="ls-link" href={s.rulesUrl.replace('https://hilads.live', '')} target="_blank" rel="noopener">{t('contest.rules')} <Icon name="open-outline" size={14} /></a>
         </div>
       </div>
+      {ranking?.me && <div className="ls-pinned"><RankRow row={ranking.me} me t={t} onOpenProfile={onOpenProfile} /></div>}
     </div>
   )
 }
@@ -268,7 +414,7 @@ function RankRow({ row, me, t, onOpenProfile }) {
   )
 }
 
-function JoinForm({ season, suggested, header, onDone }) {
+function JoinForm({ season, suggested, onBack, onDone }) {
   const { t, i18n } = useT()
   const [age, setAge] = useState(false)
   const [rules, setRules] = useState(false)
@@ -293,12 +439,11 @@ function JoinForm({ season, suggested, header, onDone }) {
 
   return (
     <div className="full-page dc-page">
-      {header(t('contest.join'))}
+      <Header title={t('contest.join')} onBack={onBack} />
       <div className="page-body dc-body ls-body">
-        <section className="ls-pass">
-          <div className="ls-pass-art ls-pass-art--short"><HalongArt />{season.isTest && <span className="ls-test ls-test--art">{t('contest.test')}</span>}</div>
-          <div className="ls-pass-body"><h1 className="ls-prize">{season.prize?.title || season.name}</h1>{season.prize?.subtitle && <p className="ls-prize-sub">{season.prize.subtitle}</p>}</div>
-        </section>
+        <PrizePhotos photos={season.photos} short>
+          <h1 className="ls-photo-title">{season.prize?.title || season.name}</h1>
+        </PrizePhotos>
         <p>{t('contest.joinText')}</p>
         <div className="pp-v2-card ls-form">
           <label className="ls-check"><input type="checkbox" checked={age} onChange={e => setAge(e.target.checked)} /> {t('contest.age')}</label>

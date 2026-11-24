@@ -313,6 +313,30 @@
     "inviteTitle": "Traz os teus amigos",
     "inviteText": "+{{points}} pontos por cada amigo que entre pelo teu link e publique {{count}} fotos aprovadas.",
     "inviteStamp": "por amigo",
-    "inviteProgress": "{{active}} de {{cap}} amigos contam"
+    "inviteProgress": "{{active}} de {{cap}} amigos contam",
+    "cdStarts": "Descola em",
+    "cdFinal": "Última semana em",
+    "cdEnds": "Termina em",
+    "cdDays": "dias",
+    "cdHours": "horas",
+    "cdMin": "min",
+    "cdSec": "s",
+    "dur": {
+      "dh": "{{d}} d {{h}} h",
+      "hm": "{{h}} h {{m}} min",
+      "m": "{{m}} min"
+    },
+    "startsIn": "Começa em {{time}}",
+    "endsIn": "Termina em {{time}}",
+    "share": "Partilhar",
+    "shareRank": "Estou em n.º {{rank}} na Launch Season do Hilads. {{prize}}: vem jogar comigo!",
+    "shareJoin": "Estou na Launch Season do Hilads. {{prize}}: vem jogar comigo!",
+    "shareCardIn": "Estou dentro",
+    "shareCardJoin": "Joga comigo no Hilads",
+    "prizeYoureIn": "Estás dentro · Ver a tua pontuação",
+    "seePrize": "Ver o prémio",
+    "seeRanking": "Ver a classificação completa",
+    "rankingTitle": "Classificação",
+    "rulesShort": "Regulamento"
   }
 }

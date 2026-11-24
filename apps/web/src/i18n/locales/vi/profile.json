@@ -325,7 +325,31 @@
       "inviteTitle": "Rủ bạn bè",
       "inviteText": "+{{points}} điểm cho mỗi người bạn tham gia bằng link của bạn và đăng {{count}} ảnh được duyệt.",
       "inviteStamp": "mỗi bạn",
-      "inviteProgress": "{{active}}/{{cap}} bạn được tính"
+      "inviteProgress": "{{active}}/{{cap}} bạn được tính",
+      "cdStarts": "Cất cánh sau",
+      "cdFinal": "Tuần cuối sau",
+      "cdEnds": "Kết thúc sau",
+      "cdDays": "ngày",
+      "cdHours": "giờ",
+      "cdMin": "phút",
+      "cdSec": "giây",
+      "dur": {
+        "dh": "{{d}} ngày {{h}} giờ",
+        "hm": "{{h}} giờ {{m}} phút",
+        "m": "{{m}} phút"
+      },
+      "startsIn": "Bắt đầu sau {{time}}",
+      "endsIn": "Kết thúc sau {{time}}",
+      "share": "Chia sẻ",
+      "shareRank": "Mình đang hạng #{{rank}} ở Launch Season của Hilads. {{prize}}: chơi cùng mình nhé!",
+      "shareJoin": "Mình đã tham gia Launch Season của Hilads. {{prize}}: chơi cùng mình nhé!",
+      "shareCardIn": "Mình tham gia rồi",
+      "shareCardJoin": "Chơi cùng mình trên Hilads",
+      "prizeYoureIn": "Bạn đã tham gia · Xem điểm",
+      "seePrize": "Xem giải thưởng",
+      "seeRanking": "Xem toàn bộ bảng xếp hạng",
+      "rankingTitle": "Bảng xếp hạng",
+      "rulesShort": "Thể lệ"
     }
   },
   "friendReq": {

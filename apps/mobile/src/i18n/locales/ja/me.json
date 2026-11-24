@@ -287,6 +287,30 @@
     "inviteTitle": "友だちを誘おう",
     "inviteText": "あなたのリンクで参加し、承認写真を {{count}} 枚投稿した友だち 1 人につき +{{points}} pt。",
     "inviteStamp": "友だち 1 人",
-    "inviteProgress": "{{cap}} 人中 {{active}} 人がカウント"
+    "inviteProgress": "{{cap}} 人中 {{active}} 人がカウント",
+    "cdStarts": "出発まで",
+    "cdFinal": "ファイナルまで",
+    "cdEnds": "終了まで",
+    "cdDays": "日",
+    "cdHours": "時間",
+    "cdMin": "分",
+    "cdSec": "秒",
+    "dur": {
+      "dh": "{{d}}日{{h}}時間",
+      "hm": "{{h}}時間{{m}}分",
+      "m": "{{m}}分"
+    },
+    "startsIn": "{{time}}後にスタート",
+    "endsIn": "{{time}}後に終了",
+    "share": "シェア",
+    "shareRank": "Hilads の Launch Season で {{rank}} 位！{{prize}}：一緒にプレイしよう！",
+    "shareJoin": "Hilads の Launch Season に参加中！{{prize}}：一緒にプレイしよう！",
+    "shareCardIn": "参加中",
+    "shareCardJoin": "Hilads で一緒に遊ぼう",
+    "prizeYoureIn": "参加中 · スコアを見る",
+    "seePrize": "賞品を見る",
+    "seeRanking": "ランキングをすべて見る",
+    "rankingTitle": "ランキング",
+    "rulesShort": "規約"
   }
 }

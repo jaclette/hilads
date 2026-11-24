@@ -5,7 +5,9 @@ import { useTranslation } from 'react-i18next';
 import { Space, Radius, Type, type ThemeColors } from '@/constants';
 import { useThemedStyles } from '@/context/ThemeContext';
 import { contestDate, fetchContest, type ContestMeJoined, type ContestOverview } from './contest';
-import { HalongArt, LS } from './HalongArt';
+import { LS } from './HalongArt';
+import { PrizeCover } from './PrizePhotos';
+import { countdownTarget, shortLeft, useNow } from './Countdown';
 
 /**
  * The Launch Season on Today and Passport, a small boarding pass: the Ha Long art, a tear
@@ -20,6 +22,7 @@ export function LaunchSeasonCard() {
 
   useFocusEffect(useCallback(() => { fetchContest(i18n.language).then(setData).catch(() => {}); }, [i18n.language]));
 
+  const now = useNow(30_000);
   const s = data?.season;
   if (!s) return null;
   // The prize from Admin › Launch Season (an older API has none: the season's name).
@@ -28,18 +31,22 @@ export function LaunchSeasonCard() {
   const final = s.phase === 'final' || s.phase === 'over';
   const rank = final ? joined?.finalRank : joined?.seasonRank;
   const points = final ? joined?.points?.final : joined?.points?.season;
-  const when = s.phase === 'upcoming'
-    ? t('contest.phase.upcoming', { date: contestDate(s.startDate, i18n.language) })
-    : t('contest.endsOn', { date: contestDate(s.endDate, i18n.language) });
+  // Before the start and in the final week, a live countdown; in the season, the end date.
+  const target = countdownTarget(s);
+  const when = target && target.label !== 'cdFinal'
+    ? t(target.label === 'cdStarts' ? 'contest.startsIn' : 'contest.endsIn', { time: shortLeft(target.at - now, t) })
+    : s.phase === 'upcoming'
+      ? t('contest.phase.upcoming', { date: contestDate(s.startDate, i18n.language) })
+      : t('contest.endsOn', { date: contestDate(s.endDate, i18n.language) });
   const status = joined?.points
     ? t('contest.cardJoined', { points: points ?? 0 }) + (rank ? ` · ${t('contest.cardRank', { rank })}` : '')
     : null;
 
   return (
-    <Pressable style={({ pressed }) => [styles.card, pressed && { opacity: 0.85 }]} onPress={() => router.push('/contest' as never)}
+    <Pressable style={({ pressed }) => [styles.card, pressed && { opacity: 0.85 }]} onPress={() => router.push((joined ? '/contest' : '/contest-prize') as never)}
                accessibilityRole="button" testID="launch-season-card"
                accessibilityLabel={`${prize}. ${when}. ${status ?? t('contest.join')}${s.isTest ? `. ${t('contest.test')}` : ''}`}>
-      <View style={styles.art}><View style={StyleSheet.absoluteFill}><HalongArt width="100%" height="100%" /></View></View>
+      <View style={styles.art}><View style={StyleSheet.absoluteFill}><PrizeCover photos={s.photos} width="100%" height="100%" /></View></View>
       <View style={styles.tear}>
         <View style={[styles.notch, styles.notchTop]} />
         <View style={[styles.notch, styles.notchBottom]} />
