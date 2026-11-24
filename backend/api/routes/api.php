@@ -13856,7 +13856,8 @@ $router->add('POST', '/api/v1/invites/click', function () {
 // and me (joined + my points, or whether I can join). {season: null} when none.
 $router->add('GET', '/api/v1/contest', function () {
     $user = AuthService::currentUser();
-    Response::json(Contest::overview($user['id'] ?? null));
+    $locale = in_array($_GET['locale'] ?? '', Contest::LOCALES, true) ? (string) $_GET['locale'] : null;
+    Response::json(Contest::overview($user['id'] ?? null, $locale));
 });
 
 // POST /api/v1/contest/join {seasonId, ageConfirmed: true, country: 'FR', rulesAccepted: true}
@@ -13874,7 +13875,8 @@ $router->add('POST', '/api/v1/contest/join', function () {
         $code = $e->getMessage();
         Response::json(['error' => 'Cannot join', 'code' => $code], str_starts_with($code, 'invalid_') ? 400 : 403);
     }
-    Response::json(['result' => $r] + Contest::overview($user['id']));
+    $locale = in_array($_GET['locale'] ?? '', Contest::LOCALES, true) ? (string) $_GET['locale'] : null;
+    Response::json(['result' => $r] + Contest::overview($user['id'], $locale));
 });
 
 // GET /api/v1/contest/ranking?phase=season|final - the contest's own ranking (top 100 + me).

@@ -5094,6 +5094,11 @@ run($pdo, "
     )
 ", 'contest_admin_log');
 
+// Launch Season phase 2: the prize text per season and locale ({"en": {"title", "subtitle"}, …}),
+// edited in Admin › Launch Season; empty = Contest::DEFAULT_PRIZE (the week in Vietnam).
+// Reversal: ALTER TABLE contest_seasons DROP COLUMN prize_i18n.
+run($pdo, "ALTER TABLE contest_seasons ADD COLUMN IF NOT EXISTS prize_i18n JSONB NOT NULL DEFAULT '{}'::jsonb", 'contest_seasons.prize_i18n');
+
 // ── Self-heal monthly rank columns ────────────────────────────────────────
 // The denormalised users.monthly_rank_* columns are kept fresh by
 // route-level recalc hooks fired after each scoring action. If any

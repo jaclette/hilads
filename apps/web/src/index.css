@@ -12437,35 +12437,115 @@ html[data-event="halloween"] { --header-art: #FFA552; --header-art-opacity: 0.28
 .pp-points-row--tap span { flex: 1; }
 .account-welcome-invited { margin: 0 0 12px; padding: 10px 14px; border-radius: 14px; background: var(--primary-tint); color: var(--text); font-weight: 700; text-align: center; }
 
-/* ── Launch Season (phase 1: mechanics first; design pass in phase 2). Tokens only. ── */
-.ls-card { display: flex; align-items: center; gap: var(--sp-12); width: 100%; padding: var(--sp-12) var(--sp-16); min-height: 72px; border-radius: var(--r-card);
-  border: 1px solid var(--line); background: var(--primary-tint); color: var(--text); font-family: inherit; text-align: left; cursor: pointer; }
-.ls-card-emoji { font-size: 28px; }
-.ls-card-body { flex: 1; display: flex; flex-direction: column; gap: 2px; min-width: 0; font-size: var(--fs-sm); }
-.ls-card-body strong { color: var(--primary-on-tint); font-size: var(--fs-body); }
-.ls-card-cta { background: var(--cta); color: #fff; border-radius: var(--r-chip); padding: 0 var(--sp-16); line-height: 36px; font-weight: 800; font-size: var(--fs-sm); }
-.ls-test { margin-left: var(--sp-8); padding: 1px 6px; border-radius: var(--r-chip); background: var(--primary-on-tint); color: var(--primary-tint); font-size: var(--fs-xs); font-weight: 800; vertical-align: middle; }
-.ls-body { display: flex; flex-direction: column; gap: var(--sp-12); padding-bottom: 120px; }
-.ls-counter { font-size: var(--fs-title); color: var(--text); }
-.ls-split { display: flex; gap: var(--sp-8); }
-.ls-part { flex: 1; display: flex; flex-direction: column; align-items: center; padding: var(--sp-8) 0; border-radius: var(--r-chip); background: var(--primary-tint); color: var(--primary-on-tint); }
-.ls-part b { font-size: var(--fs-lg); }
-.ls-part.strong b { font-weight: 900; }
-.ls-part small { font-size: var(--fs-xs); }
-.ls-referrals { display: flex; flex-direction: column; gap: var(--sp-8); margin-top: var(--sp-8); }
+/* ── Launch Season: a boarding pass to the prize (docs/mockups/hilads_launch_season_mockup.html).
+   Event accents are fixed art colors (like the share cards); the rest uses the theme tokens. ── */
+:root { --ls-lantern: #D7263D; --ls-mango: #FFB627; --ls-orange: #FF7A3C; --ls-jade: #0F7B74; --ls-board: #21160F; --ls-board-tile: #34261B;
+        --ls-board-text: #FFF4E3; --ls-board-muted: #D8C6B2; }
+.ls-art { display: block; width: 100%; height: 100%; }
+.ls-test { display: inline-block; padding: 1px 8px; border-radius: var(--r-chip); background: var(--ls-lantern); color: #fff; font-size: var(--fs-xs); font-weight: 800; white-space: nowrap; }
+.ls-test--art { position: absolute; top: 10px; right: 10px; }
+.ls-head { display: flex; flex-direction: column; min-width: 0; }
+.ls-head small { color: var(--muted); font-size: var(--fs-sm); }
+.ls-body { display: flex; flex-direction: column; gap: var(--sp-16); padding-bottom: 120px; }
+.ls-card { display: flex; flex-direction: column; gap: var(--sp-8); }
+.ls-card p { margin: 0; }
+
+/* Today / Passport card: a small boarding pass. */
+.ls-mini { display: flex; width: 100%; min-height: 124px; padding: 0; border-radius: var(--r-card); overflow: hidden; border: 1px solid var(--line);
+  background: var(--surface); color: var(--text); font-family: inherit; text-align: left; cursor: pointer; }
+.ls-mini-art { width: 104px; flex-shrink: 0; position: relative; }
+.ls-mini-body { flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: center; gap: var(--sp-4); padding: var(--sp-12) var(--sp-12) var(--sp-12) var(--sp-16);
+  border-left: 2px dashed var(--line); position: relative; }
+.ls-mini-body::before, .ls-mini-body::after { content: ''; position: absolute; left: -11px; width: 20px; height: 20px; border-radius: 50%; background: var(--bg); }
+.ls-mini-body::before { top: -11px; } .ls-mini-body::after { bottom: -11px; }
+.ls-mini-top { display: flex; align-items: flex-start; gap: var(--sp-8); }
+.ls-mini-top strong { flex: 1; font-size: 18px; line-height: 1.2; font-weight: 800; }
+.ls-when { color: var(--primary-text); font-size: var(--fs-sm); font-weight: 700; }
+.ls-chip { align-self: flex-start; max-width: 100%; margin-top: 2px; padding: 5px 10px; border-radius: var(--r-chip); background: var(--primary-tint); color: var(--primary-on-tint);
+  font-size: var(--fs-sm); font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ls-chip--cta { background: var(--cta); color: #241A12; }
+
+/* The prize. */
+.ls-pass { border-radius: 26px; overflow: hidden; border: 1px solid var(--line); background: var(--surface); }
+.ls-pass-art { height: 180px; position: relative; }
+.ls-pass-art--short { height: 120px; }
+.ls-tear { position: relative; border-top: 2px dashed var(--line); margin: 0 14px; }
+.ls-tear::before, .ls-tear::after { content: ''; position: absolute; top: -11px; width: 20px; height: 20px; border-radius: 50%; background: var(--bg); }
+.ls-tear::before { left: -25px; } .ls-tear::after { right: -25px; }
+.ls-pass-body { padding: var(--sp-16); display: flex; flex-direction: column; gap: var(--sp-4); }
+.ls-prize { margin: 0; font-size: 30px; line-height: 1.15; font-weight: 800; letter-spacing: -.02em; color: var(--text); overflow-wrap: anywhere; }
+.ls-prize-sub { margin: 0; font-weight: 700; color: var(--primary-text); }
+.ls-meta { display: flex; gap: var(--sp-8); margin-top: var(--sp-8); }
+.ls-meta span { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+.ls-meta small { color: var(--muted); font-size: var(--fs-sm); }
+.ls-meta b { font-size: 17px; }
+.ls-gift { margin: var(--sp-8) 0 0; padding-top: var(--sp-8); border-top: 1px solid var(--line); }
+
+/* The unlock: a flight path. */
+.ls-unlock { margin: 0; display: flex; align-items: baseline; flex-wrap: wrap; gap: 6px; }
+.ls-unlock b { font-size: 28px; font-weight: 800; }
+.ls-unlock span { color: var(--muted); font-weight: 600; font-size: 17px; }
+.ls-flight { display: flex; align-items: center; gap: var(--sp-8); height: 40px; font-size: 20px; }
+.ls-flight-track { flex: 1; position: relative; height: 40px; }
+.ls-flight-track::before { content: ''; position: absolute; left: 0; right: 0; top: 19px; border-top: 3px dashed var(--line); }
+.ls-flight-done { position: absolute; left: 0; top: 17px; height: 7px; border-radius: 4px; background: var(--ls-orange); transition: width 1.4s cubic-bezier(.2, .8, .2, 1); }
+.ls-plane { position: absolute; top: 9px; transform: translateX(-50%); color: var(--ls-lantern); transition: left 1.4s cubic-bezier(.2, .8, .2, 1); }
+@media (prefers-reduced-motion: reduce) { .ls-flight-done, .ls-plane { transition: none; } }
+
+/* My score: a departure board (fixed dark in every theme). */
+.ls-board { background: var(--ls-board); color: var(--ls-board-text); border-radius: var(--r-card); padding: var(--sp-16); display: flex; flex-direction: column; gap: var(--sp-8); }
+.ls-board small { color: var(--ls-board-muted); font-size: var(--fs-sm); }
+.ls-board-head { display: flex; justify-content: space-between; align-items: center; gap: var(--sp-8); }
+.ls-board-head strong { font-size: 17px; }
+.ls-tag { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px 4px 8px; border-radius: 6px 12px 12px 6px; background: var(--medal-gold); color: var(--on-medal);
+  font-size: 20px; font-weight: 800; transform: rotate(-4deg); }
+.ls-tag i { width: 7px; height: 7px; border-radius: 50%; background: var(--ls-board); }
+.ls-tiles { display: flex; gap: 6px; }
+.ls-tile { flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: center; padding: var(--sp-8) 4px; border-radius: 12px; background: var(--ls-board-tile); position: relative; overflow: hidden; }
+.ls-tile::after { content: ''; position: absolute; left: 0; right: 0; top: 50%; border-top: 1px solid rgba(0, 0, 0, .35); }
+.ls-tile b { font-size: 28px; line-height: 1.15; font-weight: 800; color: var(--ls-mango); font-variant-numeric: tabular-nums; }
+.ls-board .ls-tile small { font-size: 12px; text-align: center; }
+.ls-tile.total { background: var(--ls-lantern); } .ls-tile.total b { color: #fff; } .ls-board .ls-tile.total small { color: #FFE0E4; }
+
+/* Invites: a passport stamp. */
+.ls-invite { display: flex; align-items: center; gap: var(--sp-16); }
+.ls-invite > span:last-child { display: flex; flex-direction: column; gap: 4px; }
+.ls-invite strong { font-size: 17px; }
+.ls-stamp { width: 76px; height: 76px; flex-shrink: 0; border-radius: 50%; border: 3px dashed var(--green); color: var(--green); display: flex; flex-direction: column;
+  align-items: center; justify-content: center; transform: rotate(-10deg); text-align: center; line-height: 1.05; }
+.ls-stamp b { font-size: 24px; } .ls-stamp small { font-size: 10px; font-weight: 700; padding: 0 4px; }
+.ls-segments { display: flex; gap: 4px; }
+.ls-segments i { flex: 1; height: 8px; border-radius: 4px; background: var(--line); }
+.ls-segments i.on { background: var(--green); }
 .ls-friend { display: flex; justify-content: space-between; gap: var(--sp-8); }
 .ls-ok { color: var(--green); }
-.ls-row-body { flex: 1; display: flex; flex-direction: column; min-width: 0; text-align: left; }
-.ls-how { margin: var(--sp-8) 0; padding-left: 18px; display: flex; flex-direction: column; gap: var(--sp-4); }
-.ls-link { display: inline-flex; align-items: center; gap: 4px; min-height: 44px; font-weight: 800; color: var(--primary-text, var(--primary)); }
-.ls-hero { font-size: 48px; text-align: center; }
-.ls-title { text-align: center; margin: 0; color: var(--text); }
+
+/* The ranking: a podium, then rows. */
+.ls-podium { display: grid; grid-template-columns: 1fr 1.15fr 1fr; align-items: end; gap: var(--sp-8); padding-top: var(--sp-8); }
+.ls-step { display: flex; flex-direction: column; align-items: center; gap: 2px; min-width: 0; border: 0; background: none; padding: 0; font: inherit; color: inherit; cursor: pointer; }
+.ls-ring { border: 3px solid var(--line); border-radius: 50%; padding: 2px; display: inline-flex; }
+.ls-step.gold .ls-ring { border-color: var(--medal-gold); } .ls-step.silver .ls-ring { border-color: var(--medal-silver); } .ls-step.bronze .ls-ring { border-color: var(--medal-bronze); }
+.ls-step-name { font-weight: 800; font-size: var(--fs-sm); max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ls-block { align-self: stretch; margin-top: 6px; border-radius: 14px 14px 4px 4px; display: grid; place-items: center; font-weight: 800; font-size: 20px; color: var(--on-medal); }
+.ls-step.gold .ls-block { height: 88px; background: var(--medal-gold); } .ls-step.silver .ls-block { height: 64px; background: var(--medal-silver); }
+.ls-step.bronze .ls-block { height: 48px; background: var(--medal-bronze); }
+.ls-you { display: inline-block; margin-left: 6px; padding: 1px 8px; border-radius: var(--r-chip); background: var(--cta); color: #241A12; font-size: var(--fs-xs); font-weight: 800; }
+.ls-step .ls-you { margin-left: 0; }
+.ls-row { display: flex; align-items: center; gap: var(--sp-12); width: 100%; min-height: 56px; padding: var(--sp-8); border: 0; border-radius: 14px; background: transparent;
+  font: inherit; color: inherit; text-align: left; cursor: pointer; }
+.ls-row.is-me { background: var(--primary-tint); }
+.ls-row-n { width: 24px; text-align: center; font-weight: 800; color: var(--muted); }
+.ls-row-body { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.ls-row-name { font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ls-row-pts { font-size: 17px; }
+
+.ls-how { list-style: none; margin: var(--sp-8) 0 0; padding: 0; display: flex; flex-direction: column; gap: var(--sp-12); }
+.ls-how li { display: flex; gap: var(--sp-12); align-items: flex-start; }
+.ls-how li > svg, .ls-how li > span:first-child { color: var(--primary-text); flex-shrink: 0; }
+.ls-link { display: inline-flex; align-items: center; gap: 4px; min-height: 44px; font-weight: 800; color: var(--primary-text); }
 .ls-form { display: flex; flex-direction: column; gap: var(--sp-12); }
 .ls-check { display: flex; align-items: center; gap: var(--sp-12); min-height: 44px; font-size: var(--fs-body); color: var(--text); }
 .ls-check input { width: 22px; height: 22px; accent-color: var(--cta); }
 .ls-field { display: flex; flex-direction: column; gap: var(--sp-4); font-size: var(--fs-sm); color: var(--muted); }
 .ls-field select { min-height: 48px; border-radius: var(--r-chip); border: 1px solid var(--line); background: var(--surface); color: var(--text); padding: 0 var(--sp-12); font: inherit; }
 .ls-error { color: var(--warning); text-align: center; }
-.ls-body .leaderboard-row { width: 100%; border: 0; border-bottom: 1px solid var(--line); background: transparent; font: inherit; color: inherit; cursor: pointer; text-align: left; }
-.ls-body .leaderboard-row.is-me { background: var(--primary-tint); }
-.ls-body .leaderboard-row:last-child { border-bottom: 0; }

@@ -2635,8 +2635,8 @@ export async function submitBlock({ targetUserId, targetNickname }) {
 }
 
 /** Launch Season (a separate contest layer): the season I see, the counter and me. */
-export async function fetchContest() {
-  const res = await fetch(`${BASE}/contest`, { credentials: 'include' })
+export async function fetchContest(locale) {
+  const res = await fetch(`${BASE}/contest${locale ? `?locale=${encodeURIComponent(locale)}` : ''}`, { credentials: 'include' })
   if (!res.ok) throw new Error('contest')
   return res.json()
 }

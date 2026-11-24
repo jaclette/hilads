@@ -104,6 +104,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 flash_set('success', 'Season created as a draft. Start it when ready.');
             }
             admin_redirect('/admin/launch-season?tab=seasons&season=' . $sid);
+        } elseif ($season !== null && $do === 'save_prize') {
+            $prize = [];
+            foreach (Contest::LOCALES as $l) {
+                $t  = trim((string) ($_POST['prize_title'][$l] ?? ''));
+                $st = trim((string) ($_POST['prize_subtitle'][$l] ?? ''));
+                if ($t === '' && $st === '') continue;
+                if ($t === '') throw new InvalidArgumentException("Prize ({$l}): a title is needed when there is a line.");
+                if (mb_strlen($t) > 60 || mb_strlen($st) > 140) throw new InvalidArgumentException("Prize ({$l}): title 60 characters max, line 140.");
+                $prize[$l] = ['title' => $t, 'subtitle' => $st];
+            }
+            if (empty($prize['en'])) throw new InvalidArgumentException('The English prize title is required (other languages fall back to it).');
+            $pdo->prepare("UPDATE contest_seasons SET prize_i18n = ?::jsonb, updated_at = now() WHERE id = ?")
+                ->execute([json_encode($prize, JSON_UNESCAPED_UNICODE), $season['id']]);
+            Contest::log($season['id'], 'prize', null, ['en' => $prize['en'], 'locales' => array_keys($prize)]);
+            flash_set('success', 'Prize saved: the app and the web show it at their next refresh (no new app version required).');
         } elseif ($season !== null && in_array($do, ['start', 'pause', 'resume', 'end', 'reopen'], true)) {
             $sql = match ($do) {
                 'start'  => "UPDATE contest_seasons SET status = 'running', paused = false, updated_at = now() WHERE id = ?",
@@ -261,6 +276,19 @@ admin_nav('/admin/launch-season');
   <?php if ($season !== null): ?>
     <h2 style="font-size:15px;color:#fff">Edit “<?= $esc($season['name']) ?>” <?= $badge($season) ?></h2>
     <?php $form($season); ?>
+    <h2 style="font-size:15px;color:#fff;margin-top:24px">Prize</h2>
+    <p class="ls-muted">What the app and the web show as the hero (the Today card, the contest screen). Change it any time, e.g. to the souvenir prize if the player threshold isn't met. English is required; an empty language shows the English text.</p>
+    <form method="post" class="form-card" style="max-width:none">
+      <?= csrf_input() ?><input type="hidden" name="do" value="save_prize">
+      <div class="table-wrapper"><table><thead><tr><th style="width:70px">Lang</th><th>Title (60 max)</th><th>Line under it (140 max)</th></tr></thead><tbody>
+        <?php foreach (Contest::LOCALES as $l): $p = $season['prize_i18n'][$l] ?? ['title' => '', 'subtitle' => '']; ?>
+          <tr><td><?= $esc($l) ?></td>
+            <td><input type="text" name="prize_title[<?= $esc($l) ?>]" value="<?= $esc($p['title'] ?? '') ?>" maxlength="60" style="width:100%;background:#1a1a1a;border:1px solid #2a2a2a;color:#eee;padding:5px 8px;border-radius:4px"<?= $l === 'en' ? ' required' : '' ?><?= $l === 'ar' ? ' dir="rtl"' : '' ?>></td>
+            <td><input type="text" name="prize_subtitle[<?= $esc($l) ?>]" value="<?= $esc($p['subtitle'] ?? '') ?>" maxlength="140" style="width:100%;background:#1a1a1a;border:1px solid #2a2a2a;color:#eee;padding:5px 8px;border-radius:4px"<?= $l === 'ar' ? ' dir="rtl"' : '' ?>></td></tr>
+        <?php endforeach; ?>
+      </tbody></table></div>
+      <div class="form-actions"><button class="btn btn-primary">Save prize</button></div>
+    </form>
     <div class="toolbar" style="gap:8px;margin:14px 0">
       <?php $act = static function (string $do, string $label, string $cls = 'btn-secondary', ?string $confirm = null) use ($esc): void { ?>
         <form method="post" class="ls-inline"<?= $confirm ? ' onsubmit="return confirm(\'' . $esc($confirm) . '\')"' : '' ?>><?= csrf_input() ?><input type="hidden" name="do" value="<?= $do ?>"><button class="btn <?= $cls ?> btn-sm"><?= $esc($label) ?></button></form>

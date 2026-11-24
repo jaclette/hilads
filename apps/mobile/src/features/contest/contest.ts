@@ -5,6 +5,8 @@ export type ContestPhase = 'upcoming' | 'season' | 'final' | 'over';
 
 export interface ContestSeason {
   id: number;
+  /** The prize, set per season in Admin › Launch Season (in the app's language, else English). */
+  prize?: { title: string; subtitle: string };
   name: string;
   isTest: boolean;
   phase: ContestPhase;
@@ -65,8 +67,8 @@ export interface ContestRanking {
   total: number;
 }
 
-export function fetchContest(): Promise<ContestOverview> {
-  return api.get<ContestOverview>('/contest');
+export function fetchContest(locale?: string): Promise<ContestOverview> {
+  return api.get<ContestOverview>('/contest', { params: { locale } });
 }
 
 export function fetchContestRanking(phase: 'season' | 'final'): Promise<ContestRanking> {
@@ -75,6 +77,12 @@ export function fetchContestRanking(phase: 'season' | 'final'): Promise<ContestR
 
 export function joinContest(seasonId: number, country: string): Promise<ContestOverview & { result: 'joined' | 'already' }> {
   return api.post('/contest/join', { seasonId, country, ageConfirmed: true, rulesAccepted: true });
+}
+
+/** Days left until a season's end date closes (its next drop), at least 0. */
+export function daysLeft(endDate: string): number {
+  const end = new Date(`${endDate}T23:59:59Z`).getTime();
+  return Math.max(0, Math.ceil((end - Date.now()) / 86_400_000));
 }
 
 /** A challenge date (YYYY-MM-DD) as a short day in the app's language. */

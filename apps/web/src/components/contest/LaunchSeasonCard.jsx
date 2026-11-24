@@ -1,35 +1,44 @@
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import Icon from '../Icon'
 import { fetchContest } from '../../api'
+import HalongArt from './HalongArt'
+
+const shortDate = (date, locale) => new Date(`${date}T12:00:00Z`).toLocaleDateString(locale, { day: 'numeric', month: 'short' })
 
 /**
- * The Launch Season's entry (Today, Passport): only while a season is visible to me (a test
- * season: its testers only). Join, or my points and rank; opens the contest screen.
+ * The Launch Season on Today and Passport, a small boarding pass (the app's LaunchSeasonCard):
+ * the art, a tear line, the prize (Admin › Launch Season), the deadline, my points and rank or
+ * Join. Only while a season is visible to me (a test season: its testers only).
  */
 export default function LaunchSeasonCard({ onOpen }) {
   const { t, i18n } = useTranslation('profile', { keyPrefix: 'pp' })
   const [data, setData] = useState(null)
-  useEffect(() => { fetchContest().then(setData).catch(() => {}) }, [])
+  useEffect(() => { fetchContest(i18n.language).then(setData).catch(() => {}) }, [i18n.language])
 
   const s = data?.season
   if (!s) return null
+  const prize = s.prize?.title || s.name
   const joined = data.me?.joined ? data.me : null
   const final = ['final', 'over'].includes(s.phase)
   const rank = final ? joined?.finalRank : joined?.seasonRank
   const points = final ? joined?.points?.final : joined?.points?.season
-  const date = new Date(`${s.phase === 'upcoming' ? s.startDate : s.endDate}T12:00:00Z`).toLocaleDateString(i18n.language, { day: 'numeric', month: 'short' })
-  const counter = data.counter ? t('contest.counter', { count: data.counter.players, max: data.counter.threshold }) : ''
+  const when = s.phase === 'upcoming'
+    ? t('contest.phase.upcoming', { date: shortDate(s.startDate, i18n.language) })
+    : t('contest.endsOn', { date: shortDate(s.endDate, i18n.language) })
 
   return (
-    <button type="button" className="ls-card tappable" onClick={onOpen}>
-      <span className="ls-card-emoji" aria-hidden="true">🚀</span>
-      <span className="ls-card-body">
-        <strong>{s.name}{s.isTest && <span className="ls-test">{t('contest.test')}</span>}</strong>
-        <span>{joined?.points ? t('contest.cardJoined', { points: points ?? 0 }) : t('contest.cardText')}{rank ? ` · ${t('contest.cardRank', { rank })}` : ''}</span>
-        <span className="dc-muted">{t(`contest.phase.${s.phase}`, { date })}{counter ? ` · ${counter}` : ''}</span>
+    <button type="button" className="ls-mini tappable" onClick={onOpen}>
+      <span className="ls-mini-art"><HalongArt /></span>
+      <span className="ls-mini-body">
+        <span className="ls-mini-top">
+          <strong>{prize} ✈️</strong>
+          {s.isTest && <span className="ls-test">{t('contest.test')}</span>}
+        </span>
+        <span className="ls-when">{when}</span>
+        {joined?.points
+          ? <span className="ls-chip">{t('contest.cardJoined', { points: points ?? 0 })}{rank ? ` · ${t('contest.cardRank', { rank })}` : ''}</span>
+          : <span className="ls-chip ls-chip--cta">{t('contest.join')}</span>}
       </span>
-      {joined ? <Icon name="chevron-forward" size={18} /> : <span className="ls-card-cta">{t('contest.cardJoin')}</span>}
     </button>
   )
 }

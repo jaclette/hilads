@@ -33,6 +33,35 @@ final class Contest
     public const SETTINGS = ['vote_cap_per_photo', 'referral_points', 'referral_min_photos', 'referral_cap',
                              'headstart_top_n', 'prize_threshold_players', 'prize_threshold_photos'];
 
+    /** The locales the prize text can be written in (the apps' 19). */
+    public const LOCALES = ['en', 'fr', 'vi', 'es', 'it', 'pt-br', 'pt-pt', 'de', 'nl', 'zh-hans', 'zh-hant', 'ja', 'ko', 'fil', 'th', 'id', 'hi', 'ru', 'ar'];
+
+    /**
+     * The launch prize, prefilled on a new season and on seasons saved before the prize
+     * setting (Admin › Launch Season edits it per season and locale: title + one line).
+     */
+    public const DEFAULT_PRIZE = [
+        'en'      => ['title' => 'Win a week in Vietnam', 'subtitle' => "Flights included, for the season's best photographer."],
+        'fr'      => ['title' => 'Gagne une semaine au Vietnam', 'subtitle' => 'Vols compris, pour le meilleur photographe de la saison.'],
+        'vi'      => ['title' => 'Thắng một tuần du lịch Việt Nam', 'subtitle' => 'Bao gồm vé máy bay, dành cho nhiếp ảnh gia xuất sắc nhất mùa.'],
+        'es'      => ['title' => 'Gana una semana en Vietnam', 'subtitle' => 'Vuelos incluidos, para el mejor fotógrafo de la temporada.'],
+        'it'      => ['title' => 'Vinci una settimana in Vietnam', 'subtitle' => 'Voli inclusi, per il miglior fotografo della stagione.'],
+        'pt-br'   => ['title' => 'Ganhe uma semana no Vietnã', 'subtitle' => 'Voos incluídos, para o melhor fotógrafo da temporada.'],
+        'pt-pt'   => ['title' => 'Ganha uma semana no Vietname', 'subtitle' => 'Voos incluídos, para o melhor fotógrafo da temporada.'],
+        'de'      => ['title' => 'Gewinne eine Woche in Vietnam', 'subtitle' => 'Inklusive Flügen, für die beste Fotografin oder den besten Fotografen der Saison.'],
+        'nl'      => ['title' => 'Win een week in Vietnam', 'subtitle' => 'Inclusief vluchten, voor de beste fotograaf van het seizoen.'],
+        'zh-hans' => ['title' => '赢取越南一周之旅', 'subtitle' => '含往返机票，送给本季最佳摄影师。'],
+        'zh-hant' => ['title' => '贏取越南一週之旅', 'subtitle' => '含來回機票，送給本季最佳攝影師。'],
+        'ja'      => ['title' => 'ベトナム1週間の旅をゲット', 'subtitle' => '航空券込み。シーズン最優秀フォトグラファーへ。'],
+        'ko'      => ['title' => '베트남 일주일 여행에 당첨되세요', 'subtitle' => '항공권 포함, 시즌 최고의 사진가에게.'],
+        'fil'     => ['title' => 'Manalo ng isang linggo sa Vietnam', 'subtitle' => 'Kasama ang flights, para sa pinakamahusay na photographer ng season.'],
+        'th'      => ['title' => 'ลุ้นเที่ยวเวียดนาม 1 สัปดาห์', 'subtitle' => 'รวมตั๋วเครื่องบิน สำหรับช่างภาพยอดเยี่ยมของซีซัน'],
+        'id'      => ['title' => 'Menangkan seminggu di Vietnam', 'subtitle' => 'Termasuk tiket pesawat, untuk fotografer terbaik musim ini.'],
+        'hi'      => ['title' => 'वियतनाम में एक हफ़्ता जीतें', 'subtitle' => 'फ़्लाइट्स शामिल, सीज़न के सबसे अच्छे फ़ोटोग्राफ़र के लिए।'],
+        'ru'      => ['title' => 'Выиграй неделю во Вьетнаме', 'subtitle' => 'С перелётом — для лучшего фотографа сезона.'],
+        'ar'      => ['title' => 'اربح أسبوعًا في فيتنام', 'subtitle' => 'شامل تذاكر الطيران، لأفضل مصوّر في الموسم.'],
+    ];
+
     // ── Seasons ─────────────────────────────────────────────────────────────
 
     public static function season(int $id): ?array
@@ -56,6 +85,8 @@ final class Contest
         foreach (self::SETTINGS as $k) $r[$k] = (int) $r[$k];
         $r['is_test'] = DailyProofRepository::bool($r['is_test']);
         $r['paused']  = DailyProofRepository::bool($r['paused']);
+        $prize = json_decode((string) ($r['prize_i18n'] ?? ''), true);
+        $r['prize_i18n'] = is_array($prize) && $prize !== [] ? $prize : self::DEFAULT_PRIZE;
         return $r;
     }
 
@@ -386,9 +417,18 @@ final class Contest
 
     // ── API payloads ────────────────────────────────────────────────────────
 
-    public static function seasonPayload(array $s): array
+    /** The prize text in a locale (else English): {title, subtitle}. */
+    public static function prize(array $s, ?string $locale): array
+    {
+        $all = $s['prize_i18n'] ?? self::DEFAULT_PRIZE;
+        $p   = ($locale !== null && !empty($all[$locale]['title'])) ? $all[$locale] : ($all['en'] ?? self::DEFAULT_PRIZE['en']);
+        return ['title' => (string) ($p['title'] ?? ''), 'subtitle' => (string) ($p['subtitle'] ?? '')];
+    }
+
+    public static function seasonPayload(array $s, ?string $locale = null): array
     {
         return [
+            'prize' => self::prize($s, $locale),
             'id' => $s['id'], 'name' => $s['name'], 'isTest' => $s['is_test'], 'phase' => self::phase($s),
             'startDate' => $s['start_date'], 'endDate' => $s['end_date'], 'finalWeekStart' => $s['final_week_start'],
             'rules' => [
@@ -415,7 +455,7 @@ final class Contest
     }
 
     /** GET /contest: the season I see, the counter, and me. */
-    public static function overview(?string $userId): array
+    public static function overview(?string $userId, ?string $locale = null): array
     {
         $season = self::visibleFor($userId);
         if ($season === null) return ['season' => null];
@@ -446,7 +486,7 @@ final class Contest
             }
         }
         return [
-            'season'  => self::seasonPayload($season),
+            'season'  => self::seasonPayload($season, $locale),
             'counter' => $st['counter'] ?? null,
             'participants' => $st['totals']['participants'] ?? 0,
             'me'      => $me,

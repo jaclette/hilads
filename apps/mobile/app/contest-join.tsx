@@ -31,12 +31,12 @@ export default function ContestJoinScreen() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetchContest().then(d => {
+    fetchContest(i18n.language).then(d => {
       setData(d);
       const cc = d.me && d.me.joined === false ? d.me.suggestedCountry : null;
       if (cc && FLAGS[cc as keyof typeof FLAGS]) setCountry(cc);
     }).catch(() => setError(t('contest.error')));
-  }, [t]);
+  }, [t, i18n.language]);
 
   const countries = useMemo(() => {
     const q = query.trim().toLowerCase();

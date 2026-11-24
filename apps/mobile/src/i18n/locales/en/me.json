@@ -237,19 +237,14 @@
   "contest": {
     "title": "Launch Season",
     "test": "TEST",
-    "cardText": "Your photos can win. Join once and every photo you post counts.",
     "cardJoined": "You're in · {{points}} pts",
     "cardRank": "#{{rank}}",
-    "cardJoin": "Join",
-    "cardOpen": "See the ranking",
     "phase": {
       "upcoming": "Starts {{date}}",
       "season": "Ends {{date}}",
       "final": "Final week · ends {{date}}",
       "over": "Results coming soon"
     },
-    "counter": "{{count}} / {{max}} players",
-    "counterHint": "Players with {{photos}}+ approved photos. The prize unlocks at {{max}}.",
     "myScore": "Your score",
     "votes": "Likes",
     "referral": "Invites",
@@ -258,8 +253,6 @@
     "pts": "{{count}} pts",
     "notRanked": "Not ranked yet",
     "photosDays": "{{photos}} photos · {{days}} days played",
-    "referrals": "Friends who count: {{active}} / {{cap}}",
-    "referralsHint": "A friend counts once they join with your link during the season, join the Launch Season and post {{count}} approved photos.",
     "friend": {
       "active": "Counts ✅",
       "pending": "{{photos}} / {{min}} photos",
@@ -288,11 +281,25 @@
     "countryPick": "Choose your country",
     "countrySearch": "Search a country",
     "accept": "I accept the rules",
-    "joined": "You're in! 🎉",
     "error": "Couldn't load the Launch Season.",
     "retry": "Try again",
     "cantJoin": "You can't join this season.",
     "closed": "Joining is closed for now.",
-    "youLabel": "You"
+    "youLabel": "You",
+    "endsOn": "Ends {{date}}",
+    "passFinal": "Final week",
+    "passEnds": "Season ends",
+    "passDaysLeft": "Days left",
+    "passNow": "Now",
+    "launchGift": "Our launch gift. The game stays the same: one photo a day.",
+    "unlockPlayers": "players",
+    "unlockHint": "The prize unlocks at {{max}} players with {{photos}} approved photos. Every photo you post brings it closer.",
+    "unlocked": "Unlocked: the prize is on. 🎉",
+    "myFinalScore": "Your final score",
+    "behind": "{{count}} pts behind #{{rank}}",
+    "inviteTitle": "Bring your friends",
+    "inviteText": "+{{points}} points for each friend who joins with your link and posts {{count}} approved photos.",
+    "inviteStamp": "per friend",
+    "inviteProgress": "{{active}} of {{cap}} friends count"
   }
 }

@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import BackButton from '../BackButton'
 import AvatarWithFlag from '../AvatarWithFlag'
 import Icon from '../Icon'
+import HalongArt from './HalongArt'
 import { fetchContest, fetchContestRanking, joinContest } from '../../api'
 import { track } from '../../lib/analytics'
 
@@ -19,14 +20,15 @@ function countryName(code, locale) {
   try { return new Intl.DisplayNames([locale], { type: 'region' }).of(code) ?? code } catch { return code }
 }
 
-function shortDate(date, locale) {
-  return new Date(`${date}T12:00:00Z`).toLocaleDateString(locale, { day: 'numeric', month: 'short' })
-}
+const shortDate = (date, locale) => new Date(`${date}T12:00:00Z`).toLocaleDateString(locale, { day: 'numeric', month: 'short' })
+const daysLeft = (endDate) => Math.max(0, Math.ceil((new Date(`${endDate}T23:59:59Z`).getTime() - Date.now()) / 86400000))
+const reduced = () => typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
 
 /**
- * Launch Season (phase 1, mechanics first), a Passport sub-screen: the prize counter, my
- * score (likes / invites / head start), the friends who count, the contest's own season and
- * final-week rankings, how it works, the rules link; joining (18+, country, rules) inline.
+ * Launch Season (the app's /contest), a Passport sub-screen: a boarding pass to the prize
+ * (Admin › Launch Season), the players' unlock as a flight path, my score as a departure board,
+ * invites as a passport stamp, the season / final-week ranking as a podium, how it works and
+ * the rules; joining (18+, country, rules) inline. Visual only: numbers from GET /contest.
  */
 export default function ContestScreen({ account, onBack, onOpenProfile, onOpenInvite, onSignUp }) {
   const { t, i18n } = useT()
@@ -42,20 +44,23 @@ export default function ContestScreen({ account, onBack, onOpenProfile, onOpenIn
   }, [])
   const load = useCallback(() => {
     setFailed(false)
-    fetchContest().then(d => {
+    fetchContest(i18n.language).then(d => {
       setData(d)
       if (!d.season) return
       const phase = ['final', 'over'].includes(d.season.phase) ? 'final' : 'season'
       setTab(phase)
       loadRanking(phase)
     }).catch(() => setFailed(true))
-  }, [loadRanking])
+  }, [loadRanking, i18n.language])
   useEffect(() => { load(); track('contest_viewed', {}) }, [load])
 
   const s = data?.season
   const me = data?.me
-  const header = (title) => (
-    <div className="page-header"><BackButton onClick={joining ? () => setJoining(false) : onBack} /><span className="page-title">{title}</span></div>
+  const header = (title, sub) => (
+    <div className="page-header">
+      <BackButton onClick={joining ? () => setJoining(false) : onBack} />
+      <span className="ls-head"><span className="page-title">{title}</span>{sub && <small>{sub}</small>}</span>
+    </div>
   )
 
   if (failed || !s) {
@@ -74,57 +79,39 @@ export default function ContestScreen({ account, onBack, onOpenProfile, onOpenIn
     return <JoinForm season={s} suggested={me?.suggestedCountry} header={header} onDone={() => { setJoining(false); load() }} />
   }
 
-  const counter = data.counter
-  const pct = counter ? Math.min(100, (counter.players / Math.max(1, counter.threshold)) * 100) : 0
   const r = s.rules
+  const prize = { title: s.prize?.title || s.name, subtitle: s.prize?.subtitle ?? '' }
+  const final = ['final', 'over'].includes(s.phase)
   const joined = me?.joined ? me : null
   const pts = joined?.points
   const rank = tab === 'final' ? joined?.finalRank : joined?.seasonRank
   const phaseLine = t(`contest.phase.${s.phase}`, { date: shortDate(s.phase === 'upcoming' ? s.startDate : s.endDate, i18n.language) })
+  const mine = ranking?.me ?? null
+  const above = mine && mine.rank > 1 ? ranking?.rows.find(x => x.rank === mine.rank - 1) : null
+  const behind = mine && above ? above.points - mine.points : null
 
   return (
     <div className="full-page dc-page">
-      {header(s.name)}
+      {header(s.name, phaseLine)}
       <div className="page-body dc-body ls-body">
-        <p className="dc-muted">{phaseLine}{s.isTest && <span className="ls-test">{t('contest.test')}</span>}</p>
-
-        {counter && (
-          <div className="pp-v2-card">
-            <strong className="ls-counter">{t('contest.counter', { count: counter.players, max: counter.threshold })}</strong>
-            <div className="pp-v2-bar" aria-hidden="true"><i style={{ width: `${pct}%` }} /></div>
-            <p className="dc-muted">{t('contest.counterHint', { photos: counter.photos, max: counter.threshold })}</p>
-          </div>
-        )}
-
-        {joined?.disqualified && <div className="pp-v2-card"><p>{t('contest.dq')}</p></div>}
-        {joined?.excluded && <div className="pp-v2-card"><p>{t('contest.excluded')}</p></div>}
-        {pts && !joined.disqualified && (
-          <div className="pp-v2-card">
-            <div className="pp-v2-head"><strong>{t('contest.myScore')}</strong><span className="pp-v2-count">{rank ? `#${rank}` : t('contest.notRanked')}</span></div>
-            <div className="ls-split">
-              <Part label={t('contest.votes')} value={tab === 'final' ? pts.finalVotes : pts.votes} />
-              <Part label={t('contest.referral')} value={pts.referral} />
-              {tab === 'final' && <Part label={t('contest.headstart')} value={pts.headstart} />}
-              <Part label={t('contest.total')} value={tab === 'final' ? pts.final : pts.season} strong />
+        {/* The prize: a boarding pass. */}
+        <section className="ls-pass" aria-label={`${prize.title}. ${prize.subtitle}`}>
+          <div className="ls-pass-art"><HalongArt />{s.isTest && <span className="ls-test ls-test--art">{t('contest.test')}</span>}</div>
+          <div className="ls-tear" aria-hidden="true" />
+          <div className="ls-pass-body">
+            <h1 className="ls-prize">{prize.title}</h1>
+            {prize.subtitle && <p className="ls-prize-sub">{prize.subtitle}</p>}
+            <div className="ls-meta">
+              <span><small>{t('contest.passFinal')}</small><b>{final ? t('contest.passNow') : shortDate(s.finalWeekStart, i18n.language)}</b></span>
+              <span><small>{t('contest.passEnds')}</small><b>{shortDate(s.endDate, i18n.language)}</b></span>
+              <span><small>{t('contest.passDaysLeft')}</small><b>{daysLeft(s.endDate)}</b></span>
             </div>
-            <p className="dc-muted">{t('contest.photosDays', { photos: joined.photos ?? 0, days: joined.days ?? 0 })}</p>
-            {joined.referrals && (
-              <div className="ls-referrals">
-                <strong>{t('contest.referrals', { active: Math.min(joined.referrals.active, joined.referrals.cap), cap: joined.referrals.cap })}</strong>
-                {joined.referrals.friends.map((f, i) => (
-                  <div key={(f.username ?? '') + i} className="ls-friend">
-                    <span>@{f.username}</span>
-                    <span className={`dc-muted${f.status === 'active' ? ' ls-ok' : ''}`}>{t(`contest.friend.${f.status}`, { photos: f.photos, min: joined.referrals.minPhotos })}</span>
-                  </div>
-                ))}
-                <p className="dc-muted">{t('contest.referralsHint', { count: joined.referrals.minPhotos })}</p>
-                <button type="button" className="btn-secondary" onClick={onOpenInvite}><Icon name="person-add-outline" size={16} /> {t('contest.inviteCta')}</button>
-              </div>
-            )}
+            <p className="dc-muted ls-gift">{t('contest.launchGift')}</p>
           </div>
-        )}
+        </section>
+
         {me && me.joined === false && (
-          <div className="pp-v2-card">
+          <div className="pp-v2-card ls-card">
             <p>{t('contest.joinText')}</p>
             {me.canJoin
               ? <button type="button" className="today-cta dc-full btn-primary" onClick={() => setJoining(true)}><Icon name="rocket-outline" size={18} />{t('contest.join')}</button>
@@ -132,12 +119,59 @@ export default function ContestScreen({ account, onBack, onOpenProfile, onOpenIn
           </div>
         )}
         {!account && (
-          <div className="pp-v2-card">
+          <div className="pp-v2-card ls-card">
             <p>{t('contest.joinText')}</p>
             <button type="button" className="today-cta dc-full btn-primary" onClick={onSignUp}><Icon name="rocket-outline" size={18} />{t('contest.join')}</button>
           </div>
         )}
 
+        {data.counter && <Unlock {...data.counter} t={t} />}
+
+        {joined?.disqualified && <div className="pp-v2-card ls-card"><p>{t('contest.dq')}</p></div>}
+        {joined?.excluded && <div className="pp-v2-card ls-card"><p>{t('contest.excluded')}</p></div>}
+
+        {/* My score: a departure board. */}
+        {pts && !joined.disqualified && (
+          <section className="ls-board">
+            <div className="ls-board-head">
+              <strong>{t(tab === 'final' ? 'contest.myFinalScore' : 'contest.myScore')}</strong>
+              {rank ? <span className="ls-tag"><i />#{rank}</span> : <small>{t('contest.notRanked')}</small>}
+            </div>
+            <div className="ls-tiles">
+              <Tile label={t('contest.votes')} value={tab === 'final' ? pts.finalVotes : pts.votes} />
+              <Tile label={t('contest.referral')} value={pts.referral} />
+              {tab === 'final' && <Tile label={t('contest.headstart')} value={pts.headstart} />}
+              <Tile label={t('contest.total')} value={tab === 'final' ? pts.final : pts.season} total />
+            </div>
+            <small>
+              {t('contest.photosDays', { photos: joined.photos ?? 0, days: joined.days ?? 0 })}
+              {behind !== null && above ? ` · ${t('contest.behind', { count: behind, rank: above.rank })}` : ''}
+            </small>
+          </section>
+        )}
+
+        {/* Invites: a passport stamp. */}
+        {joined?.referrals && !joined.disqualified && (
+          <div className="pp-v2-card ls-card">
+            <div className="ls-invite">
+              <span className="ls-stamp" aria-hidden="true"><b>+{r.referralPoints}</b><small>{t('contest.inviteStamp')}</small></span>
+              <span><strong>{t('contest.inviteTitle')}</strong><span className="dc-muted">{t('contest.inviteText', { points: r.referralPoints, count: r.referralMinPhotos })}</span></span>
+            </div>
+            <div className="ls-segments" aria-hidden="true">
+              {Array.from({ length: Math.min(joined.referrals.cap, 20) }).map((_, i) => <i key={i} className={i < joined.referrals.active ? 'on' : ''} />)}
+            </div>
+            <p className="dc-muted">{t('contest.inviteProgress', { active: Math.min(joined.referrals.active, joined.referrals.cap), cap: joined.referrals.cap })}</p>
+            {joined.referrals.friends.map((f, i) => (
+              <div key={(f.username ?? '') + i} className="ls-friend">
+                <span>@{f.username}</span>
+                <span className={`dc-muted${f.status === 'active' ? ' ls-ok' : ''}`}>{t(`contest.friend.${f.status}`, { photos: f.photos, min: joined.referrals.minPhotos })}</span>
+              </div>
+            ))}
+            <button type="button" className="today-cta dc-full btn-primary" onClick={onOpenInvite}><Icon name="person-add-outline" size={18} />{t('contest.inviteCta')}</button>
+          </div>
+        )}
+
+        {/* The contest's own ranking: a podium, then the list. */}
         <div className="leaderboard-seg leaderboard-seg--primary" role="tablist">
           {['season', 'final'].map(k => (
             <button key={k} type="button" role="tab" aria-selected={tab === k} className={`leaderboard-seg-item${tab === k ? ' is-active' : ''}`}
@@ -147,20 +181,21 @@ export default function ContestScreen({ account, onBack, onOpenProfile, onOpenIn
         {tab === 'final' && ranking && !ranking.frozen && (
           <p className="dc-muted">{t('contest.finalNotYet', { date: shortDate(s.finalWeekStart, i18n.language), count: r.headstartTopN })}</p>
         )}
-        <div className="pp-list">
+        <div className="pp-v2-card ls-card">
           {!ranking && <div className="dc-center"><span className="wm-spinner" aria-hidden="true" /></div>}
-          {ranking && ranking.rows.length === 0 && <p className="dc-muted pp-pad">{t('contest.empty')}</p>}
-          {ranking?.rows.map(row => <RankRow key={row.userId} row={row} me={row.userId === account?.id} t={t} onOpenProfile={onOpenProfile} />)}
+          {ranking && ranking.rows.length === 0 && <p className="dc-muted">{t('contest.empty')}</p>}
+          {ranking && ranking.rows.length > 0 && <Podium rows={ranking.rows.slice(0, 3)} meId={account?.id} t={t} onOpenProfile={onOpenProfile} />}
+          {ranking?.rows.slice(3).map(row => <RankRow key={row.userId} row={row} me={row.userId === account?.id} t={t} onOpenProfile={onOpenProfile} />)}
           {ranking?.me && !ranking.rows.some(x => x.userId === ranking.me.userId) && <RankRow row={ranking.me} me t={t} onOpenProfile={onOpenProfile} />}
         </div>
 
-        <div className="pp-v2-card">
+        <div className="pp-v2-card ls-card">
           <strong>{t('contest.howTitle')}</strong>
           <ul className="ls-how">
-            <li>{t('contest.how1')}</li>
-            <li>{t('contest.how2', { count: r.voteCap })}</li>
-            <li>{t('contest.how3', { points: r.referralPoints, min: r.referralMinPhotos, max: r.referralCap })}</li>
-            <li>{t('contest.how4', { count: r.headstartTopN })}</li>
+            <li><Icon name="camera-outline" size={20} /><span>{t('contest.how1')}</span></li>
+            <li><Icon name="heart-outline" size={20} /><span>{t('contest.how2', { count: r.voteCap })}</span></li>
+            <li><Icon name="people-outline" size={20} /><span>{t('contest.how3', { points: r.referralPoints, min: r.referralMinPhotos, max: r.referralCap })}</span></li>
+            <li><Icon name="flag-outline" size={20} /><span>{t('contest.how4', { count: r.headstartTopN })}</span></li>
           </ul>
           <a className="ls-link" href={s.rulesUrl.replace('https://hilads.live', '')} target="_blank" rel="noopener">{t('contest.rules')} <Icon name="open-outline" size={14} /></a>
         </div>
@@ -169,11 +204,50 @@ export default function ContestScreen({ account, onBack, onOpenProfile, onOpenIn
   )
 }
 
-function Part({ label, value, strong }) {
+/** "212 / 500 players" and the plane flying along the route to the prize (once). */
+function Unlock({ players, threshold, photos, t }) {
+  const pct = Math.min(1, players / Math.max(1, threshold))
+  const [w, setW] = useState(reduced() ? pct : 0)
+  useEffect(() => { const id = setTimeout(() => setW(pct), reduced() ? 0 : 60); return () => clearTimeout(id) }, [pct])
   return (
-    <span className={`ls-part${strong ? ' strong' : ''}`} aria-label={`${label}: ${value}`}>
-      <b>{value}</b><small>{label}</small>
-    </span>
+    <div className="pp-v2-card ls-card">
+      <p className="ls-unlock"><b>{players} / {threshold}</b> <span>{t('contest.unlockPlayers')}</span></p>
+      <div className="ls-flight" aria-hidden="true">
+        <span>🏙️</span>
+        <span className="ls-flight-track"><i className="ls-flight-done" style={{ width: `${w * 100}%` }} /><span className="ls-plane" style={{ left: `${w * 100}%` }}><Icon name="airplane-outline" size={22} /></span></span>
+        <span>🎁</span>
+      </div>
+      <p className="dc-muted">{players >= threshold ? t('contest.unlocked') : t('contest.unlockHint', { max: threshold, photos })}</p>
+    </div>
+  )
+}
+
+function Tile({ label, value, total }) {
+  return <span className={`ls-tile${total ? ' total' : ''}`}><b>{value}</b><small>{label}</small></span>
+}
+
+function Podium({ rows, meId, t, onOpenProfile }) {
+  const order = [rows[1], rows[0], rows[2]]
+  const cls = ['gold', 'silver', 'bronze']
+  return (
+    <div className="ls-podium">
+      {order.map((row, i) => {
+        if (!row) return <span key={i} />
+        const place = row.rank - 1
+        const name = row.username ? '@' + row.username : row.displayName ?? ''
+        return (
+          <button key={row.userId} type="button" className={`ls-step ${cls[place] ?? ''}${place === 0 ? ' first' : ''}`} onClick={() => onOpenProfile(row.userId, row.displayName ?? row.username)}
+            aria-label={`#${row.rank} ${name}, ${t('contest.pts', { count: row.points })}`}>
+            {place === 0 && <svg className="ls-crown" width="26" height="21" viewBox="0 0 30 24" aria-hidden="true"><path d="M3 8.5 L8.5 14 L15 4.5 L21.5 14 L27 8.5 L25 21 L5 21 Z" fill="var(--medal-gold)" stroke="var(--on-medal)" strokeWidth="1.8" strokeLinejoin="round" /><circle cx="3" cy="7.5" r="2.2" fill="var(--medal-gold)" stroke="var(--on-medal)" strokeWidth="1.5" /><circle cx="15" cy="3.5" r="2.2" fill="var(--medal-gold)" stroke="var(--on-medal)" strokeWidth="1.5" /><circle cx="27" cy="7.5" r="2.2" fill="var(--medal-gold)" stroke="var(--on-medal)" strokeWidth="1.5" /></svg>}
+            <span className="ls-ring"><AvatarWithFlag userId={row.userId} displayName={row.displayName ?? row.username} photoUrl={row.photoUrl} size={place === 0 ? 58 : 48} /></span>
+            <span className="ls-step-name">{name}</span>
+            <span className="dc-muted">{t('contest.pts', { count: row.points })}</span>
+            {row.userId === meId && <span className="ls-you">{t('contest.youLabel')}</span>}
+            <span className="ls-block">{row.rank}</span>
+          </button>
+        )
+      })}
+    </div>
   )
 }
 
@@ -182,14 +256,14 @@ function RankRow({ row, me, t, onOpenProfile }) {
   const detail = [row.votes > 0 ? `${t('contest.votes')} ${row.votes}` : null, row.referral > 0 ? `${t('contest.referral')} ${row.referral}` : null,
                   row.headstart > 0 ? `${t('contest.headstart')} ${row.headstart}` : null].filter(Boolean).join(' · ')
   return (
-    <button type="button" className={`leaderboard-row leaderboard-row--tappable${me ? ' is-me' : ''}`} onClick={() => onOpenProfile(row.userId, row.displayName ?? row.username)}>
-      <span className="leaderboard-rank">{row.rank}</span>
-      <AvatarWithFlag userId={row.userId} displayName={row.displayName ?? row.username} photoUrl={row.photoUrl} size={36} />
+    <button type="button" className={`ls-row${me ? ' is-me' : ''}`} onClick={() => onOpenProfile(row.userId, row.displayName ?? row.username)}>
+      <span className="ls-row-n">{row.rank}</span>
+      <AvatarWithFlag userId={row.userId} displayName={row.displayName ?? row.username} photoUrl={row.photoUrl} size={38} />
       <span className="ls-row-body">
-        <span className="leaderboard-name">{name}{me ? ` · ${t('contest.youLabel')}` : ''}</span>
+        <span className="ls-row-name">{name}{me && <span className="ls-you">{t('contest.youLabel')}</span>}</span>
         {detail && <span className="dc-muted">{detail}</span>}
       </span>
-      <span className="leaderboard-points">{t('contest.pts', { count: row.points })}</span>
+      <b className="ls-row-pts">{row.points}</b>
     </button>
   )
 }
@@ -221,8 +295,10 @@ function JoinForm({ season, suggested, header, onDone }) {
     <div className="full-page dc-page">
       {header(t('contest.join'))}
       <div className="page-body dc-body ls-body">
-        <div className="ls-hero" aria-hidden="true">🚀</div>
-        <h2 className="ls-title">{season.name}</h2>
+        <section className="ls-pass">
+          <div className="ls-pass-art ls-pass-art--short"><HalongArt />{season.isTest && <span className="ls-test ls-test--art">{t('contest.test')}</span>}</div>
+          <div className="ls-pass-body"><h1 className="ls-prize">{season.prize?.title || season.name}</h1>{season.prize?.subtitle && <p className="ls-prize-sub">{season.prize.subtitle}</p>}</div>
+        </section>
         <p>{t('contest.joinText')}</p>
         <div className="pp-v2-card ls-form">
           <label className="ls-check"><input type="checkbox" checked={age} onChange={e => setAge(e.target.checked)} /> {t('contest.age')}</label>
