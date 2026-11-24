@@ -126,7 +126,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if ($do === 'photo_pixabay' || $do === 'photo_upload') {
                 if (count($photos) >= ContestPhotos::MAX) throw new InvalidArgumentException('Up to ' . ContestPhotos::MAX . ' photos: remove one first.');
                 $photos[] = $do === 'photo_pixabay'
-                    ? ContestPhotos::importPixabay((string) ($_POST['large'] ?? ''), (string) ($_POST['page'] ?? ''), (string) ($_POST['user'] ?? ''), (string) ($_POST['caption'] ?? ''))
+                    ? ContestPhotos::importPixabay((string) ($_POST['large'] ?? ''), (string) ($_POST['page'] ?? ''), (string) ($_POST['user'] ?? ''), (string) ($_POST['caption'] ?? ''), (string) ($_POST['fallback'] ?? ''))
                     : ContestPhotos::importUpload($_FILES['photo'] ?? [], (string) ($_POST['credit'] ?? ''), (string) ($_POST['caption'] ?? ''));
             } elseif (!isset($photos[$i])) {
                 throw new InvalidArgumentException('Unknown photo.');
@@ -340,8 +340,8 @@ admin_nav('/admin/launch-season');
         <?php foreach ($hits as $h): ?>
           <form method="post" style="width:200px;border:1px solid #2a2a2a;border-radius:8px;overflow:hidden;background:#161616">
             <?= csrf_input() ?><input type="hidden" name="do" value="photo_pixabay"><input type="hidden" name="q" value="<?= $esc($q) ?>">
-            <input type="hidden" name="large" value="<?= $esc($h['large']) ?>"><input type="hidden" name="page" value="<?= $esc($h['page']) ?>"><input type="hidden" name="user" value="<?= $esc($h['user']) ?>">
-            <img src="<?= $esc($h['preview']) ?>" alt="" style="width:200px;height:120px;object-fit:cover;display:block">
+            <input type="hidden" name="large" value="<?= $esc($h['large']) ?>"><input type="hidden" name="fallback" value="<?= $esc($h['fallback'] ?? '') ?>"><input type="hidden" name="page" value="<?= $esc($h['page']) ?>"><input type="hidden" name="user" value="<?= $esc($h['user']) ?>">
+            <img src="<?= $esc($h['preview']) ?>" referrerpolicy="no-referrer" alt="" style="width:200px;height:120px;object-fit:cover;display:block">
             <div style="padding:6px;display:flex;flex-direction:column;gap:4px;font-size:11px">
               <span class="ls-muted"><?= $esc($h['user']) ?> · <a href="<?= $esc($h['page']) ?>" target="_blank" rel="noopener">Pixabay</a></span>
               <input type="text" name="caption" placeholder="Caption" style="width:100%">

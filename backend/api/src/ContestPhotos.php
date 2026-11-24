@@ -79,26 +79,36 @@ final class ContestPhotos
         foreach ((array) ($body['hits'] ?? []) as $h) {
             if (!is_array($h) || preg_match('/\b(ai generated|ai-generated|generative|midjourney|stable diffusion)\b/i', (string) ($h['tags'] ?? ''))) continue;
             if (empty($h['largeImageURL']) || empty($h['pageURL'])) continue;
-            $out[] = ['id' => (int) $h['id'], 'preview' => (string) ($h['webformatURL'] ?? $h['previewURL'] ?? ''), 'large' => (string) $h['largeImageURL'],
+            // The same photo on Pixabay's image CDN (the API's previewURL, _150 -> _640 / _1280): pixabay.com/get
+            // links are throttled (429) for servers and refused to browsers sending a referrer.
+            $cdn = (string) ($h['previewURL'] ?? '');
+            $isCdn = (bool) preg_match('#^https://cdn\.pixabay\.com/photo/\S+_150\.(jpe?g|png)$#i', $cdn);
+            $out[] = ['id' => (int) $h['id'],
+                      'preview' => $isCdn ? preg_replace('/_150\.(jpe?g|png)$/i', '_640.$1', $cdn) : (string) ($h['webformatURL'] ?? ''),
+                      'large' => $isCdn ? preg_replace('/_150\.(jpe?g|png)$/i', '_1280.$1', $cdn) : (string) $h['largeImageURL'],
+                      'fallback' => (string) $h['largeImageURL'],
                       'page' => (string) $h['pageURL'], 'user' => (string) ($h['user'] ?? ''), 'tags' => (string) ($h['tags'] ?? '')];
         }
         return $out;
     }
 
     /** Copies a picked Pixabay photo to R2: the stored entry. */
-    public static function importPixabay(string $large, string $page, string $user, string $caption): array
+    public static function importPixabay(string $large, string $page, string $user, string $caption, string $fallback = ''): array
     {
-        if (!preg_match('#^https://(pixabay\.com/get/|cdn\.pixabay\.com/photo/)\S+\.(jpe?g|png)(\?\S*)?$#i', $large)) {
-            throw new InvalidArgumentException('Not a Pixabay photo file.');
-        }
+        $ok = static fn(string $u): bool => (bool) preg_match('#^https://(pixabay\.com/get/|cdn\.pixabay\.com/photo/)\S+\.(jpe?g|png)(\?\S*)?$#i', $u);
+        if (!$ok($large)) throw new InvalidArgumentException('Not a Pixabay photo file.');
         if (!preg_match('#^https://pixabay\.com/\S+#', $page)) throw new InvalidArgumentException('Not a Pixabay page.');
-        $ch = curl_init($large);
-        curl_setopt_array($ch, [CURLOPT_RETURNTRANSFER => true, CURLOPT_TIMEOUT => 45, CURLOPT_FOLLOWLOCATION => false,
-            CURLOPT_MAXFILESIZE => 15 * 1024 * 1024, CURLOPT_PROTOCOLS => CURLPROTO_HTTPS, CURLOPT_USERAGENT => self::UA]);
-        $bytes = curl_exec($ch);
-        $code  = (int) curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
-        curl_close($ch);
-        if (!is_string($bytes) || $code !== 200 || strlen($bytes) < 5000) throw new RuntimeException("The photo could not be downloaded (HTTP {$code}).");
+        // The CDN rendition first, then the API's own link; one short retry when throttled.
+        $bytes = null; $code = 0;
+        foreach (array_values(array_unique(array_filter([$large, $ok($fallback) ? $fallback : '']))) as $url) {
+            for ($try = 0; $try < 2 && $bytes === null; $try++) {
+                if ($try) sleep(2);
+                [$bytes, $code] = self::fetch($url);
+                if ($code !== 429) break;
+            }
+            if ($bytes !== null) break;
+        }
+        if ($bytes === null) throw new RuntimeException("The photo could not be downloaded (HTTP {$code}). Try again in a minute.");
         $tmp = tempnam(sys_get_temp_dir(), 'lsp');
         file_put_contents($tmp, $bytes);
         try {
@@ -108,6 +118,18 @@ final class ContestPhotos
         }
         return ['url' => $url, 'caption' => self::clean($caption, 60), 'credit' => self::clean($user, 60), 'source' => 'pixabay',
                 'sourceUrl' => $page, 'license' => self::LICENSE];
+    }
+
+    /** [bytes or null, HTTP code]. */
+    private static function fetch(string $url): array
+    {
+        $ch = curl_init($url);
+        curl_setopt_array($ch, [CURLOPT_RETURNTRANSFER => true, CURLOPT_TIMEOUT => 45, CURLOPT_FOLLOWLOCATION => false,
+            CURLOPT_MAXFILESIZE => 15 * 1024 * 1024, CURLOPT_PROTOCOLS => CURLPROTO_HTTPS, CURLOPT_USERAGENT => self::UA]);
+        $bytes = curl_exec($ch);
+        $code  = (int) curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
+        curl_close($ch);
+        return [is_string($bytes) && $code === 200 && strlen($bytes) >= 5000 ? $bytes : null, $code];
     }
 
     /** Our own photo (an admin upload): the stored entry. */
