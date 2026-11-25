@@ -297,9 +297,9 @@ $badge = static function (?array $s) use ($esc): string {
     $phase = Contest::phase($s);
     $label = ['draft' => 'Draft', 'upcoming' => 'Running · not started', 'season' => 'Running', 'final' => 'Final week',
               'over' => 'Over · not ended', 'ended' => 'Ended'][$phase];
-    $color = ['draft' => '#555', 'upcoming' => '#2a6', 'season' => '#2a6', 'final' => '#d90', 'over' => '#a60', 'ended' => '#444'][$phase];
-    return '<span class="badge" style="background:' . $color . ';color:#fff">' . $esc($s['paused'] ? $label . ' · paused' : $label) . '</span>'
-         . ($s['is_test'] ? ' <span class="badge" style="background:#6a3fd0;color:#fff">TEST</span>' : '');
+    $cls = ['draft' => 'b-mute', 'upcoming' => 'b-info', 'season' => 'b-ok', 'final' => 'b-brand', 'over' => 'b-warn', 'ended' => 'b-mute'][$phase];
+    return '<span class="badge ' . $cls . '">' . $esc($s['paused'] ? $label . ' · paused' : $label) . '</span>'
+         . ($s['is_test'] ? ' <span class="badge b-violet">TEST</span>' : '');
 };
 $who = static fn(array $r): string => $esc($r['username'] ? '@' . $r['username'] : ($r['displayName'] ?? $r['userId']));
 
@@ -536,12 +536,12 @@ admin_nav('/admin/launch-season');
       <?php $act = static function (string $do, string $label, string $cls = 'btn-secondary', ?string $confirm = null) use ($esc): void { ?>
         <form method="post" class="ls-inline"<?= $confirm ? ' onsubmit="return confirm(\'' . $esc($confirm) . '\')"' : '' ?>><?= csrf_input() ?><input type="hidden" name="do" value="<?= $do ?>"><button class="btn <?= $cls ?> btn-sm"><?= $esc($label) ?></button></form>
       <?php }; ?>
-      <?php if ($season['status'] === 'draft') $act('start', '▶ Publish', 'btn-primary', 'Publish this season? It becomes visible ' . ($season['is_test'] ? 'to its testers' : 'to everyone') . ': a teaser with Notify me until its start date, then the contest.'); ?>
-      <?php if ($season['status'] === 'running' && !$season['paused']) $act('pause', '⏸ Pause', 'btn-secondary', 'Pause? The contest is hidden and joining closes; photos and likes keep counting by date.'); ?>
-      <?php if ($season['status'] === 'running' && $season['paused']) $act('resume', '▶ Resume'); ?>
-      <?php if ($season['status'] === 'running') $act('end', '■ End', 'btn-danger', 'End the season? It disappears from the app. Rankings stay readable here.'); ?>
+      <?php if ($season['status'] === 'draft') $act('start', 'Publish', 'btn-primary', 'Publish this season? It becomes visible ' . ($season['is_test'] ? 'to its testers' : 'to everyone') . ': a teaser with Notify me until its start date, then the contest.'); ?>
+      <?php if ($season['status'] === 'running' && !$season['paused']) $act('pause', 'Pause', 'btn-secondary', 'Pause? The contest is hidden and joining closes; photos and likes keep counting by date.'); ?>
+      <?php if ($season['status'] === 'running' && $season['paused']) $act('resume', 'Resume'); ?>
+      <?php if ($season['status'] === 'running') $act('end', 'End the season', 'btn-danger', 'End the season? It disappears from the app. Rankings stay readable here.'); ?>
       <?php if ($season['status'] === 'ended') $act('reopen', 'Reopen', 'btn-secondary', 'Reopen this season?'); ?>
-      <?php if ($season['status'] !== 'draft') $act('freeze', '❄ Take the head-start now', 'btn-secondary', 'Replace the head-start with the current season top ' . $season['headstart_top_n'] . '?'); ?>
+      <?php if ($season['status'] !== 'draft') $act('freeze', 'Take the head-start now', 'btn-secondary', 'Replace the head-start with the current season top ' . $season['headstart_top_n'] . '?'); ?>
       <span class="ls-muted">Head-start: <?= $season['headstart_frozen_at'] ? 'frozen ' . $esc(substr((string) $season['headstart_frozen_at'], 0, 16)) : 'taken automatically at the first drop of the final week' ?></span>
       <span class="ls-muted">· Notify me: <b style="color:var(--text)"><?= class_exists('ContestNotify') ? ContestNotify::count((int) $season['id']) : 0 ?></b> tap(s)<?= $season['is_test'] ? ' (testers only)' : '' ?> · live push: <?= !empty($season['live_notified_at']) ? 'sent ' . $esc(substr((string) $season['live_notified_at'], 0, 16)) : 'sent by the cron once ' . $esc($season['start_date']) . ' arrives' ?></span>
       <span class="ls-muted">· State from the dates: <b style="color:var(--text)"><?= $esc(['upcoming' => 'Upcoming (teaser, Notify me)', 'season' => 'Running', 'final' => 'Running · final week', 'over' => 'Ended', 'ended' => 'Ended', 'draft' => 'Draft (not published)'][Contest::phase($season)] ?? Contest::phase($season)) ?></b></span>

@@ -351,7 +351,7 @@ admin_nav('/admin/events');
                 value="<?= htmlspecialchars($_POST['expires_at'] ?? ($isRecurring ? '' : fmt_dt($event['expires_at'])), ENT_QUOTES) ?>"
             >
             <div class="hint"><?php if ($isRecurring): ?>
-                <strong>Leave blank.</strong> Recurring events use a far-future sentinel for <code>expires_at</code> so the canonical row never ages out - typing anything here turns the series into a one-shot. Currently: <code><?= htmlspecialchars(fmt_dt($event['expires_at']), ENT_QUOTES) ?></code>.
+                <strong>Leave empty.</strong> A recurring Hi plan never expires on its own; typing a date here turns the series into a one-off Hi plan. Currently: <code><?= htmlspecialchars(fmt_dt($event['expires_at']), ENT_QUOTES) ?></code>.
             <?php else: ?>
                 Leave blank to keep current value
             <?php endif; ?></div>

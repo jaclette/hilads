@@ -463,10 +463,10 @@ admin_nav('/admin/users');
              score_month_ref is force-set to the current UTC month when the
              month value changes, so the value lands in the right bucket. -->
         <div style="margin-bottom:8px">
-            <h3 style="margin:0 0 4px;font-size:14px;font-weight:700">🏆 Leaderboard score</h3>
-            <p style="margin:0 0 12px;color:var(--faint);font-size:12px">
-                Direct override of <code>users.score_alltime</code> / <code>users.score_month</code>.
-                Bypasses the <code>score_events</code> ledger. Leave blank to keep current.
+            <h3 style="margin:0 0 4px;font-size:14px;font-weight:700">Points (override)</h3>
+            <p class="hint" style="margin:0 0 12px">
+                Sets the player's all-time and this-month points directly, without adding a line to their points history.
+                For corrections only. Leave empty to keep the current points.
             </p>
         </div>
         <div class="form-group" style="display:flex;gap:12px">
