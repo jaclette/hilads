@@ -26,8 +26,7 @@ admin_nav('/admin/daily');
 daily_styles();
 ?>
 <div class="admin-main">
-    <h1 class="page-title">🧳 Places migration</h1>
-    <?php daily_subnav('/admin/daily/spots'); ?>
+    <?php daily_head('/admin/daily/spots', 'Places migration', 'Dry run first: nothing is written until you apply it.'); ?>
     <?= flash_html() ?>
     <?php foreach ($report['errors'] as $e): ?><div class="form-card" style="border-color:var(--bad)">⚠️ <?= dh($e) ?></div><?php endforeach; ?>
     <p class="daily-muted"><?= $report['apply'] ? 'Applied. Below: what was done.' : 'Dry run: nothing has been written yet.' ?></p>

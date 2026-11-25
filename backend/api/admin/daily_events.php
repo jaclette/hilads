@@ -46,8 +46,7 @@ admin_nav('/admin/daily');
 daily_styles();
 ?>
 <div class="admin-main">
-    <h1 class="page-title">🎃 Seasonal events</h1>
-    <?php daily_subnav($self); ?>
+    <?php daily_head($self, 'Seasonal events', 'Event looks (Halloween…) for the app: dates, the features they switch on, and the sticker pack.'); ?>
     <?= flash_html() ?>
     <p class="daily-muted" style="max-width:720px;margin-bottom:12px">
         A look the apps put on Today and the Daily screens. Dates are <strong>challenge dates</strong> (today's challenge: <?= dh($today) ?>):

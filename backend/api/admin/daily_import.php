@@ -45,8 +45,7 @@ admin_nav('/admin/daily');
 daily_styles();
 ?>
 <div class="admin-main">
-    <h1 class="page-title">⬆️ Import challenges</h1>
-    <?php daily_subnav('/admin/daily/import'); ?>
+    <?php daily_head('/admin/daily/import', 'Import challenges', 'Add or update many days from a JSON file. You always see a dry run first; nothing changes until you apply it.'); ?>
     <?= flash_html() ?>
 
     <?php if ($result !== null): ?>

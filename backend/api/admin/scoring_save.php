@@ -20,7 +20,7 @@ $stmt = Database::pdo()->prepare("
     INSERT INTO app_settings (key, value, updated_at, updated_by) VALUES (?, ?, now(), ?)
     ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value, updated_at = now(), updated_by = EXCLUDED.updated_by
 ");
-$by = 'admin';
+$by = admin_actor();
 $stmt->execute(['scoring_podium_min_photos', (string) $min, $by]);
 $stmt->execute(['scoring_vote_requires_play', $play ? '1' : '0', $by]);
 AppConfig::forgetSettings();

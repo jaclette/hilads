@@ -60,8 +60,7 @@ admin_nav('/admin/daily');
 daily_styles();
 ?>
 <div class="admin-main">
-    <h1 class="page-title">💡 Proposals</h1>
-    <?php daily_subnav('/admin/daily/proposals'); ?>
+    <?php daily_head('/admin/daily/proposals', 'Proposals', 'Challenges and Local twists suggested by players. Approve to schedule them, or reject with a reason.'); ?>
     <?= flash_html() ?>
 
     <h3 style="margin:6px 0 8px">Challenge proposals (<?= count($pending) ?>)</h3>

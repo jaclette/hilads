@@ -75,8 +75,7 @@ admin_nav('/admin/daily');
 daily_styles();
 ?>
 <div class="admin-main">
-    <h1 class="page-title">✨ Special days</h1>
-    <?php daily_subnav($self); ?>
+    <?php daily_head($self, 'Special days', 'World, country and city days (holidays, festivals) and each theme\'s default cover.'); ?>
     <?= flash_html() ?>
 
     <div class="table-wrapper">

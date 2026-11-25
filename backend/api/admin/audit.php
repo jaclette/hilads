@@ -48,7 +48,7 @@ $kindLabel = fn (string $k): string => [
     'daily_proof' => 'Daily photos', 'city' => 'Cities', 'place' => 'Places', 'places' => 'Places', 'scores' => 'Scores',
     'ranks' => 'Ranks', 'thumbs' => 'Thumbnails', 'email' => 'Email', 'app_settings' => 'App versions & switches',
     'daily_proposal' => 'Proposals', 'daily_special' => 'Special days', 'photo' => 'Photos', 'report' => 'Reports',
-    'message' => 'Messages', 'comment' => 'Photo comments', 'ban' => 'Bans',
+    'message' => 'Messages', 'comment' => 'Photo comments', 'ban' => 'Bans', 'page' => 'Other changes',
 ][$k] ?? ucfirst(str_replace('_', ' ', $k));
 $actionLabel = fn (string $a): string => [
     'admin.sign_in' => 'Signed in', 'admin.sign_out' => 'Signed out', 'admin_user.create' => 'Added an admin',

@@ -17,8 +17,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $do = (string) ($_POST['do'] ?? '');
     try {
         if ($do === 'switch') {
-            $pdo->prepare("INSERT INTO app_settings (key, value, updated_at, updated_by) VALUES ('hi_question_enabled', ?, now(), 'admin')
-                           ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value, updated_at = now()")->execute([!empty($_POST['enabled']) ? '1' : '0']);
+            $pdo->prepare("INSERT INTO app_settings (key, value, updated_at, updated_by) VALUES ('hi_question_enabled', ?, now(), ?)
+                           ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value, updated_at = now(), updated_by = EXCLUDED.updated_by")->execute([!empty($_POST['enabled']) ? '1' : '0', admin_actor()]);
             AppConfig::forgetSettings();
             flash_set('success', 'Question of the day ' . (!empty($_POST['enabled']) ? 'on' : 'off') . '.');
         } elseif ($do === 'add') {
@@ -58,36 +58,47 @@ $today = DailyClock::currentDate();
 admin_head('Hi questions');
 admin_nav('/admin/hi-questions');
 ?>
-<main class="admin-main">
+<div class="admin-main">
+  <?= ui_page_head('Today', 'Hi questions', 'Once a day Hilads posts one question in every city chat (<code>{city}</code> becomes the city\'s name) and one in World. The list rotates by date; with no question here, the built-in ones are used.') ?>
   <?= flash_html() ?>
-  <h1 class="page-title">Hi — question of the day</h1>
-  <p style="color:var(--faint);max-width:820px">Once a day, Hilads posts one question in every city chat (local tips, <code>{city}</code> becomes the city's name) and one in World (comparing cities). The list rotates by date; with no question here, the built-in defaults are used.</p>
-  <form method="post" class="toolbar" style="margin:12px 0 24px">
-    <?= csrf_input() ?><input type="hidden" name="do" value="switch">
-    <label><input type="checkbox" name="enabled" value="1"<?= HiQuestions::enabled() ? ' checked' : '' ?>> Post the question of the day</label>
-    <button class="btn btn-primary btn-sm">Save</button>
-  </form>
+  <div class="card card-pad" style="margin-bottom:16px">
+    <form method="post" style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin:0">
+      <?= csrf_input() ?><input type="hidden" name="do" value="switch">
+      <label class="check"><input type="checkbox" name="enabled" value="1"<?= HiQuestions::enabled() ? ' checked' : '' ?>> Post the question of the day</label>
+      <button class="btn btn-sm">Save</button>
+    </form>
+  </div>
   <?php foreach (['city' => 'City chats', 'world' => 'World'] as $scope => $title): ?>
-    <h2 style="font-size:15px;color:var(--text);margin:24px 0 8px"><?= $esc($title) ?> — today: “<?= $esc(HiQuestions::render(HiQuestions::textFor($scope, $today), $scope === 'city' ? 'Saigon' : null)) ?>”</h2>
+  <section class="card" style="margin-bottom:16px">
+    <div class="card-head"><h2><?= $esc($title) ?></h2>
+      <span class="hint">Today: “<?= $esc(HiQuestions::render(HiQuestions::textFor($scope, $today), $scope === 'city' ? 'Saigon' : null)) ?>”</span></div>
     <?php if ($by[$scope] === []): ?>
-      <form method="post" style="margin-bottom:8px"><?= csrf_input() ?><input type="hidden" name="do" value="seed"><input type="hidden" name="scope" value="<?= $scope ?>">
-        <span style="color:var(--faint)">Using the <?= count($scope === 'world' ? HiQuestions::WORLD : HiQuestions::CITY) ?> built-in questions.</span>
-        <button class="btn btn-secondary btn-sm">Copy them here to edit</button></form>
+      <div class="card-body"><form method="post" style="display:flex;gap:10px;align-items:center;margin:0"><?= csrf_input() ?><input type="hidden" name="do" value="seed"><input type="hidden" name="scope" value="<?= $scope ?>">
+        <span class="muted">Using the <?= count($scope === 'world' ? HiQuestions::WORLD : HiQuestions::CITY) ?> built-in questions.</span>
+        <button class="btn btn-sm">Copy them here to edit</button></form></div>
     <?php endif; ?>
-    <div class="table-wrapper"><table><thead><tr><th>Order</th><th>Question</th><th>On</th><th></th></tr></thead><tbody>
-      <?php foreach ($by[$scope] as $r): ?>
-        <tr><form method="post"><?= csrf_input() ?><input type="hidden" name="do" value="save"><input type="hidden" name="id" value="<?= (int) $r['id'] ?>">
-          <td><input type="number" name="position" value="<?= (int) $r['position'] ?>" style="width:60px;background:var(--surface);border:1px solid var(--line);color:var(--text);padding:4px"></td>
-          <td><input type="text" name="text" value="<?= $esc($r['text']) ?>" maxlength="200" style="width:100%;min-width:420px;background:var(--surface);border:1px solid var(--line);color:var(--text);padding:6px"></td>
-          <td><input type="checkbox" name="active" value="1"<?= ($r['active'] === true || $r['active'] === 't') ? ' checked' : '' ?>></td>
-          <td class="td-actions"><button class="btn btn-secondary btn-sm">Save</button></form>
-            <form method="post" onsubmit="return confirm('Delete this question?')"><?= csrf_input() ?><input type="hidden" name="do" value="delete"><input type="hidden" name="id" value="<?= (int) $r['id'] ?>"><button class="btn btn-danger btn-sm">Delete</button></form></td></tr>
+    <div class="table-wrapper"><table class="data"><thead><tr><th style="width:90px">Order</th><th>Question</th><th style="width:60px">On</th><th style="width:170px"></th></tr></thead><tbody>
+      <?php foreach ($by[$scope] as $r): $fid = 'q' . (int) $r['id']; ?>
+        <tr>
+          <td><input class="input" form="<?= $fid ?>" type="number" name="position" value="<?= (int) $r['position'] ?>" style="width:70px" aria-label="Order"></td>
+          <td><input class="input" form="<?= $fid ?>" type="text" name="text" value="<?= $esc($r['text']) ?>" maxlength="200" style="width:100%" aria-label="Question"></td>
+          <td><input form="<?= $fid ?>" type="checkbox" name="active" value="1"<?= ($r['active'] === true || $r['active'] === 't') ? ' checked' : '' ?> aria-label="On"></td>
+          <td><div style="display:flex;gap:6px;justify-content:flex-end">
+            <form id="<?= $fid ?>" method="post" style="margin:0"><?= csrf_input() ?><input type="hidden" name="do" value="save"><input type="hidden" name="id" value="<?= (int) $r['id'] ?>"><button class="btn btn-sm">Save</button></form>
+            <form method="post" style="margin:0" data-confirm="Delete this question?" data-confirm-text="It leaves the rotation." data-confirm-button="Delete"><?= csrf_input() ?><input type="hidden" name="do" value="delete"><input type="hidden" name="id" value="<?= (int) $r['id'] ?>"><button class="btn btn-sm btn-danger">Delete</button></form>
+          </div></td>
+        </tr>
       <?php endforeach; ?>
-      <tr><form method="post"><?= csrf_input() ?><input type="hidden" name="do" value="add"><input type="hidden" name="scope" value="<?= $scope ?>">
-        <td></td><td><input type="text" name="text" maxlength="200" placeholder="<?= $scope === 'city' ? "Where's the best phở in {city}?" : 'What do people in your city eat for breakfast?' ?>" style="width:100%;min-width:420px;background:var(--surface);border:1px solid var(--line);color:var(--text);padding:6px"></td>
-        <td></td><td><button class="btn btn-primary btn-sm">Add</button></td></form></tr>
+      <tr>
+        <td></td>
+        <td><input class="input" form="add-<?= $scope ?>" type="text" name="text" maxlength="200" style="width:100%" aria-label="New question"
+                   placeholder="<?= $scope === 'city' ? "Where's the best phở in {city}?" : 'What do people in your city eat for breakfast?' ?>"></td>
+        <td></td>
+        <td><form id="add-<?= $scope ?>" method="post" style="margin:0;display:flex;justify-content:flex-end"><?= csrf_input() ?><input type="hidden" name="do" value="add"><input type="hidden" name="scope" value="<?= $scope ?>"><button class="btn btn-sm btn-primary">Add</button></form></td>
+      </tr>
     </tbody></table></div>
+  </section>
   <?php endforeach; ?>
-</main>
+</div>
 <?php
 admin_foot();

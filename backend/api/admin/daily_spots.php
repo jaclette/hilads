@@ -40,8 +40,7 @@ admin_nav('/admin/daily');
 daily_styles();
 ?>
 <div class="admin-main">
-    <h1 class="page-title">📍 Spots</h1>
-    <?php daily_subnav('/admin/daily/spots'); ?>
+    <?php daily_head('/admin/daily/spots', 'Spots', 'Places on the map, made from players\' photos and our seeds.'); ?>
     <?= flash_html() ?>
 
     <div class="daily-inline" style="margin-bottom:12px">

@@ -26,15 +26,15 @@ function daily_text(?string $json): string
 function daily_state_badge(string $state): string
 {
     $map = [
-        'empty'        => ['b-bad', 'empty'],
-        'draft'        => ['b-mute', 'draft'],
-        'scheduled'    => ['b-info', 'scheduled'],
-        'published'    => ['b-ok', 'published'],
-        'reserve_used' => ['b-warn', 'reserve used'],
-        'pending'      => ['b-warn', 'pending'],
-        'approved'     => ['b-ok', 'approved'],
-        'rejected'     => ['b-bad', 'rejected'],
-        'removed'      => ['b-mute', 'removed'],
+        'empty'        => ['b-bad', 'Nothing planned'],
+        'draft'        => ['b-mute', 'Draft'],
+        'scheduled'    => ['b-info', 'Scheduled'],
+        'published'    => ['b-ok', 'Published'],
+        'reserve_used' => ['b-warn', 'From reserve'],
+        'pending'      => ['b-warn', 'Pending'],
+        'approved'     => ['b-ok', 'Approved'],
+        'rejected'     => ['b-bad', 'Rejected'],
+        'removed'      => ['b-mute', 'Removed'],
     ];
     [$cls, $label] = $map[$state] ?? ['b-mute', $state];
     return '<span class="badge ' . $cls . '">' . dh($label) . '</span>';
@@ -154,28 +154,49 @@ function daily_brand_warnings(string $english, array $translations): string
 
 function daily_subnav(string $current): void
 {
-    $links = [
-        '/admin/daily'         => '📅 Calendar',
-        '/admin/daily/today'   => '🔥 Today',
-        '/admin/daily/reserve' => '🧺 Reserve',
-        '/admin/daily/proposals' => '💡 Proposals',
-        '/admin/daily/spots'   => '📍 Spots',
-        '/admin/daily/picks'   => '⭐ Picks',
-        '/admin/daily/specials' => '✨ Special days',
-        '/admin/daily/events'  => '🎃 Seasonal events',
-        '/admin/daily/promo'   => '🎬 Promo',
-        '/admin/daily/import'  => '⬆️ Import',
-        '/admin/daily/covers'  => '🖼️ Covers',
-        '/admin/daily/translations' => '🌐 Translations',
-        '/admin/daily/log'     => '📜 Log',
+    echo daily_tabs($current);
+}
+
+/**
+ * The tabs of the sidebar section a Daily page belongs to: Daily challenges (calendar, today,
+ * reserve, proposals, import, covers, translations, history), Special days & events, Places.
+ */
+function daily_tabs(string $current): string
+{
+    $groups = [
+        'challenges' => ['/admin/daily' => 'Calendar', '/admin/daily/today' => 'Today', '/admin/daily/reserve' => 'Reserve',
+                         '/admin/daily/proposals' => 'Proposals', '/admin/daily/translations' => 'Translations',
+                         '/admin/daily/covers' => 'Covers', '/admin/daily/import' => 'Import', '/admin/daily/log' => 'History'],
+        'specials'   => ['/admin/daily/specials' => 'Special days', '/admin/daily/events' => 'Seasonal events'],
+        'places'     => ['/admin/daily/spots' => 'Spots', '/admin/daily/picks' => 'Hilads picks'],
+        'promo'      => [],
     ];
-    echo '<div class="daily-subnav">';
+    $group = match (true) {
+        str_starts_with($current, '/admin/daily/specials'), str_starts_with($current, '/admin/daily/events') => 'specials',
+        str_starts_with($current, '/admin/daily/spots'), str_starts_with($current, '/admin/daily/picks') => 'places',
+        str_starts_with($current, '/admin/daily/promo') => 'promo',
+        default => 'challenges',
+    };
+    if ($groups[$group] === []) return '';
     $pending = admin_pending_proposals();
-    foreach ($links as $href => $label) {
-        $badge = $href === '/admin/daily/proposals' && $pending > 0 ? ' <span class="nav-count">' . $pending . '</span>' : '';
-        echo '<a href="' . $href . '"' . ($current === $href ? ' class="active"' : '') . '>' . $label . $badge . '</a>';
+    $tabs = [];
+    foreach ($groups[$group] as $href => $label) {
+        $tabs[] = [$label, $href, $href === '/admin/daily/proposals' && $pending > 0 ? $pending : null, $current === $href];
     }
-    echo '</div>';
+    return '<div style="margin-bottom:18px">' . ui_tabs($tabs, 'Section') . '</div>';
+}
+
+/** Header + tabs of a Daily page: the sidebar group, a plain title, one line about the page. */
+function daily_head(string $current, string $title, string $sub = '', string $actions = ''): void
+{
+    $group = match (true) {
+        str_starts_with($current, '/admin/daily/specials'), str_starts_with($current, '/admin/daily/events') => 'Today › Special days & events',
+        str_starts_with($current, '/admin/daily/spots'), str_starts_with($current, '/admin/daily/picks') => 'Community › Places',
+        str_starts_with($current, '/admin/daily/promo') => 'Growth',
+        default => 'Today › Daily challenges',
+    };
+    echo ui_page_head($group, $title, $sub, $actions);
+    echo daily_tabs($current);
 }
 
 /** Page-local styles: layout of the Daily pages and the phone rules. */
@@ -185,8 +206,19 @@ function daily_styles(): void
 .daily-subnav { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:18px; }
 .daily-subnav a { padding:6px 12px; border:1px solid var(--line); border-radius:6px; color:var(--muted); font-size:13px; }
 .daily-subnav a.active, .daily-subnav a:hover { color:var(--text); background:var(--surface-2); text-decoration:none; }
-.daily-cols { display:grid; grid-template-columns: minmax(0,1fr) 340px; gap:20px; align-items:start; }
+.daily-cols { display:grid; grid-template-columns: minmax(0,1fr) 360px; gap:20px; align-items:start; }
+.daily-cols > div:last-child { position: sticky; top: 72px; }
+.daily-cols .form-card { max-width: none; }
+.daily-cols .form-card > h3:first-of-type, .daily-cols .form-card > h3 { font-size: var(--fs-md); font-weight: 700; }
+.daily-cols .form-card + .form-card, .daily-cols form + .form-card, .daily-cols .form-card + form { margin-top: 16px; }
+.daily-jump { display:flex; gap:6px; flex-wrap:wrap; margin: 0 0 16px; position: sticky; top: 56px; z-index: 20; padding: 8px 0; background: var(--bg); }
+.daily-jump a { display:inline-flex; gap:6px; align-items:center; font-size: var(--fs-sm); font-weight: 600; padding: 5px 10px; border-radius: 999px;
+  border: 1px solid var(--line); background: var(--surface); color: var(--text); text-decoration: none; }
+.daily-jump a:hover { border-color: var(--line-strong); }
+.daily-jump .ok { color: var(--ok); } .daily-jump .warn { color: var(--warn); } .daily-jump .bad { color: var(--bad); }
+[id] { scroll-margin-top: 120px; }
 .daily-row-empty-soon td { background:var(--bad-soft); }
+.daily-row-today td { box-shadow: inset 0 1px 0 var(--brand), inset 0 -1px 0 var(--brand); }
 .daily-muted { color:var(--faint); font-size:12px; }
 .daily-counter { font-size:12px; color:var(--faint); text-align:right; margin-top:4px; }
 .daily-counter.near { color:var(--brand-text); } .daily-counter.over { color:var(--bad); font-weight:600; }
@@ -210,9 +242,8 @@ function daily_styles(): void
 .daily-tr td.lang { width:130px; color:var(--muted); font-size:12px; padding-top:10px; }
 .daily-tr textarea, .daily-tr input[type=text] { width:100%; background:var(--surface-2); border:1px solid var(--line); color:var(--text); padding:6px 8px; border-radius:5px; font-size:13px; font-family:inherit; }
 .daily-tr .missing { color:var(--bad); font-size:11px; }
+@media (max-width: 1100px) { .daily-cols { grid-template-columns: 1fr; } .daily-cols > div:last-child { position: static; } }
 @media (max-width: 720px) {
-  .admin-header { overflow-x: auto; }
-  .admin-header nav { flex-wrap: nowrap; }
   .daily-cols { grid-template-columns: 1fr; }
   .daily-stack tr { display: block; border-bottom: 1px solid var(--line); padding: 6px 0; }
   .daily-stack td { display: block; width: 100%; min-width: 0 !important; }

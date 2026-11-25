@@ -20,6 +20,9 @@ final class DailyAdminService
     /** Set to 'cli' by scripts; null = the logged-in back office admin. */
     public static ?string $actor = null;
 
+    /** Audit lines written in this request (the back office's fallback logs a change only when none was). */
+    public static int $writes = 0;
+
     // ── Challenges ───────────────────────────────────────────────────────────
 
     /**
@@ -1182,6 +1185,7 @@ final class DailyAdminService
 
     public static function audit(string $action, string $entityType, ?string $entityId, ?array $before, ?array $after): void
     {
+        self::$writes++;
         try {
             Database::pdo()->prepare("
                 INSERT INTO admin_audit_log (admin_username, admin_user_id, admin_ip, action, entity_type, entity_id, before, after)

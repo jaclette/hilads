@@ -35,11 +35,17 @@ try {
 }
 session_start();
 
+
 require_once __DIR__ . '/auth.php';
 require_once __DIR__ . '/csrf.php';
 require_once __DIR__ . '/flash.php';
 require_once __DIR__ . '/layout.php';
 require_once __DIR__ . '/ui.php';
+
+// Every change is audited: handlers log their own lines; this catches the ones that don't.
+if ($method === 'POST') {
+    register_shutdown_function('admin_audit_fallback');
+}
 
 // Ops timezone: all admin timestamps (When / Created / Last) and the per-day
 // activity buckets render in Saigon time, not UTC.

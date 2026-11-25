@@ -81,8 +81,7 @@ admin_nav('/admin/daily');
 daily_styles();
 ?>
 <div class="admin-main">
-    <h1 class="page-title">🔥 Today</h1>
-    <?php daily_subnav($self); ?>
+    <?php daily_head($self, 'Today', 'Today\'s challenge as it happens: photos to moderate, reported photos and comments, the morning push.'); ?>
     <?= flash_html() ?>
 
     <div class="form-card">

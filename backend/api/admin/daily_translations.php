@@ -47,8 +47,7 @@ admin_nav('/admin/daily');
 daily_styles();
 ?>
 <div class="admin-main">
-    <h1 class="page-title">🌐 Translations</h1>
-    <?php daily_subnav('/admin/daily/translations'); ?>
+    <?php daily_head('/admin/daily/translations', 'Translations', 'Every coming challenge in the 19 languages. Missing ones are in red.'); ?>
     <?= flash_html() ?>
 
     <div class="form-card">

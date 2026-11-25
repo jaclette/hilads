@@ -20,8 +20,7 @@ admin_nav('/admin/daily');
 daily_styles();
 ?>
 <div class="admin-main">
-    <h1 class="page-title">📜 Audit log</h1>
-    <?php daily_subnav('/admin/daily/log'); ?>
+    <?php daily_head('/admin/daily/log', 'History', 'Every change to Daily challenges, twists and photos, newest first. The full back office history is in System › Audit log.'); ?>
 
     <form method="GET" action="/admin/daily/log" class="toolbar daily-inline" style="margin-bottom:12px">
         <select name="type">

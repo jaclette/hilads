@@ -36,8 +36,7 @@ admin_nav('/admin/daily');
 daily_styles();
 ?>
 <div class="admin-main">
-    <h1 class="page-title">🆕 New places in review (<?= count($queue) ?>)</h1>
-    <?php daily_subnav('/admin/daily/spots'); ?>
+    <?php daily_head('/admin/daily/spots', 'New places in review (' . count($queue) . ')', 'Places players added. Approve (renaming if needed), merge into an existing spot, or reject.'); ?>
     <?= flash_html() ?>
     <p class="daily-muted">The name is typed by the user, the position is their phone's when posting. Check both, merge duplicates into the spot close by.</p>
 

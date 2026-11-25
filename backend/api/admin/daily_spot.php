@@ -46,8 +46,7 @@ admin_nav('/admin/daily');
 daily_styles();
 ?>
 <div class="admin-main">
-    <h1 class="page-title">📍 <?= dh($spot['name']) ?></h1>
-    <?php daily_subnav('/admin/daily/spots'); ?>
+    <?php daily_head('/admin/daily/spots', (string) $spot['name'], ''); ?>
     <?= flash_html() ?>
 
     <?php if ($merged): ?>

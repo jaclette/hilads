@@ -54,8 +54,7 @@ admin_nav('/admin/daily');
 daily_styles();
 ?>
 <div class="admin-main">
-    <h1 class="page-title">⭐ Hilads picks</h1>
-    <?php daily_subnav('/admin/daily/picks'); ?>
+    <?php daily_head('/admin/daily/picks', 'Hilads picks', 'Real verified places shown with a badge after the players\' photos. Never voted, counted or ranked.'); ?>
     <?= flash_html() ?>
 
     <?php if (!$ready): ?>

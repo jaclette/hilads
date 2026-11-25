@@ -60,8 +60,7 @@ daily_styles();
 .promo-photo .badge { display:inline-block; margin-top:4px; font-size:11px; }
 </style>
 <div class="admin-main">
-    <h1 class="page-title">🎬 Promo</h1>
-    <?php daily_subnav('/admin/daily/promo'); ?>
+    <?php daily_head('/admin/daily/promo', 'Promo', 'Material for the promo videos made on the Mac: the day\'s best photos and the players\' consent.'); ?>
 
     <div class="daily-inline" style="margin-bottom:14px">
         <a class="btn btn-secondary btn-sm" href="/admin/daily/promo?date=<?= $prev ?>">← <?= $prev ?></a>

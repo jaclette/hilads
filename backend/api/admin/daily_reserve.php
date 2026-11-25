@@ -26,8 +26,7 @@ admin_nav('/admin/daily');
 daily_styles();
 ?>
 <div class="admin-main">
-    <h1 class="page-title">🧺 Reserve</h1>
-    <?php daily_subnav('/admin/daily/reserve'); ?>
+    <?php daily_head('/admin/daily/reserve', 'Reserve', 'Undated challenges. On a day with nothing scheduled, the drop publishes the oldest unused one.', '<a class="btn btn-primary" href="/admin/daily/new?reserve=1">New reserve challenge</a>'); ?>
     <?= flash_html() ?>
 
     <form method="POST" action="/admin/daily/reserve" class="form-card">

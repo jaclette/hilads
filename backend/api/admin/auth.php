@@ -113,3 +113,42 @@ function admin_die(string $message): never
     admin_foot();
     exit;
 }
+
+/**
+ * Audit safety net (registered for every POST in boot.php): a change that went through but wrote
+ * no audit line of its own gets a generic one, so every back office change is in the log with its
+ * person, page, button and submitted fields (never passwords, tokens or typed phrases).
+ * "Went through" = a success message was set, or the answer is a redirect / JSON without an error.
+ */
+function admin_audit_fallback(): void
+{
+    global $uri;
+    if (DailyAdminService::$writes > 0 || !class_exists('AdminAuth') || AdminAuth::user() === null) return;
+    $path = (string) $uri;
+    foreach (['/admin/login', '/admin/logout', '/admin/account', '/admin/search', '/admin/assets'] as $skip) {
+        if (str_starts_with($path, $skip)) return;
+    }
+    $flash = $_SESSION['admin_flash'] ?? [];
+    $types = array_column($flash, 'type');
+    if (in_array('error', $types, true)) return;
+    $headers = implode("\n", headers_list());
+    $redirectOrJson = stripos($headers, 'Location:') !== false || stripos($headers, 'application/json') !== false;
+    if (!in_array('success', $types, true) && !$redirectOrJson) return;
+
+    $fields = [];
+    foreach ($_POST as $k => $v) {
+        if (preg_match('/csrf|password|phrase|token|secret|code$/i', (string) $k)) continue;
+        $val = is_array($v) ? json_encode($v, JSON_UNESCAPED_UNICODE) : (string) $v;
+        $fields[$k] = mb_strlen($val) > 300 ? mb_substr($val, 0, 300) . '…' : $val;
+    }
+    foreach ($_FILES as $k => $f) {
+        if (is_array($f['name'] ?? null)) $fields[$k] = 'files: ' . implode(', ', array_filter($f['name']));
+        elseif (($f['name'] ?? '') !== '') $fields[$k] = 'file: ' . $f['name'];
+    }
+    $button = (string) ($_POST['action'] ?? $_POST['do'] ?? '');
+    $slug = trim(preg_replace('#[^a-z0-9]+#', '_', strtolower(substr($path, strlen('/admin')))), '_') ?: 'dashboard';
+    $json = json_encode($fields, JSON_UNESCAPED_UNICODE);
+    if (strlen((string) $json) > 4000) $fields = ['fields' => mb_substr((string) $json, 0, 4000) . '…'];
+    AdminAuth::log('page.' . $slug . ($button !== '' ? '.' . preg_replace('/[^a-z0-9_:-]/i', '', explode(':', $button)[0]) : ''),
+        'page', $path, null, $fields + ($flash ? ['message' => (string) end($flash)['message']] : []));
+}

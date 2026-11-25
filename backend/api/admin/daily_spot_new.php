@@ -29,8 +29,7 @@ admin_nav('/admin/daily');
 daily_styles();
 ?>
 <div class="admin-main">
-    <h1 class="page-title">＋ Seed a spot</h1>
-    <?php daily_subnav('/admin/daily/spots'); ?>
+    <?php daily_head('/admin/daily/spots', 'Seed a spot', 'Add a real place by hand, with a photo, so the map is never empty there.'); ?>
     <?= flash_html() ?>
 
     <form method="POST" action="/admin/daily/spots/new" enctype="multipart/form-data" class="form-card">

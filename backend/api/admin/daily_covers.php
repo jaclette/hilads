@@ -95,8 +95,7 @@ daily_styles();
 .covers-thumb { width: 200px; aspect-ratio: 5/2; object-fit: cover; border-radius: 6px; display: block; }
 </style>
 <div class="admin-main">
-    <h1 class="page-title">🖼️ Covers</h1>
-    <?php daily_subnav('/admin/daily/covers'); ?>
+    <?php daily_head('/admin/daily/covers', 'Covers', 'The image at the top of each challenge card. Upload several days at once.'); ?>
     <?= flash_html() ?>
 
     <div class="form-card" id="covers-results"<?= $report ? '' : ' hidden' ?>>

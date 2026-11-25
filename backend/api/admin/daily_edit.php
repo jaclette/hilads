@@ -126,7 +126,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$isNew) {
             $row  = DailyAdminService::setChallengeTranslations($id, (array) ($p['tr_text'] ?? []), (array) ($p['tr_context'] ?? []));
             $text = json_decode((string) $row['text_i18n'], true) ?: [];
             $warn = daily_brand_warnings((string) ($text['en'] ?? ''), $text);
-            return 'Translations saved (' . count(DailyI18n::translated($text)) . '/18).'
+            return 'Translations saved (' . (count(DailyI18n::translated($text)) + 1) . '/19 languages).'
                 . ($warn !== '' ? " Check brand terms (they stay in English): {$warn}." : '');
         }, 'Translations saved.', $self . '#translations'),
 
@@ -134,7 +134,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$isNew) {
             $row  = DailyAdminService::setTwistTranslations((string) ($p['twist_id'] ?? ''), (array) ($p['tr_twist'] ?? []));
             $map  = json_decode((string) $row['text_i18n'], true) ?: [];
             $warn = daily_brand_warnings((string) $row['text'], $map);
-            return 'Twist translations saved (' . count(DailyI18n::translated($map)) . '/18).'
+            return 'Twist translations saved (' . (count(DailyI18n::translated($map)) + 1) . '/19 languages).'
                 . ($warn !== '' ? " Check brand terms (they stay in English): {$warn}." : '');
         }, 'Twist translations saved.', $self . '#twists'),
 
@@ -219,30 +219,55 @@ admin_nav('/admin/daily');
 daily_styles();
 ?>
 <div class="admin-main">
-    <div style="margin-bottom:12px"><a href="<?= $isReserve ? '/admin/daily/reserve' : '/admin/daily' ?>" class="btn btn-secondary btn-sm">← Back</a></div>
-    <h1 class="page-title"><?= dh($title) ?>
-        <?php if (!$isNew): ?><?= daily_state_badge($isReserve && $challenge['challenge_date'] ? 'reserve_used' : $status) ?><?php endif; ?>
-    </h1>
+    <?php
+    $stateBadge = $isNew ? '' : daily_state_badge($isReserve && $challenge['challenge_date'] ? 'reserve_used' : $status);
+    $sub = $isNew ? ($isReserve ? 'An undated challenge the drop uses on a day with nothing scheduled.' : 'Write it in English; translations, cover and question come after saving.')
+         : $stateBadge . ($date !== '' ? ' · live ' . dh(daily_window_label($date)) . ' (Saigon)' : '');
+    echo ui_page_head('Today › Daily challenges', $title, $sub,
+        '<a href="' . ($isReserve ? '/admin/daily/reserve' : '/admin/daily') . '" class="btn">Back to the ' . ($isReserve ? 'reserve' : 'calendar') . '</a>');
+    if (!$isNew):
+        $jText = json_decode((string) $challenge['text_i18n'], true) ?: [];
+        $jTr   = count(DailyI18n::translated($jText));
+        $jQ    = ($challenge['compare_type'] ?? null) !== null;
+        $jCov  = !empty($challenge['cover_url']);
+        $jHl   = (json_decode((string) ($challenge['headline_i18n'] ?? ''), true) ?: [])['en'] ?? '';
+        $jTw   = count(DailyAdminService::twistsFor($challenge['id']));
+        $jump  = [
+            ['#basics', 'Challenge', null, ''],
+            ['#headline', 'Headline', $jHl !== '' ? 'set' : 'none', ''],
+            ['#subtitle', 'Subtitle', null, ''],
+            ['#share-question', 'Share question', null, ''],
+            ['#cover', 'Cover', $jCov ? 'own' : 'default', $jCov ? 'ok' : 'warn'],
+            ['#compare', 'Comparison question', $jQ ? 'set' : 'missing', $jQ ? 'ok' : 'warn'],
+            ['#translations', 'Languages', ($jTr + 1) . '/19', $jTr === 18 ? 'ok' : ($jTr === 0 ? 'bad' : 'warn')],
+            ['#twists', 'Local twists', (string) $jTw, ''],
+            ['#actions', 'Test push, duplicate, delete', null, ''],
+        ];
+        echo '<nav class="daily-jump" aria-label="On this page">';
+        foreach ($jump as [$href, $label, $state, $cls]) {
+            echo '<a href="' . $href . '">' . dh($label) . ($state !== null ? ' <span class="' . $cls . '">' . dh($state) . '</span>' : '') . '</a>';
+        }
+        echo '</nav>';
+    endif;
+    ?>
     <?= flash_html() ?>
     <?php if (isset($formError)): ?><div class="flash flash-error"><?= dh($formError) ?></div><?php endif; ?>
-    <?php if ($lastDuplicate): ?><p style="margin-bottom:12px"><a class="btn btn-secondary btn-sm" href="/admin/daily/<?= dh($lastDuplicate) ?>">Open the copy →</a></p><?php endif; ?>
-    <?php if (!$isNew && $date !== ''): ?>
-        <p class="daily-muted" style="margin-bottom:14px">Live in Saigon: <?= dh(daily_window_label($date)) ?></p>
-    <?php endif; ?>
+    <?php if ($lastDuplicate): ?><div class="callout ok" style="margin-bottom:12px">Copy made. <a href="/admin/daily/<?= dh($lastDuplicate) ?>">Open the copy</a></div><?php endif; ?>
     <?php if ($isPublished): ?>
-        <div class="warning-box" style="margin-bottom:14px">This challenge is published: text edits are live for everyone (cards already posted keep their text).</div>
+        <div class="callout warn" style="margin-bottom:14px">This challenge is published: text edits are live for everyone (cards already posted keep their text).</div>
     <?php endif; ?>
 
     <div class="daily-cols">
         <div>
-            <form method="POST" action="<?= dh($self) ?><?= $isNew && $isReserve ? '?reserve=1' : '' ?>" class="form-card">
+            <form method="POST" action="<?= dh($self) ?><?= $isNew && $isReserve ? '?reserve=1' : '' ?>" class="form-card" id="basics">
+                <h3 style="margin-bottom:12px">Challenge</h3>
                 <?= csrf_input() ?>
                 <input type="hidden" name="action" value="save">
                 <?php if (!$isReserve): ?>
                     <div class="form-group">
-                        <label>Date (UTC date of the drop)</label>
+                        <label>Date</label>
                         <input type="date" name="date" value="<?= dh($date) ?>" <?= $isPublished ? 'disabled' : '' ?>>
-                        <div class="hint">Leave empty for an undated draft. Only future drops can be planned.</div>
+                        <div class="hint">The day it goes live (the drop at <?= dh(sprintf('%02d:%02d', ...DailyClock::dropTime())) ?> UTC). Empty: an undated draft. Only future days can be planned.</div>
                     </div>
                 <?php else: ?>
                     <p class="daily-muted" style="margin-bottom:12px">Reserve: no date. The drop publishes the oldest unused reserve on a day with nothing scheduled.
@@ -254,12 +279,12 @@ daily_styles();
                     <div class="hint"><?= $isReserve ? 'Weekday default: the theme of the day it is used.' : 'Defaults to the theme of the date\'s weekday. A world special day (<a href="/admin/daily/specials">Special days</a>) replaces it.' ?></div>
                 </div>
                 <div class="form-group">
-                    <label>Challenge (English)</label>
+                    <label>Challenge, in English</label>
                     <textarea name="text" id="dc-text" rows="3" required><?= dh($text) ?></textarea>
                     <div class="daily-counter" id="dc-counter"></div>
                 </div>
                 <div class="form-group">
-                    <label>Context (English, optional)</label>
+                    <label>Context, in English (optional)</label>
                     <textarea name="context" id="dc-context" rows="3"><?= dh($context) ?></textarea>
                 </div>
                 <?php if (!$isReserve && !$isPublished): ?>
@@ -291,7 +316,7 @@ daily_styles();
                 <?php $hl = json_decode((string) ($challenge['headline_i18n'] ?? ''), true) ?: []; $hlTr = array_diff_key($hl, ['en' => true]); ?>
                 <form method="POST" action="<?= dh($self) ?>" class="form-card" id="headline" style="margin-top:16px">
                     <?= csrf_input() ?><input type="hidden" name="action" value="save_headline">
-                    <h3 style="margin-bottom:4px">Headline <span class="daily-muted">(Today hero, <?= DailyAdminService::HEADLINE_MAX ?> characters max, <?= count($hlTr) ?>/18 translated)</span></h3>
+                    <h3 style="margin-bottom:4px">Headline <span class="daily-muted">(Today hero, <?= DailyAdminService::HEADLINE_MAX ?> characters max, <?= count($hlTr) + 1 ?>/19 languages)</span></h3>
                     <div class="form-group"><input type="text" name="headline_en" maxlength="<?= DailyAdminService::HEADLINE_MAX ?>" value="<?= dh($hl['en'] ?? '') ?>" placeholder="Find the oldest shop on your street.">
                         <div class="hint">Empty: the hero shows the challenge text.</div></div>
                     <div class="form-group"><label>Translations (optional JSON)</label>
@@ -302,7 +327,7 @@ daily_styles();
                 <?php $st = json_decode((string) ($challenge['subtitle_i18n'] ?? ''), true) ?: []; $stTr = array_diff_key($st, ['en' => true]); ?>
                 <form method="POST" action="<?= dh($self) ?>" class="form-card" id="subtitle" style="margin-top:16px">
                     <?= csrf_input() ?><input type="hidden" name="action" value="save_subtitle">
-                    <h3 style="margin-bottom:4px">Subtitle <span class="daily-muted">(challenge screen, under the question, <?= DailyAdminService::SUBTITLE_MAX ?> characters max, <?= count($stTr) ?>/18 translated)</span></h3>
+                    <h3 style="margin-bottom:4px">Subtitle <span class="daily-muted">(challenge screen, under the question, <?= DailyAdminService::SUBTITLE_MAX ?> characters max, <?= count($stTr) + 1 ?>/19 languages)</span></h3>
                     <div class="form-group"><input type="text" name="subtitle_en" maxlength="<?= DailyAdminService::SUBTITLE_MAX ?>" value="<?= dh($st['en'] ?? '') ?>" placeholder="Raise a glass where the locals drink.">
                         <div class="hint">One short line that doesn't repeat the question. Empty: the challenge text shows.</div></div>
                     <div class="form-group"><label>Translations (optional JSON)</label>
@@ -313,7 +338,7 @@ daily_styles();
                 <?php $sq = json_decode((string) ($challenge['share_question_i18n'] ?? ''), true) ?: []; $sqTr = array_diff_key($sq, ['en' => true]); ?>
                 <form method="POST" action="<?= dh($self) ?>" class="form-card" id="share-question" style="margin-top:16px">
                     <?= csrf_input() ?><input type="hidden" name="action" value="save_share_question">
-                    <h3 style="margin-bottom:4px">Share question <span class="daily-muted">(the share card's big question, <?= DailyAdminService::SHARE_QUESTION_MAX ?> characters max, <?= count($sqTr) ?>/18 translated)</span></h3>
+                    <h3 style="margin-bottom:4px">Share question <span class="daily-muted">(the share card's big question, <?= DailyAdminService::SHARE_QUESTION_MAX ?> characters max, <?= count($sqTr) + 1 ?>/19 languages)</span></h3>
                     <div class="form-group"><input type="text" name="share_question_en" maxlength="<?= DailyAdminService::SHARE_QUESTION_MAX ?>" value="<?= dh($sq['en'] ?? '') ?>" placeholder="Where do YOU go for pho?">
                         <div class="hint">Asks the friend who sees the Story. Empty: "What's YOUR city's answer?" (translated in the apps).</div></div>
                     <div class="form-group"><label>Translations (optional JSON)</label>
@@ -334,8 +359,8 @@ daily_styles();
                     <div class="form-actions" style="gap:8px">
                         <button class="btn btn-primary btn-sm" type="submit" name="action" value="cover_upload">Upload cover</button>
                         <?php if ($coverUrl): ?>
-                            <button class="btn btn-secondary btn-sm" type="submit" name="action" value="cover_as_theme" formnovalidate>Make it the <?= dh(DailyThemes::name($coverTheme)) ?> default</button>
-                            <button class="btn btn-secondary btn-sm" type="submit" name="action" value="cover_remove" formnovalidate>Use the theme's default</button>
+                            <button class="btn btn-sm" type="submit" name="action" value="cover_as_theme" formnovalidate>Make it the <?= dh(DailyThemes::name($coverTheme)) ?> default</button>
+                            <button class="btn btn-sm" type="submit" name="action" value="cover_remove" formnovalidate>Use the theme's default</button>
                         <?php endif; ?>
                     </div>
                     <div class="hint" style="margin-top:8px">Every theme's default cover: <a href="/admin/daily/specials#themes">Specials → Theme covers</a>. Many days at once: <a href="/admin/daily/covers">Covers</a>.</div>
@@ -351,10 +376,10 @@ daily_styles();
                 <form method="POST" action="<?= dh($self) ?>" class="form-card" id="compare" style="margin-top:16px">
                     <?= csrf_input() ?>
                     <input type="hidden" name="action" value="save_compare">
-                    <h3 style="margin-bottom:4px">Comparison question <span class="daily-muted">(<?= count(DailyI18n::translated($cmpQ)) ?>/18 translated)</span></h3>
+                    <h3 style="margin-bottom:4px">Comparison question <span class="daily-muted">(<?= count(DailyI18n::translated($cmpQ)) + 1 ?>/19 languages)</span></h3>
                     <p class="daily-muted" style="margin-bottom:8px">One question whose short answer changes from city to city: a name, a price, a time, a gesture, a word.
                         Answered after the photo (required in the new apps), and again for the poster's home city in Back home.</p>
-                    <?php if ($cmpType === null): ?><div class="warning-box" style="margin-bottom:8px">No question yet: every challenge should carry one.</div><?php endif; ?>
+                    <?php if ($cmpType === null): ?><div class="callout warn" style="margin-bottom:8px">No question yet: every challenge should carry one.</div><?php endif; ?>
                     <div class="form-group">
                         <label>Answer type</label>
                         <select name="compare_type" id="cq-type">
@@ -420,7 +445,7 @@ daily_styles();
                 <form method="POST" action="<?= dh($self) ?>" class="form-card" id="translations">
                     <?= csrf_input() ?>
                     <input type="hidden" name="action" value="save_translations">
-                    <h3 style="margin-bottom:4px">Translations <span class="daily-muted">(<?= count($trDone) ?>/18)</span></h3>
+                    <h3 style="margin-bottom:4px">Languages <span class="daily-muted">(<?= count($trDone) + 1 ?>/19)</span></h3>
                     <p class="daily-muted" style="margin-bottom:8px">Shown to users in their app language; an empty language falls back to English.
                         Keep in English: <?= dh(implode(', ', DailyI18n::BRAND_TERMS)) ?>.</p>
                     <?php if (DailyI18n::isStale($trText, $text)): ?>
@@ -526,24 +551,24 @@ daily_styles();
                     <?php endforeach; ?>
                 </div>
 
-                <div class="form-card">
-                    <h3 style="margin-bottom:10px">Actions</h3>
+                <div class="form-card" id="actions">
+                    <h3 style="margin-bottom:10px">Test push, duplicate, delete</h3>
                     <form method="POST" action="<?= dh($self) ?>" class="daily-inline" style="margin-bottom:10px">
                         <?= csrf_input() ?><input type="hidden" name="action" value="test_push">
-                        <button class="btn btn-secondary btn-sm" type="submit">📲 Send the morning push to me</button>
+                        <button class="btn btn-sm" type="submit">Send me the morning push</button>
                     </form>
                     <form method="POST" action="<?= dh($self) ?>" class="daily-inline" style="margin-bottom:10px">
                         <?= csrf_input() ?><input type="hidden" name="action" value="duplicate">
-                        <input type="date" name="date"><button class="btn btn-secondary btn-sm" type="submit">Duplicate (date optional)</button>
+                        <input type="date" name="date" aria-label="Date of the copy (optional)"><button class="btn btn-sm" type="submit">Duplicate</button><span class="hint">as a draft, on this date if you pick one</span>
                     </form>
                     <?php if (!$isPublished && !$isReserve): ?>
                         <form method="POST" action="<?= dh($self) ?>" class="daily-inline" style="margin-bottom:10px">
                             <?= csrf_input() ?><input type="hidden" name="action" value="move">
-                            <input type="date" name="date" required><button class="btn btn-secondary btn-sm" type="submit">Move to date</button>
+                            <input type="date" name="date" required aria-label="New date"><button class="btn btn-sm" type="submit">Move to this date</button>
                         </form>
                     <?php endif; ?>
                     <?php if (!$isPublished): ?>
-                        <form method="POST" action="<?= dh($self) ?>" class="daily-inline" onsubmit="return confirm('Delete this challenge and its twists?')">
+                        <form method="POST" action="<?= dh($self) ?>" class="daily-inline" data-confirm="Delete this challenge?" data-confirm-text="The challenge and its Local twists are deleted. It is not published yet, so no player loses anything." data-confirm-button="Delete">
                             <?= csrf_input() ?><input type="hidden" name="action" value="delete">
                             <button class="btn btn-danger btn-sm" type="submit">Delete</button>
                         </form>
