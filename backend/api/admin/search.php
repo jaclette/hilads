@@ -77,7 +77,7 @@ admin_nav('/admin/search');
                 <a class="result-row" href="/admin/users/<?= $e(rawurlencode($u['id'])) ?>/edit">
                     <?php if ($thumb): ?><img src="<?= $e($thumb) ?>" alt="" loading="lazy"><?php else: ?><span class="avatar" style="width:40px;height:40px"><?= $e(mb_strtoupper(mb_substr((string) $u['display_name'], 0, 1))) ?></span><?php endif; ?>
                     <div class="who"><b><?= $e($u['display_name']) ?><?= $u['username'] ? ' <span class="muted" style="font-weight:500">@' . $e($u['username']) . '</span>' : '' ?></b>
-                        <span><?= $e($u['email'] ?: ($u['guest_id'] ? 'Guest' : '')) ?><?= $u['home_city_name'] ? ' · ' . $e($u['home_city_name']) : '' ?> · joined <?= $e(date('j M Y', strtotime((string) $u['created_at']))) ?></span></div>
+                        <span><?= $e($u['email'] ?: ($u['guest_id'] ? 'Guest' : '')) ?><?= $u['home_city_name'] ? ' · ' . $e($u['home_city_name']) : '' ?> · joined <?= $e(date('j M Y', (int) $u['created_at'])) ?></span></div>
                     <?php if ($u['deleted_at']): ?><span class="badge b-bad" style="margin-left:auto">Deleted</span><?php endif; ?>
                 </a>
             <?php endforeach; ?>

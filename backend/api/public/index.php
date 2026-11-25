@@ -159,6 +159,7 @@ require_once __DIR__ . '/../src/HiQuestions.php';
     require_once __DIR__ . '/../src/ScoringReport.php';
     require_once __DIR__ . '/../src/DailyPromo.php';
     require_once __DIR__ . '/../src/AdminAuth.php';
+    require_once __DIR__ . '/../src/AdminDashboard.php';
     require_once __DIR__ . '/../admin/boot.php';
     exit;
 }
