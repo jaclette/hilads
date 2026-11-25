@@ -226,26 +226,24 @@ admin_head('Edit User');
 admin_nav('/admin/users');
 ?>
 <div class="admin-main">
-    <div style="margin-bottom:16px">
-        <a href="/admin/users" class="btn btn-secondary btn-sm">← Users</a>
-    </div>
-
-    <h1 class="page-title">
-        Edit User
-        <?php if ($user['is_fake']): ?>
-            <span class="badge badge-fake" style="font-size:12px;vertical-align:middle">Fake</span>
-        <?php endif; ?>
-        <?php if ($isDeleted): ?>
-            <span class="badge badge-deleted" style="font-size:12px;vertical-align:middle">Deleted</span>
-        <?php endif; ?>
-    </h1>
-
+    <?php
+    $tags = [];
+    if ($isDeleted) $tags[] = '<span class="badge b-bad">Deleted</span>';
+    if ($user['is_fake']) $tags[] = '<span class="badge b-violet">Seeded</span>';
+    $tags[] = '<span class="mono faint">' . ui_e($user['id']) . '</span>';
+    $acts = '<a href="/admin/users" class="btn">Back to users</a>';
+    if (!$isDeleted && admin_can_edit('community')) {
+        $acts .= '<a href="/admin/users/' . ui_e(urlencode($userId)) . '/roles" class="btn">Host roles</a>'
+               . '<a href="/admin/users/' . ui_e(urlencode($userId)) . '/delete" class="btn btn-danger">Delete account</a>';
+    }
+    echo ui_page_head('Community › Users', (string) ($user['display_name'] ?? 'Player'), implode(' ', $tags), $acts);
+    ?>
     <?= flash_html() ?>
 
     <?php if ($isDeleted): ?>
-        <div class="warning-box" style="margin-bottom:20px">
-            This account was soft-deleted on <?= date('Y-m-d H:i', strtotime($user['deleted_at'])) ?>.
-            All sessions were cleared. Data is preserved. Editing is still possible.
+        <div class="callout warn" style="margin-bottom:20px">
+            This account was deleted on <?= date('Y-m-d H:i', strtotime($user['deleted_at'])) ?>.
+            They were signed out everywhere. Their data is kept and can still be edited.
         </div>
     <?php endif; ?>
 
@@ -254,16 +252,16 @@ admin_nav('/admin/users');
         <div class="info-grid">
             <span class="info-label">User ID</span>
             <span class="info-value"><?= htmlspecialchars($user['id'], ENT_QUOTES) ?></span>
-            <span class="info-label">Auth type</span>
+            <span class="info-label">Signs in with</span>
             <span class="info-value">
-                <?= $user['google_id'] ? 'Google' : ($user['email'] ? 'Email/password' : 'Guest only') ?>
+                <?= $user['google_id'] ? 'Google' : ($user['email'] ? 'Email and password' : 'Nothing (guest)') ?>
             </span>
             <?php if ($user['guest_id']): ?>
             <span class="info-label">Guest ID</span>
             <span class="info-value"><?= htmlspecialchars($user['guest_id'], ENT_QUOTES) ?></span>
             <?php endif; ?>
             <?php if (!empty($roles)): ?>
-            <span class="info-label">City roles</span>
+            <span class="info-label">Host roles</span>
             <span class="info-value">
                 <?php foreach ($roles as $r): ?>
                     <?= htmlspecialchars($r['city_name'] . ' (' . $r['role'] . ')', ENT_QUOTES) ?>

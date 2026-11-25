@@ -21,9 +21,11 @@ if ($method === 'POST') {
     }
 
     UserRepository::softDelete($userId);
+    AdminAuth::log('user.delete', 'user', (string) $userId,
+        ['name' => $user['display_name'] ?? null, 'username' => $user['username'] ?? null, 'email' => $user['email'] ?? null], ['deleted' => true]);
 
     $name = $user['display_name'] ?? $userId;
-    flash_set('success', "User \"{$name}\" has been deleted (soft). Sessions cleared.");
+    flash_set('success', "{$name}'s account is deleted and signed out everywhere.");
     admin_redirect('/admin/users');
 }
 
@@ -40,25 +42,22 @@ admin_head('Delete user');
 admin_nav('/admin/users');
 ?>
 <div class="admin-main">
-    <h1 class="page-title">Delete user</h1>
-
-    <div style="max-width:560px;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:24px;margin-top:8px">
-        <p style="font-size:16px;margin:0 0 16px">
-            Delete <strong><?= htmlspecialchars($name, ENT_QUOTES) ?></strong>
-            <span style="color:var(--faint)">&lt;<?= htmlspecialchars($email, ENT_QUOTES) ?>&gt;</span>?
-        </p>
-        <ul style="color:var(--muted);font-size:13px;line-height:1.8;margin:0 0 22px 18px;padding:0">
-            <li>Account is deactivated and signed out everywhere.</li>
-            <li>They can't log back in or re-register with this email.</li>
-            <li>Messages and events are preserved.</li>
-            <li>Reversible by an engineer.</li>
+    <?= ui_page_head('Community › Users', 'Delete ' . $name . '\'s account') ?>
+    <div class="card card-pad danger-card" style="max-width:600px">
+        <p style="font-size:var(--fs-md);margin-bottom:12px"><b><?= ui_e($name) ?></b> <span class="muted"><?= ui_e($email) ?></span></p>
+        <ul class="affects">
+            <li>The account stops working and is signed out everywhere.</li>
+            <li>They can't sign back in or sign up again with this email.</li>
+            <li>Their messages, photos and plans stay.</li>
+            <li>Only an engineer can bring the account back.</li>
         </ul>
-        <div style="display:flex;gap:10px;align-items:center">
-            <form method="POST" action="/admin/users/<?= urlencode($userId) ?>/delete" style="margin:0">
+        <div class="form-actions">
+            <form method="POST" action="/admin/users/<?= ui_e(urlencode($userId)) ?>/delete" style="margin:0"
+                  data-confirm="Delete <?= ui_e($name) ?>'s account?" data-confirm-text="They are signed out at once and can't come back with this email." data-confirm-button="Delete account">
                 <?= csrf_input() ?>
-                <button type="submit" class="btn btn-danger btn-sm">Delete user</button>
+                <button type="submit" class="btn btn-danger-solid">Delete account</button>
             </form>
-            <a href="/admin/users" class="btn btn-secondary btn-sm">Cancel</a>
+            <a href="/admin/users/<?= ui_e(urlencode($userId)) ?>/edit" class="btn">Cancel</a>
         </div>
     </div>
 </div>

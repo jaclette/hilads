@@ -210,7 +210,7 @@ admin_nav('/admin/arrivals');
     <!-- View toggle: Accumulation vs Per day -->
     <div style="display:flex;gap:8px;margin-bottom:16px">
         <?php
-        $viewOpts = ['sum' => '∑ Accumulation', 'daily' => '📅 Per day'];
+        $viewOpts = ['sum' => 'Total', 'daily' => 'Per day'];
         foreach ($viewOpts as $vk => $vlabel):
             $active = $view === $vk;
             $href = '/admin/arrivals?from=' . urlencode($from) . '&to=' . urlencode($to) . '&view=' . $vk;

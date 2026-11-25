@@ -49,7 +49,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         VALUES (?, ?, ?, ?)
                         ON CONFLICT (user_id, city_id, role) DO NOTHING
                     ")->execute([$id, $userId, $cityId, $role]);
-                    flash_set('success', 'Ambassador assigned.');
+                    AdminAuth::log('user.host_add', 'user', (string) $userId, null, ['city' => $cityId, 'role' => $role]);
+                    flash_set('success', 'Host role added.');
                 } catch (\Throwable $e) {
                     flash_set('error', 'Could not assign role: ' . $e->getMessage());
                 }
@@ -59,8 +60,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif ($action === 'remove_role') {
         $roleId = trim($_POST['role_id'] ?? '');
         if ($roleId !== '') {
+            $st = $pdo->prepare("SELECT city_id, role FROM user_city_roles WHERE id = ? AND user_id = ?");
+            $st->execute([$roleId, $userId]);
+            $before = $st->fetch(PDO::FETCH_ASSOC) ?: null;
             $pdo->prepare("DELETE FROM user_city_roles WHERE id = ? AND user_id = ?")->execute([$roleId, $userId]);
-            flash_set('success', 'Role removed.');
+            AdminAuth::log('user.host_remove', 'user', (string) $userId, $before, ['removed' => true]);
+            flash_set('success', 'Host role removed.');
         }
     }
 
@@ -93,23 +98,18 @@ admin_head('Roles - ' . $displayName);
 admin_nav('/admin/users');
 ?>
 <div class="admin-main">
-    <div style="display:flex; align-items:center; gap:12px; margin-bottom:20px">
-        <a href="/admin/users" class="btn btn-secondary btn-sm">← Users</a>
-        <h1 class="page-title" style="margin-bottom:0">
-            Roles - <?= htmlspecialchars($displayName, ENT_QUOTES) ?>
-        </h1>
-    </div>
-
+    <?= ui_page_head('Community › Users', 'Host roles · ' . $displayName, 'A host is a local ambassador in a city: their picks and tips show with a Host badge.',
+        '<a href="/admin/users/' . ui_e(urlencode($userId)) . '/edit" class="btn">Back to the player</a>') ?>
     <?= flash_html() ?>
 
     <!-- ── Current roles ──────────────────────────────────────────────────── -->
     <div class="form-card" style="max-width:520px; margin-bottom:24px">
         <h3 class="info-section" style="font-size:12px; color:var(--faint); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:14px">
-            Current Roles
+            Host in
         </h3>
 
         <?php if (empty($roles)): ?>
-            <p style="color:var(--faint); font-size:13px">No roles assigned. This user is a regular member.</p>
+            <p style="color:var(--faint); font-size:13px">Not a host anywhere yet.</p>
         <?php else: ?>
             <div class="table-wrapper">
                 <table>
@@ -125,12 +125,12 @@ admin_nav('/admin/users');
                         <?php foreach ($roles as $r): ?>
                             <tr>
                                 <td><?= htmlspecialchars($r['city_name'], ENT_QUOTES) ?></td>
-                                <td><span class="badge badge-ambassador">⭐ Host</span></td>
+                                <td><span class="badge b-brand">Host</span></td>
                                 <td style="color:var(--faint); white-space:nowrap">
                                     <?= date('Y-m-d', strtotime($r['created_at'])) ?>
                                 </td>
                                 <td>
-                                    <form method="POST" style="display:inline" onsubmit="return confirm('Remove this role?')">
+                                    <form method="POST" style="display:inline" data-confirm="Remove this host role?" data-confirm-text="Their Host badge in this city goes away." data-confirm-button="Remove">
                                         <?= csrf_input() ?>
                                         <input type="hidden" name="action"  value="remove_role">
                                         <input type="hidden" name="role_id" value="<?= htmlspecialchars($r['id'], ENT_QUOTES) ?>">

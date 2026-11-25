@@ -33,54 +33,50 @@ admin_head('Cities');
 admin_nav('/admin/cities');
 ?>
 <div class="admin-main">
-    <h1 class="page-title">Cities</h1>
-    <p style="color:var(--faint);margin:-8px 0 16px;font-size:13px;max-width:720px">
-        Every city where people play. A city is created the first time someone plays there (GPS or a pick in the app's city search), on the GeoNames world base.
-        <a href="/admin/cities/suburbs">Suburbs</a>: force a place onto its main city, or keep it its own city.
-    </p>
-
+    <?= ui_page_head('Community', 'Cities', 'Every city where people play. A city is created the first time someone plays there (GPS or the app\'s city search). Check the new ones, merge duplicates.',
+        '<a class="btn" href="/admin/cities/suburbs">Suburbs</a>') ?>
     <?= flash_html() ?>
-    <?php if ($err): ?><p class="badge badge-deleted" style="display:inline-block;margin-bottom:12px"><?= $h($err) ?></p><?php endif; ?>
+    <?php if ($err): ?><div class="flash flash-error"><?= $h($err) ?></div><?php endif; ?>
 
-    <div style="display:flex;gap:8px;align-items:center;margin-bottom:14px;flex-wrap:wrap">
-        <a class="btn btn-sm <?= $view === 'search' ? 'btn-primary' : 'btn-secondary' ?>" href="/admin/cities">All cities</a>
-        <a class="btn btn-sm <?= $view === 'auto' ? 'btn-primary' : 'btn-secondary' ?>" href="/admin/cities?view=auto">Created automatically</a>
+    <div class="card">
+    <div class="toolbar">
+        <?= ui_tabs([['All cities', '/admin/cities', null, $view === 'search'], ['New, created automatically', '/admin/cities?view=auto', null, $view === 'auto']], 'Cities') ?>
         <?php if ($view === 'search'): ?>
-            <form method="GET" action="/admin/cities" style="display:flex;gap:6px;align-items:center;margin-left:8px">
-                <input type="text" name="q" value="<?= $h($q) ?>" placeholder="Name, alias, country (VN), city_20…" style="width:260px">
-                <label style="color:var(--faint);font-size:12px"><input type="checkbox" name="merged" value="1" <?= $merged ? 'checked' : '' ?>> merged too</label>
-                <button type="submit" class="btn btn-sm btn-secondary">Search</button>
+            <form method="GET" action="/admin/cities" style="display:flex;gap:8px;align-items:center;margin:0">
+                <input type="search" name="q" value="<?= $h($q) ?>" placeholder="Name, alias, country code (VN) or id" style="width:280px">
+                <label class="check"><input type="checkbox" name="merged" value="1" <?= $merged ? 'checked' : '' ?>> include merged</label>
+                <button type="submit" class="btn btn-sm">Search</button>
             </form>
         <?php endif; ?>
     </div>
-
     <div class="table-wrapper">
-        <table>
+        <table class="data" data-sortable>
             <thead><tr>
-                <th>City</th><th>Short name · aliases</th><th>Country</th><th>Members</th><th>Photos</th><th>GeoNames</th><th>Created</th><th></th>
+                <th data-sort>City</th><th>Short name, other names</th><th data-sort>Country</th><th data-sort="num">Members</th><th data-sort="num">Photos</th><th>World city base</th><th data-sort>Created</th><th></th>
             </tr></thead>
             <tbody>
             <?php foreach ($rows as $c): ?>
                 <tr>
                     <td>
-                        <a href="/admin/cities/<?= $h($c['id']) ?>"><?= $h($c['name']) ?></a>
-                        <span class="td-mono"><?= $h($c['id']) ?></span>
-                        <?php if ($c['status'] !== 'active'): ?><span class="badge badge-expired">merged → <?= $h($c['merged_into']) ?></span><?php endif; ?>
-                        <?php if ($c['force_live']): ?><span class="badge badge-live">live</span><?php endif; ?>
+                        <a href="/admin/cities/<?= $h($c['id']) ?>" style="font-weight:700;color:var(--text)"><?= $h($c['name']) ?></a>
+                        <div class="td-mono"><?= $h($c['id']) ?></div>
+                        <?php if ($c['status'] !== 'active'): ?><span class="badge b-mute">merged into <?= $h($c['merged_into']) ?></span><?php endif; ?>
+                        <?php if ($c['force_live']): ?><span class="badge b-brand" title="Shown as live even with few players">forced live</span><?php endif; ?>
                     </td>
                     <td style="color:var(--muted)"><?= $h(implode(' · ', array_filter(array_merge([$c['short_name']], $c['aliases'])))) ?></td>
                     <td><?= $h($c['country']) ?></td>
                     <td><?= $c['members'] ?></td>
                     <td><?= $c['photos'] ?></td>
-                    <td class="td-mono"><?= $c['geoname_id'] ?? '<span style="color:var(--bad)">unmapped</span>' ?></td>
-                    <td class="td-mono"><?= $h(substr((string) $c['created_at'], 0, 16)) ?><?= $c['auto_created'] ? ' <span class="badge badge-recurring">auto</span>' : '' ?>
-                        <?php if ($view === 'auto' && ($seenAt === '' || strtotime((string) $c['created_at']) > strtotime($seenAt))): ?><span class="badge badge-live">new</span><?php endif; ?></td>
-                    <td><a class="btn btn-sm btn-secondary" href="/admin/cities/<?= $h($c['id']) ?>">Edit</a></td>
+                    <td class="td-mono"><?= $c['geoname_id'] ?? '<span class="badge b-warn">not matched</span>' ?></td>
+                    <td class="td-mono"><?= $h(substr((string) $c['created_at'], 0, 16)) ?><?= $c['auto_created'] ? ' <span class="badge b-violet">automatic</span>' : '' ?>
+                        <?php if ($view === 'auto' && ($seenAt === '' || strtotime((string) $c['created_at']) > strtotime($seenAt))): ?><span class="badge b-brand">new</span><?php endif; ?></td>
+                    <td><a class="btn btn-sm" href="/admin/cities/<?= $h($c['id']) ?>">Open</a></td>
                 </tr>
             <?php endforeach; ?>
-            <?php if (!$rows && !$err): ?><tr><td colspan="8" class="no-results">No city.</td></tr><?php endif; ?>
+            <?php if (!$rows && !$err): ?><tr><td colspan="8"><?= ui_empty('No city here', $view === 'auto' ? 'No city was created automatically recently.' : 'Nothing matches this search.') ?></td></tr><?php endif; ?>
             </tbody>
         </table>
+    </div>
     </div>
 </div>
 <?php admin_foot(); ?>

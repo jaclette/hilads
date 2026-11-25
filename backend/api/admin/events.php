@@ -118,33 +118,31 @@ admin_head('Hi plan');
 admin_nav('/admin/events');
 ?>
 <div class="admin-main">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
-        <h1 class="page-title" style="margin-bottom:0">Hi plan <span style="color:var(--faint);font-size:14px;font-weight:400"><?= number_format($total) ?> total</span></h1>
-        <a href="/admin/events/create" class="btn btn-primary btn-sm">+ Create Hi plan</a>
-    </div>
+    <?= ui_plans_head('events', 'Hi plan & Hi now', 'Hi plans are planned meetups (one-off or recurring); Hi now are open hangouts happening now. ' . number_format($total) . ' Hi plans.',
+        admin_can_edit('community') ? '<a href="/admin/events/create" class="btn btn-primary">Create a Hi plan</a>' : '') ?>
 
     <?= flash_html() ?>
 
     <form method="GET" action="/admin/events" class="toolbar">
-        <input type="text" name="q" value="<?= htmlspecialchars($search, ENT_QUOTES) ?>" placeholder="Search by title, ID or creator ID…">
+        <input type="search" name="q" value="<?= htmlspecialchars($search, ENT_QUOTES) ?>" placeholder="Title, id or creator id">
         <select name="filter">
             <?php
             $filters = [
-                'all'      => 'All Hi plan',
+                'all'      => 'All Hi plans',
                 'active'   => 'Active',
                 'expired'  => 'Expired',
                 'deleted'  => 'Deleted',
                 'recurring'=> 'Recurring',
-                'one-shot' => 'One-shot',
+                'one-shot' => 'One-off',
             ];
             foreach ($filters as $val => $label):
             ?>
                 <option value="<?= $val ?>" <?= $filter === $val ? 'selected' : '' ?>><?= $label ?></option>
             <?php endforeach; ?>
         </select>
-        <button type="submit" class="btn btn-primary btn-sm">Filter</button>
+        <button type="submit" class="btn btn-sm">Filter</button>
         <?php if ($search !== '' || $filter !== 'all' || $city !== ''): ?>
-            <a href="/admin/events" class="btn btn-secondary btn-sm">Clear</a>
+            <a href="/admin/events" class="btn btn-sm btn-ghost">Clear</a>
         <?php endif; ?>
     </form>
 
@@ -254,24 +252,24 @@ admin_nav('/admin/events');
                             </td>
                             <td>
                                 <div class="td-actions">
-                                    <a href="/admin/events/<?= urlencode($ev['channel_id']) ?>/edit" class="btn btn-secondary btn-sm">Edit</a>
+                                    <a href="/admin/events/<?= urlencode($ev['channel_id']) ?>/edit" class="btn btn-sm">Edit</a>
                                     <?php if (!$isDeleted): ?>
                                         <?php if ($isRecurring): ?>
                                             <form method="POST" action="/admin/events/<?= urlencode($ev['channel_id']) ?>/delete"
-                                                  onsubmit="return confirm('Delete this occurrence only?\n\n«<?= htmlspecialchars(addslashes($ev['title']), ENT_QUOTES) ?>»\n\nOther occurrences of this series will not be affected.')">
+                                                  data-confirm="Delete only this date?" data-confirm-text="«<?= htmlspecialchars($ev['title'], ENT_QUOTES) ?>» disappears from the app on this date. The other dates of the series stay." data-confirm-button="Delete this date">
                                                 <?= csrf_input() ?>
                                                 <input type="hidden" name="mode" value="single">
-                                                <button type="submit" class="btn btn-secondary btn-sm">Del. occurrence</button>
+                                                <button type="submit" class="btn btn-secondary btn-sm">Delete this date</button>
                                             </form>
                                             <form method="POST" action="/admin/events/<?= urlencode($ev['channel_id']) ?>/delete"
-                                                  onsubmit="return confirm('DELETE ENTIRE SERIES?\n\n«<?= htmlspecialchars(addslashes($ev['title']), ENT_QUOTES) ?>»\n\nThis ends the series: every future occurrence disappears from the app and no new one is made. They stay in the database.')">
+                                                  data-confirm="End the whole series?" data-confirm-text="«<?= htmlspecialchars($ev['title'], ENT_QUOTES) ?>»: every coming date disappears from the app and no new one is made. They stay in the database." data-confirm-button="End the series">
                                                 <?= csrf_input() ?>
                                                 <input type="hidden" name="mode" value="series">
-                                                <button type="submit" class="btn btn-danger btn-sm">Del. series</button>
+                                                <button type="submit" class="btn btn-danger btn-sm">End series</button>
                                             </form>
                                         <?php else: ?>
                                             <form method="POST" action="/admin/events/<?= urlencode($ev['channel_id']) ?>/delete"
-                                                  onsubmit="return confirm('Delete plan «<?= htmlspecialchars(addslashes($ev['title']), ENT_QUOTES) ?>»? It disappears from the app (it stays in the database).')">
+                                                  data-confirm="Delete this Hi plan?" data-confirm-text="«<?= htmlspecialchars($ev['title'], ENT_QUOTES) ?>» disappears from the app. It stays in the database." data-confirm-button="Delete">
                                                 <?= csrf_input() ?>
                                                 <button type="submit" class="btn btn-danger btn-sm">Delete</button>
                                             </form>

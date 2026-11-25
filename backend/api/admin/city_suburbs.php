@@ -53,20 +53,17 @@ admin_head('Suburbs');
 admin_nav('/admin/cities');
 ?>
 <div class="admin-main">
-    <p style="margin-bottom:8px"><a href="/admin/cities">← Cities</a></p>
-    <h1 class="page-title">Suburbs</h1>
-    <p style="color:var(--faint);margin:-8px 0 16px;font-size:13px;max-width:720px">
-        Where a place plays. By default a place within 30 km of a city 3× bigger (200,000+) in the same region plays in that city. Here: force a place onto its main city, or keep it its own city. Applies to GPS and picks from now on.
-    </p>
+    <?= ui_page_head('Community › Cities', 'Suburbs', 'Where a place plays. By default a place within 30 km of a city 3× bigger (200,000+ people) in the same region plays in that city. Here: force a place onto its main city, or keep it its own city. Applies from now on.',
+        '<a class="btn" href="/admin/cities">Back to cities</a>') ?>
     <?= flash_html() ?>
-    <?php if ($err): ?><p class="badge badge-deleted" style="display:inline-block;margin-bottom:12px"><?= $h($err) ?></p><?php endif; ?>
+    <?php if ($err): ?><div class="flash flash-error"><?= $h($err) ?></div><?php endif; ?>
 
     <div style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:16px">
         <form method="GET" action="/admin/cities/suburbs" class="form-card" style="flex:1;min-width:320px">
-            <h3 style="margin-bottom:8px">Find a GeoNames id</h3>
+            <h3 style="margin-bottom:8px">Find a place in the world city base</h3>
             <div style="display:flex;gap:6px">
                 <input type="text" name="q" value="<?= $h($q) ?>" placeholder="Makati, Brooklyn…">
-                <button type="submit" class="btn btn-secondary">Search</button>
+                <button type="submit" class="btn">Search</button>
             </div>
             <?php foreach ($found as $f): ?>
                 <p style="font-size:13px;margin:6px 0">
@@ -98,19 +95,19 @@ admin_nav('/admin/cities');
                     <td><?= $h($r['name'] ?? '?') ?> <span class="td-mono"><?= $r['geoname_id'] ?> <?= $h($r['country']) ?></span></td>
                     <td><?= $r['target_geoname_id'] !== null
                         ? $h($r['target_name'] ?? '?') . ' <span class="td-mono">' . $r['target_geoname_id'] . '</span>'
-                        : '<span class="badge badge-active">its own city</span>' ?></td>
+                        : '<span class="badge b-ok">its own city</span>' ?></td>
                     <td style="color:var(--muted)"><?= $h($r['note']) ?></td>
                     <td>
                         <?php if ($r['channel_id']): ?>
                             <a href="/admin/cities/<?= $h($r['channel_id']) ?>"><?= $h($r['channel_id']) ?></a>
                             <?php if ($r['target_geoname_id'] !== null && $r['channel_status'] === 'active'): ?>
-                                <span class="badge badge-deleted">still its own city: merge it</span>
+                                <span class="badge b-warn">still its own city: merge it</span>
                             <?php endif; ?>
                         <?php endif; ?>
                     </td>
                     <td class="td-mono"><?= $h(substr((string) $r['created_at'], 0, 10)) ?></td>
                     <td>
-                        <form method="POST" action="/admin/cities/suburbs" onsubmit="return confirm('Remove this rule?')">
+                        <form method="POST" action="/admin/cities/suburbs" data-confirm="Remove this rule?" data-confirm-text="The place goes back to the default rule from now on." data-confirm-button="Remove">
                             <?= csrf_input() ?>
                             <input type="hidden" name="action" value="delete"><input type="hidden" name="geoname_id" value="<?= $r['geoname_id'] ?>">
                             <button type="submit" class="btn btn-sm btn-danger">Remove</button>

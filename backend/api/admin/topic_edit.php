@@ -102,11 +102,7 @@ admin_head('Edit Hi now');
 admin_nav('/admin/topics');
 ?>
 <div class="admin-main">
-    <div style="margin-bottom:16px">
-        <a href="/admin/topics" class="btn btn-secondary btn-sm">← Hangouts</a>
-    </div>
-
-    <h1 class="page-title">Edit Hi now</h1>
+    <?= ui_page_head('Community › Hi plan & Hi now', 'Edit Hi now', '', '<a href="/admin/topics" class="btn">Back to the list</a>') ?>
 
     <?php if ($topic['status'] === 'deleted'): ?>
         <div class="warning-box">This hangout is deleted. Editing will not restore it in the app feed.</div>

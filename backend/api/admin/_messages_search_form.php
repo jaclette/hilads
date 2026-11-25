@@ -4,7 +4,7 @@
 declare(strict_types=1);
 ?>
 <form method="GET" action="/admin/messages" class="toolbar">
-    <input type="text" name="q" value="<?= htmlspecialchars($search, ENT_QUOTES) ?>" placeholder="Chat name (city, plan, topic) or id" style="width:320px">
+    <input type="text" name="q" value="<?= htmlspecialchars($search, ENT_QUOTES) ?>" placeholder="Chat name (city, Hi plan, Hi now) or id" style="width:320px">
     <select name="type">
         <?php
         $opts = ['all' => 'All chats'] + $TYPE_LABELS;

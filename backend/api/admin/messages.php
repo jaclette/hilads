@@ -24,8 +24,6 @@ $TYPE_BADGE = [
     'topic'     => 'b-violet',
     'challenge' => 'b-mute',
 ];
-$TYPE_LABELS['event'] = 'Plan';
-$TYPE_LABELS['topic'] = 'Topic';
 $TYPE_LABELS['challenge'] = 'Old challenge';
 
 $search  = trim($_GET['q'] ?? '');
@@ -283,7 +281,7 @@ admin_nav('/admin/messages');
 <?php else:
     // ── Default: per-city message activity over a date range ────────────────
     ?>
-    <?= ui_page_head('Moderation', 'Messages', 'Find a chat by its name, or browse the busiest chats over a date range (cities, then plans and topics). Open one to delete messages. Reported messages are under <a href="/admin/reports?kind=messages">Reports</a>.') ?>
+    <?= ui_page_head('Moderation', 'Messages', 'Find a chat by its name, or browse the busiest chats over a date range (cities, then Hi plans and Hi now). Open one to delete messages. Reported messages are under <a href="/admin/reports?kind=messages">Reports</a>.') ?>
 
     <?= flash_html() ?>
 
@@ -466,7 +464,7 @@ admin_nav('/admin/messages');
     $subTotal = 0;
     foreach ($subs as $r) { $subTotal += (int) $r['cnt']; }
     ?>
-    <h2 style="margin:28px 0 4px">Plans, topics and old challenges</h2>
+    <h2 style="margin:28px 0 4px">Hi plans, Hi now and old challenges</h2>
     <p style="color:var(--faint);font-size:13px;margin:0 0 12px"><?= count($subs) ?> channels · <?= number_format($subTotal) ?> messages · <?= htmlspecialchars($rangeLabel, ENT_QUOTES) ?> (UTC+7)</p>
     <div class="table-wrapper">
         <table>
@@ -475,7 +473,7 @@ admin_nav('/admin/messages');
             </thead>
             <tbody>
             <?php if (empty($subs)): ?>
-                <tr><td colspan="5" class="no-results">No message in a plan, topic or old challenge in this range.</td></tr>
+                <tr><td colspan="5" class="no-results">No message in a Hi plan, Hi now or old challenge in this range.</td></tr>
             <?php else: foreach ($subs as $c):
                 $lastTs = $c['last_at'] ? strtotime($c['last_at']) : 0;
                 $tLabel = $TYPE_LABELS[$c['type']] ?? $c['type'];

@@ -134,11 +134,8 @@ admin_head('Create User');
 admin_nav('/admin/users');
 ?>
 <div class="admin-main">
-    <div style="margin-bottom:16px">
-        <a href="/admin/users" class="btn btn-secondary btn-sm">← Users</a>
-    </div>
-
-    <h1 class="page-title">Create User</h1>
+    <?= ui_page_head('Community › Users', 'Create an account', 'For a real person, or a seeded account (tick "Seeded account" below) used to make a city look alive.',
+        '<a href="/admin/users" class="btn">Back to users</a>') ?>
 
     <?= flash_html() ?>
 
@@ -279,15 +276,15 @@ admin_nav('/admin/users');
             <label style="display:flex;align-items:center;gap:10px;cursor:pointer">
                 <input type="checkbox" name="is_fake" value="1"
                        <?= !empty($post['is_fake']) ? 'checked' : '' ?> style="width:auto">
-                <span>Fake / seeded user
-                    <span style="color:var(--faint);font-size:11px">(admin-only, never shown to users)</span>
+                <span>Seeded account
+                    <span class="hint">(marked as seeded in the back office; players don't see the mark)</span>
                 </span>
             </label>
         </div>
 
         <div class="form-actions">
-            <button type="submit" class="btn btn-primary">Create user</button>
-            <a href="/admin/users" class="btn btn-secondary">Cancel</a>
+            <button type="submit" class="btn btn-primary">Create account</button>
+            <a href="/admin/users" class="btn">Cancel</a>
         </div>
     </form>
 </div>

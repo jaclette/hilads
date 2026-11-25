@@ -104,15 +104,13 @@ admin_head('Hi now');
 admin_nav('/admin/topics');
 ?>
 <div class="admin-main">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
-        <h1 class="page-title" style="margin-bottom:0">Hi now <span style="color:var(--faint);font-size:14px;font-weight:400"><?= number_format($total) ?> total</span></h1>
-        <a href="/admin/topics/create" class="btn btn-primary btn-sm">+ Create Hi now</a>
-    </div>
+    <?= ui_plans_head('topics', 'Hi plan & Hi now', 'Hi plans are planned meetups (one-off or recurring); Hi now are open hangouts happening now. ' . number_format($total) . ' Hi now.',
+        admin_can_edit('community') ? '<a href="/admin/topics/create" class="btn btn-primary">Start a Hi now</a>' : '') ?>
 
     <?= flash_html() ?>
 
     <form method="GET" action="/admin/topics" class="toolbar">
-        <input type="text" name="q" value="<?= htmlspecialchars($search, ENT_QUOTES) ?>" placeholder="Search by title, ID or creator ID…">
+        <input type="search" name="q" value="<?= htmlspecialchars($search, ENT_QUOTES) ?>" placeholder="Title, id or creator id">
         <select name="filter">
             <?php
             $filters = ['all' => 'All Hi now', 'active' => 'Active', 'expired' => 'Expired'];
@@ -121,9 +119,9 @@ admin_nav('/admin/topics');
                 <option value="<?= $val ?>" <?= $filter === $val ? 'selected' : '' ?>><?= $label ?></option>
             <?php endforeach; ?>
         </select>
-        <button type="submit" class="btn btn-primary btn-sm">Filter</button>
+        <button type="submit" class="btn btn-sm">Filter</button>
         <?php if ($search !== '' || $filter !== 'all' || $city !== ''): ?>
-            <a href="/admin/topics" class="btn btn-secondary btn-sm">Clear</a>
+            <a href="/admin/topics" class="btn btn-sm btn-ghost">Clear</a>
         <?php endif; ?>
     </form>
 
@@ -204,7 +202,7 @@ admin_nav('/admin/topics');
                             <td><?= $catIcon ?> <?= htmlspecialchars($t['category'], ENT_QUOTES) ?></td>
                             <td>
                                 <?php if ($t['created_by'] !== null): ?>
-                                    <span class="badge badge-registered" title="<?= htmlspecialchars($t['created_by'], ENT_QUOTES) ?>">Reg.</span>
+                                    <span class="badge b-info" title="<?= htmlspecialchars($t['created_by'], ENT_QUOTES) ?>">Player</span>
                                 <?php elseif ($t['guest_id'] !== null): ?>
                                     <span class="badge badge-guest" title="<?= htmlspecialchars($t['guest_id'], ENT_QUOTES) ?>">Guest</span>
                                 <?php else: ?>
@@ -222,10 +220,10 @@ admin_nav('/admin/topics');
                             <td>
                                 <div class="td-actions">
                                     <a href="/admin/topics/<?= urlencode($t['channel_id']) ?>/edit"
-                                       class="btn btn-secondary btn-sm<?= $isDeleted ? '" style="opacity:.45' : '' ?>">Edit</a>
+                                       class="btn btn-sm<?= $isDeleted ? '" style="opacity:.45' : '' ?>">Edit</a>
                                     <?php if (!$isDeleted): ?>
                                         <form method="POST" action="/admin/topics/<?= urlencode($t['channel_id']) ?>/delete"
-                                              onsubmit="return confirm('Delete Hi now «<?= htmlspecialchars(addslashes($t['title']), ENT_QUOTES) ?>»?\n\nIt disappears from the app. Its messages are kept.')">
+                                              data-confirm="Delete this Hi now?" data-confirm-text="«<?= htmlspecialchars($t['title'], ENT_QUOTES) ?>» disappears from the app. Its messages are kept." data-confirm-button="Delete">
                                             <?= csrf_input() ?>
                                             <button type="submit" class="btn btn-danger btn-sm">Delete</button>
                                         </form>

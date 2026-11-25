@@ -186,7 +186,7 @@ function admin_menu(): array
         ['community', 'Community', [
             ['/admin/users', 'Users', 'users', '#^/admin/users#', null],
             ['/admin/cities', 'Cities', 'city', '#^/admin/cities#', 'cities'],
-            ['/admin/events', 'Plans', 'plan', '#^/admin/(events|topics)#', null],
+            ['/admin/events', 'Hi plan & Hi now', 'plan', '#^/admin/(events|topics)#', null],
             ['/admin/daily/spots', 'Places', 'pin', '#^/admin/daily/(spots|picks)#', null],
         ]],
         ['game', 'Game', [

@@ -77,3 +77,13 @@ function ui_when(int|string|null $ts): string
     $t = is_int($ts) || ctype_digit((string) $ts) ? (int) $ts : (int) strtotime((string) $ts);
     return date('j M Y, H:i', $t) . ' (Saigon)';
 }
+
+/** Community › Hi plan & Hi now: one header, two tabs. */
+function ui_plans_head(string $current, string $title, string $sub, string $actions = ''): string
+{
+    return ui_page_head('Community', $title, $sub, $actions)
+        . '<div style="margin-bottom:16px">' . ui_tabs([
+            ['Hi plan', '/admin/events', null, $current === 'events'],
+            ['Hi now', '/admin/topics', null, $current === 'topics'],
+        ], 'Kind') . '</div>';
+}

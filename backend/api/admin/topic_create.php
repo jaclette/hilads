@@ -84,11 +84,7 @@ admin_head('Create Hi now');
 admin_nav('/admin/topics');
 ?>
 <div class="admin-main">
-    <div style="margin-bottom:16px">
-        <a href="/admin/topics" class="btn btn-secondary btn-sm">← Hangouts</a>
-    </div>
-
-    <h1 class="page-title">Create Hi now</h1>
+    <?= ui_page_head('Community › Hi plan & Hi now', 'Start a Hi now', '', '<a href="/admin/topics" class="btn">Back to the list</a>') ?>
 
     <?= flash_html() ?>
 

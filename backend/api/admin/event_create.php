@@ -150,11 +150,7 @@ admin_nav('/admin/events');
 </style>
 
 <div class="admin-main">
-    <div style="margin-bottom:16px">
-        <a href="/admin/events" class="btn btn-secondary btn-sm">← Events</a>
-    </div>
-
-    <h1 class="page-title">Create Hi plan</h1>
+    <?= ui_page_head('Community › Hi plan & Hi now', 'Create a Hi plan', '', '<a href="/admin/events" class="btn">Back to the list</a>') ?>
 
     <?= flash_html() ?>
 

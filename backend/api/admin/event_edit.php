@@ -233,11 +233,7 @@ admin_head('Edit Hi plan');
 admin_nav('/admin/events');
 ?>
 <div class="admin-main">
-    <div style="margin-bottom:16px">
-        <a href="/admin/events" class="btn btn-secondary btn-sm">← Events</a>
-    </div>
-
-    <h1 class="page-title">Edit Hi plan</h1>
+    <?= ui_page_head('Community › Hi plan & Hi now', 'Edit Hi plan', '', '<a href="/admin/events" class="btn">Back to the list</a>') ?>
 
     <?= flash_html() ?>
 
