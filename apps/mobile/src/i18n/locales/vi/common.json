@@ -171,7 +171,9 @@
   "tabs": {
     "today": "Hôm nay",
     "map": "Bản đồ",
-    "passport": "Hộ chiếu"
+    "passport": "Hộ chiếu",
+    "season": "Thắng",
+    "new": "mới"
   },
   "scope": {
     "title": "Xem",

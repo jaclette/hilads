@@ -172,7 +172,9 @@
   "tabs": {
     "today": "Vandaag",
     "map": "Kaart",
-    "passport": "Paspoort"
+    "passport": "Paspoort",
+    "season": "Winnen",
+    "new": "nieuw"
   },
   "scope": {
     "title": "Tonen",

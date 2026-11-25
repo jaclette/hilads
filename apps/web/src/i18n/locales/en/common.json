@@ -128,7 +128,8 @@
     "map": "Map",
     "chat": "Hi",
     "passport": "Passport",
-    "ranks": "Ranks"
+    "ranks": "Ranks",
+    "season": "Win"
   },
   "scope": {
     "title": "Show",

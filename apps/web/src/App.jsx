@@ -36,6 +36,7 @@ import QuickStart from './components/chat/QuickStart'
 import { createSocket } from './socket'
 import { cityFlag } from './cityMeta'
 import Icon from './components/Icon'
+import { useContestTab } from './components/contest/useContestTab'
 import { THEME_ICON, eventIcon, VIBE_ICONS, TOPIC_ICONS, CHALLENGE_TYPE_ICONS } from './lib/icons'
 import { badgeLabel } from './badgeMeta'
 import { getTimeLabel, getEventLocation, getEventMapsUrl, formatTime, eventSlug, osmPointUrl } from './eventUtils'
@@ -1934,6 +1935,8 @@ export default function App() {
   // V6: unread counts per category (the bell, "While you were away", the tab badges).
   useNotifCountsSync(!!account)
   const notifCounts = useNotifCounts()
+  // The Launch Season's temporary 5th tab (only while a season is Upcoming or Running).
+  const seasonTab = useContestTab()
 
   // V6: opening a tab clears its badge (the notifications behind it are read).
   const chatTabActive = !showToday && !showMap && !showProfileDrawer && !showEventDrawer && !showCityPicker
@@ -6105,7 +6108,7 @@ export default function App() {
         />
 
         {/* Bottom navigation - mobile only */}
-        <nav className="bottom-nav" aria-label={i18n.t('a11y.mainNav', { ns: 'common' })}>
+        <nav className={`bottom-nav${seasonTab ? ' bottom-nav--five' : ''}`} aria-label={i18n.t('a11y.mainNav', { ns: 'common' })}>
           {(() => {
             const onPassport = showProfileDrawer
             const onChat = !showToday && !showMap && !onPassport && !showEventDrawer &&
@@ -6120,7 +6123,23 @@ export default function App() {
             ]
             // V6 tab badges (dots): Passport = a new Local Pass, World = results out. Hi's mentions: the bell, the inbox.
             const badge = { passport: notifCounts.badges.passport, ranks: notifCounts.badges.ranks }
-            return tabs.map(({ key, label, active, onClick, Icon }) => (
+            // The Launch Season's temporary tab (a plane in the middle, only while a season is Upcoming or
+            // Running): a launcher to the teaser / Prize screen or my contest home (Passport sub-screens).
+            if (seasonTab) {
+              tabs.splice(2, 0, { key: 'season', label: 'tabs.season', active: false, season: true,
+                onClick: () => { seasonTab.markSeen(); goToMeTab(); setPassportSub(seasonTab.sub) },
+                Icon: () => <Icon name="airplane-outline" size={26} /> })
+            }
+            return tabs.map(({ key, label, active, onClick, Icon, season }) => season ? (
+              <button key={key} type="button" className="bottom-nav-tab bottom-nav-tab--season" onClick={onClick}
+                      aria-label={`${t(label, { ns: 'common' })}${seasonTab.isTest ? ' (TEST)' : ''}`}>
+                <span className="bottom-nav-icon"><Icon />
+                  {seasonTab.isTest && <span className="bottom-nav-test">TEST</span>}
+                  {seasonTab.isNew && <span className={`n6-tab-dot${seasonTab.isTest ? ' n6-tab-dot--left' : ''}`} />}
+                </span>
+                <span className="bottom-nav-label">{t(label, { ns: 'common' })}</span>
+              </button>
+            ) : (
               <button key={key} type="button" className={`bottom-nav-tab${active ? ' active' : ''}`} onClick={onClick}
                       aria-current={active ? 'page' : undefined}>
                 {active && <TabGhost />}

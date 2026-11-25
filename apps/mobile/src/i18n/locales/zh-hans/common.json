@@ -171,7 +171,9 @@
   "tabs": {
     "today": "今天",
     "map": "地图",
-    "passport": "护照"
+    "passport": "护照",
+    "season": "赢大奖",
+    "new": "新"
   },
   "scope": {
     "title": "显示",

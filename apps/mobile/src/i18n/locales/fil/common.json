@@ -172,7 +172,9 @@
   "tabs": {
     "today": "Ngayon",
     "map": "Mapa",
-    "passport": "Passport"
+    "passport": "Passport",
+    "season": "Manalo",
+    "new": "bago"
   },
   "scope": {
     "title": "Ipakita",

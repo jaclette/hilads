@@ -10,6 +10,7 @@ import { Button, Card, CityFlag, Screen, ScreenHeader, Sheet, SheetFlatList, She
 import { FLAGS } from '@/ui/flags';
 import { countryName } from '@/features/compare/HomeCityPicker';
 import { fetchContest, joinContest, type ContestOverview } from '@/features/contest/contest';
+import { refreshContestTab } from '@/features/contest/useContestTab';
 import { track } from '@/services/analytics';
 
 /**
@@ -56,6 +57,7 @@ export default function ContestJoinScreen() {
     setError(null);
     try {
       await joinContest(season.id, country);
+      refreshContestTab();
       void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       track('contest_joined', { test: season.isTest });
       router.replace('/contest' as never);

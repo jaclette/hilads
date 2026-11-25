@@ -16,6 +16,7 @@ import { markTabFocus, markTabPress } from '@/lib/perfProbe';
 import { track } from '@/services/analytics';
 import { useApp } from '@/context/AppContext';
 import { badgeCount, useUnreadMessages } from '@/features/messages/unread';
+import { useContestTab } from '@/features/contest/useContestTab';
 
 // V6 tab badges: what each tab's badge counts, and the notification types its visit marks read.
 // (Hi is no longer a tab: its mentions reach the bell and the inbox.)
@@ -42,6 +43,9 @@ const TABS: TabDef[] = [
   { name: 'map',      label: 'tabs.map',      icon: 'map-outline' },
   { name: 'passport', label: 'tabs.passport', icon: 'id-card-outline' },
 ];
+
+// The Launch Season's temporary tab (not a route: it opens the contest screens).
+const SEASON_TAB: TabDef = { name: 'season', label: 'tabs.season', icon: 'airplane-outline' };
 
 // expo-router 58: the first tab is set here (Tabs no longer takes initialRouteName).
 export const unstable_settings = { initialRouteName: 'today' };
@@ -84,15 +88,43 @@ function CustomTabBar({ state, emitter, navigateToTab }: BottomTabBarProps) {
     markNotificationTypesRead(b.types).then(refreshNotifCounts);
   }, [activeTab, badges]);  
 
+  // The Launch Season (temporary 5th tab, a plane in the middle): only while a season is Upcoming
+  // or Running; a launcher to the teaser / Prize screen or my contest home. Gone when it ends.
+  const contest = useContestTab();
+  const tabs: TabDef[] = contest ? [...TABS.slice(0, 2), SEASON_TAB, ...TABS.slice(2)] : TABS;
+
   if (keyboardUp) return null;
 
   return (
-    <View style={[styles.container, {
+    <View style={[styles.container, contest && styles.containerFive, {
       backgroundColor: colors.bg2,
       borderTopColor:  colors.line,
       paddingBottom:   Math.max(12, insets.bottom),
     }]}>
-      {TABS.map(tab => {
+      {tabs.map(tab => {
+        if (tab.name === SEASON_TAB.name && contest) {
+          const label = t(tab.label);
+          return (
+            <Pressable key={tab.name} accessibilityRole="button" testID="tab-season"
+                       accessibilityLabel={`${label}${contest.isTest ? ' (TEST)' : ''}${contest.isNew ? `, ${t('tabs.new')}` : ''}`}
+                       style={styles.tab}
+                       onPress={() => {
+                         track('tab_pressed', { from: activeTab ?? null, to: 'season' });
+                         if (Platform.OS !== 'web') Haptics.selectionAsync().catch(() => {});
+                         contest.markSeen();
+                         router.push(contest.route as never);
+                       }}>
+              <View>
+                <Ionicons name={tab.icon} size={IconSize.lg} color={colors.primaryText} />
+                {contest.isTest
+                  ? <Text style={[styles.test, { color: '#FFFFFF', backgroundColor: colors.red, borderColor: colors.bg2 }]} maxFontSizeMultiplier={1.2}>TEST</Text>
+                  : contest.isNew && <View style={[styles.dot, { backgroundColor: colors.cta, borderColor: colors.bg2 }]} />}
+                {contest.isTest && contest.isNew && <View style={[styles.dot, styles.dotLeft, { backgroundColor: colors.cta, borderColor: colors.bg2 }]} />}
+              </View>
+              <Text style={[styles.label, styles.labelActive, { color: colors.primaryText }]} numberOfLines={1} maxFontSizeMultiplier={1.4} adjustsFontSizeToFit minimumFontScale={0.8}>{label}</Text>
+            </Pressable>
+          );
+        }
         const routeIndex = state.routes.findIndex(r => r.name === tab.name);
         const focused    = activeTab === tab.name;
         // One selected state for every tab (design pass): the shared peach. Gold is for prizes only.
@@ -170,6 +202,8 @@ const styles = StyleSheet.create({
     paddingTop:        Space.sm,
     paddingHorizontal: Space.md,
   },
+  // Five tabs (a Launch Season is on): a little tighter so every label still fits a small phone.
+  containerFive: { gap: Space.xs, paddingHorizontal: Space.sm },
   tab: {
     flex:           1,
     alignItems:     'center',
@@ -183,6 +217,9 @@ const styles = StyleSheet.create({
                  borderWidth: 2, alignItems: 'center', justifyContent: 'center' },
   badgeText:   { fontSize: FontSizes.tiny, lineHeight: 14, fontWeight: '800' },
   dot:         { position: 'absolute', top: -2, right: -4, width: 11, height: 11, borderRadius: 6, borderWidth: 2 },
+  dotLeft:     { right: undefined, left: -4 },
+  test:        { position: 'absolute', top: -6, right: -16, fontSize: 8, lineHeight: 11, fontWeight: '900', paddingHorizontal: 3,
+                 borderRadius: 4, borderWidth: 1, overflow: 'hidden' },
   labelActive: { fontWeight: '700' },
 });
 

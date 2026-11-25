@@ -171,7 +171,9 @@
   "tabs": {
     "today": "오늘",
     "map": "지도",
-    "passport": "여권"
+    "passport": "여권",
+    "season": "경품",
+    "new": "새 소식"
   },
   "scope": {
     "title": "보기",

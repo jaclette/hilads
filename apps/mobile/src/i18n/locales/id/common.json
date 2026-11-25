@@ -171,7 +171,9 @@
   "tabs": {
     "today": "Hari ini",
     "map": "Peta",
-    "passport": "Paspor"
+    "passport": "Paspor",
+    "season": "Menang",
+    "new": "baru"
   },
   "scope": {
     "title": "Tampilkan",

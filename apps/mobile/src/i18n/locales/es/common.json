@@ -173,7 +173,9 @@
   "tabs": {
     "today": "Hoy",
     "map": "Mapa",
-    "passport": "Pasaporte"
+    "passport": "Pasaporte",
+    "season": "Gana",
+    "new": "nuevo"
   },
   "scope": {
     "title": "Mostrar",

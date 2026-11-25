@@ -173,7 +173,9 @@
   "tabs": {
     "today": "Oggi",
     "map": "Mappa",
-    "passport": "Passaporto"
+    "passport": "Passaporto",
+    "season": "Vinci",
+    "new": "novità"
   },
   "scope": {
     "title": "Mostra",

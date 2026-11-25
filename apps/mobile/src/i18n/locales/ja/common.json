@@ -171,7 +171,9 @@
   "tabs": {
     "today": "今日",
     "map": "マップ",
-    "passport": "パスポート"
+    "passport": "パスポート",
+    "season": "賞品",
+    "new": "新着"
   },
   "scope": {
     "title": "表示",

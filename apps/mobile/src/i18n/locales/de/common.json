@@ -172,7 +172,9 @@
   "tabs": {
     "today": "Heute",
     "map": "Karte",
-    "passport": "Reisepass"
+    "passport": "Reisepass",
+    "season": "Gewinnen",
+    "new": "neu"
   },
   "scope": {
     "title": "Anzeigen",

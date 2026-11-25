@@ -12667,3 +12667,12 @@ html[data-event="halloween"] { --header-art: #FFA552; --header-art-opacity: 0.28
 .ls-unlock-win .icon { color: #FFB627; flex: none; }
 .ls-warm p { margin: 4px 0 8px; }
 .ls-warm .ls-howwin-title { display: flex; align-items: center; gap: 6px; }
+
+/* Launch Season: the temporary 5th tab (a plane, only while a season is Upcoming or Running). */
+.bottom-nav.bottom-nav--five { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: var(--sp-4); padding-left: 8px; padding-right: 8px; }
+.bottom-nav-tab--season { color: var(--primary-text); }
+.bottom-nav-tab--season .bottom-nav-label { font-weight: 700; }
+.bottom-nav-test { position: absolute; top: -6px; right: -16px; font-size: 8px; line-height: 11px; font-weight: 900; padding: 0 3px; border-radius: 4px;
+  color: #fff; background: var(--red, #D7263D); border: 1px solid var(--surface); }
+.n6-tab-dot.n6-tab-dot--left { right: auto; left: -4px; }
+.bottom-nav--five .bottom-nav-label { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }

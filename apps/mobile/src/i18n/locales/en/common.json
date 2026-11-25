@@ -172,7 +172,9 @@
   "tabs": {
     "today": "Today",
     "map": "Map",
-    "passport": "Passport"
+    "passport": "Passport",
+    "season": "Win",
+    "new": "new"
   },
   "scope": {
     "title": "Show",

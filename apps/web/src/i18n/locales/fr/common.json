@@ -128,7 +128,8 @@
     "map": "Carte",
     "chat": "Hi",
     "passport": "Passeport",
-    "ranks": "Classement"
+    "ranks": "Classement",
+    "season": "Gagne"
   },
   "scope": {
     "title": "Afficher",
