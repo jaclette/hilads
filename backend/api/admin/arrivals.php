@@ -158,7 +158,7 @@ admin_nav('/admin/arrivals');
                     <td>
                         <?php if ($a['guest_id'] !== null): ?>
                             <form method="POST" action="/admin/bans/add"
-                                  onsubmit="return confirm('Block guest «<?= htmlspecialchars(addslashes($who), ENT_QUOTES) ?>» and the IP(s) they arrived/posted from?')">
+                                  data-confirm="Ban <?= htmlspecialchars($who, ENT_QUOTES) ?> for good?" data-confirm-text="The guest and the IP addresses they arrived or posted from can't post anymore, with no end date. You can lift it on the Bans page." data-confirm-button="Ban">
                                 <?= csrf_input() ?>
                                 <input type="hidden" name="target" value="guest_fanout">
                                 <input type="hidden" name="value" value="<?= htmlspecialchars($a['guest_id'], ENT_QUOTES) ?>">
@@ -190,8 +190,7 @@ admin_nav('/admin/arrivals');
     $prevFrom = (new DateTime($from))->modify('-1 day')->format('Y-m-d');
     $nextTo   = (new DateTime($to))->modify('+1 day')->format('Y-m-d');
     ?>
-    <h1 class="page-title">Arrivals <span style="color:var(--faint);font-size:14px;font-weight:400">by city</span></h1>
-    <p style="color:var(--faint);margin:-8px 0 16px;font-size:13px">How many people arrived in each city over a date range. Click a city to see who arrived.</p>
+    <?= ui_page_head('Moderation', 'Arrivals', 'Who arrived in each city over a date range ("X arrived" in the city chat). Open a city to see who arrived, and ban a guest if needed.') ?>
 
     <!-- Range + view controls -->
     <form method="GET" action="/admin/arrivals" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px">

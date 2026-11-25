@@ -54,6 +54,7 @@ final class AdminAuthTest extends TestCase
         self::assertSame('places', AdminAuth::area('/admin/daily/spots/abc'));
         self::assertSame('content', AdminAuth::area('/admin/daily/2026-11-25'));
         self::assertSame('archive', AdminAuth::area('/admin/campaigns/create'));
+        self::assertSame('moderation', AdminAuth::area('/admin/arrivals'), 'Arrivals is a working page again (bans from it)');
         self::assertSame('any', AdminAuth::area('/admin'));
         self::assertSame('settings', AdminAuth::area('/admin/something-new'), 'unmapped pages are super admin only');
     }

@@ -14,7 +14,7 @@ Danger zone · audit log · environment variables
 | Sidebar | What you do there |
 |---|---|
 | Today | The dashboard, the Daily challenges (calendar, today, reserve, proposals, translations, covers, import, history), special days and seasonal events, Hi questions |
-| Moderation | Photos, reports (players, chat messages, photo comments), chat messages, bans |
+| Moderation | Photos, reports (players, chat messages, photo comments), chat messages, bans, arrivals |
 | Community | Players, cities, Hi plan & Hi now, places (spots and Hilads picks) |
 | Game | Scoring and fair play, Launch Seasons |
 | Growth | Push, email, Worlds studio, promo |
@@ -54,7 +54,7 @@ create the first one:
 | Content editor | Daily challenges, special days, Hi questions, places, Worlds studio and Promo. Sees the rest, can't change it. |
 | Read-only | Sees every page except Settings, Audit log, App versions and the Danger zone. Can't change anything. |
 
-Pages under **Archive** (Old challenges, Campaigns, Arrivals) keep their data and are read-only for everyone.
+Pages under **Archive** (Old challenges, Campaigns) keep their data and are read-only for everyone.
 
 ## Adding a team member
 

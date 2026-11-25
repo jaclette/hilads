@@ -182,6 +182,7 @@ function admin_menu(): array
             ['/admin/reports', 'Reports', 'flag', '#^/admin/reports#', 'reports'],
             ['/admin/messages', 'Messages', 'message', '#^/admin/messages#', null],
             ['/admin/bans', 'Bans', 'ban', '#^/admin/bans#', null],
+            ['/admin/arrivals', 'Arrivals', 'door', '#^/admin/arrivals#', null],
         ]],
         ['community', 'Community', [
             ['/admin/users', 'Users', 'users', '#^/admin/users#', null],
@@ -209,7 +210,6 @@ function admin_menu(): array
         ['archive', 'Archive', [
             ['/admin/challenges', 'Old challenges', 'box', '#^/admin/challenges#', null],
             ['/admin/campaigns', 'Campaigns', 'zap', '#^/admin/campaigns#', null],
-            ['/admin/arrivals', 'Arrivals', 'door', '#^/admin/arrivals#', null],
         ]],
     ];
 }
