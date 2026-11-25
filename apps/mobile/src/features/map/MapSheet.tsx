@@ -62,9 +62,11 @@ export const MapSheet = forwardRef<MapSheetHandle, {
   selectedCard: ReactNode;
   topNote: ReactNode;
   emptyArea: boolean;
+  /** The spots are still loading: no count and no "be the pioneer" yet (an empty state only after the answer). */
+  loading?: boolean;
   onPick: (s: Spot) => void;
   onPeek?: (height: number) => void;
-}>(function MapSheet({ spots, me, origin, place, filterLabel, selectedCard, topNote, emptyArea, onPick, onPeek }, ref) {
+}>(function MapSheet({ spots, me, origin, place, filterLabel, selectedCard, topNote, emptyArea, loading = false, onPick, onPeek }, ref) {
   const styles = useThemedStyles(makeStyles);
   const { t } = useTranslation('daily');
   const sheet = useRef<BottomSheet>(null);
@@ -101,9 +103,9 @@ export const MapSheet = forwardRef<MapSheetHandle, {
 
   // The title: "[6] spots to explore", the number in its pill (§ marks where it goes in each language).
   const count = spots.length;
-  const [before, after = ''] = t('map.sheet.peekTitle', { count, num: '§' }).split('§');
+  const [before, after = ''] = t('map.sheet.peekTitle', { count: loading ? 2 : count, num: '§' }).split('§');
   const nearest = me && data.length && !emptyArea ? meters(me, [data[0].lng, data[0].lat]) : null;
-  const sub = emptyArea || count === 0 ? t('map.sheet.peekEmpty')
+  const sub = loading ? '' : emptyArea || count === 0 ? t('map.sheet.peekEmpty')
     : [filterLabel, nearest !== null ? t('map.sheet.peekNearest', { distance: distance(nearest) }) : null, atPeek ? t('map.sheet.peekSwipe') : null].filter(Boolean).join(' · ');
   // Nearest first, those with a photo: the polaroids.
   const near = useMemo(() => sortSpots(spots, 'near', me ?? origin).filter(s => s.cover.thumbUrl || s.cover.photoUrl).slice(0, 3), [spots, me, origin]);
@@ -130,7 +132,7 @@ export const MapSheet = forwardRef<MapSheetHandle, {
         <View style={styles.headText}>
           <View style={styles.titleRow}>
             {!!before.trim() && <Text style={[styles.title, styles.titlePart]} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7}>{before.trim()}</Text>}
-            <RollingCount n={emptyArea ? 0 : count} reduced={reduced} />
+            {loading ? <Text style={[styles.title, styles.titlePart]}>…</Text> : <RollingCount n={emptyArea ? 0 : count} reduced={reduced} />}
             {!!after.trim() && <Text style={[styles.title, styles.titlePart]} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7}>{after.trim()}</Text>}
           </View>
           <Text style={styles.sub} numberOfLines={2}>{sub}</Text>

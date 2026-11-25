@@ -2,7 +2,80 @@ import { useEffect, useState } from 'react';
 import { AppState } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import i18n from '@/i18n';
+import { useApp } from '@/context/AppContext';
 import { fetchContest, type ContestOverview } from './contest';
+
+/**
+ * The Launch Season overview (GET /contest), shared by the tab bar's temporary tab and the
+ * Today / Passport banner: one request, and the last answer kept on the device for the exact
+ * context it belongs to (account + language), so a cold start shows the right banner at once
+ * instead of popping it in late. A different account or language never sees another's entry:
+ * it waits for its own answer.
+ */
+const KEY_PREFIX = 'contest_overview:';
+const SEEN_KEY = 'contest_tab_seen';
+const FRESH_MS = 60_000;
+
+let ctx = '';                                  // `${accountId|guest}:${locale}`
+let data: ContestOverview | null = null;       // for ctx only
+let loadedAt = 0;
+let seen: string | null = null;
+const subs = new Set<() => void>();
+const emit = () => subs.forEach(f => f());
+
+AsyncStorage.getItem(SEEN_KEY).then(v => { seen = v; emit(); }).catch(() => {});
+
+function useCtx(): string {
+  const { account } = useApp();
+  return `${account?.id ?? 'guest'}:${i18n.language}`;
+}
+
+function switchTo(next: string) {
+  if (ctx === next) return;
+  ctx = next; data = null; loadedAt = 0;
+  AsyncStorage.getItem(KEY_PREFIX + next).then(raw => {
+    if (ctx !== next || data !== null || !raw) return;
+    try { data = JSON.parse(raw) as ContestOverview; emit(); } catch { /* ignore a bad entry */ }
+  }).catch(() => {});
+}
+
+function load(force = false) {
+  if (!force && Date.now() - loadedAt < FRESH_MS) return;
+  loadedAt = Date.now();
+  const forCtx = ctx;
+  fetchContest(i18n.language).then(d => {
+    if (ctx !== forCtx) return;
+    data = d; emit();
+    AsyncStorage.setItem(KEY_PREFIX + forCtx, JSON.stringify(d)).catch(() => {});
+  }).catch(() => { loadedAt = 0; });
+}
+
+/** After joining, a Notify me, a language change: the overview changed, refetch it. */
+export function refreshContestTab() { load(true); }
+
+/** Replace the overview with a fresh answer (e.g. the one POST /contest/notify returns). */
+export function setContestOverview(d: ContestOverview) {
+  data = d; loadedAt = Date.now(); emit();
+  AsyncStorage.setItem(KEY_PREFIX + ctx, JSON.stringify(d)).catch(() => {});
+}
+
+/** The overview for my account and language (null until known), refreshed on mount / foreground. */
+export function useContestOverview(): ContestOverview | null {
+  const next = useCtx();
+  switchTo(next);
+  const [, setTick] = useState(0);
+  useEffect(() => {
+    const f = () => setTick(n => n + 1);
+    subs.add(f);
+    load();
+    const sub = AppState.addEventListener('change', st => { if (st === 'active') load(); });
+    return () => { subs.delete(f); sub.remove(); };
+  }, [next]);
+  return data;
+}
+
+/** Refetch when a screen comes into focus (still at most once a minute). */
+export function reloadContestOverview() { load(); }
 
 /**
  * The temporary Launch Season tab (the plane): shown only while a season I can see is Upcoming
@@ -12,40 +85,14 @@ import { fetchContest, type ContestOverview } from './contest';
  * the final week started (one stamp per season and phase, cleared on tap).
  */
 export type ContestTab = { route: string; isTest: boolean; isNew: boolean; markSeen: () => void } | null;
-
-const SEEN_KEY = 'contest_tab_seen';
 const LIVE = new Set(['upcoming', 'season', 'final']);
 
-let data: ContestOverview | null = null;
-let seen: string | null = null;
-let loadedAt = 0;
-const subs = new Set<() => void>();
-const emit = () => subs.forEach(f => f());
-
-AsyncStorage.getItem(SEEN_KEY).then(v => { seen = v; emit(); }).catch(() => {});
-
-function load(force = false) {
-  if (!force && Date.now() - loadedAt < 5 * 60_000) return;
-  loadedAt = Date.now();
-  fetchContest(i18n.language).then(d => { data = d; emit(); }).catch(() => { loadedAt = 0; });
-}
-
-/** After joining or a Notify me elsewhere, the tab's target can change: refresh it. */
-export function refreshContestTab() { load(true); }
-
 export function useContestTab(): ContestTab {
-  const [, setTick] = useState(0);
-  useEffect(() => {
-    const f = () => setTick(n => n + 1);
-    subs.add(f);
-    load();
-    const sub = AppState.addEventListener('change', st => { if (st === 'active') load(); });
-    return () => { subs.delete(f); sub.remove(); };
-  }, []);
-  const s = data?.season;
+  const d = useContestOverview();
+  const s = d?.season;
   if (!s || !LIVE.has(s.phase)) return null;
   const stamp = `${s.id}:${s.phase}`;
-  const joined = data?.me?.joined === true;
+  const joined = d?.me?.joined === true;
   return {
     route: s.phase !== 'upcoming' && joined ? '/contest' : '/contest-prize',
     isTest: !!s.isTest,

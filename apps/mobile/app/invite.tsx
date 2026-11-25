@@ -124,7 +124,8 @@ export default function InviteScreen() {
         <Card style={styles.progressCard}>
           <View style={styles.progressHead}>
             <Text style={styles.sectionSmall} accessibilityRole="header">{t('invite.progressTitle')}</Text>
-            <Text style={styles.progressCount} accessibilityLabel={t('crew.a11y', { count, max })}>{t('invite.progress', { count, max })}</Text>
+            {/* No "0 / 5" before the crew has loaded: a neutral placeholder, never a default shown as real. */}
+            <Text style={styles.progressCount} accessibilityLabel={crew ? t('crew.a11y', { count, max }) : '…'}>{crew ? t('invite.progress', { count, max }) : '…'}</Text>
           </View>
           <View style={styles.bar} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
             <View style={[styles.barFill, { width: `${progress * 100}%`, backgroundColor: crew?.bonus ? colors.gold : colors.cta }]} />

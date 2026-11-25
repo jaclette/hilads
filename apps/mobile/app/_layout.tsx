@@ -243,7 +243,8 @@ function RootLayoutInner() {
             <Stack.Screen name="messages" />
             <Stack.Screen name="notifications" />
             <Stack.Screen name="notification-settings" />
-            <Stack.Screen name="leaderboard" />
+            {/* Old links redirect at once to the Ranks tab: no slide-in of the empty redirect screen. */}
+            <Stack.Screen name="leaderboard" options={{ animation: 'none' }} />
             <Stack.Screen
               name="debug"
               options={{ animation: 'slide_from_bottom', presentation: 'modal' }}

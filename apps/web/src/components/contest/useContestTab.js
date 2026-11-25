@@ -10,11 +10,15 @@ import { fetchContest } from '../../api'
  */
 const SEEN_KEY = 'contest_tab_seen'
 const LIVE = new Set(['upcoming', 'season', 'final'])
+const OPENED_KEY = 'contest_tab_opened'
 const readSeen = () => { try { return localStorage.getItem(SEEN_KEY) } catch { return null } }
+const readOpened = () => { try { return localStorage.getItem(OPENED_KEY) === '1' } catch { return true } }
 
 export function useContestTab() {
   const [data, setData] = useState(null)
   const [seen, setSeen] = useState(readSeen)
+  // The plane's one-time takeoff glide (once per page load) until the tab was opened once.
+  const [opened, setOpened] = useState(readOpened)
   useEffect(() => {
     let alive = true
     const load = () => fetchContest(i18n.language).then(d => { if (alive) setData(d) }).catch(() => {})
@@ -31,6 +35,10 @@ export function useContestTab() {
     sub: s.phase !== 'upcoming' && data.me?.joined ? 'contest' : 'contest-prize',
     isTest: !!s.isTest,
     isNew: seen !== stamp,
-    markSeen: () => { try { localStorage.setItem(SEEN_KEY, stamp) } catch { /* private mode */ } setSeen(stamp) },
+    glide: !opened,
+    markSeen: () => {
+      try { localStorage.setItem(SEEN_KEY, stamp); localStorage.setItem(OPENED_KEY, '1') } catch { /* private mode */ }
+      setSeen(stamp); setOpened(true)
+    },
   }
 }

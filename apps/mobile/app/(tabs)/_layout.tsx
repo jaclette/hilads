@@ -1,6 +1,7 @@
 import { useRef, useCallback, useEffect, useState } from 'react';
 import { Tabs, router, useFocusEffect, useSegments } from 'expo-router';
-import { View, Text, Pressable, StyleSheet, BackHandler, Platform, Keyboard } from 'react-native';
+import { View, Text, Pressable, StyleSheet, BackHandler, Platform, Keyboard, Animated, Easing, AppState, AccessibilityInfo } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import type { BottomTabBarProps } from 'expo-router/js-tabs';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -112,10 +113,11 @@ function CustomTabBar({ state, emitter, navigateToTab }: BottomTabBarProps) {
                          track('tab_pressed', { from: activeTab ?? null, to: 'season' });
                          if (Platform.OS !== 'web') Haptics.selectionAsync().catch(() => {});
                          contest.markSeen();
+                         markSeasonTabOpened();
                          router.push(contest.route as never);
                        }}>
               <View>
-                <Ionicons name={tab.icon} size={IconSize.lg} color={colors.primaryText} />
+                <SeasonPlane icon={tab.icon} color={colors.primaryText} />
                 {contest.isTest
                   ? <Text style={[styles.test, { color: '#FFFFFF', backgroundColor: colors.red, borderColor: colors.bg2 }]} maxFontSizeMultiplier={1.2}>TEST</Text>
                   : contest.isNew && <View style={[styles.dot, { backgroundColor: colors.cta, borderColor: colors.bg2 }]} />}
@@ -168,6 +170,60 @@ function CustomTabBar({ state, emitter, navigateToTab }: BottomTabBarProps) {
         );
       })}
     </View>
+  );
+}
+
+// ── The Boarding tab's plane: a one-time takeoff glide ───────────────────────
+// Once per app open (launch, or back from the background), never again once the tab was opened
+// (remembered on the device), never with reduce motion. A 1.3 s native-driver animation, so no
+// cost while idle; the bar remounting (keyboard) doesn't replay it in the same session.
+const OPENED_KEY = 'contest_tab_opened';
+let openedMem: boolean | null = null;
+let playedThisOpen = false;
+AppState.addEventListener('change', st => { if (st === 'background') playedThisOpen = false; });
+
+function markSeasonTabOpened() {
+  if (openedMem) return;
+  openedMem = true;
+  AsyncStorage.setItem(OPENED_KEY, '1').catch(() => {});
+}
+
+function SeasonPlane({ icon, color }: { icon: TabDef['icon']; color: string }) {
+  const t = useRef(new Animated.Value(1)).current;     // 1 = at rest
+  const [opened, setOpened] = useState<boolean | null>(openedMem);
+  useEffect(() => {
+    if (openedMem !== null) return;
+    AsyncStorage.getItem(OPENED_KEY).then(v => { openedMem = v === '1'; setOpened(openedMem); }).catch(() => { openedMem = true; setOpened(true); });
+  }, []);
+  useEffect(() => {
+    if (opened !== false) return;
+    const play = () => {
+      if (playedThisOpen || openedMem) return;
+      AccessibilityInfo.isReduceMotionEnabled().then(still => {
+        if (still) { playedThisOpen = true; return; }
+        t.setValue(0);
+        // Counted as played only once it finished on screen: a tab bar mounted and replaced during
+        // the start-up redirect (its glide cut short) doesn't use up the one glide of this open.
+        Animated.timing(t, { toValue: 1, duration: 1300, delay: 450, easing: Easing.out(Easing.cubic), useNativeDriver: true })
+          .start(({ finished }) => { if (finished) playedThisOpen = true; });
+      }).catch(() => {});
+    };
+    play();
+    const sub = AppState.addEventListener('change', st => { if (st === 'active') play(); });
+    return () => { sub.remove(); t.stopAnimation(); };
+  }, [opened, t]);
+  const style = {
+    opacity: t.interpolate({ inputRange: [0, 0.25, 1], outputRange: [0, 1, 1] }),
+    transform: [
+      { translateX: t.interpolate({ inputRange: [0, 0.6, 1], outputRange: [-16, 5, 0] }) },
+      { translateY: t.interpolate({ inputRange: [0, 0.6, 1], outputRange: [4, -3, 0] }) },
+      { rotate: t.interpolate({ inputRange: [0, 0.6, 1], outputRange: ['8deg', '-12deg', '0deg'] }) },
+    ],
+  };
+  return (
+    <Animated.View style={style}>
+      <Ionicons name={icon} size={IconSize.lg} color={color} />
+    </Animated.View>
   );
 }
 

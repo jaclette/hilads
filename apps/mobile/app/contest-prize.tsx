@@ -14,6 +14,7 @@ import { PrizePhotos } from '@/features/contest/PrizePhotos';
 import { LS } from '@/features/contest/HalongArt';
 import { useContestShare } from '@/features/contest/useContestShare';
 import { SouvenirLine } from '@/features/contest/SouvenirLine';
+import { setContestOverview } from '@/features/contest/useContestTab';
 import { HowToWin } from '@/features/contest/HowToWin';
 import { FounderWord, SampleItinerary } from '@/features/contest/PrizeTrip';
 import { track } from '@/services/analytics';
@@ -57,7 +58,7 @@ export default function ContestPrizeScreen() {
   const notify = () => {
     if (!s || notified || busy) return;
     setBusy(true);
-    notifyContest(s.id, i18n.language).then(setData).catch(() => {}).finally(() => setBusy(false));
+    notifyContest(s.id, i18n.language).then(d => { setData(d); setContestOverview(d); }).catch(() => {}).finally(() => setBusy(false));
   };
   const cta = upcoming
     ? !account ? { label: t('contest.notifyMe'), go: () => router.push('/auth-gate?reason=contest&returnTo=%2Fcontest-prize' as never) }

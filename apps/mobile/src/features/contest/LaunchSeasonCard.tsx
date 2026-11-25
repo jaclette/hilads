@@ -6,7 +6,8 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { Space, Radius, Type, type ThemeColors } from '@/constants';
 import { useThemedStyles } from '@/context/ThemeContext';
-import { contestDate, fetchContest, notifyContest, type ContestMeJoined, type ContestMeNotJoined, type ContestOverview } from './contest';
+import { contestDate, notifyContest, type ContestMeJoined, type ContestMeNotJoined } from './contest';
+import { reloadContestOverview, setContestOverview, useContestOverview } from './useContestTab';
 import { LS } from './HalongArt';
 import { PrizeCover } from './PrizePhotos';
 import { CountdownBoard, countdownTarget, shortLeft, useNow } from './Countdown';
@@ -33,9 +34,11 @@ export function LaunchSeasonCard() {
   const styles = useThemedStyles(makeStyles);
   const router = useRouter();
   const { t, i18n } = useTranslation('me');
-  const [data, setData] = useState<ContestOverview | null>(null);
+  // Shared with the tab bar, kept per account + language (no late pop-in on a cold start).
+  const data = useContestOverview();
+  const setData = setContestOverview;
 
-  useFocusEffect(useCallback(() => { fetchContest(i18n.language).then(setData).catch(() => {}); }, [i18n.language]));
+  useFocusEffect(useCallback(() => { reloadContestOverview(); }, []));
 
   const now = useNow(30_000);
   const [busy, setBusy] = useState(false);

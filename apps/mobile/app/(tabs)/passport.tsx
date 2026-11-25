@@ -76,6 +76,10 @@ export default function PassportScreen() {
   const [help, setHelp]     = useState(false);
   const [page, setPage]     = useState(0);
   const [share, setShare]   = useState<ShareContent | null>(null);
+  // The first answer for this account + city has landed (or a cached one exists): until then the
+  // numbers below are skeletons, never defaults shown as real ("0-day streak", "0 of 7 stamps").
+  const [loadedKey, setLoadedKey] = useState<string | null>(() => (passportCache.get(cacheKey) ? cacheKey : null));
+  const ready = loadedKey === cacheKey || !!passportCache.get(cacheKey);
 
   const cityKey = city?.channelId ? (String(city.channelId).startsWith('city_') ? String(city.channelId) : `city_${city.channelId}`) : null;
   const cityNum = cityKey ? Number(cityKey.slice(5)) : null;
@@ -113,6 +117,7 @@ export default function PassportScreen() {
       passportCache.set(cacheKey, { at: Date.now(), stats: s1, counts: c });
       setStats(s1);
       setCounts(c);
+      setLoadedKey(cacheKey);
     });
     return () => { alive = false; };
   }, [account, cityKey, cacheKey]));
@@ -179,10 +184,12 @@ export default function PassportScreen() {
           cityName={home ? shortCityName(home.name ?? '') : cityName}
           cityCountry={home ? home.country : city?.country ?? null}
           since={since}
-          stats={stats ? { cities: stats.citiesPlayed ?? null, photos: stats.photos ?? stats.completed, likes: stats.likesReceived ?? null } : null}
+          stats={stats ? { cities: stats.citiesPlayed ?? null, photos: stats.photos ?? stats.completed, likes: stats.likesReceived ?? null }
+            : ready ? null : { cities: null, photos: null, likes: null }}
         />
         {!!stats?.invitedBy && <InvitedBy by={stats.invitedBy} />}
 
+        {!ready ? <PassportSkeleton /> : (<>
         {/* Streak and weekly rank: two cards of one height, an icon disc, the title on two lines at most. */}
         <View style={styles.cards}>
           <Card style={styles.card}>
@@ -237,6 +244,7 @@ export default function PassportScreen() {
                     todayTheme={todayTheme} tomorrowTheme={tomorrow} />
         ) : null}
 
+        </>)}
         {(stats?.pioneerOf?.length ?? 0) > 0 && <PioneerBadges pioneers={stats!.pioneerOf!} />}
         {(stats?.specialStamps?.length ?? 0) > 0 && <SpecialStamps stamps={stats!.specialStamps!} />}
 
@@ -267,6 +275,20 @@ export default function PassportScreen() {
       <PointsHelpSheet visible={help} onClose={() => setHelp(false)} />
       <ShareSheet content={share} source="passport" onClose={() => setShare(null)} />
     </SafeAreaView>
+  );
+}
+
+/** While the Passport's first answer is on its way: its two cards and a stamp page, as quiet blocks. */
+function PassportSkeleton() {
+  const styles = useThemedStyles(makeStyles);
+  return (
+    <View accessibilityLabel="…" style={{ gap: Space.md }}>
+      <View style={styles.cards}>
+        <View style={[styles.card, styles.skelBlock, { height: 120 }]} />
+        <View style={[styles.card, styles.skelBlock, { height: 120 }]} />
+      </View>
+      <View style={[styles.skelBlock, { height: 230 }]} />
+    </View>
   );
 }
 
@@ -315,6 +337,7 @@ function Identity({ name, photo, mode, cityName, cityCountry, since = null, stat
 }
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
+  skelBlock: { borderRadius: Radius.card, backgroundColor: c.bg3 },
   container:      { flex: 1, backgroundColor: c.bg },
   body:           { paddingHorizontal: Spacing.md, paddingBottom: Spacing.xl, gap: Space.lg },
   identityWrap:   { gap: Space.lg },

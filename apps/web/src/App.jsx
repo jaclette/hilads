@@ -6133,7 +6133,7 @@ export default function App() {
             return tabs.map(({ key, label, active, onClick, Icon, season }) => season ? (
               <button key={key} type="button" className="bottom-nav-tab bottom-nav-tab--season" onClick={onClick}
                       aria-label={`${t(label, { ns: 'common' })}${seasonTab.isTest ? ' (TEST)' : ''}`}>
-                <span className="bottom-nav-icon"><Icon />
+                <span className="bottom-nav-icon"><span className={seasonTab.glide ? 'season-plane is-glide' : 'season-plane'}><Icon /></span>
                   {seasonTab.isTest && <span className="bottom-nav-test">TEST</span>}
                   {seasonTab.isNew && <span className={`n6-tab-dot${seasonTab.isTest ? ' n6-tab-dot--left' : ''}`} />}
                 </span>

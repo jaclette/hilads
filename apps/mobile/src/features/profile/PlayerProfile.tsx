@@ -57,6 +57,8 @@ export function PlayerProfile({ userId, preview = false }: { userId: string; pre
 
   const [user, setUser] = useState<PublicProfile | null>(null);
   const [stats, setStats] = useState<DailyUserStats | null>(null);
+  // The stats request has answered (ok or not): until then the stamps' place is a skeleton.
+  const [statsDone, setStatsDone] = useState(false);
   const [card, setCard] = useState<ProfileCard | null>(null);
   const [friends, setFriends] = useState<number | null>(null);
   const [plans, setPlans] = useState<HiladsEvent[]>([]);
@@ -80,7 +82,7 @@ export function PlayerProfile({ userId, preview = false }: { userId: string; pre
         setPendingReqId(u.pendingFriendRequest.id);
       } else { setFriendState('none'); setPendingReqId(null); }
     }).catch((e: { status?: number }) => setFailed(e?.status === 404 || e?.status === 403 ? 'gone' : 'error'));
-    fetchUserDaily(userId).then(setStats).catch(() => {});
+    fetchUserDaily(userId).then(setStats).catch(() => {}).finally(() => setStatsDone(true));
     fetchProfileCard(userId).then(setCard).catch(() => {});
     fetchUserFriends(userId, 1, 1).then(f => setFriends(f.total)).catch(() => {});
     // Plans they host, still to come (Hi plans are live on the Map).
@@ -251,7 +253,14 @@ export function PlayerProfile({ userId, preview = false }: { userId: string; pre
             </>
           )}
 
-          {/* Stamps, Local Pass, Pioneer, season medals. */}
+          {/* Stamps, Local Pass, Pioneer, season medals (a skeleton in their place while the stats load,
+              so the photos below don't jump down when they land). */}
+          {!statsDone && (
+            <>
+              <Section title={t('p2.stamps')} />
+              <View style={[styles.skel, { height: 220, borderRadius: Radius.card }]} />
+            </>
+          )}
           {mainPass && mainPass.done > 0 && (
             <>
               <Section title={t('p2.stamps')} />

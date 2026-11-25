@@ -750,6 +750,7 @@ export default function MapScreen() {
         place={scope === 'city' && city?.name ? shortCityName(city.name) : null}
         filterLabel={plansOnly ? t('inbox.cat.plans', { ns: 'notifications' }) : todayOnly ? t('map.todayChip') : themeFilter === SPECIAL ? t('map.halloween') : themeFilter ? themeName(themeFilter) : null}
         emptyArea={emptyArea}
+        loading={!loaded}
         onPick={s => select(s, 'map_list', true)}
         selectedCard={selected ? (
           <SpotSheet

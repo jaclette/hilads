@@ -12676,3 +12676,14 @@ html[data-event="halloween"] { --header-art: #FFA552; --header-art-opacity: 0.28
   color: #fff; background: var(--red, #D7263D); border: 1px solid var(--surface); }
 .n6-tab-dot.n6-tab-dot--left { right: auto; left: -4px; }
 .bottom-nav--five .bottom-nav-label { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+
+/* The Boarding tab's plane: a one-time takeoff glide per page load, until the tab was opened once. */
+.season-plane { display: inline-flex; }
+.season-plane.is-glide { animation: season-plane-glide 1.3s cubic-bezier(0.22, 1, 0.36, 1) 0.45s both; }
+@keyframes season-plane-glide {
+  0%   { opacity: 0; transform: translate(-16px, 4px) rotate(8deg); }
+  25%  { opacity: 1; }
+  60%  { transform: translate(5px, -3px) rotate(-12deg); }
+  100% { opacity: 1; transform: none; }
+}
+@media (prefers-reduced-motion: reduce) { .season-plane.is-glide { animation: none; } }
