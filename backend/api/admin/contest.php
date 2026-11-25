@@ -272,7 +272,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             flash_set('success', 'Saved.');
         } elseif ($season !== null && $do === 'rules') {
             $locale = strtolower(trim((string) ($_POST['locale'] ?? '')));
-            if (!preg_match('/^[a-z]{2}(-[a-z]{2,4})?$/', $locale)) throw new InvalidArgumentException('Locale like en, fr, pt-br.');
+            if (!preg_match('/^[a-z]{2,3}(-[a-z]{2,4})?$/', $locale)) throw new InvalidArgumentException('Locale like en, fr, fil, pt-br.');
             $body = trim((string) ($_POST['body'] ?? ''));
             if ($body === '') throw new InvalidArgumentException('The rules text is empty.');
             $final = !empty($_POST['is_final']) ? 'true' : 'false';

@@ -13911,7 +13911,7 @@ $router->add('GET', '/api/v1/contest/ranking', function () {
 
 // GET /api/v1/contest/rules?locale=fr&season=3 - the public rules (hilads.live/launch-season/rules). Public.
 $router->add('GET', '/api/v1/contest/rules', function () {
-    $locale = preg_match('/^[a-z]{2}(-[a-z]{2,4})?$/', (string) ($_GET['locale'] ?? '')) ? (string) $_GET['locale'] : 'en';
+    $locale = preg_match('/^[a-z]{2,3}(-[a-z]{2,4})?$/', (string) ($_GET['locale'] ?? '')) ? (string) $_GET['locale'] : 'en';
     $season = isset($_GET['season']) && ctype_digit((string) $_GET['season']) ? (int) $_GET['season'] : null;
     header('Cache-Control: public, max-age=60');
     Response::json(Contest::rules($season, $locale));
