@@ -313,8 +313,8 @@
       "passNow": "지금",
       "launchGift": "출시 기념 선물이에요. 게임은 그대로: 하루에 사진 한 장.",
       "unlockPlayers": "명",
-      "unlockHint": "승인된 사진 {{photos}}장 이상을 올린 플레이어가 {{max}}명이 되면 상품이 열려요. 그다음 파이널 위크 1위가 상품을 받아요.",
-      "unlocked": "잠금 해제: 상품 확정! 🎉",
+      "unlockHint": "승인된 사진 {{photos}}장 이상을 올린 플레이어가 {{max}}명이 되면 여행이 열려요.",
+      "unlocked": "여행이 확정됐어요 🎉 이제 파이널 위크 1위에 도전하세요.",
       "myFinalScore": "최종 점수",
       "behind": "{{rank}}위와 {{count}}점 차이",
       "inviteTitle": "친구를 데려오세요",
@@ -359,7 +359,20 @@
       "itSample": "예시 일정이에요. 실제 여행은 우승자와 함께 계획해요.",
       "itDay": "{{n}}일차",
       "founderTitle": "창업자의 한마디",
-      "founderSign": "{{name}}, Hilads 창업자"
+      "founderSign": "{{name}}, Hilads 창업자",
+      "todayKicker": "진짜 여행이 걸려 있어요",
+      "todayWin": "파이널 위크 1위가 되면 여행은 당신 거예요",
+      "todayJoin": "참가하고 우승에 도전하기",
+      "unlockWin": "파이널 위크 1위가 되어 여행을 차지하세요 ✈️",
+      "souvenirLine": "파이널 위크 2위부터 {{to}}위까지 모두 베트남 기념품 세트를 받아요. 집으로 보내 드려요 🎁",
+      "teaserKicker": "곧 시작",
+      "teaserTitle": "Launch Season이 곧 시작돼요",
+      "teaserWarm": "지금 몸을 풀어 두세요: 시작할 때 점수는 0부터, 모두 공평하게 출발해요.",
+      "teaserTrainTitle": "지금 몸 풀기",
+      "teaserTraining": "진짜 대회는 {{time}} 후에 시작돼요. 시작할 때 점수가 0으로 돌아가니 모두 공평하게 출발해요. 그때까지는 평소처럼 오늘의 챌린지를 즐기세요. 모든 사진은 이미 Hilads 랭킹에 반영돼요.",
+      "teaserRanks": "Hilads 랭킹 보기",
+      "notifyMe": "알림 받기",
+      "notifyOn": "시작하면 알려 드릴게요"
     }
   },
   "friendReq": {

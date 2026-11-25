@@ -337,8 +337,8 @@
       "passNow": "Adesso",
       "launchGift": "Il nostro regalo di lancio. Il gioco resta lo stesso: una foto al giorno.",
       "unlockPlayers": "giocatori",
-      "unlockHint": "Il premio si sblocca quando {{max}} giocatori hanno pubblicato {{photos}} foto approvate ciascuno. Poi lo vince il n. 1 dell'ultima settimana.",
-      "unlocked": "Sbloccato: il premio è in palio! 🎉",
+      "unlockHint": "Il viaggio si sblocca quando {{max}} giocatori hanno pubblicato {{photos}} foto approvate ciascuno.",
+      "unlocked": "Il viaggio è confermato 🎉 Ora sii il n. 1 dell'ultima settimana per vincerlo.",
       "myFinalScore": "Il tuo punteggio finale",
       "behind": "{{count}} pt dietro al n. {{rank}}",
       "inviteTitle": "Porta i tuoi amici",
@@ -383,7 +383,20 @@
       "itSample": "Un itinerario di esempio: il viaggio vero si organizza insieme al vincitore.",
       "itDay": "Giorno {{n}}",
       "founderTitle": "Due parole dal fondatore",
-      "founderSign": "{{name}}, fondatore di Hilads"
+      "founderSign": "{{name}}, fondatore di Hilads",
+      "todayKicker": "Un vero viaggio in palio",
+      "todayWin": "Sii il n. 1 dell'ultima settimana e il viaggio è tuo",
+      "todayJoin": "Partecipa e gioca per vincere",
+      "unlockWin": "Sii il n. 1 dell'ultima settimana per vincere il viaggio ✈️",
+      "souvenirLine": "Dal 2° al {{to}}° posto dell'ultima settimana, ognuno vince un pacco di souvenir dal Vietnam, spedito a casa 🎁",
+      "teaserKicker": "In arrivo",
+      "teaserTitle": "Sta arrivando la Launch Season",
+      "teaserWarm": "Scaldati ora: i punti ripartono da zero al lancio, tutti partono alla pari.",
+      "teaserTrainTitle": "Scaldati ora",
+      "teaserTraining": "La vera gara inizia tra {{time}}. I punti ripartono da zero al lancio, così tutti partono alla pari. Nel frattempo gioca alla sfida del giorno come sempre: ogni foto conta già nella classifica Hilads.",
+      "teaserRanks": "Vedi la classifica Hilads",
+      "notifyMe": "Avvisami",
+      "notifyOn": "Ti avviseremo"
     }
   },
   "friendReq": {

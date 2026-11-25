@@ -5098,6 +5098,20 @@ run($pdo, "
 // edited in Admin › Launch Season; empty = Contest::DEFAULT_PRIZE (the week in Vietnam).
 // Reversal: ALTER TABLE contest_seasons DROP COLUMN prize_i18n.
 run($pdo, "ALTER TABLE contest_seasons ADD COLUMN IF NOT EXISTS prize_i18n JSONB NOT NULL DEFAULT '{}'::jsonb", 'contest_seasons.prize_i18n');
+// Launch Season souvenir prizes (ranks 2..N of the final week): {enabled, to, i18n: {locale: line}}, off by default.
+// Reversal: ALTER TABLE contest_seasons DROP COLUMN souvenir.
+run($pdo, "ALTER TABLE contest_seasons ADD COLUMN IF NOT EXISTS souvenir JSONB NOT NULL DEFAULT '{}'::jsonb", 'contest_seasons.souvenir');
+// Launch Season "Notify me" (Upcoming phase) + the one "season is live" push (ContestNotify).
+// Reversal: DROP TABLE contest_interest; ALTER TABLE contest_seasons DROP COLUMN live_notified_at.
+run($pdo, "
+    CREATE TABLE IF NOT EXISTS contest_interest (
+        season_id   INT         NOT NULL REFERENCES contest_seasons(id) ON DELETE CASCADE,
+        user_id     TEXT        NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        created_at  TIMESTAMPTZ NOT NULL DEFAULT now(),
+        PRIMARY KEY (season_id, user_id)
+    )
+", 'contest_interest');
+run($pdo, "ALTER TABLE contest_seasons ADD COLUMN IF NOT EXISTS live_notified_at TIMESTAMPTZ", 'contest_seasons.live_notified_at');
 
 // Launch Season: the season's photos (Admin › Launch Season › Photos: Pixabay picks copied to R2
 // with author + license, or our own uploads), [{url, caption, credit, source, sourceUrl, license}].

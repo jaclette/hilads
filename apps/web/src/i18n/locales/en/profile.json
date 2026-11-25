@@ -325,8 +325,8 @@
       "passNow": "Now",
       "launchGift": "Our launch gift. The game stays the same: one photo a day.",
       "unlockPlayers": "players",
-      "unlockHint": "The prize is unlocked once {{max}} players have posted {{photos}} approved photos each. Then the #1 of the final week wins it.",
-      "unlocked": "Unlocked: the prize is on. 🎉",
+      "unlockHint": "The trip unlocks once {{max}} players have each posted {{photos}} approved photos.",
+      "unlocked": "The trip is on 🎉 Now be #1 in the final week to win it.",
       "myFinalScore": "Your final score",
       "behind": "{{count}} pts behind #{{rank}}",
       "inviteTitle": "Bring your friends",
@@ -371,7 +371,20 @@
       "itSample": "A sample itinerary: the real trip is planned together with the winner.",
       "itDay": "Day {{n}}",
       "founderTitle": "A word from the founder",
-      "founderSign": "{{name}}, founder of Hilads"
+      "founderSign": "{{name}}, founder of Hilads",
+      "todayKicker": "A real trip to win",
+      "todayWin": "Be #1 in the final week and the trip is yours",
+      "todayJoin": "Join and play to win",
+      "unlockWin": "Be #1 in the final week to win the trip ✈️",
+      "souvenirLine": "Ranks 2 to {{to}} of the final week each win a Vietnam souvenir pack, shipped to them 🎁",
+      "teaserKicker": "Coming soon",
+      "teaserTitle": "The Launch Season is coming",
+      "teaserWarm": "Warm up now: points reset to zero at launch, everyone starts fair.",
+      "teaserTrainTitle": "Warm up now",
+      "teaserTraining": "The real competition starts in {{time}}. Points reset to zero at launch, so everyone starts fair. Until then, play the daily game as usual: every photo already counts in the Hilads ranking.",
+      "teaserRanks": "See the Hilads ranking",
+      "notifyMe": "Notify me",
+      "notifyOn": "You'll be notified"
     }
   },
   "friendReq": {

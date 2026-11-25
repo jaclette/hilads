@@ -7,6 +7,8 @@ export interface ContestSeason {
   id: number;
   /** The prize, set per season in Admin › Launch Season (in the app's language, else English). */
   prize?: { title: string; subtitle: string; description?: string };
+  /** Ranks 2..to of the final week each win a souvenir (Admin › Launch Season), null when off. */
+  souvenir?: { from: number; to: number; text: string | null } | null;
   /** Real photos from Admin › Launch Season › Photos (Pixabay picks or our own), in order; empty = the illustration. */
   photos?: { url: string; caption: string; credit: string }[];
   /** "Your week in Vietnam", a sample itinerary (Admin › Launch Season), in the app's language. */
@@ -46,6 +48,8 @@ export interface ContestMeNotJoined {
   canJoin: boolean;
   reason: string | null;
   suggestedCountry?: string | null;
+  /** The Upcoming phase's "Notify me": already tapped (an older API: absent). */
+  notified?: boolean;
 }
 
 export interface ContestOverview {
@@ -87,6 +91,11 @@ export function fetchContestRanking(phase: 'season' | 'final'): Promise<ContestR
 
 export function joinContest(seasonId: number, country: string): Promise<ContestOverview & { result: 'joined' | 'already' }> {
   return api.post('/contest/join', { seasonId, country, ageConfirmed: true, rulesAccepted: true });
+}
+
+/** The Upcoming phase's "Notify me" (no age / country / rules yet): one push when the season starts. */
+export function notifyContest(seasonId: number, locale?: string): Promise<ContestOverview & { ok: true }> {
+  return api.post('/contest/notify', { seasonId }, { params: locale ? { locale } : undefined });
 }
 
 /** Days left until a season's end date closes (its next drop), at least 0. */

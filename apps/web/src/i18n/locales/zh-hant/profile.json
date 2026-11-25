@@ -313,8 +313,8 @@
       "passNow": "現在",
       "launchGift": "我們的上線禮物。遊戲不變：每天一張照片。",
       "unlockPlayers": "名玩家",
-      "unlockHint": "當 {{max}} 名玩家各發布 {{photos}} 張通過審核的照片後，獎品解鎖。之後，決賽週第 1 名贏得獎品。",
-      "unlocked": "已解鎖：獎品正式生效！🎉",
+      "unlockHint": "當 {{max}} 名玩家各發布 {{photos}} 張通過審核的照片後，旅行即解鎖。",
+      "unlocked": "旅行已確定 🎉 現在衝擊決賽週第 1 名，把它贏回家。",
       "myFinalScore": "你的最終得分",
       "behind": "落後第 {{rank}} 名 {{count}} 分",
       "inviteTitle": "帶上你的好友",
@@ -359,7 +359,20 @@
       "itSample": "行程示例：真正的旅行會與獲勝者一起規劃。",
       "itDay": "第 {{n}} 天",
       "founderTitle": "創辦人的話",
-      "founderSign": "{{name}}，Hilads 創辦人"
+      "founderSign": "{{name}}，Hilads 創辦人",
+      "todayKicker": "真的有旅行可以贏",
+      "todayWin": "拿下決賽週第 1 名，旅行就是你的",
+      "todayJoin": "加入並贏取大獎",
+      "unlockWin": "拿下決賽週第 1 名，贏得這次旅行 ✈️",
+      "souvenirLine": "決賽週第 2 至 {{to}} 名每人贏得一份越南紀念品禮包，寄到你家 🎁",
+      "teaserKicker": "即將開始",
+      "teaserTitle": "Launch Season 即將來臨",
+      "teaserWarm": "先熱身吧：正式開始時積分歸零，人人公平起步。",
+      "teaserTrainTitle": "先熱身吧",
+      "teaserTraining": "真正的比賽將在 {{time}} 後開始。開始時積分歸零，人人公平起步。在此之前，照常玩每日挑戰：每張照片都已計入 Hilads 排行榜。",
+      "teaserRanks": "查看 Hilads 排行榜",
+      "notifyMe": "通知我",
+      "notifyOn": "開始時會通知你"
     }
   },
   "friendReq": {

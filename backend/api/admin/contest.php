@@ -120,6 +120,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 ->execute([json_encode($prize, JSON_UNESCAPED_UNICODE), $season['id']]);
             Contest::log($season['id'], 'prize', null, ['en' => $prize['en'], 'locales' => array_keys($prize)]);
             flash_set('success', 'Prize saved: the app and the web show it at their next refresh (no new app version required).');
+        } elseif ($season !== null && $do === 'save_souvenir') {
+            $i18n = [];
+            foreach (Contest::LOCALES as $l) {
+                $t = trim((string) ($_POST['souvenir_text'][$l] ?? ''));
+                if ($t === '') continue;
+                if (mb_strlen($t) > 160) throw new InvalidArgumentException("Souvenir line ({$l}): 160 characters max.");
+                $i18n[$l] = $t;
+            }
+            $sv = ['enabled' => !empty($_POST['souvenir_enabled']), 'to' => max(2, min(50, (int) ($_POST['souvenir_to'] ?? 10))), 'i18n' => $i18n];
+            $pdo->prepare("UPDATE contest_seasons SET souvenir = ?::jsonb, updated_at = now() WHERE id = ?")
+                ->execute([json_encode($sv, JSON_UNESCAPED_UNICODE), $season['id']]);
+            Contest::log($season['id'], 'souvenir', null, ['enabled' => $sv['enabled'], 'to' => $sv['to'], 'locales' => array_keys($i18n)]);
+            flash_set('success', 'Souvenir prizes ' . ($sv['enabled'] ? 'on: ranks 2 to ' . $sv['to'] : 'off') . '. The app and the web show it at their next refresh.');
         } elseif ($season !== null && in_array($do, ['trip_text', 'founder_meta', 'founder_photo', 'day_photo_upload', 'day_photo_remove'], true)) {
             $days = ContestTrip::days($season);
             $founder = ContestTrip::founder($season);
@@ -463,17 +476,35 @@ admin_nav('/admin/launch-season');
       </tbody></table></div>
       <div class="form-actions"><button class="btn btn-primary">Save prize</button></div>
     </form>
+    <h2 id="souvenir" style="font-size:15px;color:#fff;margin-top:24px">Souvenir prizes (ranks 2 to N)</h2>
+    <?php $sv = json_decode((string) ($season['souvenir'] ?? '{}'), true); $sv = is_array($sv) ? $sv : []; ?>
+    <p class="ls-muted">The #1 of the final week wins the prize above; when this is on, ranks 2 to N each get a Vietnam souvenir pack, shipped to them (that is N − 1 parcels to send worldwide). Shown on the Prize screen and the ranking. Leave a line empty for the app's own wording ("Ranks 2 to N of the final week each win a Vietnam souvenir pack, shipped to them"), translated; a line you type replaces it in that language (empty = English). Not part of the score. Remember the rules page.</p>
+    <form method="post" class="form-card" style="max-width:none">
+      <?= csrf_input() ?><input type="hidden" name="do" value="save_souvenir">
+      <div class="ls-inline" style="gap:16px;margin-bottom:8px">
+        <label style="display:flex;gap:6px;align-items:center"><input type="checkbox" name="souvenir_enabled" value="1"<?= !empty($sv['enabled']) ? ' checked' : '' ?>> On for this season</label>
+        <label style="display:flex;gap:6px;align-items:center">Ranks 2 to <input type="number" name="souvenir_to" min="2" max="50" value="<?= (int) ($sv['to'] ?? 10) ?>" style="width:70px;background:#1a1a1a;border:1px solid #2a2a2a;color:#eee;padding:4px 6px;border-radius:4px"></label>
+      </div>
+      <div class="table-wrapper"><table><thead><tr><th style="width:70px">Lang</th><th>Line (optional, 160 max)</th></tr></thead><tbody>
+        <?php foreach (Contest::LOCALES as $l): ?>
+          <tr><td><?= $esc($l) ?></td><td><input type="text" name="souvenir_text[<?= $esc($l) ?>]" value="<?= $esc($sv['i18n'][$l] ?? '') ?>" maxlength="160" style="width:100%;background:#1a1a1a;border:1px solid #2a2a2a;color:#eee;padding:5px 8px;border-radius:4px"<?= $l === 'ar' ? ' dir="rtl"' : '' ?>></td></tr>
+        <?php endforeach; ?>
+      </tbody></table></div>
+      <div class="form-actions"><button class="btn btn-primary">Save souvenir prizes</button></div>
+    </form>
     <div class="toolbar" style="gap:8px;margin:14px 0">
       <?php $act = static function (string $do, string $label, string $cls = 'btn-secondary', ?string $confirm = null) use ($esc): void { ?>
         <form method="post" class="ls-inline"<?= $confirm ? ' onsubmit="return confirm(\'' . $esc($confirm) . '\')"' : '' ?>><?= csrf_input() ?><input type="hidden" name="do" value="<?= $do ?>"><button class="btn <?= $cls ?> btn-sm"><?= $esc($label) ?></button></form>
       <?php }; ?>
-      <?php if ($season['status'] === 'draft') $act('start', '▶ Start', 'btn-primary', 'Start this season? It becomes visible ' . ($season['is_test'] ? 'to its testers.' : 'to everyone.')); ?>
+      <?php if ($season['status'] === 'draft') $act('start', '▶ Publish', 'btn-primary', 'Publish this season? It becomes visible ' . ($season['is_test'] ? 'to its testers' : 'to everyone') . ': a teaser with Notify me until its start date, then the contest.'); ?>
       <?php if ($season['status'] === 'running' && !$season['paused']) $act('pause', '⏸ Pause', 'btn-secondary', 'Pause? The contest is hidden and joining closes; photos and likes keep counting by date.'); ?>
       <?php if ($season['status'] === 'running' && $season['paused']) $act('resume', '▶ Resume'); ?>
       <?php if ($season['status'] === 'running') $act('end', '■ End', 'btn-danger', 'End the season? It disappears from the app. Rankings stay readable here.'); ?>
       <?php if ($season['status'] === 'ended') $act('reopen', 'Reopen', 'btn-secondary', 'Reopen this season?'); ?>
       <?php if ($season['status'] !== 'draft') $act('freeze', '❄ Take the head-start now', 'btn-secondary', 'Replace the head-start with the current season top ' . $season['headstart_top_n'] . '?'); ?>
       <span class="ls-muted">Head-start: <?= $season['headstart_frozen_at'] ? 'frozen ' . $esc(substr((string) $season['headstart_frozen_at'], 0, 16)) : 'taken automatically at the first drop of the final week' ?></span>
+      <span class="ls-muted">· Notify me: <b style="color:#fff"><?= class_exists('ContestNotify') ? ContestNotify::count((int) $season['id']) : 0 ?></b> tap(s)<?= $season['is_test'] ? ' (testers only)' : '' ?> · live push: <?= !empty($season['live_notified_at']) ? 'sent ' . $esc(substr((string) $season['live_notified_at'], 0, 16)) : 'sent by the cron once ' . $esc($season['start_date']) . ' arrives' ?></span>
+      <span class="ls-muted">· State from the dates: <b style="color:#fff"><?= $esc(['upcoming' => 'Upcoming (teaser, Notify me)', 'season' => 'Running', 'final' => 'Running · final week', 'over' => 'Ended', 'ended' => 'Ended', 'draft' => 'Draft (not published)'][Contest::phase($season)] ?? Contest::phase($season)) ?></b></span>
     </div>
 
     <?php if ($season['is_test']): ?>

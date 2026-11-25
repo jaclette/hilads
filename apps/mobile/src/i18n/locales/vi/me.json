@@ -275,8 +275,8 @@
     "passNow": "Ngay bây giờ",
     "launchGift": "Quà ra mắt của chúng tôi. Trò chơi vẫn vậy: mỗi ngày một ảnh.",
     "unlockPlayers": "người chơi",
-    "unlockHint": "Giải thưởng được mở khóa khi {{max}} người chơi mỗi người đăng {{photos}} ảnh được duyệt. Sau đó, người #1 tuần cuối sẽ thắng.",
-    "unlocked": "Đã mở khóa: giải thưởng chính thức! 🎉",
+    "unlockHint": "Chuyến đi được mở khóa khi {{max}} người chơi mỗi người đăng {{photos}} ảnh được duyệt.",
+    "unlocked": "Chuyến đi đã sẵn sàng 🎉 Giờ hãy đứng #1 tuần cuối để thắng.",
     "myFinalScore": "Điểm chung cuộc",
     "behind": "Kém #{{rank}} {{count}} điểm",
     "inviteTitle": "Rủ bạn bè",
@@ -321,6 +321,19 @@
     "itSample": "Lịch trình tham khảo: chuyến đi thật sẽ được lên kế hoạch cùng người thắng.",
     "itDay": "Ngày {{n}}",
     "founderTitle": "Đôi lời từ nhà sáng lập",
-    "founderSign": "{{name}}, nhà sáng lập Hilads"
+    "founderSign": "{{name}}, nhà sáng lập Hilads",
+    "todayKicker": "Một chuyến đi thật để giành",
+    "todayWin": "Đứng #1 tuần cuối và chuyến đi là của bạn",
+    "todayJoin": "Tham gia và chơi để thắng",
+    "unlockWin": "Đứng #1 tuần cuối để thắng chuyến đi ✈️",
+    "souvenirLine": "Hạng 2 đến {{to}} của tuần cuối mỗi người nhận một gói quà lưu niệm Việt Nam, gửi tận nơi 🎁",
+    "teaserKicker": "Sắp diễn ra",
+    "teaserTitle": "Launch Season sắp bắt đầu",
+    "teaserWarm": "Khởi động ngay: điểm về 0 khi bắt đầu, ai cũng xuất phát công bằng.",
+    "teaserTrainTitle": "Khởi động ngay",
+    "teaserTraining": "Cuộc thi thật sự bắt đầu sau {{time}}. Điểm sẽ về 0 khi bắt đầu, nên ai cũng xuất phát công bằng. Trong lúc chờ, cứ chơi thử thách hằng ngày như bình thường: mỗi tấm ảnh đều đã được tính vào bảng xếp hạng Hilads.",
+    "teaserRanks": "Xem bảng xếp hạng Hilads",
+    "notifyMe": "Báo cho tôi",
+    "notifyOn": "Bạn sẽ được báo"
   }
 }

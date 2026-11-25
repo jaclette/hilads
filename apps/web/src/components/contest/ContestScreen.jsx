@@ -5,7 +5,7 @@ import AvatarWithFlag from '../AvatarWithFlag'
 import Icon from '../Icon'
 import HalongArt from './HalongArt'
 import { mediumUrl } from '../../lib/imageThumb'
-import { fetchContest, fetchContestRanking, fetchCrew, joinContest } from '../../api'
+import { fetchContest, fetchContestRanking, fetchCrew, joinContest, notifyContest } from '../../api'
 import { shareLink } from '../../lib/shareLink'
 import { track } from '../../lib/analytics'
 
@@ -47,18 +47,49 @@ export function shortLeft(msLeft, t) {
   return t('contest.dur.m', { m: Math.max(1, mm) })
 }
 
-function CountdownBoard({ target }) {
+/**
+ * "now" for a live countdown: every second while the tab is visible; with reduced motion, no
+ * ticking seconds (every 30 s, `seconds` false: days / hours / minutes only); paused when hidden.
+ */
+export function useLiveNow() {
+  const [now, setNow] = useState(() => Date.now())
+  const [visible, setVisible] = useState(() => typeof document === 'undefined' || document.visibilityState !== 'hidden')
+  const still = reduced()
+  useEffect(() => {
+    const on = () => setVisible(document.visibilityState !== 'hidden')
+    document.addEventListener('visibilitychange', on)
+    return () => document.removeEventListener('visibilitychange', on)
+  }, [])
+  useEffect(() => {
+    if (!visible) return undefined
+    setNow(Date.now())
+    const id = setInterval(() => setNow(Date.now()), still ? 30000 : 1000)
+    return () => clearInterval(id)
+  }, [visible, still])
+  return { now, seconds: !still }
+}
+
+/** The departure-board countdown, ticking live while visible; `compact` (the Today banner): no label, smaller tiles. */
+export function CountdownBoard({ target, compact = false }) {
   const { t } = useT()
-  const now = useNow(1000)
+  const { now, seconds } = useLiveNow()
   const left = Math.max(0, Math.floor((target.at - now) / 1000))
   const parts = [[Math.floor(left / 86400), t('contest.cdDays')], [Math.floor((left % 86400) / 3600), t('contest.cdHours')],
-                 [Math.floor((left % 3600) / 60), t('contest.cdMin')], [left % 60, t('contest.cdSec')]]
+                 [Math.floor((left % 3600) / 60), t('contest.cdMin')]]
+  if (seconds) parts.push([left % 60, t('contest.cdSec')])
   return (
-    <div className="ls-countdown" role="timer" aria-label={`${t(`contest.${target.label}`)} ${shortLeft(target.at - now, t)}`}>
-      <small>{t(`contest.${target.label}`)}</small>
+    <div className={`ls-countdown${compact ? ' ls-countdown--compact' : ''}`} role="timer" aria-label={`${t(`contest.${target.label}`)} ${shortLeft(target.at - now, t)}`}>
+      {!compact && <small>{t(`contest.${target.label}`)}</small>}
       <div className="ls-tiles">{parts.map(([v, u], i) => <span key={i} className="ls-tile"><b>{String(v).padStart(2, '0')}</b><small>{u}</small></span>)}</div>
     </div>
   )
+}
+
+/** Ranks 2..N of the final week each win a souvenir, when the season has it on (Admin › Launch Season). */
+export function SouvenirLine({ souvenir }) {
+  const { t } = useT()
+  if (!souvenir) return null
+  return <p className="ls-souvenir"><Icon name="gift" size={18} /><span>{souvenir.text || t('contest.souvenirLine', { to: souvenir.to })}</span></p>
 }
 
 /** Share: my invite link (a friend who joins counts for me) and the line; the web shares the link. */
@@ -170,7 +201,7 @@ function useContest() {
     fetchContest(i18n.language).then(setData).catch(() => setFailed(true))
   }, [i18n.language])
   useEffect(() => { load() }, [load])
-  return { data, failed, load }
+  return { data, failed, load, setData }
 }
 
 function Header({ title, sub, onBack }) {
@@ -202,9 +233,10 @@ function Empty({ data, failed, load, onBack }) {
  */
 export function ContestPrize({ account, onBack, onOpenHome, onSignUp }) {
   const { t, i18n } = useT()
-  const { data, failed, load } = useContest()
+  const { data, failed, load, setData } = useContest()
   const [joining, setJoining] = useState(false)
   const share = useShare(data, account)
+  const { now } = useLiveNow()
   useEffect(() => { track('contest_prize_viewed', {}) }, [])
   const s = data?.season
   if (!s) return <Empty data={data} failed={failed} load={load} onBack={onBack} />
@@ -212,7 +244,14 @@ export function ContestPrize({ account, onBack, onOpenHome, onSignUp }) {
   const me = data.me
   const target = countdownTarget(s)
   const final = ['final', 'over'].includes(s.phase)
-  const cta = !account ? { label: t('contest.join'), go: onSignUp }
+  // The Upcoming phase (teaser): nothing playable for the contest yet, "Notify me" instead of Join.
+  const upcoming = s.phase === 'upcoming'
+  const notified = me?.joined === true || !!me?.notified
+  const notify = () => { if (!notified) notifyContest(s.id, i18n.language).then(setData).catch(() => {}) }
+  const cta = upcoming
+    ? !account ? { label: t('contest.notifyMe'), go: onSignUp, icon: 'notifications-outline' }
+      : { label: t(notified ? 'contest.notifyOn' : 'contest.notifyMe'), go: notify, icon: notified ? 'checkmark-circle-outline' : 'notifications-outline', done: notified }
+    : !account ? { label: t('contest.join'), go: onSignUp }
     : me?.joined ? { label: t('contest.prizeYoureIn'), go: onOpenHome }
     : me?.canJoin ? { label: t('contest.join'), go: () => setJoining(true) } : null
   return (
@@ -223,14 +262,22 @@ export function ContestPrize({ account, onBack, onOpenHome, onSignUp }) {
           {s.isTest && <span className="ls-test">{t('contest.test')}</span>}
         </div>
         <PrizePhotos photos={s.photos}>
-          <small className="ls-kicker">{s.name}</small>
+          <small className="ls-kicker">{upcoming ? t('contest.teaserTitle') : s.name}</small>
           <h1 className="ls-photo-title">{s.prize?.title || s.name}</h1>
           <p className="ls-photo-win">🏆 {t('contest.winLine')}</p>
         </PrizePhotos>
         <div className="ls-prize-body">
           {s.prize?.subtitle && <p className="ls-prize-sub">{s.prize.subtitle}</p>}
           {s.prize?.description && <p className="ls-desc">{s.prize.description}</p>}
+          <SouvenirLine souvenir={s.souvenir} />
           {target && <CountdownBoard target={target} />}
+          {upcoming && target && (
+            <section className="pp-v2-card ls-card ls-warm">
+              <strong className="ls-howwin-title"><Icon name="barbell-outline" size={20} /> {t('contest.teaserTrainTitle')}</strong>
+              <p>{t('contest.teaserTraining', { time: shortLeft(target.at - now, t) })}</p>
+              <a className="ls-link" href="/world">{t('contest.teaserRanks')} <Icon name="chevron-forward" size={14} /></a>
+            </section>
+          )}
           <div className="ls-meta-boxes">
             <span><small>{t('contest.passFinal')}</small><b>{final ? t('contest.passNow') : shortDate(s.finalWeekStart, i18n.language)}</b></span>
             <span><small>{t('contest.passEnds')}</small><b>{shortDate(s.endDate, i18n.language)}</b></span>
@@ -245,7 +292,7 @@ export function ContestPrize({ account, onBack, onOpenHome, onSignUp }) {
           </div>
         </div>
       </div>
-      {cta && <div className="inv-footer"><button type="button" className="today-cta dc-full btn-primary" onClick={cta.go}><Icon name={me?.joined ? 'trophy-outline' : 'rocket-outline'} size={18} />{cta.label}</button></div>}
+      {cta && <div className="inv-footer"><button type="button" className={`today-cta dc-full ${cta.done ? 'btn-secondary' : 'btn-primary'}`} onClick={cta.go} disabled={cta.done}><Icon name={cta.icon || (me?.joined ? 'trophy-outline' : 'rocket-outline')} size={18} />{cta.label}</button></div>}
     </div>
   )
 }
@@ -397,6 +444,7 @@ export function ContestRanking({ account, onBack, onOpenProfile, initialTab = 's
           <p className="dc-muted">{t('contest.finalNotYet', { date: shortDate(s.finalWeekStart, i18n.language), count: s.rules.headstartTopN })}</p>
         )}
         {tab === 'season' && s && s.rules.headstartTopN > 0 && <p className="dc-muted">{t('contest.hsHint', { count: s.rules.headstartTopN })}</p>}
+        {s && <SouvenirLine souvenir={s.souvenir} />}
         <div className="pp-v2-card ls-card">
           {!ranking && <div className="dc-center"><span className="wm-spinner" aria-hidden="true" /></div>}
           {ranking && ranking.rows.length === 0 && <p className="dc-muted">{t('contest.empty')}</p>}
@@ -416,6 +464,7 @@ function Unlock({ players, threshold, photos, t }) {
   useEffect(() => { const id = setTimeout(() => setW(pct), reduced() ? 0 : 60); return () => clearTimeout(id) }, [pct])
   return (
     <div className="pp-v2-card ls-card">
+      <p className="ls-unlock-win"><Icon name="trophy" size={20} /> {t('contest.unlockWin')}</p>
       <p className="ls-unlock"><b>{players} / {threshold}</b> <span>{t('contest.unlockPlayers')}</span></p>
       <div className="ls-flight" aria-hidden="true">
         <span>🏙️</span>

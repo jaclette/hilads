@@ -337,8 +337,8 @@
       "passNow": "Maintenant",
       "launchGift": "Notre cadeau de lancement. Le jeu reste le même : une photo par jour.",
       "unlockPlayers": "joueurs",
-      "unlockHint": "Le prix est débloqué dès que {{max}} joueurs ont posté {{photos}} photos approuvées chacun. Ensuite, le n° 1 de la dernière semaine le gagne.",
-      "unlocked": "Débloqué : le prix est en jeu. 🎉",
+      "unlockHint": "Le voyage se débloque dès que {{max}} joueurs ont posté {{photos}} photos approuvées chacun.",
+      "unlocked": "Le voyage est lancé 🎉 À toi d'être n° 1 de la dernière semaine pour le gagner.",
       "myFinalScore": "Ton score final",
       "behind": "{{count}} pts derrière le n° {{rank}}",
       "inviteTitle": "Ramène tes amis",
@@ -383,7 +383,20 @@
       "itSample": "Un exemple d'itinéraire : le vrai voyage se prépare avec le gagnant.",
       "itDay": "Jour {{n}}",
       "founderTitle": "Un mot du fondateur",
-      "founderSign": "{{name}}, fondateur de Hilads"
+      "founderSign": "{{name}}, fondateur de Hilads",
+      "todayKicker": "Un vrai voyage à gagner",
+      "todayWin": "Sois n° 1 de la dernière semaine et le voyage est à toi",
+      "todayJoin": "Inscris-toi et joue pour gagner",
+      "unlockWin": "Sois n° 1 de la dernière semaine pour gagner le voyage ✈️",
+      "souvenirLine": "Les places 2 à {{to}} de la dernière semaine gagnent chacune un pack souvenir du Vietnam, envoyé chez elles 🎁",
+      "teaserKicker": "Bientôt",
+      "teaserTitle": "La Launch Season arrive",
+      "teaserWarm": "Échauffe-toi : les points repartent de zéro au lancement, tout le monde part à égalité.",
+      "teaserTrainTitle": "Échauffe-toi",
+      "teaserTraining": "La vraie compétition commence dans {{time}}. Les points repartent de zéro au lancement : tout le monde part à égalité. D'ici là, joue au jeu du jour comme d'habitude : chaque photo compte déjà dans le classement Hilads.",
+      "teaserRanks": "Voir le classement Hilads",
+      "notifyMe": "Préviens-moi",
+      "notifyOn": "On te prévient au lancement"
     }
   },
   "friendReq": {

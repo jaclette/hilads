@@ -275,8 +275,8 @@
     "passNow": "開催中",
     "launchGift": "ローンチ記念のプレゼント。ゲームはそのまま：1 日 1 枚。",
     "unlockPlayers": "人",
-    "unlockHint": "承認写真を {{photos}} 枚以上投稿したプレイヤーが {{max}} 人に達すると賞品が解放されます。その後、ファイナルウィークの1位が獲得します。",
-    "unlocked": "解放されました：賞品決定！🎉",
+    "unlockHint": "承認写真を {{photos}} 枚以上投稿したプレイヤーが {{max}} 人に達すると、旅行が解放されます。",
+    "unlocked": "旅行が決定 🎉 あとはファイナルウィークで1位を目指そう。",
     "myFinalScore": "最終スコア",
     "behind": "{{rank}} 位まであと {{count}} pt",
     "inviteTitle": "友だちを誘おう",
@@ -321,6 +321,19 @@
     "itSample": "旅程の一例です。実際の旅は優勝者と一緒に計画します。",
     "itDay": "{{n}}日目",
     "founderTitle": "創業者からのひとこと",
-    "founderSign": "{{name}}（Hilads 創業者）"
+    "founderSign": "{{name}}（Hilads 創業者）",
+    "todayKicker": "本物の旅行が当たる",
+    "todayWin": "ファイナルウィークで1位になれば旅行はあなたのもの",
+    "todayJoin": "参加して優勝を狙おう",
+    "unlockWin": "ファイナルウィークで1位になって旅行をゲット ✈️",
+    "souvenirLine": "ファイナルウィークの2位〜{{to}}位には、ベトナムのお土産セットをお届け 🎁",
+    "teaserKicker": "まもなく",
+    "teaserTitle": "Launch Season がまもなくスタート",
+    "teaserWarm": "今のうちにウォーミングアップ：開幕時にポイントはゼロから、全員が同じスタート。",
+    "teaserTrainTitle": "今のうちにウォーミングアップ",
+    "teaserTraining": "本番の競争はあと {{time}} で始まります。開幕時にポイントはゼロに戻るので、全員が同じスタートラインから。それまではいつも通りデイリーチャレンジを楽しんで。写真はすべて Hilads ランキングにもうカウントされます。",
+    "teaserRanks": "Hilads ランキングを見る",
+    "notifyMe": "通知を受け取る",
+    "notifyOn": "開始時にお知らせします"
   }
 }

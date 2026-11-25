@@ -8,6 +8,7 @@ import { useApp } from '@/context/AppContext';
 import { Card, Screen, ScreenHeader, Segmented } from '@/ui';
 import { contestDate, fetchContest, fetchContestRanking, type ContestOverview, type ContestRanking } from '@/features/contest/contest';
 import { Podium, RankRow } from '@/features/contest/RankingParts';
+import { SouvenirLine } from '@/features/contest/SouvenirLine';
 import { track } from '@/services/analytics';
 
 /**
@@ -56,6 +57,7 @@ export default function ContestRankingScreen() {
           <Text style={styles.muted}>{t('contest.finalNotYet', { date: contestDate(s.finalWeekStart, i18n.language), count: s.rules.headstartTopN })}</Text>
         )}
         {tab === 'season' && s && topN > 0 && <Text style={styles.muted}>{t('contest.hsHint', { count: topN })}</Text>}
+        {s && <SouvenirLine souvenir={s.souvenir} />}
         {failed ? <Text style={styles.muted}>{t('contest.error')}</Text> : !ranking ? <ActivityIndicator color={colors.muted} style={{ marginVertical: Space.lg }} /> : (
           <Card style={styles.card}>
             {ranking.rows.length === 0 && <Text style={styles.muted}>{t('contest.empty')}</Text>}

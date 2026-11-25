@@ -236,6 +236,11 @@ function Unlock({ players, max, photos }: { players: number; max: number; photos
   }, [width, pct, pos]);
   return (
     <Card style={styles.card}>
+      {/* The competition first (the #1 of the final week wins), the players' threshold second. */}
+      <View style={styles.unlockWin}>
+        <Ionicons name="trophy" size={20} color={LS.mango} />
+        <Text style={styles.unlockWinText}>{t('contest.unlockWin')}</Text>
+      </View>
       <View style={styles.unlockHead} accessible accessibilityLabel={`${players} / ${max} ${t('contest.unlockPlayers')}`}>
         <Text style={styles.unlockCount}>{players} / {max}</Text>
         <Text style={styles.unlockLabel}>{t('contest.unlockPlayers')}</Text>
@@ -286,7 +291,9 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   winLine:    { ...Type.caption, fontWeight: '700', color: c.text },
   // The unlock.
   unlockHead: { flexDirection: 'row', alignItems: 'baseline', gap: Space.xs, flexWrap: 'wrap' },
-  unlockCount:{ ...Type.display, color: c.text },
+  unlockWin:  { flexDirection: 'row', alignItems: 'flex-start', gap: Space.xs },
+  unlockWinText: { ...Type.label, fontSize: 17, lineHeight: 23, fontWeight: '800', color: c.text, flex: 1 },
+  unlockCount:{ ...Type.title, color: c.text },
   unlockLabel:{ ...Type.label, fontWeight: '600', color: c.muted },
   flight:     { flexDirection: 'row', alignItems: 'center', gap: Space.xs, height: 40 },
   flightEnd:  { fontSize: 20 },

@@ -337,8 +337,8 @@
       "passNow": "Agora",
       "launchGift": "O nosso presente de lançamento. O jogo continua igual: uma foto por dia.",
       "unlockPlayers": "jogadores",
-      "unlockHint": "O prémio desbloqueia quando {{max}} jogadores tiverem publicado {{photos}} fotos aprovadas cada um. Depois, ganha-o o n.º 1 da última semana.",
-      "unlocked": "Desbloqueado: o prémio está em jogo! 🎉",
+      "unlockHint": "A viagem desbloqueia quando {{max}} jogadores tiverem publicado {{photos}} fotos aprovadas cada um.",
+      "unlocked": "A viagem está confirmada 🎉 Agora sê o n.º 1 da última semana para a ganhar.",
       "myFinalScore": "A tua pontuação final",
       "behind": "{{count}} pts atrás do n.º {{rank}}",
       "inviteTitle": "Traz os teus amigos",
@@ -383,7 +383,20 @@
       "itSample": "Um roteiro de exemplo: a viagem real é planeada com quem vencer.",
       "itDay": "Dia {{n}}",
       "founderTitle": "Uma palavra do fundador",
-      "founderSign": "{{name}}, fundador do Hilads"
+      "founderSign": "{{name}}, fundador do Hilads",
+      "todayKicker": "Uma viagem a sério em jogo",
+      "todayWin": "Sê o n.º 1 da última semana e a viagem é tua",
+      "todayJoin": "Entra e joga para ganhar",
+      "unlockWin": "Sê o n.º 1 da última semana para ganhar a viagem ✈️",
+      "souvenirLine": "Do 2.º ao {{to}}.º lugar da última semana, cada um ganha um kit de lembranças do Vietname, enviado para casa 🎁",
+      "teaserKicker": "Brevemente",
+      "teaserTitle": "A Launch Season está a chegar",
+      "teaserWarm": "Aquece já: os pontos voltam a zero no lançamento, todos começam iguais.",
+      "teaserTrainTitle": "Aquece já",
+      "teaserTraining": "A competição a sério começa daqui a {{time}}. Os pontos voltam a zero no lançamento, por isso todos começam iguais. Até lá, joga o desafio do dia como sempre: cada foto já conta na classificação do Hilads.",
+      "teaserRanks": "Ver a classificação do Hilads",
+      "notifyMe": "Avisa-me",
+      "notifyOn": "Vais ser avisado"
     }
   },
   "friendReq": {

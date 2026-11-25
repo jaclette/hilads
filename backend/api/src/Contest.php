@@ -41,25 +41,25 @@ final class Contest
      * setting (Admin › Launch Season edits it per season and locale: title + one line).
      */
     public const DEFAULT_PRIZE = [
-        'en'      => ['title' => 'Win a week in Vietnam', 'subtitle' => "Flights included, for the season's best photographer.", 'description' => 'Seven days in Vietnam for the season\'s best photographer, return flights included. Limestone islands in Ha Long Bay, lantern-lit evenings in Hoi An, street food in Saigon: your next photos are waiting.'],
-        'fr'      => ['title' => 'Gagne une semaine au Vietnam', 'subtitle' => 'Vols compris, pour le meilleur photographe de la saison.', 'description' => 'Sept jours au Vietnam pour le meilleur photographe de la saison, vols aller-retour compris. Les îles de calcaire de la baie d\'Ha Long, les soirées aux lanternes de Hoi An, la street food de Saigon : tes prochaines photos t\'attendent.'],
-        'vi'      => ['title' => 'Thắng một tuần du lịch Việt Nam', 'subtitle' => 'Bao gồm vé máy bay, dành cho nhiếp ảnh gia xuất sắc nhất mùa.', 'description' => 'Bảy ngày ở Việt Nam dành cho nhiếp ảnh gia xuất sắc nhất mùa, bao gồm vé máy bay khứ hồi. Những đảo đá vôi ở vịnh Hạ Long, buổi tối lung linh đèn lồng ở Hội An, ẩm thực đường phố Sài Gòn: những bức ảnh tiếp theo của bạn đang chờ.'],
-        'es'      => ['title' => 'Gana una semana en Vietnam', 'subtitle' => 'Vuelos incluidos, para el mejor fotógrafo de la temporada.', 'description' => 'Siete días en Vietnam para el mejor fotógrafo de la temporada, vuelos de ida y vuelta incluidos. Las islas de piedra caliza de la bahía de Ha Long, las noches de farolillos en Hoi An, la comida callejera de Saigón: tus próximas fotos te esperan.'],
-        'it'      => ['title' => 'Vinci una settimana in Vietnam', 'subtitle' => 'Voli inclusi, per il miglior fotografo della stagione.', 'description' => 'Sette giorni in Vietnam per il miglior fotografo della stagione, voli di andata e ritorno inclusi. Le isole calcaree della baia di Ha Long, le sere tra le lanterne di Hoi An, lo street food di Saigon: le tue prossime foto ti aspettano.'],
-        'pt-br'   => ['title' => 'Ganhe uma semana no Vietnã', 'subtitle' => 'Voos incluídos, para o melhor fotógrafo da temporada.', 'description' => 'Sete dias no Vietnã para o melhor fotógrafo da temporada, passagens de ida e volta incluídas. As ilhas de calcário da baía de Ha Long, as noites de lanternas em Hoi An, a comida de rua de Saigon: suas próximas fotos estão esperando.'],
-        'pt-pt'   => ['title' => 'Ganha uma semana no Vietname', 'subtitle' => 'Voos incluídos, para o melhor fotógrafo da temporada.', 'description' => 'Sete dias no Vietname para o melhor fotógrafo da temporada, voos de ida e volta incluídos. As ilhas de calcário da baía de Ha Long, as noites de lanternas em Hoi An, a comida de rua de Saigão: as tuas próximas fotos estão à espera.'],
-        'de'      => ['title' => 'Gewinne eine Woche in Vietnam', 'subtitle' => 'Inklusive Flügen, für die beste Fotografin oder den besten Fotografen der Saison.', 'description' => 'Sieben Tage Vietnam für die beste Fotografin oder den besten Fotografen der Saison, Hin- und Rückflug inklusive. Kalksteininseln in der Halong-Bucht, Laternenabende in Hoi An, Streetfood in Saigon: Deine nächsten Fotos warten schon.'],
-        'nl'      => ['title' => 'Win een week in Vietnam', 'subtitle' => 'Inclusief vluchten, voor de beste fotograaf van het seizoen.', 'description' => 'Zeven dagen Vietnam voor de beste fotograaf van het seizoen, retourvluchten inbegrepen. Kalksteeneilanden in de Ha Long-baai, avonden vol lantaarns in Hoi An, streetfood in Saigon: je volgende foto\'s wachten al.'],
-        'zh-hans' => ['title' => '赢取越南一周之旅', 'subtitle' => '含往返机票，送给本季最佳摄影师。', 'description' => '为本季最佳摄影师送上越南七日游，含往返机票。下龙湾的石灰岩群岛、会安灯笼点亮的夜晚、西贡的街头美食：你的下一组照片正在等你。'],
-        'zh-hant' => ['title' => '贏取越南一週之旅', 'subtitle' => '含來回機票，送給本季最佳攝影師。', 'description' => '為本季最佳攝影師送上越南七日遊，含來回機票。下龍灣的石灰岩群島、會安燈籠點亮的夜晚、西貢的街頭美食：你的下一組照片正在等你。'],
-        'ja'      => ['title' => 'ベトナム1週間の旅をゲット', 'subtitle' => '航空券込み。シーズン最優秀フォトグラファーへ。', 'description' => 'シーズン最優秀フォトグラファーにベトナム7日間の旅を（往復航空券込み）。ハロン湾の石灰岩の島々、ランタンが灯るホイアンの夜、サイゴンの屋台グルメ。次の一枚があなたを待っています。'],
-        'ko'      => ['title' => '베트남 일주일 여행에 당첨되세요', 'subtitle' => '항공권 포함, 시즌 최고의 사진가에게.', 'description' => '시즌 최고의 사진가에게 베트남 7일 여행을 드려요. 왕복 항공권 포함. 하롱베이의 석회암 섬들, 등불이 밝히는 호이안의 밤, 사이공의 길거리 음식: 다음 사진이 당신을 기다려요.'],
-        'fil'     => ['title' => 'Manalo ng isang linggo sa Vietnam', 'subtitle' => 'Kasama ang flights, para sa pinakamahusay na photographer ng season.', 'description' => 'Pitong araw sa Vietnam para sa pinakamahusay na photographer ng season, kasama ang round-trip flights. Mga limestone island sa Ha Long Bay, mga gabing puno ng parol sa Hoi An, street food sa Saigon: naghihintay ang mga susunod mong photo.'],
-        'th'      => ['title' => 'ลุ้นเที่ยวเวียดนาม 1 สัปดาห์', 'subtitle' => 'รวมตั๋วเครื่องบิน สำหรับช่างภาพยอดเยี่ยมของซีซัน', 'description' => 'เที่ยวเวียดนาม 7 วันสำหรับช่างภาพยอดเยี่ยมของซีซัน รวมตั๋วเครื่องบินไป-กลับ เกาะหินปูนในอ่าวฮาลอง ค่ำคืนแสงโคมในฮอยอัน สตรีทฟู้ดในไซง่อน ภาพถัดไปของคุณรออยู่'],
-        'id'      => ['title' => 'Menangkan seminggu di Vietnam', 'subtitle' => 'Termasuk tiket pesawat, untuk fotografer terbaik musim ini.', 'description' => 'Tujuh hari di Vietnam untuk fotografer terbaik musim ini, termasuk tiket pesawat pulang-pergi. Pulau-pulau batu kapur di Teluk Ha Long, malam berhias lampion di Hoi An, jajanan kaki lima di Saigon: foto-foto berikutnya menantimu.'],
-        'hi'      => ['title' => 'वियतनाम में एक हफ़्ता जीतें', 'subtitle' => 'फ़्लाइट्स शामिल, सीज़न के सबसे अच्छे फ़ोटोग्राफ़र के लिए।', 'description' => 'सीज़न के सबसे अच्छे फ़ोटोग्राफ़र के लिए वियतनाम में सात दिन, आने-जाने की फ़्लाइट्स शामिल। हा लॉन्ग बे के चूना-पत्थर के द्वीप, होई आन की लालटेनों वाली शामें, साइगॉन का स्ट्रीट फ़ूड: आपकी अगली फ़ोटो इंतज़ार कर रही हैं।'],
-        'ru'      => ['title' => 'Выиграй неделю во Вьетнаме', 'subtitle' => 'С перелётом — для лучшего фотографа сезона.', 'description' => 'Семь дней во Вьетнаме для лучшего фотографа сезона, перелёт туда и обратно включён. Известняковые острова бухты Халонг, вечера с фонариками в Хойане, уличная еда Сайгона — твои следующие фото уже ждут.'],
-        'ar'      => ['title' => 'اربح أسبوعًا في فيتنام', 'subtitle' => 'شامل تذاكر الطيران، لأفضل مصوّر في الموسم.', 'description' => 'سبعة أيام في فيتنام لأفضل مصوّر في الموسم، تشمل تذاكر الطيران ذهابًا وإيابًا. جزر الحجر الجيري في خليج ها لونغ، وأمسيات الفوانيس في هوي آن، وطعام الشارع في سايغون: صورك القادمة بانتظارك.'],
+        'en'      => ['title' => 'Win a week in Vietnam', 'subtitle' => 'Seven days, return flights included.', 'description' => 'Limestone islands in Ha Long Bay, lantern-lit evenings in Hoi An, street food in Saigon: your next photos are waiting.'],
+        'fr'      => ['title' => 'Gagne une semaine au Vietnam', 'subtitle' => 'Sept jours, vols aller-retour compris.', 'description' => 'Les îles de calcaire de la baie d\'Ha Long, les soirées aux lanternes de Hoi An, la street food de Saigon : tes prochaines photos t\'attendent.'],
+        'vi'      => ['title' => 'Thắng một tuần du lịch Việt Nam', 'subtitle' => 'Bảy ngày, bao gồm vé máy bay khứ hồi.', 'description' => 'Những đảo đá vôi ở vịnh Hạ Long, buổi tối lung linh đèn lồng ở Hội An, ẩm thực đường phố Sài Gòn: những bức ảnh tiếp theo của bạn đang chờ.'],
+        'es'      => ['title' => 'Gana una semana en Vietnam', 'subtitle' => 'Siete días, vuelos de ida y vuelta incluidos.', 'description' => 'Las islas de piedra caliza de la bahía de Ha Long, las noches de farolillos en Hoi An, la comida callejera de Saigón: tus próximas fotos te esperan.'],
+        'it'      => ['title' => 'Vinci una settimana in Vietnam', 'subtitle' => 'Sette giorni, voli di andata e ritorno inclusi.', 'description' => 'Le isole calcaree della baia di Ha Long, le sere tra le lanterne di Hoi An, lo street food di Saigon: le tue prossime foto ti aspettano.'],
+        'pt-br'   => ['title' => 'Ganhe uma semana no Vietnã', 'subtitle' => 'Sete dias, passagens de ida e volta incluídas.', 'description' => 'As ilhas de calcário da baía de Ha Long, as noites de lanternas em Hoi An, a comida de rua de Saigon: suas próximas fotos estão esperando.'],
+        'pt-pt'   => ['title' => 'Ganha uma semana no Vietname', 'subtitle' => 'Sete dias, voos de ida e volta incluídos.', 'description' => 'As ilhas de calcário da baía de Ha Long, as noites de lanternas em Hoi An, a comida de rua de Saigão: as tuas próximas fotos estão à espera.'],
+        'de'      => ['title' => 'Gewinne eine Woche in Vietnam', 'subtitle' => 'Sieben Tage, Hin- und Rückflug inklusive.', 'description' => 'Kalksteininseln in der Halong-Bucht, Laternenabende in Hoi An, Streetfood in Saigon: Deine nächsten Fotos warten schon.'],
+        'nl'      => ['title' => 'Win een week in Vietnam', 'subtitle' => 'Zeven dagen, retourvluchten inbegrepen.', 'description' => 'Kalksteeneilanden in de Ha Long-baai, avonden vol lantaarns in Hoi An, streetfood in Saigon: je volgende foto\'s wachten al.'],
+        'zh-hans' => ['title' => '赢取越南一周之旅', 'subtitle' => '七天行程，含往返机票。', 'description' => '下龙湾的石灰岩群岛、会安灯笼点亮的夜晚、西贡的街头美食：你的下一组照片正在等你。'],
+        'zh-hant' => ['title' => '贏取越南一週之旅', 'subtitle' => '七天行程，含來回機票。', 'description' => '下龍灣的石灰岩群島、會安燈籠點亮的夜晚、西貢的街頭美食：你的下一組照片正在等你。'],
+        'ja'      => ['title' => 'ベトナム1週間の旅をゲット', 'subtitle' => '7日間、往復航空券込み。', 'description' => 'ハロン湾の石灰岩の島々、ランタンが灯るホイアンの夜、サイゴンの屋台グルメ。次の一枚があなたを待っています。'],
+        'ko'      => ['title' => '베트남 일주일 여행에 당첨되세요', 'subtitle' => '7일 여행, 왕복 항공권 포함.', 'description' => '하롱베이의 석회암 섬들, 등불이 밝히는 호이안의 밤, 사이공의 길거리 음식: 다음 사진이 당신을 기다려요.'],
+        'fil'     => ['title' => 'Manalo ng isang linggo sa Vietnam', 'subtitle' => 'Pitong araw, kasama ang round-trip flights.', 'description' => 'Mga limestone island sa Ha Long Bay, mga gabing puno ng parol sa Hoi An, street food sa Saigon: naghihintay ang mga susunod mong photo.'],
+        'th'      => ['title' => 'ลุ้นเที่ยวเวียดนาม 1 สัปดาห์', 'subtitle' => '7 วัน รวมตั๋วเครื่องบินไป-กลับ', 'description' => 'เกาะหินปูนในอ่าวฮาลอง ค่ำคืนแสงโคมในฮอยอัน สตรีทฟู้ดในไซง่อน ภาพถัดไปของคุณรออยู่'],
+        'id'      => ['title' => 'Menangkan seminggu di Vietnam', 'subtitle' => 'Tujuh hari, termasuk tiket pesawat pulang-pergi.', 'description' => 'Pulau-pulau batu kapur di Teluk Ha Long, malam berhias lampion di Hoi An, jajanan kaki lima di Saigon: foto-foto berikutnya menantimu.'],
+        'hi'      => ['title' => 'वियतनाम में एक हफ़्ता जीतें', 'subtitle' => 'सात दिन, आने-जाने की फ़्लाइट्स शामिल।', 'description' => 'हा लॉन्ग बे के चूना-पत्थर के द्वीप, होई आन की लालटेनों वाली शामें, साइगॉन का स्ट्रीट फ़ूड: आपकी अगली फ़ोटो इंतज़ार कर रही हैं।'],
+        'ru'      => ['title' => 'Выиграй неделю во Вьетнаме', 'subtitle' => 'Семь дней, перелёт туда и обратно включён.', 'description' => 'Известняковые острова бухты Халонг, вечера с фонариками в Хойане, уличная еда Сайгона — твои следующие фото уже ждут.'],
+        'ar'      => ['title' => 'اربح أسبوعًا في فيتنام', 'subtitle' => 'سبعة أيام، تشمل تذاكر الطيران ذهابًا وإيابًا.', 'description' => 'جزر الحجر الجيري في خليج ها لونغ، وأمسيات الفوانيس في هوي آن، وطعام الشارع في سايغون: صورك القادمة بانتظارك.'],
     ];
 
     // ── Seasons ─────────────────────────────────────────────────────────────
@@ -141,7 +141,8 @@ final class Contest
     /**
      * Why this user cannot join this season (null = they can): closed, excluded (review,
      * demo, fake, hidden from rankings, deleted), tester (testers never join a real season),
-     * not_tester (a test season), dev_build (a dev build joins only a test season).
+     * not_tester (a test season), dev_build (a dev build joins only a test season), not_started
+     * (the Upcoming phase: nothing is playable for the contest yet, the apps offer "Notify me").
      */
     public static function joinBlock(array $season, string $userId, bool $devBuild): ?string
     {
@@ -154,12 +155,13 @@ final class Contest
         $stmt->execute([$season['is_test'] ? 'true' : 'false', $userId]);
         $u = $stmt->fetch(PDO::FETCH_ASSOC);
         if (!$u || DailyProofRepository::bool($u['excluded'])) return 'excluded';
+        $notStarted = DailyClock::currentDate() < $season['start_date'] ? 'not_started' : null;
         if ($season['is_test']) {
-            return self::isTester($season['id'], $userId) ? null : 'not_tester';
+            return self::isTester($season['id'], $userId) ? $notStarted : 'not_tester';
         }
         if (DailyProofRepository::bool($u['tester'])) return 'tester';
         if ($devBuild) return 'dev_build';
-        return null;
+        return $notStarted;
     }
 
     public static function participant(int $seasonId, string $userId): ?array
@@ -425,10 +427,27 @@ final class Contest
         return ['title' => (string) ($p['title'] ?? ''), 'subtitle' => (string) ($p['subtitle'] ?? ''), 'description' => (string) ($p['description'] ?? '')];
     }
 
+    /**
+     * The secondary prizes (Admin › Launch Season › Souvenir prizes): ranks 2 to N of the final week
+     * each get a souvenir pack. Off by default (parcels to ship worldwide), a season setting; null when
+     * off. text = the admin's line in that language (else English), null = the apps' own wording.
+     */
+    public static function souvenir(array $s, ?string $locale): ?array
+    {
+        $raw = $s['souvenir'] ?? [];
+        if (is_string($raw)) $raw = json_decode($raw, true);
+        if (!is_array($raw) || empty($raw['enabled'])) return null;
+        $to   = max(2, min(50, (int) ($raw['to'] ?? 10)));
+        $i18n = is_array($raw['i18n'] ?? null) ? $raw['i18n'] : [];
+        $text = trim((string) (($locale !== null ? ($i18n[$locale] ?? '') : '') ?: ($i18n['en'] ?? '')));
+        return ['from' => 2, 'to' => $to, 'text' => $text !== '' ? $text : null];
+    }
+
     public static function seasonPayload(array $s, ?string $locale = null): array
     {
         return [
             'prize' => self::prize($s, $locale),
+            'souvenir' => self::souvenir($s, $locale),
             'photos' => class_exists('ContestPhotos') ? ContestPhotos::payload($s) : [],
         ] + (class_exists('ContestTrip') ? ContestTrip::payload($s, $locale) : []) + [
             'id' => $s['id'], 'name' => $s['name'], 'isTest' => $s['is_test'], 'phase' => self::phase($s),
@@ -497,7 +516,9 @@ final class Contest
                 $stmt  = Database::pdo()->prepare("SELECT home_country FROM users WHERE id = ?");
                 $stmt->execute([$userId]);
                 $cc    = $stmt->fetchColumn() ?: (class_exists('Request') ? Request::country() : null);
-                $me = ['joined' => false, 'canJoin' => $block === null, 'reason' => $block, 'suggestedCountry' => $cc ? strtoupper((string) $cc) : null];
+                $me = ['joined' => false, 'canJoin' => $block === null, 'reason' => $block, 'suggestedCountry' => $cc ? strtoupper((string) $cc) : null,
+                       // The Upcoming phase's "Notify me" (ContestNotify): already tapped?
+                       'notified' => class_exists('ContestNotify') && ContestNotify::isRegistered($season['id'], $userId)];
             }
         }
         return [

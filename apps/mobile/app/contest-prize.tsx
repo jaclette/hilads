@@ -8,11 +8,12 @@ import { Space, Gutter, Radius, Type, IconSize, type ThemeColors } from '@/const
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { useApp } from '@/context/AppContext';
 import { Button } from '@/ui';
-import { contestDate, fetchContest, type ContestOverview } from '@/features/contest/contest';
-import { CountdownBoard, countdownTarget } from '@/features/contest/Countdown';
+import { contestDate, fetchContest, notifyContest, type ContestMeNotJoined, type ContestOverview } from '@/features/contest/contest';
+import { CountdownBoard, countdownTarget, shortLeft, useNow } from '@/features/contest/Countdown';
 import { PrizePhotos } from '@/features/contest/PrizePhotos';
 import { LS } from '@/features/contest/HalongArt';
 import { useContestShare } from '@/features/contest/useContestShare';
+import { SouvenirLine } from '@/features/contest/SouvenirLine';
 import { HowToWin } from '@/features/contest/HowToWin';
 import { FounderWord, SampleItinerary } from '@/features/contest/PrizeTrip';
 import { track } from '@/services/analytics';
@@ -48,7 +49,20 @@ export default function ContestPrizeScreen() {
   const target = s ? countdownTarget(s) : null;
   const final = s?.phase === 'final' || s?.phase === 'over';
 
-  const cta = !account
+  // The Upcoming phase (teaser): nothing playable for the contest yet, "Notify me" instead of Join.
+  const upcoming = s?.phase === 'upcoming';
+  const notified = me?.joined === true || !!(me && (me as ContestMeNotJoined).notified);
+  const [busy, setBusy] = useState(false);
+  const now = useNow(60_000);
+  const notify = () => {
+    if (!s || notified || busy) return;
+    setBusy(true);
+    notifyContest(s.id, i18n.language).then(setData).catch(() => {}).finally(() => setBusy(false));
+  };
+  const cta = upcoming
+    ? !account ? { label: t('contest.notifyMe'), go: () => router.push('/auth-gate?reason=contest&returnTo=%2Fcontest-prize' as never) }
+      : { label: t(notified ? 'contest.notifyOn' : 'contest.notifyMe'), go: notify }
+    : !account
     ? { label: t('contest.join'), go: () => router.push('/auth-gate?reason=contest&returnTo=%2Fcontest-prize' as never) }
     : joined ? { label: t('contest.prizeYoureIn'), go: () => router.push('/contest' as never) }
     : me && me.joined === false && me.canJoin ? { label: t('contest.join'), go: () => router.push('/contest-join' as never) }
@@ -64,14 +78,28 @@ export default function ContestPrizeScreen() {
       ) : (
         <ScrollView contentContainerStyle={{ paddingBottom: 120 + insets.bottom }} testID="contest-prize">
           <PrizePhotos photos={s.photos ?? []} height={Math.min(560, Math.round(height * 0.58))}>
-            <Text style={styles.kicker}>{s.name}</Text>
+            <Text style={styles.kicker}>{upcoming ? t('contest.teaserTitle') : s.name}</Text>
             <Text style={styles.title} accessibilityRole="header">{s.prize?.title || s.name}</Text>
             <Text style={styles.winLine}>🏆 {t('contest.winLine')}</Text>
           </PrizePhotos>
           <View style={styles.body}>
             {!!s.prize?.subtitle && <Text style={styles.sub}>{s.prize.subtitle}</Text>}
             {!!s.prize?.description && <Text style={styles.text}>{s.prize.description}</Text>}
+            <SouvenirLine souvenir={s.souvenir} />
             {target && <CountdownBoard target={target} />}
+            {upcoming && target && (
+              <View style={styles.warmCard}>
+                <View style={styles.warmHead}>
+                  <Ionicons name="barbell-outline" size={IconSize.md} color={colors.primaryText} />
+                  <Text style={styles.howTitle}>{t('contest.teaserTrainTitle')}</Text>
+                </View>
+                <Text style={styles.text}>{t('contest.teaserTraining', { time: shortLeft(target.at - now, t) })}</Text>
+                <Pressable onPress={() => router.push('/(tabs)/ranks' as never)} accessibilityRole="link" hitSlop={8} style={styles.link} testID="contest-teaser-ranks">
+                  <Text style={styles.linkText}>{t('contest.teaserRanks')}</Text>
+                  <Ionicons name="chevron-forward" size={IconSize.sm} color={colors.primaryText} />
+                </Pressable>
+              </View>
+            )}
             <View style={styles.meta}>
               <View style={styles.metaCol}><Text style={styles.metaLabel}>{t('contest.passFinal')}</Text>
                 <Text style={styles.metaValue}>{final ? t('contest.passNow') : contestDate(s.finalWeekStart, i18n.language)}</Text></View>
@@ -112,7 +140,8 @@ export default function ContestPrizeScreen() {
 
       {s && cta && (
         <View style={[styles.footer, { paddingBottom: insets.bottom + Space.sm }]}>
-          <Button icon={joined ? 'trophy-outline' : 'rocket-outline'} label={cta.label} onPress={cta.go} testID="contest-prize-cta" />
+          <Button icon={upcoming ? (notified ? 'checkmark-circle-outline' : 'notifications-outline') : joined ? 'trophy-outline' : 'rocket-outline'}
+                  variant={upcoming && notified ? 'secondary' : undefined} label={cta.label} onPress={cta.go} testID="contest-prize-cta" />
         </View>
       )}
       {share.sheet}
@@ -128,6 +157,8 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   body:      { paddingHorizontal: Gutter, paddingTop: Space.md, gap: Space.sm },
   sub:       { ...Type.label, color: c.primaryText },
   winLine:   { ...Type.label, fontWeight: '800', color: '#FFFFFF' },
+  warmCard:  { padding: Space.md, borderRadius: Radius.card, backgroundColor: c.bg2, borderWidth: 1, borderColor: c.line, gap: Space.xs, marginTop: Space.xs },
+  warmHead:  { flexDirection: 'row', alignItems: 'center', gap: Space.xs },
   howCard:   { padding: Space.md, paddingBottom: 0, borderRadius: Radius.card, backgroundColor: c.bg2, borderWidth: 1, borderColor: c.line, gap: Space.sm, marginTop: Space.xs },
   howTitle:  { ...Type.title, color: c.text },
   text:      { ...Type.body, fontSize: 16, lineHeight: 24, color: c.text },

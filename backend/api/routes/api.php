@@ -752,6 +752,13 @@ $router->add('GET', '/internal/run-cron', function () {
         $closed = $stmt->fetchAll(\PDO::FETCH_COLUMN);
         error_log('[cron] auto-closed ' . count($closed) . ' photo-proof contest(s)');
 
+        // ── Launch Season: the one "season is live" push to its Notify-me taps ──
+        try {
+            if (class_exists('ContestNotify')) ContestNotify::dispatchLive();
+        } catch (\Throwable $e) {
+            error_log('[cron] contest live push failed: ' . $e->getMessage());
+        }
+
         // ── Scheduled pushes: dispatch any that are now due ───────────────────
         // Atomically claim due rows (status → 'sending') so overlapping cron
         // ticks can't double-send, then dispatch each outside the claim. Isolated
@@ -13877,6 +13884,21 @@ $router->add('POST', '/api/v1/contest/join', function () {
     }
     $locale = in_array($_GET['locale'] ?? '', Contest::LOCALES, true) ? (string) $_GET['locale'] : null;
     Response::json(['result' => $r] + Contest::overview($user['id'], $locale));
+});
+
+// POST /api/v1/contest/notify {seasonId} - the Upcoming phase's "Notify me" (no age / country / rules
+// yet): one push when the season starts (ContestNotify). Idempotent.
+$router->add('POST', '/api/v1/contest/notify', function () {
+    $user = AuthService::requireAuth('contest_notify');
+    enforceRateLimit('contest_notify', 20, 600);
+    $body   = Request::json() ?? [];
+    $season = Contest::visibleFor($user['id']);
+    if ($season === null || (int) ($body['seasonId'] ?? 0) !== $season['id'] || Contest::phase($season) !== 'upcoming') {
+        Response::json(['error' => 'Nothing to be notified about', 'code' => 'closed'], 409);
+    }
+    ContestNotify::register($season['id'], $user['id']);
+    $locale = in_array($_GET['locale'] ?? '', Contest::LOCALES, true) ? (string) $_GET['locale'] : null;
+    Response::json(['ok' => true] + Contest::overview($user['id'], $locale));
 });
 
 // GET /api/v1/contest/ranking?phase=season|final - the contest's own ranking (top 100 + me).

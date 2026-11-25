@@ -337,8 +337,8 @@
       "passNow": "Ahora",
       "launchGift": "Nuestro regalo de lanzamiento. El juego sigue igual: una foto al día.",
       "unlockPlayers": "jugadores",
-      "unlockHint": "El premio se desbloquea cuando {{max}} jugadores hayan publicado {{photos}} fotos aprobadas cada uno. Después, lo gana el n.º 1 de la última semana.",
-      "unlocked": "Desbloqueado: ¡el premio va en serio! 🎉",
+      "unlockHint": "El viaje se desbloquea cuando {{max}} jugadores hayan publicado {{photos}} fotos aprobadas cada uno.",
+      "unlocked": "El viaje está en marcha 🎉 Ahora sé el n.º 1 de la última semana para ganarlo.",
       "myFinalScore": "Tu puntuación final",
       "behind": "{{count}} pts por detrás del n.º {{rank}}",
       "inviteTitle": "Trae a tus amigos",
@@ -383,7 +383,20 @@
       "itSample": "Un itinerario de ejemplo: el viaje real se planifica junto con el ganador.",
       "itDay": "Día {{n}}",
       "founderTitle": "Unas palabras del fundador",
-      "founderSign": "{{name}}, fundador de Hilads"
+      "founderSign": "{{name}}, fundador de Hilads",
+      "todayKicker": "Un viaje de verdad en juego",
+      "todayWin": "Sé el n.º 1 de la última semana y el viaje es tuyo",
+      "todayJoin": "Únete y juega para ganar",
+      "unlockWin": "Sé el n.º 1 de la última semana para ganar el viaje ✈️",
+      "souvenirLine": "Los puestos 2 a {{to}} de la última semana ganan cada uno un pack de recuerdos de Vietnam, enviado a casa 🎁",
+      "teaserKicker": "Muy pronto",
+      "teaserTitle": "Llega la Launch Season",
+      "teaserWarm": "Calienta ya: los puntos vuelven a cero en el lanzamiento, todos empiezan igual.",
+      "teaserTrainTitle": "Calienta ya",
+      "teaserTraining": "La competición de verdad empieza en {{time}}. Los puntos vuelven a cero en el lanzamiento, así que todos empiezan igual. Mientras tanto, juega al reto del día como siempre: cada foto ya cuenta en la clasificación de Hilads.",
+      "teaserRanks": "Ver la clasificación de Hilads",
+      "notifyMe": "Avísame",
+      "notifyOn": "Te avisaremos"
     }
   },
   "friendReq": {

@@ -288,8 +288,8 @@
     "passNow": "Jetzt",
     "launchGift": "Unser Launch-Geschenk. Das Spiel bleibt gleich: ein Foto pro Tag.",
     "unlockPlayers": "Spieler",
-    "unlockHint": "Der Preis wird freigeschaltet, sobald {{max}} Spieler je {{photos}} freigegebene Fotos gepostet haben. Dann gewinnt ihn Platz 1 der Finalwoche.",
-    "unlocked": "Freigeschaltet: Der Preis ist im Spiel! 🎉",
+    "unlockHint": "Die Reise wird freigeschaltet, sobald {{max}} Spieler je {{photos}} freigegebene Fotos gepostet haben.",
+    "unlocked": "Die Reise steht fest 🎉 Jetzt werde Platz 1 der Finalwoche, um sie zu gewinnen.",
     "myFinalScore": "Dein Endstand",
     "behind": "{{count}} Pkt. hinter Platz {{rank}}",
     "inviteTitle": "Bring deine Freunde mit",
@@ -334,6 +334,19 @@
     "itSample": "Ein Beispiel-Reiseplan: Die echte Reise wird gemeinsam mit dem Gewinner geplant.",
     "itDay": "Tag {{n}}",
     "founderTitle": "Ein Wort vom Gründer",
-    "founderSign": "{{name}}, Gründer von Hilads"
+    "founderSign": "{{name}}, Gründer von Hilads",
+    "todayKicker": "Eine echte Reise zu gewinnen",
+    "todayWin": "Werde Platz 1 der Finalwoche und die Reise gehört dir",
+    "todayJoin": "Mitmachen und gewinnen",
+    "unlockWin": "Werde Platz 1 der Finalwoche und gewinne die Reise ✈️",
+    "souvenirLine": "Platz 2 bis {{to}} der Finalwoche gewinnt je ein Vietnam-Souvenirpaket, zu dir nach Hause geschickt 🎁",
+    "teaserKicker": "Bald",
+    "teaserTitle": "Die Launch Season kommt",
+    "teaserWarm": "Wärm dich jetzt auf: Zum Start fangen alle bei null an, faire Chancen für alle.",
+    "teaserTrainTitle": "Jetzt aufwärmen",
+    "teaserTraining": "Der echte Wettbewerb startet in {{time}}. Zum Start fangen alle bei null Punkten an, also mit fairen Chancen. Bis dahin spielst du die Tagesaufgabe wie gewohnt: Jedes Foto zählt schon jetzt in der Hilads-Rangliste.",
+    "teaserRanks": "Zur Hilads-Rangliste",
+    "notifyMe": "Benachrichtige mich",
+    "notifyOn": "Du wirst benachrichtigt"
   }
 }

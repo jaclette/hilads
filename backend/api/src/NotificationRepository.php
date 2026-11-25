@@ -332,6 +332,8 @@ class NotificationRepository
             // Admin broadcasts can include a custom deepLink; falls back to
             // the notifications screen so the row is at least viewable.
             'admin_announcement'              => $data['deepLink'] ?? '/notifications',
+            // The Launch Season is live (ContestNotify, to its Notify-me taps): the Prize screen.
+            'contest_live'                    => $data['deepLink'] ?? '/contest-prize',
             // Tap → open the challenge. Push action buttons (Accept / Ignore)
             // close the loop on the invitation directly without the user
             // having to land in the app.

@@ -2648,6 +2648,17 @@ export async function fetchContestRanking(phase) {
   return res.json()
 }
 
+/** The Upcoming phase's "Notify me" (no age / country / rules yet): one push when the season starts. */
+export async function notifyContest(seasonId, locale) {
+  const res = await fetch(`${BASE}/contest/notify${locale ? `?locale=${encodeURIComponent(locale)}` : ''}`, {
+    method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ seasonId }),
+  })
+  const body = await res.json().catch(() => ({}))
+  if (!res.ok) throw new Error(body.code || 'contest_notify')
+  return body
+}
+
 /** Join once: 18+, a country, the rules accepted. Throws an Error whose message is the server's code. */
 export async function joinContest(seasonId, country) {
   const res = await fetch(`${BASE}/contest/join`, {

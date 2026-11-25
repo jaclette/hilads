@@ -301,8 +301,8 @@
     "passNow": "Agora",
     "launchGift": "Nosso presente de lançamento. O jogo continua igual: uma foto por dia.",
     "unlockPlayers": "jogadores",
-    "unlockHint": "O prêmio é liberado quando {{max}} jogadores tiverem postado {{photos}} fotos aprovadas cada um. Depois, o nº 1 da última semana leva.",
-    "unlocked": "Liberado: o prêmio está valendo! 🎉",
+    "unlockHint": "A viagem é liberada quando {{max}} jogadores tiverem postado {{photos}} fotos aprovadas cada um.",
+    "unlocked": "A viagem está valendo 🎉 Agora seja o nº 1 da última semana para ganhá-la.",
     "myFinalScore": "Sua pontuação final",
     "behind": "{{count}} pts atrás do nº {{rank}}",
     "inviteTitle": "Traga seus amigos",
@@ -347,6 +347,19 @@
     "itSample": "Um roteiro de exemplo: a viagem real é planejada junto com quem vencer.",
     "itDay": "Dia {{n}}",
     "founderTitle": "Uma palavra do fundador",
-    "founderSign": "{{name}}, fundador do Hilads"
+    "founderSign": "{{name}}, fundador do Hilads",
+    "todayKicker": "Uma viagem de verdade em jogo",
+    "todayWin": "Seja o nº 1 da última semana e a viagem é sua",
+    "todayJoin": "Entre e jogue para ganhar",
+    "unlockWin": "Seja o nº 1 da última semana para ganhar a viagem ✈️",
+    "souvenirLine": "Do 2º ao {{to}}º lugar da última semana, cada um ganha um kit de lembranças do Vietnã, enviado para casa 🎁",
+    "teaserKicker": "Em breve",
+    "teaserTitle": "A Launch Season está chegando",
+    "teaserWarm": "Aqueça agora: os pontos zeram no lançamento, todo mundo começa igual.",
+    "teaserTrainTitle": "Aqueça agora",
+    "teaserTraining": "A competição de verdade começa em {{time}}. Os pontos zeram no lançamento, então todo mundo começa igual. Até lá, jogue o desafio do dia como sempre: cada foto já conta no ranking do Hilads.",
+    "teaserRanks": "Ver o ranking do Hilads",
+    "notifyMe": "Me avise",
+    "notifyOn": "Você será avisado"
   }
 }

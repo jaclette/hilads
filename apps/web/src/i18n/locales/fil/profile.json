@@ -325,8 +325,8 @@
       "passNow": "Ngayon",
       "launchGift": "Ang aming launch gift. Pareho pa rin ang laro: isang photo kada araw.",
       "unlockPlayers": "players",
-      "unlockHint": "Mabubuksan ang premyo kapag {{max}} players ang nakapag-post ng tig-{{photos}} approved photos. Pagkatapos, ang #1 sa huling linggo ang mananalo nito.",
-      "unlocked": "Bukas na: tuloy ang premyo! 🎉",
+      "unlockHint": "Mabubuksan ang trip kapag {{max}} players ang nakapag-post ng tig-{{photos}} approved photos.",
+      "unlocked": "Tuloy na ang trip 🎉 Ngayon, maging #1 sa huling linggo para mapanalunan ito.",
       "myFinalScore": "Final score mo",
       "behind": "{{count}} pts kulang sa #{{rank}}",
       "inviteTitle": "Isama ang friends mo",
@@ -371,7 +371,20 @@
       "itSample": "Halimbawang itinerary: ang totoong trip ay pinaplano kasama ang nanalo.",
       "itDay": "Day {{n}}",
       "founderTitle": "Mensahe mula sa founder",
-      "founderSign": "{{name}}, founder ng Hilads"
+      "founderSign": "{{name}}, founder ng Hilads",
+      "todayKicker": "May totoong trip na mapapanalunan",
+      "todayWin": "Maging #1 sa huling linggo at sa 'yo na ang trip",
+      "todayJoin": "Sumali at maglaro para manalo",
+      "unlockWin": "Maging #1 sa huling linggo para manalo ng trip ✈️",
+      "souvenirLine": "Ang rank 2 hanggang {{to}} sa huling linggo ay mananalo ng Vietnam souvenir pack, ipapadala sa kanila 🎁",
+      "teaserKicker": "Malapit na",
+      "teaserTitle": "Parating na ang Launch Season",
+      "teaserWarm": "Mag-warm up na: babalik sa zero ang points sa launch, patas ang simula ng lahat.",
+      "teaserTrainTitle": "Mag-warm up na",
+      "teaserTraining": "Magsisimula ang totoong kompetisyon sa loob ng {{time}}. Babalik sa zero ang points sa launch, kaya patas ang simula ng lahat. Habang naghihintay, laruin ang daily challenge gaya ng dati: bawat larawan ay bilang na sa Hilads ranking.",
+      "teaserRanks": "Tingnan ang Hilads ranking",
+      "notifyMe": "Abisuhan ako",
+      "notifyOn": "Aabisuhan ka namin"
     }
   },
   "friendReq": {

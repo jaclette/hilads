@@ -12634,3 +12634,36 @@ html[data-event="halloween"] { --header-art: #FFA552; --header-art-opacity: 0.28
 .ls-founder-print img { display: block; width: 100%; aspect-ratio: 4 / 5; object-fit: cover; border-radius: 2px; }
 .ls-founder-letter { margin: 0; font-size: 16px; line-height: 1.55; color: var(--text); }
 .ls-founder-sign { margin: 0; display: flex; align-items: center; gap: var(--sp-12); font-weight: 700; font-style: italic; color: var(--primary-text); }
+
+/* Launch Season: the Today / Passport banner (fixed event colors, on a photo). */
+.ls-banner { position: relative; display: flex; flex-direction: column; justify-content: space-between; min-height: 236px; width: 100%; text-align: left;
+  border-radius: var(--r-card); overflow: hidden; border: 2px solid #FFB627; background: #0B4F4C; color: #fff; cursor: pointer; }
+.ls-banner:active { transform: scale(.985); }
+.ls-banner:focus-visible { outline: 3px solid var(--primary); outline-offset: 2px; }
+.ls-banner-art, .ls-banner-shade { position: absolute; inset: 0; }
+.ls-banner-art img, .ls-banner-art svg { width: 100%; height: 100%; object-fit: cover; display: block; }
+.ls-banner-shade { background: linear-gradient(180deg, rgba(12,8,5,.30) 0%, rgba(12,8,5,.05) 30%, rgba(12,8,5,.55) 60%, rgba(12,8,5,.90) 100%); }
+.ls-confetti { position: absolute; border-radius: 2px; }
+.ls-banner-top, .ls-banner-bottom { position: relative; padding: var(--sp-16); }
+.ls-banner-top { display: flex; align-items: center; justify-content: space-between; gap: var(--sp-8); }
+.ls-banner-bottom { display: flex; flex-direction: column; gap: 4px; padding-top: 0; }
+.ls-ribbon { display: inline-flex; align-items: center; gap: 5px; background: #FFB627; color: #21160F; border-radius: var(--r-chip); padding: 5px 10px; font-size: var(--fs-xs); font-weight: 900; }
+.ls-banner-title { font-size: 26px; line-height: 1.2; font-weight: 900; text-shadow: 0 1px 6px rgba(0,0,0,.35); }
+.ls-banner-win { font-weight: 800; color: #FFE29A; }
+.ls-banner-warm { font-size: var(--fs-xs); font-weight: 600; margin-top: 4px; }
+.ls-banner-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--sp-8); margin-top: var(--sp-8); }
+.ls-banner-when { display: inline-flex; align-items: center; gap: 4px; font-size: var(--fs-xs); font-weight: 700; }
+.ls-banner-cta { display: inline-flex; align-items: center; gap: 6px; align-self: flex-start; min-height: 40px; padding: 0 14px; border: 0; border-radius: var(--r-chip);
+  background: #FF7A3C; color: #21160F; font: inherit; font-weight: 900; cursor: pointer; max-width: 100%; margin-top: 4px; }
+.ls-banner-cta.is-in { background: #fff; }
+.ls-countdown--compact { padding: 6px; margin: 4px 0 0; background: rgba(33,22,15,.82); }
+.ls-countdown--compact .ls-tiles { gap: 4px; }
+.ls-countdown--compact .ls-tile { padding: 3px 0; }
+.ls-countdown--compact .ls-tile b { font-size: 20px; line-height: 24px; }
+.ls-countdown--compact .ls-tile small { font-size: 10px; }
+.ls-souvenir { display: flex; align-items: center; gap: var(--sp-8); margin: 0; padding: 10px 14px; border-radius: var(--r-card); background: var(--gold-tint, rgba(212,160,23,.22));
+  color: var(--text); font-size: var(--fs-xs); font-weight: 700; }
+.ls-unlock-win { display: flex; align-items: flex-start; gap: 6px; margin: 0 0 4px; font-size: 17px; font-weight: 800; color: var(--text); }
+.ls-unlock-win .icon { color: #FFB627; flex: none; }
+.ls-warm p { margin: 4px 0 8px; }
+.ls-warm .ls-howwin-title { display: flex; align-items: center; gap: 6px; }
