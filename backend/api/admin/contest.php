@@ -57,6 +57,20 @@ if (isset($_GET['suggest'])) {
 }
 
 // ── Actions ────────────────────────────────────────────────────────────────
+// Copies a season's content (photos, sample itinerary, founder word, prize text, souvenir prizes) onto
+// another: never its participants, testers, head-start, rules or scores. The photo files are shared (a
+// removed photo only leaves the season's list, the file stays on R2). Returns the source's name.
+$copyContent = static function (int $dst, int $src) use ($pdo): string {
+    if ($dst === $src) throw new InvalidArgumentException('Pick another season to copy from.');
+    $from = Contest::season($src) ?? throw new InvalidArgumentException('Unknown season to copy from.');
+    $pdo->prepare("UPDATE contest_seasons d SET photos = s.photos, itinerary = s.itinerary, founder = s.founder,
+                          prize_i18n = s.prize_i18n, souvenir = s.souvenir, updated_at = now()
+                   FROM contest_seasons s WHERE d.id = ? AND s.id = ?")->execute([$dst, $src]);
+    Contest::log($dst, 'copy_content', null, ['from' => $src]);
+    Contest::forget($dst);
+    return (string) $from['name'];
+};
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     csrf_verify();
     $do   = (string) ($_POST['do'] ?? '');
@@ -101,7 +115,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $pdo->prepare("INSERT INTO contest_rules (season_id, locale, body) VALUES (?, 'en', ?) ON CONFLICT DO NOTHING")
                     ->execute([$sid, Contest::placeholderRules($s)]);
                 Contest::log($sid, 'create', null, $fields);
-                flash_set('success', 'Season created as a draft. Start it when ready.');
+                $copied = (int) ($_POST['copy_from'] ?? 0) > 0 ? $copyContent($sid, (int) $_POST['copy_from']) : null;
+                flash_set('success', 'Season created as a draft' . ($copied !== null ? ", with the content of \"{$copied}\" (photos, itinerary, founder word, prize, souvenirs)" : '') . '. Publish it when ready.');
             }
             admin_redirect('/admin/launch-season?tab=seasons&season=' . $sid);
         } elseif ($season !== null && $do === 'save_prize') {
@@ -120,6 +135,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 ->execute([json_encode($prize, JSON_UNESCAPED_UNICODE), $season['id']]);
             Contest::log($season['id'], 'prize', null, ['en' => $prize['en'], 'locales' => array_keys($prize)]);
             flash_set('success', 'Prize saved: the app and the web show it at their next refresh (no new app version required).');
+        } elseif ($season !== null && $do === 'copy_content') {
+            $name = $copyContent((int) $season['id'], (int) ($_POST['copy_from'] ?? 0));
+            flash_set('success', "Content copied from \"{$name}\": photos, sample itinerary, founder word, prize text and souvenir prizes. Participants, testers, rules and scores untouched.");
         } elseif ($season !== null && $do === 'save_souvenir') {
             $i18n = [];
             foreach (Contest::LOCALES as $l) {
@@ -324,7 +342,7 @@ admin_nav('/admin/launch-season');
 
 <?php if ($tab === 'seasons'): ?>
   <?php
-  $form = static function (?array $s) use ($esc): void {
+  $form = static function (?array $s) use ($esc, $pdo): void {
       $v = static fn(string $k, $d = '') => $esc($s[$k] ?? $d);
       $defaults = ['vote_cap_per_photo' => 20, 'referral_points' => 20, 'referral_min_photos' => 5, 'referral_cap' => 10,
                    'headstart_top_n' => 10, 'prize_threshold_players' => 500, 'prize_threshold_photos' => 10];
@@ -343,13 +361,36 @@ admin_nav('/admin/launch-season');
             <label><?= $esc($l) ?><input type="number" min="0" name="<?= $k ?>" value="<?= $v($k, $defaults[$k]) ?>" required></label>
           <?php endforeach; ?>
         </div>
-        <p style="margin:12px 0 0"><label><input type="checkbox" name="is_test" value="1"<?= !empty($s['is_test']) ? ' checked' : '' ?>> Test season: only the testers below see it; no push to anyone; never in a real season</label></p>
+        <p style="margin:12px 0 0"><label><input type="checkbox" name="is_test" value="1"<?= !empty($s['is_test']) ? ' checked' : '' ?>> Test season: only the testers below see it (and only they get the "season is live" push); never in a real season</label></p>
+        <?php if (!$s): $others = $pdo->query("SELECT id, name, is_test FROM contest_seasons ORDER BY id DESC")->fetchAll(PDO::FETCH_ASSOC); ?>
+          <?php if ($others): ?>
+            <p style="margin:8px 0 0"><label>Copy content from
+              <select name="copy_from" style="background:#1a1a1a;border:1px solid #2a2a2a;color:#eee;padding:4px 6px;border-radius:4px">
+                <option value="0">Nothing (start empty)</option>
+                <?php foreach ($others as $o): ?><option value="<?= (int) $o['id'] ?>">#<?= (int) $o['id'] ?> <?= $esc($o['name']) ?><?= $o['is_test'] ? ' (test)' : '' ?></option><?php endforeach; ?>
+              </select></label>
+              <span class="ls-muted">photos, sample itinerary, founder word, prize text, souvenir prizes; never participants, testers, rules or scores</span></p>
+          <?php endif; ?>
+        <?php endif; ?>
         <?php if (!empty($s['headstart_frozen_at'])): ?>
           <p style="margin:6px 0 0"><label><input type="checkbox" name="refreeze" value="1"> Also re-take the head-start (frozen <?= $esc(substr((string) $s['headstart_frozen_at'], 0, 16)) ?>) with these settings</label></p>
         <?php endif; ?>
         <p class="ls-muted">Dates are challenge dates (the daily drop). Settings apply live: the standings are recomputed at once.</p>
         <div class="form-actions"><button class="btn btn-primary"><?= $s ? 'Save season' : 'Create season (draft)' ?></button></div>
       </form>
+      <?php if ($s): $others = $pdo->query("SELECT id, name, is_test FROM contest_seasons WHERE id <> " . (int) $s['id'] . " ORDER BY id DESC")->fetchAll(PDO::FETCH_ASSOC); ?>
+        <?php if ($others): ?>
+          <form method="post" class="ls-inline" style="margin:8px 0;flex-wrap:wrap" onsubmit="return confirm('Replace this season\'s photos, sample itinerary, founder word, prize text and souvenir prizes with the chosen season\'s? Participants, testers, rules and scores stay.')">
+            <?= csrf_input() ?><input type="hidden" name="do" value="copy_content">
+            <label>Copy content from
+              <select name="copy_from" style="background:#1a1a1a;border:1px solid #2a2a2a;color:#eee;padding:4px 6px;border-radius:4px">
+                <?php foreach ($others as $o): ?><option value="<?= (int) $o['id'] ?>">#<?= (int) $o['id'] ?> <?= $esc($o['name']) ?><?= $o['is_test'] ? ' (test)' : '' ?></option><?php endforeach; ?>
+              </select></label>
+            <button class="btn btn-secondary btn-sm">Copy content</button>
+            <span class="ls-muted">photos, sample itinerary, founder word, prize text, souvenir prizes</span>
+          </form>
+        <?php endif; ?>
+      <?php endif; ?>
   <?php }; ?>
 
   <?php if ($season !== null): ?>
