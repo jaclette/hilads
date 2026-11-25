@@ -834,8 +834,11 @@ admin_nav('/admin/launch-season');
   $cur = null; foreach ($rules as $r) if ($r['locale'] === $locale) $cur = $r;
   $public = 'https://hilads.live' . ($locale !== 'en' ? '/' . $locale : '') . '/launch-season/rules' . ($season['is_test'] ? '?season=' . $season['id'] : '');
   ?>
-  <p class="ls-muted">Markdown (# title, ## heading, - list, **bold**). The English text is the reference: joiners accept its version. Other locales fall back to English until added.
+  <p class="ls-muted">Markdown (# title, ## heading, - list, **bold**, [link](https://…)). The English text is the reference: joiners accept its version. Other locales fall back to English until added.
     Public page: <a href="<?= $esc($public) ?>" target="_blank"><?= $esc($public) ?></a></p>
+  <p class="ls-muted">Placeholders, filled from this season's dates and settings on the public page (keep them as they are in every translation):
+    <?php foreach (Contest::RULES_TOKENS as $tk): ?><code style="color:#ddd">{{<?= $esc($tk) ?>}}</code> <?php endforeach; ?>
+    · <code>[TBD: …]</code> marks what is still to decide. The page shows the red DRAFT banner until Final is ticked.</p>
   <div class="toolbar" style="gap:6px">
     <?php foreach ($rules as $r): ?><a class="btn btn-sm <?= $r['locale'] === $locale ? 'btn-primary' : 'btn-secondary' ?>" href="<?= $esc($url('rules', ['locale' => $r['locale']])) ?>"><?= $esc($r['locale']) ?> v<?= (int) $r['version'] ?><?= DailyProofRepository::bool($r['is_final']) ? ' ✓' : ' · draft' ?></a><?php endforeach; ?>
     <form method="get" class="ls-inline"><input type="hidden" name="tab" value="rules"><input type="hidden" name="season" value="<?= $sid ?>"><input type="text" name="locale" placeholder="Add a locale: fr, vi…" style="width:150px"><button class="btn btn-secondary btn-sm">Add</button></form>
@@ -843,9 +846,11 @@ admin_nav('/admin/launch-season');
   <form method="post" class="form-card" style="max-width:none">
     <?= csrf_input() ?><input type="hidden" name="do" value="rules"><input type="hidden" name="locale" value="<?= $esc($locale) ?>">
     <div class="form-group"><label>Rules · <?= $esc($locale) ?><?= $cur ? ' · v' . (int) $cur['version'] . ' · ' . $esc(substr((string) $cur['updated_at'], 0, 16)) : ' · new' ?></label>
-      <textarea name="body" rows="26" style="font-family:ui-monospace,monospace;font-size:13px"><?= $esc($cur['body'] ?? ($locale === 'en' ? Contest::placeholderRules($season) : ($rules[0]['body'] ?? ''))) ?></textarea></div>
+      <textarea name="body" rows="26" style="font-family:ui-monospace,monospace;font-size:13px"><?= $esc(!empty($_GET['template']) ? Contest::placeholderRules($season) : ($cur['body'] ?? ($locale === 'en' ? Contest::placeholderRules($season) : ($rules[0]['body'] ?? '')))) ?></textarea></div>
+    <?php if (!empty($_GET['template'])): ?><p class="flash flash-success" style="margin:6px 0">The full rules template is loaded in the box: nothing is saved until you press Save rules.</p><?php endif; ?>
     <p><label><input type="checkbox" name="is_final" value="1"<?= $cur && DailyProofRepository::bool($cur['is_final']) ? ' checked' : '' ?>> Final (removes the “DRAFT - not final” banner on the public page)</label></p>
-    <div class="form-actions"><button class="btn btn-primary">Save rules</button></div>
+    <div class="form-actions"><button class="btn btn-primary">Save rules</button>
+      <a class="btn btn-secondary" href="<?= $esc($url('rules', ['locale' => $locale, 'template' => 1])) ?>">Load the full template (English)</a></div>
   </form>
 
 <?php elseif ($tab === 'log'): ?>

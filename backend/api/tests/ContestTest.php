@@ -166,10 +166,14 @@ final class ContestTest extends TestCase
         self::assertSame('ended', Contest::phase(['status' => 'ended'] + $s, '2026-12-05'));
     }
 
-    public function testPlaceholderRulesAreMarkedDraftAndUseTheSettings(): void
+    public function testRulesTemplateIsFilledFromTheSeason(): void
     {
-        $md = Contest::placeholderRules(self::SEASON);
-        self::assertStringContainsString('DRAFT - not final', $md);
-        self::assertStringContainsString('up to 20 points per photo', $md);
+        $md = Contest::fillRules(Contest::placeholderRules(), self::SEASON + ['souvenir' => ['enabled' => true, 'to' => 8]]);
+        self::assertStringNotContainsString('{{', $md, 'every placeholder is filled');
+        self::assertStringContainsString('capped at ' . self::SEASON['vote_cap_per_photo'] . ' points per photo', $md);
+        self::assertStringContainsString('ranks 2 to 8 of the final-week leaderboard', $md);
+        self::assertStringContainsString('[TBD:', $md, 'open points stay visible until the text is final');
+        // The DRAFT banner is the page's (until Final is ticked), not part of the text.
+        self::assertStringNotContainsString('DRAFT', Contest::placeholderRules());
     }
 }

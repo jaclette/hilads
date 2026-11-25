@@ -567,7 +567,7 @@ final class Contest
             $season = $r ? self::normalizeSeason($r) : null;
         }
         if ($season === null) {
-            return ['season' => null, 'locale' => 'en', 'body' => self::placeholderRules(null), 'isFinal' => false, 'version' => 0, 'updatedAt' => null];
+            return ['season' => null, 'locale' => 'en', 'body' => self::fillRules(self::placeholderRules(null), null), 'isFinal' => false, 'version' => 0, 'updatedAt' => null];
         }
         $stmt = $pdo->prepare("SELECT locale, body, is_final, version, updated_at FROM contest_rules WHERE season_id = ? AND locale IN (?, 'en')
                                ORDER BY (locale = ?) DESC LIMIT 1");
@@ -576,43 +576,117 @@ final class Contest
         return [
             'season'    => ['id' => $season['id'], 'name' => $season['name'], 'startDate' => $season['start_date'], 'endDate' => $season['end_date']],
             'locale'    => $r['locale'] ?? 'en',
-            'body'      => $r['body'] ?? self::placeholderRules($season),
+            'body'      => self::fillRules($r['body'] ?? self::placeholderRules($season), $season, (string) ($r['locale'] ?? $locale)),
             'isFinal'   => $r ? DailyProofRepository::bool($r['is_final']) : false,
             'version'   => (int) ($r['version'] ?? 0),
             'updatedAt' => $r['updated_at'] ?? null,
         ];
     }
 
-    /** The DRAFT placeholder (markdown), from the season's settings. */
-    public static function placeholderRules(?array $s): string
+    /**
+     * The rules template (markdown, English): what a new season's rules start from (Admin › Rules).
+     * {{tokens}} are filled from the season's dates and settings when the page shows it (fillRules),
+     * so the text and its translations never go stale when a date or a number changes. The page
+     * itself shows the DRAFT banner until the admin ticks Final. [TBD: …] = for the owner / lawyer.
+     */
+    public const RULES_TOKENS = ['season', 'start', 'final_start', 'end', 'weeks', 'season_weeks', 'vote_cap', 'ref_points',
+                                 'ref_min', 'ref_cap', 'hs_top', 'players', 'photos', 'souvenir_to'];
+
+    public static function placeholderRules(?array $s = null): string
     {
-        $s ??= ['name' => 'Launch Season', 'start_date' => '…', 'end_date' => '…', 'final_week_start' => '…',
+        return <<<'MD'
+# {{season}}: official rules
+
+## 1. Organiser
+The {{season}} (the "Contest") is organised by [TBD: organiser's legal name, legal form, registered address and company number] ("Hilads", "we"), the publisher of the Hilads app and website.
+
+## 2. Dates
+The Contest runs from {{start}} to {{end}} ({{weeks}} weeks): a season of {{season_weeks}} weeks, then a final week from {{final_start}} to {{end}}. Days follow the Hilads daily challenge: each day starts at the daily drop.
+
+Before {{start}}, the app may show a preview of the Contest. Playing the daily game during that time is normal Hilads play: it counts for the permanent Hilads ranking, never for the Contest. Contest points only count from {{start}}.
+
+## 3. Who can enter
+- Entry is free. No purchase is needed.
+- You must be 18 or older when you join.
+- One person, one account, one entry. Using several accounts leads to disqualification.
+- Residents of [TBD: excluded countries] and of any country where this kind of contest is not allowed cannot enter.
+- [TBD: confirm] Hilads employees and their households cannot win.
+- To enter, tap "Join" in the app during the season, confirm you are 18 or older, choose your country and accept these rules.
+
+## 4. How to qualify
+To be ranked, post at least one valid photo approved by Hilads during the season, after joining. A valid photo is your own photo, taken for the day's challenge and respecting the Hilads community rules. Photos posted before you join, or before {{start}}, don't count.
+
+## 5. Scoring
+- **Likes:** each like on your valid photos = 1 point, capped at {{vote_cap}} points per photo.
+- **Friends:** +{{ref_points}} points for each active referred friend, up to {{ref_cap}} friends. An active friend joins Hilads with your invite link during the season, joins the Contest and posts at least {{ref_min}} valid photos. A friend who already had an account, who joined before your invite or who uses the same device as you doesn't count.
+- **Head start:** when the final week starts, the top {{hs_top}} of the season ranking get a head-start bonus: {{hs_top}} points for #1, down to 1 point for #{{hs_top}}.
+- **Final week:** the final-week ranking counts the likes of the final week only, plus your head start and your friend points.
+- **Ties:** most days played, then most likes over the whole season (uncapped), then the earliest to join.
+
+## 6. Winner
+The winner is the #1 of the final-week leaderboard when the Contest ends on {{end}}, after the checks in section 9. Hilads announces the result in the app within [TBD] days and contacts the winner in the app and by email. If the winner doesn't answer within [TBD] days, or isn't eligible, the next eligible participant in the final-week ranking wins.
+
+## 7. Prize
+A one-week trip to Vietnam for the winner:
+- A round-trip international economy flight from the airport nearest the winner's home, up to USD 2,000. If the flight costs more than USD 2,000, the winner pays the difference or picks cheaper dates.
+- Lodging and transport in Vietnam are included.
+- Not included: visa, travel insurance, meals and personal expenses.
+- The travel dates are agreed between the winner and Hilads, [TBD: within which period].
+
+**Prize condition:** the trip is awarded only if at least {{players}} different participants each post {{photos}} or more valid photos during the season. Otherwise, the winner receives a Vietnam souvenir pack instead of the trip.
+
+**Souvenir prizes:** [TBD: keep only if souvenir prizes are on for this season] ranks 2 to {{souvenir_to}} of the final-week leaderboard each receive a Vietnam souvenir pack, shipped to them.
+
+Prizes are personal and non-transferable, and cannot be exchanged for cash. If a prize cannot be delivered, Hilads may replace it with a prize of similar value.
+
+## 8. A separate ranking
+The Contest ranking is separate from the permanent Hilads ranking. Joining doesn't change your game: your photos and likes still count for Hilads as usual, and Contest points never count for the Hilads ranking.
+
+## 9. Fair play and moderation
+Hilads moderates photos and may invalidate photos, likes or referred friends, and disqualify an entry, in case of fraud or rule breaking: fake or multiple accounts, bought or exchanged likes, automated activity, photos that aren't yours, or anything against the Hilads community rules. Before awarding a prize, Hilads may ask the winner to prove their identity, age and country.
+
+## 10. Your photos
+You keep the rights to your photos. By posting during the Contest, you allow Hilads to show your photos, credited with your username, in the app, on the website and in Hilads communications about the Contest, worldwide, for free, [TBD: for how long]. Only post photos you took yourself; if a person can be recognised, make sure they agree.
+
+## 11. Personal data
+Hilads uses your account data, your country, your age confirmation and your Contest activity to run the Contest, check eligibility and deliver the prizes, as described in the [Hilads privacy policy](https://hilads.live/privacy). The winner's details are shared with travel providers only to deliver the prize. [TBD: data controller and contact for your rights].
+
+## 12. Taxes, visas and travel
+The winner is responsible for any taxes on the prize and for their passport, visa, vaccinations, insurance and any other travel requirement.
+
+## 13. Changes
+Hilads may change, suspend, shorten or cancel the Contest, or replace a prize with one of similar value, in case of force majeure or events beyond its control (for example large-scale fraud, a technical failure or travel restrictions). Any change is published on this page with a new version number.
+
+## 14. Applicable law and contact
+[TBD: applicable law and competent courts.] Questions about the Contest: [TBD: contact email].
+MD;
+    }
+
+    /** The rules text with its {{tokens}} filled from the season (dates in English words, else ISO). */
+    public static function fillRules(string $body, ?array $s, string $locale = 'en'): string
+    {
+        $s ??= ['name' => 'Launch Season', 'start_date' => null, 'end_date' => null, 'final_week_start' => null,
                 'vote_cap_per_photo' => 20, 'referral_points' => 20, 'referral_min_photos' => 5, 'referral_cap' => 10,
                 'headstart_top_n' => 10, 'prize_threshold_players' => 500, 'prize_threshold_photos' => 10];
-        return <<<MD
-        # {$s['name']} — official rules
-
-        **DRAFT - not final.** This text is being reviewed and will change.
-
-        ## Who can enter
-        Anyone 18 or older with a Hilads account who joins the {$s['name']} in the app. One entry per person.
-
-        ## Dates
-        From {$s['start_date']} to {$s['end_date']}. The final week starts on {$s['final_week_start']}.
-
-        ## How points work
-        - Post your photo for the daily challenge as usual. Once you have joined, every approved photo you post during the season counts.
-        - 1 like = 1 point, up to {$s['vote_cap_per_photo']} points per photo.
-        - Invite friends: +{$s['referral_points']} points for each friend who joins with your link during the season, joins the contest and posts {$s['referral_min_photos']} approved photos (up to {$s['referral_cap']} friends).
-        - At the start of the final week, the top {$s['headstart_top_n']} get a head start ({$s['headstart_top_n']} points for #1 down to 1 point).
-        - Final score = likes in the final week + invite points + head start. Ties: most days played, then most likes overall, then the earliest to join.
-
-        ## Prize
-        The prize is awarded if at least {$s['prize_threshold_players']} players post {$s['prize_threshold_photos']} approved photos or more during the season.
-
-        ## Fair play
-        Hilads may invalidate photos, likes or invites and disqualify entries that break the rules.
-        MD;
+        $date = static function (?string $d) use ($locale): string {
+            if (!$d) return '…';
+            $t = strtotime($d . ' 12:00:00 UTC');
+            return $locale === 'en' ? gmdate('j F Y', $t) : gmdate('Y-m-d', $t);
+        };
+        $days = static fn(?string $a, ?string $b): int => $a && $b ? (int) round((strtotime($b) - strtotime($a)) / 86400) + 1 : 0;
+        $weeks = (int) round($days($s['start_date'], $s['end_date']) / 7);
+        $sv = $s['souvenir'] ?? [];
+        if (is_string($sv)) $sv = json_decode($sv, true);
+        $vals = [
+            'season' => (string) $s['name'], 'start' => $date($s['start_date']), 'final_start' => $date($s['final_week_start']),
+            'end' => $date($s['end_date']), 'weeks' => (string) $weeks,
+            'season_weeks' => (string) ($s['start_date'] && $s['final_week_start'] ? max(0, (int) round((strtotime($s['final_week_start']) - strtotime($s['start_date'])) / 86400 / 7)) : 0),
+            'vote_cap' => (string) $s['vote_cap_per_photo'], 'ref_points' => (string) $s['referral_points'],
+            'ref_min' => (string) $s['referral_min_photos'], 'ref_cap' => (string) $s['referral_cap'], 'hs_top' => (string) $s['headstart_top_n'],
+            'players' => (string) $s['prize_threshold_players'], 'photos' => (string) $s['prize_threshold_photos'],
+            'souvenir_to' => (string) max(2, min(50, (int) ((is_array($sv) ? $sv['to'] ?? null : null) ?? 10))),
+        ];
+        return preg_replace_callback('/\{\{(\w+)\}\}/', static fn(array $m): string => $vals[$m[1]] ?? $m[0], $body) ?? $body;
     }
 
     // ── Admin ───────────────────────────────────────────────────────────────
