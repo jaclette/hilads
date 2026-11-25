@@ -128,6 +128,9 @@ function admin_audit_fallback(): void
     foreach (['/admin/login', '/admin/logout', '/admin/account', '/admin/search', '/admin/assets'] as $skip) {
         if (str_starts_with($path, $skip)) return;
     }
+    // Lookups sent by POST (counts, searches, previews) change nothing.
+    $button = (string) ($_POST['action'] ?? $_POST['do'] ?? '');
+    if (in_array($button, ['search_user', 'count', 'search', 'preview', 'check', 'lookup'], true)) return;
     $flash = $_SESSION['admin_flash'] ?? [];
     $types = array_column($flash, 'type');
     if (in_array('error', $types, true)) return;
@@ -145,7 +148,6 @@ function admin_audit_fallback(): void
         if (is_array($f['name'] ?? null)) $fields[$k] = 'files: ' . implode(', ', array_filter($f['name']));
         elseif (($f['name'] ?? '') !== '') $fields[$k] = 'file: ' . $f['name'];
     }
-    $button = (string) ($_POST['action'] ?? $_POST['do'] ?? '');
     $slug = trim(preg_replace('#[^a-z0-9]+#', '_', strtolower(substr($path, strlen('/admin')))), '_') ?: 'dashboard';
     $json = json_encode($fields, JSON_UNESCAPED_UNICODE);
     if (strlen((string) $json) > 4000) $fields = ['fields' => mb_substr((string) $json, 0, 4000) . '…'];

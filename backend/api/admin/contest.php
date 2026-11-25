@@ -12,8 +12,8 @@ admin_require_login();
 
 $pdo  = Database::pdo();
 $esc  = static fn($v): string => htmlspecialchars((string) $v, ENT_QUOTES);
-$tabs = ['seasons' => '🗓️ Seasons', 'dashboard' => '📊 Dashboard', 'participants' => '👥 Participants',
-         'signals' => '🚩 Signals', 'winner' => '🏆 Winner & export', 'rules' => '📜 Rules', 'log' => '🧾 Log'];
+$tabs = ['seasons' => 'Seasons', 'dashboard' => 'Overview', 'participants' => 'Participants',
+         'signals' => 'Fair play signals', 'winner' => 'Winner & export', 'rules' => 'Rules', 'log' => 'History'];
 $tab  = isset($tabs[$_GET['tab'] ?? '']) ? (string) $_GET['tab'] : 'dashboard';
 $seasons = Contest::seasons();
 $sid  = (int) ($_GET['season'] ?? ($seasons[0]['id'] ?? 0));
@@ -324,8 +324,8 @@ admin_nav('/admin/launch-season');
 .ls-x { text-decoration: line-through; color:var(--faint); }
 </style>
 <main class="admin-main">
+  <?= ui_page_head('Game', 'Seasons', 'Launch Season contests: dates, prize, participants, the ranking, the winner. Test seasons are only seen by their testers.') ?>
   <?= flash_html() ?>
-  <h1 class="page-title">🚀 Launch Season</h1>
   <form method="get" class="toolbar" style="margin:0">
     <input type="hidden" name="tab" value="<?= $esc($tab) ?>">
     <select name="season" onchange="this.form.submit()">
@@ -336,8 +336,7 @@ admin_nav('/admin/launch-season');
     </select>
     <?= $badge($season) ?>
   </form>
-  <div class="ls-subnav">
-    <?php foreach ($tabs as $t => $label): ?><a href="<?= $esc($url($t)) ?>"<?= $t === $tab ? ' class="active"' : '' ?>><?= $label ?></a><?php endforeach; ?>
+  <div style="margin:12px 0 18px"><?= ui_tabs(array_map(fn ($t, $label) => [$label, $url($t), null, $t === $tab], array_keys($tabs), $tabs), 'Season section') ?>
   </div>
 
 <?php if ($tab === 'seasons'): ?>

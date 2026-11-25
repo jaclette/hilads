@@ -61,13 +61,10 @@ admin_head('App versions');
 admin_nav('/admin/app-versions');
 ?>
 <div class="admin-main">
-    <h1 class="page-title">App versions</h1>
-    <p style="color:var(--faint);margin:-8px 0 16px;font-size:13px;max-width:640px">
-        Apps from 1.8.0 read these at launch and when they come back to the foreground: below the <strong>minimum</strong> a blocking "Update required" screen with a button to the store, below the <strong>latest</strong> a "Update available" banner they can close. Only set a minimum once that version is live on the store.
-    </p>
+    <?= ui_page_head('System', 'App versions & switches', 'Apps from 1.8.0 read these when they open: below the <b>minimum</b> they show a blocking "Update required" screen, below the <b>latest</b> an "Update available" banner they can close. Only raise the minimum once that version is live in the stores. Other switches: <a href="/admin/scoring">scoring</a>, <a href="/admin/hi-questions">Hi questions</a>, <a href="/admin/daily/events">seasonal events</a>.') ?>
 
     <?= flash_html() ?>
-    <?php if ($err): ?><p class="badge badge-deleted" style="display:inline-block;margin-bottom:12px"><?= $h($err) ?></p><?php endif; ?>
+    <?php if ($err): ?><div class="flash flash-error"><?= $h($err) ?></div><?php endif; ?>
 
     <form method="POST" action="/admin/app-versions" class="form-card" style="max-width:640px">
         <?= csrf_input() ?>

@@ -392,6 +392,15 @@ if ($method === 'POST') {
     }
 }
 
+// Audit: what was sent / scheduled / cancelled, by whom (the page answers in place, so it logs itself).
+if ($method === 'POST' && !empty($flash) && empty($flashError) && in_array($action ?? '', ['send', 'test', 'cancel_schedule'], true)) {
+    AdminAuth::log('push.' . $action, 'push', isset($broadcastId) ? (string) $broadcastId : null, null, array_filter([
+        'title' => $title ?? null, 'body' => $body ?? null, 'audience' => $audienceType ?? null,
+        'filter' => $audienceFilter ?? null, 'deep_link' => $deepLink ?? null,
+        'schedule_id' => $action === 'cancel_schedule' ? (int) ($_POST['schedule_id'] ?? 0) : null, 'result' => $flash,
+    ], fn ($v) => $v !== null && $v !== '' && $v !== []));
+}
+
 // ── Render ───────────────────────────────────────────────────────────────────
 
 $cities       = admin_push_cities();
@@ -403,7 +412,7 @@ admin_nav('/admin/push');
 
 ?>
 <div class="admin-main">
-    <h1 class="page-title">Push Notifications</h1>
+    <?= ui_page_head('Growth', 'Push', 'Send a notification to everyone, a city, old app versions or one player. Try it on your own phone first; sends are limited and kept in the history below.') ?>
 
     <?php if ($flash): ?>
         <div class="flash flash-success"><?= htmlspecialchars($flash, ENT_QUOTES) ?></div>

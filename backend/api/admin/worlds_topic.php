@@ -117,7 +117,7 @@ admin_nav('/admin/worlds');
 worlds_styles();
 ?>
 <div class="admin-main">
-    <h1 class="page-title">🌍 <?= wh($topic['title']) ?></h1>
+    <?= ui_page_head('Growth › Worlds studio', (string) $topic['title']) ?>
     <?php worlds_subnav(''); ?>
     <p class="worlds-muted" style="margin-bottom:14px">
         <a href="/admin/worlds?month=<?= substr($topic['date'], 0, 7) ?>">← <?= wh((new DateTimeImmutable($topic['date']))->format('F Y')) ?></a> ·

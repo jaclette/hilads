@@ -264,6 +264,8 @@ if ($method === 'POST') {
                         $detail .= ', ' . $bccCount . ' BCC';
                     }
                     $resendId = $decoded['id'] ?? null;
+                    AdminAuth::log($isTest ? 'email.test' : 'email.send', 'email', $resendId, null,
+                        ['to' => $toCount, 'bcc' => $bccCount, 'subject' => $subject, 'from' => $from]);
                     $success  = $label . ' sent successfully (' . $detail . ').'
                         . ($resendId ? ' Resend ID: ' . htmlspecialchars($resendId, ENT_QUOTES) : '');
                     // Surface skipped addresses as a non-blocking warning
@@ -302,7 +304,7 @@ admin_head('Send Email');
 admin_nav('/admin/email');
 
 echo '<div class="admin-main">';
-echo '<h1 class="page-title">Send Email</h1>';
+echo ui_page_head('Growth', 'Email', 'Send an email through Resend: to a few addresses, or to every registered player (once a day at most). Send yourself a test first.');
 
 if ($success) {
     echo '<div class="flash flash-success">' . $success . '</div>';

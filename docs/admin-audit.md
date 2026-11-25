@@ -223,3 +223,8 @@ Done (phases 0 + 1, plus accounts pulled forward from phase 2), local, not deplo
 - Screenshots: `docs/admin-audit/phase1/`.
 
 Next: phase 2 rest (audit lines in every remaining handler), phase 3 dashboard, phase 4 pages, phase 5 guide.
+
+Phase 3 (dashboard) pushed f27384c3f. Phase 4 by group: Moderation 5a3b1afa1, Daily (+ audit safety net, rest of
+phase 2) 80dc0106f, Community cc2a0cce2, Game / Growth / System (this round). Every page now has the shared header and plain
+names (Hi plan / Hi now as in the apps); Archive pages (Old challenges, Campaigns, Arrivals) keep their old look behind the
+read-only banner. Next: phase 5 (admin-guide how-tos, final label pass).

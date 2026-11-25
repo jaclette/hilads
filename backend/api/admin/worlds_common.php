@@ -12,16 +12,16 @@ function wh(?string $s): string
 
 function worlds_subnav(string $current): void
 {
-    $links = ['/admin/worlds' => '📅 Calendar', '/admin/worlds/settings' => '⚙️ Settings'];
-    echo '<div class="worlds-subnav">';
-    foreach ($links as $href => $label) {
-        echo '<a href="' . $href . '"' . ($current === $href ? ' class="active"' : '') . '>' . $label . '</a>';
-    }
-    echo '</div>';
+    echo '<div style="margin-bottom:18px">' . ui_tabs([
+        ['Calendar', '/admin/worlds', null, $current === '/admin/worlds'],
+        ['Settings', '/admin/worlds/settings', null, $current === '/admin/worlds/settings'],
+    ], 'Worlds studio') . '</div>';
 }
 
 function worlds_status_badge(string $status): string
 {
+    $classes = ['planned' => 'b-mute', 'generated' => 'b-info', 'ready' => 'b-warn', 'published' => 'b-ok'];
+    return '<span class="badge ' . ($classes[$status] ?? 'b-mute') . '">' . wh(ucfirst($status)) . '</span>';
     $colors = ['planned' => ['#252525', '#aaa'], 'generated' => ['rgba(96,165,250,0.12)', '#60a5fa'],
                'ready' => ['rgba(251,191,36,0.12)', '#fbbf24'], 'published' => ['rgba(34,197,94,0.12)', '#4ade80']];
     [$bg, $fg] = $colors[$status] ?? $colors['planned'];

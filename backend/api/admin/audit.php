@@ -48,7 +48,7 @@ $kindLabel = fn (string $k): string => [
     'daily_proof' => 'Daily photos', 'city' => 'Cities', 'place' => 'Places', 'places' => 'Places', 'scores' => 'Scores',
     'ranks' => 'Ranks', 'thumbs' => 'Thumbnails', 'email' => 'Email', 'app_settings' => 'App versions & switches',
     'daily_proposal' => 'Proposals', 'daily_special' => 'Special days', 'photo' => 'Photos', 'report' => 'Reports',
-    'message' => 'Messages', 'comment' => 'Photo comments', 'ban' => 'Bans', 'page' => 'Other changes',
+    'message' => 'Messages', 'comment' => 'Photo comments', 'ban' => 'Bans', 'page' => 'Other changes', 'push' => 'Push', 'user' => 'Players',
 ][$k] ?? ucfirst(str_replace('_', ' ', $k));
 $actionLabel = fn (string $a): string => [
     'admin.sign_in' => 'Signed in', 'admin.sign_out' => 'Signed out', 'admin_user.create' => 'Added an admin',
@@ -63,7 +63,9 @@ $actionLabel = fn (string $a): string => [
     'photo.seen_all' => 'Marked every photo checked', 'report.status' => 'Changed a report\'s status', 'ban.guest' => 'Banned a guest from a report',
     'ban.add' => 'Added a ban', 'ban.lift' => 'Lifted a ban', 'message.keep' => 'Kept a reported message', 'message.remove' => 'Removed a reported message',
     'message.delete' => 'Deleted a message', 'message.erase' => 'Erased a message for good', 'comment.keep' => 'Kept a reported comment',
-    'comment.remove' => 'Removed a reported comment',
+    'comment.remove' => 'Removed a reported comment', 'push.send' => 'Sent a push', 'push.test' => 'Sent a test push to themselves',
+    'push.cancel_schedule' => 'Cancelled a scheduled push', 'user.delete' => 'Deleted a player\'s account', 'user.host_add' => 'Made a player host',
+    'user.host_remove' => 'Removed a host role',
 ][$a] ?? ucfirst(str_replace(['_', '.'], [' ', ' › '], $a));
 
 /** What changed between before and after: [key, before, after] for the keys that differ. */

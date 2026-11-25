@@ -70,8 +70,8 @@ admin_nav('/admin/scoring');
   @media (max-width: 900px) { .sc-grid { grid-template-columns: 1fr; } }
 </style>
 <main class="admin-main">
+  <?= ui_page_head('Game', 'Scoring', 'How points are given, what the two fair-play switches would change, and the players to check by hand. <a href="#fair-play">Fair play</a>.') ?>
   <?= flash_html() ?>
-  <h1 class="page-title">Scoring v2 — simulation and fair play</h1>
   <?php
     $since    = Scoring::since();
     $minNow   = (int) Scoring::switch('podium_min_photos');

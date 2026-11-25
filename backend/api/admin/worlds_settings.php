@@ -42,7 +42,7 @@ admin_nav('/admin/worlds');
 worlds_styles();
 ?>
 <div class="admin-main">
-    <h1 class="page-title">🌍 Different Worlds · Settings</h1>
+    <?= ui_page_head('Growth › Worlds studio', 'Settings', 'Prompts, style and countries used to prepare and draw the packages.') ?>
     <?php worlds_subnav('/admin/worlds/settings'); ?>
     <?= flash_html() ?>
     <form method="POST" action="/admin/worlds/settings" class="form-card" style="max-width:900px">

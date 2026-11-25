@@ -76,7 +76,7 @@ admin_nav('/admin/worlds');
 worlds_styles();
 ?>
 <div class="admin-main">
-    <h1 class="page-title">🌍 Different Worlds</h1>
+    <?= ui_page_head('Growth', 'Worlds studio', 'The Different Worlds video series: plan topics by month, import the packages prepared in Claude Code, render and publish.') ?>
     <?php worlds_subnav('/admin/worlds'); ?>
     <?= flash_html() ?>
 
