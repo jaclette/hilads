@@ -93,9 +93,12 @@ admin_nav('/admin');
         <div class="attention" style="border-top:1px solid var(--line)">
             <a href="/admin/photos" class="<?= $att['photos'] > 0 ? 'hot' : 'calm' ?>"><span class="big num"><?= $n($att['photos']) ?></span>
                 <span class="what"><b>Photos to check</b><?= $att['photos'] > 0 ? 'oldest ' . $e($ago($att['photosOldest'])) . ' ago' : 'all checked' ?></span></a>
-            <a href="<?= $att['reports'] === 0 && $att['commentReports'] > 0 ? '/admin/daily/today' : '/admin/reports' ?>" class="<?= $att['reports'] + $att['commentReports'] > 0 ? 'hot' : 'calm' ?>">
-                <span class="big num"><?= $n($att['reports'] + $att['commentReports']) ?></span>
-                <span class="what"><b>Open reports</b><?= $att['commentReports'] > 0 ? $n($att['reports']) . ' players · ' . $n($att['commentReports']) . ' comments' : ($att['reports'] > 0 ? 'on players' : 'none open') ?></span></a>
+            <?php $openReports = $att['reports'] + $att['messageReports'] + $att['commentReports'];
+                  $parts = array_filter([$att['reports'] ? $n($att['reports']) . ' on players' : '', $att['messageReports'] ? $n($att['messageReports']) . ' messages' : '',
+                                         $att['commentReports'] ? $n($att['commentReports']) . ' comments' : '']); ?>
+            <a href="/admin/reports<?= $att['reports'] === 0 ? ($att['messageReports'] > 0 ? '?kind=messages' : ($att['commentReports'] > 0 ? '?kind=comments' : '')) : '' ?>" class="<?= $openReports > 0 ? 'hot' : 'calm' ?>">
+                <span class="big num"><?= $n($openReports) ?></span>
+                <span class="what"><b>Open reports</b><?= $parts ? ui_e(implode(' · ', $parts)) : 'none open' ?></span></a>
             <a href="/admin/daily/proposals" class="<?= $att['proposals'] > 0 ? 'hot' : 'calm' ?>"><span class="big num"><?= $n($att['proposals']) ?></span>
                 <span class="what"><b>Proposals to review</b>challenges and Local twists</span></a>
             <a href="/admin/cities?view=auto" class="<?= $att['cities'] > 0 ? 'hot' : 'calm' ?>"><span class="big num"><?= $n($att['cities']) ?></span>

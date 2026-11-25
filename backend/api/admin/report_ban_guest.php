@@ -22,7 +22,8 @@ if (empty($guestId)) {
 }
 
 try {
-    $result = BanRepository::banGuest($guestId, 'admin: report #' . $reportId, 'admin', 7);
+    $result = BanRepository::banGuest($guestId, 'admin: report #' . $reportId, admin_actor(), 7);
+    AdminAuth::log('ban.guest', 'report', (string) $reportId, null, ['guest' => $guestId, 'days' => $result['days'], 'ips' => $result['ips']]);
     // Resolve the report in the same click so the queue stays clean.
     $pdo->prepare("UPDATE user_reports SET status = 'reviewed' WHERE id = ? AND status = 'open'")
         ->execute([$reportId]);

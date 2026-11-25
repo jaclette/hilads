@@ -47,7 +47,8 @@ $kindLabel = fn (string $k): string => [
     'admin' => 'Sign-in', 'admin_user' => 'Admin accounts', 'daily_challenge' => 'Daily challenges', 'daily_twist' => 'Local twists',
     'daily_proof' => 'Daily photos', 'city' => 'Cities', 'place' => 'Places', 'places' => 'Places', 'scores' => 'Scores',
     'ranks' => 'Ranks', 'thumbs' => 'Thumbnails', 'email' => 'Email', 'app_settings' => 'App versions & switches',
-    'daily_proposal' => 'Proposals', 'daily_special' => 'Special days',
+    'daily_proposal' => 'Proposals', 'daily_special' => 'Special days', 'photo' => 'Photos', 'report' => 'Reports',
+    'message' => 'Messages', 'comment' => 'Photo comments', 'ban' => 'Bans',
 ][$k] ?? ucfirst(str_replace('_', ' ', $k));
 $actionLabel = fn (string $a): string => [
     'admin.sign_in' => 'Signed in', 'admin.sign_out' => 'Signed out', 'admin_user.create' => 'Added an admin',
@@ -58,6 +59,11 @@ $actionLabel = fn (string $a): string => [
     'admin_user.recover' => 'Recovered access (Render shell)', 'scores.reset_all' => 'Reset all scores', 'ranks.recalc_all' => 'Recalculated every rank',
     'thumbs.backfill' => 'Made profile thumbnails', 'email.send_all' => 'Emailed every registered user', 'app_settings.save' => 'Saved app versions & switches',
     'city.merge' => 'Merged cities', 'city.update' => 'Edited a city',
+    'photo.remove' => 'Removed a photo', 'photo.keep' => 'Kept a reported photo', 'photo.seen' => 'Marked photos checked',
+    'photo.seen_all' => 'Marked every photo checked', 'report.status' => 'Changed a report\'s status', 'ban.guest' => 'Banned a guest from a report',
+    'ban.add' => 'Added a ban', 'ban.lift' => 'Lifted a ban', 'message.keep' => 'Kept a reported message', 'message.remove' => 'Removed a reported message',
+    'message.delete' => 'Deleted a message', 'message.erase' => 'Erased a message for good', 'comment.keep' => 'Kept a reported comment',
+    'comment.remove' => 'Removed a reported comment',
 ][$a] ?? ucfirst(str_replace(['_', '.'], [' ', ' › '], $a));
 
 /** What changed between before and after: [key, before, after] for the keys that differ. */

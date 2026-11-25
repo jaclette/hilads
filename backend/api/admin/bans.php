@@ -2,6 +2,10 @@
 
 declare(strict_types=1);
 
+// Moderation › Bans: who can't post right now. Guests are blocked by guest id and/or IP address
+// (checked on every message and photo); registered players are handled in Users (delete the
+// account). Adding and lifting a ban are in the audit log (a lifted ban's row is deleted).
+
 admin_require_login();
 
 $bans = [];
@@ -9,87 +13,96 @@ $err  = null;
 try {
     $bans = BanRepository::listActive(500);
 } catch (\Throwable $e) {
-    $err = 'Could not load bans (migration run?): ' . $e->getMessage();
+    $err = 'Could not load the bans: ' . $e->getMessage();
 }
+$canEdit = admin_can_edit('moderation');
+$help = '<h3>What a ban does</h3><p>A banned guest or IP address can still open the app but can\'t send messages or photos. It is checked on every send.</p>'
+      . '<h3>Which kind</h3><ul><li><b>Guest + their IPs</b> (usual): the guest id and every IP address their recent messages came from.</li>'
+      . '<li><b>Guest only</b>: just that guest id; a new install gets a new one.</li>'
+      . '<li><b>IP address</b>: everyone behind that address (a café or office Wi-Fi too), so prefer short bans.</li></ul>'
+      . '<h3>Registered players</h3><p>Open them in Users: delete the account if they break the rules.</p>'
+      . '<h3>From a report</h3><p>Reports › Players has a "Ban 7 days" button for reported guests.</p>';
 
 admin_head('Bans');
 admin_nav('/admin/bans');
+echo '<div class="admin-main">';
+echo ui_page_head('Moderation', 'Bans', 'Guests and IP addresses that can\'t post right now. Registered players are handled in <a href="/admin/users">Users</a>.',
+    ui_help('How bans work', $help));
+echo flash_html();
+if ($err) echo '<div class="flash flash-error">' . ui_e($err) . '</div>';
 ?>
-<div class="admin-main">
-    <h1 class="page-title">Bans <span style="color:var(--faint);font-size:14px;font-weight:400">block by IP / guest</span></h1>
-    <p style="color:var(--faint);margin:-8px 0 16px;font-size:13px">Block a returning anonymous guest by IP or guest id. A ban stops new posts (checked on every send). Registered users are blocked via Users → Delete.</p>
+<div class="grid cols-2-1" style="align-items:start">
+<div class="card">
+    <div class="card-head"><h2>Active bans</h2><span class="hint"><?= count($bans) ?></span></div>
+    <?php if ($bans === []): ?>
+        <?= ui_empty('Nobody is banned', 'Bans you add appear here until they expire.') ?>
+    <?php else: ?>
+    <div class="table-wrapper"><table class="data" data-sortable>
+        <thead><tr><th data-sort>Who</th><th>Why</th><th data-sort>By</th><th data-sort>Since</th><th data-sort>Until</th><th></th></tr></thead>
+        <tbody>
+        <?php foreach ($bans as $b):
+            $isIp = !empty($b['ip_address']);
+            $expires = $b['expires_at'] ? strtotime((string) $b['expires_at']) : 0; ?>
+            <tr>
+                <td><span class="badge <?= $isIp ? 'b-bad' : 'b-warn' ?>"><?= $isIp ? 'IP address' : 'Guest' ?></span>
+                    <div class="mono" style="margin-top:3px"><?= ui_e($isIp ? $b['ip_address'] : $b['guest_id']) ?></div></td>
+                <td style="max-width:260px"><?= ui_e($b['reason'] ?? '') ?: '<span class="faint">–</span>' ?></td>
+                <td class="muted"><?= ui_e($b['created_by'] ?? '–') ?></td>
+                <td title="<?= ui_e(ui_when($b['created_at'])) ?>" data-v="<?= ui_e($b['created_at']) ?>" style="white-space:nowrap"><?= ui_e(ui_ago($b['created_at'])) ?></td>
+                <td data-v="<?= $expires ?: '9999999999' ?>" style="white-space:nowrap"><?= $expires ? ui_e(date('j M, H:i', $expires)) : '<span class="badge b-bad">Permanent</span>' ?></td>
+                <td><?php if ($canEdit): ?>
+                    <form method="POST" action="/admin/bans/<?= (int) $b['id'] ?>/unban" style="margin:0"
+                          data-confirm="Lift this ban?" data-confirm-text="They can post again at once." data-confirm-button="Lift ban" data-danger="0">
+                        <?= csrf_input() ?><button type="submit" class="btn btn-sm">Lift</button>
+                    </form>
+                <?php endif; ?></td>
+            </tr>
+        <?php endforeach; ?>
+        </tbody>
+    </table></div>
+    <?php endif; ?>
+</div>
 
-    <?= flash_html() ?>
-    <?php if ($err): ?><p class="badge badge-deleted" style="display:inline-block;margin-bottom:12px"><?= htmlspecialchars($err, ENT_QUOTES) ?></p><?php endif; ?>
-
-    <!-- Add ban -->
-    <form method="POST" action="/admin/bans/add" class="toolbar" style="flex-wrap:wrap;gap:8px;align-items:center">
-        <?= csrf_input() ?>
-        <select name="target" style="background:var(--surface);border:1px solid var(--line);color:var(--text);border-radius:6px;padding:8px;font-size:13px">
-            <option value="ip">IP address</option>
-            <option value="guest">Guest id</option>
-            <option value="guest_fanout">Guest id + their IPs</option>
-        </select>
-        <input type="text" name="value" placeholder="IP or guest id…" required
-               style="min-width:240px;background:var(--surface);border:1px solid var(--line);color:var(--text);border-radius:6px;padding:8px;font-size:13px">
-        <input type="text" name="reason" placeholder="Reason (optional)"
-               style="min-width:180px;background:var(--surface);border:1px solid var(--line);color:var(--text);border-radius:6px;padding:8px;font-size:13px">
-        <select name="days" style="background:var(--surface);border:1px solid var(--line);color:var(--text);border-radius:6px;padding:8px;font-size:13px">
-            <option value="0">Permanent</option>
-            <option value="7" selected>7 days</option>
-            <option value="30">30 days</option>
-            <option value="90">90 days</option>
-        </select>
-        <button type="submit" class="btn btn-danger btn-sm">Block</button>
-    </form>
-
-    <div class="table-wrapper">
-        <table>
-            <thead>
-                <tr>
-                    <th style="width:90px">Type</th>
-                    <th>Target</th>
-                    <th>Reason</th>
-                    <th style="width:80px">By</th>
-                    <th style="width:150px">Created</th>
-                    <th style="width:150px">Expires</th>
-                    <th style="width:100px">Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-            <?php if (empty($bans)): ?>
-                <tr><td colspan="7" class="no-results">No active bans.</td></tr>
-            <?php else: foreach ($bans as $b):
-                $isIp     = !empty($b['ip_address']);
-                $target   = $isIp ? $b['ip_address'] : $b['guest_id'];
-                $created  = $b['created_at'] ? strtotime($b['created_at']) : 0;
-                $expires  = $b['expires_at'] ? strtotime($b['expires_at']) : 0;
-                ?>
-                <tr>
-                    <td>
-                        <?php if ($isIp): ?>
-                            <span class="badge" style="background:#ef444422;color:var(--bad);border:1px solid #ef444455">IP</span>
-                        <?php else: ?>
-                            <span class="badge badge-guest">Guest</span>
-                        <?php endif; ?>
-                    </td>
-                    <td class="td-mono" style="color:var(--text)"><?= htmlspecialchars((string) $target, ENT_QUOTES) ?></td>
-                    <td style="color:var(--faint)"><?= htmlspecialchars($b['reason'] ?? '-', ENT_QUOTES) ?></td>
-                    <td style="color:var(--faint)"><?= htmlspecialchars($b['created_by'] ?? '-', ENT_QUOTES) ?></td>
-                    <td style="color:var(--faint);white-space:nowrap"><?= $created ? date('M d, H:i', $created) : '-' ?></td>
-                    <td style="color:var(--faint);white-space:nowrap"><?= $expires ? date('M d, H:i', $expires) : '<span style="color:var(--bad)">permanent</span>' ?></td>
-                    <td>
-                        <form method="POST" action="/admin/bans/<?= (int) $b['id'] ?>/unban"
-                              onsubmit="return confirm('Lift this ban?')">
-                            <?= csrf_input() ?>
-                            <button type="submit" class="btn btn-secondary btn-sm">Unban</button>
-                        </form>
-                    </td>
-                </tr>
-            <?php endforeach; endif; ?>
-            </tbody>
-        </table>
+<?php if ($canEdit): ?>
+<div class="card">
+    <div class="section">
+        <h2>Ban someone</h2>
+        <p class="hint">Find the guest id or IP address on a message (Messages) or a report.</p>
+        <form method="POST" action="/admin/bans/add" data-confirm="Add this ban?" data-confirm-text="They won't be able to post until it ends." data-confirm-button="Ban">
+            <?= csrf_input() ?>
+            <div class="field">
+                <label for="b-target">What to ban</label>
+                <select id="b-target" name="target">
+                    <option value="guest_fanout">Guest + the IPs they posted from</option>
+                    <option value="guest">Guest only</option>
+                    <option value="ip">IP address</option>
+                </select>
+            </div>
+            <div class="field">
+                <label for="b-value">Guest id or IP address</label>
+                <input id="b-value" name="value" required autocomplete="off" spellcheck="false">
+            </div>
+            <div class="field">
+                <label for="b-days">For</label>
+                <select id="b-days" name="days">
+                    <option value="1">1 day</option>
+                    <option value="7" selected>7 days</option>
+                    <option value="30">30 days</option>
+                    <option value="90">90 days</option>
+                    <option value="0">Permanent</option>
+                </select>
+            </div>
+            <div class="field">
+                <label for="b-reason">Reason</label>
+                <input id="b-reason" name="reason" placeholder="Spam in Saigon chat">
+                <div class="help">Shown in this list and the audit log, never to the person.</div>
+            </div>
+            <button type="submit" class="btn btn-danger">Ban</button>
+        </form>
     </div>
+</div>
+<?php endif; ?>
+</div>
 </div>
 <?php
 admin_foot();

@@ -110,7 +110,10 @@ function admin_badges(): array
             'proposals' => $n(fn () => class_exists('DailyProposals') ? DailyProposals::pendingCount() : 0),
             'photos'    => $n(fn () => class_exists('PhotoWatch') ? PhotoWatch::unseenCount() : 0),
             'cities'    => $n(fn () => CityAdmin::newAutoCount()),
-            'reports'   => $n(fn () => Database::pdo()->query("SELECT count(*) FROM user_reports WHERE status = 'open'")->fetchColumn()),
+            // Open reports of every kind on the Reports page: players, chat messages (text), photo comments.
+            'reports'   => $n(fn () => Database::pdo()->query("SELECT count(*) FROM user_reports WHERE status = 'open'")->fetchColumn())
+                         + $n(fn () => Database::pdo()->query("SELECT count(DISTINCT r.message_id) FROM message_reports r JOIN messages m ON m.id = r.message_id AND m.type = 'text' WHERE r.status = 'open'")->fetchColumn())
+                         + $n(fn () => Database::pdo()->query("SELECT count(DISTINCT r.comment_id) FROM photo_comment_reports r JOIN photo_comments c ON c.id = r.comment_id AND c.deleted_at IS NULL WHERE r.status = 'open'")->fetchColumn()),
         ];
     }) ?? [];
     return $b;

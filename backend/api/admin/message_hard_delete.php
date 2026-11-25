@@ -9,7 +9,7 @@ csrf_verify();
 // $messageId is set by the boot.php route match.
 $pdo = Database::pdo();
 
-$stmt = $pdo->prepare("SELECT channel_id FROM messages WHERE id = :id");
+$stmt = $pdo->prepare("SELECT channel_id, content, nickname, image_url FROM messages WHERE id = :id");
 $stmt->execute([':id' => $messageId]);
 $row = $stmt->fetch();
 
@@ -52,8 +52,10 @@ try {
     admin_redirect($back);
 }
 
+AdminAuth::log('message.erase', 'message', (string) $messageId,
+    ['channel' => $row['channel_id'], 'author' => $row['nickname'], 'text' => mb_substr((string) $row['content'], 0, 200)], ['erased' => true, 'reactions' => $reactionsRemoved]);
 error_log('[admin] message HARD-deleted: ' . $messageId . ' in ' . ($row['channel_id'] ?? '?')
         . ' (' . $reactionsRemoved . ' reactions)');
-flash_set('success', 'Message permanently deleted'
+flash_set('success', 'Message erased'
     . ($reactionsRemoved > 0 ? " ({$reactionsRemoved} reaction" . ($reactionsRemoved === 1 ? '' : 's') . " removed)" : '') . '.');
 admin_redirect($back);

@@ -16,7 +16,7 @@ declare(strict_types=1);
 final class AdminDashboard
 {
     private const TZ = 'Asia/Ho_Chi_Minh';
-    private const REAL_PHOTO = "NOT p.is_seed AND NOT p.is_demo AND NOT p.is_suggestion AND p.moderation_status <> 'rejected'";
+    private const REAL_PHOTO = "NOT p.is_seed AND NOT p.is_demo AND NOT p.is_suggestion AND p.moderation_status NOT IN ('rejected', 'removed')";
     private const REAL_USER  = "NOT coalesce(u.is_fake, false) AND NOT coalesce(u.is_demo, false) AND NOT coalesce(u.is_review, false)";
 
     /** Run a block, turning a failure into an error the page can show. */
@@ -216,7 +216,13 @@ final class AdminDashboard
                 $commentReports = (int) $pdo->query("SELECT count(DISTINCT r.comment_id) FROM photo_comment_reports r JOIN photo_comments c ON c.id = r.comment_id
                                                      WHERE r.status = 'open' AND c.deleted_at IS NULL AND c.hidden_at IS NULL")->fetchColumn();
             } catch (\Throwable) { /* older schema */ }
+            $messageReports = 0;
+            try {
+                $messageReports = (int) $pdo->query("SELECT count(DISTINCT r.message_id) FROM message_reports r JOIN messages m ON m.id = r.message_id AND m.type = 'text'
+                                                     WHERE r.status = 'open'")->fetchColumn();
+            } catch (\Throwable) { /* older schema */ }
             return [
+                'messageReports' => $messageReports,
                 'photos'    => PhotoWatch::unseenCount(),
                 'photosOldest' => $oldest ?: null,
                 'reports'   => $reports,

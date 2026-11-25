@@ -39,6 +39,7 @@ require_once __DIR__ . '/auth.php';
 require_once __DIR__ . '/csrf.php';
 require_once __DIR__ . '/flash.php';
 require_once __DIR__ . '/layout.php';
+require_once __DIR__ . '/ui.php';
 
 // Ops timezone: all admin timestamps (When / Created / Last) and the per-day
 // activity buckets render in Saigon time, not UTC.

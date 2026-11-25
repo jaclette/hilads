@@ -21,6 +21,7 @@ $stmt->execute([$newStatus, $reportId]);
 if ($stmt->rowCount() === 0) {
     flash_set('error', 'Report not found.');
 } else {
+    AdminAuth::log('report.status', 'report', (string) $reportId, null, ['status' => $newStatus]);
     flash_set('success', 'Report marked as ' . $newStatus . '.');
 }
 

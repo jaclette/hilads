@@ -18,12 +18,15 @@ $TYPE_LABELS = [
     'challenge' => 'Challenge',
 ];
 $TYPE_BADGE = [
-    'city'      => '#3b82f6',
-    'world'     => '#22c55e',
-    'event'     => '#f59e0b',
-    'topic'     => '#a855f7',
-    'challenge' => '#ef4444',
+    'city'      => 'b-info',
+    'world'     => 'b-ok',
+    'event'     => 'b-warn',
+    'topic'     => 'b-violet',
+    'challenge' => 'b-mute',
 ];
+$TYPE_LABELS['event'] = 'Plan';
+$TYPE_LABELS['topic'] = 'Topic';
+$TYPE_LABELS['challenge'] = 'Old challenge';
 
 $search  = trim($_GET['q'] ?? '');
 $typeF   = $_GET['type'] ?? 'all';
@@ -71,7 +74,7 @@ admin_nav('/admin/messages');
     }
 
     $typeLabel = $TYPE_LABELS[$ch['type']] ?? $ch['type'];
-    $badgeCol  = $TYPE_BADGE[$ch['type']] ?? '#666';
+    $badgeCol  = $TYPE_BADGE[$ch['type']] ?? 'b-mute';
 
     // Date scoping applied only when a range was explicitly passed (opened from
     // the city-activity view). Search → channel keeps the full history.
@@ -114,28 +117,20 @@ admin_nav('/admin/messages');
         ? '/admin/messages?from=' . urlencode($from) . '&to=' . urlencode($to) . '&view=' . urlencode($view)
         : '/admin/messages?q=' . urlencode($search) . '&type=' . urlencode($typeF);
     ?>
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
-        <h1 class="page-title" style="margin-bottom:0">
-            <span class="badge" style="background:<?= $badgeCol ?>22;color:<?= $badgeCol ?>;border:1px solid <?= $badgeCol ?>55"><?= htmlspecialchars($typeLabel, ENT_QUOTES) ?></span>
-            <?= htmlspecialchars($ch['name'] ?? '(untitled)', ENT_QUOTES) ?>
-            <span style="color:var(--faint);font-size:14px;font-weight:400">
-                <?= number_format($total) ?> messages<?php if ($rangeExplicit): ?> · <?= htmlspecialchars($rangeLabel, ENT_QUOTES) ?><?php endif; ?>
-            </span>
-        </h1>
-        <a href="<?= $backHref ?>" class="btn btn-secondary btn-sm">← Back</a>
-    </div>
-    <div class="td-mono" style="color:var(--faint);margin-bottom:16px;font-size:11px"><?= htmlspecialchars($ch['id'], ENT_QUOTES) ?></div>
-
+    <?= ui_page_head('Moderation › Messages', (string) ($ch['name'] ?? '(untitled)'),
+        '<span class="badge ' . $badgeCol . '">' . ui_e($typeLabel) . '</span> ' . number_format($total) . ' messages'
+        . ($rangeExplicit ? ' · ' . ui_e($rangeLabel) : '') . ' · <span class="mono faint">' . ui_e($ch['id']) . '</span>',
+        '<a href="' . ui_e($backHref) . '" class="btn">Back</a>') ?>
     <?= flash_html() ?>
 
     <div class="table-wrapper">
         <table>
             <thead>
                 <tr>
-                    <th style="width:140px">When</th>
-                    <th style="width:200px">Sender</th>
+                    <th style="width:120px">When</th>
+                    <th style="width:200px">From</th>
                     <th>Message</th>
-                    <th style="width:180px">Actions</th>
+                    <th style="width:220px"></th>
                 </tr>
             </thead>
             <tbody>
@@ -145,25 +140,25 @@ admin_nav('/admin/messages');
                 $isDeleted = !empty($msg['deleted_at']);
                 $who = $msg['nickname'] ?: '(no name)';
                 if ($msg['user_id'] !== null) {
-                    $idBadge = '<span class="badge badge-registered" title="' . htmlspecialchars($msg['user_id'], ENT_QUOTES) . '">Reg.</span>';
+                    $idBadge = '<span class="badge b-info" title="' . htmlspecialchars($msg['user_id'], ENT_QUOTES) . '">Player</span>';
                 } elseif ($msg['guest_id'] !== null) {
-                    $idBadge = '<span class="badge badge-guest" title="' . htmlspecialchars($msg['guest_id'], ENT_QUOTES) . '">Guest</span>';
+                    $idBadge = '<span class="badge b-warn" title="' . htmlspecialchars($msg['guest_id'], ENT_QUOTES) . '">Guest</span>';
                 } else {
                     $idBadge = '';
                 }
                 ?>
                 <tr<?= $isDeleted ? ' style="opacity:0.45"' : '' ?>>
-                    <td style="color:var(--faint);white-space:nowrap"><?= date('M d, H:i', (int) $msg['created_ts']) ?></td>
+                    <td style="color:var(--muted);white-space:nowrap" title="<?= ui_e(ui_when((int) $msg['created_ts'])) ?>"><?= ui_e(ui_ago((int) $msg['created_ts'])) ?></td>
                     <td class="td-clip"><?= $idBadge ?> <span style="color:var(--muted)"><?= htmlspecialchars($who, ENT_QUOTES) ?></span></td>
                     <td>
                         <?php if ($isDeleted): ?>
-                            <span style="color:var(--faint);font-style:italic">— deleted —</span>
+                            <span class="faint" style="font-style:italic">Deleted</span>
                         <?php else: ?>
                             <?php if (!empty($msg['content'])): ?>
                                 <span style="color:var(--text);white-space:pre-wrap"><?= htmlspecialchars($msg['content'], ENT_QUOTES) ?></span>
                             <?php endif; ?>
                             <?php if (!empty($msg['image_url'])): ?>
-                                <a href="<?= htmlspecialchars($msg['image_url'], ENT_QUOTES) ?>" target="_blank" rel="noopener" style="color:var(--info);margin-left:6px">🖼 image</a>
+                                <a href="<?= htmlspecialchars($msg['image_url'], ENT_QUOTES) ?>" target="_blank" rel="noopener" style="margin-left:6px">Photo</a>
                             <?php endif; ?>
                         <?php endif; ?>
                     </td>
@@ -183,15 +178,15 @@ admin_nav('/admin/messages');
                         <div class="td-actions">
                             <?php if (!$isDeleted): ?>
                                 <form method="POST" action="/admin/messages/<?= urlencode($msg['id']) ?>/delete"
-                                      onsubmit="return confirm('Soft-delete this message? It becomes a tombstone (the row is kept for context).')">
+                                      data-confirm="Delete this message?" data-confirm-text="The chat shows it as deleted for everyone. Replies to it stay readable." data-confirm-button="Delete">
                                     <?= $ctx ?>
-                                    <button type="submit" class="btn btn-secondary btn-sm">Delete</button>
+                                    <button type="submit" class="btn btn-sm">Delete</button>
                                 </form>
                             <?php endif; ?>
                             <form method="POST" action="/admin/messages/<?= urlencode($msg['id']) ?>/hard-delete"
-                                  onsubmit="return confirm('PERMANENTLY delete this message and any reactions on it? This removes the row entirely and cannot be undone.')">
+                                  data-confirm="Erase this message for good?" data-confirm-text="The message and its reactions are removed from the database, with no trace in the chat. Can't be undone. Use Delete unless you must erase it (for example personal data)." data-confirm-button="Erase for good">
                                 <?= $ctx ?>
-                                <button type="submit" class="btn btn-danger btn-sm">Hard delete</button>
+                                <button type="submit" class="btn btn-danger btn-sm" title="Remove it from the database">Erase</button>
                             </form>
                         </div>
                     </td>
@@ -240,8 +235,7 @@ admin_nav('/admin/messages');
     $stmt->execute($params);
     $rows = $stmt->fetchAll();
     ?>
-    <h1 class="page-title">Messages <span style="color:var(--faint);font-size:14px;font-weight:400">moderation</span></h1>
-    <p style="color:var(--faint);margin:-8px 0 16px;font-size:13px">Search a city, Hi plan, Hi now or challenge by name, open it, and remove any message.</p>
+    <?= ui_page_head('Moderation', 'Messages', 'Find a chat by its name, open it and delete any message. Reported messages are under <a href="/admin/reports?kind=messages">Reports</a>.') ?>
 
     <?= flash_html() ?>
 
@@ -262,10 +256,10 @@ admin_nav('/admin/messages');
                 <tr><td colspan="4" class="no-results">No channels match “<?= htmlspecialchars($search, ENT_QUOTES) ?>”.</td></tr>
             <?php else: foreach ($rows as $r):
                 $typeLabel = $TYPE_LABELS[$r['type']] ?? $r['type'];
-                $badgeCol  = $TYPE_BADGE[$r['type']] ?? '#666';
+                $badgeCol  = $TYPE_BADGE[$r['type']] ?? 'b-mute';
                 ?>
                 <tr>
-                    <td><span class="badge" style="background:<?= $badgeCol ?>22;color:<?= $badgeCol ?>;border:1px solid <?= $badgeCol ?>55"><?= htmlspecialchars($typeLabel, ENT_QUOTES) ?></span></td>
+                    <td><span class="badge <?= $badgeCol ?>"><?= htmlspecialchars($typeLabel, ENT_QUOTES) ?></span></td>
                     <td class="td-clip" title="<?= htmlspecialchars($r['name'] ?? '', ENT_QUOTES) ?>">
                         <strong><?= htmlspecialchars($r['name'] ?? '(untitled)', ENT_QUOTES) ?></strong>
                         <span class="td-mono" style="color:var(--faint);display:block;font-size:11px"><?= htmlspecialchars($r['id'], ENT_QUOTES) ?></span>
@@ -278,7 +272,7 @@ admin_nav('/admin/messages');
                         <?php endif; ?>
                     </td>
                     <td>
-                        <a href="/admin/messages?channel=<?= urlencode($r['id']) ?>&q=<?= urlencode($search) ?>&type=<?= urlencode($typeF) ?>" class="btn btn-primary btn-sm">View messages →</a>
+                        <a href="/admin/messages?channel=<?= urlencode($r['id']) ?>&q=<?= urlencode($search) ?>&type=<?= urlencode($typeF) ?>" class="btn btn-sm">Open</a>
                     </td>
                 </tr>
             <?php endforeach; endif; ?>
@@ -289,8 +283,7 @@ admin_nav('/admin/messages');
 <?php else:
     // ── Default: per-city message activity over a date range ────────────────
     ?>
-    <h1 class="page-title">Messages <span style="color:var(--faint);font-size:14px;font-weight:400">moderation</span></h1>
-    <p style="color:var(--faint);margin:-8px 0 16px;font-size:13px">Search a channel by name, or browse message activity over a date range — cities first, then Hi plan / Hi now / challenge channels. Click any row to open and moderate its messages.</p>
+    <?= ui_page_head('Moderation', 'Messages', 'Find a chat by its name, or browse the busiest chats over a date range (cities, then plans and topics). Open one to delete messages. Reported messages are under <a href="/admin/reports?kind=messages">Reports</a>.') ?>
 
     <?= flash_html() ?>
 
@@ -312,12 +305,12 @@ admin_nav('/admin/messages');
 
     <div style="display:flex;gap:8px;margin-bottom:16px">
         <?php
-        $viewOpts = ['sum' => '∑ Accumulation', 'daily' => '📅 Per day'];
+        $viewOpts = ['sum' => 'Total', 'daily' => 'Per day'];
         foreach ($viewOpts as $vk => $vlabel):
             $active = $view === $vk;
             $href = '/admin/messages?from=' . urlencode($from) . '&to=' . urlencode($to) . '&view=' . $vk;
         ?>
-            <a href="<?= $href ?>" class="btn btn-sm <?= $active ? 'btn-primary' : 'btn-secondary' ?>"><?= $vlabel ?></a>
+            <a href="<?= $href ?>" class="btn btn-sm <?= $active ? 'btn-primary' : '' ?>"><?= $vlabel ?></a>
         <?php endforeach; ?>
     </div>
 
@@ -340,13 +333,13 @@ admin_nav('/admin/messages');
         <table><tbody>
             <tr>
                 <td>
-                    <span class="badge" style="background:#22c55e22;color:var(--ok);border:1px solid #22c55e55">🌍 World</span>
+                    <span class="badge b-ok">World</span>
                     <strong style="margin-left:4px">World channel</strong>
                     <span style="color:var(--faint);font-size:12px;margin-left:6px">everyone, all cities</span>
                 </td>
                 <td style="width:120px"><strong style="color:var(--text);font-size:15px"><?= number_format((int) ($world['cnt'] ?? 0)) ?></strong> <span style="color:var(--faint);font-size:12px">msgs</span></td>
                 <td style="width:150px;color:var(--faint);white-space:nowrap"><?= $worldLast ? date('M d, H:i', $worldLast) : '-' ?></td>
-                <td style="width:130px"><a href="<?= $worldHref ?>" class="btn btn-primary btn-sm">View messages →</a></td>
+                <td style="width:130px"><a href="<?= $worldHref ?>" class="btn btn-sm">Open</a></td>
             </tr>
         </tbody></table>
     </div>
@@ -441,7 +434,7 @@ admin_nav('/admin/messages');
                         </td>
                         <td><strong style="color:var(--text);font-size:15px"><?= number_format((int) $c['cnt']) ?></strong></td>
                         <td style="color:var(--faint);white-space:nowrap"><?= $lastTs ? date('M d, H:i', $lastTs) : '-' ?></td>
-                        <td><a href="/admin/messages?channel=<?= urlencode($c['id']) ?>&from=<?= urlencode($from) ?>&to=<?= urlencode($to) ?>" class="btn btn-primary btn-sm">View messages →</a></td>
+                        <td><a href="/admin/messages?channel=<?= urlencode($c['id']) ?>&from=<?= urlencode($from) ?>&to=<?= urlencode($to) ?>" class="btn btn-sm">Open</a></td>
                     </tr>
                 <?php endforeach; endif; ?>
                 </tbody>
@@ -473,7 +466,7 @@ admin_nav('/admin/messages');
     $subTotal = 0;
     foreach ($subs as $r) { $subTotal += (int) $r['cnt']; }
     ?>
-    <h2 class="page-title" style="font-size:18px;margin:28px 0 4px">Hi plan · Hi now · Challenges</h2>
+    <h2 style="margin:28px 0 4px">Plans, topics and old challenges</h2>
     <p style="color:var(--faint);font-size:13px;margin:0 0 12px"><?= count($subs) ?> channels · <?= number_format($subTotal) ?> messages · <?= htmlspecialchars($rangeLabel, ENT_QUOTES) ?> (UTC+7)</p>
     <div class="table-wrapper">
         <table>
@@ -482,18 +475,18 @@ admin_nav('/admin/messages');
             </thead>
             <tbody>
             <?php if (empty($subs)): ?>
-                <tr><td colspan="5" class="no-results">No Hi plan / Hi now / challenge messages in this range.</td></tr>
+                <tr><td colspan="5" class="no-results">No message in a plan, topic or old challenge in this range.</td></tr>
             <?php else: foreach ($subs as $c):
                 $lastTs = $c['last_at'] ? strtotime($c['last_at']) : 0;
                 $tLabel = $TYPE_LABELS[$c['type']] ?? $c['type'];
-                $tBadge = $TYPE_BADGE[$c['type']] ?? '#666';
+                $tBadge = $TYPE_BADGE[$c['type']] ?? 'b-mute';
                 ?>
                 <tr>
-                    <td><span class="badge" style="background:<?= $tBadge ?>22;color:<?= $tBadge ?>;border:1px solid <?= $tBadge ?>55"><?= htmlspecialchars($tLabel, ENT_QUOTES) ?></span></td>
+                    <td><span class="badge <?= $tBadge ?>"><?= htmlspecialchars($tLabel, ENT_QUOTES) ?></span></td>
                     <td class="td-clip" title="<?= htmlspecialchars($c['name'] ?? '', ENT_QUOTES) ?>"><strong><?= htmlspecialchars($c['name'] ?? '(untitled)', ENT_QUOTES) ?></strong></td>
                     <td><strong style="color:var(--text);font-size:15px"><?= number_format((int) $c['cnt']) ?></strong></td>
                     <td style="color:var(--faint);white-space:nowrap"><?= $lastTs ? date('M d, H:i', $lastTs) : '-' ?></td>
-                    <td><a href="/admin/messages?channel=<?= urlencode($c['id']) ?>&from=<?= urlencode($from) ?>&to=<?= urlencode($to) ?>" class="btn btn-primary btn-sm">View messages →</a></td>
+                    <td><a href="/admin/messages?channel=<?= urlencode($c['id']) ?>&from=<?= urlencode($from) ?>&to=<?= urlencode($to) ?>" class="btn btn-sm">Open</a></td>
                 </tr>
             <?php endforeach; endif; ?>
             </tbody>

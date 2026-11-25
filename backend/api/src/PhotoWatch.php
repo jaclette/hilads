@@ -135,6 +135,64 @@ final class PhotoWatch
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    /** Back office › Photos tabs: check (not seen yet), reported (open reports), removed, all. */
+    public const TABS = ['check', 'reported', 'removed', 'all'];
+
+    private static function where(string $tab, ?string $source, string $q, array &$args): string
+    {
+        $w = [match ($tab) {
+            'check'    => 'seen_at IS NULL',
+            'reported' => 'report_count > 0 AND removed_at IS NULL',
+            'removed'  => 'removed_at IS NOT NULL',
+            default    => 'TRUE',
+        }];
+        if ($source !== null && isset(self::SOURCES[$source])) { $w[] = 'source = ?'; $args[] = $source; }
+        if ($q !== '') {
+            $w[] = "(author ILIKE ? OR place ILIKE ? OR user_id = ? OR ref_id = ?)";
+            $like = '%' . str_replace(['\\', '%', '_'], ['\\\\', '\\%', '\\_'], ltrim($q, '@')) . '%';
+            array_push($args, $like, $like, $q, $q);
+        }
+        return implode(' AND ', $w);
+    }
+
+    /** One page of a tab (newest first; reported ones first on "check"), with the source / search filters. */
+    public static function search(string $tab, ?string $source, string $q, int $limit, int $offset): array
+    {
+        $args = [];
+        $where = self::where($tab, $source, $q, $args);
+        $stmt = Database::pdo()->prepare("
+            SELECT id, source, ref_id, url, user_id, guest_id, author, place, seen_at, removed_at,
+                   report_count, report_reasons, hidden_at, reported_at,
+                   EXTRACT(EPOCH FROM created_at)::BIGINT AS created_ts
+            FROM photo_watch WHERE {$where}
+            ORDER BY " . ($tab === 'check' ? '(report_count > 0) DESC, ' : '') . "created_at DESC, id DESC
+            LIMIT {$limit} OFFSET {$offset}
+        ");
+        $stmt->execute($args);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    /** How many photos in each tab (with the source / search filters). */
+    public static function counts(?string $source, string $q): array
+    {
+        $out = [];
+        foreach (self::TABS as $tab) {
+            $args = [];
+            $where = self::where($tab, $source, $q, $args);
+            $st = Database::pdo()->prepare("SELECT count(*) FROM photo_watch WHERE {$where}");
+            $st->execute($args);
+            $out[$tab] = (int) $st->fetchColumn();
+        }
+        return $out;
+    }
+
+    public static function find(int $id): ?array
+    {
+        $st = Database::pdo()->prepare('SELECT * FROM photo_watch WHERE id = ?');
+        $st->execute([$id]);
+        return $st->fetch(PDO::FETCH_ASSOC) ?: null;
+    }
+
     /** Mark seen: these ids, or every photo up to $upToId. */
     public static function markSeen(?array $ids = null, ?int $upToId = null): int
     {

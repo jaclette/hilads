@@ -366,3 +366,20 @@ a.day:hover { border-color: var(--line-strong); text-decoration: none; }
   .week { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 }
 @media (max-width: 720px) { .week { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+/* ── Help panel, list rows ─────────────────────────────────────────── */
+details.help { position: relative; }
+details.help > summary { list-style: none; }
+details.help > summary::-webkit-details-marker { display: none; }
+details.help[open] > summary { border-color: var(--brand); }
+.help-body { position: absolute; right: 0; top: calc(100% + 8px); width: min(440px, 86vw); z-index: 40; padding: 16px 18px; box-shadow: var(--shadow-lg);
+  font-size: var(--fs-sm); line-height: 1.55; color: var(--text); }
+.help-body h3 { margin: 10px 0 4px; } .help-body h3:first-child { margin-top: 0; }
+.help-body ul { margin: 4px 0 0; padding-left: 18px; } .help-body p + p { margin-top: 8px; }
+.data .thumb-cell { width: 68px; }
+.data td.num, .data th.num { text-align: right; }
+.reasons { font-size: var(--fs-xs); color: var(--bad); margin-top: 3px; }
+.toolbar .grow { flex: 1; }
+.seg + .seg { margin-left: 4px; }
+.card .table-wrapper { border: 0; border-radius: 0; box-shadow: none; }
+.card .pager { padding: 12px 16px; margin: 0; }

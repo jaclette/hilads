@@ -9,7 +9,7 @@ csrf_verify();
 // $messageId is set by the boot.php route match.
 $pdo = Database::pdo();
 
-$stmt = $pdo->prepare("SELECT channel_id, deleted_at FROM messages WHERE id = :id");
+$stmt = $pdo->prepare("SELECT channel_id, deleted_at, content, nickname, image_url FROM messages WHERE id = :id");
 $stmt->execute([':id' => $messageId]);
 $row = $stmt->fetch();
 
@@ -50,6 +50,8 @@ $pdo->prepare("
      WHERE id = :id
 ")->execute([':id' => $messageId]);
 
+AdminAuth::log('message.delete', 'message', (string) $messageId,
+    ['channel' => $row['channel_id'], 'author' => $row['nickname'], 'text' => $row['content'], 'photo' => $row['image_url']], ['deleted' => true]);
 error_log('[admin] message soft-deleted: ' . $messageId . ' in ' . ($row['channel_id'] ?? '?'));
 flash_set('success', 'Message deleted.');
 admin_redirect($back);

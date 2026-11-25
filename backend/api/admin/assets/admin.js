@@ -42,18 +42,21 @@
   // The typed phrase is also checked on the server; this only saves a round trip.
   document.addEventListener('submit', function (e) {
     var f = e.target;
-    if (!f.matches || !f.matches('form[data-confirm]') || f.dataset.confirmed === '1') return;
+    if (!f.matches || f.dataset.confirmed === '1') return;
+    // The confirm can sit on the form, or on the button that submits it (row actions in a list form).
+    var src = e.submitter && e.submitter.dataset && e.submitter.dataset.confirm ? e.submitter : f;
+    if (!src.dataset || !src.dataset.confirm) return;
     e.preventDefault();
-    var phrase = f.dataset.phrase || '';
+    var phrase = src.dataset.phrase || '';
     var d = document.createElement('dialog'); d.className = 'confirm';
     d.innerHTML = '<form method="dialog"><div class="dlg-body"><h2></h2><p></p>' +
       (phrase ? '<div class="field"><label>Type <span class="phrase"></span> to confirm</label><input autocomplete="off" spellcheck="false"></div>' : '') +
       '</div><div class="dlg-actions"><button class="btn" value="cancel">Cancel</button><button class="btn ' +
-      (f.dataset.danger === '0' ? 'btn-primary' : 'btn-danger-solid') + '" value="ok"></button></div></form>';
-    d.querySelector('h2').textContent = f.dataset.confirm;
-    d.querySelector('p').textContent = f.dataset.confirmText || '';
+      (src.dataset.danger === '0' ? 'btn-primary' : 'btn-danger-solid') + '" value="ok"></button></div></form>';
+    d.querySelector('h2').textContent = src.dataset.confirm;
+    d.querySelector('p').textContent = src.dataset.confirmText || '';
     var ok = d.querySelector('button[value=ok]');
-    ok.textContent = f.dataset.confirmButton || 'Confirm';
+    ok.textContent = src.dataset.confirmButton || 'Confirm';
     if (phrase) {
       d.querySelector('.phrase').textContent = phrase;
       var inp = d.querySelector('input');
