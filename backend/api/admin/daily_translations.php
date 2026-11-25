@@ -61,7 +61,7 @@ daily_styles();
     <?php if ($result !== null): ?>
         <div class="form-card">
             <?php if (!$result['ok']): ?>
-                <h3 style="color:#f87171;margin-bottom:8px">Nothing can be imported</h3>
+                <h3 style="color:var(--bad);margin-bottom:8px">Nothing can be imported</h3>
                 <ul style="margin-left:18px"><?php foreach ($result['errors'] as $e): ?><li><?= dh($e) ?></li><?php endforeach; ?></ul>
             <?php else: ?>
                 <h3 style="margin-bottom:8px">Dry run - nothing written yet</h3>
@@ -72,7 +72,7 @@ daily_styles();
                     <?php foreach ($result['report'] as $line): ?>
                         <tr><td><?= dh($line['date']) ?></td><td><?= dh($line['field']) ?></td>
                             <td class="daily-muted"><?= isset($line['error'])
-                                ? '<span style="color:#f87171">' . dh($line['error']) . '</span>'
+                                ? '<span style="color:var(--bad)">' . dh($line['error']) . '</span>'
                                 : dh(count($line['locales']) . ' language(s): ' . implode(', ', $line['locales'])) ?></td></tr>
                     <?php endforeach; ?>
                     </tbody>

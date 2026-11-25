@@ -5124,6 +5124,59 @@ run($pdo, "ALTER TABLE contest_seasons ADD COLUMN IF NOT EXISTS photos JSONB NOT
 run($pdo, "ALTER TABLE contest_seasons ADD COLUMN IF NOT EXISTS itinerary JSONB NOT NULL DEFAULT '[]'::jsonb", 'contest_seasons.itinerary');
 run($pdo, "ALTER TABLE contest_seasons ADD COLUMN IF NOT EXISTS founder JSONB NOT NULL DEFAULT '{}'::jsonb", 'contest_seasons.founder');
 
+// ── Admin accounts (back office) ──────────────────────────────────────────
+// One account per person instead of the shared ADMIN_USERNAME / ADMIN_PASSWORD login.
+// role: super_admin | moderator | editor | viewer (AdminAuth::ROLES). totp_secret = base32,
+// required for super admins. recovery_codes = sha256 of each unused code. must_change_password
+// is set by scripts/admin_recover.php. Reversal: DROP TABLE admin_login_attempts, admin_sessions, admin_users.
+run($pdo, "
+    CREATE TABLE IF NOT EXISTS admin_users (
+        id                   BIGSERIAL   PRIMARY KEY,
+        email                TEXT        NOT NULL,
+        name                 TEXT        NOT NULL,
+        password_hash        TEXT        NOT NULL,
+        role                 TEXT        NOT NULL DEFAULT 'viewer',
+        totp_secret          TEXT,
+        totp_enabled_at      TIMESTAMPTZ,
+        totp_last_step       BIGINT,
+        recovery_codes       JSONB       NOT NULL DEFAULT '[]'::jsonb,
+        must_change_password BOOLEAN     NOT NULL DEFAULT FALSE,
+        disabled_at          TIMESTAMPTZ,
+        last_login_at        TIMESTAMPTZ,
+        created_at           TIMESTAMPTZ NOT NULL DEFAULT now(),
+        updated_at           TIMESTAMPTZ NOT NULL DEFAULT now()
+    )
+", 'admin_users');
+run($pdo, "CREATE UNIQUE INDEX IF NOT EXISTS idx_admin_users_email ON admin_users (lower(email))", 'idx_admin_users_email');
+// Admin sessions live in the database (they used to be files on the instance, lost at every deploy).
+// id = sha256 of the session cookie value.
+run($pdo, "
+    CREATE TABLE IF NOT EXISTS admin_sessions (
+        id            TEXT        PRIMARY KEY,
+        admin_user_id BIGINT      REFERENCES admin_users(id) ON DELETE CASCADE,
+        data          TEXT        NOT NULL DEFAULT '',
+        ip            TEXT,
+        user_agent    TEXT,
+        created_at    TIMESTAMPTZ NOT NULL DEFAULT now(),
+        last_seen_at  TIMESTAMPTZ NOT NULL DEFAULT now()
+    )
+", 'admin_sessions');
+run($pdo, "CREATE INDEX IF NOT EXISTS idx_admin_sessions_user ON admin_sessions (admin_user_id)", 'idx_admin_sessions_user');
+run($pdo, "CREATE INDEX IF NOT EXISTS idx_admin_sessions_seen ON admin_sessions (last_seen_at)", 'idx_admin_sessions_seen');
+// Sign-in attempts (password and 2FA steps), for the lockout: 5 failures in 15 minutes per IP or per email.
+run($pdo, "
+    CREATE TABLE IF NOT EXISTS admin_login_attempts (
+        id         BIGSERIAL   PRIMARY KEY,
+        ip         TEXT,
+        email      TEXT,
+        ok         BOOLEAN     NOT NULL,
+        created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+    )
+", 'admin_login_attempts');
+run($pdo, "CREATE INDEX IF NOT EXISTS idx_admin_login_attempts_time ON admin_login_attempts (created_at DESC)", 'idx_admin_login_attempts_time');
+// Who did it, as a person (admin_username keeps the name at the time).
+run($pdo, "ALTER TABLE admin_audit_log ADD COLUMN IF NOT EXISTS admin_user_id BIGINT", 'admin_audit_log.admin_user_id');
+
 // ── Self-heal monthly rank columns ────────────────────────────────────────
 // The denormalised users.monthly_rank_* columns are kept fresh by
 // route-level recalc hooks fired after each scoring action. If any

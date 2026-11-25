@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 admin_require_login();
 csrf_verify();
+admin_require_super('/admin/danger');
+admin_require_phrase('RECALCULATE', '/admin/danger');
 
 // Manual rank recalc - exposed because the route-level recalc hooks
 // only fire on score-changing actions (rate / approve / accept / etc).
@@ -21,13 +23,14 @@ try {
 } catch (\Throwable $e) {
     error_log('[admin-ranks-recalc] failed: ' . $e->getMessage());
     flash_set('error', 'Recalc failed - check logs.');
-    admin_redirect('/admin');
+    admin_redirect('/admin/danger');
 }
 
+AdminAuth::log('ranks.recalc_all', 'ranks', null, null, $summary);
 flash_set('success', sprintf(
     'Ranks recalculated: %d cit%s + world in %dms.',
     $summary['cities'],
     $summary['cities'] === 1 ? 'y' : 'ies',
     $summary['total_ms'],
 ));
-admin_redirect('/admin');
+admin_redirect('/admin/danger');

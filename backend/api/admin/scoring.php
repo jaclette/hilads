@@ -62,11 +62,11 @@ admin_nav('/admin/scoring');
 ?>
 <style>
   .sc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 28px; }
-  .sc-h2 { font-size: 15px; font-weight: 600; color: #fff; margin: 28px 0 10px; }
-  .sc-note { color: #888; font-size: 12px; margin-bottom: 12px; max-width: 900px; }
+  .sc-h2 { font-size: 15px; font-weight: 600; color: var(--text); margin: 28px 0 10px; }
+  .sc-note { color: var(--faint); font-size: 12px; margin-bottom: 12px; max-width: 900px; }
   .num { text-align: right; font-variant-numeric: tabular-nums; }
-  .up { color: #4ade80; } .down { color: #f87171; }
-  .pill { display: inline-block; padding: 1px 7px; border-radius: 9px; background: #252525; color: #aaa; font-size: 11px; }
+  .up { color: var(--ok); } .down { color: var(--bad); }
+  .pill { display: inline-block; padding: 1px 7px; border-radius: 9px; background: var(--surface-2); color: var(--muted); font-size: 11px; }
   @media (max-width: 900px) { .sc-grid { grid-template-columns: 1fr; } }
 </style>
 <main class="admin-main">
@@ -87,7 +87,7 @@ admin_nav('/admin/scoring');
   <form method="post" action="/admin/scoring" class="toolbar" style="gap:16px">
     <?= csrf_input() ?>
     <label>Minimum photos worldwide for a full podium
-      <input type="number" name="podium_min_photos" min="0" max="1000" value="<?= $minNow ?>" style="width:80px;background:#1a1a1a;border:1px solid #2a2a2a;color:#e0e0e0;padding:6px;border-radius:6px">
+      <input type="number" name="podium_min_photos" min="0" max="1000" value="<?= $minNow ?>" style="width:80px;background:var(--surface);border:1px solid var(--line);color:var(--text);padding:6px;border-radius:6px">
       <span class="sc-note">(0 = off; below it only 🥇 is paid)</span></label>
     <label><input type="checkbox" name="vote_requires_play" value="1"<?= $playNow ? ' checked' : '' ?>> Play to like (only players who posted the day's photo can like it)</label>
     <button class="btn btn-primary btn-sm" type="submit">Save switches</button>
@@ -187,7 +187,7 @@ admin_nav('/admin/scoring');
     </tbody>
   </table></div>
 
-  <h2 class="sc-h2">Fair play — to check by hand (nothing is blocked)</h2>
+  <h2 class="sc-h2" id="fair-play">Fair play — to check by hand (nothing is blocked)</h2>
   <p class="sc-note">Devices: the app's install id (X-Install-Id) and hashed networks are recorded from the invites release on; older accounts show up once they open the app.</p>
 
   <h3 class="sc-h2" style="font-size:13px">Several accounts on one device (same guest id)</h3>
@@ -235,23 +235,8 @@ admin_nav('/admin/scoring');
     <?php endforeach; ?>
   </tbody></table></div><?php endif; ?>
 
-  <div style="margin-top: 40px; padding: 16px; border: 1px solid rgba(248, 113, 113, 0.35); border-radius: 8px; background: rgba(248, 113, 113, 0.04); max-width: 900px;">
-    <h2 style="margin: 0 0 6px; font-size: 14px; color: #f87171; text-transform: uppercase; letter-spacing: 0.5px;">⚠️ Reset all scores to 0</h2>
-    <p class="sc-note" style="color:#aaa">
-      Every player goes back to 0 points: the whole points history is deleted (all time, this season, the week, Perfect weeks,
-      invite points) and every ranking starts empty (they refresh within a minute). Photos, likes, streaks, stamps and invitations
-      stay. Can't be undone.
-    </p>
-    <form method="POST" action="/admin/scores/reset-all" style="display:flex;gap:16px;align-items:center;flex-wrap:wrap"
-          onsubmit="return this.confirm_text.value === 'RESET' || (alert('Type RESET to confirm.'), false)">
-      <?= csrf_input() ?>
-      <input type="hidden" name="back" value="scoring">
-      <label><input type="checkbox" name="keep_today" value="1"> Keep the points of today's challenge (players who already played today)</label>
-      <label><input type="checkbox" name="with_seasons" value="1"> Also delete past season results and medals</label>
-      <input type="text" name="confirm_text" placeholder="Type RESET" autocomplete="off"
-             style="width:120px;background:#1a1a1a;border:1px solid #7f1d1d;color:#e0e0e0;padding:6px;border-radius:6px">
-      <button type="submit" class="btn btn-danger btn-sm">Reset all scores to 0</button>
-    </form>
+  <div class="callout warn" style="margin-top:32px;max-width:900px">
+    Resetting every player's points now lives in <a href="/admin/danger">System › Danger zone</a> (super admins, typed confirmation).
   </div>
 </main>
 <?php

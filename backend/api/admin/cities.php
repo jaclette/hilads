@@ -22,7 +22,7 @@ try {
     if ($view === 'auto') {
         // Opening the list clears the count on the nav; the rows created since the last visit say "new".
         $seenAt = CityAdmin::autoSeenAt();
-        CityAdmin::markAutoSeen((string) (getenv('ADMIN_USERNAME') ?: 'admin'));
+        CityAdmin::markAutoSeen(admin_actor());
     }
 } catch (\Throwable $e) {
     $err = 'Run php migrate.php first (' . $e->getMessage() . ').';
@@ -34,7 +34,7 @@ admin_nav('/admin/cities');
 ?>
 <div class="admin-main">
     <h1 class="page-title">Cities</h1>
-    <p style="color:#777;margin:-8px 0 16px;font-size:13px;max-width:720px">
+    <p style="color:var(--faint);margin:-8px 0 16px;font-size:13px;max-width:720px">
         Every city where people play. A city is created the first time someone plays there (GPS or a pick in the app's city search), on the GeoNames world base.
         <a href="/admin/cities/suburbs">Suburbs</a>: force a place onto its main city, or keep it its own city.
     </p>
@@ -48,7 +48,7 @@ admin_nav('/admin/cities');
         <?php if ($view === 'search'): ?>
             <form method="GET" action="/admin/cities" style="display:flex;gap:6px;align-items:center;margin-left:8px">
                 <input type="text" name="q" value="<?= $h($q) ?>" placeholder="Name, alias, country (VN), city_20…" style="width:260px">
-                <label style="color:#888;font-size:12px"><input type="checkbox" name="merged" value="1" <?= $merged ? 'checked' : '' ?>> merged too</label>
+                <label style="color:var(--faint);font-size:12px"><input type="checkbox" name="merged" value="1" <?= $merged ? 'checked' : '' ?>> merged too</label>
                 <button type="submit" class="btn btn-sm btn-secondary">Search</button>
             </form>
         <?php endif; ?>
@@ -68,11 +68,11 @@ admin_nav('/admin/cities');
                         <?php if ($c['status'] !== 'active'): ?><span class="badge badge-expired">merged → <?= $h($c['merged_into']) ?></span><?php endif; ?>
                         <?php if ($c['force_live']): ?><span class="badge badge-live">live</span><?php endif; ?>
                     </td>
-                    <td style="color:#aaa"><?= $h(implode(' · ', array_filter(array_merge([$c['short_name']], $c['aliases'])))) ?></td>
+                    <td style="color:var(--muted)"><?= $h(implode(' · ', array_filter(array_merge([$c['short_name']], $c['aliases'])))) ?></td>
                     <td><?= $h($c['country']) ?></td>
                     <td><?= $c['members'] ?></td>
                     <td><?= $c['photos'] ?></td>
-                    <td class="td-mono"><?= $c['geoname_id'] ?? '<span style="color:#f87171">unmapped</span>' ?></td>
+                    <td class="td-mono"><?= $c['geoname_id'] ?? '<span style="color:var(--bad)">unmapped</span>' ?></td>
                     <td class="td-mono"><?= $h(substr((string) $c['created_at'], 0, 16)) ?><?= $c['auto_created'] ? ' <span class="badge badge-recurring">auto</span>' : '' ?>
                         <?php if ($view === 'auto' && ($seenAt === '' || strtotime((string) $c['created_at']) > strtotime($seenAt))): ?><span class="badge badge-live">new</span><?php endif; ?></td>
                     <td><a class="btn btn-sm btn-secondary" href="/admin/cities/<?= $h($c['id']) ?>">Edit</a></td>

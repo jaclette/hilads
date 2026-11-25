@@ -118,13 +118,13 @@ admin_nav('/admin/messages');
         <h1 class="page-title" style="margin-bottom:0">
             <span class="badge" style="background:<?= $badgeCol ?>22;color:<?= $badgeCol ?>;border:1px solid <?= $badgeCol ?>55"><?= htmlspecialchars($typeLabel, ENT_QUOTES) ?></span>
             <?= htmlspecialchars($ch['name'] ?? '(untitled)', ENT_QUOTES) ?>
-            <span style="color:#555;font-size:14px;font-weight:400">
+            <span style="color:var(--faint);font-size:14px;font-weight:400">
                 <?= number_format($total) ?> messages<?php if ($rangeExplicit): ?> · <?= htmlspecialchars($rangeLabel, ENT_QUOTES) ?><?php endif; ?>
             </span>
         </h1>
         <a href="<?= $backHref ?>" class="btn btn-secondary btn-sm">← Back</a>
     </div>
-    <div class="td-mono" style="color:#555;margin-bottom:16px;font-size:11px"><?= htmlspecialchars($ch['id'], ENT_QUOTES) ?></div>
+    <div class="td-mono" style="color:var(--faint);margin-bottom:16px;font-size:11px"><?= htmlspecialchars($ch['id'], ENT_QUOTES) ?></div>
 
     <?= flash_html() ?>
 
@@ -153,17 +153,17 @@ admin_nav('/admin/messages');
                 }
                 ?>
                 <tr<?= $isDeleted ? ' style="opacity:0.45"' : '' ?>>
-                    <td style="color:#888;white-space:nowrap"><?= date('M d, H:i', (int) $msg['created_ts']) ?></td>
-                    <td class="td-clip"><?= $idBadge ?> <span style="color:#ccc"><?= htmlspecialchars($who, ENT_QUOTES) ?></span></td>
+                    <td style="color:var(--faint);white-space:nowrap"><?= date('M d, H:i', (int) $msg['created_ts']) ?></td>
+                    <td class="td-clip"><?= $idBadge ?> <span style="color:var(--muted)"><?= htmlspecialchars($who, ENT_QUOTES) ?></span></td>
                     <td>
                         <?php if ($isDeleted): ?>
-                            <span style="color:#555;font-style:italic">— deleted —</span>
+                            <span style="color:var(--faint);font-style:italic">— deleted —</span>
                         <?php else: ?>
                             <?php if (!empty($msg['content'])): ?>
-                                <span style="color:#ddd;white-space:pre-wrap"><?= htmlspecialchars($msg['content'], ENT_QUOTES) ?></span>
+                                <span style="color:var(--text);white-space:pre-wrap"><?= htmlspecialchars($msg['content'], ENT_QUOTES) ?></span>
                             <?php endif; ?>
                             <?php if (!empty($msg['image_url'])): ?>
-                                <a href="<?= htmlspecialchars($msg['image_url'], ENT_QUOTES) ?>" target="_blank" rel="noopener" style="color:#3b82f6;margin-left:6px">🖼 image</a>
+                                <a href="<?= htmlspecialchars($msg['image_url'], ENT_QUOTES) ?>" target="_blank" rel="noopener" style="color:var(--info);margin-left:6px">🖼 image</a>
                             <?php endif; ?>
                         <?php endif; ?>
                     </td>
@@ -240,8 +240,8 @@ admin_nav('/admin/messages');
     $stmt->execute($params);
     $rows = $stmt->fetchAll();
     ?>
-    <h1 class="page-title">Messages <span style="color:#555;font-size:14px;font-weight:400">moderation</span></h1>
-    <p style="color:#777;margin:-8px 0 16px;font-size:13px">Search a city, Hi plan, Hi now or challenge by name, open it, and remove any message.</p>
+    <h1 class="page-title">Messages <span style="color:var(--faint);font-size:14px;font-weight:400">moderation</span></h1>
+    <p style="color:var(--faint);margin:-8px 0 16px;font-size:13px">Search a city, Hi plan, Hi now or challenge by name, open it, and remove any message.</p>
 
     <?= flash_html() ?>
 
@@ -268,7 +268,7 @@ admin_nav('/admin/messages');
                     <td><span class="badge" style="background:<?= $badgeCol ?>22;color:<?= $badgeCol ?>;border:1px solid <?= $badgeCol ?>55"><?= htmlspecialchars($typeLabel, ENT_QUOTES) ?></span></td>
                     <td class="td-clip" title="<?= htmlspecialchars($r['name'] ?? '', ENT_QUOTES) ?>">
                         <strong><?= htmlspecialchars($r['name'] ?? '(untitled)', ENT_QUOTES) ?></strong>
-                        <span class="td-mono" style="color:#555;display:block;font-size:11px"><?= htmlspecialchars($r['id'], ENT_QUOTES) ?></span>
+                        <span class="td-mono" style="color:var(--faint);display:block;font-size:11px"><?= htmlspecialchars($r['id'], ENT_QUOTES) ?></span>
                     </td>
                     <td>
                         <?php if ($r['status'] === 'deleted'): ?>
@@ -289,8 +289,8 @@ admin_nav('/admin/messages');
 <?php else:
     // ── Default: per-city message activity over a date range ────────────────
     ?>
-    <h1 class="page-title">Messages <span style="color:#555;font-size:14px;font-weight:400">moderation</span></h1>
-    <p style="color:#777;margin:-8px 0 16px;font-size:13px">Search a channel by name, or browse message activity over a date range — cities first, then Hi plan / Hi now / challenge channels. Click any row to open and moderate its messages.</p>
+    <h1 class="page-title">Messages <span style="color:var(--faint);font-size:14px;font-weight:400">moderation</span></h1>
+    <p style="color:var(--faint);margin:-8px 0 16px;font-size:13px">Search a channel by name, or browse message activity over a date range — cities first, then Hi plan / Hi now / challenge channels. Click any row to open and moderate its messages.</p>
 
     <?= flash_html() ?>
 
@@ -298,14 +298,14 @@ admin_nav('/admin/messages');
 
     <!-- Range + view controls -->
     <form method="GET" action="/admin/messages" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px">
-        <span style="color:#888;font-size:13px;font-weight:600">From</span>
+        <span style="color:var(--faint);font-size:13px;font-weight:600">From</span>
         <input type="date" name="from" value="<?= htmlspecialchars($from, ENT_QUOTES) ?>" max="<?= $today ?>"
                onchange="this.form.submit()" onclick="if(this.showPicker)this.showPicker()"
-               style="background:#1a1a1a;border:1px solid #333;color:#eee;border-radius:6px;padding:6px 8px;font-size:13px">
-        <span style="color:#888;font-size:13px;font-weight:600">to</span>
+               style="background:var(--surface);border:1px solid var(--line);color:var(--text);border-radius:6px;padding:6px 8px;font-size:13px">
+        <span style="color:var(--faint);font-size:13px;font-weight:600">to</span>
         <input type="date" name="to" value="<?= htmlspecialchars($to, ENT_QUOTES) ?>" max="<?= $today ?>"
                onchange="this.form.submit()" onclick="if(this.showPicker)this.showPicker()"
-               style="background:#1a1a1a;border:1px solid #333;color:#eee;border-radius:6px;padding:6px 8px;font-size:13px">
+               style="background:var(--surface);border:1px solid var(--line);color:var(--text);border-radius:6px;padding:6px 8px;font-size:13px">
         <input type="hidden" name="view" value="<?= htmlspecialchars($view, ENT_QUOTES) ?>">
         <a href="/admin/messages?from=<?= $today ?>&to=<?= $today ?>&view=<?= htmlspecialchars($view, ENT_QUOTES) ?>" class="btn btn-secondary btn-sm">Today</a>
     </form>
@@ -340,12 +340,12 @@ admin_nav('/admin/messages');
         <table><tbody>
             <tr>
                 <td>
-                    <span class="badge" style="background:#22c55e22;color:#22c55e;border:1px solid #22c55e55">🌍 World</span>
+                    <span class="badge" style="background:#22c55e22;color:var(--ok);border:1px solid #22c55e55">🌍 World</span>
                     <strong style="margin-left:4px">World channel</strong>
-                    <span style="color:#666;font-size:12px;margin-left:6px">everyone, all cities</span>
+                    <span style="color:var(--faint);font-size:12px;margin-left:6px">everyone, all cities</span>
                 </td>
-                <td style="width:120px"><strong style="color:#fff;font-size:15px"><?= number_format((int) ($world['cnt'] ?? 0)) ?></strong> <span style="color:#666;font-size:12px">msgs</span></td>
-                <td style="width:150px;color:#888;white-space:nowrap"><?= $worldLast ? date('M d, H:i', $worldLast) : '-' ?></td>
+                <td style="width:120px"><strong style="color:var(--text);font-size:15px"><?= number_format((int) ($world['cnt'] ?? 0)) ?></strong> <span style="color:var(--faint);font-size:12px">msgs</span></td>
+                <td style="width:150px;color:var(--faint);white-space:nowrap"><?= $worldLast ? date('M d, H:i', $worldLast) : '-' ?></td>
                 <td style="width:130px"><a href="<?= $worldHref ?>" class="btn btn-primary btn-sm">View messages →</a></td>
             </tr>
         </tbody></table>
@@ -382,7 +382,7 @@ admin_nav('/admin/messages');
         $maxDayTotal = $dayTotals ? max($dayTotals) : 0;
         $grandTotal  = array_sum($cityTotals);
         ?>
-        <p style="color:#666;font-size:13px;margin:0 0 12px"><?= count($cityTotals) ?> cities · <?= number_format($grandTotal) ?> messages · <?= htmlspecialchars($rangeLabel, ENT_QUOTES) ?> (UTC+7)</p>
+        <p style="color:var(--faint);font-size:13px;margin:0 0 12px"><?= count($cityTotals) ?> cities · <?= number_format($grandTotal) ?> messages · <?= htmlspecialchars($rangeLabel, ENT_QUOTES) ?> (UTC+7)</p>
 
         <?php if (empty($cityTotals)): ?>
             <p class="no-results" style="padding:30px 0">No city messages in this range.</p>
@@ -415,7 +415,7 @@ admin_nav('/admin/messages');
         $i = 0;
         foreach ($cities as $r) { $barColors[$r['id']] = $PALETTE[$i % count($PALETTE)]; $i++; }
         ?>
-        <p style="color:#666;font-size:13px;margin:0 0 12px"><?= count($cities) ?> cities · <?= number_format($totalMsgs) ?> messages · <?= htmlspecialchars($rangeLabel, ENT_QUOTES) ?> (UTC+7)</p>
+        <p style="color:var(--faint);font-size:13px;margin:0 0 12px"><?= count($cities) ?> cities · <?= number_format($totalMsgs) ?> messages · <?= htmlspecialchars($rangeLabel, ENT_QUOTES) ?> (UTC+7)</p>
 
         <?php
         $chartLink = static fn(string $id): string =>
@@ -439,8 +439,8 @@ admin_nav('/admin/messages');
                             <span style="width:10px;height:10px;border-radius:3px;background:<?= $barColors[$c['id']] ?>;display:inline-block;margin-right:6px"></span>
                             <strong><?= htmlspecialchars($c['name'] ?? '(untitled)', ENT_QUOTES) ?></strong>
                         </td>
-                        <td><strong style="color:#fff;font-size:15px"><?= number_format((int) $c['cnt']) ?></strong></td>
-                        <td style="color:#888;white-space:nowrap"><?= $lastTs ? date('M d, H:i', $lastTs) : '-' ?></td>
+                        <td><strong style="color:var(--text);font-size:15px"><?= number_format((int) $c['cnt']) ?></strong></td>
+                        <td style="color:var(--faint);white-space:nowrap"><?= $lastTs ? date('M d, H:i', $lastTs) : '-' ?></td>
                         <td><a href="/admin/messages?channel=<?= urlencode($c['id']) ?>&from=<?= urlencode($from) ?>&to=<?= urlencode($to) ?>" class="btn btn-primary btn-sm">View messages →</a></td>
                     </tr>
                 <?php endforeach; endif; ?>
@@ -474,7 +474,7 @@ admin_nav('/admin/messages');
     foreach ($subs as $r) { $subTotal += (int) $r['cnt']; }
     ?>
     <h2 class="page-title" style="font-size:18px;margin:28px 0 4px">Hi plan · Hi now · Challenges</h2>
-    <p style="color:#666;font-size:13px;margin:0 0 12px"><?= count($subs) ?> channels · <?= number_format($subTotal) ?> messages · <?= htmlspecialchars($rangeLabel, ENT_QUOTES) ?> (UTC+7)</p>
+    <p style="color:var(--faint);font-size:13px;margin:0 0 12px"><?= count($subs) ?> channels · <?= number_format($subTotal) ?> messages · <?= htmlspecialchars($rangeLabel, ENT_QUOTES) ?> (UTC+7)</p>
     <div class="table-wrapper">
         <table>
             <thead>
@@ -491,8 +491,8 @@ admin_nav('/admin/messages');
                 <tr>
                     <td><span class="badge" style="background:<?= $tBadge ?>22;color:<?= $tBadge ?>;border:1px solid <?= $tBadge ?>55"><?= htmlspecialchars($tLabel, ENT_QUOTES) ?></span></td>
                     <td class="td-clip" title="<?= htmlspecialchars($c['name'] ?? '', ENT_QUOTES) ?>"><strong><?= htmlspecialchars($c['name'] ?? '(untitled)', ENT_QUOTES) ?></strong></td>
-                    <td><strong style="color:#fff;font-size:15px"><?= number_format((int) $c['cnt']) ?></strong></td>
-                    <td style="color:#888;white-space:nowrap"><?= $lastTs ? date('M d, H:i', $lastTs) : '-' ?></td>
+                    <td><strong style="color:var(--text);font-size:15px"><?= number_format((int) $c['cnt']) ?></strong></td>
+                    <td style="color:var(--faint);white-space:nowrap"><?= $lastTs ? date('M d, H:i', $lastTs) : '-' ?></td>
                     <td><a href="/admin/messages?channel=<?= urlencode($c['id']) ?>&from=<?= urlencode($from) ?>&to=<?= urlencode($to) ?>" class="btn btn-primary btn-sm">View messages →</a></td>
                 </tr>
             <?php endforeach; endif; ?>

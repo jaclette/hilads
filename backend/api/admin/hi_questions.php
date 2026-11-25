@@ -61,30 +61,30 @@ admin_nav('/admin/hi-questions');
 <main class="admin-main">
   <?= flash_html() ?>
   <h1 class="page-title">Hi — question of the day</h1>
-  <p style="color:#888;max-width:820px">Once a day, Hilads posts one question in every city chat (local tips, <code>{city}</code> becomes the city's name) and one in World (comparing cities). The list rotates by date; with no question here, the built-in defaults are used.</p>
+  <p style="color:var(--faint);max-width:820px">Once a day, Hilads posts one question in every city chat (local tips, <code>{city}</code> becomes the city's name) and one in World (comparing cities). The list rotates by date; with no question here, the built-in defaults are used.</p>
   <form method="post" class="toolbar" style="margin:12px 0 24px">
     <?= csrf_input() ?><input type="hidden" name="do" value="switch">
     <label><input type="checkbox" name="enabled" value="1"<?= HiQuestions::enabled() ? ' checked' : '' ?>> Post the question of the day</label>
     <button class="btn btn-primary btn-sm">Save</button>
   </form>
   <?php foreach (['city' => 'City chats', 'world' => 'World'] as $scope => $title): ?>
-    <h2 style="font-size:15px;color:#fff;margin:24px 0 8px"><?= $esc($title) ?> — today: “<?= $esc(HiQuestions::render(HiQuestions::textFor($scope, $today), $scope === 'city' ? 'Saigon' : null)) ?>”</h2>
+    <h2 style="font-size:15px;color:var(--text);margin:24px 0 8px"><?= $esc($title) ?> — today: “<?= $esc(HiQuestions::render(HiQuestions::textFor($scope, $today), $scope === 'city' ? 'Saigon' : null)) ?>”</h2>
     <?php if ($by[$scope] === []): ?>
       <form method="post" style="margin-bottom:8px"><?= csrf_input() ?><input type="hidden" name="do" value="seed"><input type="hidden" name="scope" value="<?= $scope ?>">
-        <span style="color:#888">Using the <?= count($scope === 'world' ? HiQuestions::WORLD : HiQuestions::CITY) ?> built-in questions.</span>
+        <span style="color:var(--faint)">Using the <?= count($scope === 'world' ? HiQuestions::WORLD : HiQuestions::CITY) ?> built-in questions.</span>
         <button class="btn btn-secondary btn-sm">Copy them here to edit</button></form>
     <?php endif; ?>
     <div class="table-wrapper"><table><thead><tr><th>Order</th><th>Question</th><th>On</th><th></th></tr></thead><tbody>
       <?php foreach ($by[$scope] as $r): ?>
         <tr><form method="post"><?= csrf_input() ?><input type="hidden" name="do" value="save"><input type="hidden" name="id" value="<?= (int) $r['id'] ?>">
-          <td><input type="number" name="position" value="<?= (int) $r['position'] ?>" style="width:60px;background:#1a1a1a;border:1px solid #2a2a2a;color:#eee;padding:4px"></td>
-          <td><input type="text" name="text" value="<?= $esc($r['text']) ?>" maxlength="200" style="width:100%;min-width:420px;background:#1a1a1a;border:1px solid #2a2a2a;color:#eee;padding:6px"></td>
+          <td><input type="number" name="position" value="<?= (int) $r['position'] ?>" style="width:60px;background:var(--surface);border:1px solid var(--line);color:var(--text);padding:4px"></td>
+          <td><input type="text" name="text" value="<?= $esc($r['text']) ?>" maxlength="200" style="width:100%;min-width:420px;background:var(--surface);border:1px solid var(--line);color:var(--text);padding:6px"></td>
           <td><input type="checkbox" name="active" value="1"<?= ($r['active'] === true || $r['active'] === 't') ? ' checked' : '' ?>></td>
           <td class="td-actions"><button class="btn btn-secondary btn-sm">Save</button></form>
             <form method="post" onsubmit="return confirm('Delete this question?')"><?= csrf_input() ?><input type="hidden" name="do" value="delete"><input type="hidden" name="id" value="<?= (int) $r['id'] ?>"><button class="btn btn-danger btn-sm">Delete</button></form></td></tr>
       <?php endforeach; ?>
       <tr><form method="post"><?= csrf_input() ?><input type="hidden" name="do" value="add"><input type="hidden" name="scope" value="<?= $scope ?>">
-        <td></td><td><input type="text" name="text" maxlength="200" placeholder="<?= $scope === 'city' ? "Where's the best phở in {city}?" : 'What do people in your city eat for breakfast?' ?>" style="width:100%;min-width:420px;background:#1a1a1a;border:1px solid #2a2a2a;color:#eee;padding:6px"></td>
+        <td></td><td><input type="text" name="text" maxlength="200" placeholder="<?= $scope === 'city' ? "Where's the best phở in {city}?" : 'What do people in your city eat for breakfast?' ?>" style="width:100%;min-width:420px;background:var(--surface);border:1px solid var(--line);color:var(--text);padding:6px"></td>
         <td></td><td><button class="btn btn-primary btn-sm">Add</button></td></form></tr>
     </tbody></table></div>
   <?php endforeach; ?>

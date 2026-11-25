@@ -42,12 +42,12 @@ admin_nav('/admin/users');
 <div class="admin-main">
     <h1 class="page-title">Delete user</h1>
 
-    <div style="max-width:560px;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:10px;padding:24px;margin-top:8px">
+    <div style="max-width:560px;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:24px;margin-top:8px">
         <p style="font-size:16px;margin:0 0 16px">
             Delete <strong><?= htmlspecialchars($name, ENT_QUOTES) ?></strong>
-            <span style="color:#777">&lt;<?= htmlspecialchars($email, ENT_QUOTES) ?>&gt;</span>?
+            <span style="color:var(--faint)">&lt;<?= htmlspecialchars($email, ENT_QUOTES) ?>&gt;</span>?
         </p>
-        <ul style="color:#aaa;font-size:13px;line-height:1.8;margin:0 0 22px 18px;padding:0">
+        <ul style="color:var(--muted);font-size:13px;line-height:1.8;margin:0 0 22px 18px;padding:0">
             <li>Account is deactivated and signed out everywhere.</li>
             <li>They can't log back in or re-register with this email.</li>
             <li>Messages and events are preserved.</li>

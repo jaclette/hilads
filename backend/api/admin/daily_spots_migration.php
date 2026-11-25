@@ -29,7 +29,7 @@ daily_styles();
     <h1 class="page-title">🧳 Places migration</h1>
     <?php daily_subnav('/admin/daily/spots'); ?>
     <?= flash_html() ?>
-    <?php foreach ($report['errors'] as $e): ?><div class="form-card" style="border-color:#f87171">⚠️ <?= dh($e) ?></div><?php endforeach; ?>
+    <?php foreach ($report['errors'] as $e): ?><div class="form-card" style="border-color:var(--bad)">⚠️ <?= dh($e) ?></div><?php endforeach; ?>
     <p class="daily-muted"><?= $report['apply'] ? 'Applied. Below: what was done.' : 'Dry run: nothing has been written yet.' ?></p>
 
     <h3 style="margin:12px 0 8px">1. V1 pins → spots</h3>

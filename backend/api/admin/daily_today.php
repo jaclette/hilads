@@ -64,7 +64,7 @@ $proofCell = function (array $r) use ($cityName): string {
             ? '<a href="' . dh($r['selfie_url']) . '" target="_blank" title="Selfie"><img class="daily-thumb" style="width:40px;height:54px" src="' . dh(R2Uploader::thumbProxy($r['selfie_url'])) . '" alt="Selfie"></a>'
             : '')
         . '<div><strong>@' . dh($r['username'] ?: $r['display_name']) . '</strong> <span class="daily-muted">' . dh($label) . ' · ' . dh($cityName($r['city_id'])) . '</span>'
-        . ($r['edited_at'] ? ' <span class="badge" style="background:#3f3f46;color:#ddd">edited</span>' : '')
+        . ($r['edited_at'] ? ' <span class="badge" style="background:var(--surface-2);color:var(--text)">edited</span>' : '')
         . '<div style="margin-top:4px">' . ($r['caption'] !== null ? dh($r['caption']) : '<span class="daily-muted">no caption</span>') . '</div>'
         . ($r['price_amount'] !== null ? '<div class="daily-muted">' . dh(rtrim(rtrim((string) $r['price_amount'], '0'), '.') . ' ' . $r['price_currency']) . '</div>' : '')
         . (($r['place_id'] ?? null) !== null
@@ -88,18 +88,18 @@ daily_styles();
     <div class="form-card">
         <?php if ($challenge): ?>
             <div class="daily-muted"><?= dh($date) ?> · <?= dh(daily_window_label($date)) ?> · <?= floor($left / 3600) ?>h<?= sprintf('%02d', floor($left % 3600 / 60)) ?> left</div>
-            <div style="font-size:18px;font-weight:600;color:#fff;margin:6px 0"><?= dh(daily_text($full['text_i18n'])) ?></div>
+            <div style="font-size:18px;font-weight:600;color:var(--text);margin:6px 0"><?= dh(daily_text($full['text_i18n'])) ?></div>
             <a class="btn btn-secondary btn-sm" href="/admin/daily/<?= dh($challenge['id']) ?>">Open in the editor</a>
         <?php else: ?>
-            <div style="color:#f87171;font-weight:600">Nothing is live for <?= dh($date) ?>.</div>
+            <div style="color:var(--bad);font-weight:600">Nothing is live for <?= dh($date) ?>.</div>
         <?php endif; ?>
         <div class="daily-muted" style="margin-top:8px">Drop: <?= $run ? dh($run['status'] . ($run['source'] ? ' · ' . $run['source'] : '') . ($run['error'] ? ' · ' . $run['error'] : '')) : 'not run yet' ?></div>
     </div>
 
     <div class="stats-row">
         <div class="stat-card"><div class="stat-value"><?= $stats['approved'] ?></div><div class="stat-label">approved proofs</div></div>
-        <div class="stat-card"><div class="stat-value" style="<?= count($queue['pending']) ? 'color:#fcd34d' : '' ?>"><?= count($queue['pending']) ?></div><div class="stat-label">waiting for review</div></div>
-        <div class="stat-card"><div class="stat-value" style="<?= count($queue['reported']) ? 'color:#f87171' : '' ?>"><?= count($queue['reported']) ?></div><div class="stat-label">reported</div></div>
+        <div class="stat-card"><div class="stat-value" style="<?= count($queue['pending']) ? 'color:var(--warn)' : '' ?>"><?= count($queue['pending']) ?></div><div class="stat-label">waiting for review</div></div>
+        <div class="stat-card"><div class="stat-value" style="<?= count($queue['reported']) ? 'color:var(--bad)' : '' ?>"><?= count($queue['reported']) ?></div><div class="stat-label">reported</div></div>
         <?php foreach (array_slice($stats['byCity'], 0, 5, true) as $cid => $n): ?>
             <div class="stat-card"><div class="stat-value"><?= (int) $n ?></div><div class="stat-label"><?= dh($cityName($cid)) ?></div></div>
         <?php endforeach; ?>
@@ -129,7 +129,7 @@ daily_styles();
         <div class="table-wrapper"><table class="daily-stack"><tbody>
         <?php foreach ($queue['reported'] as $r): ?>
             <tr>
-                <td><?= $proofCell($r) ?><div style="margin-top:6px;color:#f87171"><?= (int) $r['report_count'] ?> report(s): <?= dh(str_replace(',', ', ', (string) $r['reasons'])) ?></div></td>
+                <td><?= $proofCell($r) ?><div style="margin-top:6px;color:var(--bad)"><?= (int) $r['report_count'] ?> report(s): <?= dh(str_replace(',', ', ', (string) $r['reasons'])) ?></div></td>
                 <td class="td-actions" style="min-width:300px">
                     <form method="POST" action="<?= $self ?>" style="display:inline"><?= csrf_input() ?>
                         <input type="hidden" name="action" value="dismiss_reports"><input type="hidden" name="proof_id" value="<?= dh($r['id']) ?>">
@@ -154,9 +154,9 @@ daily_styles();
                         <img src="<?= dh((string) $c['photo_url']) ?>" alt="" style="width:56px;height:56px;object-fit:cover;border-radius:6px">
                         <div>
                             <strong>@<?= dh((string) ($c['username'] ?? $c['display_name'])) ?></strong>
-                            <?= $c['hidden_at'] !== null ? '<span style="color:#f87171">· hidden</span>' : '' ?>
+                            <?= $c['hidden_at'] !== null ? '<span style="color:var(--bad)">· hidden</span>' : '' ?>
                             <div style="margin-top:4px;white-space:pre-wrap"><?= dh((string) $c['body']) ?></div>
-                            <div style="margin-top:6px;color:#f87171"><?= (int) $c['report_count'] ?> report(s): <?= dh(str_replace(',', ', ', (string) $c['reasons'])) ?></div>
+                            <div style="margin-top:6px;color:var(--bad)"><?= (int) $c['report_count'] ?> report(s): <?= dh(str_replace(',', ', ', (string) $c['reasons'])) ?></div>
                         </div>
                     </div>
                 </td>

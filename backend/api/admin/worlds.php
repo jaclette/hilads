@@ -85,14 +85,14 @@ worlds_styles();
             <h3 style="margin-bottom:8px">Import</h3>
             <?php foreach ($report as $r): ?>
                 <p><strong><?= wh($r['date']) ?></strong>
-                    <?= $r['ok'] ? (!empty($r['text']) ? '<span style="color:#4ade80">✓ text only: version ' . (int) $r['version'] . ' updated, slides redrawn</span>'
-                                                         : '<span style="color:#4ade80">✓ version ' . (int) $r['version'] . ' saved, slides rendered</span>')
-                                 : (!empty($r['skipped']) ? '<span style="color:#fbbf24">skipped</span>' : '<span style="color:#f87171">not imported</span>') ?>
+                    <?= $r['ok'] ? (!empty($r['text']) ? '<span style="color:var(--ok)">✓ text only: version ' . (int) $r['version'] . ' updated, slides redrawn</span>'
+                                                         : '<span style="color:var(--ok)">✓ version ' . (int) $r['version'] . ' saved, slides rendered</span>')
+                                 : (!empty($r['skipped']) ? '<span style="color:var(--warn)">skipped</span>' : '<span style="color:var(--bad)">not imported</span>') ?>
                     <?php $t = DailyClock::isValidDate($r['date']) ? DwStudio::topicByDate($r['date']) : null; if ($t): ?>
                         · <a href="/admin/worlds/<?= $t['id'] ?>">open</a><?php endif; ?></p>
                 <ul class="worlds-report">
-                    <?php foreach ($r['errors'] as $e): ?><li style="color:#f87171"><?= wh($e) ?></li><?php endforeach; ?>
-                    <?php foreach ($r['warnings'] as $w): ?><li style="color:#fbbf24"><?= wh($w) ?></li><?php endforeach; ?>
+                    <?php foreach ($r['errors'] as $e): ?><li style="color:var(--bad)"><?= wh($e) ?></li><?php endforeach; ?>
+                    <?php foreach ($r['warnings'] as $w): ?><li style="color:var(--warn)"><?= wh($w) ?></li><?php endforeach; ?>
                 </ul>
             <?php endforeach; ?>
         </div>
@@ -196,7 +196,7 @@ document.getElementById('worlds-import').addEventListener('submit', async (e) =>
             const notes = report.flatMap((r) => r.warnings);
             if (notes.length) {
                 const ul = document.createElement('ul');
-                ul.style.cssText = 'color:#fbbf24;margin:2px 0 6px 16px';
+                ul.style.cssText = 'color:var(--warn);margin:2px 0 6px 16px';
                 for (const w of notes) { const n = document.createElement('li'); n.textContent = w; ul.appendChild(n); }
                 li.appendChild(ul);
             }

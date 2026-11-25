@@ -11,7 +11,7 @@ require_once __DIR__ . '/daily_common.php';
 
 $self   = '/admin/daily/events';
 $editId = isset($_GET['id']) ? (string) $_GET['id'] : null;
-$by     = (string) (getenv('ADMIN_USERNAME') ?: 'admin');
+$by     = admin_actor();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     csrf_verify();

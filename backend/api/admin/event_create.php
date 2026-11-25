@@ -135,16 +135,16 @@ admin_head('Create Hi plan');
 admin_nav('/admin/events');
 ?>
 <style>
-.kind-toggle { display:flex; gap:0; border:1px solid #2a2a2a; border-radius:6px; overflow:hidden; margin-bottom:24px; width:fit-content; }
-.kind-toggle label { display:flex; align-items:center; gap:8px; padding:8px 20px; cursor:pointer; font-size:13px; color:#888; transition:all .15s; }
+.kind-toggle { display:flex; gap:0; border:1px solid var(--line); border-radius:6px; overflow:hidden; margin-bottom:24px; width:fit-content; }
+.kind-toggle label { display:flex; align-items:center; gap:8px; padding:8px 20px; cursor:pointer; font-size:13px; color:var(--faint); transition:all .15s; }
 .kind-toggle input[type=radio] { display:none; }
-.kind-toggle input[type=radio]:checked + span { color:#fff; }
-.kind-toggle label:has(input:checked) { background:#252525; color:#fff; }
+.kind-toggle input[type=radio]:checked + span { color:var(--text); }
+.kind-toggle label:has(input:checked) { background:var(--surface-2); color:var(--text); }
 .weekdays-row { display:flex; gap:6px; flex-wrap:wrap; }
 .weekday-cb { display:none; }
-.weekday-label { display:inline-flex; align-items:center; justify-content:center; width:44px; height:32px; border:1px solid #2a2a2a; border-radius:5px; font-size:12px; color:#666; cursor:pointer; transition:all .15s; }
-.weekday-cb:checked + .weekday-label { background:rgba(255,122,60,.2); border-color:#FF7A3C; color:#FF7A3C; }
-.section-divider { border:none; border-top:1px solid #222; margin:20px 0; }
+.weekday-label { display:inline-flex; align-items:center; justify-content:center; width:44px; height:32px; border:1px solid var(--line); border-radius:5px; font-size:12px; color:var(--faint); cursor:pointer; transition:all .15s; }
+.weekday-cb:checked + .weekday-label { background:rgba(255,122,60,.2); border-color:var(--brand); color:var(--brand-text); }
+.section-divider { border:none; border-top:1px solid var(--line); margin:20px 0; }
 #recurring-fields { display:none; }
 #oneshot-fields   { display:block; }
 </style>
@@ -252,12 +252,12 @@ admin_nav('/admin/events');
             <div class="form-group">
                 <label>Recurrence</label>
                 <div style="display:flex;gap:8px">
-                    <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13px;color:#ccc">
+                    <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13px;color:var(--muted)">
                         <input type="radio" name="recurrence_type" value="daily"
                                <?= ($post['recurrence_type'] ?? 'daily') === 'daily' ? 'checked' : '' ?>
                                onchange="setRecurrence('daily')"> Daily
                     </label>
-                    <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13px;color:#ccc">
+                    <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13px;color:var(--muted)">
                         <input type="radio" name="recurrence_type" value="weekly"
                                <?= ($post['recurrence_type'] ?? '') === 'weekly' ? 'checked' : '' ?>
                                onchange="setRecurrence('weekly')"> Weekly
@@ -296,7 +296,7 @@ admin_nav('/admin/events');
                            value="<?= htmlspecialchars($post['starts_on'] ?? $defaultStartsOn, ENT_QUOTES) ?>">
                 </div>
                 <div class="form-group" style="flex:1">
-                    <label for="ends_on">Ends on <span style="color:#555">(optional)</span></label>
+                    <label for="ends_on">Ends on <span style="color:var(--faint)">(optional)</span></label>
                     <input type="date" id="ends_on" name="ends_on"
                            value="<?= htmlspecialchars($post['ends_on'] ?? '', ENT_QUOTES) ?>">
                     <div class="hint">Leave blank for indefinite recurrence</div>

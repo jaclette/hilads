@@ -104,12 +104,12 @@ admin_nav('/admin/users');
 
     <!-- ── Current roles ──────────────────────────────────────────────────── -->
     <div class="form-card" style="max-width:520px; margin-bottom:24px">
-        <h3 class="info-section" style="font-size:12px; color:#555; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:14px">
+        <h3 class="info-section" style="font-size:12px; color:var(--faint); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:14px">
             Current Roles
         </h3>
 
         <?php if (empty($roles)): ?>
-            <p style="color:#555; font-size:13px">No roles assigned. This user is a regular member.</p>
+            <p style="color:var(--faint); font-size:13px">No roles assigned. This user is a regular member.</p>
         <?php else: ?>
             <div class="table-wrapper">
                 <table>
@@ -126,7 +126,7 @@ admin_nav('/admin/users');
                             <tr>
                                 <td><?= htmlspecialchars($r['city_name'], ENT_QUOTES) ?></td>
                                 <td><span class="badge badge-ambassador">⭐ Host</span></td>
-                                <td style="color:#666; white-space:nowrap">
+                                <td style="color:var(--faint); white-space:nowrap">
                                     <?= date('Y-m-d', strtotime($r['created_at'])) ?>
                                 </td>
                                 <td>
@@ -147,7 +147,7 @@ admin_nav('/admin/users');
 
     <!-- ── Add role ───────────────────────────────────────────────────────── -->
     <div class="form-card" style="max-width:520px">
-        <h3 style="font-size:12px; color:#555; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:14px">
+        <h3 style="font-size:12px; color:var(--faint); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:14px">
             Add Role
         </h3>
 

@@ -81,7 +81,7 @@ daily_styles();
                         <td style="width:80px"><a href="<?= dh($pr['photo_url']) ?>" target="_blank"><img class="daily-thumb" src="<?= dh(R2Uploader::thumbProxy($pr['photo_url'])) ?>" alt=""></a></td>
                         <td><strong>@<?= dh($pr['username'] ?: $pr['display_name']) ?></strong>
                             <?= daily_state_badge($pr['moderation_status']) ?>
-                            <?= DailyProofRepository::bool($pr['is_seed']) ? '<span class="badge" style="background:#1e3a5f;color:#93c5fd">seed</span>' : '' ?>
+                            <?= DailyProofRepository::bool($pr['is_seed']) ? '<span class="badge" style="background:var(--info-soft);color:var(--info)">seed</span>' : '' ?>
                             <div><?= $pr['caption'] !== null ? dh($pr['caption']) : '<span class="daily-muted">no caption</span>' ?></div>
                             <div class="daily-muted">
                                 <?= dh(daily_theme_label($pr['theme'], $pr['challenge_date'])) ?>

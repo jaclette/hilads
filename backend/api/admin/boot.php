@@ -5,14 +5,34 @@ declare(strict_types=1);
 // Admin backoffice bootstrap.
 // Loaded from public/index.php when URI starts with /admin.
 
+$uri    = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
+$method = strtoupper($_SERVER['REQUEST_METHOD'] ?? 'GET');
+
+// Static files of the back office (CSS, JS), no session needed.
+if (str_starts_with($uri, '/admin/assets/')) {
+    require __DIR__ . '/assets.php';
+    exit;
+}
+
 session_name('hilads_admin');
 session_set_cookie_params([
     'lifetime' => 0,          // session cookie (browser close = logout)
     'path'     => '/admin',
-    'secure'   => isset($_SERVER['HTTPS']),
+    'secure'   => isset($_SERVER['HTTPS']) || ($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '') === 'https',
     'httponly' => true,
     'samesite' => 'Strict',
 ]);
+// Sessions in the database (admin_sessions) so a deploy no longer signs everyone out; the
+// file sessions stay only until migrate.php has created the table.
+try {
+    if (Database::pdo()->query("SELECT to_regclass('admin_sessions') IS NOT NULL")->fetchColumn()) {
+        ini_set('session.gc_probability', '1');
+        ini_set('session.gc_divisor', '100');
+        session_set_save_handler(new AdminSessionHandler(), true);
+    }
+} catch (\Throwable $e) {
+    error_log('[admin] database sessions unavailable: ' . $e->getMessage());
+}
 session_start();
 
 require_once __DIR__ . '/auth.php';
@@ -23,9 +43,6 @@ require_once __DIR__ . '/layout.php';
 // Ops timezone: all admin timestamps (When / Created / Last) and the per-day
 // activity buckets render in Saigon time, not UTC.
 date_default_timezone_set('Asia/Ho_Chi_Minh');
-
-$uri    = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
-$method = strtoupper($_SERVER['REQUEST_METHOD'] ?? 'GET');
 
 // ── Avatar upload helper ───────────────────────────────────────────────────────
 // Validates and uploads an avatar $_FILES entry to R2.
@@ -79,6 +96,30 @@ if ($uri === '/admin' || $uri === '/admin/') {
 
 } elseif ($uri === '/admin/login') {
     require __DIR__ . '/login.php';
+
+} elseif ($uri === '/admin/login/code') {
+    require __DIR__ . '/login_code.php';
+
+} elseif ($uri === '/admin/login/setup') {
+    require __DIR__ . '/login_setup.php';
+
+} elseif ($uri === '/admin/account') {
+    require __DIR__ . '/account.php';
+
+} elseif ($uri === '/admin/account/2fa') {
+    require __DIR__ . '/account_2fa.php';
+
+} elseif ($uri === '/admin/settings' || $uri === '/admin/settings/admins') {
+    require __DIR__ . '/settings_admins.php';
+
+} elseif ($uri === '/admin/audit') {
+    require __DIR__ . '/audit.php';
+
+} elseif ($uri === '/admin/danger') {
+    require __DIR__ . '/danger.php';
+
+} elseif ($uri === '/admin/search') {
+    require __DIR__ . '/search.php';
 
 } elseif ($uri === '/admin/logout' && $method === 'POST') {
     require __DIR__ . '/logout.php';
@@ -353,7 +394,7 @@ if ($uri === '/admin' || $uri === '/admin/') {
     http_response_code(404);
     admin_head('Not Found');
     echo '<div class="admin-main"><h1 class="page-title">404 Not Found</h1>';
-    echo '<p style="color:#666">The page you\'re looking for doesn\'t exist.</p>';
+    echo '<p style="color:var(--faint)">The page you\'re looking for doesn\'t exist.</p>';
     echo '<p style="margin-top:12px"><a href="/admin" class="btn btn-secondary btn-sm">← Dashboard</a></p>';
     echo '</div>';
     admin_foot();

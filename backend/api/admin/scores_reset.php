@@ -28,12 +28,14 @@ csrf_verify();
 // pair and we'd only get the debrief event if a fresh rating arrived.
 
 $pdo  = Database::pdo();
-$back = ($_POST['back'] ?? '') === 'scoring' ? '/admin/scoring' : '/admin';
-// Admin › Scoring asks to type RESET (the dashboard keeps its confirm dialog).
-if ($back === '/admin/scoring' && trim((string) ($_POST['confirm_text'] ?? '')) !== 'RESET') {
-    flash_set('error', 'Type RESET to confirm - nothing was changed.');
-    admin_redirect($back);
-}
+// Only from System › Danger zone, super admins, with the phrase typed (checked here, not only in the page).
+$back = '/admin/danger';
+admin_require_super($back);
+admin_require_phrase('RESET ALL SCORES', $back);
+$before = [
+    'score_events' => (int) $pdo->query("SELECT count(*) FROM score_events")->fetchColumn(),
+    'players_with_points' => (int) $pdo->query("SELECT count(*) FROM users WHERE score_alltime > 0 OR score_month > 0")->fetchColumn(),
+];
 $withSeasons = !empty($_POST['with_seasons']);
 $seasons = 0;
 // Keep the points earned on today's challenge under the v2 rules (players who already played
@@ -101,6 +103,10 @@ try {
 if ($todayChallenge !== null) {
     try { MonthlyRankService::recalcAll(); } catch (\Throwable) { /* ranks refresh on the next score change */ }
 }
+AdminAuth::log('scores.reset_all', 'scores', null, $before, [
+    'deleted_score_events' => $deleted, 'kept_today_players' => $kept, 'season_results_deleted' => $seasons,
+    'keep_today' => $todayChallenge !== null, 'with_seasons' => $withSeasons,
+]);
 error_log("[admin-scores-reset] wiped {$deleted} score_events + reset all user aggregates" . ($withSeasons ? " + {$seasons} season results" : '')
           . ($todayChallenge !== null ? " (kept today's points for {$kept} players)" : ''));
 flash_set('success', "All scores reset to 0. Deleted {$deleted} score events" . ($withSeasons ? " and {$seasons} season results" : '')

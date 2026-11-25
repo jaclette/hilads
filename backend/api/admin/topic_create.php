@@ -105,7 +105,7 @@ admin_nav('/admin/topics');
 
         <!-- City -->
         <div class="form-group">
-            <label for="city_id">City <span style="color:#ef4444">*</span></label>
+            <label for="city_id">City <span style="color:var(--bad)">*</span></label>
             <select id="city_id" name="city_id" onchange="loadMembers(this.value)" required>
                 <option value="">- Select city -</option>
                 <?php foreach ($cities as $c): ?>
@@ -120,7 +120,7 @@ admin_nav('/admin/topics');
 
         <!-- Title -->
         <div class="form-group">
-            <label for="title">Title <span style="color:#ef4444">*</span></label>
+            <label for="title">Title <span style="color:var(--bad)">*</span></label>
             <input type="text" id="title" name="title" maxlength="100" required
                    value="<?= htmlspecialchars($post['title'] ?? '', ENT_QUOTES) ?>"
                    placeholder="e.g. Best rooftop bars in the city?">
@@ -142,7 +142,7 @@ admin_nav('/admin/topics');
 
         <!-- Description -->
         <div class="form-group">
-            <label for="description">Description <span style="color:#555">(optional)</span></label>
+            <label for="description">Description <span style="color:var(--faint)">(optional)</span></label>
             <textarea id="description" name="description" maxlength="500"
                       placeholder="Short context for this conversation…"><?= htmlspecialchars($post['description'] ?? '', ENT_QUOTES) ?></textarea>
             <div class="hint">Max 500 characters.</div>
@@ -166,7 +166,7 @@ admin_nav('/admin/topics');
 
         <!-- Creator -->
         <div class="form-group">
-            <label for="creator_id">Creator <span style="color:#555">(optional)</span></label>
+            <label for="creator_id">Creator <span style="color:var(--faint)">(optional)</span></label>
             <select id="creator_id" name="creator_id">
                 <option value="">- Admin / no specific creator -</option>
                 <?php

@@ -110,13 +110,13 @@ admin_nav('/admin/challenges');
     ?>
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
         <h1 class="page-title" style="margin-bottom:0">
-            <span class="badge" style="background:#ef444422;color:#ef4444;border:1px solid #ef444455">Challenges</span>
+            <span class="badge" style="background:#ef444422;color:var(--bad);border:1px solid #ef444455">Challenges</span>
             <?= htmlspecialchars($cityRow['name'] ?? '(untitled)', ENT_QUOTES) ?>
-            <span style="color:#555;font-size:14px;font-weight:400"><?= number_format(count($items)) ?> challenges · <?= htmlspecialchars($rangeLabel, ENT_QUOTES) ?></span>
+            <span style="color:var(--faint);font-size:14px;font-weight:400"><?= number_format(count($items)) ?> challenges · <?= htmlspecialchars($rangeLabel, ENT_QUOTES) ?></span>
         </h1>
         <a href="<?= $backHref ?>" class="btn btn-secondary btn-sm">← Back</a>
     </div>
-    <div class="td-mono" style="color:#555;margin-bottom:16px;font-size:11px"><?= htmlspecialchars($cityRow['id'], ENT_QUOTES) ?></div>
+    <div class="td-mono" style="color:var(--faint);margin-bottom:16px;font-size:11px"><?= htmlspecialchars($cityRow['id'], ENT_QUOTES) ?></div>
 
     <?= flash_html() ?>
 
@@ -146,25 +146,25 @@ admin_nav('/admin/challenges');
                 $pcount    = (int) ($it['participant_count'] ?? 0);
                 ?>
                 <tr<?= $deleted ? ' style="opacity:0.45"' : '' ?>>
-                    <td style="color:#888;white-space:nowrap"><?= date('M d, H:i', (int) $it['created_ts']) ?></td>
+                    <td style="color:var(--faint);white-space:nowrap"><?= date('M d, H:i', (int) $it['created_ts']) ?></td>
                     <td class="td-clip" title="<?= htmlspecialchars($it['title'], ENT_QUOTES) ?>">
                         <?= $icon ?> <strong><?= htmlspecialchars($it['title'], ENT_QUOTES) ?></strong>
-                        <?php if ($intl): ?><span class="badge" style="background:#38bdf822;color:#38bdf8;border:1px solid #38bdf855;margin-left:4px">🌐</span><?php endif; ?>
+                        <?php if ($intl): ?><span class="badge" style="background:#38bdf822;color:var(--info);border:1px solid #38bdf855;margin-left:4px">🌐</span><?php endif; ?>
                         <?php if ($isGroup): ?>
-                            <span class="badge" style="background:#a78bfa22;color:#a78bfa;border:1px solid #a78bfa55;margin-left:4px">GROUP</span>
-                            <span class="badge" style="background:#ffffff11;color:#aaa;border:1px solid #ffffff22;margin-left:4px"><?= $usesProof ? '📸 photo' : '📍 meet' ?></span>
-                            <span class="badge" style="background:#ffffff11;color:#aaa;border:1px solid #ffffff22;margin-left:4px">👥 <?= $pcount ?></span>
+                            <span class="badge" style="background:#a78bfa22;color:var(--violet);border:1px solid #a78bfa55;margin-left:4px">GROUP</span>
+                            <span class="badge" style="background:#ffffff11;color:var(--muted);border:1px solid #ffffff22;margin-left:4px"><?= $usesProof ? '📸 photo' : '📍 meet' ?></span>
+                            <span class="badge" style="background:#ffffff11;color:var(--muted);border:1px solid #ffffff22;margin-left:4px">👥 <?= $pcount ?></span>
                         <?php else: ?>
-                            <span class="badge" style="background:#ffffff0d;color:#777;border:1px solid #ffffff14;margin-left:4px"><?= $usesProof ? '📸 photo' : '📍 meet' ?> · 1-1</span>
+                            <span class="badge" style="background:#ffffff0d;color:var(--faint);border:1px solid #ffffff14;margin-left:4px"><?= $usesProof ? '📸 photo' : '📍 meet' ?> · 1-1</span>
                         <?php endif; ?>
                     </td>
-                    <td style="color:#888"><?= htmlspecialchars($TYPE_LABEL[$it['challenge_type']] ?? ($it['challenge_type'] ?? '-'), ENT_QUOTES) ?></td>
+                    <td style="color:var(--faint)"><?= htmlspecialchars($TYPE_LABEL[$it['challenge_type']] ?? ($it['challenge_type'] ?? '-'), ENT_QUOTES) ?></td>
                     <td class="td-clip"><?= htmlspecialchars($creator, ENT_QUOTES) ?></td>
                     <td>
                         <?php if ($deleted): ?>
                             <span class="badge badge-deleted">Deleted</span>
                         <?php elseif ($it['status'] === 'validated'): ?>
-                            <span class="badge" style="background:#22c55e22;color:#4ade80;border:1px solid #22c55e33">✓ Validated</span>
+                            <span class="badge" style="background:#22c55e22;color:var(--ok);border:1px solid #22c55e33">✓ Validated</span>
                         <?php else: ?>
                             <span class="badge badge-active">Open</span>
                         <?php endif; ?>
@@ -184,10 +184,10 @@ admin_nav('/admin/challenges');
                         $winnerUid = $groupWinner[$it['channel_id']] ?? null;
                         ?>
                         <?php if (!$usesProof): ?>
-                            <span style="color:#555">—</span>
+                            <span style="color:var(--faint)">—</span>
                         <?php elseif ($isGroup): ?>
                             <?php if (empty($subs)): ?>
-                                <span style="color:#888;font-size:12px">No photos yet</span>
+                                <span style="color:var(--faint);font-size:12px">No photos yet</span>
                             <?php else: ?>
                                 <div style="display:flex;flex-wrap:wrap;gap:8px;max-width:340px">
                                 <?php foreach ($subs as $s):
@@ -195,9 +195,9 @@ admin_nav('/admin/challenges');
                                     <div style="width:78px;<?= $isWin ? 'outline:2px solid #FFC93C;border-radius:6px;outline-offset:1px' : '' ?>">
                                         <a href="<?= htmlspecialchars($s['media_url'], ENT_QUOTES) ?>" target="_blank" rel="noopener" title="Open full size">
                                             <img src="<?= htmlspecialchars($s['media_url'], ENT_QUOTES) ?>" alt="submission"
-                                                 style="width:78px;height:78px;object-fit:cover;border-radius:6px;border:1px solid #2a2a2a;display:block">
+                                                 style="width:78px;height:78px;object-fit:cover;border-radius:6px;border:1px solid var(--line);display:block">
                                         </a>
-                                        <div style="font-size:10px;color:#aaa;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:78px">
+                                        <div style="font-size:10px;color:var(--muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:78px">
                                             <?= $isWin ? '👑 ' : '' ?><?= htmlspecialchars($s['display_name'] ?? '?', ENT_QUOTES) ?>
                                         </div>
                                         <form method="POST" action="/admin/challenges/<?= urlencode($it['channel_id']) ?>/proof/<?= urlencode($s['proof_id']) ?>/delete"
@@ -210,19 +210,19 @@ admin_nav('/admin/challenges');
                                 </div>
                             <?php endif; ?>
                         <?php elseif (empty($it['proof_media_url'])): ?>
-                            <span style="color:#888;font-size:12px">No proof yet</span>
+                            <span style="color:var(--faint);font-size:12px">No proof yet</span>
                         <?php else: ?>
                             <div style="display:flex;gap:8px;align-items:flex-start">
                                 <a href="<?= htmlspecialchars($it['proof_media_url'], ENT_QUOTES) ?>" target="_blank" rel="noopener" title="Open full size">
                                     <img src="<?= htmlspecialchars($it['proof_media_url'], ENT_QUOTES) ?>" alt="proof"
-                                         style="width:56px;height:56px;object-fit:cover;border-radius:6px;border:1px solid #2a2a2a;display:block">
+                                         style="width:56px;height:56px;object-fit:cover;border-radius:6px;border:1px solid var(--line);display:block">
                                 </a>
                                 <div class="td-actions" style="flex-direction:column;gap:6px">
                                     <form method="POST" action="/admin/challenges/<?= urlencode($it['channel_id']) ?>/proof/replace"
                                           enctype="multipart/form-data" style="display:flex;flex-direction:column;gap:3px">
                                         <?= $proofCtx ?>
                                         <input type="file" name="photo" accept="image/jpeg,image/png,image/webp" required
-                                               style="font-size:11px;max-width:150px;color:#aaa">
+                                               style="font-size:11px;max-width:150px;color:var(--muted)">
                                         <button type="submit" class="btn btn-secondary btn-sm">Replace</button>
                                     </form>
                                     <form method="POST" action="/admin/challenges/<?= urlencode($it['channel_id']) ?>/proof/delete"
@@ -265,8 +265,8 @@ admin_nav('/admin/challenges');
 <?php else:
     // ── Default: challenges created per city over a date range ──────────────
     ?>
-    <h1 class="page-title">Challenges <span style="color:#555;font-size:14px;font-weight:400">by city</span></h1>
-    <p style="color:#777;margin:-8px 0 16px;font-size:13px">How many challenges were created in each city over a date range. Click a city to list and moderate them.</p>
+    <h1 class="page-title">Challenges <span style="color:var(--faint);font-size:14px;font-weight:400">by city</span></h1>
+    <p style="color:var(--faint);margin:-8px 0 16px;font-size:13px">How many challenges were created in each city over a date range. Click a city to list and moderate them.</p>
 
     <?= flash_html() ?>
 

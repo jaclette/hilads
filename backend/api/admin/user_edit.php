@@ -320,7 +320,7 @@ admin_nav('/admin/users');
                            style="display:none"
                            onchange="handleAvatarChange(this)">
                     <?php if ($currentPhoto): ?>
-                        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13px;color:#aaa">
+                        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13px;color:var(--muted)">
                             <input type="checkbox" name="remove_avatar" value="1" id="remove_avatar" style="width:auto"
                                    onchange="handleRemoveToggle(this)">
                             Remove avatar
@@ -334,19 +334,19 @@ admin_nav('/admin/users');
         <hr class="section-divider">
 
         <div class="form-group">
-            <label for="display_name">Display name <span style="color:#f87171">*</span></label>
+            <label for="display_name">Display name <span style="color:var(--bad)">*</span></label>
             <input type="text" id="display_name" name="display_name" maxlength="40" required
                    value="<?= htmlspecialchars($post['display_name'] ?? '', ENT_QUOTES) ?>">
         </div>
 
         <div class="form-group">
-            <label for="email">Email <span style="color:#f87171">*</span></label>
+            <label for="email">Email <span style="color:var(--bad)">*</span></label>
             <input type="email" id="email" name="email" required
                    value="<?= htmlspecialchars($post['email'] ?? '', ENT_QUOTES) ?>">
         </div>
 
         <div class="form-group">
-            <label for="password">New password <span style="color:#555">(leave blank to keep current)</span></label>
+            <label for="password">New password <span style="color:var(--faint)">(leave blank to keep current)</span></label>
             <input type="password" id="password" name="password" minlength="8" maxlength="72"
                    placeholder="Leave blank to keep unchanged">
         </div>
@@ -382,9 +382,9 @@ admin_nav('/admin/users');
         ?>
         <div class="form-group">
             <label>Live city (current_city_id)</label>
-            <p style="margin:-2px 0 8px;color:#888;font-size:12px">
+            <p style="margin:-2px 0 8px;color:var(--faint);font-size:12px">
                 Drives city-member status, the NOW screen, and the city chat.
-                Current: <strong style="color:#ddd"><?= htmlspecialchars($currentCityLbl, ENT_QUOTES) ?></strong>
+                Current: <strong style="color:var(--text)"><?= htmlspecialchars($currentCityLbl, ENT_QUOTES) ?></strong>
             </p>
             <input
                 type="text"
@@ -429,7 +429,7 @@ admin_nav('/admin/users');
         </div>
 
         <div class="form-group">
-            <label for="birth_year">Birth year <span style="color:#555">(optional)</span></label>
+            <label for="birth_year">Birth year <span style="color:var(--faint)">(optional)</span></label>
             <input type="number" id="birth_year" name="birth_year" min="1900" max="<?= (int)date('Y') - 13 ?>"
                    value="<?= htmlspecialchars((string)($post['birth_year'] ?? ''), ENT_QUOTES) ?>"
                    style="max-width:140px">
@@ -453,7 +453,7 @@ admin_nav('/admin/users');
         <div class="form-group">
             <label style="display:flex;align-items:center;gap:10px;cursor:pointer">
                 <input type="checkbox" name="is_fake" value="1" <?= !empty($post['is_fake']) ? 'checked' : '' ?> style="width:auto">
-                <span>Fake / seeded user <span style="color:#555;font-size:11px">(admin-only, never shown to users)</span></span>
+                <span>Fake / seeded user <span style="color:var(--faint);font-size:11px">(admin-only, never shown to users)</span></span>
             </label>
         </div>
 
@@ -466,7 +466,7 @@ admin_nav('/admin/users');
              month value changes, so the value lands in the right bucket. -->
         <div style="margin-bottom:8px">
             <h3 style="margin:0 0 4px;font-size:14px;font-weight:700">🏆 Leaderboard score</h3>
-            <p style="margin:0 0 12px;color:#888;font-size:12px">
+            <p style="margin:0 0 12px;color:var(--faint);font-size:12px">
                 Direct override of <code>users.score_alltime</code> / <code>users.score_month</code>.
                 Bypasses the <code>score_events</code> ledger. Leave blank to keep current.
             </p>
@@ -524,18 +524,18 @@ admin_nav('/admin/users');
 .avatar-picker { display:flex; align-items:center; gap:20px; }
 .avatar-preview {
     width:80px; height:80px; border-radius:50%;
-    background:#1a1a1a; border:2px dashed #333;
+    background:var(--surface); border:2px dashed var(--line);
     display:flex; align-items:center; justify-content:center;
     flex-shrink:0; overflow:hidden; transition:border-color .15s;
 }
-.avatar-preview:has(img:not([style*="display:none"])) { border-style:solid; border-color:#FF7A3C; }
-.avatar-placeholder { color:#444; display:flex; align-items:center; justify-content:center; }
+.avatar-preview:has(img:not([style*="display:none"])) { border-style:solid; border-color:var(--brand); }
+.avatar-placeholder { color:var(--faint); display:flex; align-items:center; justify-content:center; }
 .avatar-actions { display:flex; flex-direction:column; gap:8px; align-items:flex-start; }
 
 /* Interests */
 .interests-grid { display:flex; flex-wrap:wrap; gap:6px; }
-.interest-item { display:flex; align-items:center; gap:5px; padding:4px 10px; border:1px solid #2a2a2a; border-radius:5px; font-size:12px; color:#888; cursor:pointer; }
-.interest-item:has(input:checked) { border-color:#FF7A3C; color:#FF7A3C; background:rgba(255,122,60,.08); }
+.interest-item { display:flex; align-items:center; gap:5px; padding:4px 10px; border:1px solid var(--line); border-radius:5px; font-size:12px; color:var(--faint); cursor:pointer; }
+.interest-item:has(input:checked) { border-color:var(--brand); color:var(--brand-text); background:rgba(255,122,60,.08); }
 .interest-item input[type=checkbox] { display:none; }
 </style>
 

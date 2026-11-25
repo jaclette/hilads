@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 // Back office audit log: who changed what (admin_audit_log). "Who" is the
-// shared ADMIN_USERNAME plus the IP (AUDIT Q10), or "cli" / "auto-approve".
+// signed-in admin account plus the IP, or "cli" / "auto-approve".
 
 admin_require_login();
 require_once __DIR__ . '/daily_common.php';

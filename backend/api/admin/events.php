@@ -119,7 +119,7 @@ admin_nav('/admin/events');
 ?>
 <div class="admin-main">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
-        <h1 class="page-title" style="margin-bottom:0">Hi plan <span style="color:#555;font-size:14px;font-weight:400"><?= number_format($total) ?> total</span></h1>
+        <h1 class="page-title" style="margin-bottom:0">Hi plan <span style="color:var(--faint);font-size:14px;font-weight:400"><?= number_format($total) ?> total</span></h1>
         <a href="/admin/events/create" class="btn btn-primary btn-sm">+ Create Hi plan</a>
     </div>
 
@@ -220,36 +220,36 @@ admin_nav('/admin/events');
                             <td class="td-clip" title="<?= htmlspecialchars($ev['title'], ENT_QUOTES) ?>">
                                 <strong><?= htmlspecialchars($ev['title'], ENT_QUOTES) ?></strong>
                             </td>
-                            <td style="color:#888"><?= htmlspecialchars($ev['city_name'] ?? '-', ENT_QUOTES) ?></td>
-                            <td style="color:#666"><?= htmlspecialchars($ev['event_type'] ?? '-', ENT_QUOTES) ?></td>
+                            <td style="color:var(--faint)"><?= htmlspecialchars($ev['city_name'] ?? '-', ENT_QUOTES) ?></td>
+                            <td style="color:var(--faint)"><?= htmlspecialchars($ev['event_type'] ?? '-', ENT_QUOTES) ?></td>
                             <td>
                                 <?php if ($isRecurring): ?>
                                     <span class="badge badge-recurring">↻ Recurring</span>
                                 <?php else: ?>
-                                    <span style="color:#555">One-shot</span>
+                                    <span style="color:var(--faint)">One-shot</span>
                                 <?php endif; ?>
                             </td>
                             <td class="td-clip">
                                 <?php if ($ev['created_by'] !== null): ?>
                                     <?php $creatorName = $ev['creator_display_name'] ?: $ev['host_nickname'] ?: substr($ev['created_by'], 0, 10) . '…'; ?>
                                     <span class="badge badge-registered" title="<?= htmlspecialchars($ev['created_by'], ENT_QUOTES) ?>">Reg.</span>
-                                    <span style="color:#ccc"><?= htmlspecialchars($creatorName, ENT_QUOTES) ?></span>
+                                    <span style="color:var(--muted)"><?= htmlspecialchars($creatorName, ENT_QUOTES) ?></span>
                                 <?php elseif ($ev['guest_id'] !== null): ?>
                                     <?php $creatorName = $ev['host_nickname'] ?: substr($ev['guest_id'], 0, 10) . '…'; ?>
                                     <span class="badge badge-guest" title="<?= htmlspecialchars($ev['guest_id'], ENT_QUOTES) ?>">Guest</span>
-                                    <span style="color:#888"><?= htmlspecialchars($creatorName, ENT_QUOTES) ?></span>
+                                    <span style="color:var(--faint)"><?= htmlspecialchars($creatorName, ENT_QUOTES) ?></span>
                                 <?php else: ?>
-                                    <span style="color:#444">-</span>
+                                    <span style="color:var(--faint)">-</span>
                                 <?php endif; ?>
                             </td>
-                            <td style="color:#888; white-space:nowrap">
+                            <td style="color:var(--faint); white-space:nowrap">
                                 <?= $startsTs > 0 ? date('M d, H:i', $startsTs) : '-' ?>
                             </td>
-                            <td style="color:#888; white-space:nowrap">
+                            <td style="color:var(--faint); white-space:nowrap">
                                 <?= $expiresTs > 0 ? date('M d, H:i', $expiresTs) : '-' ?>
                             </td>
                             <td><?= $statusBadge ?></td>
-                            <td style="color:#666; white-space:nowrap">
+                            <td style="color:var(--faint); white-space:nowrap">
                                 <?= $ev['created_at'] ? date('M d, H:i', strtotime($ev['created_at'])) : '-' ?>
                             </td>
                             <td>
@@ -264,20 +264,20 @@ admin_nav('/admin/events');
                                                 <button type="submit" class="btn btn-secondary btn-sm">Del. occurrence</button>
                                             </form>
                                             <form method="POST" action="/admin/events/<?= urlencode($ev['channel_id']) ?>/delete"
-                                                  onsubmit="return confirm('DELETE ENTIRE SERIES?\n\n«<?= htmlspecialchars(addslashes($ev['title']), ENT_QUOTES) ?>»\n\nThis will delete ALL future occurrences and stop new ones from being generated.\n\nThis cannot be undone.')">
+                                                  onsubmit="return confirm('DELETE ENTIRE SERIES?\n\n«<?= htmlspecialchars(addslashes($ev['title']), ENT_QUOTES) ?>»\n\nThis ends the series: every future occurrence disappears from the app and no new one is made. They stay in the database.')">
                                                 <?= csrf_input() ?>
                                                 <input type="hidden" name="mode" value="series">
                                                 <button type="submit" class="btn btn-danger btn-sm">Del. series</button>
                                             </form>
                                         <?php else: ?>
                                             <form method="POST" action="/admin/events/<?= urlencode($ev['channel_id']) ?>/delete"
-                                                  onsubmit="return confirm('Delete event «<?= htmlspecialchars(addslashes($ev['title']), ENT_QUOTES) ?>»? This cannot be undone.')">
+                                                  onsubmit="return confirm('Delete plan «<?= htmlspecialchars(addslashes($ev['title']), ENT_QUOTES) ?>»? It disappears from the app (it stays in the database).')">
                                                 <?= csrf_input() ?>
                                                 <button type="submit" class="btn btn-danger btn-sm">Delete</button>
                                             </form>
                                         <?php endif; ?>
                                     <?php else: ?>
-                                        <span style="color:#444;font-size:11px">deleted</span>
+                                        <span style="color:var(--faint);font-size:11px">deleted</span>
                                     <?php endif; ?>
                                 </div>
                             </td>

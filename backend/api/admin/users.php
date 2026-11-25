@@ -111,7 +111,7 @@ admin_nav('/admin/users');
 ?>
 <div class="admin-main">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
-        <h1 class="page-title" style="margin-bottom:0">Users <span style="color:#555;font-size:14px;font-weight:400"><?= number_format($total) ?> total</span></h1>
+        <h1 class="page-title" style="margin-bottom:0">Users <span style="color:var(--faint);font-size:14px;font-weight:400"><?= number_format($total) ?> total</span></h1>
         <a href="/admin/users/create" class="btn btn-primary btn-sm">+ Create user</a>
     </div>
 
@@ -165,7 +165,7 @@ admin_nav('/admin/users');
         ";
         include __DIR__ . '/_city_activity.php';
         if ($city !== '') {
-            echo '<p style="color:#888;font-size:13px;margin:16px 0 4px">Users in this city, registered ' . htmlspecialchars($rangeLabel, ENT_QUOTES) . ':</p>';
+            echo '<p style="color:var(--faint);font-size:13px;margin:16px 0 4px">Users in this city, registered ' . htmlspecialchars($rangeLabel, ENT_QUOTES) . ':</p>';
         }
     endif; ?>
 
@@ -212,7 +212,7 @@ admin_nav('/admin/users');
                             <td>
                                 <?php $userRoles = $rolesByUser[$u['id']] ?? []; ?>
                                 <?php if (empty($userRoles)): ?>
-                                    <span style="color:#444">-</span>
+                                    <span style="color:var(--faint)">-</span>
                                 <?php else: ?>
                                     <?php foreach ($userRoles as $r): ?>
                                         <span class="badge badge-ambassador" title="<?= htmlspecialchars($r['role'], ENT_QUOTES) ?>">
@@ -221,7 +221,7 @@ admin_nav('/admin/users');
                                     <?php endforeach; ?>
                                 <?php endif; ?>
                             </td>
-                            <td style="white-space:nowrap; color:#666">
+                            <td style="white-space:nowrap; color:var(--faint)">
                                 <?php
                                 $ts = is_numeric($u['created_at']) ? (int)$u['created_at'] : strtotime((string)$u['created_at']);
                                 echo $ts > 0 ? date('Y-m-d H:i', $ts) : '-';
@@ -241,7 +241,7 @@ admin_nav('/admin/users');
                                         <a href="/admin/users/<?= urlencode($u['id']) ?>/roles" class="btn btn-secondary btn-sm">Roles</a>
                                         <a href="/admin/users/<?= urlencode($u['id']) ?>/delete" class="btn btn-danger btn-sm">Delete</a>
                                     <?php else: ?>
-                                        <span style="color:#444;font-size:11px">deleted <?= date('Y-m-d', strtotime($u['deleted_at'])) ?></span>
+                                        <span style="color:var(--faint);font-size:11px">deleted <?= date('Y-m-d', strtotime($u['deleted_at'])) ?></span>
                                     <?php endif; ?>
                                 </div>
                             </td>

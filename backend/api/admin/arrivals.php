@@ -99,13 +99,13 @@ admin_nav('/admin/arrivals');
     ?>
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
         <h1 class="page-title" style="margin-bottom:0">
-            <span class="badge" style="background:#3b82f622;color:#3b82f6;border:1px solid #3b82f655">City</span>
+            <span class="badge" style="background:#3b82f622;color:var(--info);border:1px solid #3b82f655">City</span>
             <?php $chFlag = $isoFlag($ch['country'] ?? ''); if ($chFlag) echo '<span style="margin-right:2px">' . $chFlag . '</span> '; ?><?= htmlspecialchars($ch['name'] ?? '(untitled)', ENT_QUOTES) ?>
-            <span style="color:#555;font-size:14px;font-weight:400"><?= number_format($total) ?> arrivals · <?= htmlspecialchars($rangeLabel, ENT_QUOTES) ?></span>
+            <span style="color:var(--faint);font-size:14px;font-weight:400"><?= number_format($total) ?> arrivals · <?= htmlspecialchars($rangeLabel, ENT_QUOTES) ?></span>
         </h1>
         <a href="<?= $backHref ?>" class="btn btn-secondary btn-sm">← Back</a>
     </div>
-    <div class="td-mono" style="color:#555;margin-bottom:16px;font-size:11px"><?= htmlspecialchars($ch['id'], ENT_QUOTES) ?></div>
+    <div class="td-mono" style="color:var(--faint);margin-bottom:16px;font-size:11px"><?= htmlspecialchars($ch['id'], ENT_QUOTES) ?></div>
 
     <div class="table-wrapper">
         <table>
@@ -117,10 +117,10 @@ admin_nav('/admin/arrivals');
                 // Platform → label + emoji. Unknown/legacy rows (pre-capture) show "—".
                 $platformBadge = static function (?string $p): string {
                     return match ($p) {
-                        'ios'     => '<span style="color:#ddd;font-size:12px">🍎 iOS</span>',
-                        'android' => '<span style="color:#ddd;font-size:12px">🤖 Android</span>',
-                        'web'     => '<span style="color:#ddd;font-size:12px">🌐 Web</span>',
-                        default   => '<span style="color:#444">—</span>',
+                        'ios'     => '<span style="color:var(--text);font-size:12px">🍎 iOS</span>',
+                        'android' => '<span style="color:var(--text);font-size:12px">🤖 Android</span>',
+                        'web'     => '<span style="color:var(--text);font-size:12px">🌐 Web</span>',
+                        default   => '<span style="color:var(--faint)">—</span>',
                     };
                 };
                 foreach ($arrivals as $a):
@@ -134,24 +134,24 @@ admin_nav('/admin/arrivals');
                 } else { $idBadge = ''; $profile = null; }
                 ?>
                 <tr>
-                    <td style="color:#888;white-space:nowrap">✨ <?= date('M d, H:i', (int) $a['created_ts']) ?></td>
+                    <td style="color:var(--faint);white-space:nowrap">✨ <?= date('M d, H:i', (int) $a['created_ts']) ?></td>
                     <td>
                         <?= $idBadge ?>
                         <?php if ($profile): ?>
-                            <a href="<?= $profile ?>" style="color:#ddd;margin-left:4px"><?= htmlspecialchars($who, ENT_QUOTES) ?></a>
+                            <a href="<?= $profile ?>" style="color:var(--text);margin-left:4px"><?= htmlspecialchars($who, ENT_QUOTES) ?></a>
                         <?php else: ?>
-                            <span style="color:#ccc;margin-left:4px"><?= htmlspecialchars($who, ENT_QUOTES) ?></span>
+                            <span style="color:var(--muted);margin-left:4px"><?= htmlspecialchars($who, ENT_QUOTES) ?></span>
                         <?php endif; ?>
                     </td>
                     <td style="white-space:nowrap">
                         <?php if (!empty($a['country'])): ?>
                             <span style="font-size:15px"><?= $isoFlag($a['country']) ?></span>
-                            <span style="color:#888;font-size:12px"><?= htmlspecialchars(strtoupper($a['country']), ENT_QUOTES) ?></span>
+                            <span style="color:var(--faint);font-size:12px"><?= htmlspecialchars(strtoupper($a['country']), ENT_QUOTES) ?></span>
                         <?php elseif (empty($a['ip_address'])): ?>
-                            <span style="color:#444">-</span>
+                            <span style="color:var(--faint)">-</span>
                         <?php endif; ?>
                         <?php if (!empty($a['ip_address'])): ?>
-                            <div class="td-mono" style="color:#9ca3af;font-size:11px;margin-top:2px"><?= htmlspecialchars($a['ip_address'], ENT_QUOTES) ?></div>
+                            <div class="td-mono" style="color:var(--muted);font-size:11px;margin-top:2px"><?= htmlspecialchars($a['ip_address'], ENT_QUOTES) ?></div>
                         <?php endif; ?>
                     </td>
                     <td style="white-space:nowrap"><?= $platformBadge($a['platform'] ?? null) ?></td>
@@ -167,7 +167,7 @@ admin_nav('/admin/arrivals');
                                 <button type="submit" class="btn btn-danger btn-sm">Ban</button>
                             </form>
                         <?php else: ?>
-                            <span style="color:#444;font-size:11px">-</span>
+                            <span style="color:var(--faint);font-size:11px">-</span>
                         <?php endif; ?>
                     </td>
                 </tr>
@@ -190,19 +190,19 @@ admin_nav('/admin/arrivals');
     $prevFrom = (new DateTime($from))->modify('-1 day')->format('Y-m-d');
     $nextTo   = (new DateTime($to))->modify('+1 day')->format('Y-m-d');
     ?>
-    <h1 class="page-title">Arrivals <span style="color:#555;font-size:14px;font-weight:400">by city</span></h1>
-    <p style="color:#777;margin:-8px 0 16px;font-size:13px">How many people arrived in each city over a date range. Click a city to see who arrived.</p>
+    <h1 class="page-title">Arrivals <span style="color:var(--faint);font-size:14px;font-weight:400">by city</span></h1>
+    <p style="color:var(--faint);margin:-8px 0 16px;font-size:13px">How many people arrived in each city over a date range. Click a city to see who arrived.</p>
 
     <!-- Range + view controls -->
     <form method="GET" action="/admin/arrivals" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px">
-        <span style="color:#888;font-size:13px;font-weight:600">From</span>
+        <span style="color:var(--faint);font-size:13px;font-weight:600">From</span>
         <input type="date" name="from" value="<?= htmlspecialchars($from, ENT_QUOTES) ?>" max="<?= $today ?>"
                onchange="this.form.submit()" onclick="if(this.showPicker)this.showPicker()"
-               style="background:#1a1a1a;border:1px solid #333;color:#eee;border-radius:6px;padding:6px 8px;font-size:13px">
-        <span style="color:#888;font-size:13px;font-weight:600">to</span>
+               style="background:var(--surface);border:1px solid var(--line);color:var(--text);border-radius:6px;padding:6px 8px;font-size:13px">
+        <span style="color:var(--faint);font-size:13px;font-weight:600">to</span>
         <input type="date" name="to" value="<?= htmlspecialchars($to, ENT_QUOTES) ?>" max="<?= $today ?>"
                onchange="this.form.submit()" onclick="if(this.showPicker)this.showPicker()"
-               style="background:#1a1a1a;border:1px solid #333;color:#eee;border-radius:6px;padding:6px 8px;font-size:13px">
+               style="background:var(--surface);border:1px solid var(--line);color:var(--text);border-radius:6px;padding:6px 8px;font-size:13px">
         <input type="hidden" name="view" value="<?= htmlspecialchars($view, ENT_QUOTES) ?>">
         <a href="/admin/arrivals" class="btn btn-secondary btn-sm">Today</a>
     </form>
@@ -253,7 +253,7 @@ admin_nav('/admin/arrivals');
         $maxDayTotal = $dayTotals ? max($dayTotals) : 0;
         $grandTotal  = array_sum($cityTotals);
         ?>
-        <p style="color:#666;font-size:13px;margin:0 0 12px"><?= count($cityTotals) ?> cities · <?= number_format($grandTotal) ?> arrivals · <?= htmlspecialchars($rangeLabel, ENT_QUOTES) ?> (UTC+7)</p>
+        <p style="color:var(--faint);font-size:13px;margin:0 0 12px"><?= count($cityTotals) ?> cities · <?= number_format($grandTotal) ?> arrivals · <?= htmlspecialchars($rangeLabel, ENT_QUOTES) ?> (UTC+7)</p>
 
         <?php if (empty($cityTotals)): ?>
             <p class="no-results" style="padding:30px 0">No arrivals in this range.</p>
@@ -289,7 +289,7 @@ admin_nav('/admin/arrivals');
         $i = 0;
         foreach ($cities as $r) { $barColors[$r['id']] = $PALETTE[$i % count($PALETTE)]; $i++; }
         ?>
-        <p style="color:#666;font-size:13px;margin:0 0 12px"><?= count($cities) ?> cities · <?= number_format($totalArr) ?> arrivals · <?= htmlspecialchars($rangeLabel, ENT_QUOTES) ?> (UTC+7)</p>
+        <p style="color:var(--faint);font-size:13px;margin:0 0 12px"><?= count($cities) ?> cities · <?= number_format($totalArr) ?> arrivals · <?= htmlspecialchars($rangeLabel, ENT_QUOTES) ?> (UTC+7)</p>
 
         <?php
         $chartLink = static fn(string $id): string =>
@@ -314,8 +314,8 @@ admin_nav('/admin/arrivals');
                             <?php $cFlag = $isoFlag($c['country'] ?? ''); if ($cFlag) echo '<span style="margin-right:4px">' . $cFlag . '</span>'; ?>
                             <strong><?= htmlspecialchars($c['name'] ?? '(untitled)', ENT_QUOTES) ?></strong>
                         </td>
-                        <td><strong style="color:#fff;font-size:15px"><?= number_format((int) $c['cnt']) ?></strong></td>
-                        <td style="color:#888;white-space:nowrap"><?= $lastTs ? date('M d, H:i', $lastTs) : '-' ?></td>
+                        <td><strong style="color:var(--text);font-size:15px"><?= number_format((int) $c['cnt']) ?></strong></td>
+                        <td style="color:var(--faint);white-space:nowrap"><?= $lastTs ? date('M d, H:i', $lastTs) : '-' ?></td>
                         <td><a href="/admin/arrivals?channel=<?= urlencode($c['id']) ?>&from=<?= urlencode($from) ?>&to=<?= urlencode($to) ?>" class="btn btn-primary btn-sm">Who arrived →</a></td>
                     </tr>
                 <?php endforeach; endif; ?>

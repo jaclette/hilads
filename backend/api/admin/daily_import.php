@@ -26,6 +26,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } else {
         $apply   = ($_POST['step'] ?? '') === 'apply';
         $replace = ($_POST['replace'] ?? '') === '1';
+        // Replace deletes unplayed days: the apply step needs REPLACE typed (checked here).
+        if ($apply && $replace && strtoupper(trim((string) ($_POST['confirm_phrase'] ?? ''))) !== 'REPLACE') {
+            $apply = false;
+            flash_set('error', 'Type REPLACE to apply an import that replaces days. Nothing was changed; here is the dry run again.');
+        }
         $result  = DailyAdminService::import($doc, !$apply, $replace);
         if ($apply && $result['ok']) {
             $counts = array_count_values(array_column($result['report'], 'action'));
@@ -47,7 +52,7 @@ daily_styles();
     <?php if ($result !== null): ?>
         <div class="form-card">
             <?php if (!$result['ok']): ?>
-                <h3 style="color:#f87171;margin-bottom:8px">Nothing can be imported - fix these first</h3>
+                <h3 style="color:var(--bad);margin-bottom:8px">Nothing can be imported - fix these first</h3>
                 <ul style="margin-left:18px"><?php foreach ($result['errors'] as $e): ?><li><?= dh($e) ?></li><?php endforeach; ?></ul>
             <?php else: ?>
                 <h3 style="margin-bottom:8px">Dry run - nothing written yet<?= $replace ? ' · replace' : '' ?></h3>
@@ -68,7 +73,8 @@ daily_styles();
                     <?php endforeach; ?>
                     </tbody>
                 </table></div>
-                <form method="POST" action="/admin/daily/import" style="margin-top:12px">
+                <form method="POST" action="/admin/daily/import" style="margin-top:12px"<?php if ($replace): ?>
+                      data-confirm="Apply and replace days?" data-confirm-text="Unpublished days in the file's date range that are not in the file are deleted, with their twists and Hilads suggestions." data-phrase="REPLACE" data-confirm-button="Apply and replace"<?php endif; ?>>
                     <?= csrf_input() ?>
                     <input type="hidden" name="step" value="apply">
                     <input type="hidden" name="json" value="<?= dh($json) ?>">

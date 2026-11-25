@@ -6,8 +6,8 @@ declare(strict_types=1);
  * Back office services for the Daily Challenge (pages in admin/, prompt 06,
  * and the import CLI). Plain PHP, called directly - there is no admin API.
  *
- * Every change is written to admin_audit_log. The back office has one shared
- * env login, so the actor is ADMIN_USERNAME + IP (or "cli" for scripts).
+ * Every change is written to admin_audit_log, by the signed-in admin account
+ * (AdminAuth: name + id + IP), or "cli" for scripts.
  * Methods throw InvalidArgumentException with a short, admin-readable message
  * when a request is refused.
  */
@@ -1184,10 +1184,11 @@ final class DailyAdminService
     {
         try {
             Database::pdo()->prepare("
-                INSERT INTO admin_audit_log (admin_username, admin_ip, action, entity_type, entity_id, before, after)
-                VALUES (?, ?, ?, ?, ?, ?, ?)
+                INSERT INTO admin_audit_log (admin_username, admin_user_id, admin_ip, action, entity_type, entity_id, before, after)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
             ")->execute([
                 self::actorName(),
+                self::$actor === null && class_exists('AdminAuth') ? AdminAuth::id() : null,
                 self::$actor === null ? self::actorIp() : null,
                 $action,
                 $entityType,
@@ -1210,7 +1211,9 @@ final class DailyAdminService
 
     private static function actorName(): string
     {
-        return self::$actor ?? (getenv('ADMIN_USERNAME') ?: 'admin');
+        if (self::$actor !== null) return self::$actor;
+        $name = class_exists('AdminAuth') ? AdminAuth::name() : null;
+        return $name ?? (getenv('ADMIN_USERNAME') ?: 'admin');
     }
 
     /** True once someone has posted a photo on the challenge (seeds, demos and Hilads suggestions aside, any status). */

@@ -157,7 +157,7 @@ admin_nav('/admin/users');
 
         <!-- ── Avatar ──────────────────────────────────────────────────────── -->
         <div class="form-group">
-            <label>Avatar <span style="color:#555">(optional)</span></label>
+            <label>Avatar <span style="color:var(--faint)">(optional)</span></label>
             <div class="avatar-picker">
                 <div class="avatar-preview" id="avatar-preview">
                     <span class="avatar-placeholder" id="avatar-placeholder">
@@ -189,7 +189,7 @@ admin_nav('/admin/users');
 
         <!-- ── Core fields ─────────────────────────────────────────────────── -->
         <div class="form-group">
-            <label for="display_name">Display name <span style="color:#f87171">*</span></label>
+            <label for="display_name">Display name <span style="color:var(--bad)">*</span></label>
             <input type="text" id="display_name" name="display_name" maxlength="40" required
                    value="<?= htmlspecialchars($post['display_name'] ?? '', ENT_QUOTES) ?>"
                    placeholder="e.g. Sophie M.">
@@ -206,14 +206,14 @@ admin_nav('/admin/users');
         </div>
 
         <div class="form-group">
-            <label for="email">Email <span style="color:#f87171">*</span></label>
+            <label for="email">Email <span style="color:var(--bad)">*</span></label>
             <input type="email" id="email" name="email" required
                    value="<?= htmlspecialchars($post['email'] ?? '', ENT_QUOTES) ?>"
                    placeholder="user@example.com">
         </div>
 
         <div class="form-group">
-            <label for="password">Password <span style="color:#f87171">*</span></label>
+            <label for="password">Password <span style="color:var(--bad)">*</span></label>
             <input type="password" id="password" name="password" minlength="8" maxlength="72" required
                    placeholder="Min 8 characters">
             <div class="hint">The user can reset it via the app if needed.</div>
@@ -251,7 +251,7 @@ admin_nav('/admin/users');
         </div>
 
         <div class="form-group">
-            <label for="birth_year">Birth year <span style="color:#555">(optional)</span></label>
+            <label for="birth_year">Birth year <span style="color:var(--faint)">(optional)</span></label>
             <input type="number" id="birth_year" name="birth_year"
                    min="1900" max="<?= (int)date('Y') - 13 ?>"
                    value="<?= htmlspecialchars($post['birth_year'] ?? '', ENT_QUOTES) ?>"
@@ -280,7 +280,7 @@ admin_nav('/admin/users');
                 <input type="checkbox" name="is_fake" value="1"
                        <?= !empty($post['is_fake']) ? 'checked' : '' ?> style="width:auto">
                 <span>Fake / seeded user
-                    <span style="color:#555;font-size:11px">(admin-only, never shown to users)</span>
+                    <span style="color:var(--faint);font-size:11px">(admin-only, never shown to users)</span>
                 </span>
             </label>
         </div>
@@ -310,22 +310,22 @@ admin_nav('/admin/users');
 .avatar-picker { display:flex; align-items:center; gap:20px; }
 .avatar-preview {
     width:80px; height:80px; border-radius:50%;
-    background:#1a1a1a; border:2px dashed #333;
+    background:var(--surface); border:2px dashed var(--line);
     display:flex; align-items:center; justify-content:center;
     flex-shrink:0; overflow:hidden; transition:border-color .15s;
 }
-.avatar-preview:has(img[style*="block"]) { border-style:solid; border-color:#FF7A3C; }
-.avatar-placeholder { color:#444; display:flex; align-items:center; justify-content:center; }
+.avatar-preview:has(img[style*="block"]) { border-style:solid; border-color:var(--brand); }
+.avatar-placeholder { color:var(--faint); display:flex; align-items:center; justify-content:center; }
 .avatar-actions { display:flex; flex-direction:column; gap:8px; align-items:flex-start; }
 
 /* Interests */
 .interests-grid { display:flex; flex-wrap:wrap; gap:6px; }
 .interest-item {
     display:flex; align-items:center; gap:5px;
-    padding:4px 10px; border:1px solid #2a2a2a; border-radius:5px;
-    font-size:12px; color:#888; cursor:pointer;
+    padding:4px 10px; border:1px solid var(--line); border-radius:5px;
+    font-size:12px; color:var(--faint); cursor:pointer;
 }
-.interest-item:has(input:checked) { border-color:#FF7A3C; color:#FF7A3C; background:rgba(255,122,60,.08); }
+.interest-item:has(input:checked) { border-color:var(--brand); color:var(--brand-text); background:rgba(255,122,60,.08); }
 .interest-item input[type=checkbox] { display:none; }
 </style>
 

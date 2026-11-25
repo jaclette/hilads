@@ -55,7 +55,7 @@ admin_nav('/admin/cities');
 <div class="admin-main">
     <p style="margin-bottom:8px"><a href="/admin/cities">← Cities</a></p>
     <h1 class="page-title">Suburbs</h1>
-    <p style="color:#777;margin:-8px 0 16px;font-size:13px;max-width:720px">
+    <p style="color:var(--faint);margin:-8px 0 16px;font-size:13px;max-width:720px">
         Where a place plays. By default a place within 30 km of a city 3× bigger (200,000+) in the same region plays in that city. Here: force a place onto its main city, or keep it its own city. Applies to GPS and picks from now on.
     </p>
     <?= flash_html() ?>
@@ -99,7 +99,7 @@ admin_nav('/admin/cities');
                     <td><?= $r['target_geoname_id'] !== null
                         ? $h($r['target_name'] ?? '?') . ' <span class="td-mono">' . $r['target_geoname_id'] . '</span>'
                         : '<span class="badge badge-active">its own city</span>' ?></td>
-                    <td style="color:#aaa"><?= $h($r['note']) ?></td>
+                    <td style="color:var(--muted)"><?= $h($r['note']) ?></td>
                     <td>
                         <?php if ($r['channel_id']): ?>
                             <a href="/admin/cities/<?= $h($r['channel_id']) ?>"><?= $h($r['channel_id']) ?></a>

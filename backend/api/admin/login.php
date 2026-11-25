@@ -2,75 +2,100 @@
 
 declare(strict_types=1);
 
-// Already logged in → redirect to dashboard
+// Sign in, step 1: email + password. Then a 2FA code (login/code), or setting 2FA up when the
+// role requires it (account/2fa). Before any account exists, the shared ADMIN_USERNAME /
+// ADMIN_PASSWORD login opens the "create the first super admin" form, and nothing else.
+
 if (admin_is_logged_in()) {
     admin_redirect('/admin');
 }
 
 $error = null;
+$hasAccounts = AdminAuth::hasAccounts();
+$email = trim((string) ($_POST['email'] ?? ''));
 
 if ($method === 'POST') {
     csrf_verify();
+    $password = (string) ($_POST['password'] ?? '');
+    $ip = AdminAuth::ip();
 
-    $username = trim($_POST['username'] ?? '');
-    $password = $_POST['password'] ?? '';
-
-    $adminUser = (string)(getenv('ADMIN_USERNAME') ?: '');
-    $adminPass = (string)(getenv('ADMIN_PASSWORD') ?: '');
-
-    if ($adminUser === '' || $adminPass === '') {
-        $error = 'Admin credentials are not configured. Set ADMIN_USERNAME and ADMIN_PASSWORD environment variables.';
-    } elseif (
-        hash_equals($adminUser, $username) &&
-        hash_equals($adminPass, $password)
-    ) {
-        session_regenerate_id(true);
-        $_SESSION['admin_logged_in'] = true;
-        admin_redirect('/admin');
+    if ($hasAccounts && AdminAuth::locked($ip, $email)) {
+        $error = 'Too many failed attempts. Wait 15 minutes and try again.';
+    } elseif (!$hasAccounts) {
+        $envUser = (string) (getenv('ADMIN_USERNAME') ?: '');
+        $envPass = (string) (getenv('ADMIN_PASSWORD') ?: '');
+        if ($envUser === '' || $envPass === '') {
+            $error = 'No admin account exists yet and the setup login (ADMIN_USERNAME / ADMIN_PASSWORD) is not configured.';
+        } elseif (hash_equals($envUser, $email) && hash_equals($envPass, $password)) {
+            session_regenerate_id(true);
+            $_SESSION['admin_bootstrap'] = time();
+            admin_redirect('/admin/login/setup');
+        } else {
+            usleep(400_000);
+            $error = 'Wrong username or password.';
+            error_log('[admin] failed setup login from ' . $ip);
+        }
     } else {
-        // Intentionally vague to avoid username enumeration
-        $error = 'Invalid credentials.';
-        error_log('[admin] failed login attempt from IP ' . ($_SERVER['REMOTE_ADDR'] ?? 'unknown'));
+        $u = AdminAuth::findByEmail($email);
+        if ($u !== null && $u['disabled_at'] === null && AdminAuth::checkPassword($u, $password)) {
+            session_regenerate_id(true);
+            if (AdminAuth::has2fa($u)) {
+                $_SESSION['admin_pending_uid'] = (int) $u['id'];
+                $_SESSION['admin_pending_at'] = time();
+                admin_redirect('/admin/login/code');
+            }
+            if (AdminAuth::needs2fa($u)) {
+                // Super admin without 2FA (first sign-in, or after a recovery): set it up first.
+                AdminAuth::attempt($ip, $email, true);
+                $_SESSION['admin_enroll_uid'] = (int) $u['id'];
+                $_SESSION['admin_pending_at'] = time();
+                admin_redirect('/admin/account/2fa');
+            }
+            AdminAuth::attempt($ip, $email, true);
+            AdminAuth::signIn($u);
+            AdminAuth::log('admin.sign_in', 'admin_user', (string) $u['id'], null, ['with' => 'password']);
+            $to = (string) ($_SESSION['admin_after_login'] ?? '/admin');
+            unset($_SESSION['admin_after_login']);
+            admin_redirect(str_starts_with($to, '/admin') ? $to : '/admin');
+        }
+        AdminAuth::attempt($ip, $email, false);
+        usleep(400_000);
+        $envUser = (string) (getenv('ADMIN_USERNAME') ?: '');
+        $error = $envUser !== '' && hash_equals($envUser, $email)
+            ? 'The shared login is switched off now that admin accounts exist. Sign in with your own email.'
+            : 'Wrong email or password.';
     }
 }
 
-admin_head('Login');
+admin_head('Sign in');
 ?>
 <div class="login-page">
     <div class="login-box">
-        <h1>Hilads Admin</h1>
-        <p class="subtitle">Sign in to continue</p>
+        <div class="brand"><span class="brand-mark">Hi</span> Hilads back office</div>
+        <h1>Sign in</h1>
+        <p class="subtitle"><?= $hasAccounts ? 'With your own admin account.' : 'First time: use the setup login, then create your own account.' ?></p>
 
+        <?= flash_html() ?>
         <?php if ($error !== null): ?>
             <div class="flash flash-error"><?= htmlspecialchars($error, ENT_QUOTES) ?></div>
         <?php endif; ?>
 
         <form method="POST" action="/admin/login">
             <?= csrf_input() ?>
-            <div class="form-group">
-                <label for="username">Username</label>
-                <input
-                    type="text"
-                    id="username"
-                    name="username"
-                    autocomplete="username"
-                    autofocus
-                    required
-                    value="<?= htmlspecialchars($_POST['username'] ?? '', ENT_QUOTES) ?>"
-                >
+            <div class="field">
+                <label for="email"><?= $hasAccounts ? 'Email' : 'Setup username' ?></label>
+                <input type="<?= $hasAccounts ? 'email' : 'text' ?>" id="email" name="email" autocomplete="username" autofocus required
+                       value="<?= htmlspecialchars($email, ENT_QUOTES) ?>">
             </div>
-            <div class="form-group">
+            <div class="field">
                 <label for="password">Password</label>
-                <input
-                    type="password"
-                    id="password"
-                    name="password"
-                    autocomplete="current-password"
-                    required
-                >
+                <input type="password" id="password" name="password" autocomplete="current-password" required>
             </div>
-            <button type="submit" class="btn btn-primary">Sign in</button>
+            <button type="submit" class="btn btn-primary">Continue</button>
         </form>
+        <?php if ($hasAccounts): ?>
+            <p class="hint" style="margin-top:16px">Lost your phone or your recovery codes? See “Recover access” in docs/admin-guide.md.</p>
+        <?php endif; ?>
     </div>
 </div>
 <?php

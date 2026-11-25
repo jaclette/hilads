@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 admin_require_login();
 csrf_verify();
+admin_require_super('/admin/danger');
+admin_require_phrase('BACKFILL', '/admin/danger');
 
 // Backfill profile thumbnails for users who uploaded their photo
 // BEFORE the on-upload thumbnail pipeline shipped (or whose thumb
@@ -119,6 +121,7 @@ if ($updated === 0 && !empty($errors)) {
     $detail = ' First errors: ' . implode(' | ', array_slice($errors, 0, 3));
 }
 
+AdminAuth::log('thumbs.backfill', 'users', null, null, ['updated' => $updated, 'skipped' => $skipped, 'remaining' => $remaining]);
 $flashType = ($updated === 0 && $skipped > 0) ? 'error' : 'success';
 flash_set($flashType, sprintf(
     'Thumbnails backfilled: %d updated, %d skipped, %d remaining (%dms).%s%s',
@@ -129,4 +132,4 @@ flash_set($flashType, sprintf(
     $remaining > 0 && $updated > 0 ? ' Click again to continue.' : '',
     $detail,
 ));
-admin_redirect('/admin');
+admin_redirect('/admin/danger');

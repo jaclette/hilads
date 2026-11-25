@@ -128,7 +128,7 @@ worlds_styles();
     <?= flash_html() ?>
 
     <?php if ($report !== null && !$report['ok']): ?>
-        <div class="form-card" style="max-width:none;margin-bottom:18px"><h3 style="color:#f87171;margin-bottom:6px">Not imported</h3>
+        <div class="form-card" style="max-width:none;margin-bottom:18px"><h3 style="color:var(--bad);margin-bottom:6px">Not imported</h3>
             <ul class="worlds-report"><?php foreach (array_merge($report['errors'], $report['warnings']) as $e): ?><li><?= wh($e) ?></li><?php endforeach; ?></ul></div>
     <?php endif; ?>
     <?php if ($importWarnings !== []): ?>
@@ -148,7 +148,7 @@ worlds_styles();
         <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:12px" id="slides">
             <strong>Version <?= $pkg['version'] ?></strong>
             <?php $secs = DwStudio::videoSeconds($pkg['content']); ?>
-            <span class="worlds-muted" title="Hook 3.5 s, each country 4 to 5 s (from its text), outro 4 s"<?= $secs > DwStudio::MAX_VIDEO_SECONDS ? ' style="color:#f87171;font-weight:700"' : '' ?>>
+            <span class="worlds-muted" title="Hook 3.5 s, each country 4 to 5 s (from its text), outro 4 s"<?= $secs > DwStudio::MAX_VIDEO_SECONDS ? ' style="color:var(--bad);font-weight:700"' : '' ?>>
                 ⏱ <?= wh(number_format($secs, 1)) ?> s<?= $secs > DwStudio::MAX_VIDEO_SECONDS ? ' · over ' . DwStudio::MAX_VIDEO_SECONDS . ' s' : '' ?></span>
             <span class="worlds-muted"><?= wh($pkg['model']) ?> · <?= wh(date('j M H:i', strtotime($pkg['created_at']))) ?></span>
             <?php if (count($versions) > 1): ?>
@@ -184,8 +184,8 @@ worlds_styles();
                     <a href="<?= wh($s['png_url'] ?? '#') ?>" target="_blank" rel="noopener"><img data-pos="<?= $p['position'] ?>" src="<?= wh($s['png_url'] ?? '') ?>" alt="" loading="lazy"></a>
                     <?php if ($video): ?><span class="worlds-badge<?= $p['clip'] ? ' is-clip' : '' ?>"><?= $p['clip'] ? '🎬 Clip' : '📷 Photo' ?></span><?php endif; ?>
                     <div class="worlds-muted"><?= wh(DwSlides::fileName($p['position'], $p['kind'], $p['country'] ?? null)) ?>
-                        <?= !empty($s['error']) ? '<br><span style="color:#f87171">' . wh($s['error']) . '</span>' : '' ?>
-                        <?= ($s && filter_var($s['fallback'], FILTER_VALIDATE_BOOLEAN)) ? '<br><span style="color:#fbbf24">plain background</span>' : '' ?></div>
+                        <?= !empty($s['error']) ? '<br><span style="color:var(--bad)">' . wh($s['error']) . '</span>' : '' ?>
+                        <?= ($s && filter_var($s['fallback'], FILTER_VALIDATE_BOOLEAN)) ? '<br><span style="color:var(--warn)">plain background</span>' : '' ?></div>
                     <?php if ($p['credit'] !== ''): ?><div class="worlds-muted" title="<?= wh($p['credit']) ?>"><?= wh(mb_strimwidth($p['credit'], 0, 60, '…')) ?></div><?php endif; ?>
                     <?php if ($video): $clip = $p['clip']; ?>
                         <div class="worlds-clip">
@@ -357,7 +357,7 @@ worlds_styles();
       const { report } = await call({ action: 'import_start', topic_id: importForm.dataset.topic, json });
       if (!report.ok) {
         box.hidden = true;
-        errors.innerHTML = '<li><strong style="color:#f87171">Not imported</strong></li>' + [...report.errors, ...report.warnings].map(m => `<li>${m.replace(/</g, '&lt;')}</li>`).join('');
+        errors.innerHTML = '<li><strong style="color:var(--bad)">Not imported</strong></li>' + [...report.errors, ...report.warnings].map(m => `<li>${m.replace(/</g, '&lt;')}</li>`).join('');
         btn.disabled = false;
         return;
       }
@@ -375,7 +375,7 @@ worlds_styles();
       location.href = <?= json_encode($self) ?>;
     } catch (err) {
       box.hidden = true;
-      errors.innerHTML = `<li style="color:#f87171">Import failed: ${err.message.replace(/</g, '&lt;')}</li>`;
+      errors.innerHTML = `<li style="color:var(--bad)">Import failed: ${err.message.replace(/</g, '&lt;')}</li>`;
       btn.disabled = false;
     }
   });

@@ -26,18 +26,18 @@ function daily_text(?string $json): string
 function daily_state_badge(string $state): string
 {
     $map = [
-        'empty'        => ['#7f1d1d', '#fca5a5', 'empty'],
-        'draft'        => ['#3f3f46', '#d4d4d8', 'draft'],
-        'scheduled'    => ['#1e3a5f', '#93c5fd', 'scheduled'],
-        'published'    => ['#14532d', '#86efac', 'published'],
-        'reserve_used' => ['#4a3410', '#fcd34d', 'reserve used'],
-        'pending'      => ['#4a3410', '#fcd34d', 'pending'],
-        'approved'     => ['#14532d', '#86efac', 'approved'],
-        'rejected'     => ['#7f1d1d', '#fca5a5', 'rejected'],
-        'removed'      => ['#3f3f46', '#a1a1aa', 'removed'],
+        'empty'        => ['b-bad', 'empty'],
+        'draft'        => ['b-mute', 'draft'],
+        'scheduled'    => ['b-info', 'scheduled'],
+        'published'    => ['b-ok', 'published'],
+        'reserve_used' => ['b-warn', 'reserve used'],
+        'pending'      => ['b-warn', 'pending'],
+        'approved'     => ['b-ok', 'approved'],
+        'rejected'     => ['b-bad', 'rejected'],
+        'removed'      => ['b-mute', 'removed'],
     ];
-    [$bg, $fg, $label] = $map[$state] ?? ['#3f3f46', '#d4d4d8', $state];
-    return '<span class="badge" style="background:' . $bg . ';color:' . $fg . '">' . dh($label) . '</span>';
+    [$cls, $label] = $map[$state] ?? ['b-mute', $state];
+    return '<span class="badge ' . $cls . '">' . dh($label) . '</span>';
 }
 
 /**
@@ -110,10 +110,10 @@ function daily_place_badges(array $p): string
 {
     $html = daily_state_badge($p['status'] === 'pending' ? 'pending' : $p['status']);
     if (DailyProofRepository::bool($p['hidden'] ?? false)) {
-        $html .= ' <span class="badge" style="background:#3f3f46;color:#d4d4d8">hidden</span>';
+        $html .= ' <span class="badge" style="background:var(--surface-2);color:var(--text)">hidden</span>';
     }
     if (($p['merged_into'] ?? null) !== null) {
-        $html .= ' <span class="badge" style="background:#3f3f46;color:#d4d4d8">merged</span>';
+        $html .= ' <span class="badge" style="background:var(--surface-2);color:var(--text)">merged</span>';
     }
     return $html;
 }
@@ -183,14 +183,14 @@ function daily_styles(): void
 {
     echo '<style>
 .daily-subnav { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:18px; }
-.daily-subnav a { padding:6px 12px; border:1px solid #2a2a2a; border-radius:6px; color:#aaa; font-size:13px; }
-.daily-subnav a.active, .daily-subnav a:hover { color:#fff; background:#252525; text-decoration:none; }
+.daily-subnav a { padding:6px 12px; border:1px solid var(--line); border-radius:6px; color:var(--muted); font-size:13px; }
+.daily-subnav a.active, .daily-subnav a:hover { color:var(--text); background:var(--surface-2); text-decoration:none; }
 .daily-cols { display:grid; grid-template-columns: minmax(0,1fr) 340px; gap:20px; align-items:start; }
-.daily-row-empty-soon td { background:#2a1414; }
-.daily-muted { color:#777; font-size:12px; }
-.daily-counter { font-size:12px; color:#777; text-align:right; margin-top:4px; }
-.daily-counter.near { color:#FF7A3C; } .daily-counter.over { color:#f87171; font-weight:600; }
-.daily-checklist label { display:flex; gap:8px; align-items:flex-start; padding:4px 0; color:#ccc; font-size:13px; }
+.daily-row-empty-soon td { background:var(--bad-soft); }
+.daily-muted { color:var(--faint); font-size:12px; }
+.daily-counter { font-size:12px; color:var(--faint); text-align:right; margin-top:4px; }
+.daily-counter.near { color:var(--brand-text); } .daily-counter.over { color:var(--bad); font-weight:600; }
+.daily-checklist label { display:flex; gap:8px; align-items:flex-start; padding:4px 0; color:var(--muted); font-size:13px; }
 .daily-preview-card { background:#1f1410; border:1px solid #FF7A3C55; border-radius:14px; padding:14px; margin-bottom:14px; }
 .daily-preview-card .kicker { color:#FF7A3C; font-size:11px; font-weight:700; letter-spacing:.5px; text-transform:uppercase; }
 .daily-preview-card .text { color:#fff; font-size:16px; font-weight:600; margin:6px 0; }
@@ -201,20 +201,20 @@ function daily_styles(): void
 .daily-preview-push .icon { width:34px; height:34px; border-radius:8px; background:#FF7A3C; color:#111; font-weight:800; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
 .daily-preview-push .title { color:#fff; font-weight:600; font-size:13px; }
 .daily-preview-push .body { color:#ddd; font-size:13px; display:-webkit-box; -webkit-line-clamp:4; -webkit-box-orient:vertical; overflow:hidden; }
-.daily-thumb { width:72px; height:72px; object-fit:cover; border-radius:6px; background:#222; }
+.daily-thumb { width:72px; height:72px; object-fit:cover; border-radius:6px; background:var(--surface-2); }
 .daily-inline { display:inline-flex; gap:6px; align-items:center; flex-wrap:wrap; }
-.daily-inline input[type=text], .daily-inline input[type=date] { background:#111; border:1px solid #333; color:#eee; padding:6px 8px; border-radius:5px; font-size:13px; }
-.daily-twist { border-top:1px solid #222; padding:12px 0; }
+.daily-inline input[type=text], .daily-inline input[type=date] { background:var(--surface-2); border:1px solid var(--line); color:var(--text); padding:6px 8px; border-radius:5px; font-size:13px; }
+.daily-twist { border-top:1px solid var(--line); padding:12px 0; }
 .daily-tr { width:100%; border-collapse:collapse; }
-.daily-tr td { padding:4px 4px; vertical-align:top; border-top:1px solid #222; }
-.daily-tr td.lang { width:130px; color:#aaa; font-size:12px; padding-top:10px; }
-.daily-tr textarea, .daily-tr input[type=text] { width:100%; background:#111; border:1px solid #333; color:#eee; padding:6px 8px; border-radius:5px; font-size:13px; font-family:inherit; }
-.daily-tr .missing { color:#f87171; font-size:11px; }
+.daily-tr td { padding:4px 4px; vertical-align:top; border-top:1px solid var(--line); }
+.daily-tr td.lang { width:130px; color:var(--muted); font-size:12px; padding-top:10px; }
+.daily-tr textarea, .daily-tr input[type=text] { width:100%; background:var(--surface-2); border:1px solid var(--line); color:var(--text); padding:6px 8px; border-radius:5px; font-size:13px; font-family:inherit; }
+.daily-tr .missing { color:var(--bad); font-size:11px; }
 @media (max-width: 720px) {
   .admin-header { overflow-x: auto; }
   .admin-header nav { flex-wrap: nowrap; }
   .daily-cols { grid-template-columns: 1fr; }
-  .daily-stack tr { display: block; border-bottom: 1px solid #222; padding: 6px 0; }
+  .daily-stack tr { display: block; border-bottom: 1px solid var(--line); padding: 6px 0; }
   .daily-stack td { display: block; width: 100%; min-width: 0 !important; }
   .daily-stack .daily-inline input[type=text] { flex: 1 1 100%; }
   .form-card { max-width: 100%; }

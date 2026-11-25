@@ -66,7 +66,7 @@ admin_nav('/admin/reports');
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
         <h1 class="page-title" style="margin-bottom:0">
             Reports
-            <span style="color:#555;font-size:14px;font-weight:400"><?= number_format($total) ?> <?= htmlspecialchars($status === 'all' ? 'total' : $status, ENT_QUOTES) ?></span>
+            <span style="color:var(--faint);font-size:14px;font-weight:400"><?= number_format($total) ?> <?= htmlspecialchars($status === 'all' ? 'total' : $status, ENT_QUOTES) ?></span>
             <?php if ($openCount > 0): ?>
                 <span class="badge badge-live" style="font-size:11px;margin-left:6px"><?= $openCount ?> open</span>
             <?php endif; ?>
@@ -128,7 +128,7 @@ admin_nav('/admin/reports');
                                         <?= htmlspecialchars($reporterName, ENT_QUOTES) ?>
                                     </a>
                                 <?php else: ?>
-                                    <span style="color:#888"><?= htmlspecialchars($reporterName, ENT_QUOTES) ?></span>
+                                    <span style="color:var(--faint)"><?= htmlspecialchars($reporterName, ENT_QUOTES) ?></span>
                                 <?php endif; ?>
                             </td>
                             <td>
@@ -137,7 +137,7 @@ admin_nav('/admin/reports');
                                         <?= htmlspecialchars($targetName, ENT_QUOTES) ?>
                                     </a>
                                 <?php else: ?>
-                                    <span style="color:#888"><?= htmlspecialchars($targetName, ENT_QUOTES) ?></span>
+                                    <span style="color:var(--faint)"><?= htmlspecialchars($targetName, ENT_QUOTES) ?></span>
                                 <?php endif; ?>
                             </td>
                             <td class="td-clip" style="max-width:300px" title="<?= htmlspecialchars($r['reason'], ENT_QUOTES) ?>">
@@ -146,7 +146,7 @@ admin_nav('/admin/reports');
                             <td>
                                 <span class="badge <?= $statusClass ?>"><?= htmlspecialchars($r['status'], ENT_QUOTES) ?></span>
                             </td>
-                            <td style="white-space:nowrap;color:#666">
+                            <td style="white-space:nowrap;color:var(--faint)">
                                 <?= date('Y-m-d H:i', strtotime($r['created_at'])) ?>
                             </td>
                             <td>
@@ -173,9 +173,10 @@ admin_nav('/admin/reports');
                                     <?php if ($r['target_user_id'] && $r['target_deleted_at'] === null): ?>
                                         <a href="/admin/users/<?= urlencode($r['target_user_id']) ?>/delete" class="btn btn-danger btn-sm">Delete account</a>
                                     <?php elseif ($r['target_user_id'] && $r['target_deleted_at'] !== null): ?>
-                                        <span style="color:#444;font-size:11px;align-self:center">account deleted</span>
+                                        <span style="color:var(--faint);font-size:11px;align-self:center">account deleted</span>
                                     <?php elseif ($r['target_guest_id']): ?>
-                                        <form method="POST" action="/admin/reports/<?= (int)$r['id'] ?>/ban-guest" style="margin:0">
+                                        <form method="POST" action="/admin/reports/<?= (int)$r['id'] ?>/ban-guest" style="margin:0"
+                                              data-confirm="Ban this guest for 7 days?" data-confirm-text="The guest and the IPs of their recent messages can't post for 7 days. You can lift it on the Bans page." data-confirm-button="Ban 7 days">
                                             <?= csrf_input() ?>
                                             <button type="submit" class="btn btn-danger btn-sm" title="Block this guest + their recent IPs from posting for 7 days">Ban guest</button>
                                         </form>
@@ -194,7 +195,7 @@ admin_nav('/admin/reports');
             <?php if ($page > 1): ?>
                 <a href="?status=<?= urlencode($status) ?>&page=<?= $page - 1 ?>" class="btn btn-secondary btn-sm">← Prev</a>
             <?php endif; ?>
-            <span style="color:#666;font-size:12px">Page <?= $page ?> / <?= $pages ?></span>
+            <span style="color:var(--faint);font-size:12px">Page <?= $page ?> / <?= $pages ?></span>
             <?php if ($page < $pages): ?>
                 <a href="?status=<?= urlencode($status) ?>&page=<?= $page + 1 ?>" class="btn btn-secondary btn-sm">Next →</a>
             <?php endif; ?>

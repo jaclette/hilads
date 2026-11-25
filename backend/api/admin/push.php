@@ -11,8 +11,8 @@ admin_require_login();
  * POST /admin/push          → action=count|test|send (form-encoded, CSRF protected)
  * POST /admin/push (search) → action=search_user, AJAX-style JSON response
  *
- * Auth: admin_require_login() above. Single-user env-based auth - there's no
- * admin_users table, so audit captures the env's ADMIN_USERNAME + remote IP.
+ * Auth: admin_require_login() above; the sender is the signed-in admin account
+ * (admin_actor) + remote IP.
  */
 
 // ── Constants ────────────────────────────────────────────────────────────────
@@ -35,7 +35,7 @@ const PUSH_DEEP_LINK_PRESETS = [
 
 function admin_push_username(): string
 {
-    return (string) (getenv('ADMIN_USERNAME') ?: 'admin');
+    return admin_actor();
 }
 
 function admin_push_test_user_id(): ?string
@@ -420,7 +420,7 @@ admin_nav('/admin/push');
             <div class="form-group">
                 <label>
                     Title
-                    <span style="color:#666;font-size:11px;float:right" id="title-counter">0 / <?= PUSH_TITLE_MAX ?></span>
+                    <span style="color:var(--faint);font-size:11px;float:right" id="title-counter">0 / <?= PUSH_TITLE_MAX ?></span>
                 </label>
                 <input type="text" name="title" id="push-title"
                        maxlength="<?= PUSH_TITLE_MAX ?>" required
@@ -430,7 +430,7 @@ admin_nav('/admin/push');
             <div class="form-group">
                 <label>
                     Body
-                    <span style="color:#666;font-size:11px;float:right" id="body-counter">0 / <?= PUSH_BODY_MAX ?></span>
+                    <span style="color:var(--faint);font-size:11px;float:right" id="body-counter">0 / <?= PUSH_BODY_MAX ?></span>
                 </label>
                 <textarea name="body" id="push-body" rows="3"
                           maxlength="<?= PUSH_BODY_MAX ?>" required><?= htmlspecialchars($savedBody, ENT_QUOTES) ?></textarea>
@@ -446,12 +446,12 @@ admin_nav('/admin/push');
                     <label style="font-weight:normal;text-transform:none;letter-spacing:0">
                         <input type="radio" name="audience_type" value="all_installs" <?= $savedAudience === 'all_installs' ? 'checked' : '' ?>>
                         All app installs (incl. guests)
-                        <span style="color:#666;font-size:11px;display:block;margin-left:22px">Registered users + unregistered guest devices. Guests get a native push only (no in-app inbox).</span>
+                        <span style="color:var(--faint);font-size:11px;display:block;margin-left:22px">Registered users + unregistered guest devices. Guests get a native push only (no in-app inbox).</span>
                     </label>
                     <label style="font-weight:normal;text-transform:none;letter-spacing:0">
                         <input type="radio" name="audience_type" value="old_app" <?= $savedAudience === 'old_app' ? 'checked' : '' ?>>
                         Old app versions
-                        <span style="color:#666;font-size:11px;display:block;margin-left:22px">Accounts and guest devices seen on an app from before the update screen (1.7.1 and older) while "Block old apps" is on (<a href="/admin/app-versions">App versions</a>).</span>
+                        <span style="color:var(--faint);font-size:11px;display:block;margin-left:22px">Accounts and guest devices seen on an app from before the update screen (1.7.1 and older) while "Block old apps" is on (<a href="/admin/app-versions">App versions</a>).</span>
                     </label>
                     <label style="font-weight:normal;text-transform:none;letter-spacing:0;display:flex;align-items:center;gap:8px;flex-wrap:wrap">
                         <input type="radio" name="audience_type" value="city" <?= $savedAudience === 'city' ? 'checked' : '' ?>>
@@ -470,7 +470,7 @@ admin_nav('/admin/push');
                         Specific user
                         <input type="text" id="user-search" placeholder="search by display name…" style="max-width:240px">
                         <input type="hidden" name="user_id" id="user-id" value="<?= htmlspecialchars($savedUserId, ENT_QUOTES) ?>">
-                        <span id="user-search-result" style="font-size:12px;color:#888"></span>
+                        <span id="user-search-result" style="font-size:12px;color:var(--faint)"></span>
                     </label>
                 </div>
             </div>
@@ -490,20 +490,20 @@ admin_nav('/admin/push');
             </div>
 
             <div class="form-group">
-                <label>🎉 Campaign image <span style="color:#666;font-weight:400">(optional — a big colorful picture for a special campaign push)</span></label>
+                <label>🎉 Campaign image <span style="color:var(--faint);font-weight:400">(optional — a big colorful picture for a special campaign push)</span></label>
                 <input type="file" name="image_file" accept="image/jpeg,image/png,image/webp"
-                       style="color:#aaa;font-size:13px;margin-bottom:8px">
-                <div class="hint" style="color:#666;margin-bottom:8px">Upload a picture (JPEG / PNG / WebP, max 5 MB) — or paste a link below.</div>
+                       style="color:var(--muted);font-size:13px;margin-bottom:8px">
+                <div class="hint" style="color:var(--faint);margin-bottom:8px">Upload a picture (JPEG / PNG / WebP, max 5 MB) — or paste a link below.</div>
                 <input type="text" name="image_url" placeholder="…or an https:// image URL"
                        value="<?= htmlspecialchars($savedImageUrl, ENT_QUOTES) ?>">
-                <div class="hint" style="color:#666">Turns the push into a rich, eye-catching notification (Android big-picture; iOS shows text only). Leave blank for a plain push.</div>
+                <div class="hint" style="color:var(--faint)">Turns the push into a rich, eye-catching notification (Android big-picture; iOS shows text only). Leave blank for a plain push.</div>
             </div>
 
             <div class="form-group">
-                <label>🕑 Schedule for later <span style="color:#666;font-weight:400">(optional — leave blank to send now)</span></label>
+                <label>🕑 Schedule for later <span style="color:var(--faint);font-weight:400">(optional — leave blank to send now)</span></label>
                 <input type="datetime-local" name="schedule_at" value="<?= htmlspecialchars($savedSchedule, ENT_QUOTES) ?>"
-                       style="color:#eee;background:#1a1a1a;border:1px solid #333;border-radius:6px;padding:6px 8px;font-size:13px">
-                <div class="hint" style="color:#666">Time is UTC+7 (ops time). The push is stored and sent automatically at that time by the cron.</div>
+                       style="color:var(--text);background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:6px 8px;font-size:13px">
+                <div class="hint" style="color:var(--faint)">Time is UTC+7 (ops time). The push is stored and sent automatically at that time by the cron.</div>
             </div>
 
             <div class="form-actions" style="display:flex;gap:12px;flex-wrap:wrap">
@@ -538,7 +538,7 @@ admin_nav('/admin/push');
     } catch (\Throwable $e) { /* table may not exist until migration runs */ }
     ?>
     <?php if (!empty($scheduled)): ?>
-        <h2 style="margin-top:32px;margin-bottom:12px;color:#ccc;font-size:18px">🕑 Scheduled (<?= count($scheduled) ?>)</h2>
+        <h2 style="margin-top:32px;margin-bottom:12px;color:var(--muted);font-size:18px">🕑 Scheduled (<?= count($scheduled) ?>)</h2>
         <table class="admin-table" style="width:100%">
             <thead><tr>
                 <th style="width:150px">When (UTC+7)</th><th>Title</th><th style="width:130px">Audience</th><th style="width:90px">Actions</th>
@@ -550,10 +550,10 @@ admin_nav('/admin/push');
                     'city' => 'City', 'user' => 'One user', default => $s['audience_type'],
                 }; ?>
                 <tr>
-                    <td style="color:#eee;white-space:nowrap">🕑 <?= htmlspecialchars($s['send_local'], ENT_QUOTES) ?></td>
-                    <td class="td-clip"><strong style="color:#ddd"><?= htmlspecialchars($s['title'], ENT_QUOTES) ?></strong>
-                        <span style="color:#666;display:block;font-size:11px"><?= htmlspecialchars(mb_strimwidth((string) $s['body'], 0, 70, '…'), ENT_QUOTES) ?></span></td>
-                    <td style="color:#888"><?= htmlspecialchars($aud, ENT_QUOTES) ?></td>
+                    <td style="color:var(--text);white-space:nowrap">🕑 <?= htmlspecialchars($s['send_local'], ENT_QUOTES) ?></td>
+                    <td class="td-clip"><strong style="color:var(--text)"><?= htmlspecialchars($s['title'], ENT_QUOTES) ?></strong>
+                        <span style="color:var(--faint);display:block;font-size:11px"><?= htmlspecialchars(mb_strimwidth((string) $s['body'], 0, 70, '…'), ENT_QUOTES) ?></span></td>
+                    <td style="color:var(--faint)"><?= htmlspecialchars($aud, ENT_QUOTES) ?></td>
                     <td>
                         <form method="POST" action="/admin/push" onsubmit="return confirm('Cancel this scheduled push?')">
                             <?= csrf_input() ?>
@@ -568,7 +568,7 @@ admin_nav('/admin/push');
         </table>
     <?php endif; ?>
 
-    <h2 style="margin-top:32px;margin-bottom:12px;color:#ccc;font-size:18px">Recent broadcasts</h2>
+    <h2 style="margin-top:32px;margin-bottom:12px;color:var(--muted);font-size:18px">Recent broadcasts</h2>
     <table class="admin-table" style="width:100%">
         <thead>
             <tr>
@@ -584,7 +584,7 @@ admin_nav('/admin/push');
         </thead>
         <tbody>
             <?php if (empty($recent)): ?>
-                <tr><td colspan="8" style="text-align:center;color:#666;padding:24px">No broadcasts yet.</td></tr>
+                <tr><td colspan="8" style="text-align:center;color:var(--faint);padding:24px">No broadcasts yet.</td></tr>
             <?php endif; ?>
             <?php foreach ($recent as $r): ?>
                 <?php
@@ -610,7 +610,7 @@ admin_nav('/admin/push');
                     <td title="<?= htmlspecialchars((string)$r['body'], ENT_QUOTES) ?>"><?= htmlspecialchars((string)$r['title'], ENT_QUOTES) ?></td>
                     <td><?= htmlspecialchars($audienceText, ENT_QUOTES) ?></td>
                     <td style="text-align:right"><?= number_format((int)$r['recipient_count']) ?></td>
-                    <td style="text-align:right;color:#4ade80"><?= number_format((int)$r['delivered_count']) ?></td>
+                    <td style="text-align:right;color:var(--ok)"><?= number_format((int)$r['delivered_count']) ?></td>
                     <td style="text-align:right;color:<?= ((int)$r['failed_count']) > 0 ? '#f87171' : '#666' ?>"><?= number_format((int)$r['failed_count']) ?></td>
                     <td style="color:<?= $statusColor ?>"><?= htmlspecialchars((string)$r['status'], ENT_QUOTES) ?></td>
                 </tr>
@@ -661,8 +661,8 @@ userSearch.addEventListener('input', () => {
         // Auto-pick the first match. Show "X (n more)" so the admin sees there were others.
         const top = data.users[0];
         userIdHidden.value = top.id;
-        userResult.innerHTML = '✓ <strong style="color:#4ade80">' + escapeHtml(top.display_name) + '</strong>'
-                             + (data.users.length > 1 ? ' <span style="color:#666">(' + (data.users.length - 1) + ' more matches - refine to pick a different one)</span>' : '');
+        userResult.innerHTML = '✓ <strong style="color:var(--ok)">' + escapeHtml(top.display_name) + '</strong>'
+                             + (data.users.length > 1 ? ' <span style="color:var(--faint)">(' + (data.users.length - 1) + ' more matches - refine to pick a different one)</span>' : '');
     }, 250);
 });
 

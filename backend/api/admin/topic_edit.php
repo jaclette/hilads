@@ -150,7 +150,7 @@ admin_nav('/admin/topics');
 
         <!-- Title -->
         <div class="form-group">
-            <label for="title">Title <span style="color:#ef4444">*</span></label>
+            <label for="title">Title <span style="color:var(--bad)">*</span></label>
             <input type="text" id="title" name="title" maxlength="100" required
                    value="<?= htmlspecialchars($post['title'] ?? '', ENT_QUOTES) ?>"
                    placeholder="Hangout title">
@@ -172,14 +172,14 @@ admin_nav('/admin/topics');
 
         <!-- Description -->
         <div class="form-group">
-            <label for="description">Description <span style="color:#555">(optional)</span></label>
+            <label for="description">Description <span style="color:var(--faint)">(optional)</span></label>
             <textarea id="description" name="description" maxlength="500"
                       placeholder="Short context for this conversation…"><?= htmlspecialchars($post['description'] ?? '', ENT_QUOTES) ?></textarea>
         </div>
 
         <!-- Expiry -->
         <div class="form-group">
-            <label for="expires_at">Expiry date &amp; time <span style="color:#555">(optional - leave blank to keep current)</span></label>
+            <label for="expires_at">Expiry date &amp; time <span style="color:var(--faint)">(optional - leave blank to keep current)</span></label>
             <input type="datetime-local" id="expires_at" name="expires_at"
                    value="<?= htmlspecialchars($post['expires_at'] ?? '', ENT_QUOTES) ?>">
             <div class="hint">

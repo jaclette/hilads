@@ -42,7 +42,7 @@ if (!$event) {
     http_response_code(404);
     admin_head('Hi plan Not Found');
     admin_nav('/admin/events');
-    echo '<div class="admin-main"><p style="color:#666">Hi plan not found.</p>';
+    echo '<div class="admin-main"><p style="color:var(--faint)">Hi plan not found.</p>';
     echo '<p style="margin-top:12px"><a href="/admin/events" class="btn btn-secondary btn-sm">← Events</a></p></div>';
     admin_foot();
     exit;
@@ -378,7 +378,7 @@ admin_nav('/admin/events');
                 <?php if ($event['series_recurrence_type'] === 'weekly'): ?>
                     <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:4px">
                         <?php foreach ($dayNames as $dow => $name): ?>
-                            <label style="display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border:1px solid #333;border-radius:6px;cursor:pointer;background:<?= in_array($dow, $shownWeekdays, true) ? '#3a2a18' : 'transparent' ?>">
+                            <label style="display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border:1px solid var(--line);border-radius:6px;cursor:pointer;background:<?= in_array($dow, $shownWeekdays, true) ? '#3a2a18' : 'transparent' ?>">
                                 <input
                                     type="checkbox"
                                     name="weekdays[]"

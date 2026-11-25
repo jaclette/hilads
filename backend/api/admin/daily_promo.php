@@ -48,14 +48,14 @@ daily_styles();
 ?>
 <style>
 .promo-files { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:12px; margin-bottom:18px; }
-.promo-file { background:#181818; border:1px solid #2a2a2a; border-radius:10px; padding:12px; }
+.promo-file { background:var(--surface); border:1px solid var(--line); border-radius:10px; padding:12px; }
 .promo-file video { width:100%; aspect-ratio:9/16; background:#000; border-radius:8px; margin-bottom:8px; }
 .promo-captions { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:12px; margin-bottom:24px; }
-.promo-captions textarea { width:100%; min-height:200px; background:#111; border:1px solid #333; color:#eee; padding:8px; border-radius:6px; font:13px/1.45 inherit; }
-.promo-city { border-top:1px solid #222; padding:10px 0; }
+.promo-captions textarea { width:100%; min-height:200px; background:var(--surface-2); border:1px solid var(--line); color:var(--text); padding:8px; border-radius:6px; font:13px/1.45 inherit; }
+.promo-city { border-top:1px solid var(--line); padding:10px 0; }
 .promo-photos { display:flex; gap:10px; flex-wrap:wrap; margin-top:6px; }
 .promo-photo { width:150px; }
-.promo-photo img { width:150px; height:150px; object-fit:cover; border-radius:8px; display:block; background:#222; }
+.promo-photo img { width:150px; height:150px; object-fit:cover; border-radius:8px; display:block; background:var(--surface-2); }
 .promo-photo.used img { outline:3px solid #22c55e; }
 .promo-photo .badge { display:inline-block; margin-top:4px; font-size:11px; }
 </style>
@@ -125,9 +125,9 @@ daily_styles();
                             <div style="font-size:12px;margin-top:4px">@<?= dh($c['username']) ?></div>
                             <?php if ($c['city']['answer']['en'] !== null): ?><div class="daily-muted">“<?= dh($c['city']['answer']['en']) ?>”</div><?php endif; ?>
                             <?php if ($c['reason'] !== null): [$text, $bg] = $reasons[$c['reason']]; ?>
-                                <span class="badge" style="background:<?= $bg ?>;color:#eee"><?= $text ?></span>
+                                <span class="badge" style="background:<?= $bg ?>;color:var(--text)"><?= $text ?></span>
                             <?php elseif ($isUsed): ?>
-                                <span class="badge" style="background:#14532d;color:#dcfce7">In the promo</span>
+                                <span class="badge" style="background:var(--ok-soft);color:var(--ok)">In the promo</span>
                             <?php endif; ?>
                             <form method="POST" action="<?= dh($self) ?>" style="margin-top:4px">
                                 <?= csrf_input() ?><input type="hidden" name="proof_id" value="<?= dh($c['proofId']) ?>">

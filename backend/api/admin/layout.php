@@ -2,202 +2,64 @@
 
 declare(strict_types=1);
 
+/**
+ * The back office shell: <head> (one stylesheet, one script), the grouped sidebar with counts,
+ * and the top bar (search, environment, theme, my account). Pages keep calling
+ * admin_head($title) → admin_nav($current) → their content → admin_foot().
+ */
+
+function admin_asset(string $name): string
+{
+    $file = __DIR__ . '/assets/' . $name;
+    return '/admin/assets/' . $name . '?v=' . (is_file($file) ? filemtime($file) : '0');
+}
+
 function admin_head(string $title): void
 {
+    global $uri;
     header('Content-Type: text/html; charset=utf-8');
+    header('X-Frame-Options: DENY');
+    header('Referrer-Policy: same-origin');
+    $archive = isset($uri) && class_exists('AdminAuth') && AdminAuth::area((string) $uri) === 'archive';
     echo '<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
-<title>' . htmlspecialchars($title, ENT_QUOTES) . ' - Hilads Admin</title>
-<style>
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: system-ui, -apple-system, sans-serif; background: #0f0f0f; color: #e0e0e0; font-size: 14px; line-height: 1.5; }
-a { color: #FF7A3C; text-decoration: none; }
-a:hover { text-decoration: underline; }
-button, .btn { cursor: pointer; font-family: inherit; font-size: 13px; }
-
-/* Header */
-.admin-header { background: #1a1a1a; border-bottom: 1px solid #2a2a2a; padding: 0 24px; display: flex; align-items: center; height: 52px; gap: 20px; position: sticky; top: 0; z-index: 100; }
-.admin-header .logo { font-weight: 700; font-size: 15px; color: #fff; letter-spacing: -0.3px; flex-shrink: 0; }
-.admin-header .logo span { color: #FF7A3C; }
-.admin-header nav { display: flex; gap: 4px; }
-.admin-header nav a { color: #999; font-size: 13px; padding: 5px 10px; border-radius: 5px; transition: color 0.15s; }
-.admin-header nav a:hover { color: #fff; text-decoration: none; background: #252525; }
-.admin-header nav a.active { color: #fff; background: #252525; }
-.header-right { margin-left: auto; display: flex; align-items: center; gap: 10px; }
-.logout-form button { background: none; border: 1px solid #333; color: #888; padding: 5px 12px; border-radius: 5px; font-size: 12px; transition: all 0.15s; }
-.logout-form button:hover { border-color: #ef4444; color: #f87171; }
-
-/* Layout */
-.admin-main { padding: 28px 24px; max-width: 1440px; }
-.page-title { font-size: 20px; font-weight: 600; margin-bottom: 20px; color: #fff; }
-
-/* Stats */
-.stats-row { display: flex; gap: 12px; margin-bottom: 28px; flex-wrap: wrap; }
-.stat-card { background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 8px; padding: 16px 20px; min-width: 130px; }
-.stat-value { font-size: 26px; font-weight: 700; color: #FF7A3C; line-height: 1; }
-.stat-label { color: #666; font-size: 11px; margin-top: 5px; text-transform: uppercase; letter-spacing: 0.5px; }
-
-/* Search / filter bar */
-.toolbar { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; align-items: center; }
-.toolbar input[type="text"], .toolbar select {
-    background: #1a1a1a; border: 1px solid #2a2a2a; color: #e0e0e0;
-    padding: 7px 12px; border-radius: 6px; font-size: 13px; font-family: inherit;
-}
-.toolbar input[type="text"] { width: 260px; }
-.toolbar input[type="text"]::placeholder { color: #444; }
-.toolbar input[type="text"]:focus, .toolbar select:focus { outline: none; border-color: #FF7A3C; }
-.toolbar select { min-width: 130px; }
-
-/* Buttons */
-.btn { display: inline-flex; align-items: center; gap: 5px; padding: 7px 14px; border-radius: 6px; font-weight: 500; border: none; transition: background 0.15s; white-space: nowrap; }
-.btn-primary { background: #FF7A3C; color: #fff; }
-.btn-primary:hover { background: #e86b30; text-decoration: none; }
-.btn-sm { padding: 4px 9px; font-size: 12px; border-radius: 5px; }
-.btn-secondary { background: #252525; border: 1px solid #333; color: #ccc; }
-.btn-secondary:hover { background: #2e2e2e; text-decoration: none; }
-.btn-danger { background: #2a1010; border: 1px solid #7f1d1d; color: #fca5a5; }
-.btn-danger:hover { background: #3a1515; text-decoration: none; }
-
-/* Table */
-.table-wrapper { overflow-x: auto; border: 1px solid #222; border-radius: 8px; }
-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-thead th { text-align: left; padding: 9px 12px; background: #161616; border-bottom: 1px solid #2a2a2a; color: #666; font-weight: 500; white-space: nowrap; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; }
-tbody tr { border-bottom: 1px solid #1a1a1a; }
-tbody tr:last-child { border-bottom: none; }
-tbody tr:hover { background: #141414; }
-td { padding: 9px 12px; vertical-align: middle; }
-.td-mono { font-family: monospace; font-size: 11px; color: #888; }
-.td-clip { max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.td-actions { white-space: nowrap; display: flex; gap: 6px; }
-.no-results { padding: 40px; text-align: center; color: #555; }
-
-/* Badges */
-.nav-count { display: inline-block; min-width: 18px; padding: 1px 6px; margin-left: 4px; border-radius: 9px; background: #FF7A3C; color: #fff;
-             font-size: 11px; font-weight: 700; line-height: 16px; text-align: center; }
-.badge { display: inline-block; padding: 2px 7px; border-radius: 10px; font-size: 11px; font-weight: 600; white-space: nowrap; }
-.badge-live    { background: rgba(255,122,60,0.18); color: #FF7A3C; }
-.badge-active  { background: rgba(34,197,94,0.12); color: #4ade80; }
-.badge-expired { background: rgba(255,255,255,0.05); color: #555; }
-.badge-deleted { background: rgba(239,68,68,0.12); color: #f87171; }
-.badge-recurring { background: rgba(167,139,250,0.12); color: #a78bfa; }
-.badge-guest   { background: rgba(251,191,36,0.1); color: #fbbf24; }
-.badge-registered { background: rgba(96,165,250,0.1); color: #60a5fa; }
-.badge-photo       { background: rgba(34,197,94,0.08); color: #4ade80; }
-.badge-ambassador  { background: rgba(255,122,60,0.15); color: #FF7A3C; }
-.badge-fake        { background: rgba(167,139,250,0.15); color: #c4b5fd; }
-
-/* Flash messages */
-.flash { padding: 10px 16px; border-radius: 6px; margin-bottom: 16px; font-size: 13px; }
-.flash-success { background: rgba(34,197,94,0.08); border: 1px solid rgba(34,197,94,0.25); color: #4ade80; }
-.flash-error   { background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.25); color: #f87171; }
-
-/* Forms */
-.form-card { background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 8px; padding: 24px; max-width: 580px; }
-.form-group { margin-bottom: 18px; }
-.form-group label { display: block; font-size: 11px; color: #666; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
-.form-group input, .form-group select, .form-group textarea {
-    width: 100%; background: #111; border: 1px solid #2a2a2a; color: #e0e0e0;
-    padding: 8px 12px; border-radius: 6px; font-size: 14px; font-family: inherit;
-}
-.form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: #FF7A3C; }
-.form-group input[readonly], .form-group input[disabled] { color: #555; background: #0d0d0d; }
-.form-group .hint { font-size: 11px; color: #555; margin-top: 5px; }
-.form-group textarea { resize: vertical; min-height: 80px; }
-.form-actions { display: flex; gap: 10px; margin-top: 24px; align-items: center; }
-
-.info-section { margin-bottom: 20px; }
-.info-section h3 { font-size: 12px; color: #555; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; }
-.info-grid { display: grid; grid-template-columns: 130px 1fr; gap: 6px 0; font-size: 12px; }
-.info-label { color: #555; }
-.info-value { color: #ccc; font-family: monospace; }
-
-.warning-box { background: rgba(251,191,36,0.06); border: 1px solid rgba(251,191,36,0.2); border-radius: 6px; padding: 10px 14px; margin-bottom: 20px; font-size: 12px; color: #fbbf24; line-height: 1.5; }
-
-/* Pagination */
-.pagination { display: flex; gap: 6px; align-items: center; margin-top: 16px; font-size: 13px; color: #555; }
-.pagination a { color: #FF7A3C; padding: 4px 8px; border-radius: 4px; }
-.pagination a:hover { background: #1a1a1a; text-decoration: none; }
-.pagination .current { background: #FF7A3C; color: #fff; padding: 4px 8px; border-radius: 4px; }
-.pagination .sep { color: #333; }
-
-/* Searchable city picker (.city-picker) - vanilla autocomplete combo used by
-   user_create / user_edit. Text input filters a scrollable result list; click
-   commits to the hidden home_city field. */
-.city-picker { position: relative; }
-.city-picker-options {
-    list-style: none; margin: 4px 0 0; padding: 0;
-    position: absolute; z-index: 100; left: 0; right: 0; top: 100%;
-    max-height: 280px; overflow-y: auto;
-    background: #1a1a1a; border: 1px solid #333; border-radius: 6px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.5);
-}
-.city-picker-options li {
-    padding: 8px 12px; cursor: pointer; font-size: 13px; color: #ddd; user-select: none;
-}
-.city-picker-options li:hover, .city-picker-options li.active { background: #2a2a2a; color: #FF7A3C; }
-.city-picker-options li .match { color: #FF7A3C; }
-.city-picker-flag { display: inline-block; width: 24px; margin-right: 8px; font-size: 14px; line-height: 1; text-align: center; }
-.city-picker-empty { padding: 10px 12px; color: #555; font-size: 12px; font-style: italic; }
-
-/* Login */
-.login-page { display: flex; align-items: center; justify-content: center; min-height: 100vh; }
-.login-box { background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 12px; padding: 36px 32px; width: 340px; }
-.login-box h1 { font-size: 18px; font-weight: 700; margin-bottom: 4px; color: #fff; }
-.login-box .subtitle { color: #555; font-size: 13px; margin-bottom: 28px; }
-.login-box .form-group label { color: #777; }
-.login-box .btn-primary { width: 100%; justify-content: center; padding: 10px; margin-top: 4px; }
-</style>
+<title>' . htmlspecialchars($title, ENT_QUOTES) . ' · Hilads Admin</title>
+<script>try{var t=localStorage.getItem("admin_theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&display=swap">
+<link rel="stylesheet" href="' . admin_asset('admin.css') . '">
+<script src="' . admin_asset('admin.js') . '" defer></script>
 <script>
-// Shared searchable-city picker init. Each .city-picker in the page
-// gets a focus/input/blur cycle wired up: typing filters the list,
-// click commits to the hidden field. Used by user_create.php and
-// user_edit.php (each passes its own city array on page load).
-//
-// `cities` is an array of {name, country} objects. The country is an
-// ISO 3166-1 alpha-2 code (e.g. "FR") that gets rendered as a flag
-// emoji next to the city name for fast visual scanning.
+// Shared searchable-city picker (user_create.php / user_edit.php). `cities` = [{name, country}].
 function initCityPickers(cities) {
     if (!Array.isArray(cities) || cities.length === 0) return;
     const MAX_RESULTS = 100;
-
     function flagEmoji(cc) {
         if (!cc || cc.length !== 2) return "";
         const A = "A".charCodeAt(0);
-        return String.fromCodePoint(
-            0x1F1E6 + cc.toUpperCase().charCodeAt(0) - A,
-            0x1F1E6 + cc.toUpperCase().charCodeAt(1) - A
-        );
+        return String.fromCodePoint(0x1F1E6 + cc.toUpperCase().charCodeAt(0) - A, 0x1F1E6 + cc.toUpperCase().charCodeAt(1) - A);
     }
-
     document.querySelectorAll(".city-picker").forEach(function (picker) {
         const search  = picker.querySelector(".city-picker-search");
         const hidden  = picker.querySelector("input[type=\"hidden\"]");
         const options = picker.querySelector(".city-picker-options");
         if (!search || !hidden || !options) return;
         let activeIdx = -1;
-
         function render(query) {
             const q = (query || "").trim().toLowerCase();
-            const list = q === ""
-                ? cities.slice(0, MAX_RESULTS)
+            const list = q === "" ? cities.slice(0, MAX_RESULTS)
                 : cities.filter(function (c) { return (c.name || "").toLowerCase().indexOf(q) !== -1; }).slice(0, MAX_RESULTS);
-            if (list.length === 0) {
-                options.innerHTML = "<li class=\"city-picker-empty\">No matches</li>";
-            } else {
-                options.innerHTML = list.map(function (c) {
-                    const safe = (c.name || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/"/g, "&quot;");
-                    const flag = flagEmoji(c.country || "");
-                    return "<li data-city=\"" + safe + "\"><span class=\"city-picker-flag\">" + flag + "</span>" + safe + "</li>";
-                }).join("");
-            }
+            options.innerHTML = list.length === 0 ? "<li class=\"city-picker-empty\">No matches</li>" : list.map(function (c) {
+                const safe = (c.name || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/"/g, "&quot;");
+                return "<li data-city=\"" + safe + "\"><span class=\"city-picker-flag\">" + flagEmoji(c.country || "") + "</span>" + safe + "</li>";
+            }).join("");
             options.hidden = false;
             activeIdx = -1;
         }
-
         function setActive(idx) {
             const items = options.querySelectorAll("li[data-city]");
             items.forEach(function (li) { li.classList.remove("active"); });
@@ -206,13 +68,7 @@ function initCityPickers(cities) {
             items[idx].classList.add("active");
             items[idx].scrollIntoView({ block: "nearest" });
         }
-
-        function commit(city) {
-            search.value = city;
-            hidden.value = city;
-            options.hidden = true;
-        }
-
+        function commit(city) { search.value = city; hidden.value = city; options.hidden = true; }
         search.addEventListener("focus",  function () { render(search.value); });
         search.addEventListener("input",  function () { render(search.value); hidden.value = search.value; });
         search.addEventListener("blur",   function () { setTimeout(function () { options.hidden = true; }, 150); });
@@ -226,83 +82,196 @@ function initCityPickers(cities) {
         options.addEventListener("mousedown", function (e) {
             const li = e.target.closest("li[data-city]");
             if (!li) return;
-            e.preventDefault(); // keep focus so blur does not race the click
+            e.preventDefault();
             commit(li.dataset.city);
         });
     });
 }
 </script>
 </head>
-<body>
+<body' . ($archive ? ' class="is-archive"' : '') . '>
 ';
 }
 
 /** Proposals waiting for a review (challenges + Local Twists), once per request. */
 function admin_pending_proposals(): int
 {
-    static $n = null;
-    return $n ??= class_exists('DailyProposals') ? DailyProposals::pendingCount() : 0;
+    return admin_badges()['proposals'] ?? 0;
+}
+
+/** The sidebar counts, one cached read (30 s) for every page. */
+function admin_badges(): array
+{
+    static $b = null;
+    if ($b !== null) return $b;
+    $b = Cache::remember('admin_nav_badges', 30, function (): array {
+        $n = fn (callable $f): int => (function () use ($f) { try { return (int) $f(); } catch (\Throwable) { return 0; } })();
+        return [
+            'proposals' => $n(fn () => class_exists('DailyProposals') ? DailyProposals::pendingCount() : 0),
+            'photos'    => $n(fn () => class_exists('PhotoWatch') ? PhotoWatch::unseenCount() : 0),
+            'cities'    => $n(fn () => CityAdmin::newAutoCount()),
+            'reports'   => $n(fn () => Database::pdo()->query("SELECT count(*) FROM user_reports WHERE status = 'open'")->fetchColumn()),
+        ];
+    }) ?? [];
+    return $b;
+}
+
+/** Drop the cached counts after an action that changes them (photo seen, report handled…). */
+function admin_badges_changed(): void
+{
+    Cache::forget('admin_nav_badges');
+}
+
+/** Inline icons (24×24 stroke), so the sidebar needs no icon font or emoji. */
+function admin_icon(string $name): string
+{
+    static $p = [
+        'home'     => '<path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/>',
+        'calendar' => '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/>',
+        'star'     => '<path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/>',
+        'question' => '<circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6v.6M12 17h.01"/>',
+        'image'    => '<rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M21 16l-5-5-9 9"/>',
+        'flag'     => '<path d="M5 21V4M5 4h11l-2 4 2 4H5"/>',
+        'message'  => '<path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/>',
+        'ban'      => '<circle cx="12" cy="12" r="9"/><path d="M5.6 5.6l12.8 12.8"/>',
+        'users'    => '<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0M16 4.5a3.5 3.5 0 0 1 0 7M21.5 20a6.5 6.5 0 0 0-4-6"/>',
+        'city'     => '<path d="M3 21h18M5 21V8l5-3v16M10 21V3l9 4v14M14 9h2M14 13h2M14 17h2"/>',
+        'plan'     => '<path d="M8 2v4M16 2v4"/><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M8 14l3 3 5-6"/>',
+        'pin'      => '<path d="M12 21s-7-6.1-7-11.5a7 7 0 0 1 14 0C19 14.9 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/>',
+        'scales'   => '<path d="M12 3v18M7 21h10M5 7h14M5 7l-3 7a3 3 0 0 0 6 0zM19 7l-3 7a3 3 0 0 0 6 0z"/>',
+        'trophy'   => '<path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0zM7 6H3v2a4 4 0 0 0 4 4M17 6h4v2a4 4 0 0 1-4 4"/>',
+        'shield'   => '<path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M9 12l2 2 4-4"/>',
+        'bell'     => '<path d="M6 8a6 6 0 0 1 12 0c0 7 3 8 3 8H3s3-1 3-8M10 20a2 2 0 0 0 4 0"/>',
+        'mail'     => '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/>',
+        'film'     => '<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 4v16M17 4v16M3 9h4M3 15h4M17 9h4M17 15h4"/>',
+        'clapper'  => '<path d="M4 9h16v11H4zM4 9l2-5 14 0-2 5M9 4l-2 5M15 4l-2 5"/>',
+        'phone'    => '<rect x="6" y="2" width="12" height="20" rx="2"/><path d="M11 18h2"/>',
+        'cog'      => '<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>',
+        'list'     => '<path d="M9 6h12M9 12h12M9 18h12M4 6h.01M4 12h.01M4 18h.01"/>',
+        'alert'    => '<path d="M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0zM12 9v4M12 17h.01"/>',
+        'box'      => '<path d="M21 8l-9-5-9 5v8l9 5 9-5z"/><path d="M3 8l9 5 9-5M12 13v8"/>',
+        'zap'      => '<path d="M13 2L4 14h7l-1 8 9-12h-7z"/>',
+        'door'     => '<path d="M14 3h5v18h-5M10 17l5-5-5-5M15 12H3"/>',
+        'search'   => '<circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/>',
+        'sun'      => '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
+        'menu'     => '<path d="M4 6h16M4 12h16M4 18h16"/>',
+        'logout'   => '<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/>',
+    ];
+    return '<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'
+         . ($p[$name] ?? '') . '</svg>';
+}
+
+/**
+ * The sidebar: [group key, label, items]; item = [href, label, icon, match regex, badge key].
+ * An item shows only when the signed-in role may open its page.
+ */
+function admin_menu(): array
+{
+    return [
+        ['today', 'Today', [
+            ['/admin', 'Dashboard', 'home', '#^/admin/?$#', null],
+            ['/admin/daily', 'Daily challenges', 'calendar', '#^/admin/daily(?!/(specials|events|spots|picks|promo))#', 'proposals'],
+            ['/admin/daily/specials', 'Special days & events', 'star', '#^/admin/daily/(specials|events)#', null],
+            ['/admin/hi-questions', 'Hi questions', 'question', '#^/admin/hi-questions#', null],
+        ]],
+        ['moderation', 'Moderation', [
+            ['/admin/photos', 'Photos', 'image', '#^/admin/photos#', 'photos'],
+            ['/admin/reports', 'Reports', 'flag', '#^/admin/reports#', 'reports'],
+            ['/admin/messages', 'Messages', 'message', '#^/admin/messages#', null],
+            ['/admin/bans', 'Bans', 'ban', '#^/admin/bans#', null],
+        ]],
+        ['community', 'Community', [
+            ['/admin/users', 'Users', 'users', '#^/admin/users#', null],
+            ['/admin/cities', 'Cities', 'city', '#^/admin/cities#', 'cities'],
+            ['/admin/events', 'Plans', 'plan', '#^/admin/(events|topics)#', null],
+            ['/admin/daily/spots', 'Places', 'pin', '#^/admin/daily/(spots|picks)#', null],
+        ]],
+        ['game', 'Game', [
+            ['/admin/scoring', 'Scoring', 'scales', '#^/admin/scoring#', null],
+            ['/admin/launch-season', 'Seasons', 'trophy', '#^/admin/launch-season#', null],
+            ['/admin/scoring#fair-play', 'Fair play', 'shield', '#^$#', null],
+        ]],
+        ['growth', 'Growth', [
+            ['/admin/push', 'Push', 'bell', '#^/admin/push#', null],
+            ['/admin/email', 'Email', 'mail', '#^/admin/email#', null],
+            ['/admin/worlds', 'Worlds studio', 'film', '#^/admin/worlds#', null],
+            ['/admin/daily/promo', 'Promo', 'clapper', '#^/admin/daily/promo#', null],
+        ]],
+        ['system', 'System', [
+            ['/admin/app-versions', 'App versions & switches', 'phone', '#^/admin/app-versions#', null],
+            ['/admin/settings', 'Settings', 'cog', '#^/admin/settings#', null],
+            ['/admin/audit', 'Audit log', 'list', '#^/admin/audit#', null],
+            ['/admin/danger', 'Danger zone', 'alert', '#^/admin/danger#', null],
+        ]],
+        ['archive', 'Archive', [
+            ['/admin/challenges', 'Old challenges', 'box', '#^/admin/challenges#', null],
+            ['/admin/campaigns', 'Campaigns', 'zap', '#^/admin/campaigns#', null],
+            ['/admin/arrivals', 'Arrivals', 'door', '#^/admin/arrivals#', null],
+        ]],
+    ];
 }
 
 function admin_nav(string $current = ''): void
 {
-    $isLoggedIn = admin_is_logged_in();
-    echo '<header class="admin-header">';
-    echo '<div class="logo">Hilads <span>Admin</span></div>';
-    if ($isLoggedIn) {
-        echo '<nav>';
-        $links = [
-            '/admin'         => 'Dashboard',
-            '/admin/users'   => 'Users',
-            '/admin/events'  => 'Hi plan',
-            '/admin/topics'  => 'Hi now',
-            '/admin/challenges' => 'Challenges',
-            '/admin/campaigns'  => '⚡ Campaigns',
-            '/admin/daily'      => '🔥 Daily',
-            '/admin/worlds'     => '🌍 Worlds',
-            '/admin/launch-season' => '🚀 Launch Season',
-            '/admin/cities'     => 'Cities',
-            '/admin/messages'=> 'Messages',
-            '/admin/photos'  => 'Photos',
-            '/admin/scoring' => 'Scoring',
-            '/admin/hi-questions' => 'Hi questions',
-            '/admin/arrivals'=> 'Arrivals',
-            '/admin/reports' => 'Reports',
-            '/admin/bans'    => 'Bans',
-            '/admin/email'   => 'Email',
-            '/admin/push'    => 'Push',
-            '/admin/app-versions' => 'App versions',
-        ];
-        // Proposals waiting for a review: a count on Daily (and on its Proposals tab, daily_subnav).
-        $pending = admin_pending_proposals();
-        // Cities created automatically since the list was last opened (a first visit there).
-        try { $newCities = CityAdmin::newAutoCount(); } catch (\Throwable) { $newCities = 0; }
-        foreach ($links as $href => $label) {
-            $active = ($current === $href) ? ' class="active"' : '';
-            $badge  = $href === '/admin/daily' && $pending > 0
-                ? ' <span class="nav-count" title="Proposals waiting">' . $pending . '</span>' : '';
-            $to = $href;
-            if ($href === '/admin/photos' && class_exists('PhotoWatch') && ($newPhotos = PhotoWatch::unseenCount()) > 0) {
-                $badge = ' <span class="nav-count" title="Photos not checked yet">' . min($newPhotos, 99) . ($newPhotos > 99 ? '+' : '') . '</span>';
-            }
-            if ($href === '/admin/cities' && $newCities > 0) {
-                $to    = '/admin/cities?view=auto';
-                $badge = ' <span class="nav-count" title="New cities created automatically">' . min($newCities, 99) . ($newCities > 99 ? '+' : '') . '</span>';
-            }
-            echo '<a href="' . $to . '"' . $active . '>' . $label . $badge . '</a>';
+    global $uri;
+    if (!admin_is_logged_in()) return;
+    $GLOBALS['admin_shell_open'] = true;
+    $path   = (string) ($uri ?? $current);
+    $role   = AdminAuth::role();
+    $badges = admin_badges();
+    $e = fn ($s) => htmlspecialchars((string) $s, ENT_QUOTES);
+
+    echo '<div class="shell"><aside class="sidebar" aria-label="Back office">';
+    echo '<a class="brand" href="/admin"><span class="brand-mark">Hi</span><span>Hilads<small>Back office</small></span></a>';
+    foreach (admin_menu() as [$key, $label, $items]) {
+        $html = '';
+        $groupCount = 0;
+        $hasCurrent = false;
+        foreach ($items as [$href, $text, $icon, $match, $badgeKey]) {
+            if (!AdminAuth::canView($role, AdminAuth::area(strtok($href, '#?')))) continue;
+            $isCurrent = preg_match($match, $path) === 1;
+            $hasCurrent = $hasCurrent || $isCurrent;
+            $n = $badgeKey ? (int) ($badges[$badgeKey] ?? 0) : 0;
+            $groupCount += $n;
+            $count = $n > 0 ? '<span class="count' . ($badgeKey === 'cities' ? ' quiet' : '') . '">' . ($n > 99 ? '99+' : $n) . '</span>' : '';
+            $to = $badgeKey === 'cities' && $n > 0 ? '/admin/cities?view=auto' : $href;
+            $html .= '<a href="' . $e($to) . '"' . ($isCurrent ? ' aria-current="page"' : '') . ' title="' . $e($text) . '">'
+                   . admin_icon($icon) . '<span class="lbl">' . $e($text) . '</span>' . $count . '</a>';
         }
-        echo '</nav>';
-        echo '<div class="header-right">';
-        echo '<form class="logout-form" method="POST" action="/admin/logout">';
-        echo csrf_input();
-        echo '<button type="submit">Sign out</button>';
-        echo '</form>';
-        echo '</div>';
+        if ($html === '') continue;
+        $open = $key !== 'archive' || $hasCurrent;
+        echo '<details class="navgroup" data-group="' . $key . '"' . ($open ? ' open' : '') . '><summary>' . $e($label)
+           . ($groupCount > 0 ? '<span class="gcount">' . ($groupCount > 99 ? '99+' : $groupCount) . '</span>' : '')
+           . '</summary><nav class="nav">' . $html . '</nav></details>';
     }
-    echo '</header>';
+    echo '</aside><div class="main">';
+
+    $u = AdminAuth::user();
+    $initials = mb_strtoupper(mb_substr((string) $u['name'], 0, 1));
+    $isProd = (getenv('APP_ENV') ?: '') === 'production';
+    echo '<header class="topbar">'
+       . '<button type="button" class="icon-btn menu-btn" data-menu aria-label="Menu">' . admin_icon('menu') . '</button>'
+       . '<form class="search" method="GET" action="/admin/search" role="search">' . admin_icon('search')
+       . '<input id="admin-search" type="search" name="q" placeholder="Search players, photos, cities" value="'
+       . $e($path === '/admin/search' ? ($_GET['q'] ?? '') : '') . '" autocomplete="off" aria-label="Search"><kbd>/</kbd></form>'
+       . '<span class="env ' . ($isProd ? 'env-prod' : 'env-local') . '" title="' . ($isProd ? 'Changes here affect real players' : 'Not production') . '">'
+       . ($isProd ? 'PROD' : 'LOCAL') . '</span>'
+       . '<div class="me">'
+       . '<button type="button" class="icon-btn" data-theme-toggle title="Theme: system / light / dark" aria-label="Change theme">' . admin_icon('sun') . '</button>'
+       . '<a class="who-link" href="/admin/account" title="My account"><span class="avatar">' . $e($initials) . '</span>'
+       . '<span class="name">' . $e($u['name']) . '</span></a>'
+       . '<span class="role">' . $e(AdminAuth::ROLES[$u['role']] ?? $u['role']) . '</span>'
+       . '<form method="POST" action="/admin/logout" style="margin:0">' . csrf_input()
+       . '<button type="submit" class="icon-btn" title="Sign out" aria-label="Sign out">' . admin_icon('logout') . '</button></form>'
+       . '</div></header>';
+
+    if (AdminAuth::area($path) === 'archive') {
+        echo '<div class="admin-main" style="padding-bottom:0"><div class="callout warn archive-banner">Archive: this page is kept for history and is read-only. Its data stays, nothing here can be changed.</div></div>';
+    }
 }
 
 function admin_foot(): void
 {
+    if (!empty($GLOBALS['admin_shell_open'])) echo '</div></div>';
     echo '</body></html>';
 }

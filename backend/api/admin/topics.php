@@ -105,7 +105,7 @@ admin_nav('/admin/topics');
 ?>
 <div class="admin-main">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
-        <h1 class="page-title" style="margin-bottom:0">Hi now <span style="color:#555;font-size:14px;font-weight:400"><?= number_format($total) ?> total</span></h1>
+        <h1 class="page-title" style="margin-bottom:0">Hi now <span style="color:var(--faint);font-size:14px;font-weight:400"><?= number_format($total) ?> total</span></h1>
         <a href="/admin/topics/create" class="btn btn-primary btn-sm">+ Create Hi now</a>
     </div>
 
@@ -197,10 +197,10 @@ admin_nav('/admin/topics');
                             <td class="td-clip" title="<?= htmlspecialchars($t['title'] . ($t['description'] ? ' - ' . $t['description'] : ''), ENT_QUOTES) ?>">
                                 <strong><?= htmlspecialchars($t['title'], ENT_QUOTES) ?></strong>
                                 <?php if ($t['description']): ?>
-                                    <br><span style="color:#555;font-size:11px"><?= htmlspecialchars(mb_substr($t['description'], 0, 60), ENT_QUOTES) ?><?= mb_strlen($t['description']) > 60 ? '…' : '' ?></span>
+                                    <br><span style="color:var(--faint);font-size:11px"><?= htmlspecialchars(mb_substr($t['description'], 0, 60), ENT_QUOTES) ?><?= mb_strlen($t['description']) > 60 ? '…' : '' ?></span>
                                 <?php endif; ?>
                             </td>
-                            <td style="color:#888"><?= htmlspecialchars($t['city_name'] ?? '-', ENT_QUOTES) ?></td>
+                            <td style="color:var(--faint)"><?= htmlspecialchars($t['city_name'] ?? '-', ENT_QUOTES) ?></td>
                             <td><?= $catIcon ?> <?= htmlspecialchars($t['category'], ENT_QUOTES) ?></td>
                             <td>
                                 <?php if ($t['created_by'] !== null): ?>
@@ -208,15 +208,15 @@ admin_nav('/admin/topics');
                                 <?php elseif ($t['guest_id'] !== null): ?>
                                     <span class="badge badge-guest" title="<?= htmlspecialchars($t['guest_id'], ENT_QUOTES) ?>">Guest</span>
                                 <?php else: ?>
-                                    <span style="color:#444">-</span>
+                                    <span style="color:var(--faint)">-</span>
                                 <?php endif; ?>
                             </td>
-                            <td style="color:#888"><?= (int)$t['message_count'] ?></td>
+                            <td style="color:var(--faint)"><?= (int)$t['message_count'] ?></td>
                             <td style="color:<?= $isExpired ? '#555' : '#888' ?>; white-space:nowrap">
                                 <?= $expiresTs > 0 ? date('M d, H:i', $expiresTs) : '-' ?>
                             </td>
                             <td><?= $statusBadge ?></td>
-                            <td style="color:#666; white-space:nowrap">
+                            <td style="color:var(--faint); white-space:nowrap">
                                 <?= $t['created_at'] ? date('M d, H:i', strtotime($t['created_at'])) : '-' ?>
                             </td>
                             <td>
@@ -225,12 +225,12 @@ admin_nav('/admin/topics');
                                        class="btn btn-secondary btn-sm<?= $isDeleted ? '" style="opacity:.45' : '' ?>">Edit</a>
                                     <?php if (!$isDeleted): ?>
                                         <form method="POST" action="/admin/topics/<?= urlencode($t['channel_id']) ?>/delete"
-                                              onsubmit="return confirm('Delete Hi now «<?= htmlspecialchars(addslashes($t['title']), ENT_QUOTES) ?>»?\n\nThis will remove the Hi now and all its messages. Cannot be undone.')">
+                                              onsubmit="return confirm('Delete Hi now «<?= htmlspecialchars(addslashes($t['title']), ENT_QUOTES) ?>»?\n\nIt disappears from the app. Its messages are kept.')">
                                             <?= csrf_input() ?>
                                             <button type="submit" class="btn btn-danger btn-sm">Delete</button>
                                         </form>
                                     <?php else: ?>
-                                        <span style="color:#444;font-size:11px">deleted</span>
+                                        <span style="color:var(--faint);font-size:11px">deleted</span>
                                     <?php endif; ?>
                                 </div>
                             </td>

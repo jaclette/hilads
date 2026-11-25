@@ -135,6 +135,10 @@ if ($method === 'POST') {
         $apiKey = getenv('RESEND_API_KEY');
         if (!$apiKey) {
             $error = 'RESEND_API_KEY is not configured.';
+        } elseif ($sendAll && strtoupper(trim((string) ($_POST['confirm_phrase'] ?? ''))) !== 'SEND TO EVERYONE') {
+            $error = 'Type "SEND TO EVERYONE" to send to every registered user. Nothing was sent.';
+        } elseif ($sendAll && !DbRateLimiter::allow('admin_email_all', 1, 86400)) {
+            $error = 'An email to every registered user already went out in the last 24 hours. Nothing was sent.';
         } elseif ($sendAll) {
             // ── Broadcast to all registered users ─────────────────────────────
             // Privacy: BCC at scale is unreliable (some providers strip it,
@@ -158,6 +162,7 @@ if ($method === 'POST') {
                 $sent = 0; $failed = 0; $lastCode = null; $lastDecoded = null; $firstId = null;
                 $failedAddrs = [];
                 error_log('[admin/email] broadcast (1:1) to ' . count($recipients) . ' registered users');
+                AdminAuth::log('email.send_all', 'email', null, null, ['recipients' => count($recipients), 'subject' => $subject, 'from' => $from]);
 
                 foreach ($recipients as $addr) {
                     $r = resend_send($apiKey, [
@@ -291,6 +296,7 @@ $savedBcc     = $savedBcc     ?? '';
 $savedSubject = $savedSubject ?? '';
 $savedBody    = $savedBody    ?? '';
 $savedSendAll = $savedSendAll ?? false;
+$registeredCount = count(all_registered_emails());
 
 admin_head('Send Email');
 admin_nav('/admin/email');
@@ -307,58 +313,58 @@ if ($error) {
 
 if ($debug !== null) {
     $dp = $debug;
-    echo '<div style="background:#111;border:1px solid #2a2a2a;border-radius:8px;padding:16px;margin-bottom:20px;font-size:12px;font-family:monospace">';
-    echo '<div style="color:#666;text-transform:uppercase;letter-spacing:.5px;font-size:10px;margin-bottom:10px">Debug - last send</div>';
+    echo '<div style="background:var(--surface-2);border:1px solid var(--line);border-radius:8px;padding:16px;margin-bottom:20px;font-size:12px;font-family:monospace">';
+    echo '<div style="color:var(--faint);text-transform:uppercase;letter-spacing:.5px;font-size:10px;margin-bottom:10px">Debug - last send</div>';
 
     echo '<div style="display:grid;grid-template-columns:140px 1fr;gap:4px 0">';
 
     // To
-    echo '<span style="color:#555">to (' . count($dp['to']) . ')</span>';
-    echo '<span style="color:#ccc">' . htmlspecialchars(implode(', ', $dp['to']), ENT_QUOTES) . '</span>';
+    echo '<span style="color:var(--faint)">to (' . count($dp['to']) . ')</span>';
+    echo '<span style="color:var(--muted)">' . htmlspecialchars(implode(', ', $dp['to']), ENT_QUOTES) . '</span>';
 
     // BCC
-    echo '<span style="color:#555">bcc (' . count($dp['bcc']) . ')</span>';
-    $bccDisplay = !empty($dp['bcc']) ? htmlspecialchars(implode(', ', $dp['bcc']), ENT_QUOTES) : '<em style="color:#444">none</em>';
-    echo '<span style="color:#ccc">' . $bccDisplay . '</span>';
+    echo '<span style="color:var(--faint)">bcc (' . count($dp['bcc']) . ')</span>';
+    $bccDisplay = !empty($dp['bcc']) ? htmlspecialchars(implode(', ', $dp['bcc']), ENT_QUOTES) : '<em style="color:var(--faint)">none</em>';
+    echo '<span style="color:var(--muted)">' . $bccDisplay . '</span>';
 
     // bcc actually in payload
-    echo '<span style="color:#555">bcc in payload</span>';
+    echo '<span style="color:var(--faint)">bcc in payload</span>';
     if ($dp['bcc_in_payload'] === null) {
-        echo '<span style="color:#f87171">NOT SET (empty BCC was given or count was 0)</span>';
+        echo '<span style="color:var(--bad)">NOT SET (empty BCC was given or count was 0)</span>';
     } else {
         $count = count($dp['bcc_in_payload']);
-        echo '<span style="color:#4ade80">' . $count . ' address' . ($count !== 1 ? 'es' : '') . ': '
+        echo '<span style="color:var(--ok)">' . $count . ' address' . ($count !== 1 ? 'es' : '') . ': '
             . htmlspecialchars(implode(', ', $dp['bcc_in_payload']), ENT_QUOTES) . '</span>';
     }
 
     // Invalid
     if (!empty($dp['to_invalid']) || !empty($dp['bcc_invalid'])) {
-        echo '<span style="color:#555">skipped invalid</span>';
+        echo '<span style="color:var(--faint)">skipped invalid</span>';
         $all = array_merge($dp['to_invalid'], $dp['bcc_invalid']);
-        echo '<span style="color:#fbbf24">' . htmlspecialchars(implode(', ', $all), ENT_QUOTES) . '</span>';
+        echo '<span style="color:var(--warn)">' . htmlspecialchars(implode(', ', $all), ENT_QUOTES) . '</span>';
     }
 
     // HTTP code
-    echo '<span style="color:#555">Resend HTTP</span>';
+    echo '<span style="color:var(--faint)">Resend HTTP</span>';
     $codeColor = ($dp['http_code'] >= 200 && $dp['http_code'] < 300) ? '#4ade80' : '#f87171';
     echo '<span style="color:' . $codeColor . '">' . (int)$dp['http_code'] . '</span>';
 
     // Resend ID
-    echo '<span style="color:#555">Resend ID</span>';
+    echo '<span style="color:var(--faint)">Resend ID</span>';
     if ($dp['resend_id']) {
-        echo '<span style="color:#60a5fa">' . htmlspecialchars($dp['resend_id'], ENT_QUOTES) . '</span>';
+        echo '<span style="color:var(--info)">' . htmlspecialchars($dp['resend_id'], ENT_QUOTES) . '</span>';
     } else {
-        echo '<span style="color:#f87171">no ID returned</span>';
+        echo '<span style="color:var(--bad)">no ID returned</span>';
     }
 
     // Raw response
-    echo '<span style="color:#555">Raw response</span>';
-    echo '<span style="color:#888">' . htmlspecialchars(json_encode($dp['resend_raw'], JSON_UNESCAPED_UNICODE), ENT_QUOTES) . '</span>';
+    echo '<span style="color:var(--faint)">Raw response</span>';
+    echo '<span style="color:var(--faint)">' . htmlspecialchars(json_encode($dp['resend_raw'], JSON_UNESCAPED_UNICODE), ENT_QUOTES) . '</span>';
 
     echo '</div>'; // grid
 
     if ($dp['resend_id']) {
-        echo '<div style="margin-top:12px;color:#555">Check delivery in the <a href="https://resend.com/emails/' . htmlspecialchars($dp['resend_id'], ENT_QUOTES) . '" target="_blank" style="color:#FF7A3C">Resend dashboard →</a></div>';
+        echo '<div style="margin-top:12px;color:var(--faint)">Check delivery in the <a href="https://resend.com/emails/' . htmlspecialchars($dp['resend_id'], ENT_QUOTES) . '" target="_blank" style="color:var(--brand-text)">Resend dashboard →</a></div>';
     }
 
     echo '</div>';
@@ -379,8 +385,12 @@ echo '</div>';
 echo '<div class="form-group">';
 echo '<label style="display:flex;align-items:center;gap:8px;font-weight:normal;text-transform:none;letter-spacing:0;cursor:pointer">';
 echo '<input type="checkbox" name="send_all_users" id="send-all-users" value="1"' . ($savedSendAll ? ' checked' : '') . '>';
-echo 'Send to all registered users <span style="color:#888;font-size:12px">(1:1 - each user gets their own copy, no shared visibility; "Send test" still uses the To field)</span>';
+echo 'Send to all registered users (' . number_format($registeredCount) . ') <span class="hint">each gets their own copy, nobody sees the others; "Send test" still uses the To field; once a day at most</span>';
 echo '</label>';
+echo '<div id="send-all-phrase" class="field" style="max-width:360px;margin:8px 0 0"' . ($savedSendAll ? '' : ' hidden') . '>';
+echo '<label for="confirm-phrase">Type <span class="phrase">SEND TO EVERYONE</span> to confirm</label>';
+echo '<input id="confirm-phrase" name="confirm_phrase" autocomplete="off" spellcheck="false">';
+echo '</div>';
 echo '</div>';
 
 echo '<div class="form-group" id="to-group">';
@@ -390,7 +400,7 @@ echo '<div class="hint">Comma or newline separated. Multiple recipients allowed.
 echo '</div>';
 
 echo '<div class="form-group">';
-echo '<label>BCC <span style="color:#444;font-size:10px;text-transform:none;letter-spacing:0">(optional)</span></label>';
+echo '<label>BCC <span style="color:var(--faint);font-size:10px;text-transform:none;letter-spacing:0">(optional)</span></label>';
 echo '<textarea name="bcc" rows="2" placeholder="bcc@example.com">' . htmlspecialchars($savedBcc, ENT_QUOTES) . '</textarea>';
 echo '<div class="hint">Comma or newline separated.</div>';
 echo '</div>';
@@ -401,7 +411,7 @@ echo '<input type="text" name="subject" value="' . htmlspecialchars($savedSubjec
 echo '</div>';
 
 echo '<div class="form-group">';
-echo '<label>Message <span style="color:#444;font-size:10px;text-transform:none;letter-spacing:0">(HTML supported)</span></label>';
+echo '<label>Message <span style="color:var(--faint);font-size:10px;text-transform:none;letter-spacing:0">(HTML supported)</span></label>';
 echo '<textarea name="body" rows="14" placeholder="Write your message here. Line breaks are preserved automatically. Paste HTML for full control." required>' . htmlspecialchars($savedBody, ENT_QUOTES) . '</textarea>';
 echo '<div class="hint">Plain text: line breaks → &lt;br&gt; automatically. HTML: sent as-is.</div>';
 echo '</div>';
@@ -414,21 +424,8 @@ echo '</div>';
 echo '</div>';
 echo '</form>';
 
-// ── All registered emails (copy-paste) ────────────────────────────────────
-// Same source as the "Send to all registered users" broadcast, exposed as a
-// plain comma-separated list so the admin can copy it into another tool.
-$allEmails = all_registered_emails();
-$emailList = implode(', ', $allEmails);
-echo '<details class="form-card" style="margin-top:20px">';
-echo '<summary style="cursor:pointer;font-weight:600">All registered emails (' . count($allEmails) . ') - copy-paste</summary>';
-echo '<div style="margin-top:12px">';
-echo '<textarea id="all-emails" readonly rows="6" style="width:100%;font-family:monospace;font-size:12px" onclick="this.select()" placeholder="No registered users with an email address.">' . htmlspecialchars($emailList, ENT_QUOTES) . '</textarea>';
-echo '<div class="hint">Comma-separated. Click the field to select all, or use the button.</div>';
-echo '<div class="form-actions" style="margin-top:10px">';
-echo '<button type="button" id="copy-all-emails" class="btn btn-secondary">Copy all</button>';
-echo '</div>';
-echo '</div>';
-echo '</details>';
+// The list of every registered address is no longer printed on this page (it was shown, copyable,
+// on each visit). Exports with personal data belong to super admins (phase 2+).
 
 echo '</div>';
 
@@ -442,42 +439,17 @@ echo '</div>';
   var toGroup  = document.getElementById('to-group');
   if (!checkbox) return;
 
+  var phrase = document.getElementById('send-all-phrase');
   function syncHint() {
     if (toGroup) toGroup.style.opacity = checkbox.checked ? '0.6' : '1';
+    if (phrase) phrase.hidden = !checkbox.checked;
   }
   checkbox.addEventListener('change', syncHint);
   syncHint();
 
-  if (sendBtn) {
-    sendBtn.addEventListener('click', function (e) {
-      if (checkbox.checked && !confirm('This will email ALL registered users. Send to everyone?')) {
-        e.preventDefault();
-      }
-    });
-  }
 })();
 
-(function () {
-  var copyBtn = document.getElementById('copy-all-emails');
-  var field   = document.getElementById('all-emails');
-  if (!copyBtn || !field) return;
 
-  copyBtn.addEventListener('click', function () {
-    field.select();
-    var done = function () {
-      var label = copyBtn.textContent;
-      copyBtn.textContent = 'Copied ✓';
-      setTimeout(function () { copyBtn.textContent = label; }, 1500);
-    };
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(field.value).then(done, function () {
-        document.execCommand('copy'); done();
-      });
-    } else {
-      document.execCommand('copy'); done();
-    }
-  });
-})();
 </script>
 <?php
 

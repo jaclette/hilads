@@ -103,7 +103,7 @@ admin_nav($self);
 <div class="admin-main">
     <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:12px">
         <h1 class="page-title" style="margin-bottom:0">Photos
-            <span style="color:#555;font-size:14px;font-weight:400"><?= $unseen ?> new · everything people publish, live at once</span>
+            <span style="color:var(--faint);font-size:14px;font-weight:400"><?= $unseen ?> new · everything people publish, live at once</span>
         </h1>
         <div style="display:flex;gap:8px;align-items:center">
             <a class="btn btn-sm <?= $view === 'new' ? 'btn-primary' : 'btn-secondary' ?>" href="<?= $self ?>?view=new">New</a>
@@ -139,24 +139,24 @@ admin_nav($self);
                 default  => null,
             };
         ?>
-        <div style="background:#141414;border:<?= (int) $r['report_count'] > 0 && !$removed ? '2px solid #ef4444' : '1px solid ' . ($isNew ? $color : '#262626') ?>;border-radius:10px;overflow:hidden;<?= $removed ? 'opacity:.4' : '' ?>">
+        <div style="background:var(--surface-2);border:<?= (int) $r['report_count'] > 0 && !$removed ? '2px solid #ef4444' : '1px solid ' . ($isNew ? $color : '#262626') ?>;border-radius:10px;overflow:hidden;<?= $removed ? 'opacity:.4' : '' ?>">
             <a href="<?= dh($r['url']) ?>" target="_blank" rel="noopener">
-                <img src="<?= dh($thumb) ?>" alt="" loading="lazy" style="display:block;width:100%;aspect-ratio:1;object-fit:cover;background:#222">
+                <img src="<?= dh($thumb) ?>" alt="" loading="lazy" style="display:block;width:100%;aspect-ratio:1;object-fit:cover;background:var(--surface-2)">
             </a>
             <div style="padding:8px 10px;font-size:12px;line-height:1.45">
                 <span class="badge" style="background:<?= $color ?>22;color:<?= $color ?>;border:1px solid <?= $color ?>55"><?= dh(PhotoWatch::SOURCES[$r['source']] ?? $r['source']) ?></span>
-                <?php if ($isNew): ?><span class="badge" style="background:#22c55e22;color:#4ade80">new</span><?php endif; ?>
-                <?php if ($removed): ?><span class="badge" style="background:#ef444422;color:#f87171">removed</span><?php endif; ?>
+                <?php if ($isNew): ?><span class="badge" style="background:#22c55e22;color:var(--ok)">new</span><?php endif; ?>
+                <?php if ($removed): ?><span class="badge" style="background:#ef444422;color:var(--bad)">removed</span><?php endif; ?>
                 <?php if ((int) $r['report_count'] > 0 && !$removed): ?>
-                    <span class="badge" style="background:#ef444422;color:#f87171">reported ×<?= (int) $r['report_count'] ?><?= $r['hidden_at'] ? ' · hidden' : '' ?></span>
-                    <div style="color:#f87171;margin-top:2px"><?= dh(str_replace(['_', ','], [' ', ', '], (string) $r['report_reasons'])) ?></div>
+                    <span class="badge" style="background:#ef444422;color:var(--bad)">reported ×<?= (int) $r['report_count'] ?><?= $r['hidden_at'] ? ' · hidden' : '' ?></span>
+                    <div style="color:var(--bad);margin-top:2px"><?= dh(str_replace(['_', ','], [' ', ', '], (string) $r['report_reasons'])) ?></div>
                 <?php endif; ?>
-                <div style="margin-top:4px;color:#ddd">
+                <div style="margin-top:4px;color:var(--text)">
                     <?php if ($r['user_id']): ?><a href="/admin/users/<?= rawurlencode((string) $r['user_id']) ?>/edit"><?= dh((string) $r['author']) ?></a>
-                    <?php else: ?><?= dh((string) $r['author']) ?> <span style="color:#666">(guest)</span><?php endif; ?>
+                    <?php else: ?><?= dh((string) $r['author']) ?> <span style="color:var(--faint)">(guest)</span><?php endif; ?>
                 </div>
-                <?php if ($r['place']): ?><div style="color:#888"><?= dh((string) $r['place']) ?></div><?php endif; ?>
-                <div style="color:#666"><?= dh(date('M j, H:i', (int) $r['created_ts'] + 7 * 3600)) ?> <span style="color:#444">UTC+7</span></div>
+                <?php if ($r['place']): ?><div style="color:var(--faint)"><?= dh((string) $r['place']) ?></div><?php endif; ?>
+                <div style="color:var(--faint)"><?= dh(date('M j, H:i', (int) $r['created_ts'] + 7 * 3600)) ?> <span style="color:var(--faint)">UTC+7</span></div>
                 <div style="display:flex;gap:6px;margin-top:6px">
                     <?php if ($open): ?><a class="btn btn-secondary btn-sm" href="<?= dh($open) ?>">Open</a><?php endif; ?>
                     <?php if ((int) $r['report_count'] > 0 && !$removed): ?>

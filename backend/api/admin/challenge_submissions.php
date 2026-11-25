@@ -36,7 +36,7 @@ admin_nav('/admin/challenges');
     </div>
 
     <h1 class="page-title">🏆 Pick the winner
-        <span style="color:#555;font-size:14px;font-weight:400"><?= htmlspecialchars($challenge['title'] ?? '', ENT_QUOTES) ?></span>
+        <span style="color:var(--faint);font-size:14px;font-weight:400"><?= htmlspecialchars($challenge['title'] ?? '', ENT_QUOTES) ?></span>
     </h1>
     <?= flash_html() ?>
 
@@ -45,24 +45,24 @@ admin_nav('/admin/challenges');
     <?php elseif (empty($submissions)): ?>
         <p class="no-results" style="padding:20px 0">No photos have been submitted yet.</p>
     <?php else: ?>
-        <p style="color:#777;margin:-4px 0 16px;font-size:13px">
+        <p style="color:var(--faint);margin:-4px 0 16px;font-size:13px">
             <?= count($submissions) ?> submission(s).
-            <?php if ($winnerUserId): ?><strong style="color:#22c55e">A winner has been crowned.</strong><?php else: ?>Choose the best photo — the winner earns the reward (2× for a campaign).<?php endif; ?>
+            <?php if ($winnerUserId): ?><strong style="color:var(--ok)">A winner has been crowned.</strong><?php else: ?>Choose the best photo — the winner earns the reward (2× for a campaign).<?php endif; ?>
         </p>
         <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px">
             <?php foreach ($submissions as $s):
                 $isWinner = $winnerUserId !== null && ($s['user_id'] ?? null) === $winnerUserId;
                 ?>
-                <div style="border:1px solid <?= $isWinner ? '#22c55e' : '#2a2a2a' ?>;border-radius:12px;overflow:hidden;background:#161310">
+                <div style="border:1px solid <?= $isWinner ? '#22c55e' : '#2a2a2a' ?>;border-radius:12px;overflow:hidden;background:var(--surface-2)">
                     <a href="<?= htmlspecialchars($s['media_url'] ?? '#', ENT_QUOTES) ?>" target="_blank" rel="noopener">
                         <img src="<?= htmlspecialchars($s['media_url'] ?? '', ENT_QUOTES) ?>" alt="" style="width:100%;height:200px;object-fit:cover;display:block">
                     </a>
                     <div style="padding:10px 12px">
-                        <div style="color:#ddd;font-weight:600;font-size:13px">
+                        <div style="color:var(--text);font-weight:600;font-size:13px">
                             <?= htmlspecialchars($s['display_name'] ?? '(unknown)', ENT_QUOTES) ?>
-                            <?php if ($isWinner): ?><span class="badge" style="background:#22c55e22;color:#22c55e;border:1px solid #22c55e55;margin-left:4px">🏆 Winner</span><?php endif; ?>
+                            <?php if ($isWinner): ?><span class="badge" style="background:#22c55e22;color:var(--ok);border:1px solid #22c55e55;margin-left:4px">🏆 Winner</span><?php endif; ?>
                         </div>
-                        <div class="td-mono" style="color:#555;font-size:10px;margin:4px 0 8px"><?= htmlspecialchars((string) ($s['user_id'] ?? ''), ENT_QUOTES) ?></div>
+                        <div class="td-mono" style="color:var(--faint);font-size:10px;margin:4px 0 8px"><?= htmlspecialchars((string) ($s['user_id'] ?? ''), ENT_QUOTES) ?></div>
                         <?php if (!$winnerUserId): ?>
                             <form method="POST" action="/admin/challenges/<?= urlencode($challengeId) ?>/pick-winner"
                                   onsubmit="return confirm('Crown this photo as the winner? Points are awarded and the challenge is validated. This cannot be undone.')">

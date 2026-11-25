@@ -143,7 +143,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $userIds    = PushBroadcastService::resolveAudience($paudType, $paudFilter);
                     if (!empty($userIds)) {
                         $bid = PushBroadcastService::recordBroadcast(
-                            getenv('ADMIN_USERNAME') ?: 'admin', $_SERVER['REMOTE_ADDR'] ?? '',
+                            admin_actor(), $_SERVER['REMOTE_ADDR'] ?? '',
                             $pTitle, $pBody, $paudType, $paudFilter, $deep, count($userIds),
                         );
                         // challengeTitle drives the {title} placeholder in the localized template.
@@ -177,9 +177,9 @@ admin_nav('/admin/campaigns');
 ?>
 <style>
 .scope-toggle { display:flex; gap:8px; }
-.scope-toggle label { flex:1; text-align:center; padding:10px; border:1px solid #2a2a2a; border-radius:6px; cursor:pointer; color:#999; }
+.scope-toggle label { flex:1; text-align:center; padding:10px; border:1px solid var(--line); border-radius:6px; cursor:pointer; color:var(--muted); }
 .scope-toggle input { display:none; }
-.scope-toggle label:has(input:checked) { background:rgba(255,122,60,.2); border-color:#FF7A3C; color:#FF7A3C; }
+.scope-toggle label:has(input:checked) { background:rgba(255,122,60,.2); border-color:var(--brand); color:var(--brand-text); }
 #target-city-group { display:none; }
 </style>
 
@@ -188,7 +188,7 @@ admin_nav('/admin/campaigns');
         <a href="/admin/challenges" class="btn btn-secondary btn-sm">← Challenges</a>
     </div>
 
-    <h1 class="page-title">⚡ Create campaign challenge <span style="color:#FF7A3C">2× points</span></h1>
+    <h1 class="page-title">⚡ Create campaign challenge <span style="color:var(--brand-text)">2× points</span></h1>
 
     <?= flash_html() ?>
     <?php if (!empty($errors)): ?>
@@ -259,7 +259,7 @@ admin_nav('/admin/campaigns');
             <textarea id="copy" name="copy" rows="3" placeholder='Leave blank to lead with the challenge title, e.g. “Find me the tastiest bánh mì” + ⚡ DOUBLE points hook'><?= htmlspecialchars($post['copy'] ?? '', ENT_QUOTES) ?></textarea>
         </div>
 
-        <div class="form-group" style="border-top:1px solid #2a2a2a;padding-top:16px;margin-top:8px">
+        <div class="form-group" style="border-top:1px solid var(--line);padding-top:16px;margin-top:8px">
             <label style="display:flex;align-items:center;gap:8px;cursor:pointer">
                 <input type="checkbox" id="push_enabled" name="push_enabled" value="1" onchange="togglePush()" <?= ($post['push_enabled'] ?? '') === '1' ? 'checked' : '' ?>>
                 🔔 Also send a push notification (opens the challenge on tap)

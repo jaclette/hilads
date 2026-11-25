@@ -89,9 +89,9 @@ daily_styles();
 ?>
 <style>
 .covers-progress { margin: 4px 0 14px; }
-.covers-bar { height: 10px; border-radius: 5px; background: #2a2a2a; overflow: hidden; }
+.covers-bar { height: 10px; border-radius: 5px; background: var(--surface-2); overflow: hidden; }
 .covers-bar span { display: block; height: 100%; width: 0; background: #FF7A3C; transition: width .2s; }
-.covers-status { margin-top: 8px; font-size: 13px; color: #aaa; }
+.covers-status { margin-top: 8px; font-size: 13px; color: var(--muted); }
 .covers-thumb { width: 200px; aspect-ratio: 5/2; object-fit: cover; border-radius: 6px; display: block; }
 </style>
 <div class="admin-main">

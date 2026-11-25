@@ -21,12 +21,12 @@ declare(strict_types=1);
   position:absolute; bottom:140%; left:50%; transform:translateX(-50%);
   background:#000; color:#fff; padding:4px 9px; border-radius:6px;
   font-size:12px; font-weight:600; white-space:nowrap; z-index:30;
-  pointer-events:none; border:1px solid #555;
+  pointer-events:none; border:1px solid var(--line-strong);
 }
 .dsc-seg:first-child  { border-top-left-radius:5px; border-bottom-left-radius:5px; }
 .dsc-seg:last-child   { border-top-right-radius:5px; border-bottom-right-radius:5px; }
-.dsc-legend-item { display:flex; align-items:center; gap:6px; text-decoration:none; font-size:13px; color:#ddd; }
-.dsc-legend-item:hover { color:#fff; }
+.dsc-legend-item { display:flex; align-items:center; gap:6px; text-decoration:none; font-size:13px; color:var(--text); }
+.dsc-legend-item:hover { color:var(--text); }
 </style>
 
 <!-- Legend -->
@@ -35,13 +35,13 @@ declare(strict_types=1);
         <a class="dsc-legend-item" href="<?= $legendHref($cid) ?>">
             <span style="width:12px;height:12px;border-radius:3px;background:<?= $col ?>;display:inline-block"></span>
             <?php if (!empty($cityFlag[$cid])) echo $cityFlag[$cid] . ' '; ?><?= htmlspecialchars($cityName[$cid] ?? '?', ENT_QUOTES) ?>
-            <span style="color:#666">(<?= number_format((int) $cityTotals[$cid]) ?>)</span>
+            <span style="color:var(--faint)">(<?= number_format((int) $cityTotals[$cid]) ?>)</span>
         </a>
     <?php endforeach; ?>
 </div>
 
 <!-- Stacked bar per day -->
-<div style="background:#161310;border:1px solid #2a2a2a;border-radius:12px;padding:14px 18px">
+<div style="background:var(--surface-2);border:1px solid var(--line);border-radius:12px;padding:14px 18px">
     <?php
     $cursor = new DateTime($from);
     $end    = new DateTime($to);
@@ -50,7 +50,7 @@ declare(strict_types=1);
         $dayTotal = $dayTotals[$day] ?? 0;
         ?>
         <div style="display:flex;align-items:center;gap:12px;padding:5px 0">
-            <span style="width:90px;flex-shrink:0;color:#aaa;font-size:12px;white-space:nowrap"><?= $cursor->format('D M d') ?></span>
+            <span style="width:90px;flex-shrink:0;color:var(--muted);font-size:12px;white-space:nowrap"><?= $cursor->format('D M d') ?></span>
             <span style="flex:1;height:18px;background:rgba(255,255,255,0.05);border-radius:5px;display:flex">
                 <?php foreach ($cityColor as $cid => $col):
                     $cnt = $daily[$day][$cid] ?? 0;
@@ -64,7 +64,7 @@ declare(strict_types=1);
                        style="width:<?= $w ?>%;background:<?= $col ?>"></a>
                 <?php endforeach; ?>
             </span>
-            <span style="width:46px;text-align:right;color:#fff;font-weight:700;font-size:13px"><?= number_format($dayTotal) ?></span>
+            <span style="width:46px;text-align:right;color:var(--text);font-weight:700;font-size:13px"><?= number_format($dayTotal) ?></span>
         </div>
         <?php $cursor->modify('+1 day'); endwhile; ?>
 </div>
