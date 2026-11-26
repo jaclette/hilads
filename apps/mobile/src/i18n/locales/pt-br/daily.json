@@ -1075,7 +1075,16 @@
       "text": "O ranking recomeça no dia 1 de cada mês. Seu total de todos os tempos nunca zera: é a sua glória.",
       "ends": "Esta temporada termina {{date}}",
       "pre": "Pré-temporada: a primeira temporada começa {{date}}"
-    }
+    },
+    "mainTitle": "Jogue e ganhe",
+    "mainSub": "O coração do jogo",
+    "plusBonus": "+ BÔNUS",
+    "bonusTag": "BÔNUS",
+    "bonusFriend": "A primeira foto de cada amigo",
+    "bonusCrew": "Seu {{count, ordinal}} amigo do mês",
+    "bonusCta": "Convidar amigos →",
+    "bonusSub_one": "Pontos extras, até {{count}} amigos por mês",
+    "bonusSub_other": "Pontos extras, até {{count}} amigos por mês"
   },
   "a11y": {
     "likes_one": "{{count}} curtida",

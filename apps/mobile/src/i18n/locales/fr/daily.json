@@ -1075,7 +1075,16 @@
       "text": "Le classement repart à zéro le 1er de chaque mois. Ton total depuis toujours ne se remet jamais à zéro : c'est ta gloire.",
       "ends": "Cette saison se termine {{date}}",
       "pre": "Avant-saison : la première saison commence {{date}}"
-    }
+    },
+    "mainTitle": "Joue et gagne",
+    "mainSub": "Le cœur du jeu",
+    "plusBonus": "+ BONUS",
+    "bonusTag": "BONUS",
+    "bonusFriend": "La première photo de chaque ami",
+    "bonusCrew": "Ton {{count, ordinal}} ami du mois",
+    "bonusCta": "Inviter des amis →",
+    "bonusSub_one": "Des points en plus, jusqu’à {{count}} amis par mois",
+    "bonusSub_other": "Des points en plus, jusqu’à {{count}} amis par mois"
   },
   "a11y": {
     "likes_one": "{{count}} j'aime",

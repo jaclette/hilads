@@ -1030,7 +1030,16 @@
       "text": "The ranking starts over on the 1st of every month. Your all-time total never resets: that's your glory.",
       "ends": "This season ends {{date}}",
       "pre": "Pre-season: the first season starts {{date}}"
-    }
+    },
+    "mainTitle": "Play and win",
+    "mainSub": "The heart of the game",
+    "plusBonus": "+ BONUS",
+    "bonusTag": "BONUS",
+    "bonusFriend": "Each friend's first photo",
+    "bonusCrew": "Your {{count, ordinal}} friend of the month",
+    "bonusCta": "Invite friends →",
+    "bonusSub_one": "Extra points, up to {{count}} friends a month",
+    "bonusSub_other": "Extra points, up to {{count}} friends a month"
   },
   "a11y": {
     "likes_one": "{{count}} like",

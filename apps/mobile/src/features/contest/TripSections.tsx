@@ -13,13 +13,13 @@ import type { Crew } from '@/features/invites/invite';
 import { contestDate, contestGoal, phaseDay, type ContestMeJoined, type ContestMeNotJoined, type ContestOverview, type ContestRanking,
          type ContestRow, type ContestSeason } from './contest';
 import { Podium } from './RankingParts';
-import { RankMedal } from '@/features/daily/RankMedal';
 import { ordinal } from '@/lib/ordinal';
 import { SouvenirLine } from './SouvenirLine';
 import { LS } from './HalongArt';
 import { BoardingRow, BoardingSheet, LockedPass, TripTicket } from './Boarding';
 import type { ShareContent } from '@/features/share/content';
 import { useTripNotify } from './useTripNotify';
+import { PlayCard, BonusDivider, BonusCard, PointsNotes } from '@/features/scoring/PointsCards';
 
 /**
  * The Trip tab's four sections (app/(tabs)/trip.tsx). Plain language, every number from the server:
@@ -473,7 +473,7 @@ export function TripFriends({ season: s, crew, onCta }: { season: ContestSeason;
 
 // ── Rules ─────────────────────────────────────────────────────────────────────
 
-export function TripRules({ season: s, counter, onCta }: { season: ContestSeason; counter: ContestOverview['counter'] | null; onCta: Cta }) {
+export function TripRules({ season: s, counter, onCta, onSection }: { season: ContestSeason; counter: ContestOverview['counter'] | null; onCta: Cta; onSection: (s: TripSection) => void }) {
   const styles = useThemedStyles(makeStyles);
   const { colors } = useTheme();
   const { t, i18n } = useTranslation('me');
@@ -481,14 +481,6 @@ export function TripRules({ season: s, counter, onCta }: { season: ContestSeason
   const p = s.points ?? { play: 10, podium: [30, 20, 10] as [number, number, number], week: 30, friend: 10, crew: 50, crewSize: 5, friendsPerMonth: 5 };
   const hs = s.rules.headstartTopN;
   const goal = contestGoal(counter);
-  const table: [string, string][] = [
-    [t('trip.rules.play'), `+${p.play}`],
-  ];
-  // The perfect-week bonus is not counted in the campaign (the game keeps it).
-  const tableAfter: [string, string][] = [
-    [t('trip.rules.friend', { count: p.friendsPerMonth }), `+${p.friend}`],
-    [t('trip.rules.crew', { size: p.crewSize }), `+${p.crew}`],
-  ];
   return (
     <View style={styles.stack}>
       <Card style={styles.card}>
@@ -501,31 +493,26 @@ export function TripRules({ season: s, counter, onCta }: { season: ContestSeason
         ))}
       </Card>
 
-      <Card style={styles.card}>
-        <Text style={styles.cardTitle} accessibilityRole="header">{t('trip.rules.pointsTitle')}</Text>
-        {table.map(([label, value], i) => (
-          <View key={i} style={styles.tableRow} accessible accessibilityLabel={`${label}: ${value}`}>
-            <Text style={[styles.text, { flex: 1 }]}>{label}</Text>
-            <Text style={styles.tableValue}>{value}</Text>
-          </View>
-        ))}
-        {/* The podium of the day: one line per place with its medal, as on "How it works". */}
-        <View style={styles.tableRow}><Text style={[styles.text, { flex: 1 }]}>{t('trip.rules.podiumTitle')}</Text></View>
-        {p.podium.map((pts, i) => (
-          <View key={`p${i}`} style={styles.placeRow} accessible accessibilityLabel={`${t('trip.rules.place', { rank: i + 1 })}: +${pts}`}>
-            <RankMedal rank={i + 1} podium size={28} />
-            <Text style={[styles.text, { flex: 1 }]}>{t('trip.rules.place', { rank: i + 1 })}</Text>
-            <Text style={styles.tableValue}>+{pts}</Text>
-          </View>
-        ))}
-        {tableAfter.map(([label, value], i) => (
-          <View key={`a${i}`} style={styles.tableRow} accessible accessibilityLabel={`${label}: ${value}`}>
-            <Text style={[styles.text, { flex: 1 }]}>{label}</Text>
-            <Text style={styles.tableValue}>{value}</Text>
-          </View>
-        ))}
-        <Text style={styles.muted}>{t('trip.rules.pointsNoteNoWeek', { date: d(s.startDate) })}</Text>
-      </Card>
+      {/* How points are counted: the main card, then the friends bonus (the same split as "How Hilads works"). */}
+      <Text style={styles.sectionLabel} accessibilityRole="header">{t('trip.rules.pointsTitle')}</Text>
+      <PlayCard emoji="📸" title={t('trip.rules.playTitle')} sub={t('trip.rules.playSub')} podiumAfter={1}
+                lines={[
+                  { emoji: '🎯', title: t('trip.rules.playDaily'), sub: t('trip.rules.playDailySub'), value: `+${p.play}` },
+                  { emoji: '👑', title: t('trip.rules.podiumLine'), sub: t('trip.rules.podiumSub') },
+                ]}
+                podium={p.podium.map((pts, i) => ({ rank: i + 1, label: t('trip.rules.place', { rank: i + 1 }), value: `+${pts}` }))} />
+      <BonusDivider label={t('trip.rules.plusBonus')} />
+      <BonusCard tag={t('trip.rules.bonusTag')} emoji="🎁" title={t('trip.rules.bonusTitle')} sub={t('trip.rules.bonusSub', { count: p.friendsPerMonth })}
+                 lines={[
+                   { emoji: '🤝', title: t('trip.rules.bonusFriend'), value: `+${p.friend}` },
+                   { emoji: '🎉', title: t('trip.rules.bonusCrew', { count: p.crewSize }), value: `+${p.crew}` },
+                 ]}
+                 cta={t('trip.rules.bonusCta')} onCta={() => { onCta('rules_invite'); onSection('friends'); }} ctaTestID="trip-rules-invite" />
+      <PointsNotes lines={[
+        { emoji: '✅', text: t('trip.rules.note1') },
+        { emoji: '📅', text: t('trip.rules.note2', { date: d(s.startDate) }) },
+        { emoji: '🔥', text: t('trip.rules.note3') },
+      ]} />
 
       <Card style={styles.card}>
         <Text style={styles.cardTitle} accessibilityRole="header">{t('trip.rules.finalTitle')}</Text>
@@ -640,10 +627,8 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   howRow:     { flexDirection: 'row', alignItems: 'flex-start', gap: Space.sm },
   howNum:     { width: 26, height: 26, borderRadius: 13, backgroundColor: c.primaryTint, alignItems: 'center', justifyContent: 'center' },
   howNumText: { ...Type.caption, fontWeight: '900', color: c.primaryOnTint },
-  tableRow:   { flexDirection: 'row', alignItems: 'center', gap: Space.sm, paddingVertical: Space.xs, borderTopWidth: 1, borderTopColor: c.line },
-  tableValue: { ...Type.label, fontSize: 16, color: c.primaryText, fontVariant: ['tabular-nums'] },
-  placeRow:   { flexDirection: 'row', alignItems: 'center', gap: Space.sm, paddingVertical: 4, paddingLeft: Space.sm },
   whoRow:     { flexDirection: 'row', alignItems: 'flex-start', gap: Space.sm },
   ticketBlock:{ gap: Space.sm },
+  sectionLabel:{ ...Type.caption, fontSize: 12, fontWeight: '900', letterSpacing: 0.6, color: c.muted, textTransform: 'uppercase', marginBottom: -Space.xs },
   ticketHelp: { ...Type.caption, color: c.muted, textAlign: 'center', fontWeight: '700' },
 });

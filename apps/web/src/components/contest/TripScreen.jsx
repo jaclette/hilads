@@ -171,7 +171,7 @@ export default function TripScreen({ account, cityName = null, initialSection = 
                                                onOpenToday={onOpenToday} onOpenProfile={onOpenProfile} setData={setData} />}
           {section === 'ranking' && <Ranking s={s} ranking={ranking} meId={account?.id ?? null} t={t} i18n={i18n} onOpenProfile={onOpenProfile} />}
           {section === 'friends' && <Friends s={s} crew={crew} account={account} t={t} onCta={cta} onSignUp={onSignUp} />}
-          {section === 'rules' && <Rules s={s} counter={data.counter} t={t} i18n={i18n} onCta={cta} />}
+          {section === 'rules' && <Rules s={s} counter={data.counter} t={t} i18n={i18n} onCta={cta} onSection={k => go(k, 'cta')} />}
         </div>
       </div>
     </div>
@@ -688,16 +688,11 @@ function Friends({ s, crew, account, t, onCta, onSignUp }) {
 
 // ── Rules ─────────────────────────────────────────────────────────────────────
 
-function Rules({ s, counter, t, i18n, onCta }) {
+function Rules({ s, counter, t, i18n, onCta, onSection }) {
   const d = x => shortDate(x, i18n.language)
   const p = s.points ?? { play: 10, podium: [30, 20, 10], week: 30, friend: 10, crew: 50, crewSize: 5, friendsPerMonth: 5 }
   const hs = s.rules.headstartTopN
   const goal = contestGoal(counter)
-  const table = [
-    // The perfect-week bonus is not counted in the campaign (the game keeps it).
-    [t('trip.rules.friend', { count: p.friendsPerMonth }), `+${p.friend}`],
-    [t('trip.rules.crew', { size: p.crewSize }), `+${p.crew}`],
-  ]
   return (
     <div className="tr-stack">
       <section className="tr-card">
@@ -705,17 +700,31 @@ function Rules({ s, counter, t, i18n, onCta }) {
         <ol className="tr-how">{[t('trip.rules.how1'), t('trip.rules.how2', { count: hs, date: d(s.finalWeekStart) }), t('trip.rules.how3', { date: d(s.endDate) })]
           .map((line, i) => <li key={i}><i className={i === 2 ? 'win' : ''}>{i + 1}</i><span>{line}</span></li>)}</ol>
       </section>
-      <section className="tr-card">
-        <h3 className="tr-card-title">{t('trip.rules.pointsTitle')}</h3>
-        <dl className="tr-table">
-          <div><dt>{t('trip.rules.play')}</dt><dd>+{p.play}</dd></div>
-          {/* The podium of the day: one line per place with its medal, as on "How it works". */}
-          <div><dt>{t('trip.rules.podiumTitle')}</dt><dd /></div>
-          {p.podium.map((pts, i) => <div key={`p${i}`} className="tr-place"><dt><RankMedal rank={i + 1} podium size={28} />{t('trip.rules.place', { rank: i + 1 })}</dt><dd>+{pts}</dd></div>)}
-          {table.map(([label, value], i) => <div key={i}><dt>{label}</dt><dd>{value}</dd></div>)}
-        </dl>
-        <p className="tr-muted">{t('trip.rules.pointsNoteNoWeek', { date: d(s.startDate) })}</p>
+      {/* How points are counted: the main card, then the friends bonus (docs/mockups/hilads_rules_points_mockup.html). */}
+      <h3 className="tr-section-label">{t('trip.rules.pointsTitle')}</h3>
+      <section className="tr-card pc-card">
+        <div className="pc-head"><span className="pc-icon" aria-hidden="true">📸</span><span><b>{t('trip.rules.playTitle')}</b><small>{t('trip.rules.playSub')}</small></span></div>
+        <div className="pc-line"><span className="pc-emoji" aria-hidden="true">🎯</span><span className="pc-text">{t('trip.rules.playDaily')}<small>{t('trip.rules.playDailySub')}</small></span><span className="pc-pts">+{p.play}</span></div>
+        <div className="pc-line"><span className="pc-emoji" aria-hidden="true">👑</span><span className="pc-text">{t('trip.rules.podiumLine')}<small>{t('trip.rules.podiumSub')}</small></span></div>
+        <div className="pc-podium">
+          {p.podium.map((pts, i) => (
+            <div key={i} className="pc-place"><RankMedal rank={i + 1} podium size={26} /><span>{t('trip.rules.place', { rank: i + 1 })}</span><span className="pc-pts">+{pts}</span></div>
+          ))}
+        </div>
       </section>
+      <div className="pc-divider" aria-hidden="true"><span>{t('trip.rules.plusBonus')}</span></div>
+      <section className="pc-bonus">
+        <span className="pc-tag">{t('trip.rules.bonusTag')}</span>
+        <div className="pc-head"><span className="pc-icon" aria-hidden="true">🎁</span><span><b>{t('trip.rules.bonusTitle')}</b><small>{t('trip.rules.bonusSub', { count: p.friendsPerMonth })}</small></span></div>
+        <div className="pc-line"><span className="pc-emoji" aria-hidden="true">🤝</span><span className="pc-text">{t('trip.rules.bonusFriend')}</span><span className="pc-pts">+{p.friend}</span></div>
+        <div className="pc-line"><span className="pc-emoji" aria-hidden="true">🎉</span><span className="pc-text">{t('trip.rules.bonusCrew', { count: p.crewSize })}</span><span className="pc-pts">+{p.crew}</span></div>
+        <button type="button" className="pc-btn" onClick={() => { onCta('rules_invite'); onSection('friends') }}>{t('trip.rules.bonusCta')}</button>
+      </section>
+      <ul className="pc-notes">
+        <li><span aria-hidden="true">✅</span>{t('trip.rules.note1')}</li>
+        <li><span aria-hidden="true">📅</span>{t('trip.rules.note2', { date: d(s.startDate) })}</li>
+        <li><span aria-hidden="true">🔥</span>{t('trip.rules.note3')}</li>
+      </ul>
       <section className="tr-card">
         <h3 className="tr-card-title">{t('trip.rules.finalTitle')}</h3>
         <p>{t('trip.rules.final1', { date: d(s.finalWeekStart) })}</p>

@@ -1,14 +1,13 @@
 import { useEffect } from 'react';
-import { Pressable, ScrollView, Text, View, StyleSheet } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { ScrollView, Text, View, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import { Space, Gutter, Radius, Type, type ThemeColors } from '@/constants';
-import { useThemedStyles, useTheme } from '@/context/ThemeContext';
+import { Space, Gutter, Type, type ThemeColors } from '@/constants';
+import { useThemedStyles } from '@/context/ThemeContext';
 import { useApp } from '@/context/AppContext';
 import { Button, Card, Screen, ScreenHeader } from '@/ui';
 import { ACCENTS, tint } from '@/ui/joy';
-import { RankMedal } from '@/features/daily/RankMedal';
+import { PlayCard, BonusDivider, BonusCard } from '@/features/scoring/PointsCards';
 import { useScoringPoints, seasonEnd, seasonStart } from '@/features/scoring/points';
 import { useDailyToday } from '@/hooks/useDaily';
 import { track } from '@/services/analytics';
@@ -17,13 +16,12 @@ import { track } from '@/services/analytics';
  * How Hilads works (docs/mockups/hilads_how_it_works_mockup.html), opened from World's
  * "How it works" button: a real screen. Scoring v2 ("Play, Win, Invite"): the points are
  * the server's config (GET /daily/points), until they arrive the values it ships with.
- * Play (+10), Win (the World top 3), Perfect week, Invite friends; likes give no points,
- * they decide the top 3. Seasons: the ranking starts over every month, all time stays.
+ * The main card "Play and win" (play +10, the World top 3 with its medals, perfect week, likes give
+ * no points but decide the top 3), then the friends bonus (+ BONUS): the same split as the Trip's Rules. Seasons: the ranking starts over every month, all time stays.
  */
 
 export default function HowItWorksScreen() {
   const styles = useThemedStyles(makeStyles);
-  const { colors } = useTheme();
   const router = useRouter();
   const { t, i18n } = useTranslation('daily');
   const { account, city } = useApp();
@@ -40,18 +38,6 @@ export default function HowItWorksScreen() {
   };
   const plus = (n: number) => t('rules.plus', { count: n });
 
-  const earn = [
-    // A card with a destination is tappable (chevron): Play → Today, Win → this season's players,
-    // Perfect week → the week on the Passport, Invite → "Bring your crew". The others have none.
-    { emoji: '📸', title: t('rules.earn.photoTitle'), text: t('rules.earn.photoText'), value: plus(pts.proof), places: null, to: '/(tabs)/today' },
-    // The top 3: one line per place (medal, 1st / 2nd / 3rd, its points), not one pill.
-    { emoji: '👑', title: t('rules.earn.topTitle'), text: t('rules.earn.topText', { count: pts.minVotesToWin }), value: null,
-      places: pts.top.map((n, i) => ({ rank: i + 1, label: t(`rules.earn.place${i + 1}`), value: plus(n) })), to: '/ranks?tab=players&period=season' },
-    { emoji: '🔥', title: t('rules.earn.weekTitle'), text: t('rules.earn.weekText'), value: plus(pts.perfectWeek ?? 30), places: null, to: '/(tabs)/passport?focus=week' },
-    { emoji: '🤝', title: t('rules.earn.inviteTitle'),
-      text: t('rules.earn.inviteText', { count: pts.invitesPerSeason ?? 5, crew: pts.crewBonus ?? 50 }), value: plus(pts.friendJoined ?? 10), places: null, to: '/invite' },
-    { emoji: '❤️', title: t('rules.earn.likesTitle'), text: t('rules.earn.likesText'), value: null, places: null, to: null },
-  ];
   const open = (to: string, card: string) => { track('how_it_works_card', { card }); router.push(to as never); };
   const collect = [
     { emoji: '🔥', title: t('rules.collect.streakTitle'), text: t('rules.collect.streakText') },
@@ -75,37 +61,26 @@ export default function HowItWorksScreen() {
           <Text style={styles.introText}>{t('rules.introText')}</Text>
         </Card>
 
+        {/* Earn points: the main card "Play and win", then the friends bonus (the same split as the Trip's Rules). */}
         <Text style={styles.section} accessibilityRole="header">{t('rules.earnTitle')}</Text>
-        {earn.map((r, i) => (
-          <Card key={r.title} style={styles.rule}>
-            <Pressable accessible style={({ pressed }) => [styles.ruleCol, pressed && !!r.to && styles.pressed]} disabled={!r.to}
-                  onPress={() => { if (r.to) open(r.to, r.to); }} accessibilityRole={r.to ? 'button' : undefined}
-                  testID={r.to ? `how-it-works-card-${i}` : undefined}
-                  accessibilityLabel={[r.title, r.text, r.value, ...(r.places ?? []).map(p => `${p.label} ${p.value}`)].filter(Boolean).join('. ')}>
-              <View style={styles.ruleRow}>
-                <View style={[styles.bubble, { backgroundColor: tint(ACCENTS[i % ACCENTS.length], 0.22) }]}><Text style={styles.bubbleEmoji}>{r.emoji}</Text></View>
-                <View style={styles.ruleBody}>
-                  <Text style={styles.ruleTitle}>{r.title}</Text>
-                  <Text style={styles.ruleText}>{r.text}</Text>
-                </View>
-                {!!r.value && <View style={styles.pill}><Text style={styles.pillText}>{r.value}</Text></View>}
-                {!!r.to && <Ionicons name="chevron-forward" size={18} color={colors.muted} />}
-              </View>
-              {/* The podium's places, the podium's medals (gold, silver, bronze). */}
-              {!!r.places && (
-                <View style={styles.places}>
-                  {r.places.map(p => (
-                    <View key={p.rank} style={styles.place}>
-                      <RankMedal rank={p.rank} podium size={32} />
-                      <Text style={styles.placeLabel} numberOfLines={1}>{p.label}</Text>
-                      <View style={styles.pill}><Text style={styles.pillText}>{p.value}</Text></View>
-                    </View>
-                  ))}
-                </View>
-              )}
-            </Pressable>
-          </Card>
-        ))}
+        <PlayCard emoji="📸" title={t('rules.mainTitle')} sub={t('rules.mainSub')} podiumAfter={1}
+                  lines={[
+                    { emoji: '🎯', title: t('rules.earn.photoTitle'), sub: t('rules.earn.photoText'), value: plus(pts.proof),
+                      onPress: () => open('/(tabs)/today', 'play'), testID: 'how-it-works-card-0' },
+                    { emoji: '👑', title: t('rules.earn.topTitle'), sub: t('rules.earn.topText', { count: pts.minVotesToWin }),
+                      onPress: () => open('/ranks?tab=players&period=season', 'top'), testID: 'how-it-works-card-1' },
+                    { emoji: '🔥', title: t('rules.earn.weekTitle'), sub: t('rules.earn.weekText'), value: plus(pts.perfectWeek ?? 30),
+                      onPress: () => open('/(tabs)/passport?focus=week', 'week'), testID: 'how-it-works-card-2' },
+                    { emoji: '❤️', title: t('rules.earn.likesTitle'), sub: t('rules.earn.likesText') },
+                  ]}
+                  podium={pts.top.map((n, i) => ({ rank: i + 1, label: t(`rules.earn.place${i + 1}`), value: plus(n) }))} />
+        <BonusDivider label={t('rules.plusBonus')} />
+        <BonusCard tag={t('rules.bonusTag')} emoji="🎁" title={t('rules.earn.inviteTitle')} sub={t('rules.bonusSub', { count: pts.invitesPerSeason ?? 5 })}
+                   lines={[
+                     { emoji: '🤝', title: t('rules.bonusFriend'), value: plus(pts.friendJoined ?? 10) },
+                     { emoji: '🎉', title: t('rules.bonusCrew', { count: pts.crewSize ?? 5 }), value: plus(pts.crewBonus ?? 50) },
+                   ]}
+                   cta={t('rules.bonusCta')} onCta={() => open('/invite', 'invite')} ctaTestID="how-it-works-invite" />
 
         <Text style={styles.section} accessibilityRole="header">{t('rules.collectTitle')}</Text>
         {collect.map((r, i) => (
@@ -171,21 +146,13 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   introText:   { ...Type.body, color: c.text, textAlign: 'center' },
   section:     { ...Type.title, color: c.text, marginTop: Space.md },
   rule:        { padding: Space.md },
-  ruleCol:     { gap: Space.md },
-  pressed:     { opacity: 0.6 },
   ruleRow:     { flexDirection: 'row', alignItems: 'center', gap: Space.md },
-  // The top 3's lines, under the text, aligned with it (the bubble's width + the gap).
-  places:      { gap: Space.sm, paddingLeft: 48 + Space.md },
-  place:       { flexDirection: 'row', alignItems: 'center', gap: Space.md, minHeight: 36 },
-  placeLabel:  { flex: 1, ...Type.label, color: c.text },
   bubble:      { width: 48, height: 48, borderRadius: 24, alignItems: 'center', justifyContent: 'center' },
   bubbleEmoji: { fontSize: 24, lineHeight: 30 },
   ruleBody:    { flex: 1, gap: Space.xxs },
   ruleTitle:   { ...Type.label, color: c.text },
   ruleText:    { ...Type.body, color: c.muted },
   seasonEnd:   { ...Type.caption, fontWeight: '700', color: c.text, marginTop: Space.xxs },
-  pill:        { paddingHorizontal: Space.md, minHeight: 32, borderRadius: Radius.control, backgroundColor: c.primaryTint, alignItems: 'center', justifyContent: 'center', maxWidth: 120 },
-  pillText:    { ...Type.caption, fontWeight: '800', color: c.primaryOnTint, textAlign: 'center' },
   race:        { padding: Space.md },
   step:        { flexDirection: 'row', gap: Space.md },
   rail:        { alignItems: 'center', width: 44 },

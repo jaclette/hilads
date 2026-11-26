@@ -988,7 +988,16 @@
       "text": "排行榜在每月 1 日重新开始。你的历史总分永不清零：那是你的荣耀。",
       "ends": "本赛季结束于 {{date}}",
       "pre": "季前赛：首个赛季于 {{date}} 开始"
-    }
+    },
+    "mainTitle": "玩并赢",
+    "mainSub": "游戏的核心",
+    "plusBonus": "+ 奖励",
+    "bonusTag": "奖励",
+    "bonusFriend": "每位朋友的第一张照片",
+    "bonusCrew": "你本月的第 {{count}} 位朋友",
+    "bonusCta": "邀请朋友 →",
+    "bonusSub_one": "额外积分，每月最多 {{count}} 位朋友",
+    "bonusSub_other": "额外积分，每月最多 {{count}} 位朋友"
   },
   "a11y": {
     "likes_one": "{{count}} 个赞",

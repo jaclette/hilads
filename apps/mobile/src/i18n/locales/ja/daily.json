@@ -988,7 +988,16 @@
       "text": "ランキングは毎月1日にリセット。通算ポイントはずっと残るよ。それがあなたの栄光。",
       "ends": "今シーズンは{{date}}に終了",
       "pre": "プレシーズン：最初のシーズンは{{date}}にスタート"
-    }
+    },
+    "mainTitle": "プレイして勝つ",
+    "mainSub": "ゲームの中心",
+    "plusBonus": "+ ボーナス",
+    "bonusTag": "ボーナス",
+    "bonusFriend": "友だち一人ひとりの最初の写真",
+    "bonusCrew": "今月{{count}}人目の友だち",
+    "bonusCta": "友だちを招待 →",
+    "bonusSub_one": "追加ポイント、毎月{{count}}人まで",
+    "bonusSub_other": "追加ポイント、毎月{{count}}人まで"
   },
   "a11y": {
     "likes_one": "いいね{{count}}件",

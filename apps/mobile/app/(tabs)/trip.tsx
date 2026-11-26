@@ -155,7 +155,7 @@ export default function TripScreen() {
                                                          onShareBoarding={() => share.open({ boarding: true })} buildShare={() => share.build({ boarding: true })} />}
             {section === 'ranking'  && <TripRanking season={s} ranking={ranking} meId={account?.id ?? null} />}
             {section === 'friends'  && <TripFriends season={s} crew={crew} onCta={cta} />}
-            {section === 'rules'    && <TripRules season={s} counter={data.counter ?? null} onCta={cta} />}
+            {section === 'rules'    && <TripRules season={s} counter={data.counter ?? null} onCta={cta} onSection={next => go(next, 'cta')} />}
           </Animated.View>
         </GestureDetector>
       </Animated.ScrollView>

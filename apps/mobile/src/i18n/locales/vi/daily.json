@@ -988,7 +988,16 @@
       "text": "Bảng xếp hạng bắt đầu lại vào ngày 1 mỗi tháng. Tổng điểm mọi thời đại không bao giờ bị reset: đó là vinh quang của bạn.",
       "ends": "Mùa này kết thúc {{date}}",
       "pre": "Tiền mùa giải: mùa đầu tiên bắt đầu {{date}}"
-    }
+    },
+    "mainTitle": "Chơi và thắng",
+    "mainSub": "Trái tim của trò chơi",
+    "plusBonus": "+ THƯỞNG",
+    "bonusTag": "THƯỞNG",
+    "bonusFriend": "Ảnh đầu tiên của mỗi người bạn",
+    "bonusCrew": "Người bạn thứ {{count}} trong tháng",
+    "bonusCta": "Mời bạn bè →",
+    "bonusSub_one": "Điểm thêm, tối đa {{count}} người bạn mỗi tháng",
+    "bonusSub_other": "Điểm thêm, tối đa {{count}} người bạn mỗi tháng"
   },
   "a11y": {
     "likes_one": "{{count}} lượt thích",

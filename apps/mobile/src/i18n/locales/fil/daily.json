@@ -1030,7 +1030,16 @@
       "text": "Nagsisimula ulit ang ranking tuwing ika-1 ng buwan. Hindi kailanman nare-reset ang all-time total mo: iyan ang glory mo.",
       "ends": "Matatapos ang season na ito sa {{date}}",
       "pre": "Pre-season: magsisimula ang unang season sa {{date}}"
-    }
+    },
+    "mainTitle": "Maglaro at manalo",
+    "mainSub": "Ang puso ng laro",
+    "plusBonus": "+ BONUS",
+    "bonusTag": "BONUS",
+    "bonusFriend": "Ang unang photo ng bawat kaibigan",
+    "bonusCrew": "Ang ika-{{count}} mong kaibigan ngayong buwan",
+    "bonusCta": "Mag-imbita ng kaibigan →",
+    "bonusSub_one": "Dagdag na points, hanggang {{count}} kaibigan kada buwan",
+    "bonusSub_other": "Dagdag na points, hanggang {{count}} kaibigan kada buwan"
   },
   "a11y": {
     "likes_one": "{{count}} like",

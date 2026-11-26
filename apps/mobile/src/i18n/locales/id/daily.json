@@ -988,7 +988,16 @@
       "text": "Peringkat dimulai ulang setiap tanggal 1. Total sepanjang masamu tidak pernah direset: itulah kejayaanmu.",
       "ends": "Musim ini berakhir {{date}}",
       "pre": "Pra-musim: musim pertama dimulai {{date}}"
-    }
+    },
+    "mainTitle": "Main dan menang",
+    "mainSub": "Inti dari permainan",
+    "plusBonus": "+ BONUS",
+    "bonusTag": "BONUS",
+    "bonusFriend": "Foto pertama tiap teman",
+    "bonusCrew": "Teman ke-{{count}} bulan ini",
+    "bonusCta": "Undang teman →",
+    "bonusSub_one": "Poin tambahan, hingga {{count}} teman sebulan",
+    "bonusSub_other": "Poin tambahan, hingga {{count}} teman sebulan"
   },
   "a11y": {
     "likes_one": "{{count}} suka",

@@ -1075,7 +1075,16 @@
       "text": "La classifica riparte da zero il 1° di ogni mese. Il tuo totale di sempre non si azzera mai: è la tua gloria.",
       "ends": "Questa stagione finisce {{date}}",
       "pre": "Pre-stagione: la prima stagione inizia {{date}}"
-    }
+    },
+    "mainTitle": "Gioca e vinci",
+    "mainSub": "Il cuore del gioco",
+    "plusBonus": "+ BONUS",
+    "bonusTag": "BONUS",
+    "bonusFriend": "La prima foto di ogni amico",
+    "bonusCrew": "Il tuo {{count, ordinal}} amico del mese",
+    "bonusCta": "Invita amici →",
+    "bonusSub_one": "Punti extra, fino a {{count}} amici al mese",
+    "bonusSub_other": "Punti extra, fino a {{count}} amici al mese"
   },
   "a11y": {
     "likes_one": "{{count}} mi piace",

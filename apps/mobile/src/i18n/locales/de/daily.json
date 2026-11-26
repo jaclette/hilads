@@ -1030,7 +1030,16 @@
       "text": "Die Rangliste startet am 1. jedes Monats neu. Deine Gesamtpunkte werden nie zurückgesetzt: das ist dein Ruhm.",
       "ends": "Diese Saison endet {{date}}",
       "pre": "Vorsaison: die erste Saison startet {{date}}"
-    }
+    },
+    "mainTitle": "Spielen und gewinnen",
+    "mainSub": "Das Herz des Spiels",
+    "plusBonus": "+ BONUS",
+    "bonusTag": "BONUS",
+    "bonusFriend": "Das erste Foto jedes Freundes",
+    "bonusCrew": "Dein {{count, ordinal}} Freund im Monat",
+    "bonusCta": "Freunde einladen →",
+    "bonusSub_one": "Extrapunkte, bis zu {{count}} Freunde im Monat",
+    "bonusSub_other": "Extrapunkte, bis zu {{count}} Freunde im Monat"
   },
   "a11y": {
     "likes_one": "{{count}} Like",

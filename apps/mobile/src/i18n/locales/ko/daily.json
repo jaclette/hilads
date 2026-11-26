@@ -988,7 +988,16 @@
       "text": "랭킹은 매달 1일에 새로 시작해요. 통산 점수는 절대 초기화되지 않아요: 그게 당신의 영광이에요.",
       "ends": "이번 시즌은 {{date}}에 끝나요",
       "pre": "프리시즌: 첫 시즌은 {{date}}에 시작해요"
-    }
+    },
+    "mainTitle": "플레이하고 이기기",
+    "mainSub": "게임의 핵심",
+    "plusBonus": "+ 보너스",
+    "bonusTag": "보너스",
+    "bonusFriend": "친구마다 첫 사진",
+    "bonusCrew": "이달의 {{count}}번째 친구",
+    "bonusCta": "친구 초대하기 →",
+    "bonusSub_one": "추가 포인트, 한 달에 친구 {{count}}명까지",
+    "bonusSub_other": "추가 포인트, 한 달에 친구 {{count}}명까지"
   },
   "a11y": {
     "likes_one": "좋아요 {{count}}개",

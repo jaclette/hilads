@@ -1030,7 +1030,16 @@
       "text": "De ranglijst begint op de 1e van elke maand opnieuw. Je totaal aller tijden wordt nooit gereset: dat is je roem.",
       "ends": "Dit seizoen eindigt {{date}}",
       "pre": "Voorseizoen: het eerste seizoen begint {{date}}"
-    }
+    },
+    "mainTitle": "Speel en win",
+    "mainSub": "Het hart van het spel",
+    "plusBonus": "+ BONUS",
+    "bonusTag": "BONUS",
+    "bonusFriend": "De eerste foto van elke vriend",
+    "bonusCrew": "Je {{count, ordinal}} vriend van de maand",
+    "bonusCta": "Vrienden uitnodigen →",
+    "bonusSub_one": "Extra punten, tot {{count}} vrienden per maand",
+    "bonusSub_other": "Extra punten, tot {{count}} vrienden per maand"
   },
   "a11y": {
     "likes_one": "{{count}} like",

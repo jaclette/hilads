@@ -988,7 +988,16 @@
       "text": "排行榜在每月 1 日重新開始。你的歷史總分永遠不會歸零：那是你的榮耀。",
       "ends": "本賽季結束於 {{date}}",
       "pre": "季前賽：首個賽季於 {{date}} 開始"
-    }
+    },
+    "mainTitle": "玩並贏",
+    "mainSub": "遊戲的核心",
+    "plusBonus": "+ 獎勵",
+    "bonusTag": "獎勵",
+    "bonusFriend": "每位朋友的第一張照片",
+    "bonusCrew": "你本月的第 {{count}} 位朋友",
+    "bonusCta": "邀請朋友 →",
+    "bonusSub_one": "額外積分，每月最多 {{count}} 位朋友",
+    "bonusSub_other": "額外積分，每月最多 {{count}} 位朋友"
   },
   "a11y": {
     "likes_one": "{{count}} 個讚",
