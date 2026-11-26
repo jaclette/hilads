@@ -493,7 +493,8 @@
         "podiumTitle": "Podium hari ini (suka terbanyak di dunia)",
         "place": "Peringkat {{rank, ordinal}}",
         "goalProgress": "Sejauh ini {{players}} dari {{goal}} pemain sudah naik.",
-        "goalReached": "Target tercapai: {{goal}} pemain sudah naik 🎉"
+        "goalReached": "Target tercapai: {{goal}} pemain sudah naik 🎉",
+        "pointsNoteNoWeek": "Poin yang sama seperti di seluruh Hilads, kecuali bonus minggu sempurna, sejak hari kamu ikut, untuk tantangan mulai {{date}}."
       },
       "over": {
         "title": "Balapan sudah selesai",

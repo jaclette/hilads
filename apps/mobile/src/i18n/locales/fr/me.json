@@ -482,7 +482,8 @@
       "podiumTitle": "Podium du jour (le plus de j'aime dans le monde)",
       "place": "{{rank, ordinal}}",
       "goalProgress": "{{players}} joueurs à bord sur {{goal}} pour l’instant.",
-      "goalReached": "Objectif atteint : {{goal}} joueurs à bord 🎉"
+      "goalReached": "Objectif atteint : {{goal}} joueurs à bord 🎉",
+      "pointsNoteNoWeek": "Les mêmes points que partout dans Hilads, sauf le bonus semaine parfaite, dès ton inscription, sur les défis à partir du {{date}}."
     },
     "over": {
       "title": "La course est finie",

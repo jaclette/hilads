@@ -455,7 +455,8 @@
       "podiumTitle": "오늘의 시상대 (전 세계 좋아요 최다)",
       "place": "{{rank, ordinal}}",
       "goalProgress": "지금까지 {{goal}}명 중 {{players}}명 탑승.",
-      "goalReached": "목표 달성: {{goal}}명 탑승 🎉"
+      "goalReached": "목표 달성: {{goal}}명 탑승 🎉",
+      "pointsNoteNoWeek": "Hilads 어디서나 같은 점수로(퍼펙트 위크 보너스는 제외), 참가한 날부터 {{date}} 이후 챌린지에 적용돼요."
     },
     "over": {
       "title": "레이스가 끝났어요",

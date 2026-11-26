@@ -468,7 +468,8 @@
       "podiumTitle": "Podium des Tages (meiste Likes weltweit)",
       "place": "{{rank, ordinal}} Platz",
       "goalProgress": "Bisher {{players}} von {{goal}} Spielern an Bord.",
-      "goalReached": "Ziel erreicht: {{goal}} Spieler an Bord 🎉"
+      "goalReached": "Ziel erreicht: {{goal}} Spieler an Bord 🎉",
+      "pointsNoteNoWeek": "Dieselben Punkte wie überall in Hilads, außer dem Bonus für die perfekte Woche, ab dem Tag, an dem du mitmachst, für die Challenges ab dem {{date}}."
     },
     "over": {
       "title": "Das Rennen ist vorbei",

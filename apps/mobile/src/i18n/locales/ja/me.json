@@ -455,7 +455,8 @@
       "podiumTitle": "今日の表彰台（世界で最もいいねが多い写真）",
       "place": "{{rank, ordinal}}",
       "goalProgress": "現在 {{goal}}人中 {{players}}人が搭乗中。",
-      "goalReached": "目標達成：{{goal}}人が搭乗中 🎉"
+      "goalReached": "目標達成：{{goal}}人が搭乗中 🎉",
+      "pointsNoteNoWeek": "Hilads のどこでも同じポイント（パーフェクトウィークのボーナスは除く）。参加した日から、{{date}} 以降のチャレンジが対象です。"
     },
     "over": {
       "title": "レースは終了しました",

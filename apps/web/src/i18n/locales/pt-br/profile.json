@@ -518,7 +518,8 @@
         "podiumTitle": "Pódio do dia (mais curtidas no mundo)",
         "place": "{{rank, ordinal}} lugar",
         "goalProgress": "{{players}} de {{goal}} jogadores a bordo até agora.",
-        "goalReached": "Meta atingida: {{goal}} jogadores a bordo 🎉"
+        "goalReached": "Meta atingida: {{goal}} jogadores a bordo 🎉",
+        "pointsNoteNoWeek": "Os mesmos pontos de todo o Hilads, exceto o bônus de semana perfeita, a partir do dia em que você entra, nos desafios a partir de {{date}}."
       },
       "over": {
         "title": "A disputa acabou",

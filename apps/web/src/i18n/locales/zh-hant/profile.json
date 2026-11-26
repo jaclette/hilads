@@ -493,7 +493,8 @@
         "podiumTitle": "今日頒獎台（全球按讚最多）",
         "place": "{{rank, ordinal}}",
         "goalProgress": "目前已有 {{players}}/{{goal}} 名玩家登機。",
-        "goalReached": "目標達成：{{goal}} 名玩家已登機 🎉"
+        "goalReached": "目標達成：{{goal}} 名玩家已登機 🎉",
+        "pointsNoteNoWeek": "與 Hilads 各處相同的積分（完美一週獎勵除外），從你加入當天起，計算 {{date}} 起的挑戰。"
       },
       "over": {
         "title": "比賽結束了",

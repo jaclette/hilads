@@ -505,7 +505,8 @@
         "podiumTitle": "Podium ng araw (pinakamaraming likes sa buong mundo)",
         "place": "{{rank, ordinal}} na puwesto",
         "goalProgress": "{{players}} sa {{goal}} player ang sakay sa ngayon.",
-        "goalReached": "Naabot ang goal: {{goal}} player ang sakay 🎉"
+        "goalReached": "Naabot ang goal: {{goal}} player ang sakay 🎉",
+        "pointsNoteNoWeek": "Parehong points gaya sa buong Hilads, maliban sa perfect week bonus, mula sa araw na sumali ka, sa mga challenge mula {{date}}."
       },
       "over": {
         "title": "Tapos na ang race",

@@ -518,7 +518,8 @@
         "podiumTitle": "Podio del día (más me gusta en todo el mundo)",
         "place": "{{rank, ordinal}} puesto",
         "goalProgress": "{{players}} de {{goal}} jugadores a bordo por ahora.",
-        "goalReached": "Objetivo cumplido: {{goal}} jugadores a bordo 🎉"
+        "goalReached": "Objetivo cumplido: {{goal}} jugadores a bordo 🎉",
+        "pointsNoteNoWeek": "Los mismos puntos que en todo Hilads, salvo el bonus de semana perfecta, desde el día en que te unes, en los retos a partir del {{date}}."
       },
       "over": {
         "title": "La carrera ha terminado",

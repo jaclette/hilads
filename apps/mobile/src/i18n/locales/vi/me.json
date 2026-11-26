@@ -455,7 +455,8 @@
       "podiumTitle": "Bục vinh quang hôm nay (nhiều lượt thích nhất thế giới)",
       "place": "{{rank, ordinal}}",
       "goalProgress": "Hiện có {{players}}/{{goal}} người chơi đã lên máy bay.",
-      "goalReached": "Đã đạt mục tiêu: {{goal}} người chơi đã lên máy bay 🎉"
+      "goalReached": "Đã đạt mục tiêu: {{goal}} người chơi đã lên máy bay 🎉",
+      "pointsNoteNoWeek": "Cùng điểm như mọi nơi trong Hilads, trừ điểm thưởng tuần hoàn hảo, từ ngày bạn tham gia, cho các thử thách từ {{date}} trở đi."
     },
     "over": {
       "title": "Cuộc đua đã kết thúc",
