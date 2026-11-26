@@ -1733,6 +1733,8 @@ export default function App() {
   // handleJoin joins the FEATURED city (via locPromiseRef) rather than a stale
   // saved city, and we kick off background geo (no prompt) after entry.
   const featuredEntryRef = useRef(false)
+  // The IP lookup found no city: the first join opens the city picker instead of a default city.
+  const geoPickerRef = useRef(false)
   // True when this session arrived via the /join landing's ?auth=signup deep-link.
   // Drives (a) the signup back button → back to /join, and (b) dropping the new
   // user straight into the World (international) channel after signup.
@@ -2028,48 +2030,49 @@ export default function App() {
     setCityTimezone(timezone)
   }
 
-  // Resolve the FEATURED city (Ho Chi Minh City) for the stories ad-landing with
-  // NO geolocation prompt. Sets the header city + preview channel (drives the
-  // Screen-2 live widget) + real people-online count (channel activeUsers), and
-  // returns a location object so handleJoin can join it. (function decl = hoisted,
-  // so the effects below can call it.)
-  function resolveFeaturedCity() {
-    featuredEntryRef.current = true
-    return fetchCityBySlug(FEATURED_CITY.slug).then(data => {
-      if (!data) return null
-      showEntryCity(data.city, data.country, data.timezone)
+  // Show the featured city's live content as a PREVIEW on the landing (no join, header untouched):
+  // used when the visitor's own city is unknown, behind the city picker.
+  function previewFeaturedCity() {
+    fetchCityBySlug(FEATURED_CITY.slug).then(data => {
+      if (!data || joinedCityRef.current) return
       setPreviewChannelId(data.channelId)
       setPreviewTimezone(data.timezone ?? 'UTC')
-      // Real live count for the featured city - best effort, non-blocking.
-      fetchChannels().then(list => {
-        const ch = (list?.channels ?? []).find(c => c.channelId === data.channelId)
-        const n = Number(ch?.activeUsers ?? 0)
-        if (n > 0) setPreviewLiveCount(n)
-      }).catch(() => {})
-      return { channelId: data.channelId, city: data.city, timezone: data.timezone, country: data.country }
-    }).catch(() => null)
+    }).catch(() => {})
   }
 
-  // Bare-root ad-landing: resolve the visitor's closest supported city via the
-  // edge IP lookup (/api/geo), with NO GPS prompt. Raced against a 200ms budget:
-  //   State A (city_matched) → feature the detected city, CTA joins it.
-  //   State B (timeout/fail/unknown) → fall back to the featured city (HCMC) and
-  //     flip the CTA to the city picker. Never blocks render.
-  // Returns a location object so handleJoin can join the resolved city.
+  // IP → city at the edge (/api/geo, no GPS prompt), with a 1.5 s budget. Every lookup is measured
+  // (geo_detection: state, source, reason, delay; never the IP).
+  //   city_matched    → a Hilads city within 50 km
+  //   country_matched → the nearest Hilads city in the visitor's country
+  //   anything else (unknown / data centre / too slow / error) → null: the caller shows the city
+  //   picker. NEVER a default city (it used to be Saigon for everyone not found in time).
+  const GEO_BUDGET_MS = 1500
+  function fetchGeo(path) {
+    const t0 = performance.now()
+    let timedOut = false
+    return Promise.race([
+      fetch('/api/geo', { headers: { Accept: 'application/json' } }).then(r => (r.ok ? r.json() : null)).catch(() => null),
+      new Promise(resolve => setTimeout(() => { timedOut = true; resolve(null) }, GEO_BUDGET_MS)),
+    ]).then(geo => {
+      track('geo_detection', {
+        path,
+        state: geo?.state ?? (timedOut ? 'timeout' : 'error'),
+        via: geo?.via ?? null, source: geo?.source ?? null, reason: geo?.reason ?? null,
+        km: geo?.km ?? null, visitor_country: geo?.visitorCountry ?? null, city: geo?.city ?? null,
+        server_ms: geo?.ms ?? null, client_ms: Math.round(performance.now() - t0), list: geo?.list ?? null,
+      })
+      const ok = geo && (geo.state === 'city_matched' || geo.state === 'country_matched') && geo.channelId
+      return ok ? geo : null
+    })
+  }
+
+  // Bare-root landing: the visitor's city by IP (State A), else the city picker (State B).
+  // Returns the location to join, or null (nothing is joined; handleJoin opens the picker).
   function resolveLandingCity() {
     featuredEntryRef.current = true
-    // The landing renders INSTANTLY regardless (this only settles the CTA's city
-    // + variant), so the budget just bounds how long we wait before committing to
-    // the featured fallback. /api/geo answers in ~30ms (coords are bundled in the
-    // function), so this only needs to cover a cold lambda boot - 600ms is safe.
-    const geoRace = Promise.race([
-      fetch('/api/geo', { headers: { Accept: 'application/json' } })
-        .then(r => (r.ok ? r.json() : null))
-        .catch(() => null),
-      new Promise(resolve => setTimeout(() => resolve(null), 600)),
-    ])
-    return geoRace.then(geo => {
-      if (geo && geo.state === 'city_matched' && geo.channelId) {
+    geoPickerRef.current = false
+    return fetchGeo('landing').then(geo => {
+      if (geo) {
         showEntryCity(geo.city, geo.country, geo.timezone)
         setPreviewChannelId(geo.channelId)
         setPreviewTimezone(geo.timezone ?? 'UTC')
@@ -2083,18 +2086,13 @@ export default function App() {
         }).catch(() => {})
         return { channelId: geo.channelId, city: geo.city, timezone: geo.timezone, country: geo.country }
       }
-      // Server CONFIDENTLY found no nearby/only-in-country city → picker (State B).
-      if (geo && geo.state === 'city_unknown') {
-        setLandingState('city_picker')
-        setDetectedCity('unknown')
-        return resolveFeaturedCity()
-      }
-      // Geo merely UNAVAILABLE (localhost has no edge fn; cold-start >200ms;
-      // network/parse fail) - don't front a picker to everyone. Optimistically
-      // feature the default city; the CTA stays "Join {featured} 🔥" and the user
-      // can still switch cities inside. detected_city='unknown' keeps analytics honest.
+      // No confident city: the picker, never a default city. The featured city only fills the
+      // landing's preview behind it.
+      geoPickerRef.current = true
+      setLandingState('city_picker')
       setDetectedCity('unknown')
-      return resolveFeaturedCity()
+      previewFeaturedCity()
+      return null
     })
   }
 
@@ -2168,12 +2166,8 @@ export default function App() {
         const origin = { channelId, city: cityName, timezone, country }
         // IP geo raced against a short budget (/api/geo answers in ~30ms; the
         // budget only covers a cold lambda boot). Failure/timeout → origin.
-        const geo = await Promise.race([
-          fetch('/api/geo', { headers: { Accept: 'application/json' } })
-            .then(r => (r.ok ? r.json() : null)).catch(() => null),
-          new Promise(resolve => setTimeout(() => resolve(null), 600)),
-        ])
-        const loc = (geo && geo.state === 'city_matched' && geo.channelId)
+        const geo = await fetchGeo('challenge')
+        const loc = geo
           ? { channelId: geo.channelId, city: geo.city, timezone: geo.timezone, country: geo.country }
           : origin
         showEntryCity(loc.city, loc.country ?? null, loc.timezone ?? 'UTC')
@@ -2189,7 +2183,7 @@ export default function App() {
       featuredEntryRef.current = true
       setLandingState('deep_link')   // /c/:id CTA = "Take this challenge 🔥", no IP detection
       locPromiseRef.current = fetchChallengeById(link.id).then(data => {
-        if (!data) return resolveFeaturedCity()
+        if (!data) return resolveLandingCity()   // a broken ad link: the visitor's city by IP, never a default city
         const { challenge, channelId, cityName, country, timezone } = data
         setLandingChallenge(challenge)
         pendingChallengeRef.current = challenge.id
@@ -3015,8 +3009,10 @@ export default function App() {
       }
 
       if (!location && !rejoinData) {
-        // Geo was denied before a city was selected - return to onboarding
+        // No city (the IP lookup found none, or geo was denied): back to the landing, and when the
+        // IP lookup is why, open the city picker at once (like the app). Never a default city.
         setStatus('onboarding')
+        if (geoPickerRef.current) openLandingCityPicker()
         return
       }
       if (rejoinData?.city) setCity(rejoinData.city)

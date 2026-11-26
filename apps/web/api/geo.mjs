@@ -1,140 +1,108 @@
 /**
- * /api/geo — edge IP→city resolver for the stories landing.
+ * /api/geo — IP → Hilads city, for the web landing (/, shared challenges) and the app's first launch.
  *
- * The client fetches this ONCE on the bare-root landing (never on /c/:id) to
- * pick the featured city: a "city_matched" result drives State A (CTA
- * "Join {city} 🔥", joins that city); anything else → State B (fall back to the
- * featured city; "unknown" additionally flips the CTA to the picker).
+ * Runs at the EDGE, next to the visitor (it used to run in one US data centre, ~0.4-0.6 s from Asia,
+ * so the web's 600 ms budget often ran out and everyone was dropped into Saigon).
  *
- * Source: a precise IP→coords lookup via ipinfo.io (Vercel's own edge geo
- * headers mislocate some ISP ranges by hundreds of km — e.g. Free SAS in France
- * resolves to Strasbourg instead of the actual Bayonne area). If ipinfo fails or
- * times out we fall back to Vercel's edge headers (x-vercel-ip-country /
- * -latitude / -longitude). No browser GPS/permission prompt either way. The
- * visitor IP is sent to ipinfo for the lookup only — never logged or returned.
- * IPINFO_TOKEN (optional env var) raises the rate limit.
+ * Location: Vercel's edge headers (instant, free) refined by ipinfo.io when it answers within
+ * IPINFO_BUDGET_MS (more precise city, plus the network name used to spot data centres). The IP is
+ * sent to ipinfo for that lookup only: never logged, returned or stored. IPINFO_TOKEN (optional)
+ * raises ipinfo's rate limit.
  *
- * The supported-city coordinates are BUNDLED (api/_cities.mjs) rather than
- * fetched from the backend per request: a cold lambda doing a backend round-trip
- * blew past the client's geo budget and forced everyone to State B. The bundled
- * snapshot answers in ~30ms even cold. Regenerate it with `node api/_gen-cities.mjs`
- * when the city set changes (best-effort: a brand-new city won't match until then).
+ * Matching (api/_geo-core.mjs): a Hilads city within 50 km → city_matched; else the nearest Hilads
+ * city in the visitor's country → country_matched; else city_unknown (+ reason) → the client shows
+ * the city picker. Never a default city. IP never creates a city.
  *
- * Match: nearest supported city by haversine within MATCH_RADIUS_KM, else
- * unknown (the picker). IP is a last resort (V5-01): never a city more than
- * 50 km away, and never a new one — cities are created only by GPS or a pick.
+ * City list: the live list from the API (/api/v1/channels), kept per edge instance and refreshed in
+ * the background every LIVE_TTL_MS; the bundled snapshot (api/_cities.mjs) answers until then.
  *
- * Privacy: the raw IP is NEVER read, returned, or logged. The response carries
- * only the resolved supported-city name (or "unknown") — aggregate analytics.
+ * Response (unchanged fields + new ones): {state, city?, channelId?, country?, timezone?, detectedCity,
+ * via, source, reason?, km?, visitorCountry?, ms, list}. Old apps only read state === 'city_matched'.
  */
 
-import { CITIES } from './_cities.mjs'
+import { CITIES as BUNDLED } from './_cities.mjs'
+import { resolveCity } from './_geo-core.mjs'
 
-const MATCH_RADIUS_KM = 50    // same cap as GPS placement (V5-01)
+export const config = { runtime: 'edge' }
 
-// Haversine great-circle distance in km.
-function distanceKm(aLat, aLng, bLat, bLng) {
-  const R = 6371
-  const dLat = ((bLat - aLat) * Math.PI) / 180
-  const dLng = ((bLng - aLng) * Math.PI) / 180
-  const s =
-    Math.sin(dLat / 2) ** 2 +
-    Math.cos((aLat * Math.PI) / 180) * Math.cos((bLat * Math.PI) / 180) * Math.sin(dLng / 2) ** 2
-  return 2 * R * Math.asin(Math.min(1, Math.sqrt(s)))
+const IPINFO_BUDGET_MS = 600
+const LIVE_TTL_MS = 10 * 60 * 1000
+const API_BASE = (typeof process !== 'undefined' && process.env?.HILADS_API_BASE) || 'https://api.hilads.live'
+
+// Per edge instance: the live city list and when it was fetched.
+let live = null
+let liveAt = 0
+let refreshing = null
+
+function refreshLive() {
+  if (refreshing) return refreshing
+  refreshing = fetch(`${API_BASE}/api/v1/channels`, { headers: { Accept: 'application/json' }, signal: AbortSignal.timeout(4000) })
+    .then(r => (r.ok ? r.json() : null))
+    .then(d => {
+      const list = (d?.channels ?? [])
+        .filter(c => typeof c.lat === 'number' && typeof c.lng === 'number')
+        .map(c => ({ id: c.channelId, c: c.city, co: String(c.country || '').toUpperCase(), tz: c.timezone || 'UTC', lat: c.lat, lng: c.lng }))
+      if (list.length >= 50) { live = list; liveAt = Date.now() }
+    })
+    .catch(() => {})
+    .finally(() => { refreshing = null })
+  return refreshing
 }
-
-function resolve(lat, lng) {
-  const hasCoords = Number.isFinite(lat) && Number.isFinite(lng)
-
-  // 1) Nearest supported city by proximity (primary signal).
-  if (hasCoords) {
-    let best = null
-    let bestKm = Infinity
-    for (const c of CITIES) {
-      const km = distanceKm(lat, lng, c.lat, c.lng)
-      if (km < bestKm) { bestKm = km; best = c }
-    }
-    if (best && bestKm <= MATCH_RADIUS_KM) {
-      return { state: 'city_matched', city: best, via: 'proximity' }
-    }
-  }
-
-  // 2) No confident match → State B (client falls back to the featured city).
-  return { state: 'city_unknown', city: null, via: 'none' }
-}
-
-// Vercel's edge geo headers mislocate some ISP ranges badly (e.g. Free SAS in
-// France → Strasbourg instead of the actual Bayonne/Basque coast), so we prefer
-// a dedicated provider (ipinfo.io) and fall back to the edge headers on any
-// failure/timeout. The IP is sent to ipinfo for the lookup only — we still never
-// log or return it. Set IPINFO_TOKEN (optional) for higher rate limits.
-const IPINFO_TIMEOUT_MS = 1500
 
 function clientIp(req) {
-  const xff = (req.headers['x-forwarded-for'] || '').toString()
-  const first = xff.split(',')[0].trim()
-  return first || (req.headers['x-real-ip'] || '').toString().trim()
+  const xff = req.headers.get('x-forwarded-for') || ''
+  return xff.split(',')[0].trim() || (req.headers.get('x-real-ip') || '').trim()
 }
 
-async function preciseLookup(ip) {
+async function ipinfo(ip) {
   if (!ip) return null
-  const token = process.env.IPINFO_TOKEN
+  const token = typeof process !== 'undefined' ? process.env?.IPINFO_TOKEN : undefined
   const url = `https://ipinfo.io/${encodeURIComponent(ip)}/json${token ? `?token=${encodeURIComponent(token)}` : ''}`
-  const controller = new AbortController()
-  const timer = setTimeout(() => controller.abort(), IPINFO_TIMEOUT_MS)
   try {
-    const r = await fetch(url, { headers: { Accept: 'application/json' }, signal: controller.signal })
+    const r = await fetch(url, { headers: { Accept: 'application/json' }, signal: AbortSignal.timeout(IPINFO_BUDGET_MS) })
     if (!r.ok) return null
     const d = await r.json()
-    if (typeof d.loc === 'string' && d.loc.includes(',')) {
-      const [lat, lng] = d.loc.split(',').map(Number)
-      if (Number.isFinite(lat) && Number.isFinite(lng)) {
-        return { lat, lng, country: (d.country || '').toString().toUpperCase() }
-      }
-    }
-    return null
+    if (typeof d.loc !== 'string' || !d.loc.includes(',')) return null
+    const [lat, lng] = d.loc.split(',').map(Number)
+    return Number.isFinite(lat) && Number.isFinite(lng)
+      ? { lat, lng, country: String(d.country || '').toUpperCase(), org: d.org || null }
+      : null
   } catch {
-    return null // timeout / network / parse → fall back to Vercel headers
-  } finally {
-    clearTimeout(timer)
+    return null   // too slow / network: Vercel's headers are used
   }
 }
 
-export default async function handler(req, res) {
-  // Per-visitor result — must NOT be shared across visitors by the CDN.
-  res.setHeader('Cache-Control', 'private, no-store')
-  res.setHeader('Content-Type', 'application/json')
-
-  // Primary: precise ipinfo lookup. Fallback: Vercel's edge geo headers.
-  let country = (req.headers['x-vercel-ip-country'] || '').toString().toUpperCase()
-  let lat = parseFloat(req.headers['x-vercel-ip-latitude'])
-  let lng = parseFloat(req.headers['x-vercel-ip-longitude'])
-  let source = 'vercel'
+export default async function handler(req, context) {
+  const t0 = Date.now()
+  const headers = { 'Content-Type': 'application/json', 'Cache-Control': 'private, no-store' }
   try {
-    const p = await preciseLookup(clientIp(req))
-    if (p) { lat = p.lat; lng = p.lng; if (p.country) country = p.country; source = 'ipinfo' }
-  } catch { /* keep Vercel values */ }
+    // The live list: refreshed in the background when old; never waited for here.
+    if (!live || Date.now() - liveAt > LIVE_TTL_MS) {
+      const p = refreshLive()
+      if (context && typeof context.waitUntil === 'function') context.waitUntil(p)
+    }
+    const cities = live ?? BUNDLED
 
-  try {
-    const { state, city, via } = resolve(lat, lng)
-    res.statusCode = 200
-    res.end(JSON.stringify(
-      state === 'city_matched'
-        ? {
-            state,
-            city: city.c,
-            channelId: city.id,
-            country: city.co,
-            timezone: city.tz,
-            detectedCity: city.c,
-            via,
-            source,
-          }
-        : { state, detectedCity: 'unknown', via, source },
-    ))
+    let loc = {
+      lat: parseFloat(req.headers.get('x-vercel-ip-latitude') ?? ''),
+      lng: parseFloat(req.headers.get('x-vercel-ip-longitude') ?? ''),
+      country: (req.headers.get('x-vercel-ip-country') || '').toUpperCase(),
+      org: null,
+    }
+    let source = 'vercel'
+    const precise = await ipinfo(clientIp(req))
+    if (precise) { loc = precise; source = 'ipinfo' }
+
+    const r = resolveCity(cities, loc)
+    const base = { via: r.via, source, reason: r.reason ?? null, km: r.km ?? null, visitorCountry: loc.country || null,
+                   ms: Date.now() - t0, list: live ? 'live' : 'bundled' }
+    const body = r.city
+      ? { state: r.state, city: r.city.c, channelId: r.city.id, country: r.city.co, timezone: r.city.tz, detectedCity: r.city.c, ...base }
+      : { state: r.state, detectedCity: 'unknown', ...base }
+    // One line per lookup in Vercel's logs (no IP), for before / after measurement.
+    console.log(JSON.stringify({ geo: body.state, via: body.via, source, reason: body.reason, km: body.km, country: body.visitorCountry, ms: body.ms, list: body.list }))
+    return new Response(JSON.stringify(body), { status: 200, headers })
   } catch {
-    // Any failure → State B. Never blocks the client.
-    res.statusCode = 200
-    res.end(JSON.stringify({ state: 'city_unknown', detectedCity: 'unknown', via: 'error' }))
+    return new Response(JSON.stringify({ state: 'city_unknown', detectedCity: 'unknown', via: 'error', reason: 'error', ms: Date.now() - t0 }), { status: 200, headers })
   }
 }
