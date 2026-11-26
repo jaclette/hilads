@@ -5177,6 +5177,30 @@ run($pdo, "CREATE INDEX IF NOT EXISTS idx_admin_login_attempts_time ON admin_log
 // Who did it, as a person (admin_username keeps the name at the time).
 run($pdo, "ALTER TABLE admin_audit_log ADD COLUMN IF NOT EXISTS admin_user_id BIGINT", 'admin_audit_log.admin_user_id');
 
+// Admin trusted devices ("Trust this device for 30 days" on the 2FA step): the cookie holds
+// "<id>.<random token>", only sha256(token) is stored. A device stops being trusted when it expires,
+// is revoked, the password changes (password_changed_at) or 2FA is reset. Reversal: DROP TABLE
+// admin_trusted_devices; ALTER TABLE admin_users DROP COLUMN password_changed_at; ALTER TABLE admin_sessions DROP COLUMN device_id.
+run($pdo, "ALTER TABLE admin_users ADD COLUMN IF NOT EXISTS password_changed_at TIMESTAMPTZ", 'admin_users.password_changed_at');
+run($pdo, "
+    CREATE TABLE IF NOT EXISTS admin_trusted_devices (
+        id            BIGSERIAL   PRIMARY KEY,
+        admin_user_id BIGINT      NOT NULL REFERENCES admin_users(id) ON DELETE CASCADE,
+        token_hash    TEXT        NOT NULL UNIQUE,
+        label         TEXT        NOT NULL,
+        user_agent    TEXT,
+        ip            TEXT,
+        country       TEXT,
+        created_at    TIMESTAMPTZ NOT NULL DEFAULT now(),
+        last_used_at  TIMESTAMPTZ NOT NULL DEFAULT now(),
+        expires_at    TIMESTAMPTZ NOT NULL,
+        revoked_at    TIMESTAMPTZ,
+        revoked_reason TEXT
+    )
+", 'admin_trusted_devices');
+run($pdo, "CREATE INDEX IF NOT EXISTS idx_admin_trusted_devices_user ON admin_trusted_devices (admin_user_id)", 'idx_admin_trusted_devices_user');
+run($pdo, "ALTER TABLE admin_sessions ADD COLUMN IF NOT EXISTS device_id BIGINT", 'admin_sessions.device_id');
+
 // ── Self-heal monthly rank columns ────────────────────────────────────────
 // The denormalised users.monthly_rank_* columns are kept fresh by
 // route-level recalc hooks fired after each scoring action. If any

@@ -39,6 +39,19 @@ if ($method === 'POST') {
         $u = AdminAuth::findByEmail($email);
         if ($u !== null && $u['disabled_at'] === null && AdminAuth::checkPassword($u, $password)) {
             session_regenerate_id(true);
+            // A device trusted in the last 30 days (secure cookie checked against its stored hash): no code.
+            $device = null;
+            if (AdminAuth::has2fa($u) && !$u['must_change_password']) {
+                try { $device = AdminAuth::trustedDeviceFor($u); } catch (\Throwable) { $device = null; }
+            }
+            if ($device !== null) {
+                AdminAuth::attempt($ip, $email, true);
+                AdminAuth::signIn($u, (int) $device['id']);
+                AdminAuth::log('admin.sign_in', 'admin_user', (string) $u['id'], null, ['with' => 'password on a trusted device', 'device' => (int) $device['id'], 'label' => $device['label']]);
+                $to = (string) ($_SESSION['admin_after_login'] ?? '/admin');
+                unset($_SESSION['admin_after_login']);
+                admin_redirect(str_starts_with($to, '/admin') ? $to : '/admin');
+            }
             if (AdminAuth::has2fa($u)) {
                 $_SESSION['admin_pending_uid'] = (int) $u['id'];
                 $_SESSION['admin_pending_at'] = time();

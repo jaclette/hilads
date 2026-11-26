@@ -41,6 +41,7 @@ if ($method === 'POST') {
             if ($preAuth) {
                 AdminAuth::signIn(AdminAuth::find((int) $u['id']));
             }
+            AdminAuth::markReauth();
             AdminAuth::log('admin_user.2fa_on', 'admin_user', (string) $u['id']);
             $codesTitle = 'Two-step verification is on';
             $u = AdminAuth::find((int) $u['id']);

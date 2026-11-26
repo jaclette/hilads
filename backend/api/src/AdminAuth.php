@@ -27,9 +27,17 @@ final class AdminAuth
         'viewer'      => 'Sees every page except settings and the Danger zone, can\'t change anything.',
     ];
 
-    /** Idle timeout and absolute session length, in seconds. */
+    /** Idle timeout and absolute session length, in seconds (a device not trusted). */
     public const IDLE_SECONDS     = 2 * 3600;
     public const ABSOLUTE_SECONDS = 12 * 3600;
+    /** On a trusted device: signed in for 7 days after the last activity (sliding), 30 days at most. */
+    public const TRUSTED_IDLE_SECONDS     = 7 * 86400;
+    public const TRUSTED_ABSOLUTE_SECONDS = 30 * 86400;
+    /** "Trust this device" lasts this long; then the code is asked again. */
+    public const TRUST_DAYS = 30;
+    public const TRUST_COOKIE = 'hilads_admin_device';
+    /** A fresh 2FA code is asked before the Danger zone unless one was entered this recently. */
+    public const REAUTH_SECONDS = 15 * 60;
 
     /** Lockout: this many failed attempts in the window, per IP or per email. */
     public const MAX_FAILURES   = 5;
@@ -122,30 +130,205 @@ final class AdminAuth
         return self::role() === 'super_admin';
     }
 
-    /** Session timeouts. True when the session is still valid (and touches it). */
+    /** Session timeouts (longer on a trusted device). True when the session is still valid (and touches it). */
     public static function sessionAlive(): bool
     {
         $now = time();
         $at  = (int) ($_SESSION['admin_login_at'] ?? 0);
         $seen = (int) ($_SESSION['admin_seen_at'] ?? 0);
-        if ($at === 0 || $now - $at > self::ABSOLUTE_SECONDS || $now - $seen > self::IDLE_SECONDS) {
+        $trusted = !empty($_SESSION['admin_device_id']);
+        if ($trusted && !self::deviceStillTrusted((int) $_SESSION['admin_device_id'], (int) $_SESSION['admin_uid'])) {
+            // Trust revoked (or expired, or the password changed): this session goes on as a normal one,
+            // with the normal limits; the next sign-in on this browser asks for the code.
+            unset($_SESSION['admin_device_id']);
+            $trusted = false;
+        }
+        $idle = $trusted ? self::TRUSTED_IDLE_SECONDS : self::IDLE_SECONDS;
+        $max  = $trusted ? self::TRUSTED_ABSOLUTE_SECONDS : self::ABSOLUTE_SECONDS;
+        if ($at === 0 || $now - $at > $max || $now - $seen > $idle) {
             return false;
         }
         $_SESSION['admin_seen_at'] = $now;
+        if ($trusted && $now - $seen > 60) self::keepSessionCookie();   // slide the 7 days
         return true;
     }
 
-    /** Mark the session as fully signed in for $u. */
-    public static function signIn(array $u): void
+    /** Mark the session as fully signed in for $u, on a trusted device when $deviceId is given. */
+    public static function signIn(array $u, ?int $deviceId = null): void
     {
         session_regenerate_id(true);
         foreach (['admin_pending_uid', 'admin_enroll_uid', 'admin_bootstrap', 'admin_enroll_secret'] as $k) unset($_SESSION[$k]);
         $_SESSION['admin_uid']      = (int) $u['id'];
         $_SESSION['admin_login_at'] = time();
         $_SESSION['admin_seen_at']  = time();
+        if ($deviceId !== null) {
+            $_SESSION['admin_device_id'] = $deviceId;
+            self::keepSessionCookie();
+        } else {
+            unset($_SESSION['admin_device_id']);
+        }
         self::$loaded = false;
         AdminSessionHandler::$userId = (int) $u['id'];
         Database::pdo()->prepare("UPDATE admin_users SET last_login_at = now() WHERE id = ?")->execute([$u['id']]);
+    }
+
+    /** On a trusted device the session cookie survives the browser closing (7 days, renewed on activity). */
+    private static function keepSessionCookie(): void
+    {
+        if (headers_sent() || session_id() === '') return;
+        setcookie(session_name(), session_id(), [
+            'expires' => time() + self::TRUSTED_IDLE_SECONDS, 'path' => '/admin', 'secure' => self::https(),
+            'httponly' => true, 'samesite' => 'Strict',
+        ]);
+    }
+
+    public static function https(): bool
+    {
+        return isset($_SERVER['HTTPS']) || ($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '') === 'https';
+    }
+
+    // ── Re-authentication (Danger zone) ──────────────────────────────────────
+
+    /** A 2FA code was entered in the last REAUTH_SECONDS (at sign-in or on the confirm screen). */
+    public static function reauthFresh(): bool
+    {
+        return time() - (int) ($_SESSION['admin_reauth_at'] ?? 0) < self::REAUTH_SECONDS;
+    }
+
+    public static function markReauth(): void
+    {
+        $_SESSION['admin_reauth_at'] = time();
+    }
+
+    // ── Trusted devices ──────────────────────────────────────────────────────
+
+    /** "Chrome on Mac": what a device is bound to (a token copied to another browser or OS is refused). */
+    public static function deviceLabel(?string $ua = null): string
+    {
+        $ua ??= (string) ($_SERVER['HTTP_USER_AGENT'] ?? '');
+        $b = str_contains($ua, 'Edg/') ? 'Edge' : (str_contains($ua, 'Firefox/') ? 'Firefox' : (str_contains($ua, 'Chrome/') || str_contains($ua, 'CriOS/') ? 'Chrome'
+           : (str_contains($ua, 'Safari/') ? 'Safari' : 'Browser')));
+        $os = str_contains($ua, 'iPhone') ? 'iPhone' : (str_contains($ua, 'iPad') ? 'iPad' : (str_contains($ua, 'Android') ? 'Android'
+            : (str_contains($ua, 'Mac OS') ? 'Mac' : (str_contains($ua, 'Windows') ? 'Windows' : (str_contains($ua, 'Linux') ? 'Linux' : 'unknown system')))));
+        return $b . ' on ' . $os;
+    }
+
+    /** Trust this browser for TRUST_DAYS: a random token in an httpOnly cookie, only its hash kept. Returns the device id. */
+    public static function trustDevice(int $userId): int
+    {
+        $token = bin2hex(random_bytes(32));
+        $st = Database::pdo()->prepare("
+            INSERT INTO admin_trusted_devices (admin_user_id, token_hash, label, user_agent, ip, country, expires_at)
+            VALUES (?, ?, ?, ?, ?, ?, now() + make_interval(days => ?)) RETURNING id
+        ");
+        $st->execute([$userId, hash('sha256', $token), self::deviceLabel(), mb_substr((string) ($_SERVER['HTTP_USER_AGENT'] ?? ''), 0, 300),
+                      self::ip(), self::country(), self::TRUST_DAYS]);
+        $id = (int) $st->fetchColumn();
+        if (!headers_sent()) {
+            setcookie(self::TRUST_COOKIE, $id . '.' . $token, [
+                'expires' => time() + self::TRUST_DAYS * 86400, 'path' => '/admin', 'secure' => self::https(),
+                'httponly' => true, 'samesite' => 'Strict',
+            ]);
+        }
+        self::log('admin_user.device_trust', 'admin_user', (string) $userId, null,
+            ['device' => $id, 'label' => self::deviceLabel(), 'days' => self::TRUST_DAYS, 'country' => self::country()]);
+        return $id;
+    }
+
+    /**
+     * The trusted-device row of this browser for $u, or null. Valid only when: the cookie's token
+     * matches the stored hash, same admin, not revoked, not expired, made after the last password
+     * change, and the browser / OS are the ones it was trusted on. Touches last_used_at.
+     */
+    public static function trustedDeviceFor(array $u): ?array
+    {
+        $raw = (string) ($_COOKIE[self::TRUST_COOKIE] ?? '');
+        if (!preg_match('/^(\d{1,18})\.([a-f0-9]{64})$/', $raw, $m)) return null;
+        $st = Database::pdo()->prepare("
+            SELECT d.* FROM admin_trusted_devices d JOIN admin_users a ON a.id = d.admin_user_id
+            WHERE d.id = ? AND d.admin_user_id = ? AND d.revoked_at IS NULL AND d.expires_at > now()
+              AND (a.password_changed_at IS NULL OR d.created_at > a.password_changed_at)
+        ");
+        $st->execute([(int) $m[1], (int) $u['id']]);
+        $d = $st->fetch(PDO::FETCH_ASSOC) ?: null;
+        if ($d === null || !hash_equals((string) $d['token_hash'], hash('sha256', $m[2])) || $d['label'] !== self::deviceLabel()) {
+            return null;
+        }
+        Database::pdo()->prepare("UPDATE admin_trusted_devices SET last_used_at = now(), ip = ?, country = coalesce(?, country) WHERE id = ?")
+            ->execute([self::ip(), self::country(), $d['id']]);
+        return $d;
+    }
+
+    /** Is a signed-in session's device still trusted (not revoked, not expired, no password change since)? */
+    private static function deviceStillTrusted(int $deviceId, int $userId): bool
+    {
+        try {
+            $st = Database::pdo()->prepare("
+                SELECT 1 FROM admin_trusted_devices d JOIN admin_users a ON a.id = d.admin_user_id
+                WHERE d.id = ? AND d.admin_user_id = ? AND d.revoked_at IS NULL AND d.expires_at > now()
+                  AND (a.password_changed_at IS NULL OR d.created_at > a.password_changed_at)
+            ");
+            $st->execute([$deviceId, $userId]);
+            return (bool) $st->fetchColumn();
+        } catch (\Throwable) {
+            return false;
+        }
+    }
+
+    /** @return list<array> the admin's devices still trusted, most recently used first */
+    public static function trustedDevices(int $userId): array
+    {
+        $st = Database::pdo()->prepare("
+            SELECT d.* FROM admin_trusted_devices d JOIN admin_users a ON a.id = d.admin_user_id
+            WHERE d.admin_user_id = ? AND d.revoked_at IS NULL AND d.expires_at > now()
+              AND (a.password_changed_at IS NULL OR d.created_at > a.password_changed_at)
+            ORDER BY d.last_used_at DESC
+        ");
+        $st->execute([$userId]);
+        return $st->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    /** The trusted-device id of this browser's cookie (whatever its state), for "This device". */
+    public static function currentDeviceId(): ?int
+    {
+        return preg_match('/^(\d{1,18})\./', (string) ($_COOKIE[self::TRUST_COOKIE] ?? ''), $m) ? (int) $m[1] : null;
+    }
+
+    /** Revoke one device (null = all of them): the code is asked again there, and its sessions end. Returns how many. */
+    public static function revokeDevices(int $userId, ?int $deviceId, string $reason): int
+    {
+        $pdo = Database::pdo();
+        $sql = "UPDATE admin_trusted_devices SET revoked_at = now(), revoked_reason = ? WHERE admin_user_id = ? AND revoked_at IS NULL";
+        $args = [$reason, $userId];
+        if ($deviceId !== null) { $sql .= " AND id = ?"; $args[] = $deviceId; }
+        $st = $pdo->prepare($sql . " RETURNING id, label");
+        $st->execute($args);
+        $rows = $st->fetchAll(PDO::FETCH_ASSOC);
+        if ($rows !== []) {
+            $ids = array_map('intval', array_column($rows, 'id'));
+            try {
+                $pdo->prepare("DELETE FROM admin_sessions WHERE device_id = ANY (?::bigint[])")->execute(['{' . implode(',', $ids) . '}']);
+            } catch (\Throwable) { /* older schema */ }
+            self::log($deviceId === null ? 'admin_user.device_revoke_all' : 'admin_user.device_revoke', 'admin_user', (string) $userId, null,
+                ['devices' => array_column($rows, 'label', 'id'), 'reason' => $reason]);
+        }
+        return count($rows);
+    }
+
+    /** The country of the request (Cloudflare's CF-IPCountry header), when the server sits behind Cloudflare. */
+    public static function country(): ?string
+    {
+        $cc = strtoupper(trim((string) ($_SERVER['HTTP_CF_IPCOUNTRY'] ?? '')));
+        return preg_match('/^[A-Z]{2}$/', $cc) && !in_array($cc, ['XX', 'T1'], true) ? $cc : null;
+    }
+
+    /** "203.0.113.x": an approximate place for the device list, without the full address. */
+    public static function maskIp(?string $ip): string
+    {
+        $ip = (string) $ip;
+        if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) return preg_replace('/\.\d+$/', '.x', $ip);
+        if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6)) return implode(':', array_slice(explode(':', $ip), 0, 3)) . ':…';
+        return $ip;
     }
 
     // ── Accounts ─────────────────────────────────────────────────────────────
@@ -208,17 +391,20 @@ final class AdminAuth
         return (int) $st->fetchColumn();
     }
 
+    /** A new password: trusted devices stop being trusted (the code is asked again everywhere). */
     public static function setPassword(int $id, string $password, bool $mustChange = false): void
     {
-        Database::pdo()->prepare("UPDATE admin_users SET password_hash = ?, must_change_password = ?, updated_at = now() WHERE id = ?")
+        Database::pdo()->prepare("UPDATE admin_users SET password_hash = ?, must_change_password = ?, password_changed_at = now(), updated_at = now() WHERE id = ?")
             ->execute([self::hash($password), $mustChange ? 'true' : 'false', $id]);
+        try { self::revokeDevices($id, null, 'password changed'); } catch (\Throwable) { /* table not migrated yet */ }
     }
 
     public static function checkPassword(array $u, string $password): bool
     {
         if (!password_verify($password, (string) $u['password_hash'])) return false;
         if (password_needs_rehash((string) $u['password_hash'], defined('PASSWORD_ARGON2ID') ? PASSWORD_ARGON2ID : PASSWORD_DEFAULT)) {
-            self::setPassword((int) $u['id'], $password, (bool) $u['must_change_password']);
+            // Same password, stronger hash: not a password change.
+            Database::pdo()->prepare("UPDATE admin_users SET password_hash = ? WHERE id = ?")->execute([self::hash($password), $u['id']]);
         }
         return true;
     }
@@ -272,6 +458,7 @@ final class AdminAuth
     {
         Database::pdo()->prepare("UPDATE admin_users SET totp_secret = NULL, totp_enabled_at = NULL, totp_last_step = NULL, recovery_codes = '[]'::jsonb, updated_at = now() WHERE id = ?")
             ->execute([$id]);
+        try { self::revokeDevices($id, null, '2FA reset'); } catch (\Throwable) { /* table not migrated yet */ }
     }
 
     /** 10 new single-use codes (the old ones stop working). Stored as sha256 only. */
@@ -338,10 +525,12 @@ final class AdminAuth
         if (random_int(1, 50) === 1) $pdo->exec("DELETE FROM admin_login_attempts WHERE created_at < now() - interval '30 days'");
     }
 
+    /** The client's IP: Cloudflare's header, else the first X-Forwarded-For hop (Render's proxy), else the socket. */
     public static function ip(): string
     {
-        $ip = class_exists('Request') ? Request::ip() : ($_SERVER['REMOTE_ADDR'] ?? '');
-        return is_string($ip) ? $ip : '';
+        $raw = (string) ($_SERVER['HTTP_CF_CONNECTING_IP'] ?? $_SERVER['HTTP_X_FORWARDED_FOR'] ?? $_SERVER['REMOTE_ADDR'] ?? '');
+        $ip = trim(explode(',', $raw)[0]);
+        return filter_var($ip, FILTER_VALIDATE_IP) ? $ip : (string) ($_SERVER['REMOTE_ADDR'] ?? '');
     }
 
     // ── Permissions ──────────────────────────────────────────────────────────
@@ -469,7 +658,7 @@ final class AdminSessionHandler implements \SessionHandlerInterface
     public function read(string $id): string|false
     {
         $st = Database::pdo()->prepare("SELECT data, admin_user_id FROM admin_sessions WHERE id = ? AND last_seen_at > now() - make_interval(secs => ?)");
-        $st->execute([self::key($id), AdminAuth::ABSOLUTE_SECONDS]);
+        $st->execute([self::key($id), AdminAuth::TRUSTED_IDLE_SECONDS]);
         $row = $st->fetch(\PDO::FETCH_ASSOC);
         if (!$row) return '';
         self::$userId = $row['admin_user_id'] !== null ? (int) $row['admin_user_id'] : null;
@@ -479,12 +668,24 @@ final class AdminSessionHandler implements \SessionHandlerInterface
     public function write(string $id, string $data): bool
     {
         $uid = isset($_SESSION['admin_uid']) ? (int) $_SESSION['admin_uid'] : (self::$userId ?? null);
-        Database::pdo()->prepare("
-            INSERT INTO admin_sessions (id, admin_user_id, data, ip, user_agent, last_seen_at)
-            VALUES (?, ?, ?, ?, ?, now())
-            ON CONFLICT (id) DO UPDATE SET admin_user_id = EXCLUDED.admin_user_id, data = EXCLUDED.data,
-                ip = EXCLUDED.ip, user_agent = EXCLUDED.user_agent, last_seen_at = now()
-        ")->execute([self::key($id), $uid ?: null, $data, AdminAuth::ip(), mb_substr((string) ($_SERVER['HTTP_USER_AGENT'] ?? ''), 0, 300)]);
+        $device = isset($_SESSION['admin_device_id']) ? (int) $_SESSION['admin_device_id'] : null;
+        $ua = mb_substr((string) ($_SERVER['HTTP_USER_AGENT'] ?? ''), 0, 300);
+        try {
+            Database::pdo()->prepare("
+                INSERT INTO admin_sessions (id, admin_user_id, device_id, data, ip, user_agent, last_seen_at)
+                VALUES (?, ?, ?, ?, ?, ?, now())
+                ON CONFLICT (id) DO UPDATE SET admin_user_id = EXCLUDED.admin_user_id, device_id = EXCLUDED.device_id, data = EXCLUDED.data,
+                    ip = EXCLUDED.ip, user_agent = EXCLUDED.user_agent, last_seen_at = now()
+            ")->execute([self::key($id), $uid ?: null, $device, $data, AdminAuth::ip(), $ua]);
+        } catch (\PDOException) {
+            // Before migrate.php adds device_id: the same without it.
+            Database::pdo()->prepare("
+                INSERT INTO admin_sessions (id, admin_user_id, data, ip, user_agent, last_seen_at)
+                VALUES (?, ?, ?, ?, ?, now())
+                ON CONFLICT (id) DO UPDATE SET admin_user_id = EXCLUDED.admin_user_id, data = EXCLUDED.data,
+                    ip = EXCLUDED.ip, user_agent = EXCLUDED.user_agent, last_seen_at = now()
+            ")->execute([self::key($id), $uid ?: null, $data, AdminAuth::ip(), $ua]);
+        }
         return true;
     }
 
@@ -497,7 +698,7 @@ final class AdminSessionHandler implements \SessionHandlerInterface
     public function gc(int $max_lifetime): int|false
     {
         $st = Database::pdo()->prepare("DELETE FROM admin_sessions WHERE last_seen_at < now() - make_interval(secs => ?)");
-        $st->execute([AdminAuth::ABSOLUTE_SECONDS]);
+        $st->execute([AdminAuth::TRUSTED_IDLE_SECONDS]);
         return $st->rowCount();
     }
 }

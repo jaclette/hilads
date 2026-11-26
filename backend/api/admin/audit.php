@@ -65,7 +65,9 @@ $actionLabel = fn (string $a): string => [
     'message.delete' => 'Deleted a message', 'message.erase' => 'Erased a message for good', 'comment.keep' => 'Kept a reported comment',
     'comment.remove' => 'Removed a reported comment', 'push.send' => 'Sent a push', 'push.test' => 'Sent a test push to themselves',
     'push.cancel_schedule' => 'Cancelled a scheduled push', 'user.delete' => 'Deleted a player\'s account', 'user.host_add' => 'Made a player host',
-    'user.host_remove' => 'Removed a host role',
+    'user.host_remove' => 'Removed a host role', 'admin_user.device_trust' => 'Trusted a device for 30 days',
+    'admin_user.device_revoke' => 'Revoked a trusted device', 'admin_user.device_revoke_all' => 'Revoked every trusted device',
+    'admin.reauth' => 'Confirmed with a code (Danger zone)', 'user.current_city_cleared' => 'Cleared a guessed city',
 ][$a] ?? ucfirst(str_replace(['_', '.'], [' ', ' › '], $a));
 
 /** What changed between before and after: [key, before, after] for the keys that differ. */

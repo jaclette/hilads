@@ -34,6 +34,14 @@ Everyone has their own account: email, password and, for super admins, a code fr
 
 5 wrong attempts in 15 minutes (from the same network or on the same email) block sign-in for 15 minutes.
 
+### Trusted devices
+
+On the code step, tick **Trust this device for 30 days** on a browser only you use. For 30 days that browser signs in with
+email and password only, and stays signed in for 7 days after your last visit. The code is asked again when the 30 days
+are over, after a password change, when 2FA is reset, and always before the Danger zone (once every 15 minutes).
+My account › Trusted devices lists them (browser, last used, approximate place) with **Revoke** and **Revoke all**;
+a revoked device is signed out at once. Never tick it on a shared or borrowed computer.
+
 ### First time on a new server (no account exists yet)
 
 The old shared login (`ADMIN_USERNAME` / `ADMIN_PASSWORD` on Render) works only while no admin account exists, and only to
@@ -198,6 +206,7 @@ Everything done on a season is in its **History** tab (and in System › Audit l
 System › Danger zone (super admins): reset all scores, recalculate every rank, make missing profile thumbnails, and the
 places migration. Each one shows what it will touch (counted when the page opens) and only runs after you type its phrase
 (for example `RESET ALL SCORES`). The phrase is checked on the server as well.
+Entering it asks for your 2FA code again, even on a trusted device (valid 15 minutes).
 
 Other heavy actions stay on their page with the same protection: merging two cities (type the city's name), emailing every
 registered user (type `SEND TO EVERYONE`, once a day at most), turning on "Block old apps" (type `BLOCK OLD APPS`), and a

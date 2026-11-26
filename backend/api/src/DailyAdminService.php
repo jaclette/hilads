@@ -1209,7 +1209,7 @@ final class DailyAdminService
     /** Admin IP for the log. The admin bootstrap does not load Request, so fall back to REMOTE_ADDR. */
     private static function actorIp(): ?string
     {
-        $ip = class_exists('Request') ? Request::ip() : ($_SERVER['REMOTE_ADDR'] ?? null);
+        $ip = class_exists('AdminAuth') ? AdminAuth::ip() : (class_exists('Request') ? Request::ip() : ($_SERVER['REMOTE_ADDR'] ?? null));
         return is_string($ip) && filter_var($ip, FILTER_VALIDATE_IP) ? $ip : null;
     }
 

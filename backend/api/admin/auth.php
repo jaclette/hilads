@@ -41,6 +41,16 @@ function admin_require_login(): void
     if (!AdminAuth::allowed((string) $uri, (string) $method)) {
         admin_forbidden(AdminAuth::area((string) $uri), (string) $method);
     }
+    // Danger zone (and the other game-wide actions in its area): a fresh 2FA code first, even on a trusted device.
+    if (AdminAuth::area((string) $uri) === 'danger' && AdminAuth::has2fa($u) && !AdminAuth::reauthFresh()) {
+        if (($method ?? 'GET') === 'GET') {
+            $_SESSION['admin_after_reauth'] = $_SERVER['REQUEST_URI'] ?? '/admin/danger';
+        } else {
+            $_SESSION['admin_after_reauth'] = '/admin/danger';
+            flash_set('error', 'Confirm with a code from your app first. Nothing was changed.');
+        }
+        admin_redirect('/admin/account/verify');
+    }
 }
 
 /** The signed-in admin's name, for "updated by" columns and logs. */

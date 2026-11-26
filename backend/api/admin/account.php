@@ -27,6 +27,10 @@ if ($method === 'POST') {
             flash_set('success', 'Password changed' . ($other > 0 ? " and {$other} other session(s) signed out." : '.'));
             admin_redirect('/admin/account');
         }
+    } elseif ($do === 'device_revoke' || $do === 'device_revoke_all') {
+        $n = AdminAuth::revokeDevices((int) $u['id'], $do === 'device_revoke' ? (int) ($_POST['device_id'] ?? 0) : null, 'revoked by its owner');
+        flash_set('success', $n === 0 ? 'Nothing to revoke.' : ($n === 1 ? 'That device is no longer trusted: it will ask for a code next time.' : "{$n} devices are no longer trusted."));
+        admin_redirect('/admin/account#devices');
     } elseif ($do === 'sessions') {
         $n = AdminAuth::endSessions((int) $u['id'], true);
         AdminAuth::log('admin_user.sessions_end', 'admin_user', (string) $u['id'], null, ['ended' => $n]);
@@ -96,15 +100,51 @@ admin_nav('/admin/account');
             <h2>Two-step verification</h2>
             <?php if (AdminAuth::has2fa($u)): ?>
                 <p class="hint"><span class="badge b-ok dot">On</span> &nbsp;<?= AdminAuth::recoveryCodesLeft($u) ?> of 10 recovery codes left.</p>
-                <a class="btn" href="/admin/account/2fa">Manage 2FA and recovery codes</a>
+                <div class="form-actions" style="margin-top:0">
+                    <a class="btn" href="/admin/account/2fa">Make new recovery codes</a>
+                    <a class="btn btn-ghost" href="/admin/account/2fa">Manage 2FA</a>
+                </div>
             <?php else: ?>
                 <p class="hint"><span class="badge b-warn dot">Off</span> &nbsp;<?= AdminAuth::needs2fa($u) ? 'Required for your role.' : 'Optional for your role, recommended.' ?></p>
                 <a class="btn btn-primary" href="/admin/account/2fa">Set up 2FA</a>
             <?php endif; ?>
         </div>
+        <div class="section" id="devices">
+            <h2>Trusted devices</h2>
+            <p class="hint">On these browsers you sign in with your email and password only, for <?= AdminAuth::TRUST_DAYS ?> days after you ticked
+                "Trust this device", and you stay signed in for <?= AdminAuth::TRUSTED_IDLE_SECONDS / 86400 ?> days after your last visit.
+                The code is asked again when the trust ends, when you change your password, and always before the Danger zone.</p>
+            <?php $devices = []; try { $devices = AdminAuth::trustedDevices((int) $u['id']); } catch (\Throwable) {} $here = AdminAuth::currentDeviceId(); ?>
+            <?php if ($devices === []): ?>
+                <p class="muted" style="font-size:var(--fs-sm)">No trusted device. Tick "Trust this device" on the code screen at your next sign-in.</p>
+            <?php else: ?>
+            <div class="table-wrapper" style="margin-bottom:12px"><table>
+                <thead><tr><th>Device</th><th>Last used</th><th>Where (approx.)</th><th>Trusted until</th><th></th></tr></thead>
+                <tbody>
+                <?php foreach ($devices as $d): ?>
+                    <tr>
+                        <td><?= $e($d['label']) ?><?= (int) $d['id'] === $here ? ' <span class="badge b-brand">This device</span>' : '' ?></td>
+                        <td title="<?= $e(ui_when($d['last_used_at'])) ?>"><?= $e(ui_ago($d['last_used_at'])) ?></td>
+                        <td><?= $d['country'] ? $e($d['country']) . ' · ' : '' ?><span class="mono"><?= $e(AdminAuth::maskIp($d['ip'])) ?></span></td>
+                        <td><?= $e(date('j M Y', strtotime((string) $d['expires_at']))) ?></td>
+                        <td><form method="POST" action="/admin/account" style="margin:0" data-confirm="Stop trusting <?= $e($d['label']) ?>?"
+                                  data-confirm-text="It will ask for a code at its next sign-in<?= (int) $d['id'] === $here ? '' : ', and is signed out now' ?>." data-confirm-button="Revoke">
+                            <?= csrf_input() ?><input type="hidden" name="do" value="device_revoke"><input type="hidden" name="device_id" value="<?= (int) $d['id'] ?>">
+                            <button class="btn btn-sm btn-danger" type="submit">Revoke</button></form></td>
+                    </tr>
+                <?php endforeach; ?>
+                </tbody>
+            </table></div>
+            <form method="POST" action="/admin/account" data-confirm="Revoke every trusted device?" data-confirm-text="Every browser asks for a code at its next sign-in; the other ones are signed out now." data-confirm-button="Revoke all">
+                <?= csrf_input() ?><input type="hidden" name="do" value="device_revoke_all">
+                <button class="btn" type="submit">Revoke all</button>
+            </form>
+            <?php endif; ?>
+        </div>
         <div class="section">
             <h2>Where you're signed in</h2>
-            <p class="hint">Sessions end after <?= AdminAuth::IDLE_SECONDS / 3600 ?> h without activity, and after <?= AdminAuth::ABSOLUTE_SECONDS / 3600 ?> h in any case.</p>
+            <p class="hint">On a browser you don't trust, a session ends after <?= AdminAuth::IDLE_SECONDS / 3600 ?> h without activity and after <?= AdminAuth::ABSOLUTE_SECONDS / 3600 ?> h in any case.
+                On a trusted one, <?= AdminAuth::TRUSTED_IDLE_SECONDS / 86400 ?> days after your last visit.</p>
             <?php if ($sessions !== []): ?>
             <div class="table-wrapper" style="margin-bottom:12px"><table>
                 <thead><tr><th>Device</th><th>IP</th><th>Signed in</th><th>Last active</th></tr></thead>
@@ -112,7 +152,7 @@ admin_nav('/admin/account');
                 <?php foreach ($sessions as $s): ?>
                     <tr>
                         <td><?= $e($browser((string) $s['user_agent'])) ?><?= $s['id'] === $currentKey ? ' <span class="badge b-brand">This one</span>' : '' ?></td>
-                        <td class="td-mono"><?= $e($s['ip']) ?></td>
+                        <td class="td-mono"><?= $e(AdminAuth::maskIp($s['ip'])) ?></td>
                         <td><?= $e(date('j M, H:i', strtotime((string) $s['created_at']))) ?></td>
                         <td><?= $e(date('j M, H:i', strtotime((string) $s['last_seen_at']))) ?></td>
                     </tr>

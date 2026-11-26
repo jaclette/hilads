@@ -116,6 +116,9 @@ if ($uri === '/admin' || $uri === '/admin/') {
 } elseif ($uri === '/admin/account/2fa') {
     require __DIR__ . '/account_2fa.php';
 
+} elseif ($uri === '/admin/account/verify') {
+    require __DIR__ . '/account_verify.php';
+
 } elseif ($uri === '/admin/settings' || $uri === '/admin/settings/admins') {
     require __DIR__ . '/settings_admins.php';
 
