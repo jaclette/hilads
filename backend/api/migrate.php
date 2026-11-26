@@ -5209,6 +5209,28 @@ run($pdo, "
 run($pdo, "CREATE INDEX IF NOT EXISTS idx_admin_trusted_devices_user ON admin_trusted_devices (admin_user_id)", 'idx_admin_trusted_devices_user');
 run($pdo, "ALTER TABLE admin_sessions ADD COLUMN IF NOT EXISTS device_id BIGINT", 'admin_sessions.device_id');
 
+// Launch Trip 2026-11-26: the players' goal is optional (NULL = no goal, the prize is unconditional),
+// and "Notify me when it starts" for people without an account: an app guest (its device's push token,
+// by guest_id) or a web visitor (email, sent with Resend). ContestNotify::dispatchLive sends both once.
+// Reversal: UPDATE contest_seasons SET prize_threshold_players = 500 WHERE prize_threshold_players IS NULL;
+//           ALTER TABLE contest_seasons ALTER COLUMN prize_threshold_players SET NOT NULL; DROP TABLE contest_interest_guest.
+run($pdo, "ALTER TABLE contest_seasons ALTER COLUMN prize_threshold_players DROP NOT NULL", 'contest_seasons.prize_threshold_players nullable');
+run($pdo, "ALTER TABLE contest_seasons DROP CONSTRAINT IF EXISTS contest_seasons_prize_threshold_players_check", 'contest_seasons.prize_threshold_players check');
+run($pdo, "
+    CREATE TABLE IF NOT EXISTS contest_interest_guest (
+        id          BIGSERIAL   PRIMARY KEY,
+        season_id   INT         NOT NULL REFERENCES contest_seasons(id) ON DELETE CASCADE,
+        guest_id    TEXT,
+        email       TEXT,
+        locale      TEXT,
+        created_at  TIMESTAMPTZ NOT NULL DEFAULT now(),
+        notified_at TIMESTAMPTZ,
+        CHECK (guest_id IS NOT NULL OR email IS NOT NULL)
+    )
+", 'contest_interest_guest');
+run($pdo, "CREATE UNIQUE INDEX IF NOT EXISTS uq_contest_interest_guest_gid ON contest_interest_guest (season_id, guest_id) WHERE guest_id IS NOT NULL", 'uq_contest_interest_guest_gid');
+run($pdo, "CREATE UNIQUE INDEX IF NOT EXISTS uq_contest_interest_guest_email ON contest_interest_guest (season_id, lower(email)) WHERE email IS NOT NULL", 'uq_contest_interest_guest_email');
+
 // ── Self-heal monthly rank columns ────────────────────────────────────────
 // The denormalised users.monthly_rank_* columns are kept fresh by
 // route-level recalc hooks fired after each scoring action. If any

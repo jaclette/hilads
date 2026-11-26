@@ -361,7 +361,9 @@
       "final": "파이널 위크",
       "winner": "우승자",
       "now": "지금",
-      "done": "완료"
+      "done": "완료",
+      "race": "레이스",
+      "nowDay": "진행 중 · {{days}}일 중 {{day}}일째"
     },
     "me": {
       "rank": "지금 {{rank, ordinal}}",
@@ -388,7 +390,9 @@
       "invite": "친구 초대하기",
       "join": "레이스 참가하기",
       "signIn": "로그인하고 참가하기",
-      "ranking": "순위 보기"
+      "ranking": "순위 보기",
+      "notify": "시작하면 알려 주세요",
+      "notifyOn": "시작하면 알려 드릴게요"
     },
     "ranking": {
       "before": "파이널 위크 전",
@@ -420,7 +424,8 @@
         "joined": "가입함 · 첫 사진 대기 중",
         "played": "플레이함 · 집계 안 됨",
         "credited": "✓ +{{points}}"
-      }
+      },
+      "locked": "계정을 만들고 친구를 초대하세요"
     },
     "rules": {
       "howTitle": "우승하는 방법",
@@ -448,7 +453,9 @@
       "who4": "앱에서 참가하고 공식 규정에 동의하세요.",
       "full": "공식 규정 전문",
       "podiumTitle": "오늘의 시상대 (전 세계 좋아요 최다)",
-      "place": "{{rank, ordinal}}"
+      "place": "{{rank, ordinal}}",
+      "goalProgress": "지금까지 {{goal}}명 중 {{players}}명 탑승.",
+      "goalReached": "목표 달성: {{goal}}명 탑승 🎉"
     },
     "over": {
       "title": "레이스가 끝났어요",
@@ -487,7 +494,22 @@
       "shareText": "Hilads Launch Trip {{players}} / {{threshold}}석이 찼어요. 내 자리도 잡으세요 ✈️",
       "shareTextFirst": "Hilads Launch Trip 탑승 시작. 자리를 잡으세요 ✈️",
       "cardSeats": "{{players}} / {{threshold}}석이 찼어요",
-      "cardGrab": "자리 잡기"
+      "cardGrab": "자리 잡기",
+      "onBoard_one": "{{count}}명 탑승 중",
+      "onBoard_other": "{{count}}명 탑승 중",
+      "unlockLine_one": "{{count}}명이 모이면 여행 잠금 해제",
+      "unlockLine_other": "{{count}}명이 모이면 여행 잠금 해제",
+      "unlocked": "여행 잠금 해제 🎉",
+      "details": "자세히",
+      "a11yOpen": "자세한 내용과 초대 링크를 엽니다",
+      "noGoalText": "레이스에 참가한 모두가 탑승했어요. 친구도 데려오세요: 참여하는 도시가 많을수록 레이스가 더 활기차요.",
+      "locked": "계정을 만들고 탑승권을 받으세요",
+      "lockedText": "무료예요. Hilads 포인트는 가입한 날부터 집계돼요.",
+      "inviteTitle": "친구 초대하기",
+      "inviteText": "내 링크에는 초대 코드가 들어 있어요: 가입하고 플레이한 친구는 내 것으로 집계돼요.",
+      "inviteTextGuest": "친구에게 Launch Trip을 공유하세요.",
+      "shareTextOnBoard_one": "Hilads Launch Trip에 {{count}}명이 탑승 중이에요. 자리를 잡으세요 ✈️",
+      "shareTextOnBoard_other": "Hilads Launch Trip에 {{count}}명이 탑승 중이에요. 자리를 잡으세요 ✈️"
     },
     "prizeCta": "상품 보기 🎁",
     "prize": {

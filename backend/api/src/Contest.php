@@ -116,6 +116,9 @@ final class Contest
     {
         $r['id'] = (int) $r['id'];
         foreach (self::SETTINGS as $k) $r[$k] = (int) ($r[$k] ?? 0);
+        // The players' goal (the trip "unlocks" at N players): null = no goal, the prize is unconditional.
+        $r['prize_threshold_players'] = ($r['prize_threshold_players'] ?? null) !== null && (int) $r['prize_threshold_players'] > 0
+            ? (int) $r['prize_threshold_players'] : null;
         $r['is_test'] = DailyProofRepository::bool($r['is_test']);
         $r['paused']  = DailyProofRepository::bool($r['paused']);
         $prize = json_decode((string) ($r['prize_i18n'] ?? ''), true);
@@ -421,13 +424,24 @@ final class Contest
         foreach ($prevSeason as $i => $id)  $rows[$id]['prevSeasonRank'] = $i + 1;
         foreach ($prevFinal as $i => $id)   $rows[$id]['prevFinalRank']  = $i + 1;
 
-        $players = (int) $season['prize_threshold_players'];
+        // The players' goal: with one, "on board" = players with their boarding pass (the photos); without
+        // one (null), everyone in the race is on board and the prize is unconditional (reached).
+        $goal = ($season['prize_threshold_players'] ?? null) !== null && (int) $season['prize_threshold_players'] > 0 ? (int) $season['prize_threshold_players'] : null;
+        $inRace = array_filter($rows, static fn(array $r): bool => !$r['disqualified']);
+        $onBoard = $goal === null ? count($inRace) : $qualified;
+        // The latest players on board (the stacked avatars): photos only, newest first.
+        $recent = array_filter($inRace, static fn(array $r): bool => !empty($r['thumb']) && ($goal === null || $r['photos'] >= $threshold));
+        usort($recent, static fn(array $a, array $b): int => strcmp($b['joinedAt'], $a['joinedAt']));
+        $recent = array_map(static fn(array $r): array => ['userId' => $r['userId'], 'name' => $r['username'] ?? $r['displayName'],
+            'photoUrl' => class_exists('R2Uploader') ? R2Uploader::thumbProxy($r['thumb']) : $r['thumb']], array_slice($recent, 0, 5));
         return [
             'rows'    => $rows,
             'season'  => $seasonOrder,
             'final'   => $finalOrder,
-            'counter' => ['players' => $qualified, 'threshold' => $players, 'photos' => $threshold, 'reached' => $qualified >= $players,
-                          'showFrom' => (int) ($season['seats_show_from'] ?? 0)],
+            // threshold: 0 when there's no goal (older apps read it as reached).
+            'counter' => ['players' => $onBoard, 'threshold' => $goal ?? 0, 'goal' => $goal, 'photos' => $threshold,
+                          'reached' => $goal === null || $qualified >= $goal, 'showFrom' => (int) ($season['seats_show_from'] ?? 0),
+                          'recent' => $recent],
             'totals'  => ['participants' => count($rows), 'photos' => array_sum(array_column($rows, 'photos'))],
         ];
     }
@@ -540,6 +554,8 @@ final class Contest
         ] + (class_exists('ContestTrip') ? ContestTrip::payload($s, $locale) : []) + [
             'id' => $s['id'], 'name' => $s['name'], 'isTest' => $s['is_test'], 'phase' => self::phase($s),
             'startDate' => $s['start_date'], 'endDate' => $s['end_date'], 'finalWeekStart' => $s['final_week_start'],
+            // The current challenge date (the timeline's "day 2 of 2").
+            'today' => DailyClock::currentDate(),
             // The real moments (the daily drop, ISO UTC) for the countdowns: the season starts at its first
             // challenge's drop, the final week at its first day's, and it ends at the drop after its last day.
             'startsAt' => self::dropIso($s['start_date']), 'finalAt' => self::dropIso($s['final_week_start']),

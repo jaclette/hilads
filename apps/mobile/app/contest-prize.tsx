@@ -8,13 +8,13 @@ import { Space, Gutter, Radius, Type, IconSize, type ThemeColors } from '@/const
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { useApp } from '@/context/AppContext';
 import { Button } from '@/ui';
-import { contestDate, fetchContest, notifyContest, type ContestMeNotJoined, type ContestOverview } from '@/features/contest/contest';
+import { contestDate, contestGoal, fetchContest, type ContestOverview } from '@/features/contest/contest';
 import { CountdownBoard, countdownTarget, shortLeft, useNow } from '@/features/contest/Countdown';
 import { PrizePhotos } from '@/features/contest/PrizePhotos';
 import { LS } from '@/features/contest/HalongArt';
 import { useContestShare } from '@/features/contest/useContestShare';
 import { SouvenirLine } from '@/features/contest/SouvenirLine';
-import { setContestOverview } from '@/features/contest/useContestTab';
+import { useTripNotify } from '@/features/contest/useTripNotify';
 import { HowToWin } from '@/features/contest/HowToWin';
 import { FounderWord, SampleItinerary } from '@/features/contest/PrizeTrip';
 import { track } from '@/services/analytics';
@@ -45,6 +45,7 @@ export default function ContestPrizeScreen() {
 
   const back = () => (router.canGoBack() ? router.back() : router.navigate('/(tabs)/trip' as never));
   const s = data?.season;
+  const goal = contestGoal(data?.counter);
   const me = data?.me;
   const joined = me?.joined === true;
   const target = s ? countdownTarget(s) : null;
@@ -52,17 +53,10 @@ export default function ContestPrizeScreen() {
 
   // The Upcoming phase (teaser): nothing playable for the contest yet, "Notify me" instead of Join.
   const upcoming = s?.phase === 'upcoming';
-  const notified = me?.joined === true || !!(me && (me as ContestMeNotJoined).notified);
-  const [busy, setBusy] = useState(false);
   const now = useNow(60_000);
-  const notify = () => {
-    if (!s || notified || busy) return;
-    setBusy(true);
-    notifyContest(s.id, i18n.language).then(d => { setData(d); setContestOverview(d); }).catch(() => {}).finally(() => setBusy(false));
-  };
+  const { notified, notify } = useTripNotify(data, setData);
   const cta = upcoming
-    ? !account ? { label: t('contest.notifyMe'), go: () => router.push('/auth-gate?reason=contest&returnTo=%2Ftrip' as never) }
-      : { label: t(notified ? 'contest.notifyOn' : 'contest.notifyMe'), go: notify }
+    ? { label: t(notified ? 'trip.cta.notifyOn' : 'trip.cta.notify'), go: notify }
     : !account
     ? { label: t('contest.join'), go: () => router.push('/auth-gate?reason=contest&returnTo=%2Ftrip' as never) }
     : joined ? { label: t('contest.prizeYoureIn'), go: () => router.navigate('/(tabs)/trip' as never) }
@@ -113,8 +107,9 @@ export default function ContestPrizeScreen() {
               {[
                 t('trip.rules.final1', { date: contestDate(s.finalWeekStart, i18n.language) }),
                 t('trip.rules.how3'),
-                data?.counter ? t('trip.rules.goalText', { players: data.counter.threshold, photos: data.counter.photos }) : null,
-                t('trip.rules.fallbackText', { date: contestDate(s.endDate, i18n.language), prize: s.fallbackPrize ?? '' }),
+                // The players' goal and the fallback only when the campaign has a goal (empty = unconditional).
+                goal !== null && data?.counter ? t('trip.rules.goalText', { players: goal, photos: data.counter.photos }) : null,
+                goal !== null ? t('trip.rules.fallbackText', { date: contestDate(s.endDate, i18n.language), prize: s.fallbackPrize ?? '' }) : null,
                 `${t('trip.rules.who1')} ${t('trip.rules.who2')} ${t('trip.rules.who3')}`,
               ].filter(Boolean).map((line, i) => (
                 <View key={i} style={styles.condRow}>

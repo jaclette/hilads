@@ -150,7 +150,7 @@ export default function TripScreen() {
         <GestureDetector gesture={swipe}>
           <Animated.View style={[styles.body, { opacity: fade }]} collapsable={false}>
             {section === 'overview' && <TripOverview data={data} ranking={ranking} crew={crew} onSection={next => go(next, 'cta')} onCta={cta}
-                                                         onShareBoarding={() => share.open({ boarding: true })} />}
+                                                         onShareBoarding={() => share.open({ boarding: true })} buildShare={() => share.build({ boarding: true })} />}
             {section === 'ranking'  && <TripRanking season={s} ranking={ranking} meId={account?.id ?? null} />}
             {section === 'friends'  && <TripFriends season={s} crew={crew} onCta={cta} />}
             {section === 'rules'    && <TripRules season={s} counter={data.counter ?? null} onCta={cta} />}
@@ -259,15 +259,18 @@ export function CountdownChip({ season: s, small }: { season: { phase: string; s
   const label = !target ? t('trip.chip.over') : t(`trip.chip.${target.label}`);
   const value = target ? shortLeft(target.at - now, t) : null;
   const live = s.phase === 'final';
+  // Before the start: "Starts in" over the time left ("Starts in 2d 4h").
+  const before = target?.label === 'cdStarts' && !!value;
   return (
-    <View style={[styles.chip, small && styles.chipSmall]} accessible accessibilityRole="timer" accessibilityLabel={value ? `${value} ${label}` : label}>
+    <View style={[styles.chip, small && styles.chipSmall]} accessible accessibilityRole="timer" accessibilityLabel={value ? (before ? `${label} ${value}` : `${value} ${label}`) : label}>
+      {before && <Text style={[styles.chipLabel, small && { fontSize: 10, lineHeight: 12 }]} numberOfLines={1}>{label}</Text>}
       {value && (
         <View style={styles.chipRow}>
           {live && <View style={styles.liveDot} />}
           <Text style={[styles.chipValue, small && { fontSize: 13, lineHeight: 16 }]} numberOfLines={1}>{value}</Text>
         </View>
       )}
-      <Text style={[styles.chipLabel, !value && styles.chipValue, small && { fontSize: 10, lineHeight: 12 }]} numberOfLines={1}>{label}</Text>
+      {!before && <Text style={[styles.chipLabel, !value && styles.chipValue, small && { fontSize: 10, lineHeight: 12 }]} numberOfLines={1}>{label}</Text>}
     </View>
   );
 }

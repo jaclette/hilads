@@ -39,6 +39,8 @@ export interface ContestSeason {
   startDate: string;
   endDate: string;
   finalWeekStart: string;
+  /** The current challenge date (the timeline's "day 2 of 2"; older API: absent). */
+  today?: string;
   /** The daily drops (ISO UTC) the season starts at, the final week starts at, it ends at (older API: absent). */
   startsAt?: string | null;
   finalAt?: string | null;
@@ -76,7 +78,11 @@ export interface ContestMeNotJoined {
 export interface ContestOverview {
   season: ContestSeason | null;
   /** The players' goal, told as boarding a flight: seats taken / seats; showFrom = below it the app says "Be among the first to board" (never "0"). */
-  counter?: { players: number; threshold: number; photos: number; reached?: boolean; showFrom?: number };
+  counter?: { players: number; threshold: number; photos: number; reached?: boolean; showFrom?: number;
+              /** The players' goal (the trip unlocks at it), null = no goal: the prize is unconditional (older API: absent = threshold). */
+              goal?: number | null;
+              /** The latest players on board (stacked avatars). */
+              recent?: { userId: string; name: string | null; photoUrl: string | null }[] };
   participants?: number;
   me?: ContestMeJoined | ContestMeNotJoined | null;
 }
@@ -120,8 +126,24 @@ export function joinContest(seasonId: number, country: string): Promise<ContestO
 }
 
 /** The Upcoming phase's "Notify me" (no age / country / rules yet): one push when the season starts. */
-export function notifyContest(seasonId: number, locale?: string): Promise<ContestOverview & { ok: true }> {
-  return api.post('/contest/notify', { seasonId }, { params: locale ? { locale } : undefined });
+export function notifyContest(seasonId: number, locale?: string, guestId?: string | null): Promise<ContestOverview & { ok: true }> {
+  return api.post('/contest/notify', guestId ? { seasonId, guestId } : { seasonId }, { params: locale ? { locale } : undefined });
+}
+
+/** The players' goal: a number, or null when the prize is unconditional (an older API sends only threshold). */
+export function contestGoal(counter: ContestOverview['counter'] | null | undefined): number | null {
+  if (!counter) return null;
+  if (counter.goal !== undefined) return counter.goal;
+  return counter.threshold > 0 ? counter.threshold : null;
+}
+
+/** Day n of a phase (1-based) and its length, from the server's challenge date. */
+export function phaseDay(today: string | undefined, from: string, to: string): { day: number; days: number } | null {
+  if (!today) return null;
+  const n = (a: string, b: string) => Math.round((Date.parse(`${b}T12:00:00Z`) - Date.parse(`${a}T12:00:00Z`)) / 86_400_000);
+  const days = n(from, to) + 1;
+  const day = n(from, today) + 1;
+  return day >= 1 && day <= days ? { day, days } : null;
 }
 
 /** Days left until a season's end date closes (its next drop), at least 0. */

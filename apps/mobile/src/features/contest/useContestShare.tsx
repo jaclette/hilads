@@ -5,7 +5,7 @@ import { useApp } from '@/context/AppContext';
 import { fetchCrew } from '@/features/invites/invite';
 import { ShareSheet } from '@/features/share/ShareSheet';
 import type { ShareContent } from '@/features/share/content';
-import { contestDate, type ContestMeJoined, type ContestOverview } from './contest';
+import { contestDate, contestGoal, type ContestMeJoined, type ContestOverview } from './contest';
 
 /**
  * "Share" on the Launch Season: the share sheet with the contest card (the prize, my rank and
@@ -17,31 +17,39 @@ export function useContestShare(data: ContestOverview | null) {
   const { account } = useApp();
   const [content, setContent] = useState<ShareContent | null>(null);
 
-  /** opts.boarding: the Boarding card (seats taken) instead of my rank card. */
-  const open = async (opts?: { boarding?: boolean }) => {
+  /**
+   * The share content. opts.boarding: the Boarding card (players on board) instead of my rank card.
+   * The link opens the Trip page (hilads.live/trip: the campaign page for people without the app),
+   * with my invite code so a friend who signs up from it counts for me.
+   */
+  const build = async (opts?: { boarding?: boolean }): Promise<ShareContent | null> => {
     const s = data?.season;
-    if (!s) return;
-    let link = `${BASE_URL}/today`;
+    if (!s) return null;
+    let link = `${BASE_URL}/trip`;
     if (account) {
-      try { link = (await fetchCrew()).link; } catch { /* the plain link */ }
+      try { link = (await fetchCrew()).link.replace(/\/today(?=\?|$)/, '/trip'); } catch { /* the plain link */ }
     }
     link += `${link.includes('?') ? '&' : '?'}utm_campaign=launch_season`;
     const joined = data?.me?.joined ? (data.me as ContestMeJoined) : null;
     const final = s.phase === 'final' || s.phase === 'over';
     const rank = (final ? joined?.finalRank : joined?.seasonRank) ?? null;
     const points = joined?.points ? (final ? joined.points.final : joined.points.season) : null;
-    setContent({
+    return {
       type: 'contest', photoUrl: s.photos?.[0]?.url ?? null, theme: null, city: null, link, isTest: s.isTest,
       text: s.prize?.title || s.name, subtitle: s.prize?.subtitle ?? '',
       when: s.phase === 'upcoming' ? t('contest.phase.upcoming', { date: contestDate(s.startDate, i18n.language) })
         : t('contest.endsOn', { date: contestDate(s.endDate, i18n.language) }),
       username: account?.username ?? null, rank, points,
       boarding: opts?.boarding && data?.counter
-        ? { players: data.counter.players, threshold: data.counter.threshold, showCount: data.counter.players > 0 && data.counter.players >= (data.counter.showFrom ?? 0) }
+        ? { players: data.counter.players, threshold: contestGoal(data.counter) ?? 0, showCount: data.counter.players > 0 && data.counter.players >= (data.counter.showFrom ?? 0) }
         : null,
-    });
+    };
+  };
+  const open = async (opts?: { boarding?: boolean }) => {
+    const c = await build(opts);
+    if (c) setContent(c);
   };
 
   const sheet = <ShareSheet content={content} source={content?.type === 'contest' && content.boarding ? 'trip_boarding' : 'launch_season'} onClose={() => setContent(null)} />;
-  return { open, sheet };
+  return { open, build, sheet };
 }

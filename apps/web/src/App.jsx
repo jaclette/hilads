@@ -1088,6 +1088,8 @@ export default function App() {
   const [passportSub, setPassportSub] = useState(null) // 'photos' | 'spots' | 'friends' | null
   // The campaign's Trip tab (a full page while a campaign is on) and its section.
   const [showTrip, setShowTrip] = useState(false)
+  // Opened on a Trip link without an account: the Trip page is the landing (see the onboarding branch).
+  const [tripLanding] = useState(() => parseDeepLink()?.type === 'trip')
   const [tripSection, setTripSection] = useState('overview')
   const [worldActivity, setWorldActivity] = useState(null) // { online, cities, crossCity }
   const [worldArrivals, setWorldArrivals] = useState([])   // global recent arrivals
@@ -5120,6 +5122,18 @@ export default function App() {
           }}
           onForgotPassword={() => { setObShowAuth(false); setShowForgotPassword(true) }}
         />
+      )
+    }
+
+    // A Launch Trip share link (hilads.live/trip?ref=…) opened by someone without an account: the Trip
+    // page itself is the landing (prize, dates, players, ranking, rules), no city needed first. "Join the
+    // race" signs up (the invite code is kept), then the join lands on the Trip tab (openScreenOnJoin).
+    if (tripLanding && !obPickingCity) {
+      return (
+        <TripScreen account={null} initialSection={parseDeepLink()?.section ?? 'overview'}
+          onOpenToday={() => handleJoin(null, null, { featured: true })}
+          onSignUp={() => { setObAuthInitialTab('signup'); setObShowAuth(true) }}
+          onOpenProfile={() => {}} />
       )
     }
 

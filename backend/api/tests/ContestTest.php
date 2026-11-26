@@ -115,7 +115,25 @@ final class ContestTest extends TestCase
     {
         $photos = [self::photo('a', '2026-12-02', 0), self::photo('a', '2026-12-03', 0), self::photo('b', '2026-12-02', 0), self::photo('b', '2026-12-03', 0)];
         $st = Contest::compute(self::SEASON, [self::p('a'), self::p('b')], [], $photos, []);
-        self::assertSame(['players' => 2, 'threshold' => 2, 'photos' => 2, 'reached' => true, 'showFrom' => 0], $st['counter']);
+        self::assertSame(['players' => 2, 'threshold' => 2, 'goal' => 2, 'photos' => 2, 'reached' => true, 'showFrom' => 0, 'recent' => []], $st['counter']);
+    }
+
+    public function testNoGoalMeansEveryoneInTheRaceIsOnBoardAndThePrizeIsUnconditional(): void
+    {
+        $season = ['prize_threshold_players' => null] + self::SEASON;
+        $st = Contest::compute($season, [self::p('a'), self::p('b'), self::p('dq', '2026-12-01', true)], [], [self::photo('a', '2026-12-02', 0)], []);
+        self::assertNull($st['counter']['goal']);
+        self::assertSame(0, $st['counter']['threshold']);
+        self::assertSame(2, $st['counter']['players']);
+        self::assertTrue($st['counter']['reached']);
+    }
+
+    public function testRecentPlayersAreTheLatestWithAPhotoNewestFirst(): void
+    {
+        $p = static fn(string $id, string $at, ?string $thumb) => ['joined_at' => $at, 'thumb' => $thumb, 'username' => $id] + self::p($id);
+        $season = ['prize_threshold_players' => null] + self::SEASON;
+        $st = Contest::compute($season, [$p('a', '2026-12-01 10:00:00', 'a.jpg'), $p('b', '2026-12-02 10:00:00', 'b.jpg'), $p('c', '2026-12-03 10:00:00', null)], [], [], []);
+        self::assertSame(['b', 'a'], array_column($st['counter']['recent'], 'userId'));
     }
 
     public function testHeadstartPoints(): void

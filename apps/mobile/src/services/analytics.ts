@@ -125,7 +125,7 @@ export type AnalyticsEvent =
   | 'invite_viewed' | 'invite_opened'
   | 'contest_viewed' | 'contest_joined' | 'contest_prize_viewed' | 'contest_ranking_viewed'
   // The campaign's Trip tab (2026-11-26): { section, phase, test } / { section, via: tap|swipe|cta, phase } / { cta, section, phase }
-  | 'trip_viewed' | 'trip_section_viewed' | 'trip_cta'
+  | 'trip_viewed' | 'trip_section_viewed' | 'trip_cta' | 'trip_notify'
   // The post's success screen (2026-11-26): the map link, See how the world played, the points chip { points, milestone }.
   | 'proof_sent_map' | 'proof_sent_world' | 'proof_sent_points'
   | 'away_card_opened'

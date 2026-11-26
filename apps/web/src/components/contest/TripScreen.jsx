@@ -1,6 +1,7 @@
 import i18next from 'i18next'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { createPortal } from 'react-dom'
 import Icon from '../Icon'
 import AvatarWithFlag from '../AvatarWithFlag'
 import HalongArt from './HalongArt'
@@ -10,7 +11,9 @@ import { shareLink } from '../../lib/shareLink'
 import { track } from '../../lib/analytics'
 import { getLastToday, RankMedal } from '../daily/dailyShared'
 import { ordinal } from '../../lib/ordinal'
-import { countdownTarget, shortLeft, useLiveNow, SouvenirLine, Podium, JoinForm, ContestPrize } from './ContestScreen'
+import { contestGoal, countdownTarget, shortLeft, useLiveNow, SouvenirLine, Podium, JoinForm, ContestPrize } from './ContestScreen'
+import { pendingInvite } from '../../lib/invite'
+import { storeLink } from '../../lib/storeLinks.mjs'
 
 /**
  * The campaign's destination, the "Trip" tab (the app's app/(tabs)/trip.tsx, same sections and
@@ -176,10 +179,13 @@ function Chip({ s, small }) {
   const target = countdownTarget(s)
   const label = target ? t(`trip.chip.${target.label}`) : t('trip.chip.over')
   const value = target ? shortLeft(target.at - now, t) : null
+  // Before the start: "Starts in" over the time left.
+  const before = target?.label === 'cdStarts' && !!value
   return (
-    <span className={`tr-chip${small ? ' tr-chip--small' : ''}`} role="timer" aria-label={value ? `${value} ${label}` : label}>
+    <span className={`tr-chip${small ? ' tr-chip--small' : ''}`} role="timer" aria-label={value ? (before ? `${label} ${value}` : `${value} ${label}`) : label}>
+      {before && <small>{label}</small>}
       {value && <b>{s.phase === 'final' && <i className="tr-live-dot" aria-hidden="true" />}{value}</b>}
-      <small className={value ? '' : 'tr-chip-only'}>{label}</small>
+      {!before && <small className={value ? '' : 'tr-chip-only'}>{label}</small>}
     </span>
   )
 }
@@ -188,100 +194,114 @@ function Chip({ s, small }) {
 
 function Overview({ data, ranking, crew, account, t, i18n, onCta, onSection, onJoin, onSignUp, onOpenToday, onOpenProfile, setData }) {
   const s = data.season
-  const [sharing, setSharing] = useState(false)
+  const [sheet, setSheet] = useState(false)
   return (
     <div className="tr-stack">
       {s.isTest && <p className="tr-test-note" role="alert"><Icon name="warning-outline" size={16} />{t('trip.testNote')}</p>}
       {isOver(s) && <Winner data={data} ranking={ranking} t={t} onOpenProfile={onOpenProfile} />}
       <Timeline s={s} t={t} i18n={i18n} />
-      {data.counter && <Boarding s={s} counter={data.counter} me={data.me} t={t} i18n={i18n} onShare={() => { onCta('boarding_share'); setSharing(true) }} />}
-      {sharing && <BoardingShare s={s} counter={data.counter} account={account} t={t} onClose={() => setSharing(false)} />}
-      {!isOver(s) && <MyStatus data={data} account={account} t={t} i18n={i18n} />}
+      {data.counter && <BoardingRow s={s} counter={data.counter} t={t} onOpen={() => { onCta('boarding_open'); setSheet(true) }} />}
+      {sheet && <BoardingSheet s={s} counter={data.counter} me={data.me} account={account} t={t} i18n={i18n} onSignUp={onSignUp} onClose={() => setSheet(false)} />}
+      {!isOver(s) && <MyStatus data={data} account={account} t={t} i18n={i18n} onSignUp={() => { onCta('sign_up'); onSignUp() }} />}
       <PrimaryCta data={data} crew={crew} account={account} t={t} i18n={i18n} onCta={onCta} onSection={onSection} onJoin={onJoin}
                   onSignUp={onSignUp} onOpenToday={onOpenToday} setData={setData} />
+      {!account && <GetTheApp t={t} onCta={onCta} />}
     </div>
   )
 }
 
+// The race → Final week → Winner, with dates; the current one with "Now · day 2 of 2" (before the start: none, the header counts down).
 function Timeline({ s, t, i18n }) {
   const d = x => shortDate(x, i18n.language)
   const now = s.phase === 'season' ? 0 : s.phase === 'final' ? 1 : isOver(s) ? 2 : -1
+  const raceEnd = shift(s.finalWeekStart, -1)
   const steps = [
-    { icon: 'lock-open-outline', title: t('trip.phases.unlock'), when: `${d(s.startDate)} – ${d(shift(s.finalWeekStart, -1))}` },
-    { icon: 'flag-outline', title: t('trip.phases.final'), when: `${d(s.finalWeekStart)} – ${d(s.endDate)}` },
+    { icon: 'flag-outline', title: t('trip.phases.race'), when: raceEnd >= s.startDate ? `${d(s.startDate)} – ${d(raceEnd)}` : d(s.startDate), from: s.startDate, to: raceEnd },
+    { icon: 'flash-outline', title: t('trip.phases.final'), when: `${d(s.finalWeekStart)} – ${d(s.endDate)}`, from: s.finalWeekStart, to: s.endDate },
     { icon: 'trophy-outline', title: t('trip.phases.winner'), when: d(shift(s.endDate, 1)) },
   ]
   return (
     <ol className="tr-timeline">
-      {steps.map((st, i) => (
-        <li key={i} className={`tr-phase${i === now ? ' is-now' : ''}${i < now ? ' is-done' : ''}`}
-            aria-label={`${st.title}, ${st.when}${i === now ? `, ${t('trip.phases.now')}` : i < now ? `, ${t('trip.phases.done')}` : ''}`}>
-          <Icon name={i < now ? 'checkmark-circle' : st.icon} size={22} />
-          <b>{st.title}</b>
-          <small>{i === now ? t('trip.phases.now') : st.when}</small>
-        </li>
-      ))}
+      {steps.map((st, i) => {
+        const on = i === now
+        const day = on && st.from ? phaseDay(s.today, st.from, st.to) : null
+        const nowText = day ? t('trip.phases.nowDay', { day: day.day, days: day.days }) : t('trip.phases.now')
+        return (
+          <li key={i} className={`tr-phase${on ? ' is-now' : ''}${i < now ? ' is-done' : ''}`}
+              aria-label={`${st.title}, ${st.when}${on ? `, ${nowText}` : i < now ? `, ${t('trip.phases.done')}` : ''}`}>
+            <Icon name={i < now ? 'checkmark-circle' : st.icon} size={20} />
+            <b>{st.title}</b>
+            <small>{st.when}</small>
+            {on && <em className="tr-phase-now">{nowText}</em>}
+          </li>
+        )
+      })}
     </ol>
   )
 }
 
-// Boarding: the players' goal as a flight ("186 of 500 seats taken", the plane along the route; below
-// the server's showFrom "Be among the first to board", never a count near 0), my boarding pass, the
-// fallback. The block and its Invite button open the Boarding share (my invite link).
-function Boarding({ s, counter, me, t, i18n, onShare }) {
-  const reached = counter.reached ?? counter.players >= counter.threshold
-  const showCount = reached || (counter.players > 0 && counter.players >= (counter.showFrom ?? 0))
-  const pct = showCount ? Math.min(1, counter.players / Math.max(1, counter.threshold)) : 0
-  const joined = me?.joined && !me.excluded ? me : null
-  const myPhotos = joined ? joined.photos ?? 0 : null
-  const earned = myPhotos !== null && myPhotos >= counter.photos
-  const status = showCount ? t('trip.board.seats', { players: counter.players, threshold: counter.threshold }) : t('trip.board.first')
-  const dots = Math.min(counter.photos, 10)
+function phaseDay(today, from, to) {
+  if (!today) return null
+  const n = (a, b) => Math.round((Date.parse(`${b}T12:00:00Z`) - Date.parse(`${a}T12:00:00Z`)) / 86400000)
+  const days = n(from, to) + 1, day = n(from, today) + 1
+  return day >= 1 && day <= days ? { day, days } : null
+}
+
+function boardingState(counter) {
+  const goal = contestGoal(counter)
+  const reached = goal === null || (counter.reached ?? counter.players >= goal)
+  const showCount = counter.players > 0 && (counter.players >= (counter.showFrom ?? 0) || (goal !== null && reached))
+  return { goal, reached, showCount }
+}
+
+// Boarding, one row: the latest players' faces, "186 players on board" (below showFrom: "Be among the first to board"), Invite.
+// With a players' goal: one short line "Trip unlocks at 500 players · details". The row and Invite open the Boarding sheet.
+function BoardingRow({ s, counter, t, onOpen }) {
+  const { goal, reached, showCount } = boardingState(counter)
+  const status = showCount ? t('trip.board.onBoard', { count: counter.players }) : t('trip.board.first')
+  const faces = (counter.recent ?? []).slice(0, 4)
   return (
-    <div role="button" tabIndex={0} className={`tr-card tr-boarding${reached ? ' is-reached' : ''}`} aria-label={t('trip.board.a11y', { status })}
-         onClick={onShare} onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onShare() } }}>
-      <h3 className="tr-card-title">{reached ? t('trip.board.full') : t('trip.board.title')}
-        <span className="tr-invite-chip"><Icon name="share-outline" size={16} />{t('trip.board.invite')}</span></h3>
-      <p className={showCount ? 'tr-seats' : 'tr-seats is-first'}>{status}</p>
-      <div className="tr-track" aria-hidden="true">
-        <span className="tr-track-bg" /><span className="tr-track-fill" style={{ width: `${pct * 100}%` }} />
-        <span className="tr-track-plane" style={{ left: `${pct * 100}%` }}><Icon name="airplane-outline" size={22} /></span>
-        <span className="tr-track-gift"><Icon name="gift" size={22} /></span>
+    <section className="tr-card tr-brow-card">
+      <div className="tr-brow" role="button" tabIndex={0} aria-label={`${status}. ${t('trip.board.a11yOpen')}`} onClick={onOpen}
+           onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onOpen() } }}>
+        {faces.length > 0 && showCount ? (
+          <span className="tr-faces" aria-hidden="true">{faces.map(f => (
+            <span key={f.userId} className="tr-face">{f.photoUrl ? <img src={f.photoUrl} alt="" /> : <b>{(f.name ?? '?').slice(0, 1).toUpperCase()}</b>}</span>))}</span>
+        ) : <span className="tr-plane-dot" aria-hidden="true"><Icon name="airplane-outline" size={16} /></span>}
+        <b className={`tr-brow-status${showCount ? '' : ' is-first'}`}>{status}</b>
+        <button type="button" className="tr-invite-chip" onClick={e => { e.stopPropagation(); onOpen() }}><Icon name="person-add-outline" size={16} />{t('trip.board.invite')}</button>
       </div>
-      <p className="tr-muted">{reached ? t('trip.board.fullText') : `${t('trip.board.takeoff')} ${t('trip.board.what', { photos: counter.photos })}`}</p>
-      {myPhotos !== null && (
-        <div className={`tr-pass${earned ? ' is-earned' : ''}`}
-             aria-label={earned ? `${t('trip.board.passEarned')}. ${t('trip.board.passEarnedText')}` : `${t('trip.board.pass')}: ${t('trip.board.passProgress', { n: myPhotos, photos: counter.photos })}`}>
-          <Icon name={earned ? 'airplane-outline' : 'ticket-outline'} size={20} />
-          <span className="tr-pass-text"><small>{earned ? t('trip.board.passEarned') : t('trip.board.pass')}</small>
-            <b>{earned ? t('trip.board.passEarnedText') : t('trip.board.passProgress', { n: myPhotos, photos: counter.photos })}</b></span>
-          {earned ? <Icon name="sparkles" size={20} /> : (
-            <span className="tr-pass-dots" aria-hidden="true">{Array.from({ length: dots }).map((_, i) =>
-              <i key={i} className={i < Math.round((myPhotos / Math.max(1, counter.photos)) * dots) ? 'on' : ''} />)}</span>
-          )}
-        </div>
+      {goal !== null && !isOver(s) && (
+        <button type="button" className="tr-unlock" onClick={onOpen}>
+          <Icon name={reached ? 'lock-open-outline' : 'lock-closed-outline'} size={14} />
+          <span>{reached ? t('trip.board.unlocked') : t('trip.board.unlockLine', { count: goal })}<b> · {t('trip.board.details')}</b></span>
+        </button>
       )}
-      {!reached && (
-        <p className="tr-fallback"><Icon name="gift-outline" size={16} />
-          <span>{isOver(s) ? t('trip.board.notFullText', { prize: s.fallbackPrize ?? '' })
-            : t('trip.board.fallback', { date: shortDate(s.endDate, i18n.language), prize: s.fallbackPrize ?? '' })}</span>
-        </p>
-      )}
-    </div>
+    </section>
   )
 }
 
-// The Boarding share (the app's SharePanel with the Boarding card): a preview of the card (the prize photo,
-// "186 / 500 seats taken. Grab yours", Hilads), my invite link (a friend who joins from it counts for me),
-// WhatsApp / Messenger / Copy link, and the system share sheet (Zalo, Instagram... where the browser has one).
-function BoardingShare({ s, counter, account, t, onClose }) {
+// The Boarding sheet: the whole explanation (the goal and its progress, my boarding pass or the locked one, the fallback),
+// then the invite: a preview of the Boarding card, my link (?ref=, a friend who joins counts for me), WhatsApp / Messenger / Copy / Share.
+function BoardingSheet({ s, counter, me, account, t, i18n, onSignUp, onClose }) {
+  const { goal, reached, showCount } = boardingState(counter)
   const [code, setCode] = useState(null)
   const [copied, setCopied] = useState(false)
   useEffect(() => { if (account) fetchCrew().then(c => setCode(c.code)).catch(() => {}) }, [account])
   useEffect(() => { track('share_started', { content_type: 'trip_boarding', source: 'trip_boarding', platform_surface: 'web' }) }, [])
-  const showCount = (counter.reached ?? false) || (counter.players > 0 && counter.players >= (counter.showFrom ?? 0))
-  const text = showCount ? t('trip.board.shareText', { players: counter.players, threshold: counter.threshold }) : t('trip.board.shareTextFirst')
-  const path = `/today${code ? `?ref=${code}&` : '?'}utm_campaign=launch_trip`
+  useEffect(() => {
+    const onKey = e => { if (e.key === 'Escape') onClose() }
+    window.addEventListener('keydown', onKey); return () => window.removeEventListener('keydown', onKey)
+  }, [onClose])
+  const joined = me?.joined && !me.excluded ? me : null
+  const myPhotos = joined ? joined.photos ?? 0 : null
+  const earned = myPhotos !== null && myPhotos >= counter.photos
+  const pct = goal === null ? 1 : showCount ? Math.min(1, counter.players / Math.max(1, goal)) : 0
+  const status = !showCount ? t('trip.board.first') : goal !== null ? t('trip.board.seats', { players: counter.players, threshold: goal }) : t('trip.board.onBoard', { count: counter.players })
+  const text = !showCount ? t('trip.board.shareTextFirst')
+    : goal !== null ? t('trip.board.shareText', { players: counter.players, threshold: goal }) : t('trip.board.shareTextOnBoard', { count: counter.players })
+  // The link opens the Trip page (the campaign page for people without the app), with my invite code.
+  const path = `/trip${code ? `?ref=${code}&` : '?'}utm_campaign=launch_trip`
   const link = ch => `${window.location.origin}${path}&utm_source=${ch}&utm_medium=share`
   const done = channel => track('share_completed', { content_type: 'trip_boarding', channel, platform_surface: 'web' })
   const go = ch => {
@@ -295,31 +315,94 @@ function BoardingShare({ s, counter, account, t, onClose }) {
     window.open(url, '_blank', 'noopener'); done(ch)
   }
   const cover = s.photos?.[0]
+  const dots = Math.min(counter.photos, 10)
   const targets = [['whatsapp', 'chatbubble-ellipses-outline', 'WhatsApp'], ['messenger', 'chatbubbles-outline', 'Messenger'],
                    ['copy_link', copied ? 'checkmark' : 'link-outline', copied ? t('invite.copied') : t('invite.channel.copy_link')], ['share_sheet', 'share-outline', t('invite.share')]]
-  return (
-    <div className="tr-share-scrim" role="dialog" aria-modal="true" aria-label={t('trip.board.invite')} onClick={onClose}>
-      <div className="tr-share" onClick={e => e.stopPropagation()}>
+  // In a portal: the page itself is transformed (a fixed sheet inside it would sit under the tab bar).
+  return createPortal(
+    <div className="tr-share-scrim" role="dialog" aria-modal="true" aria-label={t('trip.board.title')} onClick={onClose}>
+      <div className="tr-share tr-bsheet" onClick={e => e.stopPropagation()}>
+        <h3 className="tr-card-title">{goal !== null && reached ? t('trip.board.full') : t('trip.board.title')}</h3>
+        <p className={showCount ? 'tr-seats' : 'tr-seats is-first'}>{status}</p>
+        {goal !== null && (
+          <div className="tr-track" aria-hidden="true">
+            <span className="tr-track-bg" /><span className="tr-track-fill" style={{ width: `${pct * 100}%` }} />
+            <span className="tr-track-plane" style={{ left: `${pct * 100}%` }}><Icon name="airplane-outline" size={22} /></span>
+            <span className="tr-track-gift"><Icon name="gift" size={22} /></span>
+          </div>
+        )}
+        <p className="tr-muted">{goal === null ? t('trip.board.noGoalText')
+          : reached ? t('trip.board.fullText') : `${t('trip.board.takeoff', { count: goal })} ${t('trip.board.what', { photos: counter.photos })}`}</p>
+        {goal !== null && (account ? myPhotos !== null && (
+          <div className={`tr-pass${earned ? ' is-earned' : ''}`}
+               aria-label={earned ? `${t('trip.board.passEarned')}. ${t('trip.board.passEarnedText')}` : `${t('trip.board.pass')}: ${t('trip.board.passProgress', { n: myPhotos, photos: counter.photos })}`}>
+            <Icon name={earned ? 'airplane-outline' : 'ticket-outline'} size={20} />
+            <span className="tr-pass-text"><small>{earned ? t('trip.board.passEarned') : t('trip.board.pass')}</small>
+              <b>{earned ? t('trip.board.passEarnedText') : t('trip.board.passProgress', { n: myPhotos, photos: counter.photos })}</b></span>
+            {earned ? <Icon name="sparkles" size={20} /> : (
+              <span className="tr-pass-dots" aria-hidden="true">{Array.from({ length: dots }).map((_, i) =>
+                <i key={i} className={i < Math.round((myPhotos / Math.max(1, counter.photos)) * dots) ? 'on' : ''} />)}</span>
+            )}
+          </div>
+        ) : <Locked t={t} onClick={() => { onClose(); onSignUp() }} />)}
+        {goal !== null && !reached && (
+          <p className="tr-fallback"><Icon name="gift-outline" size={16} />
+            <span>{isOver(s) ? t('trip.board.notFullText', { prize: s.fallbackPrize ?? '' })
+              : t('trip.board.fallback', { date: shortDate(s.endDate, i18n.language), prize: s.fallbackPrize ?? '' })}</span>
+          </p>
+        )}
+        <h4 className="tr-bsheet-sub">{t('trip.board.inviteTitle')}</h4>
+        <p className="tr-muted">{account ? t('trip.board.inviteText') : t('trip.board.inviteTextGuest')}</p>
         <div className="tr-share-card" aria-hidden="true">
           <span className="tr-share-art">{cover ? <img src={mediumUrl(cover.url) ?? cover.url} alt="" /> : <HalongArt />}</span>
           <span className="tr-share-body"><small>Hilads · Launch Trip</small>
-            <b>{showCount ? t('trip.board.cardSeats', { players: counter.players, threshold: counter.threshold }) : t('trip.board.first')}</b>
+            <b>{!showCount ? t('trip.board.first') : goal !== null ? t('trip.board.cardSeats', { players: counter.players, threshold: goal }) : t('trip.board.onBoard', { count: counter.players })}</b>
             <em>{t('trip.board.cardGrab')} ✈️</em></span>
         </div>
         <div className="tr-share-targets">{targets.map(([ch, icon, label]) => (
           <button key={ch} type="button" onClick={() => go(ch)}><span><Icon name={icon} size={22} /></span>{label}</button>))}</div>
-        <button type="button" className="tr-cta is-secondary" onClick={onClose}>{t('back', { ns: 'common' })}</button>
+        <button type="button" className="tr-cta is-secondary" onClick={onClose}>{i18next.t('a11y.close', { ns: 'common' })}</button>
       </div>
-    </div>
+    </div>,
+    document.body,
   )
 }
 
-function MyStatus({ data, account, t, i18n }) {
+// "Create your account to get your boarding pass": the friendly locked card for people without an account.
+function Locked({ t, onClick, text }) {
+  return (
+    <button type="button" className="tr-locked" onClick={onClick}>
+      <span className="tr-locked-icon"><Icon name="ticket-outline" size={20} /></span>
+      <span className="tr-locked-text"><b>{text ?? t('trip.board.locked')}</b><small>{t('trip.board.lockedText')}</small></span>
+      <Icon name="chevron-forward" size={18} />
+    </button>
+  )
+}
+
+// People without an account who came from a share: the stores, with the invite code for Google Play (Install Referrer).
+function GetTheApp({ t, onCta }) {
+  const ref = pendingInvite()
+  const ctx = { action: 'trip', surface: 'trip_landing', medium: 'trip_landing', source: 'hilads_web', campaign: 'launch_trip', ref }
+  return (
+    <section className="tr-card tr-getapp">
+      <b>{t('trip.landing.getApp')}</b>
+      <p className="tr-muted">{t('trip.landing.text')}</p>
+      <div className="tr-stores">
+        <a href={storeLink('ios', ctx)} target="_blank" rel="noopener" onClick={() => onCta('store', { store: 'ios' })}><Icon name="download-outline" size={18} />App Store</a>
+        <a href={storeLink('android', ctx)} target="_blank" rel="noopener" onClick={() => onCta('store', { store: 'android' })}><Icon name="download-outline" size={18} />Google Play</a>
+      </div>
+    </section>
+  )
+}
+
+function MyStatus({ data, account, t, i18n, onSignUp }) {
   const s = data.season
   const me = data.me
   const board = (title, text) => <section className="tr-board"><b>{title}</b>{text && <p>{text}</p>}</section>
+  // No account: the friendly locked card (my rank and boarding pass come with an account).
+  if (!account) return <Locked t={t} onClick={onSignUp} />
   if (s.phase === 'upcoming') return board(t('trip.me.upcomingTitle'), t('trip.me.upcomingText', { date: shortDate(s.startDate, i18n.language) }))
-  if (!account || !me) return board(t('trip.me.joinTitle'), t('trip.me.joinText'))
+  if (!me) return board(t('trip.me.joinTitle'), t('trip.me.joinText'))
   if (me.joined === false) return board(t('trip.me.joinTitle'), me.canJoin ? t('trip.me.joinText') : me.reason === 'closed' ? t('trip.me.closed') : t('trip.me.cantJoin'))
   if (me.disqualified) return board(t('contest.dq'))
   if (me.excluded) return board(t('contest.excluded'))
@@ -360,15 +443,17 @@ function PrimaryCta({ data, crew, account, t, i18n, onCta, onSection, onJoin, on
   )
   if (isOver(s)) return btn('podium-outline', t('trip.cta.ranking'), () => { onCta('see_ranking'); onSection('ranking') }, true)
   if (s.phase === 'upcoming') {
+    // "Notify me when it starts": members by account, people without one by email (one email at the start).
+    if (!account) return <NotifyEmail s={s} t={t} i18n={i18n} onCta={onCta} />
     const notified = me?.joined === true || !!me?.notified
-    if (!account) return btn('notifications-outline', t('contest.notifyMe'), () => { onCta('sign_in'); onSignUp() })
-    return btn(notified ? 'checkmark-circle-outline' : 'notifications-outline', t(notified ? 'contest.notifyOn' : 'contest.notifyMe'), () => {
+    return btn(notified ? 'checkmark-circle-outline' : 'notifications-outline', t(notified ? 'trip.cta.notifyOn' : 'trip.cta.notify'), () => {
       if (notified) return
       onCta('notify'); setBusy(true)
       notifyContest(s.id, i18n.language).then(setData).catch(() => {}).finally(() => setBusy(false))
     }, notified)
   }
-  if (!account || !me) return btn('rocket-outline', t('trip.cta.signIn'), () => { onCta('sign_in'); onSignUp() })
+  if (!account) return btn('rocket-outline', t('trip.cta.join'), () => { onCta('sign_up'); onSignUp() })
+  if (!me) return null
   if (me.joined === false) return me.canJoin ? btn('rocket-outline', t('trip.cta.join'), onJoin) : null
   if (me.disqualified || me.excluded) return null
   const played = !!getLastToday()?.myProof
@@ -378,6 +463,36 @@ function PrimaryCta({ data, crew, account, t, i18n, onCta, onSection, onJoin, on
       <p><Icon name="checkmark-circle" size={20} />{t('trip.cta.played')}</p>
       {btn('person-add-outline', t('trip.cta.invite'), () => { onCta('invite', { friends: crew?.count ?? null }); onSection('friends') })}
     </div>
+  )
+}
+
+// The web's "Notify me when it starts" without an account: an email, kept for one message when the race starts.
+const NOTIFY_KEY = 'hilads_trip_notify'
+function NotifyEmail({ s, t, i18n, onCta }) {
+  const [email, setEmail] = useState('')
+  const [state, setState] = useState(() => { try { return localStorage.getItem(NOTIFY_KEY) === String(s.id) ? 'done' : 'idle' } catch { return 'idle' } })
+  if (state === 'done') return <p className="tr-notify-done" role="status"><Icon name="checkmark-circle" size={20} />{t('trip.notify.emailDone')}</p>
+  const submit = e => {
+    e.preventDefault()
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) { setState('invalid'); return }
+    onCta('notify', { guest: true, channel: 'email' }); setState('busy')
+    notifyContest(s.id, i18n.language, email.trim()).then(() => {
+      try { localStorage.setItem(NOTIFY_KEY, String(s.id)) } catch { /* storage off */ }
+      track('trip_notify', { guest: true, channel: 'email', platform_surface: 'web' })
+      setState('done')
+    }).catch(err => setState(err?.message === 'invalid_email' ? 'invalid' : 'idle'))
+  }
+  return (
+    <form className="tr-notify" onSubmit={submit} noValidate>
+      <label htmlFor="tr-notify-email">{t('trip.cta.notify')}</label>
+      <div className="tr-notify-row">
+        <input id="tr-notify-email" type="email" inputMode="email" autoComplete="email" placeholder={t('trip.notify.emailPlaceholder')}
+               aria-label={t('trip.notify.email')} value={email} onChange={e => { setEmail(e.target.value); if (state === 'invalid') setState('idle') }}
+               aria-invalid={state === 'invalid'} />
+        <button type="submit" className="tr-cta" disabled={state === 'busy'}><Icon name="notifications-outline" size={18} />{t('trip.notify.emailSend')}</button>
+      </div>
+      <small className={state === 'invalid' ? 'tr-notify-err' : 'tr-muted'}>{state === 'invalid' ? t('trip.notify.emailInvalid') : t('trip.notify.emailNote')}</small>
+    </form>
   )
 }
 
@@ -392,7 +507,7 @@ function Winner({ data, ranking, t, onOpenProfile }) {
         <>
           <AvatarWithFlag userId={w.userId} displayName={w.displayName ?? w.username} photoUrl={w.photoUrl} size={88} />
           <h3 className="tr-card-title">{t('trip.over.winnerTitle', { name })}</h3>
-          <p>{data.counter?.reached ? t('trip.over.winnerTrip', { name, prize: s.prize?.title || s.name }) : t('trip.over.winnerFallback', { name, prize: s.fallbackPrize ?? '' })}</p>
+          <p>{contestGoal(data.counter) === null || data.counter?.reached ? t('trip.over.winnerTrip', { name, prize: s.prize?.title || s.name }) : t('trip.over.winnerFallback', { name, prize: s.fallbackPrize ?? '' })}</p>
         </>
       ) : (
         <>
@@ -470,8 +585,7 @@ function Friends({ s, crew, account, t, onCta, onSignUp }) {
         <ol className="tr-steps">{steps.map(([icon, text], i) => <li key={i}><i>{i + 1}</i><Icon name={icon} size={26} /><span>{text}</span></li>)}</ol>
       </section>
       {!account ? (
-        <section className="tr-card"><p>{t('trip.friends.signIn')}</p>
-          <button type="button" className="tr-cta" onClick={() => { onCta('sign_in'); onSignUp() }}><Icon name="person-add-outline" size={20} />{t('trip.cta.signIn')}</button></section>
+        <Locked t={t} text={t('trip.friends.locked')} onClick={() => { onCta('sign_up'); onSignUp() }} />
       ) : (
         <>
           <section className="tr-card">
@@ -511,6 +625,7 @@ function Rules({ s, counter, t, i18n, onCta }) {
   const d = x => shortDate(x, i18n.language)
   const p = s.points ?? { play: 10, podium: [30, 20, 10], week: 30, friend: 10, crew: 50, crewSize: 5, friendsPerMonth: 5 }
   const hs = s.rules.headstartTopN
+  const goal = contestGoal(counter)
   const table = [
     [t('trip.rules.week'), `+${p.week}`], [t('trip.rules.friend', { count: p.friendsPerMonth }), `+${p.friend}`],
     [t('trip.rules.crew', { size: p.crewSize }), `+${p.crew}`],
@@ -546,11 +661,15 @@ function Rules({ s, counter, t, i18n, onCta }) {
         {s.prize?.description && <p className="tr-muted">{s.prize.description}</p>}
         <SouvenirLine souvenir={s.souvenir} />
       </section>
-      <section className="tr-card">
-        <h3 className="tr-card-title">{t('trip.rules.goalTitle')}</h3>
-        <p>{t('trip.rules.goalText', { players: counter?.threshold ?? 500, photos: counter?.photos ?? 10 })}</p>
-        <p>{t('trip.rules.fallbackText', { date: d(s.endDate), prize: s.fallbackPrize ?? '' })}</p>
-      </section>
+      {/* The players' goal only when the campaign has one (Admin; empty = the prize is unconditional). */}
+      {goal !== null && (
+        <section className="tr-card">
+          <h3 className="tr-card-title">{t('trip.rules.goalTitle')}</h3>
+          <p>{t('trip.rules.goalText', { players: goal, photos: counter.photos })}</p>
+          <p><b>{(counter.reached ?? counter.players >= goal) ? t('trip.rules.goalReached', { goal }) : t('trip.rules.goalProgress', { players: counter.players, goal })}</b></p>
+          <p>{t('trip.rules.fallbackText', { date: d(s.endDate), prize: s.fallbackPrize ?? '' })}</p>
+        </section>
+      )}
       <section className="tr-card">
         <h3 className="tr-card-title">{t('trip.rules.whoTitle')}</h3>
         <ul className="tr-who">{['who1', 'who2', 'who3', 'who4'].map(k => <li key={k}><Icon name="checkmark" size={16} />{t(`trip.rules.${k}`)}</li>)}</ul>

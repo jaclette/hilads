@@ -122,9 +122,10 @@ export function shareText(c: ShareContent): string {
   const t = (key: string, opts?: Record<string, unknown>) => i18n.t(`share.${key}`, { ns: 'daily', ...opts });
   if (c.type === 'contest') {
     if (c.boarding) {
-      return c.boarding.showCount
+      if (!c.boarding.showCount) return i18n.t('trip.board.shareTextFirst', { ns: 'me' });
+      return c.boarding.threshold > 0
         ? i18n.t('trip.board.shareText', { ns: 'me', players: c.boarding.players, threshold: c.boarding.threshold })
-        : i18n.t('trip.board.shareTextFirst', { ns: 'me' });
+        : i18n.t('trip.board.shareTextOnBoard', { ns: 'me', count: c.boarding.players });
     }
     return c.rank
       ? i18n.t('contest.shareRank', { ns: 'me', rank: c.rank, prize: c.text })

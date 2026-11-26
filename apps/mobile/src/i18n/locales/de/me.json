@@ -358,7 +358,7 @@
     },
     "forFirst": "Für den Sieger der Finalwoche",
     "chip": {
-      "cdStarts": "bis zum Start",
+      "cdStarts": "Start in",
       "cdFinal": "bis zur Finalwoche",
       "cdEnds": "übrig",
       "over": "Beendet"
@@ -374,7 +374,9 @@
       "final": "Finalwoche",
       "winner": "Gewinner",
       "now": "Jetzt",
-      "done": "Erledigt"
+      "done": "Erledigt",
+      "race": "Das Rennen",
+      "nowDay": "Jetzt · Tag {{day}} von {{days}}"
     },
     "me": {
       "rank": "Du bist auf dem {{rank, ordinal}} Platz",
@@ -401,7 +403,9 @@
       "invite": "Freund einladen",
       "join": "Beim Rennen mitmachen",
       "signIn": "Anmelden zum Mitmachen",
-      "ranking": "Rangliste ansehen"
+      "ranking": "Rangliste ansehen",
+      "notify": "Sag mir Bescheid, wenn es losgeht",
+      "notifyOn": "Wir sagen dir Bescheid"
     },
     "ranking": {
       "before": "Vor der Finalwoche",
@@ -433,7 +437,8 @@
         "joined": "Dabei · erstes Foto folgt",
         "played": "Gespielt · zählt nicht",
         "credited": "✓ +{{points}}"
-      }
+      },
+      "locked": "Erstell dein Konto, um Freunde einzuladen"
     },
     "rules": {
       "howTitle": "So gewinnst du",
@@ -461,7 +466,9 @@
       "who4": "Melde dich in der App an und akzeptiere die offiziellen Regeln.",
       "full": "Vollständige offizielle Regeln",
       "podiumTitle": "Podium des Tages (meiste Likes weltweit)",
-      "place": "{{rank, ordinal}} Platz"
+      "place": "{{rank, ordinal}} Platz",
+      "goalProgress": "Bisher {{players}} von {{goal}} Spielern an Bord.",
+      "goalReached": "Ziel erreicht: {{goal}} Spieler an Bord 🎉"
     },
     "over": {
       "title": "Das Rennen ist vorbei",
@@ -500,7 +507,22 @@
       "shareText": "{{players}} / {{threshold}} Plätze belegt beim Hilads Launch Trip. Sichere dir deinen ✈️",
       "shareTextFirst": "Boarding für den Hilads Launch Trip. Sichere dir deinen Platz ✈️",
       "cardSeats": "{{players}} / {{threshold}} Plätze belegt",
-      "cardGrab": "Sichere dir deinen"
+      "cardGrab": "Sichere dir deinen",
+      "onBoard_one": "{{count}} Spieler an Bord",
+      "onBoard_other": "{{count}} Spieler an Bord",
+      "unlockLine_one": "Die Reise wird bei {{count}} Spieler freigeschaltet",
+      "unlockLine_other": "Die Reise wird bei {{count}} Spielern freigeschaltet",
+      "unlocked": "Reise freigeschaltet 🎉",
+      "details": "Details",
+      "a11yOpen": "Öffnet die Details und deinen Einladungslink",
+      "noGoalText": "Alle im Rennen sind an Bord. Bring deine Freunde mit: Je mehr Städte spielen, desto lebendiger das Rennen.",
+      "locked": "Erstell dein Konto für deine Bordkarte",
+      "lockedText": "Kostenlos, und deine Hilads-Punkte zählen ab dem Tag, an dem du dabei bist.",
+      "inviteTitle": "Lade deine Freunde ein",
+      "inviteText": "Dein Link enthält deinen Einladungscode: Wer sich anmeldet und spielt, zählt für dich.",
+      "inviteTextGuest": "Teile den Launch Trip mit deinen Freunden.",
+      "shareTextOnBoard_one": "{{count}} Spieler an Bord des Hilads Launch Trip. Sichere dir deinen Platz ✈️",
+      "shareTextOnBoard_other": "{{count}} Spieler an Bord des Hilads Launch Trip. Sichere dir deinen Platz ✈️"
     },
     "prizeCta": "Zum Preis 🎁",
     "prize": {

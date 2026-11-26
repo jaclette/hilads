@@ -407,7 +407,7 @@
       },
       "forFirst": "Per il vincitore dell'ultima settimana",
       "chip": {
-        "cdStarts": "al via",
+        "cdStarts": "Inizia tra",
         "cdFinal": "all'ultima settimana",
         "cdEnds": "rimasti",
         "over": "Finita"
@@ -423,7 +423,9 @@
         "final": "Ultima settimana",
         "winner": "Vincitore",
         "now": "Adesso",
-        "done": "Fatto"
+        "done": "Fatto",
+        "race": "La gara",
+        "nowDay": "Ora · giorno {{day}} di {{days}}"
       },
       "me": {
         "rank": "Sei {{rank, ordinal}}",
@@ -451,7 +453,9 @@
         "invite": "Invita un amico",
         "join": "Entra in gara",
         "signIn": "Accedi per partecipare",
-        "ranking": "Vedi la classifica"
+        "ranking": "Vedi la classifica",
+        "notify": "Avvisami quando inizia",
+        "notifyOn": "Ti avviseremo quando inizia"
       },
       "ranking": {
         "before": "Prima dell'ultima settimana",
@@ -483,7 +487,8 @@
           "joined": "Iscritto · prima foto in arrivo",
           "played": "Ha giocato · non conta",
           "credited": "✓ +{{points}}"
-        }
+        },
+        "locked": "Crea il tuo account per invitare gli amici"
       },
       "rules": {
         "howTitle": "Come vincere",
@@ -511,7 +516,9 @@
         "who4": "Iscriviti nell'app e accetta il regolamento ufficiale.",
         "full": "Regolamento ufficiale completo",
         "podiumTitle": "Podio del giorno (più mi piace nel mondo)",
-        "place": "{{rank, ordinal}} posto"
+        "place": "{{rank, ordinal}} posto",
+        "goalProgress": "{{players}} giocatori a bordo su {{goal}} per ora.",
+        "goalReached": "Obiettivo raggiunto: {{goal}} giocatori a bordo 🎉"
       },
       "over": {
         "title": "La gara è finita",
@@ -550,12 +557,39 @@
         "shareText": "{{players}} / {{threshold}} posti occupati sul Launch Trip di Hilads. Prendi il tuo ✈️",
         "shareTextFirst": "Il Launch Trip di Hilads è in imbarco. Prendi il tuo posto ✈️",
         "cardSeats": "{{players}} / {{threshold}} posti occupati",
-        "cardGrab": "Prendi il tuo"
+        "cardGrab": "Prendi il tuo",
+        "onBoard_one": "{{count}} giocatore a bordo",
+        "onBoard_other": "{{count}} giocatori a bordo",
+        "unlockLine_one": "Il viaggio si sblocca a {{count}} giocatore",
+        "unlockLine_other": "Il viaggio si sblocca a {{count}} giocatori",
+        "unlocked": "Viaggio sbloccato 🎉",
+        "details": "dettagli",
+        "a11yOpen": "Apre i dettagli e il tuo link di invito",
+        "noGoalText": "Tutti quelli in gara sono a bordo. Porta i tuoi amici: più città giocano, più la gara è viva.",
+        "locked": "Crea il tuo account per avere la carta d’imbarco",
+        "lockedText": "È gratis, e i tuoi punti Hilads contano dal giorno in cui ti iscrivi.",
+        "inviteTitle": "Invita i tuoi amici",
+        "inviteText": "Il tuo link contiene il tuo codice invito: un amico che si iscrive e gioca conta per te.",
+        "inviteTextGuest": "Condividi il Launch Trip con i tuoi amici.",
+        "shareTextOnBoard_one": "{{count}} giocatore a bordo del Launch Trip di Hilads. Prendi il tuo posto ✈️",
+        "shareTextOnBoard_other": "{{count}} giocatori a bordo del Launch Trip di Hilads. Prendi il tuo posto ✈️"
       },
       "prizeCta": "Vedi il premio 🎁",
       "prize": {
         "conditionsTitle": "Date e condizioni",
         "rulesLink": "Tutte le regole"
+      },
+      "notify": {
+        "email": "La tua email",
+        "emailPlaceholder": "tu@esempio.com",
+        "emailSend": "Avvisami",
+        "emailDone": "Fatto. Ti scriveremo quando inizia.",
+        "emailInvalid": "Controlla l’indirizzo email.",
+        "emailNote": "Una sola email quando inizia. Nient’altro."
+      },
+      "landing": {
+        "getApp": "Scarica l’app",
+        "text": "Gioca ogni giorno dal tuo telefono."
       }
     }
   },

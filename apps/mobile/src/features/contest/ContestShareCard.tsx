@@ -55,7 +55,8 @@ export const ContestShareCard = forwardRef<ViewInstance, { data: ContestShareDat
         {data.boarding ? (
           <View style={s.board}>
             {data.boarding.showCount ? (
-              <Text style={s.seats}>{t('trip.board.cardSeats', { players: data.boarding.players, threshold: data.boarding.threshold })}</Text>
+              <Text style={s.seats}>{data.boarding.threshold > 0 ? t('trip.board.cardSeats', { players: data.boarding.players, threshold: data.boarding.threshold })
+                : t('trip.board.onBoard', { count: data.boarding.players })}</Text>
             ) : <Text style={s.seats}>{t('trip.board.first')}</Text>}
             <Text style={s.grab}>{t('trip.board.cardGrab')} ✈️</Text>
           </View>

@@ -395,7 +395,7 @@
       },
       "forFirst": "Voor de winnaar van de laatste week",
       "chip": {
-        "cdStarts": "tot de start",
+        "cdStarts": "Start over",
         "cdFinal": "tot de laatste week",
         "cdEnds": "over",
         "over": "Afgelopen"
@@ -411,7 +411,9 @@
         "final": "Laatste week",
         "winner": "Winnaar",
         "now": "Nu",
-        "done": "Klaar"
+        "done": "Klaar",
+        "race": "De race",
+        "nowDay": "Nu · dag {{day}} van {{days}}"
       },
       "me": {
         "rank": "Je staat {{rank, ordinal}}",
@@ -438,7 +440,9 @@
         "invite": "Nodig een vriend uit",
         "join": "Doe mee aan de race",
         "signIn": "Log in om mee te doen",
-        "ranking": "Bekijk de ranglijst"
+        "ranking": "Bekijk de ranglijst",
+        "notify": "Laat het me weten als het begint",
+        "notifyOn": "We laten het je weten"
       },
       "ranking": {
         "before": "Voor de laatste week",
@@ -470,7 +474,8 @@
           "joined": "Doet mee · eerste foto volgt",
           "played": "Gespeeld · telt niet",
           "credited": "✓ +{{points}}"
-        }
+        },
+        "locked": "Maak je account om vrienden uit te nodigen"
       },
       "rules": {
         "howTitle": "Zo win je",
@@ -498,7 +503,9 @@
         "who4": "Meld je aan in de app en accepteer het officiële reglement.",
         "full": "Volledig officieel reglement",
         "podiumTitle": "Podium van de dag (meeste likes wereldwijd)",
-        "place": "{{rank, ordinal}} plaats"
+        "place": "{{rank, ordinal}} plaats",
+        "goalProgress": "Tot nu toe {{players}} van {{goal}} spelers aan boord.",
+        "goalReached": "Doel bereikt: {{goal}} spelers aan boord 🎉"
       },
       "over": {
         "title": "De race is voorbij",
@@ -537,12 +544,39 @@
         "shareText": "{{players}} / {{threshold}} stoelen bezet voor de Hilads Launch Trip. Pak de jouwe ✈️",
         "shareTextFirst": "De Hilads Launch Trip is aan het boarden. Pak je stoel ✈️",
         "cardSeats": "{{players}} / {{threshold}} stoelen bezet",
-        "cardGrab": "Pak de jouwe"
+        "cardGrab": "Pak de jouwe",
+        "onBoard_one": "{{count}} speler aan boord",
+        "onBoard_other": "{{count}} spelers aan boord",
+        "unlockLine_one": "Reis ontgrendeld bij {{count}} speler",
+        "unlockLine_other": "Reis ontgrendeld bij {{count}} spelers",
+        "unlocked": "Reis ontgrendeld 🎉",
+        "details": "details",
+        "a11yOpen": "Opent de details en je uitnodigingslink",
+        "noGoalText": "Iedereen in de race is aan boord. Neem je vrienden mee: hoe meer steden spelen, hoe levendiger de race.",
+        "locked": "Maak je account voor je instapkaart",
+        "lockedText": "Het is gratis, en je Hilads-punten tellen vanaf de dag dat je meedoet.",
+        "inviteTitle": "Nodig je vrienden uit",
+        "inviteText": "Je link bevat je uitnodigingscode: een vriend die meedoet en speelt, telt voor jou.",
+        "inviteTextGuest": "Deel de Launch Trip met je vrienden.",
+        "shareTextOnBoard_one": "{{count}} speler aan boord van de Hilads Launch Trip. Pak je plek ✈️",
+        "shareTextOnBoard_other": "{{count}} spelers aan boord van de Hilads Launch Trip. Pak je plek ✈️"
       },
       "prizeCta": "Bekijk de prijs 🎁",
       "prize": {
         "conditionsTitle": "Data en voorwaarden",
         "rulesLink": "Alle regels"
+      },
+      "notify": {
+        "email": "Je e-mail",
+        "emailPlaceholder": "jij@voorbeeld.nl",
+        "emailSend": "Laat het me weten",
+        "emailDone": "Klaar. We mailen je als het begint.",
+        "emailInvalid": "Controleer het e-mailadres.",
+        "emailNote": "Eén e-mail als het begint. Verder niets."
+      },
+      "landing": {
+        "getApp": "Download de app",
+        "text": "Speel elke dag op je telefoon."
       }
     }
   },

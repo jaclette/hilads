@@ -27,7 +27,7 @@ const clean = (v) => (v == null ? '' : String(v).toLowerCase().replace(/[^a-z0-9
  * `source` and `campaign` come from an outside link's UTM (a story's link
  * sticker: /get?utm_source=instagram&utm_medium=story&utm_campaign=halloween).
  */
-export function storeLink(store, { action = 'play', city = null, cityId = null, surface = null, medium = 'app_modal', source = 'hilads_web', campaign = null } = {}) {
+export function storeLink(store, { action = 'play', city = null, cityId = null, surface = null, medium = 'app_modal', source = 'hilads_web', campaign = null, ref = null } = {}) {
   const params = {
     utm_source: clean(source),
     utm_medium: clean(medium),
@@ -36,6 +36,8 @@ export function storeLink(store, { action = 'play', city = null, cityId = null, 
     ...(city ? { utm_term: clean(city) } : {}),
     hilads_action: clean(action),
     ...(cityId ? { hilads_city: clean(cityId) } : {}),
+    // An invite code: the app reads ref= from Play's Install Referrer (captureInstallReferrer).
+    ...(ref && /^[A-Za-z0-9]{5,12}$/.test(ref) ? { ref: String(ref).toUpperCase() } : {}),
   }
   const query = new URLSearchParams(params).toString()
   if (store === 'android') return `${PLAY_STORE_URL}&referrer=${encodeURIComponent(query)}`

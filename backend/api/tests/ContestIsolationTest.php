@@ -49,6 +49,11 @@ final class ContestIsolationTest extends TestCase
     public function testTheOnlyPushIsTheLiveNotice(): void
     {
         $src = self::sources(true)[__DIR__ . '/../src/ContestNotify.php'];
+        // The same live notice reaches app guests (no account, so no bell row): their device tokens, once.
+        self::assertSame(1, substr_count($src, 'MobilePushService::'), 'ContestNotify pushes guests in one place');
+        self::assertSame(1, substr_count($src, 'MobilePushService::sendToTokens('), 'ContestNotify pushes guests by token only');
+        self::assertMatchesRegularExpression('/sendToTokens\([^;]*self::TYPE\)/s', $src, 'the guest push is the live notice');
+        $src = str_replace('MobilePushService::sendToTokens(', '', $src);
         foreach (['score_events', 'MonthlyRankService', 'PushService', 'MobilePushService', 'PushBroadcastService',
                   'DailyNotify', 'DailyPushes', 'score_alltime', 'score_month'] as $needle) {
             self::assertFalse(str_contains($src, $needle), "ContestNotify.php must not use {$needle}");

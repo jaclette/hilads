@@ -383,7 +383,7 @@
       },
       "forFirst": "Untuk pemenang minggu final",
       "chip": {
-        "cdStarts": "menuju mulai",
+        "cdStarts": "Mulai dalam",
         "cdFinal": "menuju minggu final",
         "cdEnds": "tersisa",
         "over": "Selesai"
@@ -399,7 +399,9 @@
         "final": "Minggu final",
         "winner": "Pemenang",
         "now": "Sekarang",
-        "done": "Selesai"
+        "done": "Selesai",
+        "race": "Balapan",
+        "nowDay": "Sekarang · hari {{day}} dari {{days}}"
       },
       "me": {
         "rank": "Kamu peringkat {{rank, ordinal}}",
@@ -426,7 +428,9 @@
         "invite": "Ajak teman",
         "join": "Ikut balapan",
         "signIn": "Masuk untuk ikut",
-        "ranking": "Lihat peringkat"
+        "ranking": "Lihat peringkat",
+        "notify": "Kabari aku saat dimulai",
+        "notifyOn": "Kami kabari saat dimulai"
       },
       "ranking": {
         "before": "Sebelum minggu final",
@@ -458,7 +462,8 @@
           "joined": "Bergabung · menunggu foto pertama",
           "played": "Sudah main · tidak dihitung",
           "credited": "✓ +{{points}}"
-        }
+        },
+        "locked": "Buat akunmu untuk mengundang teman"
       },
       "rules": {
         "howTitle": "Cara menang",
@@ -486,7 +491,9 @@
         "who4": "Daftar di aplikasi dan setujui aturan resmi.",
         "full": "Aturan resmi lengkap",
         "podiumTitle": "Podium hari ini (suka terbanyak di dunia)",
-        "place": "Peringkat {{rank, ordinal}}"
+        "place": "Peringkat {{rank, ordinal}}",
+        "goalProgress": "Sejauh ini {{players}} dari {{goal}} pemain sudah naik.",
+        "goalReached": "Target tercapai: {{goal}} pemain sudah naik 🎉"
       },
       "over": {
         "title": "Balapan sudah selesai",
@@ -525,12 +532,39 @@
         "shareText": "{{players}} / {{threshold}} kursi terisi di Hilads Launch Trip. Ambil kursimu ✈️",
         "shareTextFirst": "Hilads Launch Trip sedang boarding. Ambil kursimu ✈️",
         "cardSeats": "{{players}} / {{threshold}} kursi terisi",
-        "cardGrab": "Ambil kursimu"
+        "cardGrab": "Ambil kursimu",
+        "onBoard_one": "{{count}} pemain sudah naik",
+        "onBoard_other": "{{count}} pemain sudah naik",
+        "unlockLine_one": "Perjalanan terbuka di {{count}} pemain",
+        "unlockLine_other": "Perjalanan terbuka di {{count}} pemain",
+        "unlocked": "Perjalanan terbuka 🎉",
+        "details": "detail",
+        "a11yOpen": "Membuka detail dan link undanganmu",
+        "noGoalText": "Semua yang ikut balapan sudah naik. Ajak temanmu: makin banyak kota yang main, makin seru balapannya.",
+        "locked": "Buat akunmu untuk dapat boarding pass",
+        "lockedText": "Gratis, dan poin Hilads-mu dihitung sejak hari kamu bergabung.",
+        "inviteTitle": "Undang temanmu",
+        "inviteText": "Link-mu membawa kode undanganmu: teman yang bergabung dan main dihitung untukmu.",
+        "inviteTextGuest": "Bagikan Launch Trip ke temanmu.",
+        "shareTextOnBoard_one": "{{count}} pemain sudah naik Hilads Launch Trip. Ambil kursimu ✈️",
+        "shareTextOnBoard_other": "{{count}} pemain sudah naik Hilads Launch Trip. Ambil kursimu ✈️"
       },
       "prizeCta": "Lihat hadiahnya 🎁",
       "prize": {
         "conditionsTitle": "Tanggal dan syarat",
         "rulesLink": "Semua aturan"
+      },
+      "notify": {
+        "email": "Email-mu",
+        "emailPlaceholder": "kamu@contoh.com",
+        "emailSend": "Kabari aku",
+        "emailDone": "Beres. Kami kirim email saat dimulai.",
+        "emailInvalid": "Periksa alamat email.",
+        "emailNote": "Satu email saat dimulai. Tidak ada yang lain."
+      },
+      "landing": {
+        "getApp": "Dapatkan aplikasinya",
+        "text": "Main setiap hari dari ponselmu."
       }
     }
   },

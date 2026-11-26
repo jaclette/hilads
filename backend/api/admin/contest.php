@@ -84,7 +84,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 throw new InvalidArgumentException('Dates: start ≤ final week start ≤ end.');
             }
             // The campaign counts the regular points (2026-11-26): only these settings are used and posted.
-            foreach (['headstart_top_n', 'prize_threshold_players', 'prize_threshold_photos', 'seats_show_from'] as $k) $fields[$k] = $intField($k, in_array($k, ['headstart_top_n', 'seats_show_from'], true) ? 0 : 1);
+            foreach (['headstart_top_n', 'prize_threshold_photos', 'seats_show_from'] as $k) $fields[$k] = $intField($k, in_array($k, ['headstart_top_n', 'seats_show_from'], true) ? 0 : 1);
+            // The players' goal is optional: empty = no goal, the prize is unconditional (no "unlock" anywhere).
+            $fields['prize_threshold_players'] = trim((string) ($_POST['prize_threshold_players'] ?? '')) === '' ? null : $intField('prize_threshold_players', 1);
             $fields['is_test'] = !empty($_POST['is_test']) ? 'true' : 'false';
             $id = (int) ($_POST['id'] ?? 0);
             if ($id > 0) {
@@ -382,7 +384,7 @@ admin_nav('/admin/launch-season');
       // Points are the regular Hilads points (config/scoring.php): no likes cap or referral settings any more.
       $defaults = ['headstart_top_n' => 10, 'prize_threshold_players' => 500, 'prize_threshold_photos' => 10, 'seats_show_from' => 20];
       $labels = ['headstart_top_n' => 'Head-start top N', 'prize_threshold_players' => "Players' goal: players needed",
-                 'prize_threshold_photos' => "Players' goal: photos each", 'seats_show_from' => 'Show "x of 500 seats taken" from (players)'];
+                 'prize_threshold_photos' => "Players' goal: photos each", 'seats_show_from' => 'Show the players count from (players)'];
       ?>
       <form method="post" class="form-card" style="max-width:none">
         <?= csrf_input() ?><input type="hidden" name="do" value="save_season"><input type="hidden" name="id" value="<?= (int) ($s['id'] ?? 0) ?>">
@@ -392,7 +394,12 @@ admin_nav('/admin/launch-season');
           <label>Final week starts<input type="date" name="final_week_start" value="<?= $v('final_week_start') ?>" required></label>
           <label>End date<input type="date" name="end_date" value="<?= $v('end_date') ?>" required></label>
           <?php foreach ($labels as $k => $l): ?>
+            <?php if ($k === 'prize_threshold_players'): $goal = $s ? ($s[$k] ?? null) : $defaults[$k]; ?>
+              <label><?= $esc($l) ?><input type="number" min="1" name="<?= $k ?>" value="<?= $goal === null ? '' : (int) $goal ?>" placeholder="No goal">
+                <small class="ls-muted">The trip unlocks at this many players. Empty = no goal: the prize is unconditional and every "unlock" / "takes off" line disappears.</small></label>
+            <?php else: ?>
             <label><?= $esc($l) ?><input type="number" min="0" name="<?= $k ?>" value="<?= $v($k, $defaults[$k]) ?>" required></label>
+            <?php endif; ?>
           <?php endforeach; ?>
         </div>
         <p style="margin:12px 0 0"><label><input type="checkbox" name="is_test" value="1"<?= !empty($s['is_test']) ? ' checked' : '' ?>> Test season: only the testers below see it (and only they get the "season is live" push); never in a real season</label></p>
@@ -553,7 +560,7 @@ admin_nav('/admin/launch-season');
     </form>
     <h2 id="fallback" style="font-size:15px;color:var(--text);margin-top:24px">If the players' goal isn't reached</h2>
     <?php $fbSet = $season['fallback_prize_i18n'] !== []; ?>
-    <p class="ls-muted">What the winner of the final week wins instead of the trip when fewer than <?= (int) $season['prize_threshold_players'] ?> players reach <?= (int) $season['prize_threshold_photos'] ?> photos. Shown from day one on the goal card ("Not full by the end? The winner still wins …"), in the app's Rules section and on the rules page ({{fallback}}). Write it to follow "still wins", e.g. "a Vietnam souvenir pack". English is required; an empty language shows the English text.</p>
+    <p class="ls-muted"><?php if ($season['prize_threshold_players'] === null): ?><strong>No players' goal on this season: the fallback prize is never shown.</strong> <?php endif; ?>What the winner of the final week wins instead of the trip when fewer than <?= (int) $season['prize_threshold_players'] ?> players reach <?= (int) $season['prize_threshold_photos'] ?> photos. Shown from day one on the goal card ("Not full by the end? The winner still wins …"), in the app's Rules section and on the rules page ({{fallback}}). Write it to follow "still wins", e.g. "a Vietnam souvenir pack". English is required; an empty language shows the English text.</p>
     <?php if (!$fbSet): ?><div class="callout warn" style="margin-bottom:10px">Not set yet: the apps show the placeholder "<?= $esc(Contest::DEFAULT_FALLBACK['en']) ?>". Set the real fallback prize before the season goes live.</div><?php endif; ?>
     <form method="post" class="form-card" style="max-width:none">
       <?= csrf_input() ?><input type="hidden" name="do" value="save_fallback">
@@ -694,7 +701,7 @@ admin_nav('/admin/launch-season');
   $stmt->execute([$season['id'], max($monday, $season['start_date']), min($sunday, $season['end_date'])]);
   $active = (int) $stmt->fetchColumn();
   $c = $st['counter'];
-  $pct = min(100, $c['players'] / max(1, $c['threshold']) * 100);
+  $pct = $c['goal'] === null ? 100 : min(100, $c['players'] / max(1, $c['threshold']) * 100);
   $table = static function (array $order, string $phase) use ($st, $who, $esc, $url): void { ?>
     <div class="table-wrapper"><table>
       <thead><tr><th>#</th><th>Player</th><th>Points</th><th>Play</th><th>Podium</th><th>Perfect week</th><th>Friends</th><?= $phase === 'final' ? '<th>Head-start</th>' : '' ?><th>Likes (tie-break)</th><th>Days</th><th>Photos</th></tr></thead>
@@ -712,13 +719,13 @@ admin_nav('/admin/launch-season');
       </tbody></table></div>
   <?php }; ?>
   <div class="stats-row">
-    <div class="stat-card"><div class="stat-value"><?= $c['players'] ?> / <?= $c['threshold'] ?></div><div class="stat-label">Players with <?= $c['photos'] ?>+ photos</div></div>
+    <div class="stat-card"><div class="stat-value"><?= $c['players'] ?><?= $c['goal'] !== null ? ' / ' . $c['goal'] : '' ?></div><div class="stat-label"><?= $c['goal'] !== null ? 'Players with ' . $c['photos'] . '+ photos' : 'Players on board (no goal)' ?></div></div>
     <div class="stat-card"><div class="stat-value"><?= $st['totals']['participants'] ?></div><div class="stat-label">Joined</div></div>
     <div class="stat-card"><div class="stat-value"><?= $active ?></div><div class="stat-label">Active this week</div></div>
     <div class="stat-card"><div class="stat-value"><?= $st['totals']['photos'] ?></div><div class="stat-label">Contest photos</div></div>
   </div>
   <div class="ls-bar" title="<?= round($pct) ?>%"><i style="width:<?= $pct ?>%"></i></div>
-  <p class="ls-muted">Prize threshold: <?= round($pct) ?>%. Standings are live (cached <?= Contest::CACHE_TTL ?> s).</p>
+  <p class="ls-muted"><?= $c['goal'] !== null ? 'Prize threshold: ' . round($pct) . '%.' : 'No players\' goal: the prize is unconditional.' ?> Standings are live (cached <?= Contest::CACHE_TTL ?> s).</p>
   <div class="ls-cols" style="margin-top:18px">
     <div><h2 style="font-size:15px;color:var(--text)">Season ranking (before <?= $esc($season['final_week_start']) ?>)</h2><?php $table($st['season'], 'season'); ?></div>
     <div><h2 style="font-size:15px;color:var(--text)">Final-week ranking <?= $season['headstart_frozen_at'] ? '' : '<span class="ls-muted">(head-start not taken yet)</span>' ?></h2><?php $table($st['final'], 'final'); ?></div>

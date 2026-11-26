@@ -371,7 +371,7 @@
     },
     "forFirst": "Para el ganador de la última semana",
     "chip": {
-      "cdStarts": "para empezar",
+      "cdStarts": "Empieza en",
       "cdFinal": "para la última semana",
       "cdEnds": "restantes",
       "over": "Terminado"
@@ -387,7 +387,9 @@
       "final": "Última semana",
       "winner": "Ganador",
       "now": "Ahora",
-      "done": "Hecho"
+      "done": "Hecho",
+      "race": "La carrera",
+      "nowDay": "Ahora · día {{day}} de {{days}}"
     },
     "me": {
       "rank": "Vas {{rank, ordinal}}",
@@ -415,7 +417,9 @@
       "invite": "Invitar a un amigo",
       "join": "Unirme a la carrera",
       "signIn": "Inicia sesión para unirte",
-      "ranking": "Ver la clasificación"
+      "ranking": "Ver la clasificación",
+      "notify": "Avísame cuando empiece",
+      "notifyOn": "Te avisaremos cuando empiece"
     },
     "ranking": {
       "before": "Antes de la última semana",
@@ -447,7 +451,8 @@
         "joined": "Se ha unido · falta su primera foto",
         "played": "Ha jugado · no cuenta",
         "credited": "✓ +{{points}}"
-      }
+      },
+      "locked": "Crea tu cuenta para invitar a tus amigos"
     },
     "rules": {
       "howTitle": "Cómo ganar",
@@ -475,7 +480,9 @@
       "who4": "Únete en la app y acepta las bases oficiales.",
       "full": "Bases oficiales completas",
       "podiumTitle": "Podio del día (más me gusta en todo el mundo)",
-      "place": "{{rank, ordinal}} puesto"
+      "place": "{{rank, ordinal}} puesto",
+      "goalProgress": "{{players}} de {{goal}} jugadores a bordo por ahora.",
+      "goalReached": "Objetivo cumplido: {{goal}} jugadores a bordo 🎉"
     },
     "over": {
       "title": "La carrera ha terminado",
@@ -514,7 +521,22 @@
       "shareText": "{{players}} / {{threshold}} asientos ocupados en el Launch Trip de Hilads. Consigue el tuyo ✈️",
       "shareTextFirst": "El Launch Trip de Hilads está embarcando. Consigue tu asiento ✈️",
       "cardSeats": "{{players}} / {{threshold}} asientos ocupados",
-      "cardGrab": "Consigue el tuyo"
+      "cardGrab": "Consigue el tuyo",
+      "onBoard_one": "{{count}} jugador a bordo",
+      "onBoard_other": "{{count}} jugadores a bordo",
+      "unlockLine_one": "El viaje se desbloquea con {{count}} jugador",
+      "unlockLine_other": "El viaje se desbloquea con {{count}} jugadores",
+      "unlocked": "Viaje desbloqueado 🎉",
+      "details": "detalles",
+      "a11yOpen": "Abre los detalles y tu enlace de invitación",
+      "noGoalText": "Todos los de la carrera están a bordo. Trae a tus amigos: cuantas más ciudades jueguen, más viva la carrera.",
+      "locked": "Crea tu cuenta para conseguir tu tarjeta de embarque",
+      "lockedText": "Es gratis, y tus puntos de Hilads cuentan desde el día que te unes.",
+      "inviteTitle": "Invita a tus amigos",
+      "inviteText": "Tu enlace lleva tu código de invitación: un amigo que se une y juega cuenta para ti.",
+      "inviteTextGuest": "Comparte el Launch Trip con tus amigos.",
+      "shareTextOnBoard_one": "{{count}} jugador a bordo del Launch Trip de Hilads. Consigue tu asiento ✈️",
+      "shareTextOnBoard_other": "{{count}} jugadores a bordo del Launch Trip de Hilads. Consigue tu asiento ✈️"
     },
     "prizeCta": "Ver el premio 🎁",
     "prize": {

@@ -13888,17 +13888,32 @@ $router->add('POST', '/api/v1/contest/join', function () {
 
 // POST /api/v1/contest/notify {seasonId} - the Upcoming phase's "Notify me" (no age / country / rules
 // yet): one push when the season starts (ContestNotify). Idempotent.
+// Without an account: {seasonId, guestId} from the app (the push goes to that guest's device) or
+// {seasonId, email} from the web (one email, ContestNotify::sendEmail).
 $router->add('POST', '/api/v1/contest/notify', function () {
-    $user = AuthService::requireAuth('contest_notify');
+    $user = AuthService::currentUser();
     enforceRateLimit('contest_notify', 20, 600);
     $body   = Request::json() ?? [];
-    $season = Contest::visibleFor($user['id']);
+    $locale = in_array($_GET['locale'] ?? '', Contest::LOCALES, true) ? (string) $_GET['locale'] : null;
+    $season = Contest::visibleFor($user['id'] ?? null);
     if ($season === null || (int) ($body['seasonId'] ?? 0) !== $season['id'] || Contest::phase($season) !== 'upcoming') {
         Response::json(['error' => 'Nothing to be notified about', 'code' => 'closed'], 409);
     }
-    ContestNotify::register($season['id'], $user['id']);
-    $locale = in_array($_GET['locale'] ?? '', Contest::LOCALES, true) ? (string) $_GET['locale'] : null;
-    Response::json(['ok' => true] + Contest::overview($user['id'], $locale));
+    if ($user !== null) {
+        ContestNotify::register($season['id'], $user['id']);
+    } else {
+        $guestId = trim((string) ($body['guestId'] ?? ''));
+        $email   = trim((string) ($body['email'] ?? ''));
+        if ($email !== '') {
+            if (!ContestNotify::validEmail($email)) Response::json(['error' => 'Invalid email', 'code' => 'invalid_email'], 400);
+            ContestNotify::registerEmail($season['id'], $email, $locale);
+        } elseif (preg_match('/^[A-Za-z0-9_-]{8,64}$/', $guestId)) {
+            ContestNotify::registerGuest($season['id'], $guestId, $locale);
+        } else {
+            Response::json(['error' => 'Sign in, or send a guestId or an email', 'code' => 'invalid'], 400);
+        }
+    }
+    Response::json(['ok' => true] + Contest::overview($user['id'] ?? null, $locale));
 });
 
 // GET /api/v1/contest/ranking?phase=season|final - the contest's own ranking (top 100 + me).

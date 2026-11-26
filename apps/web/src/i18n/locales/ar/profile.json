@@ -447,7 +447,7 @@
       },
       "forFirst": "للفائز في الأسبوع الأخير",
       "chip": {
-        "cdStarts": "حتى البداية",
+        "cdStarts": "يبدأ بعد",
         "cdFinal": "حتى الأسبوع الأخير",
         "cdEnds": "متبقية",
         "over": "انتهت"
@@ -463,7 +463,9 @@
         "final": "الأسبوع الأخير",
         "winner": "الفائز",
         "now": "الآن",
-        "done": "انتهى"
+        "done": "انتهى",
+        "race": "السباق",
+        "nowDay": "الآن · اليوم {{day}} من {{days}}"
       },
       "me": {
         "rank": "أنت في المركز {{rank, ordinal}}",
@@ -494,7 +496,9 @@
         "invite": "ادعُ صديقًا",
         "join": "انضم إلى السباق",
         "signIn": "سجّل الدخول للانضمام",
-        "ranking": "عرض الترتيب"
+        "ranking": "عرض الترتيب",
+        "notify": "أعلمني عند البدء",
+        "notifyOn": "سنعلمك عند البدء"
       },
       "ranking": {
         "before": "قبل الأسبوع الأخير",
@@ -526,7 +530,8 @@
           "joined": "انضم · بانتظار أول صورة",
           "played": "لعب · لا يُحتسب",
           "credited": "✓ ‎+{{points}}"
-        }
+        },
+        "locked": "أنشئ حسابك لدعوة أصدقائك"
       },
       "rules": {
         "howTitle": "كيف تفوز",
@@ -554,7 +559,9 @@
         "who4": "انضم من التطبيق ووافق على القواعد الرسمية.",
         "full": "القواعد الرسمية كاملة",
         "podiumTitle": "منصة اليوم (أكثر الإعجابات حول العالم)",
-        "place": "المركز {{rank, ordinal}}"
+        "place": "المركز {{rank, ordinal}}",
+        "goalProgress": "{{players}} من {{goal}} لاعب على متن الطائرة حتى الآن.",
+        "goalReached": "تحقق الهدف: {{goal}} لاعب على متن الطائرة 🎉"
       },
       "over": {
         "title": "انتهى السباق",
@@ -593,12 +600,51 @@
         "shareText": "المقاعد المحجوزة في Launch Trip من Hilads: {{players}} / {{threshold}}. احجز مقعدك ✈️",
         "shareTextFirst": "بدأ الصعود إلى Launch Trip من Hilads. احجز مقعدك ✈️",
         "cardSeats": "المقاعد المحجوزة: {{players}} / {{threshold}}",
-        "cardGrab": "احجز مقعدك"
+        "cardGrab": "احجز مقعدك",
+        "onBoard_zero": "{{count}} لاعب على متن الطائرة",
+        "onBoard_one": "لاعب واحد على متن الطائرة",
+        "onBoard_two": "لاعبان على متن الطائرة",
+        "onBoard_few": "{{count}} لاعبين على متن الطائرة",
+        "onBoard_many": "{{count}} لاعبًا على متن الطائرة",
+        "onBoard_other": "{{count}} لاعب على متن الطائرة",
+        "unlockLine_zero": "تُفتح الرحلة عند {{count}} لاعب",
+        "unlockLine_one": "تُفتح الرحلة عند لاعب واحد",
+        "unlockLine_two": "تُفتح الرحلة عند لاعبَين",
+        "unlockLine_few": "تُفتح الرحلة عند {{count}} لاعبين",
+        "unlockLine_many": "تُفتح الرحلة عند {{count}} لاعبًا",
+        "unlockLine_other": "تُفتح الرحلة عند {{count}} لاعب",
+        "unlocked": "فُتحت الرحلة 🎉",
+        "details": "التفاصيل",
+        "a11yOpen": "يفتح التفاصيل ورابط دعوتك",
+        "noGoalText": "كل من في السباق على متن الطائرة. ادعُ أصدقاءك: كلما شاركت مدن أكثر، صار السباق أكثر حيوية.",
+        "locked": "أنشئ حسابك لتحصل على بطاقة الصعود",
+        "lockedText": "مجاني، وتُحتسب نقاطك في Hilads من يوم انضمامك.",
+        "inviteTitle": "ادعُ أصدقاءك",
+        "inviteText": "رابطك يحمل رمز دعوتك: الصديق الذي ينضم ويلعب يُحتسب لك.",
+        "inviteTextGuest": "شارك Launch Trip مع أصدقائك.",
+        "shareTextOnBoard_zero": "{{count}} لاعب على متن Hilads Launch Trip. احجز مقعدك ✈️",
+        "shareTextOnBoard_one": "لاعب واحد على متن Hilads Launch Trip. احجز مقعدك ✈️",
+        "shareTextOnBoard_two": "لاعبان على متن Hilads Launch Trip. احجز مقعدك ✈️",
+        "shareTextOnBoard_few": "{{count}} لاعبين على متن Hilads Launch Trip. احجز مقعدك ✈️",
+        "shareTextOnBoard_many": "{{count}} لاعبًا على متن Hilads Launch Trip. احجز مقعدك ✈️",
+        "shareTextOnBoard_other": "{{count}} لاعب على متن Hilads Launch Trip. احجز مقعدك ✈️"
       },
       "prizeCta": "شاهد الجائزة 🎁",
       "prize": {
         "conditionsTitle": "المواعيد والشروط",
         "rulesLink": "كل القواعد"
+      },
+      "notify": {
+        "email": "بريدك الإلكتروني",
+        "emailPlaceholder": "you@example.com",
+        "emailSend": "أعلمني",
+        "emailDone": "تم. سنراسلك عند البدء.",
+        "emailInvalid": "تحقق من عنوان البريد الإلكتروني.",
+        "emailNote": "رسالة واحدة عند البدء. لا شيء آخر."
+      },
+      "landing": {
+        "getApp": "حمّل التطبيق",
+        "text": "العب كل يوم من هاتفك."
       }
     }
   },

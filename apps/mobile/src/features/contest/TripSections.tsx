@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from 'react';
-import { AccessibilityInfo, Animated, Easing, Linking, Pressable, Text, View, StyleSheet } from 'react-native';
+import { useState } from 'react';
+import { Linking, Pressable, Text, View, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
@@ -10,14 +10,16 @@ import { useDailyToday } from '@/hooks/useDaily';
 import { Avatar, Button, Card, Crown } from '@/ui';
 import { shareTo } from '@/features/share/targets';
 import type { Crew } from '@/features/invites/invite';
-import { contestDate, notifyContest, type ContestMeJoined, type ContestMeNotJoined, type ContestOverview, type ContestRanking,
+import { contestDate, contestGoal, phaseDay, type ContestMeJoined, type ContestMeNotJoined, type ContestOverview, type ContestRanking,
          type ContestRow, type ContestSeason } from './contest';
-import { setContestOverview } from './useContestTab';
 import { Podium } from './RankingParts';
 import { RankMedal } from '@/features/daily/RankMedal';
 import { ordinal } from '@/lib/ordinal';
 import { SouvenirLine } from './SouvenirLine';
 import { LS } from './HalongArt';
+import { BoardingRow, BoardingSheet, LockedPass } from './Boarding';
+import type { ShareContent } from '@/features/share/content';
+import { useTripNotify } from './useTripNotify';
 
 /**
  * The Trip tab's four sections (app/(tabs)/trip.tsx). Plain language, every number from the server:
@@ -43,12 +45,14 @@ function dayBefore(date: string): string {
 
 // ── Overview ──────────────────────────────────────────────────────────────────
 
-export function TripOverview({ data, ranking, crew, onSection, onCta, onShareBoarding }: {
+export function TripOverview({ data, ranking, crew, onSection, onCta, onShareBoarding, buildShare }: {
   data: ContestOverview; ranking: ContestRanking | null; crew: Crew | null; onSection: (s: TripSection) => void; onCta: Cta; onShareBoarding: () => void;
+  buildShare: () => Promise<ShareContent | null>;
 }) {
   const s = data.season!;
   const styles = useThemedStyles(makeStyles);
   const { t } = useTranslation('me');
+  const [sheet, setSheet] = useState(false);
   return (
     <View style={styles.stack}>
       {s.isTest && (
@@ -59,35 +63,49 @@ export function TripOverview({ data, ranking, crew, onSection, onCta, onShareBoa
       )}
       {isOver(s) && <WinnerCard data={data} ranking={ranking} />}
       <PhaseTimeline season={s} />
-      {data.counter && <BoardingCard season={s} counter={data.counter} me={data.me ?? null} onShare={() => { onCta('boarding_share'); onShareBoarding(); }} />}
+      {data.counter && (
+        <>
+          <BoardingRow season={s} counter={data.counter} onOpen={() => { onCta('boarding_open'); setSheet(true); }}
+                       onInvite={() => { onCta('boarding_share'); onShareBoarding(); }} />
+          <BoardingSheet visible={sheet} season={s} counter={data.counter} me={data.me ?? null} buildShare={() => buildShare()}
+                         onClose={() => setSheet(false)} />
+        </>
+      )}
       {!isOver(s) && <MyStatus data={data} />}
       <PrimaryCta data={data} crew={crew} onSection={onSection} onCta={onCta} />
     </View>
   );
 }
 
-/** Unlock the trip → Final week → Winner, the current phase highlighted, with dates. */
+/**
+ * The race → Final week → Winner, with their dates (Admin › Launch Season), the current one
+ * highlighted with "Now · day 2 of 2". Before the start, nothing is highlighted (the header counts down).
+ */
 function PhaseTimeline({ season: s }: { season: ContestSeason }) {
   const styles = useThemedStyles(makeStyles);
   const { colors } = useTheme();
   const { t, i18n } = useTranslation('me');
   const d = (x: string) => contestDate(x, i18n.language);
   const now = s.phase === 'season' ? 0 : s.phase === 'final' ? 1 : isOver(s) ? 2 : -1;
+  const raceEnd = dayBefore(s.finalWeekStart);
   const steps = [
-    { icon: 'lock-open-outline' as const, title: t('trip.phases.unlock'), when: `${d(s.startDate)} – ${d(dayBefore(s.finalWeekStart))}` },
-    { icon: 'flag-outline' as const, title: t('trip.phases.final'), when: `${d(s.finalWeekStart)} – ${d(s.endDate)}` },
-    { icon: 'trophy-outline' as const, title: t('trip.phases.winner'), when: d(dayAfter(s.endDate)) },
+    { icon: 'flag-outline' as const, title: t('trip.phases.race'), when: raceEnd >= s.startDate ? `${d(s.startDate)} – ${d(raceEnd)}` : d(s.startDate), from: s.startDate, to: raceEnd },
+    { icon: 'flash-outline' as const, title: t('trip.phases.final'), when: `${d(s.finalWeekStart)} – ${d(s.endDate)}`, from: s.finalWeekStart, to: s.endDate },
+    { icon: 'trophy-outline' as const, title: t('trip.phases.winner'), when: d(dayAfter(s.endDate)), from: null, to: null },
   ];
   return (
     <View style={styles.timeline}>
       {steps.map((st, i) => {
         const on = i === now, done = i < now;
+        const day = on && st.from && st.to ? phaseDay(s.today, st.from, st.to) : null;
+        const nowText = day ? t('trip.phases.nowDay', { day: day.day, days: day.days }) : t('trip.phases.now');
         return (
           <View key={i} style={[styles.phase, on && styles.phaseOn, done && styles.phaseDone]} accessible
-                accessibilityLabel={`${st.title}, ${st.when}${on ? `, ${t('trip.phases.now')}` : done ? `, ${t('trip.phases.done')}` : ''}`}>
-            <Ionicons name={done ? 'checkmark-circle' : st.icon} size={22} color={on ? colors.onCta : done ? colors.green : colors.primaryText} />
+                accessibilityLabel={`${st.title}, ${st.when}${on ? `, ${nowText}` : done ? `, ${t('trip.phases.done')}` : ''}`}>
+            <Ionicons name={done ? 'checkmark-circle' : st.icon} size={20} color={on ? colors.onCta : done ? colors.green : colors.primaryText} />
             <Text style={[styles.phaseTitle, on && { color: colors.onCta }]} numberOfLines={2}>{st.title}</Text>
-            <Text style={[styles.phaseWhen, on && { color: colors.onCta }]} numberOfLines={1}>{on ? t('trip.phases.now') : st.when}</Text>
+            <Text style={[styles.phaseWhen, on && { color: colors.onCta, opacity: 0.85 }]} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.8}>{st.when}</Text>
+            {on && <Text style={styles.phaseNow} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.75}>{nowText}</Text>}
           </View>
         );
       })}
@@ -95,97 +113,16 @@ function PhaseTimeline({ season: s }: { season: ContestSeason }) {
   );
 }
 
-/**
- * Boarding: the players' goal told as a flight. "186 of 500 seats taken" with the plane along its
- * route (below the server's showFrom: "Be among the first to board", never a count near 0), the
- * rule, my boarding pass (a ticket: "6 / 10 photos", gold once earned), the fallback. The whole block
- * and its Invite button open the Boarding share (my invite link, so friends who join count for me).
- */
-function BoardingCard({ season: s, counter, me, onShare }: {
-  season: ContestSeason; counter: NonNullable<ContestOverview['counter']>; me: ContestOverview['me'] | null; onShare: () => void;
-}) {
-  const styles = useThemedStyles(makeStyles);
-  const { colors } = useTheme();
-  const { t, i18n } = useTranslation('me');
-  const reached = counter.reached ?? counter.players >= counter.threshold;
-  const showCount = reached || (counter.players > 0 && counter.players >= (counter.showFrom ?? 0));
-  const pct = showCount ? Math.min(1, counter.players / Math.max(1, counter.threshold)) : 0;
-  const [width, setWidth] = useState(0);
-  const pos = useRef(new Animated.Value(0)).current;
-  useEffect(() => {
-    if (!width) return;
-    const to = pct * width;
-    AccessibilityInfo.isReduceMotionEnabled().then(still => {
-      if (still) { pos.setValue(to); return; }
-      Animated.timing(pos, { toValue: to, duration: 1200, easing: Easing.out(Easing.cubic), useNativeDriver: true }).start();
-    }).catch(() => pos.setValue(to));
-  }, [width, pct, pos]);
-  const joined = me?.joined === true && !(me as ContestMeJoined).excluded ? (me as ContestMeJoined) : null;
-  const myPhotos = joined ? joined.photos ?? 0 : null;
-  const earned = myPhotos !== null && myPhotos >= counter.photos;
-  const fallback = s.fallbackPrize ?? '';
-  const status = showCount ? t('trip.board.seats', { players: counter.players, threshold: counter.threshold }) : t('trip.board.first');
-  return (
-    <Pressable onPress={onShare} accessibilityRole="button" accessibilityLabel={t('trip.board.a11y', { status })} testID="trip-boarding"
-               style={({ pressed }) => [pressed && { transform: [{ scale: 0.99 }] }]}>
-      <Card style={[styles.card, reached && styles.cardReached]}>
-        <View style={styles.rowBetween}>
-          <Text style={styles.cardTitle} accessibilityRole="header">{reached ? t('trip.board.full') : t('trip.board.title')}</Text>
-          <View style={styles.inviteChip}>
-            <Ionicons name="share-outline" size={IconSize.sm} color={colors.onCta} />
-            <Text style={styles.inviteText}>{t('trip.board.invite')}</Text>
-          </View>
-        </View>
-        <Text style={showCount ? styles.seats : styles.seatsFirst}>{status}</Text>
-        <View style={styles.track} onLayout={e => setWidth(e.nativeEvent.layout.width)} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
-          <View style={styles.trackBg} />
-          <View style={[styles.trackFill, { width: `${pct * 100}%` }]} />
-          <Animated.View style={[styles.trackPlane, { transform: [{ translateX: pos }] }]}>
-            <Ionicons name="airplane" size={22} color={colors.primaryText} />
-          </Animated.View>
-          <View style={styles.trackGift}><Ionicons name="gift" size={22} color={reached ? colors.medalGold : colors.muted} /></View>
-        </View>
-        <Text style={styles.muted}>{reached ? t('trip.board.fullText') : `${t('trip.board.takeoff')} ${t('trip.board.what', { photos: counter.photos })}`}</Text>
-        {myPhotos !== null && (
-          <View style={[styles.pass, earned && styles.passEarned]} accessible
-                accessibilityLabel={earned ? `${t('trip.board.passEarned')}. ${t('trip.board.passEarnedText')}` : `${t('trip.board.pass')}: ${t('trip.board.passProgress', { n: myPhotos, photos: counter.photos })}`}>
-            <View style={[styles.passNotch, styles.passNotchL]} /><View style={[styles.passNotch, styles.passNotchR]} />
-            <Ionicons name={earned ? 'airplane' : 'ticket-outline'} size={20} color={earned ? colors.onMedal : colors.primaryText} />
-            <View style={{ flex: 1 }}>
-              <Text style={[styles.passLabel, earned && { color: colors.onMedal }]}>{earned ? t('trip.board.passEarned') : t('trip.board.pass')}</Text>
-              <Text style={[styles.passValue, earned && { color: colors.onMedal }]}>
-                {earned ? t('trip.board.passEarnedText') : t('trip.board.passProgress', { n: myPhotos, photos: counter.photos })}
-              </Text>
-            </View>
-            {earned ? <Ionicons name="sparkles" size={20} color={colors.onMedal} /> : (
-              <View style={styles.passDots}>
-                {Array.from({ length: Math.min(counter.photos, 10) }).map((_, i) => (
-                  <View key={i} style={[styles.passDot, i < Math.round((myPhotos / Math.max(1, counter.photos)) * Math.min(counter.photos, 10)) && styles.passDotOn]} />
-                ))}
-              </View>
-            )}
-          </View>
-        )}
-        {!reached && (
-          <View style={styles.fallback}>
-            <Ionicons name="gift-outline" size={IconSize.sm} color={colors.primaryOnTint} />
-            <Text style={styles.fallbackText}>
-              {isOver(s) ? t('trip.board.notFullText', { prize: fallback }) : t('trip.board.fallback', { date: contestDate(s.endDate, i18n.language), prize: fallback })}
-            </Text>
-          </View>
-        )}
-      </Card>
-    </Pressable>
-  );
-}
-
 /** My place: rank tag, points, the gap to the next rank; "Play to enter the race" before my first points (never "#1" with 0). */
 function MyStatus({ data }: { data: ContestOverview }) {
   const styles = useThemedStyles(makeStyles);
+  const router = useRouter();
   const { t, i18n } = useTranslation('me');
   const { account } = useApp();
   const s = data.season!;
   const me = data.me;
+  // No account: the friendly locked card (my rank, my boarding pass come with an account).
+  if (!account) return <LockedPass onPress={() => router.push('/auth-gate?reason=contest&returnTo=%2Ftrip' as never)} />;
   if (s.phase === 'upcoming') {
     return (
       <View style={styles.board}>
@@ -194,7 +131,7 @@ function MyStatus({ data }: { data: ContestOverview }) {
       </View>
     );
   }
-  if (!account || !me) {
+  if (!me) {
     return (
       <View style={styles.board}>
         <Text style={styles.boardTitle}>{t('trip.me.joinTitle')}</Text>
@@ -259,32 +196,27 @@ function MyStatus({ data }: { data: ContestOverview }) {
 function PrimaryCta({ data, crew, onSection, onCta }: { data: ContestOverview; crew: Crew | null; onSection: (s: TripSection) => void; onCta: Cta }) {
   const styles = useThemedStyles(makeStyles);
   const router = useRouter();
-  const { t, i18n } = useTranslation('me');
+  const { t } = useTranslation('me');
   const { account, city } = useApp();
   const daily = useDailyToday(city?.channelId);
-  const [busy, setBusy] = useState(false);
+  const notify = useTripNotify(data);
   const s = data.season!;
   const me = data.me;
-  const signIn = () => { onCta('sign_in'); router.push('/auth-gate?reason=contest&returnTo=%2Ftrip' as never); };
+  const signUp = () => { onCta('sign_up'); router.push('/auth-gate?reason=contest&returnTo=%2Ftrip' as never); };
 
   if (isOver(s)) {
     return <Button variant="secondary" icon="podium-outline" label={t('trip.cta.ranking')} onPress={() => { onCta('see_ranking'); onSection('ranking'); }} testID="trip-cta" />;
   }
   if (s.phase === 'upcoming') {
-    const notified = me?.joined === true || !!(me && (me as ContestMeNotJoined).notified);
-    if (!account) return <Button icon="notifications-outline" label={t('contest.notifyMe')} onPress={signIn} testID="trip-cta" />;
+    // "Notify me when it starts": members and app guests alike (push permission asked on the tap).
     return (
-      <Button icon={notified ? 'checkmark-circle-outline' : 'notifications-outline'} variant={notified ? 'secondary' : 'primary'} loading={busy}
-              label={t(notified ? 'contest.notifyOn' : 'contest.notifyMe')} testID="trip-cta"
-              onPress={() => {
-                if (notified || busy) return;
-                onCta('notify');
-                setBusy(true);
-                notifyContest(s.id, i18n.language).then(setContestOverview).catch(() => {}).finally(() => setBusy(false));
-              }} />
+      <Button icon={notify.notified ? 'checkmark-circle-outline' : 'notifications-outline'} variant={notify.notified ? 'secondary' : 'primary'} loading={notify.busy}
+              label={t(notify.notified ? 'trip.cta.notifyOn' : 'trip.cta.notify')} testID="trip-cta"
+              onPress={() => { if (!notify.notified) { onCta('notify', { guest: !account }); notify.notify(); } }} />
     );
   }
-  if (!account || !me) return <Button icon="rocket-outline" label={t('trip.cta.signIn')} onPress={signIn} testID="trip-cta" />;
+  if (!account) return <Button icon="rocket-outline" label={t('trip.cta.join')} onPress={signUp} testID="trip-cta" />;
+  if (!me) return null;
   if (me.joined === false) {
     return me.canJoin
       ? <Button icon="rocket-outline" label={t('trip.cta.join')} onPress={() => { onCta('join'); router.push('/contest-join' as never); }} testID="trip-cta" />
@@ -312,7 +244,7 @@ function WinnerCard({ data, ranking }: { data: ContestOverview; ranking: Contest
   const styles = useThemedStyles(makeStyles);
   const { t } = useTranslation('me');
   const s = data.season!;
-  const reached = data.counter?.reached ?? false;
+  const reached = contestGoal(data.counter) === null || (data.counter?.reached ?? false);
   const me = data.me?.joined === true ? (data.me as ContestMeJoined) : null;
   const w = s.winner;
   const name = w ? (w.username ? '@' + w.username : w.displayName ?? '') : '';
@@ -459,10 +391,7 @@ export function TripFriends({ season: s, crew, onCta }: { season: ContestSeason;
       </Card>
 
       {!account ? (
-        <Card style={styles.card}>
-          <Text style={styles.text}>{t('trip.friends.signIn')}</Text>
-          <Button icon="person-add-outline" label={t('trip.cta.signIn')} onPress={() => { onCta('sign_in'); router.push('/auth-gate?reason=invite&returnTo=%2Ftrip' as never); }} />
-        </Card>
+        <LockedPass text={t('trip.friends.locked')} onPress={() => { onCta('sign_up'); router.push('/auth-gate?reason=invite&returnTo=%2Ftrip' as never); }} />
       ) : (
         <>
           <Card style={styles.card}>
@@ -513,6 +442,7 @@ export function TripRules({ season: s, counter, onCta }: { season: ContestSeason
   const d = (x: string) => contestDate(x, i18n.language);
   const p = s.points ?? { play: 10, podium: [30, 20, 10] as [number, number, number], week: 30, friend: 10, crew: 50, crewSize: 5, friendsPerMonth: 5 };
   const hs = s.rules.headstartTopN;
+  const goal = contestGoal(counter);
   const table: [string, string][] = [
     [t('trip.rules.play'), `+${p.play}`],
   ];
@@ -574,11 +504,17 @@ export function TripRules({ season: s, counter, onCta }: { season: ContestSeason
         <SouvenirLine souvenir={s.souvenir} />
       </Card>
 
-      <Card style={styles.card}>
-        <Text style={styles.cardTitle} accessibilityRole="header">{t('trip.rules.goalTitle')}</Text>
-        <Text style={styles.text}>{t('trip.rules.goalText', { players: counter?.threshold ?? 500, photos: counter?.photos ?? 10 })}</Text>
-        <Text style={styles.text}>{t('trip.rules.fallbackText', { date: d(s.endDate), prize: s.fallbackPrize ?? '' })}</Text>
-      </Card>
+      {/* The players' goal only when the campaign has one (Admin; empty = the prize is unconditional). */}
+      {goal !== null && counter && (
+        <Card style={styles.card}>
+          <Text style={styles.cardTitle} accessibilityRole="header">{t('trip.rules.goalTitle')}</Text>
+          <Text style={styles.text}>{t('trip.rules.goalText', { players: goal, photos: counter.photos })}</Text>
+          <Text style={[styles.text, { fontWeight: '700' }]}>
+            {(counter.reached ?? counter.players >= goal) ? t('trip.rules.goalReached', { goal }) : t('trip.rules.goalProgress', { players: counter.players, goal })}
+          </Text>
+          <Text style={styles.text}>{t('trip.rules.fallbackText', { date: d(s.endDate), prize: s.fallbackPrize ?? '' })}</Text>
+        </Card>
+      )}
 
       <Card style={styles.card}>
         <Text style={styles.cardTitle} accessibilityRole="header">{t('trip.rules.whoTitle')}</Text>
@@ -616,30 +552,8 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   phaseDone:  { opacity: 0.6 },
   phaseTitle: { ...Type.caption, fontWeight: '800', color: c.text, textAlign: 'center' },
   phaseWhen:  { ...Type.caption, fontSize: 11, lineHeight: 14, color: c.muted, textAlign: 'center' },
-  // Goal.
-  seats:      { ...Type.title, color: c.text, fontVariant: ['tabular-nums'] },
-  seatsFirst: { ...Type.title, color: c.primaryText },
-  inviteChip: { flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: c.cta, borderRadius: Radius.control, paddingHorizontal: Space.md, minHeight: 36 },
-  inviteText: { ...Type.caption, fontWeight: '800', color: c.onCta },
-  // My boarding pass: a little ticket (notches on its sides), gold once earned.
-  pass:       { flexDirection: 'row', alignItems: 'center', gap: Space.sm, padding: Space.sm, paddingHorizontal: Space.md, borderRadius: 12,
-                borderWidth: 1.5, borderStyle: 'dashed', borderColor: c.primaryText, backgroundColor: c.primaryTint, overflow: 'hidden' },
-  passEarned: { borderStyle: 'solid', borderColor: c.medalGold, backgroundColor: c.medalGold },
-  passNotch:  { position: 'absolute', top: '50%', marginTop: -8, width: 16, height: 16, borderRadius: 8, backgroundColor: c.bg2 },
-  passNotchL: { left: -9 },
-  passNotchR: { right: -9 },
-  passLabel:  { ...Type.caption, fontSize: 12, lineHeight: 15, color: c.primaryOnTint },
-  passValue:  { ...Type.label, fontSize: 16, color: c.text, fontVariant: ['tabular-nums'] },
-  passDots:   { flexDirection: 'row', gap: 3 },
-  passDot:    { width: 6, height: 6, borderRadius: 3, backgroundColor: c.line },
-  passDotOn:  { backgroundColor: c.primaryText },
-  track:      { height: 34, justifyContent: 'center', marginRight: 26 },
-  trackBg:    { position: 'absolute', left: 0, right: 0, height: 12, borderRadius: 6, backgroundColor: c.primaryTint },
-  trackFill:  { position: 'absolute', left: 0, height: 12, borderRadius: 6, backgroundColor: c.cta },
-  trackPlane: { position: 'absolute', left: -11, top: 6 },
-  trackGift:  { position: 'absolute', right: -28, top: 5 },
-  fallback:   { flexDirection: 'row', gap: Space.xs, alignItems: 'flex-start', backgroundColor: c.primaryTint, borderRadius: Radius.inner, padding: Space.sm },
-  fallbackText: { ...Type.caption, color: c.primaryOnTint, flex: 1 },
+  phaseNow:   { ...Type.caption, fontSize: 11, lineHeight: 14, fontWeight: '900', color: c.onCta, backgroundColor: 'rgba(255,255,255,0.22)',
+                borderRadius: Radius.control, paddingHorizontal: 7, paddingVertical: 1, overflow: 'hidden', marginTop: 2 },
   // My status (the dark board).
   board:      { backgroundColor: LS.board, borderRadius: Radius.card, padding: Space.md, gap: Space.sm },
   boardTop:   { flexDirection: 'row', alignItems: 'center', gap: Space.md },

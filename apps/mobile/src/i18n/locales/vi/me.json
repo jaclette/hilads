@@ -345,7 +345,7 @@
     },
     "forFirst": "Dành cho người thắng tuần cuối",
     "chip": {
-      "cdStarts": "đến lúc bắt đầu",
+      "cdStarts": "Bắt đầu sau",
       "cdFinal": "đến tuần cuối",
       "cdEnds": "còn lại",
       "over": "Đã kết thúc"
@@ -361,7 +361,9 @@
       "final": "Tuần cuối",
       "winner": "Người thắng",
       "now": "Bây giờ",
-      "done": "Xong"
+      "done": "Xong",
+      "race": "Cuộc đua",
+      "nowDay": "Đang diễn ra · ngày {{day}}/{{days}}"
     },
     "me": {
       "rank": "Bạn đang {{rank, ordinal}}",
@@ -388,7 +390,9 @@
       "invite": "Mời một người bạn",
       "join": "Tham gia cuộc đua",
       "signIn": "Đăng nhập để tham gia",
-      "ranking": "Xem bảng xếp hạng"
+      "ranking": "Xem bảng xếp hạng",
+      "notify": "Báo cho tôi khi bắt đầu",
+      "notifyOn": "Chúng tôi sẽ báo khi bắt đầu"
     },
     "ranking": {
       "before": "Trước tuần cuối",
@@ -420,7 +424,8 @@
         "joined": "Đã tham gia · chờ ảnh đầu tiên",
         "played": "Đã chơi · không được tính",
         "credited": "✓ +{{points}}"
-      }
+      },
+      "locked": "Tạo tài khoản để mời bạn bè"
     },
     "rules": {
       "howTitle": "Cách chiến thắng",
@@ -448,7 +453,9 @@
       "who4": "Tham gia trong ứng dụng và chấp nhận thể lệ chính thức.",
       "full": "Toàn bộ thể lệ chính thức",
       "podiumTitle": "Bục vinh quang hôm nay (nhiều lượt thích nhất thế giới)",
-      "place": "{{rank, ordinal}}"
+      "place": "{{rank, ordinal}}",
+      "goalProgress": "Hiện có {{players}}/{{goal}} người chơi đã lên máy bay.",
+      "goalReached": "Đã đạt mục tiêu: {{goal}} người chơi đã lên máy bay 🎉"
     },
     "over": {
       "title": "Cuộc đua đã kết thúc",
@@ -487,7 +494,22 @@
       "shareText": "Đã kín {{players}} / {{threshold}} ghế trên Hilads Launch Trip. Giữ ghế của bạn ✈️",
       "shareTextFirst": "Hilads Launch Trip đang mời hành khách lên máy bay. Giữ ghế của bạn ✈️",
       "cardSeats": "Đã kín {{players}} / {{threshold}} ghế",
-      "cardGrab": "Giữ ghế ngay"
+      "cardGrab": "Giữ ghế ngay",
+      "onBoard_one": "{{count}} người chơi đã lên máy bay",
+      "onBoard_other": "{{count}} người chơi đã lên máy bay",
+      "unlockLine_one": "Mở khóa chuyến đi khi đủ {{count}} người chơi",
+      "unlockLine_other": "Mở khóa chuyến đi khi đủ {{count}} người chơi",
+      "unlocked": "Đã mở khóa chuyến đi 🎉",
+      "details": "chi tiết",
+      "a11yOpen": "Mở chi tiết và liên kết mời của bạn",
+      "noGoalText": "Mọi người trong cuộc đua đều đã lên máy bay. Rủ bạn bè cùng chơi: càng nhiều thành phố, cuộc đua càng sôi động.",
+      "locked": "Tạo tài khoản để nhận thẻ lên máy bay",
+      "lockedText": "Miễn phí, và điểm Hilads được tính từ ngày bạn tham gia.",
+      "inviteTitle": "Mời bạn bè",
+      "inviteText": "Liên kết của bạn có mã mời: bạn bè tham gia và chơi sẽ được tính cho bạn.",
+      "inviteTextGuest": "Chia sẻ Launch Trip với bạn bè.",
+      "shareTextOnBoard_one": "{{count}} người chơi đã lên Launch Trip của Hilads. Giữ chỗ của bạn ✈️",
+      "shareTextOnBoard_other": "{{count}} người chơi đã lên Launch Trip của Hilads. Giữ chỗ của bạn ✈️"
     },
     "prizeCta": "Xem giải thưởng 🎁",
     "prize": {

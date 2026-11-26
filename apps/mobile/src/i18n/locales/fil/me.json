@@ -358,7 +358,7 @@
     },
     "forFirst": "Para sa mananalo ng huling linggo",
     "chip": {
-      "cdStarts": "bago magsimula",
+      "cdStarts": "Magsisimula sa",
       "cdFinal": "bago ang huling linggo",
       "cdEnds": "natitira",
       "over": "Tapos na"
@@ -374,7 +374,9 @@
       "final": "Huling linggo",
       "winner": "Panalo",
       "now": "Ngayon",
-      "done": "Tapos"
+      "done": "Tapos",
+      "race": "Ang race",
+      "nowDay": "Ngayon · araw {{day}} ng {{days}}"
     },
     "me": {
       "rank": "Nasa {{rank, ordinal}} na puwesto ka",
@@ -401,7 +403,9 @@
       "invite": "Mag-invite ng friend",
       "join": "Sumali sa race",
       "signIn": "Mag-sign in para sumali",
-      "ranking": "Tingnan ang ranking"
+      "ranking": "Tingnan ang ranking",
+      "notify": "Sabihan ako pag nagsimula",
+      "notifyOn": "Sasabihan ka namin pag nagsimula"
     },
     "ranking": {
       "before": "Bago ang huling linggo",
@@ -433,7 +437,8 @@
         "joined": "Sumali · hinihintay ang unang photo",
         "played": "Naglaro · hindi bilang",
         "credited": "✓ +{{points}}"
-      }
+      },
+      "locked": "Gumawa ng account para mag-imbita ng kaibigan"
     },
     "rules": {
       "howTitle": "Paano manalo",
@@ -461,7 +466,9 @@
       "who4": "Sumali sa app at tanggapin ang official rules.",
       "full": "Buong official rules",
       "podiumTitle": "Podium ng araw (pinakamaraming likes sa buong mundo)",
-      "place": "{{rank, ordinal}} na puwesto"
+      "place": "{{rank, ordinal}} na puwesto",
+      "goalProgress": "{{players}} sa {{goal}} player ang sakay sa ngayon.",
+      "goalReached": "Naabot ang goal: {{goal}} player ang sakay 🎉"
     },
     "over": {
       "title": "Tapos na ang race",
@@ -500,7 +507,22 @@
       "shareText": "{{players}} / {{threshold}} na upuan ang okupado sa Hilads Launch Trip. Kunin na ang sa 'yo ✈️",
       "shareTextFirst": "Boarding na ang Hilads Launch Trip. Kunin na ang upuan mo ✈️",
       "cardSeats": "{{players}} / {{threshold}} na upuan okupado",
-      "cardGrab": "Kunin na ang sa 'yo"
+      "cardGrab": "Kunin na ang sa 'yo",
+      "onBoard_one": "{{count}} player ang sakay",
+      "onBoard_other": "{{count}} player ang sakay",
+      "unlockLine_one": "Mabubuksan ang trip sa {{count}} player",
+      "unlockLine_other": "Mabubuksan ang trip sa {{count}} player",
+      "unlocked": "Bukas na ang trip 🎉",
+      "details": "detalye",
+      "a11yOpen": "Binubuksan ang detalye at ang invite link mo",
+      "noGoalText": "Sakay na ang lahat ng nasa race. Isama ang mga kaibigan mo: mas maraming lungsod, mas buhay ang race.",
+      "locked": "Gumawa ng account para makuha ang boarding pass mo",
+      "lockedText": "Libre ito, at bibilang ang Hilads points mo mula sa araw na sumali ka.",
+      "inviteTitle": "Imbitahin ang mga kaibigan mo",
+      "inviteText": "May invite code ang link mo: ang kaibigang sumali at naglaro ay bibilang para sa iyo.",
+      "inviteTextGuest": "I-share ang Launch Trip sa mga kaibigan mo.",
+      "shareTextOnBoard_one": "{{count}} player ang sakay ng Hilads Launch Trip. Kunin ang upuan mo ✈️",
+      "shareTextOnBoard_other": "{{count}} player ang sakay ng Hilads Launch Trip. Kunin ang upuan mo ✈️"
     },
     "prizeCta": "Tingnan ang premyo 🎁",
     "prize": {

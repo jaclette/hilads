@@ -345,7 +345,7 @@
     },
     "forFirst": "献给决赛周的冠军",
     "chip": {
-      "cdStarts": "后开始",
+      "cdStarts": "距开始",
       "cdFinal": "后进入决赛周",
       "cdEnds": "剩余",
       "over": "已结束"
@@ -361,7 +361,9 @@
       "final": "决赛周",
       "winner": "获胜者",
       "now": "现在",
-      "done": "已完成"
+      "done": "已完成",
+      "race": "比赛",
+      "nowDay": "进行中 · 第 {{day}}/{{days}} 天"
     },
     "me": {
       "rank": "你是{{rank, ordinal}}",
@@ -388,7 +390,9 @@
       "invite": "邀请好友",
       "join": "加入比赛",
       "signIn": "登录后加入",
-      "ranking": "查看排名"
+      "ranking": "查看排名",
+      "notify": "开始时通知我",
+      "notifyOn": "开始时我们会通知你"
     },
     "ranking": {
       "before": "决赛周之前",
@@ -420,7 +424,8 @@
         "joined": "已加入 · 等待第一张照片",
         "played": "已玩 · 不计入",
         "credited": "✓ +{{points}}"
-      }
+      },
+      "locked": "创建账号，邀请朋友"
     },
     "rules": {
       "howTitle": "如何获胜",
@@ -448,7 +453,9 @@
       "who4": "在 App 中加入并接受正式规则。",
       "full": "完整正式规则",
       "podiumTitle": "今日领奖台（全球点赞最多）",
-      "place": "{{rank, ordinal}}"
+      "place": "{{rank, ordinal}}",
+      "goalProgress": "目前已有 {{players}}/{{goal}} 名玩家登机。",
+      "goalReached": "目标达成：{{goal}} 名玩家已登机 🎉"
     },
     "over": {
       "title": "比赛结束了",
@@ -487,7 +494,22 @@
       "shareText": "Hilads Launch Trip 已占 {{players}} / {{threshold}} 个座位。快来抢你的座位 ✈️",
       "shareTextFirst": "Hilads Launch Trip 正在登机。快来抢座位 ✈️",
       "cardSeats": "已占 {{players}} / {{threshold}} 个座位",
-      "cardGrab": "抢座位"
+      "cardGrab": "抢座位",
+      "onBoard_one": "{{count}} 名玩家已登机",
+      "onBoard_other": "{{count}} 名玩家已登机",
+      "unlockLine_one": "满 {{count}} 名玩家解锁旅行",
+      "unlockLine_other": "满 {{count}} 名玩家解锁旅行",
+      "unlocked": "旅行已解锁 🎉",
+      "details": "详情",
+      "a11yOpen": "打开详情和你的邀请链接",
+      "noGoalText": "参赛的每个人都已登机。叫上朋友：参与的城市越多，比赛越热闹。",
+      "locked": "创建账号，领取你的登机牌",
+      "lockedText": "完全免费，你的 Hilads 积分从加入当天开始计算。",
+      "inviteTitle": "邀请朋友",
+      "inviteText": "你的链接带有你的邀请码：朋友加入并参与，就会算在你名下。",
+      "inviteTextGuest": "把 Launch Trip 分享给朋友。",
+      "shareTextOnBoard_one": "已有 {{count}} 名玩家登上 Hilads Launch Trip。快来占座 ✈️",
+      "shareTextOnBoard_other": "已有 {{count}} 名玩家登上 Hilads Launch Trip。快来占座 ✈️"
     },
     "prizeCta": "查看奖品 🎁",
     "prize": {

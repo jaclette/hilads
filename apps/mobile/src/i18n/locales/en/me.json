@@ -358,7 +358,7 @@
     },
     "forFirst": "For the winner of the final week",
     "chip": {
-      "cdStarts": "to the start",
+      "cdStarts": "Starts in",
       "cdFinal": "to final week",
       "cdEnds": "left",
       "over": "Finished"
@@ -374,7 +374,9 @@
       "final": "Final week",
       "winner": "Winner",
       "now": "Now",
-      "done": "Done"
+      "done": "Done",
+      "race": "The race",
+      "nowDay": "Now · day {{day}} of {{days}}"
     },
     "me": {
       "rank": "You're {{rank, ordinal}}",
@@ -401,7 +403,9 @@
       "invite": "Invite a friend",
       "join": "Join the race",
       "signIn": "Sign in to join",
-      "ranking": "See the ranking"
+      "ranking": "See the ranking",
+      "notify": "Notify me when it starts",
+      "notifyOn": "We'll tell you when it starts"
     },
     "ranking": {
       "before": "Before the final week",
@@ -433,7 +437,8 @@
         "joined": "Joined · first photo to come",
         "played": "Played · not counted",
         "credited": "✓ +{{points}}"
-      }
+      },
+      "locked": "Create your account to invite friends"
     },
     "rules": {
       "howTitle": "How to win",
@@ -461,7 +466,9 @@
       "who4": "Join in the app and accept the official rules.",
       "full": "Full official rules",
       "podiumTitle": "Podium of the day (most likes worldwide)",
-      "place": "{{rank, ordinal}} place"
+      "place": "{{rank, ordinal}} place",
+      "goalProgress": "{{players}} of {{goal}} players on board so far.",
+      "goalReached": "Goal reached: {{goal}} players are on board 🎉"
     },
     "over": {
       "title": "The race is over",
@@ -500,7 +507,22 @@
       "shareText": "{{players}} / {{threshold}} seats taken on the Hilads Launch Trip. Grab yours ✈️",
       "shareTextFirst": "The Hilads Launch Trip is boarding. Grab your seat ✈️",
       "cardSeats": "{{players}} / {{threshold}} seats taken",
-      "cardGrab": "Grab yours"
+      "cardGrab": "Grab yours",
+      "onBoard_one": "{{count}} player on board",
+      "onBoard_other": "{{count}} players on board",
+      "unlockLine_one": "Trip unlocks at {{count}} player",
+      "unlockLine_other": "Trip unlocks at {{count}} players",
+      "unlocked": "Trip unlocked 🎉",
+      "details": "details",
+      "a11yOpen": "Opens the details and your invite link",
+      "noGoalText": "Everyone in the race is on board. Bring your friends: the more cities play, the livelier the race.",
+      "locked": "Create your account to get your boarding pass",
+      "lockedText": "It's free, and your Hilads points count from the day you join.",
+      "inviteTitle": "Invite your friends",
+      "inviteText": "Your link carries your invite code: a friend who joins and plays counts for you.",
+      "inviteTextGuest": "Share the Launch Trip with your friends.",
+      "shareTextOnBoard_one": "{{count}} player is on board the Hilads Launch Trip. Grab your seat ✈️",
+      "shareTextOnBoard_other": "{{count}} players are on board the Hilads Launch Trip. Grab your seat ✈️"
     },
     "prizeCta": "See the prize 🎁",
     "prize": {

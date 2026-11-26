@@ -29,6 +29,13 @@ const shortDate = (date, locale) => new Date(`${date}T12:00:00Z`).toLocaleDateSt
 const reduced = () => typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
 
 /** The countdown of a season's phase: start (take-off), final week, end. */
+/** The players' goal (the trip unlocks at it), null = none: the prize is unconditional (an older API sends only threshold). */
+export function contestGoal(counter) {
+  if (!counter) return null
+  if (counter.goal !== undefined) return counter.goal
+  return counter.threshold > 0 ? counter.threshold : null
+}
+
 export function countdownTarget(s) {
   const pick = s.phase === 'upcoming' ? { at: Date.parse(s.startsAt ?? ''), label: 'cdStarts' }
     : s.phase === 'season' ? { at: Date.parse(s.finalAt ?? ''), label: 'cdFinal' }
@@ -263,9 +270,11 @@ export function ContestPrize({ account, onBack, onOpenHome, onSignUp, onOpenRule
   const upcoming = s.phase === 'upcoming'
   const notified = me?.joined === true || !!me?.notified
   const notify = () => { if (!notified) notifyContest(s.id, i18n.language).then(setData).catch(() => {}) }
+  const goal = contestGoal(data.counter)
   const cta = upcoming
-    ? !account ? { label: t('contest.notifyMe'), go: onSignUp, icon: 'notifications-outline' }
-      : { label: t(notified ? 'contest.notifyOn' : 'contest.notifyMe'), go: notify, icon: notified ? 'checkmark-circle-outline' : 'notifications-outline', done: notified }
+    // Without an account: back to the Trip page, whose "Notify me" takes an email.
+    ? !account ? { label: t('trip.cta.notify'), go: onBack, icon: 'notifications-outline' }
+      : { label: t(notified ? 'trip.cta.notifyOn' : 'trip.cta.notify'), go: notify, icon: notified ? 'checkmark-circle-outline' : 'notifications-outline', done: notified }
     : !account ? { label: t('contest.join'), go: onSignUp }
     : me?.joined ? { label: t('contest.prizeYoureIn'), go: onOpenHome }
     : me?.canJoin ? { label: t('contest.join'), go: () => setJoining(true) } : null
@@ -301,8 +310,9 @@ export function ContestPrize({ account, onBack, onOpenHome, onSignUp, onOpenRule
           <section className="pp-v2-card ls-card ls-howwin"><strong className="ls-howwin-title">{t('trip.prize.conditionsTitle')}</strong>
             <ul className="tr-who">{[
               t('trip.rules.final1', { date: shortDate(s.finalWeekStart, i18n.language) }), t('trip.rules.how3'),
-              data.counter ? t('trip.rules.goalText', { players: data.counter.threshold, photos: data.counter.photos }) : null,
-              t('trip.rules.fallbackText', { date: shortDate(s.endDate, i18n.language), prize: s.fallbackPrize ?? '' }),
+              // The players' goal and the fallback only when the campaign has a goal (empty = unconditional).
+              goal !== null ? t('trip.rules.goalText', { players: goal, photos: data.counter.photos }) : null,
+              goal !== null ? t('trip.rules.fallbackText', { date: shortDate(s.endDate, i18n.language), prize: s.fallbackPrize ?? '' }) : null,
               `${t('trip.rules.who1')} ${t('trip.rules.who2')} ${t('trip.rules.who3')}`,
             ].filter(Boolean).map((line, i) => <li key={i}><Icon name="checkmark" size={16} />{line}</li>)}</ul>
             {onOpenRules && <button type="button" className="ls-link ls-link-btn" onClick={onOpenRules}>{t('trip.prize.rulesLink')} ›</button>}
@@ -379,7 +389,7 @@ export default function ContestScreen({ account, onBack, onOpenProfile, onOpenIn
         )}
 
         {target && <CountdownBoard target={target} />}
-        {data.counter && <Unlock {...data.counter} t={t} />}
+        {data.counter && contestGoal(data.counter) !== null && <Unlock {...data.counter} t={t} />}
 
         {joined?.disqualified && <div className="pp-v2-card ls-card"><p>{t('contest.dq')}</p></div>}
         {joined?.excluded && <div className="pp-v2-card ls-card"><p>{t('contest.excluded')}</p></div>}
