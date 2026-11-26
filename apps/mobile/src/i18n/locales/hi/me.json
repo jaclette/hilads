@@ -283,7 +283,7 @@
     "youLabel": "आप",
     "endsOn": "{{date}} को खत्म",
     "passFinal": "फ़ाइनल वीक",
-    "passEnds": "सीज़न खत्म",
+    "passEnds": "आख़िरी दिन",
     "passDaysLeft": "बचे दिन",
     "passNow": "अभी",
     "launchGift": "हमारा लॉन्च गिफ़्ट। खेल वही है: रोज़ एक फ़ोटो।",
@@ -501,6 +501,11 @@
       "shareTextFirst": "Hilads Launch Trip की बोर्डिंग शुरू। अपनी सीट पक्की करें ✈️",
       "cardSeats": "{{players}} / {{threshold}} सीटें भरीं",
       "cardGrab": "अपनी सीट लें"
+    },
+    "prizeCta": "इनाम देखें 🎁",
+    "prize": {
+      "conditionsTitle": "तारीखें और शर्तें",
+      "rulesLink": "सभी नियम"
     }
   }
 }

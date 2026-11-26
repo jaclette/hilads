@@ -99,7 +99,22 @@
     "citiesToday_other": "واحدة من {{count}} مدينة اليوم",
     "onMap": "صورتك الآن على الخريطة · شاهدها",
     "compareNow": "قارن الآن",
-    "currencyA11y": "العملة"
+    "currencyA11y": "العملة",
+    "liveOnMap": "صورتك منشورة الآن · على الخريطة",
+    "seeWorld": "شاهد كيف لعب العالم",
+    "chipStreak": "اليوم {{count}}",
+    "chipPoints_zero": "+{{count}} نقطة",
+    "chipPoints_one": "+{{count}} نقطة",
+    "chipPoints_two": "+{{count}} نقطتان",
+    "chipPoints_few": "+{{count}} نقاط",
+    "chipPoints_many": "+{{count}} نقطة",
+    "chipPoints_other": "+{{count}} نقطة",
+    "chipCities_zero": "{{count}} مدينة مشاركة",
+    "chipCities_one": "مدينة واحدة مشاركة",
+    "chipCities_two": "مدينتان مشاركتان",
+    "chipCities_few": "{{count}} مدن مشاركة",
+    "chipCities_many": "{{count}} مدينة مشاركة",
+    "chipCities_other": "{{count}} مدينة مشاركة"
   },
   "errors": {
     "already_posted": "لعبت تحدّي اليوم بالفعل.",
@@ -638,7 +653,22 @@
         "story": "قصة",
         "post": "منشور"
       },
-      "shared": "تمت المشاركة! لنرَ من سيلعب 🌍"
+      "shared": "تمت المشاركة! لنرَ من سيلعب 🌍",
+      "questionFrom": "{{title}}: وما جواب مدينتك أنت؟",
+      "leftToAnswer": "⏳ أمامك {{time}} للإجابة",
+      "everyDay": "تحدٍّ جديد كل يوم",
+      "leftHours_zero": "{{count}} ساعة",
+      "leftHours_one": "ساعة واحدة",
+      "leftHours_two": "ساعتان",
+      "leftHours_few": "{{count}} ساعات",
+      "leftHours_many": "{{count}} ساعة",
+      "leftHours_other": "{{count}} ساعة",
+      "leftMinutes_zero": "{{count}} دقيقة",
+      "leftMinutes_one": "دقيقة واحدة",
+      "leftMinutes_two": "دقيقتان",
+      "leftMinutes_few": "{{count}} دقائق",
+      "leftMinutes_many": "{{count}} دقيقة",
+      "leftMinutes_other": "{{count}} دقيقة"
     },
     "textProofAsk": "لعبت لأجل {{city}} على Hilads: {{challenge}} {{question}}"
   },

@@ -12719,7 +12719,8 @@ html[data-event="halloween"] { --header-art: #FFA552; --header-art-opacity: 0.28
 .tr-chip--small { min-width: 0; padding: 3px 8px; border-radius: 12px; background: var(--ls-board); }
 .tr-chip--small b { font-size: 13px; line-height: 16px; } .tr-chip--small small { font-size: 10px; line-height: 12px; }
 .tr-live-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--ls-lantern); }
-.tr-stick { position: sticky; top: 0; z-index: 5; margin-top: -52px; }
+.tr-stick { position: sticky; top: 0; z-index: 5; margin-top: -52px; pointer-events: none; }   /* over the photo's bottom: clicks go through */
+.tr-stick .tr-menu { pointer-events: auto; }
 .tr-slim { height: 52px; opacity: 0; pointer-events: none; background: var(--bg); transition: opacity var(--dur-fast, .15s) ease; }
 .tr-slim.is-on { opacity: 1; pointer-events: auto; }
 .tr-slim-row { display: flex; align-items: center; gap: 8px; width: 100%; height: 52px; padding: 0 var(--gutter, 16px); border: 0; background: none; color: var(--text); cursor: pointer; text-align: left; }
@@ -12848,3 +12849,19 @@ html[data-event="halloween"] { --header-art: #FFA552; --header-art-opacity: 0.28
 .tr-share-targets { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
 .tr-share-targets button { display: flex; flex-direction: column; align-items: center; gap: 6px; border: 0; background: none; color: var(--text); font: inherit; font-size: 12px; font-weight: 600; cursor: pointer; }
 .tr-share-targets button span { width: 52px; height: 52px; border-radius: 50%; display: grid; place-items: center; background: var(--surface); border: 1px solid var(--line); }
+/* The Trip header's "See the prize" pill, the slim header's link, the prize photos full screen. */
+.tr-prize-btn { align-self: flex-start; display: inline-flex; align-items: center; gap: 4px; min-height: 36px; margin-top: 8px; padding: 0 14px; border-radius: 999px;
+  background: rgba(255,255,255,.24); border: 1px solid rgba(255,255,255,.55); color: #fff; font: inherit; font-size: 14px; font-weight: 800; cursor: pointer;
+  animation: tr-pulse 1.1s ease .7s 1 both; }
+.tr-prize-btn:focus-visible { outline: 3px solid #fff; outline-offset: 2px; }
+@keyframes tr-pulse { 0%, 100% { transform: scale(1); } 25% { transform: scale(1.07); } 60% { transform: scale(1); } 80% { transform: scale(1.05); } }
+@media (prefers-reduced-motion: reduce) { .tr-prize-btn { animation: none; } }
+.tr-hero { cursor: pointer; }
+.tr-slim-text { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.tr-slim-link { font-size: 12px; font-weight: 800; color: var(--primary-text); }
+.ls-full { position: fixed; inset: 0; z-index: 2100; background: #000; display: flex; align-items: center; justify-content: center; }
+.ls-full img { max-width: 100%; max-height: 100%; object-fit: contain; }
+.ls-full small { position: absolute; left: 16px; right: 16px; bottom: calc(16px + env(safe-area-inset-bottom, 0px)); color: rgba(255,255,255,.85); text-align: center; }
+.ls-full-close, .ls-full-nav { position: absolute; width: 44px; height: 44px; border-radius: 50%; border: 0; background: rgba(255,255,255,.18); color: #fff; display: grid; place-items: center; cursor: pointer; }
+.ls-full-close { top: calc(12px + env(safe-area-inset-top, 0px)); right: 16px; }
+.ls-full-nav { top: 50%; margin-top: -22px; } .ls-full-nav.prev { left: 12px; } .ls-full-nav.next { right: 12px; }

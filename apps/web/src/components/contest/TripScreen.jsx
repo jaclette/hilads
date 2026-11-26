@@ -83,7 +83,8 @@ export default function TripScreen({ account, initialSection = 'overview', onOpe
   const cta = (name, extra) => track('trip_cta', { cta: name, section, phase: s?.phase ?? null, platform_surface: 'web', ...extra })
 
   if (overlay === 'prize') {
-    return <ContestPrize account={account} onBack={() => setOverlay(null)} onOpenHome={() => setOverlay(null)} onSignUp={onSignUp} />
+    return <ContestPrize account={account} onBack={() => setOverlay(null)} onOpenHome={() => setOverlay(null)} onSignUp={onSignUp}
+                         onOpenRules={() => { cta('prize_rules'); setOverlay(null); go('rules', 'cta') }} />
   }
   if (overlay === 'join' && s) {
     return (
@@ -111,11 +112,15 @@ export default function TripScreen({ account, initialSection = 'overview', onOpe
   }
 
   const cover = s.photos?.[0]
+  const prizeCta = s.tab?.prizeCta || t('trip.prizeCta')
   const openPrize = () => { cta('prize'); setOverlay('prize') }
   return (
     <div className="full-page full-page--tab tr-page">
       <div className="tr-scroll" ref={scroller} onScroll={onScroll}>
-        <button type="button" className="tr-hero" ref={hero} onClick={openPrize} aria-label={`${s.name}. ${s.prize?.title || s.name}. ${t('trip.forFirst')}. ${t('trip.a11yPrize')}`}>
+        {/* The whole photo opens the prize, and so does its "See the prize" button. */}
+        <div className="tr-hero" ref={hero} role="button" tabIndex={0} onClick={openPrize}
+             onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openPrize() } }}
+             aria-label={`${s.name}. ${s.prize?.title || s.name}. ${t('trip.forFirst')}. ${t('trip.a11yPrize')}`}>
           <span className="tr-hero-art">{cover ? <img src={mediumUrl(cover.url) ?? cover.url} alt="" /> : <HalongArt />}</span>
           <span className="tr-hero-shade" aria-hidden="true" />
           <span className="tr-hero-top">
@@ -126,16 +131,20 @@ export default function TripScreen({ account, initialSection = 'overview', onOpe
             <span className="tr-hero-text">
               <strong className="tr-hero-title">{s.prize?.title || s.name}{' '}✈️</strong>
               <span className="tr-hero-sub">{isOver(s) && s.winner ? t('trip.over.winnerKnown') : t('trip.forFirst')}</span>
+              <button type="button" className="tr-prize-btn" onClick={e => { e.stopPropagation(); openPrize() }}>
+                {prizeCta}<Icon name="chevron-forward" size={14} />
+              </button>
             </span>
             <Chip s={s} />
           </span>
-        </button>
+        </div>
 
         <div className="tr-stick">
           <div className={`tr-slim${collapsed ? ' is-on' : ''}`} aria-hidden={!collapsed}>
             <button type="button" className="tr-slim-row" onClick={openPrize} tabIndex={collapsed ? 0 : -1}>
               <span className="tr-slim-thumb">{cover ? <img src={mediumUrl(cover.url) ?? cover.url} alt="" /> : <HalongArt />}</span>
-              <span className="tr-slim-title">{s.prize?.title || s.name}</span>
+              <span className="tr-slim-text"><span className="tr-slim-title">{s.prize?.title || s.name}</span>
+                <small className="tr-slim-link">{prizeCta.replace(/\s*🎁\s*$/u, '')} ›</small></span>
               <Chip s={s} small />
             </button>
           </div>

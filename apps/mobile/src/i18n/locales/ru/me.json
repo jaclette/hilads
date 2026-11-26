@@ -311,7 +311,7 @@
     "youLabel": "Ты",
     "endsOn": "Конец {{date}}",
     "passFinal": "Финал",
-    "passEnds": "Конец сезона",
+    "passEnds": "Последний день",
     "passDaysLeft": "Осталось дней",
     "passNow": "Сейчас",
     "launchGift": "Наш подарок к запуску. Игра та же: одно фото в день.",
@@ -531,6 +531,11 @@
       "shareTextFirst": "Идёт посадка на Hilads Launch Trip. Займи своё место ✈️",
       "cardSeats": "Занято {{players}} / {{threshold}} мест",
       "cardGrab": "Займи своё"
+    },
+    "prizeCta": "Смотреть приз 🎁",
+    "prize": {
+      "conditionsTitle": "Сроки и условия",
+      "rulesLink": "Все правила"
     }
   }
 }

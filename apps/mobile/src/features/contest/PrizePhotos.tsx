@@ -1,4 +1,8 @@
 import { useState } from 'react';
+import { Modal, Pressable } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 import { ScrollView, Text, View, StyleSheet, useWindowDimensions } from 'react-native';
 import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -14,9 +18,10 @@ type Photo = NonNullable<ContestSeason['photos']>[number];
  * a dark gradient at the bottom for the text on top, the caption and credit. No photo: the
  * illustration. Fixed photo colors in every theme (an image).
  */
-export function PrizePhotos({ photos, height, children }: { photos: Photo[]; height: number; children?: React.ReactNode }) {
+export function PrizePhotos({ photos, height, children, zoomable = false }: { photos: Photo[]; height: number; children?: React.ReactNode; zoomable?: boolean }) {
   const { width } = useWindowDimensions();
   const [page, setPage] = useState(0);
+  const [full, setFull] = useState<number | null>(null);
   const cur = photos[page];
   return (
     <View style={{ height, width }}>
@@ -24,8 +29,10 @@ export function PrizePhotos({ photos, height, children }: { photos: Photo[]; hei
         <ScrollView horizontal pagingEnabled showsHorizontalScrollIndicator={false} style={StyleSheet.absoluteFill}
                     onMomentumScrollEnd={e => setPage(Math.round(e.nativeEvent.contentOffset.x / Math.max(1, width)))}>
           {photos.map((p, i) => (
-            <Image key={p.url + i} source={{ uri: mediumUrl(p.url) ?? p.url }} style={{ width, height }} contentFit="cover"
-                   accessibilityLabel={p.caption || undefined} accessible={!!p.caption} />
+            <Pressable key={p.url + i} disabled={!zoomable} onPress={() => setFull(i)} accessibilityRole={zoomable ? 'imagebutton' : undefined}
+                       accessibilityLabel={p.caption || undefined}>
+              <Image source={{ uri: mediumUrl(p.url) ?? p.url }} style={{ width, height }} contentFit="cover" />
+            </Pressable>
           ))}
         </ScrollView>
       )}
@@ -42,7 +49,35 @@ export function PrizePhotos({ photos, height, children }: { photos: Photo[]; hei
           <Text style={styles.credit} numberOfLines={1}>{[cur.caption, cur.credit ? `© ${cur.credit}` : ''].filter(Boolean).join(' · ')}</Text>
         )}
       </View>
+      {zoomable && full !== null && <FullGallery photos={photos} start={full} onClose={() => setFull(null)} />}
     </View>
+  );
+}
+
+/** The photos full screen (a tap on one): swipe between them, caption and credit, ✕ closes. */
+function FullGallery({ photos, start, onClose }: { photos: Photo[]; start: number; onClose: () => void }) {
+  const { width, height } = useWindowDimensions();
+  const insets = useSafeAreaInsets();
+  const { t } = useTranslation('common');
+  const [page, setPage] = useState(start);
+  const cur = photos[page];
+  return (
+    <Modal visible transparent animationType="fade" onRequestClose={onClose} statusBarTranslucent>
+      <View style={styles.full}>
+        <ScrollView horizontal pagingEnabled showsHorizontalScrollIndicator={false} contentOffset={{ x: start * width, y: 0 }}
+                    onMomentumScrollEnd={e => setPage(Math.round(e.nativeEvent.contentOffset.x / Math.max(1, width)))}>
+          {photos.map((p, i) => (
+            <Image key={p.url + i} source={{ uri: p.url }} style={{ width, height }} contentFit="contain" accessibilityLabel={p.caption || undefined} />
+          ))}
+        </ScrollView>
+        <Pressable onPress={onClose} style={[styles.fullClose, { top: insets.top + Space.sm }]} accessibilityRole="button" accessibilityLabel={t('close')} hitSlop={8}>
+          <Ionicons name="close" size={24} color="#FFFFFF" />
+        </Pressable>
+        {!!cur && (!!cur.caption || !!cur.credit) && (
+          <Text style={[styles.fullCredit, { bottom: insets.bottom + Space.lg }]}>{[cur.caption, cur.credit ? `© ${cur.credit}` : ''].filter(Boolean).join(' · ')}</Text>
+        )}
+      </View>
+    </Modal>
   );
 }
 
@@ -60,5 +95,9 @@ const styles = StyleSheet.create({
   dot:    { width: 7, height: 7, borderRadius: 4, backgroundColor: 'rgba(255,255,255,0.45)' },
   dotOn:  { backgroundColor: '#FFFFFF', width: 18 },
   credit: { ...Type.caption, fontSize: 11, lineHeight: 14, color: 'rgba(255,255,255,0.8)', textAlign: 'center' },
+  full:   { flex: 1, backgroundColor: '#000000' },
+  fullClose: { position: 'absolute', right: Space.lg, width: 44, height: 44, borderRadius: 22, backgroundColor: 'rgba(255,255,255,0.18)',
+               alignItems: 'center', justifyContent: 'center' },
+  fullCredit: { position: 'absolute', left: Space.lg, right: Space.lg, ...Type.caption, color: 'rgba(255,255,255,0.85)', textAlign: 'center' },
 });
 

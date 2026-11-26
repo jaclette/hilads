@@ -270,7 +270,7 @@
     "youLabel": "Kamu",
     "endsOn": "Berakhir {{date}}",
     "passFinal": "Minggu final",
-    "passEnds": "Akhir musim",
+    "passEnds": "Hari terakhir",
     "passDaysLeft": "Sisa hari",
     "passNow": "Sekarang",
     "launchGift": "Hadiah peluncuran dari kami. Permainannya tetap sama: satu foto sehari.",
@@ -488,6 +488,11 @@
       "shareTextFirst": "Hilads Launch Trip sedang boarding. Ambil kursimu ✈️",
       "cardSeats": "{{players}} / {{threshold}} kursi terisi",
       "cardGrab": "Ambil kursimu"
+    },
+    "prizeCta": "Lihat hadiahnya 🎁",
+    "prize": {
+      "conditionsTitle": "Tanggal dan syarat",
+      "rulesLink": "Semua aturan"
     }
   }
 }

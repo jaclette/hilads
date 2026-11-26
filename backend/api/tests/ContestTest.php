@@ -146,8 +146,8 @@ final class ContestTest extends TestCase
     {
         self::assertSame(Contest::DEFAULT_FALLBACK['fr'], Contest::fallbackPrize(self::SEASON, 'fr'));
         self::assertSame('a souvenir pack', Contest::fallbackPrize(self::SEASON + ['fallback_prize_i18n' => ['en' => 'a souvenir pack']], 'fr'));
-        self::assertSame(['label' => 'Voyage', 'icon' => 'airplane'], Contest::tab(self::SEASON, 'fr'));
-        self::assertSame(['label' => 'Win', 'icon' => 'trophy'], Contest::tab(self::SEASON + ['tab' => ['icon' => 'trophy', 'label' => ['en' => 'Win']]], 'de'));
+        self::assertSame(['label' => 'Voyage', 'icon' => 'airplane', 'prizeCta' => 'Voir le lot 🎁'], Contest::tab(self::SEASON, 'fr'));
+        self::assertSame(['label' => 'Win', 'icon' => 'trophy', 'prizeCta' => 'Zum Preis 🎁'], Contest::tab(self::SEASON + ['tab' => ['icon' => 'trophy', 'label' => ['en' => 'Win']]], 'de'));
         self::assertSame('airplane', Contest::tab(self::SEASON + ['tab' => ['icon' => 'not-an-icon']], 'en')['icon']);
         self::assertCount(19, Contest::DEFAULT_TAB['label']);
         self::assertCount(19, Contest::DEFAULT_FALLBACK);

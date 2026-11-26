@@ -70,3 +70,14 @@ export function onScoreCelebrationRequest(fn: () => void): () => void {
   rewardListeners.add(fn);
   return () => { rewardListeners.delete(fn); };
 }
+
+// A reward already celebrated elsewhere (the post's success screen shows the photo's points as a
+// chip): the big reward screen drops it instead of popping up right after.
+const settledListeners = new Set<(seenUntil: string) => void>();
+export function settleScoreCelebration(seenUntil: string): void {
+  settledListeners.forEach(fn => { try { fn(seenUntil); } catch { /* never breaks the caller */ } });
+}
+export function onScoreCelebrationSettled(fn: (seenUntil: string) => void): () => void {
+  settledListeners.add(fn);
+  return () => { settledListeners.delete(fn); };
+}

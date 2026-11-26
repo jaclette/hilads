@@ -91,7 +91,18 @@
     "citiesToday_other": "Сегодня в игре {{count}} города",
     "onMap": "Твоё фото уже на карте · Смотреть",
     "compareNow": "Сравнить",
-    "currencyA11y": "Валюта"
+    "currencyA11y": "Валюта",
+    "liveOnMap": "Твоё фото опубликовано · на карте",
+    "seeWorld": "Посмотри, как сыграл мир",
+    "chipStreak": "День {{count}}",
+    "chipPoints_one": "+{{count}} очко",
+    "chipPoints_few": "+{{count}} очка",
+    "chipPoints_many": "+{{count}} очков",
+    "chipPoints_other": "+{{count}} очка",
+    "chipCities_one": "{{count}} город в игре",
+    "chipCities_few": "{{count}} города в игре",
+    "chipCities_many": "{{count}} городов в игре",
+    "chipCities_other": "{{count}} города в игре"
   },
   "errors": {
     "already_posted": "Сегодня ты уже в игре.",
@@ -596,7 +607,18 @@
         "story": "История",
         "post": "Пост"
       },
-      "shared": "Готово! Посмотрим, кто сыграет 🌍"
+      "shared": "Готово! Посмотрим, кто сыграет 🌍",
+      "questionFrom": "{{title}}: а что ответит ТВОЙ город?",
+      "leftToAnswer": "⏳ На ответ осталось {{time}}",
+      "everyDay": "Новый челлендж каждый день",
+      "leftHours_one": "{{count}} ч",
+      "leftHours_few": "{{count}} ч",
+      "leftHours_many": "{{count}} ч",
+      "leftHours_other": "{{count}} ч",
+      "leftMinutes_one": "{{count}} мин",
+      "leftMinutes_few": "{{count}} мин",
+      "leftMinutes_many": "{{count}} мин",
+      "leftMinutes_other": "{{count}} мин"
     },
     "textProofAsk": "Я играю за город {{city}} в Hilads: {{challenge}} {{question}}"
   },

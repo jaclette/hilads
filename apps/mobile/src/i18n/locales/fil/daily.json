@@ -83,7 +83,14 @@
     "citiesToday_other": "Isa sa {{count}} cities ngayon",
     "onMap": "Nasa mapa na ang photo mo · Tingnan",
     "compareNow": "Ikumpara na",
-    "currencyA11y": "Currency"
+    "currencyA11y": "Currency",
+    "liveOnMap": "Live na ang photo mo · nasa mapa",
+    "seeWorld": "Tingnan kung paano naglaro ang mundo",
+    "chipStreak": "Day {{count}}",
+    "chipPoints_one": "+{{count}} pt",
+    "chipPoints_other": "+{{count}} pts",
+    "chipCities_one": "{{count}} city kasali",
+    "chipCities_other": "{{count}} cities kasali"
   },
   "errors": {
     "already_posted": "Nakapaglaro ka na sa challenge ngayon.",
@@ -554,7 +561,14 @@
         "story": "Story",
         "post": "Post"
       },
-      "shared": "Na-share na! Tingnan natin kung sino'ng maglalaro 🌍"
+      "shared": "Na-share na! Tingnan natin kung sino'ng maglalaro 🌍",
+      "questionFrom": "{{title}}: ano'ng sagot ng city MO?",
+      "leftToAnswer": "⏳ {{time}} na lang para sumagot",
+      "everyDay": "Bagong challenge araw-araw",
+      "leftHours_one": "{{count}} oras",
+      "leftHours_other": "{{count}} oras",
+      "leftMinutes_one": "{{count}} min",
+      "leftMinutes_other": "{{count}} min"
     },
     "textProofAsk": "Naglaro ako para sa {{city}} sa Hilads: {{challenge}} {{question}}"
   },

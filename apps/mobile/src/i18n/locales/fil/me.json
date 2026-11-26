@@ -283,7 +283,7 @@
     "youLabel": "Ikaw",
     "endsOn": "Matatapos sa {{date}}",
     "passFinal": "Huling linggo",
-    "passEnds": "Katapusan ng season",
+    "passEnds": "Huling araw",
     "passDaysLeft": "Araw na natitira",
     "passNow": "Ngayon",
     "launchGift": "Ang aming launch gift. Pareho pa rin ang laro: isang photo kada araw.",
@@ -501,6 +501,11 @@
       "shareTextFirst": "Boarding na ang Hilads Launch Trip. Kunin na ang upuan mo ✈️",
       "cardSeats": "{{players}} / {{threshold}} na upuan okupado",
       "cardGrab": "Kunin na ang sa 'yo"
+    },
+    "prizeCta": "Tingnan ang premyo 🎁",
+    "prize": {
+      "conditionsTitle": "Mga petsa at kondisyon",
+      "rulesLink": "Lahat ng patakaran"
     }
   }
 }

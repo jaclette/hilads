@@ -308,7 +308,7 @@
       "youLabel": "คุณ",
       "endsOn": "สิ้นสุด {{date}}",
       "passFinal": "สัปดาห์สุดท้าย",
-      "passEnds": "สิ้นสุดซีซัน",
+      "passEnds": "วันสุดท้าย",
       "passDaysLeft": "เหลืออีก (วัน)",
       "passNow": "ตอนนี้",
       "launchGift": "ของขวัญเปิดตัวจากเรา เกมยังเหมือนเดิม: วันละหนึ่งรูป",
@@ -526,6 +526,11 @@
         "shareTextFirst": "Hilads Launch Trip เปิดให้ขึ้นเครื่องแล้ว จองที่นั่งของคุณเลย ✈️",
         "cardSeats": "จองแล้ว {{players}} / {{threshold}} ที่นั่ง",
         "cardGrab": "จองเลย"
+      },
+      "prizeCta": "ดูของรางวัล 🎁",
+      "prize": {
+        "conditionsTitle": "วันที่และเงื่อนไข",
+        "rulesLink": "กติกาทั้งหมด"
       }
     }
   },

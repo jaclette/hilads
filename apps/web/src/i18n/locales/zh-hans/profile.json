@@ -308,7 +308,7 @@
       "youLabel": "你",
       "endsOn": "{{date}} 结束",
       "passFinal": "决赛周",
-      "passEnds": "赛季结束",
+      "passEnds": "最后一天",
       "passDaysLeft": "剩余天数",
       "passNow": "现在",
       "launchGift": "我们的上线礼物。游戏不变：每天一张照片。",
@@ -526,6 +526,11 @@
         "shareTextFirst": "Hilads Launch Trip 正在登机。快来抢座位 ✈️",
         "cardSeats": "已占 {{players}} / {{threshold}} 个座位",
         "cardGrab": "抢座位"
+      },
+      "prizeCta": "查看奖品 🎁",
+      "prize": {
+        "conditionsTitle": "日期和条件",
+        "rulesLink": "查看全部规则"
       }
     }
   },

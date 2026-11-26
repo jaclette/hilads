@@ -53,6 +53,14 @@ final class Contest
         'hi' => 'एक इनाम जिसकी घोषणा जल्द होगी', 'ru' => 'приз, который объявим позже', 'ar' => 'جائزة سيُعلن عنها لاحقًا',
     ];
 
+    /** The Trip header's button to the prize details (Admin › Launch Season › Prize: tab.prize_cta per language). */
+    public const DEFAULT_PRIZE_CTA = [
+        'en' => 'See the prize 🎁', 'fr' => 'Voir le lot 🎁', 'vi' => 'Xem giải thưởng 🎁', 'es' => 'Ver el premio 🎁', 'it' => 'Vedi il premio 🎁',
+        'pt-br' => 'Ver o prêmio 🎁', 'pt-pt' => 'Ver o prémio 🎁', 'de' => 'Zum Preis 🎁', 'nl' => 'Bekijk de prijs 🎁', 'zh-hans' => '查看奖品 🎁',
+        'zh-hant' => '查看獎品 🎁', 'ja' => '賞品を見る 🎁', 'ko' => '상품 보기 🎁', 'fil' => 'Tingnan ang premyo 🎁', 'th' => 'ดูของรางวัล 🎁',
+        'id' => 'Lihat hadiahnya 🎁', 'hi' => 'इनाम देखें 🎁', 'ru' => 'Смотреть приз 🎁', 'ar' => 'شاهد الجائزة 🎁',
+    ];
+
     /** The Ionicons a campaign tab may use (Admin). */
     public const TAB_ICONS = ['airplane', 'trophy', 'gift', 'star', 'flag', 'rocket', 'sparkles', 'globe', 'ribbon', 'medal'];
     public const SETTINGS = ['vote_cap_per_photo', 'referral_points', 'referral_min_photos', 'referral_cap',
@@ -489,7 +497,10 @@ final class Contest
         $label  = ($locale !== null ? ($labels[$locale] ?? null) : null) ?? ($labels['en'] ?? null)
             ?? (self::DEFAULT_TAB['label'][$locale ?? 'en'] ?? self::DEFAULT_TAB['label']['en']);
         $icon   = in_array($tab['icon'] ?? null, self::TAB_ICONS, true) ? $tab['icon'] : self::DEFAULT_TAB['icon'];
-        return ['label' => trim((string) $label), 'icon' => $icon];
+        $ctas   = is_array($tab['prize_cta'] ?? null) ? array_filter($tab['prize_cta'], static fn($v): bool => is_string($v) && trim($v) !== '') : [];
+        $cta    = ($locale !== null ? ($ctas[$locale] ?? null) : null) ?? ($ctas['en'] ?? null)
+            ?? (self::DEFAULT_PRIZE_CTA[$locale ?? 'en'] ?? self::DEFAULT_PRIZE_CTA['en']);
+        return ['label' => trim((string) $label), 'icon' => $icon, 'prizeCta' => trim((string) $cta)];
     }
 
     /**

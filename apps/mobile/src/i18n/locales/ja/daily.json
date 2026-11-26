@@ -79,7 +79,14 @@
     "citiesToday_other": "今日参加した{{count}}の街のひとつ",
     "onMap": "写真がマップに載りました · 見る",
     "compareNow": "今すぐ比べる",
-    "currencyA11y": "通貨"
+    "currencyA11y": "通貨",
+    "liveOnMap": "写真を公開しました · マップに表示中",
+    "seeWorld": "世界のみんなのプレイを見る",
+    "chipStreak": "{{count}}日目",
+    "chipPoints_one": "+{{count}}pt",
+    "chipPoints_other": "+{{count}}pt",
+    "chipCities_one": "{{count}}の街が参加",
+    "chipCities_other": "{{count}}の街が参加"
   },
   "errors": {
     "already_posted": "今日のチャレンジにはもう参加済みです。",
@@ -533,7 +540,14 @@
         "story": "ストーリー",
         "post": "投稿"
       },
-      "shared": "シェアしたよ！誰が参加するかな 🌍"
+      "shared": "シェアしたよ！誰が参加するかな 🌍",
+      "questionFrom": "{{title}}：あなたの街の答えは？",
+      "leftToAnswer": "⏳ 回答締め切りまであと{{time}}",
+      "everyDay": "毎日新しいチャレンジ",
+      "leftHours_one": "{{count}}時間",
+      "leftHours_other": "{{count}}時間",
+      "leftMinutes_one": "{{count}}分",
+      "leftMinutes_other": "{{count}}分"
     },
     "textProofAsk": "Hiladsで{{city}}代表として参加したよ：{{challenge}} {{question}}"
   },

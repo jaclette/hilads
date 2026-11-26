@@ -160,8 +160,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 if (mb_strlen($t) > 12) throw new InvalidArgumentException("Tab label ({$l}): 12 characters max (it sits under an icon).");
                 $labels[$l] = $t;
             }
+            $ctas = [];
+            foreach (Contest::LOCALES as $l) {
+                $t = trim((string) ($_POST['prize_cta'][$l] ?? ''));
+                if ($t === '') continue;
+                if (mb_strlen($t) > 28) throw new InvalidArgumentException("Prize button ({$l}): 28 characters max (a pill on the photo).");
+                $ctas[$l] = $t;
+            }
             $pdo->prepare("UPDATE contest_seasons SET tab = ?::jsonb, updated_at = now() WHERE id = ?")
-                ->execute([json_encode(['icon' => $icon, 'label' => (object) $labels], JSON_UNESCAPED_UNICODE), $season['id']]);
+                ->execute([json_encode(['icon' => $icon, 'label' => (object) $labels, 'prize_cta' => (object) $ctas], JSON_UNESCAPED_UNICODE), $season['id']]);
             Contest::log($season['id'], 'tab', null, ['icon' => $icon, 'en' => $labels['en'] ?? null]);
             flash_set('success', 'Tab saved: the apps show it at their next refresh.');
         } elseif ($season !== null && $do === 'copy_content') {
@@ -567,9 +574,10 @@ admin_nav('/admin/launch-season');
         <select name="tab_icon" style="background:var(--surface);border:1px solid var(--line);color:var(--text);padding:4px 6px;border-radius:4px">
           <?php foreach (Contest::TAB_ICONS as $ic): ?><option value="<?= $esc($ic) ?>"<?= $tabNow['icon'] === $ic ? ' selected' : '' ?>><?= $esc($ic) ?></option><?php endforeach; ?>
         </select></label>
-      <div class="table-wrapper"><table><thead><tr><th style="width:70px">Lang</th><th>Label (12 max)</th></tr></thead><tbody>
+      <div class="table-wrapper"><table><thead><tr><th style="width:70px">Lang</th><th>Label (12 max)</th><th>"See the prize" button on the photo (28 max)</th></tr></thead><tbody>
         <?php foreach (Contest::LOCALES as $l): ?>
-          <tr><td><?= $esc($l) ?></td><td><input type="text" name="tab_label[<?= $esc($l) ?>]" value="<?= $esc($season['tab']['label'][$l] ?? '') ?>" maxlength="12" placeholder="<?= $esc(Contest::DEFAULT_TAB['label'][$l] ?? '') ?>" style="width:100%;background:var(--surface);border:1px solid var(--line);color:var(--text);padding:5px 8px;border-radius:4px"<?= $l === 'ar' ? ' dir="rtl"' : '' ?>></td></tr>
+          <tr><td><?= $esc($l) ?></td><td><input type="text" name="tab_label[<?= $esc($l) ?>]" value="<?= $esc($season['tab']['label'][$l] ?? '') ?>" maxlength="12" placeholder="<?= $esc(Contest::DEFAULT_TAB['label'][$l] ?? '') ?>" style="width:100%;background:var(--surface);border:1px solid var(--line);color:var(--text);padding:5px 8px;border-radius:4px"<?= $l === 'ar' ? ' dir="rtl"' : '' ?>></td>
+            <td><input type="text" name="prize_cta[<?= $esc($l) ?>]" value="<?= $esc($season['tab']['prize_cta'][$l] ?? '') ?>" maxlength="28" placeholder="<?= $esc(Contest::DEFAULT_PRIZE_CTA[$l] ?? '') ?>" style="width:100%;background:var(--surface);border:1px solid var(--line);color:var(--text);padding:5px 8px;border-radius:4px"<?= $l === 'ar' ? ' dir="rtl"' : '' ?>></td></tr>
         <?php endforeach; ?>
       </tbody></table></div>
       <div class="form-actions"><button class="btn btn-primary">Save tab</button></div>

@@ -11,6 +11,8 @@ import { FontSizes, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { track } from '@/services/analytics';
 import { fetchDailyTodayProofs } from '@/api/daily';
+import { useApp } from '@/context/AppContext';
+import { fetchCrew } from '@/features/invites/invite';
 import { CARD_DP, ShareCard } from './ShareCard';
 import { ContestShareCard } from '@/features/contest/ContestShareCard';
 import { PROOF_CARD_DP, ProofCard, type ShareFormat, type ShareTemplate, type VersusPhoto } from './ProofCard';
@@ -47,7 +49,7 @@ const LABEL: Record<ShareChannel, string> = {
  * answers 🌍" with a success haptic once a share went out.
  */
 /** The compact panel's targets, in order (each one only when its app is installed; … and Save always). */
-const COMPACT: Target[] = ['instagram_story', 'whatsapp', 'zalo', 'messenger', 'share_sheet', 'save_image'];
+const COMPACT: Target[] = ['instagram_story', 'zalo', 'whatsapp', 'messenger', 'share_sheet', 'save_image'];
 
 export type SharePanelHandle = {
   /** The system share sheet with the card on screen (the screen's own Share button). */
@@ -66,6 +68,14 @@ function SharePanel({ content, source, previewHeight = 300, compact = false }, r
   const { colors } = useTheme();
   const { t } = useTranslation('daily');
   const proof = content.type === 'proof' ? content : null;
+  // My photo's link carries my invite code (?ref=): a friend who signs up from it counts for me.
+  const { account } = useApp();
+  const [refCode, setRefCode] = useState<string | null>(null);
+  useEffect(() => {
+    if (!proof || !account) return;
+    fetchCrew().then(c => setRefCode(c.code)).catch(() => {});
+  }, [proof?.id, account?.id]); // eslint-disable-line react-hooks/exhaustive-deps
+  const linked: ShareContent = proof && refCode ? { ...proof, refCode } : content;
   const [channels, setChannels] = useState<ShareChannel[]>([]);
   const [copied, setCopied] = useState(false);
   const [busy, setBusy] = useState<Target | null>(null);
@@ -197,7 +207,7 @@ function SharePanel({ content, source, previewHeight = 300, compact = false }, r
         await wait(900);
       }
       // My photo's link names the template, for the landing's share_link_visit.
-      const url = proof ? `${shareUrl(content)}${shareUrl(content).includes('?') ? '&' : '?'}tpl=${template}` : shareUrl(content);
+      const url = proof ? `${shareUrl(linked)}${shareUrl(linked).includes('?') ? '&' : '?'}tpl=${template}` : shareUrl(content);
       const res = await shareTo(channel, { file, url, text: shareText(content) });
       if (channel === 'copy_link') { setCopied(true); setTimeout(() => setCopied(false), 2000); }
       if (res.done && channel !== 'copy_link') shared();
@@ -270,7 +280,9 @@ function SharePanel({ content, source, previewHeight = 300, compact = false }, r
                   {/* The Post (4:5) covers its template's Story, still drawn for the Stories targets. */}
                   {compact ? (
                     // Compact: the Story on screen (a tap: full screen), its Post drawn under it for the feeds.
-                    <Pressable onPress={() => setFull(true)} accessibilityRole="imagebutton" accessibilityLabel={t(`share.card.template.${tp}`)}>
+                    // Slightly tilted, lifted off the page (the hero of the success screen); the capture is the card itself.
+                    <Pressable onPress={() => setFull(true)} accessibilityRole="imagebutton" accessibilityLabel={t(`share.card.template.${tp}`)}
+                               style={styles.hero}>
                       {scaled(tp === template ? [{ ...proofLayer(tp, 'post'), hidden: true }, proofLayer(tp, 'story')] : [proofLayer(tp, 'story')])}
                     </Pressable>
                   ) : tp === template && format === 'post'
@@ -402,6 +414,8 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   // Full width even in a centered column (the post screen): one page = this width, the targets row fits.
   wrap:      { gap: 16, alignSelf: 'stretch' },
   preview:   { alignSelf: 'center', borderRadius: 16, overflow: 'hidden', backgroundColor: c.bg3 },
+  hero:      { transform: [{ rotate: '-2deg' }], marginVertical: 8, borderRadius: 16, shadowColor: c.shadow, shadowOpacity: 0.28, shadowRadius: 18,
+               shadowOffset: { width: 0, height: 12 }, elevation: 10 },
   loading:   { alignItems: 'center', justifyContent: 'center' },
   grid:      { flexDirection: 'row', flexWrap: 'wrap', rowGap: 14 },
   target:    { width: '25%', alignItems: 'center', gap: 6, paddingHorizontal: 2 },

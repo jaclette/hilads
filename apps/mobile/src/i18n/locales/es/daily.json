@@ -87,7 +87,16 @@
     "citiesToday_other": "Una de {{count}} ciudades hoy",
     "onMap": "Tu foto ya está en el mapa · Verla",
     "compareNow": "Comparar ahora",
-    "currencyA11y": "Moneda"
+    "currencyA11y": "Moneda",
+    "liveOnMap": "Tu foto ya está publicada · en el mapa",
+    "seeWorld": "Mira cómo jugó el mundo",
+    "chipStreak": "Día {{count}}",
+    "chipPoints_one": "+{{count}} pt",
+    "chipPoints_other": "+{{count}} pts",
+    "chipPoints_many": "+{{count}} pts",
+    "chipCities_one": "{{count}} ciudad en juego",
+    "chipCities_other": "{{count}} ciudades en juego",
+    "chipCities_many": "{{count}} ciudades en juego"
   },
   "errors": {
     "already_posted": "Ya jugaste el reto de hoy.",
@@ -574,7 +583,16 @@
         "story": "Historia",
         "post": "Publicación"
       },
-      "shared": "¡Compartido! A ver quién juega 🌍"
+      "shared": "¡Compartido! A ver quién juega 🌍",
+      "questionFrom": "{{title}}: ¿y la respuesta de TU ciudad?",
+      "leftToAnswer": "⏳ Quedan {{time}} para responder",
+      "everyDay": "Un reto nuevo cada día",
+      "leftHours_one": "{{count}} h",
+      "leftHours_other": "{{count}} h",
+      "leftHours_many": "{{count}} h",
+      "leftMinutes_one": "{{count}} min",
+      "leftMinutes_other": "{{count}} min",
+      "leftMinutes_many": "{{count}} min"
     },
     "textProofAsk": "Jugué por {{city}} en Hilads: {{challenge}} {{question}}"
   },

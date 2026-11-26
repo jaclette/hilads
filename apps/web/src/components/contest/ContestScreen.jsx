@@ -1,3 +1,4 @@
+import { createPortal } from 'react-dom'
 import i18next from 'i18next'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -117,9 +118,10 @@ function HowToWin({ s }) {
   const { t, i18n } = useT()
   const r = s.rules
   const steps = [
-    ['camera-outline', t('contest.step1Title', { date: shortDate(s.finalWeekStart, i18n.language) }), t('contest.step1Text', { cap: r.voteCap, points: r.referralPoints, min: r.referralMinPhotos })],
-    ['podium-outline', t('contest.step2Title', { count: r.headstartTopN }), t('contest.step2Text', { count: r.headstartTopN, date: shortDate(s.finalWeekStart, i18n.language) })],
-    ['trophy-outline', t('contest.step3Title'), t('contest.step3Text', { date: shortDate(s.endDate, i18n.language) })],
+    // The campaign counts the regular Hilads points (2026-11-26): the same steps as the Trip tab's Rules.
+    ['camera-outline', t('contest.step1Title', { date: shortDate(s.finalWeekStart, i18n.language) }), t('trip.rules.how1')],
+    ['podium-outline', t('contest.step2Title', { count: r.headstartTopN }), t('trip.rules.how2', { count: r.headstartTopN, date: shortDate(s.finalWeekStart, i18n.language) })],
+    ['trophy-outline', t('contest.step3Title'), t('trip.rules.how3')],
   ]
   return (
     <ol className="ls-steps">
@@ -176,12 +178,13 @@ const bonusOf = (row, tab, topN) => tab === 'final' ? row.headstart : row.points
 /** The season's photos (Admin › Launch Season › Photos) with page dots, else the illustration. */
 function PrizePhotos({ photos, children, short }) {
   const [page, setPage] = useState(0)
+  const [full, setFull] = useState(null)   // a photo full screen (a tap)
   const cur = photos?.[page]
   return (
     <div className={`ls-photos${short ? ' ls-photos--short' : ''}`}>
       {photos?.length ? (
         <div className="ls-photos-track" onScroll={e => setPage(Math.round(e.currentTarget.scrollLeft / Math.max(1, e.currentTarget.clientWidth)))}>
-          {photos.map((p, i) => <img key={p.url + i} src={p.url} alt={p.caption || ''} loading={i ? 'lazy' : 'eager'} />)}
+          {photos.map((p, i) => <img key={p.url + i} src={p.url} alt={p.caption || ''} loading={i ? 'lazy' : 'eager'} onClick={() => setFull(i)} style={{ cursor: 'zoom-in' }} />)}
         </div>
       ) : <HalongArt />}
       <div className="ls-photos-shade" aria-hidden="true" />
@@ -190,6 +193,16 @@ function PrizePhotos({ photos, children, short }) {
         {photos?.length > 1 && <span className="ls-dots" aria-hidden="true">{photos.map((_, i) => <i key={i} className={i === page ? 'on' : ''} />)}</span>}
         {cur && (cur.caption || cur.credit) && <small className="ls-credit">{[cur.caption, cur.credit ? `© ${cur.credit}` : ''].filter(Boolean).join(' · ')}</small>}
       </div>
+      {full !== null && photos?.[full] && createPortal(
+        <div className="ls-full" role="dialog" aria-modal="true" onClick={() => setFull(null)}>
+          <img src={photos[full].url} alt={photos[full].caption || ''} />
+          {photos.length > 1 && <>
+            <button type="button" className="ls-full-nav prev" aria-label="‹" onClick={e => { e.stopPropagation(); setFull((full + photos.length - 1) % photos.length) }}><Icon name="chevron-back" size={24} /></button>
+            <button type="button" className="ls-full-nav next" aria-label="›" onClick={e => { e.stopPropagation(); setFull((full + 1) % photos.length) }}><Icon name="chevron-forward" size={24} /></button>
+          </>}
+          <button type="button" className="ls-full-close" aria-label="✕" onClick={() => setFull(null)}><Icon name="close" size={24} /></button>
+          {(photos[full].caption || photos[full].credit) && <small>{[photos[full].caption, photos[full].credit ? `© ${photos[full].credit}` : ''].filter(Boolean).join(' · ')}</small>}
+        </div>, document.body)}
     </div>
   )
 }
@@ -233,7 +246,7 @@ function Empty({ data, failed, load, onBack }) {
  * description, the countdown, the dates, the launch-gift line, the rules, Share; a sticky Join
  * (or "You're in", to the home).
  */
-export function ContestPrize({ account, onBack, onOpenHome, onSignUp }) {
+export function ContestPrize({ account, onBack, onOpenHome, onSignUp, onOpenRules }) {
   const { t, i18n } = useT()
   const { data, failed, load, setData } = useContest()
   const [joining, setJoining] = useState(false)
@@ -284,6 +297,16 @@ export function ContestPrize({ account, onBack, onOpenHome, onSignUp }) {
             <span><small>{t('contest.passFinal')}</small><b>{final ? t('contest.passNow') : shortDate(s.finalWeekStart, i18n.language)}</b></span>
             <span><small>{t('contest.passEnds')}</small><b>{shortDate(s.endDate, i18n.language)}</b></span>
           </div>
+          {/* Dates and conditions in plain words, then the Trip tab's Rules section. */}
+          <section className="pp-v2-card ls-card ls-howwin"><strong className="ls-howwin-title">{t('trip.prize.conditionsTitle')}</strong>
+            <ul className="tr-who">{[
+              t('trip.rules.final1', { date: shortDate(s.finalWeekStart, i18n.language) }), t('trip.rules.how3'),
+              data.counter ? t('trip.rules.goalText', { players: data.counter.threshold, photos: data.counter.photos }) : null,
+              t('trip.rules.fallbackText', { date: shortDate(s.endDate, i18n.language), prize: s.fallbackPrize ?? '' }),
+              `${t('trip.rules.who1')} ${t('trip.rules.who2')} ${t('trip.rules.who3')}`,
+            ].filter(Boolean).map((line, i) => <li key={i}><Icon name="checkmark" size={16} />{line}</li>)}</ul>
+            {onOpenRules && <button type="button" className="ls-link ls-link-btn" onClick={onOpenRules}>{t('trip.prize.rulesLink')} ›</button>}
+          </section>
           <section className="pp-v2-card ls-card ls-howwin"><strong className="ls-howwin-title">{t('contest.howWinTitle')}</strong><HowToWin s={s} /></section>
           <SampleItinerary days={s.itinerary} />
           {s.founder && <FounderWord f={s.founder} />}

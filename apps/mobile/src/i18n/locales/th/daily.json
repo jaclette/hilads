@@ -79,7 +79,14 @@
     "citiesToday_other": "หนึ่งใน {{count}} เมืองวันนี้",
     "onMap": "รูปของคุณอยู่บนแผนที่แล้ว · ดูเลย",
     "compareNow": "เปรียบเทียบเลย",
-    "currencyA11y": "สกุลเงิน"
+    "currencyA11y": "สกุลเงิน",
+    "liveOnMap": "รูปของคุณขึ้นแล้ว · อยู่บนแผนที่",
+    "seeWorld": "ดูว่าทั่วโลกเล่นกันยังไง",
+    "chipStreak": "วันที่ {{count}}",
+    "chipPoints_one": "+{{count}} แต้ม",
+    "chipPoints_other": "+{{count}} แต้ม",
+    "chipCities_one": "{{count}} เมืองร่วมเล่น",
+    "chipCities_other": "{{count}} เมืองร่วมเล่น"
   },
   "errors": {
     "already_posted": "วันนี้คุณเล่นชาเลนจ์ไปแล้ว",
@@ -533,7 +540,14 @@
         "story": "สตอรี่",
         "post": "โพสต์"
       },
-      "shared": "แชร์แล้ว! มาดูกันว่าใครจะเล่น 🌍"
+      "shared": "แชร์แล้ว! มาดูกันว่าใครจะเล่น 🌍",
+      "questionFrom": "{{title}}: แล้วเมืองของคุณตอบว่าอะไร?",
+      "leftToAnswer": "⏳ เหลือเวลาตอบอีก {{time}}",
+      "everyDay": "ชาเลนจ์ใหม่ทุกวัน",
+      "leftHours_one": "{{count}} ชม.",
+      "leftHours_other": "{{count}} ชม.",
+      "leftMinutes_one": "{{count}} นาที",
+      "leftMinutes_other": "{{count}} นาที"
     },
     "textProofAsk": "ฉันเล่นให้ {{city}} บน Hilads: {{challenge}} {{question}}"
   },

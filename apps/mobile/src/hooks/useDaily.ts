@@ -199,6 +199,11 @@ function loadToday(e: TodayEntry, force: boolean): Promise<void> {
   return e.inflight;
 }
 
+/** Fetch Today again everywhere it is shown (closing the post's success screen: my photo is in). */
+export function refreshToday(): void {
+  todayStores.forEach(e => { e.fetchedAt = 0; if (e.listeners.size) void loadToday(e, true); });
+}
+
 // The app back in the foreground, a push about new content, or a drop announced (realtime): every city
 // on screen fetches again (what's shown stays until the answer: stale-while-revalidate).
 let todayWatchers = 0;

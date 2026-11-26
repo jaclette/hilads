@@ -83,7 +83,14 @@
     "citiesToday_other": "Een van de {{count}} steden vandaag",
     "onMap": "Je foto staat nu op de kaart · Bekijk hem",
     "compareNow": "Nu vergelijken",
-    "currencyA11y": "Valuta"
+    "currencyA11y": "Valuta",
+    "liveOnMap": "Je foto staat live · op de kaart",
+    "seeWorld": "Bekijk hoe de wereld speelde",
+    "chipStreak": "Dag {{count}}",
+    "chipPoints_one": "+{{count}} pt",
+    "chipPoints_other": "+{{count}} ptn",
+    "chipCities_one": "{{count}} stad doet mee",
+    "chipCities_other": "{{count}} steden doen mee"
   },
   "errors": {
     "already_posted": "Je hebt de challenge van vandaag al gespeeld.",
@@ -554,7 +561,14 @@
         "story": "Story",
         "post": "Post"
       },
-      "shared": "Gedeeld! Eens kijken wie er meedoet 🌍"
+      "shared": "Gedeeld! Eens kijken wie er meedoet 🌍",
+      "questionFrom": "{{title}}: wat is het antwoord van JOUW stad?",
+      "leftToAnswer": "⏳ Nog {{time}} om te antwoorden",
+      "everyDay": "Elke dag een nieuwe challenge",
+      "leftHours_one": "{{count}} uur",
+      "leftHours_other": "{{count}} uur",
+      "leftMinutes_one": "{{count}} min",
+      "leftMinutes_other": "{{count}} min"
     },
     "textProofAsk": "Ik speelde voor {{city}} op Hilads: {{challenge}} {{question}}"
   },

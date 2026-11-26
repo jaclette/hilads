@@ -6,6 +6,7 @@ import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
+import * as Haptics from 'expo-haptics';
 import { Space, Gutter, Radius, Type, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { useApp } from '@/context/AppContext';
@@ -162,7 +163,10 @@ export default function TripScreen() {
       <Animated.View style={[styles.slim, { height: SLIM_H, paddingTop: insets.top, opacity: slimOpacity }]} pointerEvents={collapsed ? 'auto' : 'none'}>
         <Pressable onPress={openPrize} style={styles.slimRow} accessibilityRole="button" accessibilityHint={t('trip.a11yPrize')} hitSlop={4}>
           <View style={styles.slimThumb}><PrizeCover photos={s.photos} width={36} height={36} /></View>
-          <Text style={styles.slimTitle} numberOfLines={1}>{s.prize?.title || s.name}</Text>
+          <View style={{ flex: 1 }}>
+            <Text style={styles.slimTitle} numberOfLines={1}>{s.prize?.title || s.name}</Text>
+            <Text style={styles.slimLink} numberOfLines={1}>{(s.tab?.prizeCta || t('trip.prizeCta')).replace(/\s*🎁\s*$/u, '')} ›</Text>
+          </View>
           <CountdownChip season={s} small />
         </Pressable>
       </Animated.View>
@@ -206,13 +210,43 @@ function Hero({ season: s, height, topInset, onPress }: { season: ContestSeason;
         <View style={{ flex: 1, gap: 2 }}>
           <Text style={styles.heroTitle} numberOfLines={2} accessibilityRole="header">{s.prize?.title || s.name}{'\u00A0'}✈️</Text>
           <Text style={styles.heroSub} numberOfLines={2}>{over && s.winner ? t('trip.over.winnerKnown') : t('trip.forFirst')}</Text>
+          <PrizeButton label={s.tab?.prizeCta || t('trip.prizeCta')} onPress={onPress} />
         </View>
         <CountdownChip season={s} />
       </View>
-      <View style={styles.heroHint} pointerEvents="none">
-        <Ionicons name="expand-outline" size={14} color="#FFFFFF" />
-      </View>
+      {/* The prize: the button under the subtitle, and the whole photo. */}
     </Pressable>
+  );
+}
+
+/**
+ * "See the prize 🎁" on the photo: a white translucent pill (the label from the campaign, Admin › Launch
+ * Season), a soft pulse once when the screen opens (none with reduce motion), a haptic on press.
+ */
+function PrizeButton({ label, onPress }: { label: string; onPress: () => void }) {
+  const styles = useThemedStyles(makeStyles);
+  const pulse = useRef(new Animated.Value(1)).current;
+  useEffect(() => {
+    AccessibilityInfo.isReduceMotionEnabled().then(still => {
+      if (still) return;
+      Animated.sequence([
+        Animated.delay(700),
+        Animated.timing(pulse, { toValue: 1.07, duration: 260, useNativeDriver: true }),
+        Animated.timing(pulse, { toValue: 1, duration: 320, useNativeDriver: true }),
+        Animated.timing(pulse, { toValue: 1.05, duration: 220, useNativeDriver: true }),
+        Animated.timing(pulse, { toValue: 1, duration: 300, useNativeDriver: true }),
+      ]).start();
+    }).catch(() => {});
+  }, [pulse]);
+  return (
+    <Animated.View style={{ alignSelf: 'flex-start', marginTop: Space.sm, transform: [{ scale: pulse }] }}>
+      <Pressable onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {}); onPress(); }}
+                 style={({ pressed }) => [styles.prizeBtn, pressed && { opacity: 0.8 }]} accessibilityRole="button" accessibilityLabel={label}
+                 hitSlop={6} testID="trip-see-prize">
+        <Text style={styles.prizeBtnText} numberOfLines={1}>{label}</Text>
+        <Ionicons name="chevron-forward" size={14} color="#FFFFFF" />
+      </Pressable>
+    </Animated.View>
   );
 }
 
@@ -253,8 +287,9 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   heroBottom: { position: 'absolute', left: Gutter, right: Gutter, bottom: Space.lg, flexDirection: 'row', alignItems: 'flex-end', gap: Space.sm },
   heroTitle:  { fontSize: 28, lineHeight: 32, fontWeight: '900', letterSpacing: -0.5, color: '#FFFFFF', textShadowColor: 'rgba(0,0,0,0.35)', textShadowRadius: 6 },
   heroSub:    { ...Type.caption, fontSize: 14, lineHeight: 18, fontWeight: '700', color: 'rgba(255,255,255,0.92)' },
-  heroHint:   { position: 'absolute', right: Gutter, top: '42%', width: 28, height: 28, borderRadius: 14, backgroundColor: 'rgba(0,0,0,0.35)',
-                alignItems: 'center', justifyContent: 'center' },
+  prizeBtn:   { flexDirection: 'row', alignItems: 'center', gap: 4, minHeight: 36, paddingHorizontal: 14, borderRadius: Radius.control,
+                backgroundColor: 'rgba(255,255,255,0.24)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.55)' },
+  prizeBtnText: { fontSize: 14, lineHeight: 18, fontWeight: '800', color: '#FFFFFF' },
   chip:       { backgroundColor: 'rgba(12,8,5,0.62)', borderRadius: 14, paddingHorizontal: 10, paddingVertical: 6, alignItems: 'center', minWidth: 76 },
   chipSmall:  { paddingVertical: 3, paddingHorizontal: 8, minWidth: 0, borderRadius: 12, backgroundColor: LS.board },
   chipRow:    { flexDirection: 'row', alignItems: 'center', gap: 5 },
@@ -264,7 +299,8 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   slim:       { position: 'absolute', top: 0, left: 0, right: 0, backgroundColor: c.bg, borderBottomWidth: 0 },
   slimRow:    { height: SLIM_BAR, flexDirection: 'row', alignItems: 'center', gap: Space.sm, paddingHorizontal: Gutter },
   slimThumb:  { width: 36, height: 36, borderRadius: 10, overflow: 'hidden' },
-  slimTitle:  { ...Type.label, fontSize: 16, flex: 1, color: c.text },
+  slimTitle:  { ...Type.label, fontSize: 16, color: c.text },
+  slimLink:   { ...Type.caption, fontSize: 12, lineHeight: 15, fontWeight: '800', color: c.primaryText },
   menu:       { position: 'absolute', top: 0, left: 0, right: 0, height: MENU_H, flexDirection: 'row', backgroundColor: c.bg,
                 borderBottomWidth: 1.5, borderBottomColor: c.line, paddingHorizontal: Space.sm },
   menuItem:   { flex: 1, alignItems: 'center', justifyContent: 'flex-end', minHeight: 44 },

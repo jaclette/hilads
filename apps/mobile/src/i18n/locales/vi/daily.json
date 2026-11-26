@@ -79,7 +79,14 @@
     "citiesToday_other": "Một trong {{count}} thành phố hôm nay",
     "onMap": "Ảnh đã lên bản đồ · Xem",
     "compareNow": "So sánh ngay",
-    "currencyA11y": "Tiền tệ"
+    "currencyA11y": "Tiền tệ",
+    "liveOnMap": "Ảnh đã lên · có trên bản đồ",
+    "seeWorld": "Xem cả thế giới chơi thế nào",
+    "chipStreak": "Ngày {{count}}",
+    "chipPoints_one": "+{{count}} điểm",
+    "chipPoints_other": "+{{count}} điểm",
+    "chipCities_one": "{{count}} thành phố cùng chơi",
+    "chipCities_other": "{{count}} thành phố cùng chơi"
   },
   "errors": {
     "already_posted": "Bạn đã chơi thử thách hôm nay rồi.",
@@ -533,7 +540,14 @@
         "story": "Story",
         "post": "Bài đăng"
       },
-      "shared": "Đã chia sẻ! Chờ xem ai vào chơi nhé 🌍"
+      "shared": "Đã chia sẻ! Chờ xem ai vào chơi nhé 🌍",
+      "questionFrom": "{{title}}: còn thành phố bạn trả lời sao?",
+      "leftToAnswer": "⏳ Còn {{time}} để trả lời",
+      "everyDay": "Mỗi ngày một thử thách mới",
+      "leftHours_one": "{{count}} giờ",
+      "leftHours_other": "{{count}} giờ",
+      "leftMinutes_one": "{{count}} phút",
+      "leftMinutes_other": "{{count}} phút"
     },
     "textProofAsk": "Mình đã chơi cho {{city}} trên Hilads: {{challenge}} {{question}}"
   },

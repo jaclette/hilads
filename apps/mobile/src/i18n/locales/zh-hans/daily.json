@@ -79,7 +79,14 @@
     "citiesToday_other": "今天 {{count}} 座城市之一",
     "onMap": "照片已经上地图了 · 去看看",
     "compareNow": "马上比一比",
-    "currencyA11y": "货币"
+    "currencyA11y": "货币",
+    "liveOnMap": "照片已发布 · 已上地图",
+    "seeWorld": "看看全世界怎么玩",
+    "chipStreak": "第 {{count}} 天",
+    "chipPoints_one": "+{{count}} 分",
+    "chipPoints_other": "+{{count}} 分",
+    "chipCities_one": "{{count}} 座城市已出战",
+    "chipCities_other": "{{count}} 座城市已出战"
   },
   "errors": {
     "already_posted": "今天的挑战你已经参加过了。",
@@ -533,7 +540,14 @@
         "story": "快拍",
         "post": "帖子"
       },
-      "shared": "已分享！看看谁会来玩 🌍"
+      "shared": "已分享！看看谁会来玩 🌍",
+      "questionFrom": "{{title}}：你的城市会怎么答？",
+      "leftToAnswer": "⏳ 作答还剩 {{time}}",
+      "everyDay": "每天一个新挑战",
+      "leftHours_one": "{{count}} 小时",
+      "leftHours_other": "{{count}} 小时",
+      "leftMinutes_one": "{{count}} 分钟",
+      "leftMinutes_other": "{{count}} 分钟"
     },
     "textProofAsk": "我在 Hilads 为 {{city}} 出战：{{challenge}} {{question}}"
   },

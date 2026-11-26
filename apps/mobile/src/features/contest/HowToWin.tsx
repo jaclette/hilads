@@ -1,7 +1,7 @@
 import { Text, View, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
-import { Space, Radius, Type, IconSize, type ThemeColors } from '@/constants';
+import { Space, Type, IconSize, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { contestDate, type ContestSeason } from './contest';
 
@@ -56,5 +56,5 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   body:       { flex: 1, paddingBottom: Space.md, gap: 2 },
   head:       { flexDirection: 'row', alignItems: 'center', gap: 6, minHeight: 30 },
   title:      { ...Type.label, fontWeight: '800', color: c.text, flexShrink: 1 },
-  text:       { ...Type.body, color: c.text, borderRadius: Radius.control },
+  text:       { ...Type.body, color: c.text },
 });

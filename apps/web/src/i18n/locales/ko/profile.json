@@ -308,7 +308,7 @@
       "youLabel": "나",
       "endsOn": "{{date}} 종료",
       "passFinal": "파이널 위크",
-      "passEnds": "시즌 종료",
+      "passEnds": "마지막 날",
       "passDaysLeft": "남은 날",
       "passNow": "지금",
       "launchGift": "출시 기념 선물이에요. 게임은 그대로: 하루에 사진 한 장.",
@@ -526,6 +526,11 @@
         "shareTextFirst": "Hilads Launch Trip 탑승 시작. 자리를 잡으세요 ✈️",
         "cardSeats": "{{players}} / {{threshold}}석이 찼어요",
         "cardGrab": "자리 잡기"
+      },
+      "prizeCta": "상품 보기 🎁",
+      "prize": {
+        "conditionsTitle": "날짜와 조건",
+        "rulesLink": "전체 규칙 보기"
       }
     }
   },

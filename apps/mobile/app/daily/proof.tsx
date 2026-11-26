@@ -1,7 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
-import { holdScreen } from '@/lib/celebrationQueue';
+import { holdScreen, settleScoreCelebration } from '@/lib/celebrationQueue';
+import { ackScoreCelebration, fetchScoreCelebration } from '@/api/challenges';
+import { refreshToday } from '@/hooks/useDaily';
 import {
-  ActivityIndicator, Alert, Platform, ScrollView,
+  ActivityIndicator, Alert, Platform,
   Text, TextInput, TouchableOpacity, View, StyleSheet,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -21,7 +23,6 @@ import * as Sentry from '@sentry/react-native';
 import { uploadFile } from '@/api/uploads';
 import { createDailyProof, dailyErrorCode, fetchDailyProof, fetchDailyToday, fetchDailyTodayCountries, updateDailyProof } from '@/api/daily';
 import * as Haptics from 'expo-haptics';
-import { Confetti } from '@/ui/joy';
 import { ApiError } from '@/api/client';
 import { requestFeatureLocation } from '@/lib/geoFeature';
 import { DualCamera, dualPreferred, type DualShot } from '@/features/daily/DualCamera';
@@ -38,9 +39,7 @@ import { PublishProgress, type PublishPhase } from '@/features/daily/PublishProg
 import { WhereStep } from '@/features/proof/WhereStep';
 import { PRECISION_ICON, getPhotoPrecision, type PhotoPrecision } from '@/features/daily/photoLocation';
 import * as Location from 'expo-location';
-import { SharePanel, type SharePanelHandle } from '@/features/share/SharePanel';
-import { proofShare, representShare, type ShareContent } from '@/features/share/content';
-import { ShareSheet } from '@/features/share/ShareSheet';
+import { PostSuccess } from '@/features/proof/PostSuccess';
 import { shortCityName } from '@/i18n/cityName';
 import { Button, Card, CityFlag, DualPhoto, IconButton, TextField } from '@/ui';
 import { AnswerInput } from '@/features/compare/AnswerInput';
@@ -49,7 +48,7 @@ import { answerValue, draftFrom, emptyDraft, hhmm, type AnswerDraft } from '@/fe
 import type { DailyProof, DailyProofInput, DailyToday, HomeCityRef } from '@/types';
 import { goBack as leave } from '@/lib/nav';
 import { KeyboardForm, useNextField } from '@/ui/keyboard';
-import { AmbientBats, BatBurst, SeasonalScope } from '@/features/event/SeasonalArt';
+import { SeasonalScope } from '@/features/event/SeasonalArt';
 import { setSeasonalEvent, useEventFeature, useSeasonalLive } from '@/features/event/seasonal';
 import type { TextInputInstance } from 'react-native';
 
@@ -118,10 +117,11 @@ function DailyProofScreenContent() {
   const [place, setPlace]       = useState<PlaceChoice | null>(null);
   const [position, setPosition] = useState<Position | null>(null);
   const [photo, setPhoto]       = useState<Photo | null>(null);
-  const [invite, setInvite]     = useState<ShareContent | null>(null);
-  const sharePanel = useRef<SharePanelHandle>(null);
   const [sent, setSent]         = useState<{ proof: DailyProof; body: string; next: string; nudge: boolean; cityFirst: boolean } | null>(null);
   const [citiesToday, setCitiesToday] = useState<number | null>(null);
+  // The success screen's chips: the points this photo earned, my streak.
+  const [won, setWon] = useState<{ points: number } | null>(null);
+  const [streak, setStreak] = useState<number | null>(null);
   const [caption, setCaption]   = useState('');
   const [amount, setAmount]     = useState('');
   const [currency, setCurrency] = useState(defaultCurrency(city?.country));
@@ -535,6 +535,19 @@ function DailyProofScreenContent() {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {});
       // How many cities are on today's board with mine (the celebration's line).
       fetchDailyTodayCountries({ cityId: saved.city?.id ?? null }).then(d => setCitiesToday(d.cityCount ?? d.items.length)).catch(() => {});
+      fetchDailyToday(city?.channelId).then(d => setStreak(d.streak ?? null)).catch(() => {});
+      // The points as a chip here. A plain photo reward (the photo, the streak, early, a stamp) is
+      // celebrated by this screen only: acknowledged, so the big reward screen doesn't pop up right
+      // after. A milestone (a podium, a Perfect week, a friend, the crew bonus) keeps the big screen.
+      if (account && !original) setTimeout(() => {
+        fetchScoreCelebration().then(r => {
+          if (!(r.points > 0) || !r.seen_until) return;
+          setWon({ points: r.points });
+          const milestone = (r.win?.sources ?? []).some(x => ['top', 'week', 'friends', 'crew'].includes(x.source) && x.points > 0);
+          if (!milestone) { void ackScoreCelebration(r.seen_until); settleScoreCelebration(r.seen_until); }
+          track('proof_sent_points', { points: r.points, milestone });
+        }).catch(() => {});
+      }, 900);
     } catch (err) {
       const code = dailyErrorCode(err);
       if (code === 'too_far' && err instanceof ApiError) {
@@ -591,59 +604,22 @@ function DailyProofScreenContent() {
     void askFirstProofPush();
   }, [left]); // eslint-disable-line react-hooks/exhaustive-deps
   const afterProof = (to: string) => leaveAfterPost(to, 'replace');
-  const closeSent = () => leaveAfterPost('/(tabs)/today', 'dismiss');
+  // Close: back to Today, fetched again (my photo is in).
+  const closeSent = () => { refreshToday(); leaveAfterPost('/(tabs)/today', 'dismiss'); };
 
   const challenge = today?.challenge ?? null;
 
-  // Sent (SPEC 9.14): the confirmation, then the share card and where to share it.
+  // Sent (docs/mockups/hilads_success_share_mockup.html): a compact header (my city is on the board,
+  // my photo is live on the map, the points / streak / cities chips), the share card as the hero (swipe:
+  // its templates), the targets right under it, one primary action: how the world played.
   if (sent && challenge) {
     return (
-      <SafeAreaView style={styles.container} edges={['top', 'bottom']} testID="proof-screen">
-        <View style={styles.sentNav}>
-          <IconButton icon="close" iconSize={24} label={t('close', { ns: 'common' })} onPress={closeSent} testID="proof-sent-close" />
-        </View>
-        <ScrollView contentContainerStyle={styles.sent}>
-          {/* A seasonal event's live day: a burst of bats instead of the checkmark. */}
-          {seasonal?.key === 'halloween' ? <BatBurst />
-            : <View style={styles.icon}><Ionicons name="checkmark" size={32} color={colors.primaryOnTint} /></View>}
-          {/* My city is on today's board (V3 polish 7): its flag, a burst of confetti, how many cities play with it. */}
-          <View style={styles.boardRow}>
-            {!!sent.proof.city?.country && <CityFlag country={sent.proof.city.country} size={22} />}
-            <Text style={styles.stepTitle} accessibilityRole="header">
-              {sent.proof.city?.name
-                ? t(seasonal?.key === 'halloween' ? 'event.halloween.onBoard' : 'proof.onBoard', { city: shortCityName(sent.proof.city.name) })
-                : t('proof.sentTitleNoCity')}
-            </Text>
-          </View>
-          {citiesToday !== null && citiesToday > 1 && <Text style={styles.boardSub}>{t('proof.citiesToday', { count: citiesToday })}</Text>}
-          <Text style={styles.muted}>{sent.body}</Text>
-          {/* On the map at once (an existing spot): its link. */}
-          {sent.next.startsWith('/(tabs)/map') && (
-            <Button variant="link" icon="location-outline" label={t('proof.onMap')} onPress={() => afterProof(sent.next)} />
-          )}
-          <Text style={styles.sentShare}>{t('share.afterProof')}</Text>
-          {/* The card (swipe: its templates; tap: full screen), the targets right under it. */}
-          <SharePanel ref={sharePanel} compact content={proofShare(sent.proof, challenge)} source="after_proof" previewHeight={320} />
-          {sent.cityFirst && !!sent.proof.city?.name && (
-            <Button variant="link" icon="paper-plane-outline" label={t('represent.invite')}
-                    onPress={() => setInvite(representShare(challenge, sent.proof.city!))} />
-          )}
-        </ScrollView>
-        <ShareSheet content={invite} source="represent_after_proof" onClose={() => setInvite(null)} />
-        {seasonal?.key !== 'halloween' && <Confetti run />}
-        <View style={styles.footer}>
-          {/* Votes go to the other cities: straight to how the world answered (COPY.md). */}
-          <Text style={styles.votesNext}>{t('vote.afterPost')}</Text>
-          {/* Share (the system sheet, the template on screen) and Compare (the world's cities side by side). */}
-          <View style={styles.footerRow}>
-            <Button label={`📤 ${t('share.title')}`} onPress={() => sharePanel.current?.shareSheet()} style={styles.footerBtn} testID="proof-sent-share" />
-            <Button variant="secondary" label={`🌍 ${t('proof.compareNow')}`} onPress={() => afterProof('/daily/countries?source=after_proof')} style={styles.footerBtn} />
-          </View>
-          {sent.nudge && <Button variant="link" label={t('propose.cta')} onPress={() => afterProof('/daily/propose?source=after_proof')} />}
-        </View>
-        <AmbientBats top={60} />
+      <PostSuccess proof={sent.proof} challenge={challenge} citiesToday={citiesToday} points={won?.points ?? null} streak={streak}
+                   halloween={seasonal?.key === 'halloween'} onClose={closeSent}
+                   onMap={() => afterProof(sent.next.startsWith('/(tabs)/map') ? sent.next : '/(tabs)/map')}
+                   onWorld={() => afterProof('/daily/countries?source=after_proof')}>
         {stampThunk && challenge.special && <EventStampThunk name={challenge.special.name} onDone={() => setStampThunk(false)} />}
-      </SafeAreaView>
+      </PostSuccess>
     );
   }
 
@@ -905,8 +881,6 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   challenge:   { fontSize: FontSizes.sm, fontWeight: '700', color: c.muted, paddingHorizontal: Spacing.md, paddingBottom: Space.sm },
   icon:        { width: 64, height: 64, borderRadius: Radius.full, backgroundColor: c.primaryTint, alignItems: 'center', justifyContent: 'center' },
   stepTitle:   { fontSize: FontSizes.lg, fontWeight: '800', color: c.text, textAlign: 'center' },
-  boardRow:     { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: Space.sm, flexWrap: 'wrap' },
-  boardSub:     { fontSize: FontSizes.body, fontWeight: '700', color: c.primaryText, textAlign: 'center' },
   cta:         { alignSelf: 'stretch' },
   body:        { padding: Spacing.md, gap: Space.sm, paddingBottom: 30 },
   photoWrap:   { gap: Space.sm },
@@ -927,13 +901,8 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   priceRow:    { flexDirection: 'row', gap: Space.sm },
   currency:    { width: 84, textAlign: 'center', fontWeight: '700' },
   muted:       { fontSize: FontSizes.sm, color: c.muted, textAlign: 'center' },
-  sentNav:     { flexDirection: 'row', paddingHorizontal: Spacing.md, paddingTop: Space.xs },
-  sent:        { alignItems: 'center', padding: Spacing.lg, paddingTop: 0, gap: Space.md },
-  footerBtn:   { flex: 1 },
-  sentShare:   { alignSelf: 'stretch', fontSize: FontSizes.md, fontWeight: '800', color: c.text, marginTop: Space.md },
   link:        { fontSize: FontSizes.sm, fontWeight: '700', color: c.primaryText },
   footer:      { padding: Spacing.md, borderTopWidth: 1, borderTopColor: c.line, backgroundColor: c.bg },
-  votesNext:   { fontSize: FontSizes.sm, fontWeight: '700', color: c.text, textAlign: 'center', marginBottom: Space.md },
   footerRow:   { flexDirection: 'row', gap: Space.md },
   kicker:      { fontSize: FontSizes.xs, fontWeight: '800', color: c.primaryText, textTransform: 'uppercase', letterSpacing: 0.6, marginTop: Space.sm },
   question:    { fontSize: FontSizes.xl, lineHeight: 30, fontWeight: '800', color: c.text, letterSpacing: -0.3 },

@@ -320,7 +320,7 @@
       "youLabel": "Jij",
       "endsOn": "Eindigt op {{date}}",
       "passFinal": "Laatste week",
-      "passEnds": "Einde seizoen",
+      "passEnds": "Laatste dag",
       "passDaysLeft": "Dagen over",
       "passNow": "Nu",
       "launchGift": "Ons lanceringscadeau. Het spel blijft hetzelfde: één foto per dag.",
@@ -538,6 +538,11 @@
         "shareTextFirst": "De Hilads Launch Trip is aan het boarden. Pak je stoel ✈️",
         "cardSeats": "{{players}} / {{threshold}} stoelen bezet",
         "cardGrab": "Pak de jouwe"
+      },
+      "prizeCta": "Bekijk de prijs 🎁",
+      "prize": {
+        "conditionsTitle": "Data en voorwaarden",
+        "rulesLink": "Alle regels"
       }
     }
   },

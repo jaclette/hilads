@@ -83,7 +83,14 @@
     "citiesToday_other": "आज के {{count}} शहरों में से एक",
     "onMap": "आपकी फ़ोटो अब मैप पर है · देखें",
     "compareNow": "अभी तुलना करें",
-    "currencyA11y": "करेंसी"
+    "currencyA11y": "करेंसी",
+    "liveOnMap": "आपकी फ़ोटो लाइव है · मैप पर",
+    "seeWorld": "देखें दुनिया ने कैसे खेला",
+    "chipStreak": "दिन {{count}}",
+    "chipPoints_one": "+{{count}} पॉइंट",
+    "chipPoints_other": "+{{count}} पॉइंट",
+    "chipCities_one": "{{count}} शहर शामिल",
+    "chipCities_other": "{{count}} शहर शामिल"
   },
   "errors": {
     "already_posted": "आज का चैलेंज आप खेल चुके हैं।",
@@ -554,7 +561,14 @@
         "story": "स्टोरी",
         "post": "पोस्ट"
       },
-      "shared": "शेयर हो गया! देखते हैं कौन खेलता है 🌍"
+      "shared": "शेयर हो गया! देखते हैं कौन खेलता है 🌍",
+      "questionFrom": "{{title}}: और आपके शहर का जवाब क्या है?",
+      "leftToAnswer": "⏳ जवाब देने के लिए {{time}} बाकी",
+      "everyDay": "हर दिन नया चैलेंज",
+      "leftHours_one": "{{count}} घंटा",
+      "leftHours_other": "{{count}} घंटे",
+      "leftMinutes_one": "{{count}} मिनट",
+      "leftMinutes_other": "{{count}} मिनट"
     },
     "textProofAsk": "मैंने Hilads पर {{city}} के लिए खेला: {{challenge}} {{question}}"
   },

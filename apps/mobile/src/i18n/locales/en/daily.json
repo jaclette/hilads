@@ -83,7 +83,14 @@
     "citiesToday_other": "One of {{count}} cities today",
     "onMap": "Your photo is now on the map · See it",
     "compareNow": "Compare now",
-    "currencyA11y": "Currency"
+    "currencyA11y": "Currency",
+    "liveOnMap": "Your photo is live · on the map",
+    "seeWorld": "See how the world played",
+    "chipPoints_one": "+{{count}} pt",
+    "chipPoints_other": "+{{count}} pts",
+    "chipStreak": "Day {{count}}",
+    "chipCities_one": "{{count}} city in",
+    "chipCities_other": "{{count}} cities in"
   },
   "errors": {
     "already_posted": "You already played today's challenge.",
@@ -554,7 +561,14 @@
         "story": "Story",
         "post": "Post"
       },
-      "shared": "Shared! Let's see who plays 🌍"
+      "shared": "Shared! Let's see who plays 🌍",
+      "questionFrom": "{{title}}: what's YOUR city's answer?",
+      "leftHours_one": "{{count}}h",
+      "leftHours_other": "{{count}}h",
+      "leftMinutes_one": "{{count}} min",
+      "leftMinutes_other": "{{count}} min",
+      "leftToAnswer": "⏳ {{time}} left to answer",
+      "everyDay": "New challenge every day"
     },
     "textProofAsk": "I played for {{city}} on Hilads: {{challenge}} {{question}}"
   },

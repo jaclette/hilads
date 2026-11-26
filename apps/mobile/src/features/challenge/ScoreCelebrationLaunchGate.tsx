@@ -5,7 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useApp } from '@/context/AppContext';
 import { socket } from '@/lib/socket';
 import { onDailyDropped } from '@/lib/dailyEvents';
-import { onScoreCelebrationRequest, useCelebrationTurn } from '@/lib/celebrationQueue';
+import { onScoreCelebrationRequest, onScoreCelebrationSettled, useCelebrationTurn } from '@/lib/celebrationQueue';
 import { track } from '@/services/analytics';
 import { ShareSheet } from '@/features/share/ShareSheet';
 import { proofShare, type ShareContent } from '@/features/share/content';
@@ -64,6 +64,11 @@ export function ScoreCelebrationLaunchGate() {
     if (!userId) return;
     const offs = [
       onScoreCelebrationRequest(() => { setTimeout(() => void refetch(), 1500); }),
+      // Celebrated on the post's success screen (a chip): drop it, and remember it on the phone.
+      onScoreCelebrationSettled(until => {
+        AsyncStorage.setItem(SEEN_KEY(userId), until).catch(() => {});
+        setData(prev => (prev?.seen_until && prev.seen_until <= until ? null : prev));
+      }),
       onDailyDropped(() => { setTimeout(() => void refetch(), 4000); }),
       ...['challenge_accepted', 'challenge_created_self', 'notification']
         .map(ev => socket.on(ev, () => { void refetch(); })),

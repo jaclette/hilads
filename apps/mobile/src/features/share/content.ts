@@ -30,7 +30,11 @@ export type ShareContent =
       /** Today's question and my answer, for the share line (COPY.md). */
       question?: string | null; answer?: string | null;
       /** The challenge is over (its results are out): the Result card is offered (else not). */
-      resultsOut?: boolean }
+      resultsOut?: boolean;
+      /** My caption (the card's big line when there is no answer) and when the challenge closes (unix s: "9h left"). */
+      caption?: string | null; endsAt?: number | null;
+      /** My invite code: the shared link carries it (?ref=), so a friend who signs up from it counts for me. */
+      refCode?: string | null }
   | { type: 'spot'; id: string; photoUrl: string | null; theme: ThemeKey | null; name: string; city: City; by: string | null }
   | { type: 'today'; photoUrl: string | null; theme: ThemeKey | null; themeLabel?: string | null; date?: string; text: string; city: City;
       /** "Answer for Saigon with me on Hilads." (SPEC 9.16) instead of the challenge line. */
@@ -67,6 +71,8 @@ export function proofShare(proof: DailyProof, challenge: DailyChallenge): ShareC
     question: challenge.compare?.question ?? null,
     answer: proof.answer ? answerText(proof.answer, i18n.language) : null,
     resultsOut: !challenge.isActive,
+    caption: proof.caption?.trim() || null,
+    endsAt: challenge.isActive ? challenge.endsAt : null,
   };
 }
 
@@ -101,7 +107,8 @@ export function shareUrl(c: ShareContent): string {
   const url = `${BASE_URL}${sharePrefix()}${path}`;
   if (c.type !== 'proof') return url;
   const q = [c.username ? `from=${encodeURIComponent(c.username)}` : null,
-             c.city?.name ? `city=${encodeURIComponent(shortCityName(c.city.name))}` : null].filter(Boolean);
+             c.city?.name ? `city=${encodeURIComponent(shortCityName(c.city.name))}` : null,
+             c.refCode ? `ref=${encodeURIComponent(c.refCode)}` : null].filter(Boolean);
   return q.length ? `${url}?${q.join('&')}` : url;
 }
 

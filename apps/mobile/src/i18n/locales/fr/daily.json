@@ -87,7 +87,16 @@
     "citiesToday_other": "Une des {{count}} villes du jour",
     "onMap": "Ta photo est sur la carte · Voir",
     "compareNow": "Comparer maintenant",
-    "currencyA11y": "Devise"
+    "currencyA11y": "Devise",
+    "liveOnMap": "Ta photo est en ligne · sur la carte",
+    "seeWorld": "Vois comment le monde a joué",
+    "chipStreak": "Jour {{count}}",
+    "chipPoints_one": "+{{count}} pt",
+    "chipPoints_other": "+{{count}} pts",
+    "chipPoints_many": "+{{count}} pts",
+    "chipCities_one": "{{count}} ville en jeu",
+    "chipCities_other": "{{count}} villes en jeu",
+    "chipCities_many": "{{count}} de villes en jeu"
   },
   "errors": {
     "already_posted": "Tu as déjà joué au défi du jour.",
@@ -574,7 +583,16 @@
         "story": "Story",
         "post": "Post"
       },
-      "shared": "Partagé ! Voyons qui va jouer 🌍"
+      "shared": "Partagé ! Voyons qui va jouer 🌍",
+      "questionFrom": "{{title}} : et ta ville, elle répond quoi ?",
+      "leftToAnswer": "⏳ Encore {{time}} pour répondre",
+      "everyDay": "Un nouveau défi chaque jour",
+      "leftHours_one": "{{count}} h",
+      "leftHours_other": "{{count}} h",
+      "leftHours_many": "{{count}} h",
+      "leftMinutes_one": "{{count}} min",
+      "leftMinutes_other": "{{count}} min",
+      "leftMinutes_many": "{{count}} min"
     },
     "textProofAsk": "J'ai joué pour {{city}} sur Hilads : {{challenge}} {{question}}"
   },

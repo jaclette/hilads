@@ -79,7 +79,14 @@
     "citiesToday_other": "Salah satu dari {{count}} kota hari ini",
     "onMap": "Fotomu sudah ada di peta · Lihat",
     "compareNow": "Bandingkan sekarang",
-    "currencyA11y": "Mata uang"
+    "currencyA11y": "Mata uang",
+    "liveOnMap": "Fotomu sudah tayang · di peta",
+    "seeWorld": "Lihat gimana dunia main",
+    "chipStreak": "Hari ke-{{count}}",
+    "chipPoints_one": "+{{count}} poin",
+    "chipPoints_other": "+{{count}} poin",
+    "chipCities_one": "{{count}} kota ikut",
+    "chipCities_other": "{{count}} kota ikut"
   },
   "errors": {
     "already_posted": "Kamu sudah main tantangan hari ini.",
@@ -533,7 +540,14 @@
         "story": "Story",
         "post": "Postingan"
       },
-      "shared": "Sudah dibagikan! Yuk lihat siapa yang ikut main 🌍"
+      "shared": "Sudah dibagikan! Yuk lihat siapa yang ikut main 🌍",
+      "questionFrom": "{{title}}: apa jawaban kotaMU?",
+      "leftToAnswer": "⏳ Sisa {{time}} buat jawab",
+      "everyDay": "Tantangan baru tiap hari",
+      "leftHours_one": "{{count}} jam",
+      "leftHours_other": "{{count}} jam",
+      "leftMinutes_one": "{{count}} menit",
+      "leftMinutes_other": "{{count}} menit"
     },
     "textProofAsk": "Aku main untuk {{city}} di Hilads: {{challenge}} {{question}}"
   },

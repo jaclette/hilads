@@ -270,7 +270,7 @@
     "youLabel": "Bạn",
     "endsOn": "Kết thúc {{date}}",
     "passFinal": "Tuần cuối",
-    "passEnds": "Kết thúc mùa",
+    "passEnds": "Ngày cuối",
     "passDaysLeft": "Còn lại",
     "passNow": "Ngay bây giờ",
     "launchGift": "Quà ra mắt của chúng tôi. Trò chơi vẫn vậy: mỗi ngày một ảnh.",
@@ -488,6 +488,11 @@
       "shareTextFirst": "Hilads Launch Trip đang mời hành khách lên máy bay. Giữ ghế của bạn ✈️",
       "cardSeats": "Đã kín {{players}} / {{threshold}} ghế",
       "cardGrab": "Giữ ghế ngay"
+    },
+    "prizeCta": "Xem giải thưởng 🎁",
+    "prize": {
+      "conditionsTitle": "Ngày và điều kiện",
+      "rulesLink": "Xem toàn bộ thể lệ"
     }
   }
 }

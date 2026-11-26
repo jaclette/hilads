@@ -79,7 +79,14 @@
     "citiesToday_other": "오늘 참여한 {{count}}개 도시 중 하나",
     "onMap": "내 사진이 지도에 올라갔어요 · 보기",
     "compareNow": "지금 비교하기",
-    "currencyA11y": "통화"
+    "currencyA11y": "통화",
+    "liveOnMap": "사진이 공개됐어요 · 지도에서 보여요",
+    "seeWorld": "전 세계 플레이 보기",
+    "chipStreak": "{{count}}일째",
+    "chipPoints_one": "+{{count}}점",
+    "chipPoints_other": "+{{count}}점",
+    "chipCities_one": "{{count}}개 도시 참여",
+    "chipCities_other": "{{count}}개 도시 참여"
   },
   "errors": {
     "already_posted": "오늘 챌린지에 이미 참여했어요.",
@@ -533,7 +540,14 @@
         "story": "스토리",
         "post": "게시물"
       },
-      "shared": "공유 완료! 누가 참여할지 볼까요 🌍"
+      "shared": "공유 완료! 누가 참여할지 볼까요 🌍",
+      "questionFrom": "{{title}}: 여러분 도시의 답은?",
+      "leftToAnswer": "⏳ 답변 마감까지 {{time}}",
+      "everyDay": "매일 새로운 챌린지",
+      "leftHours_one": "{{count}}시간",
+      "leftHours_other": "{{count}}시간",
+      "leftMinutes_one": "{{count}}분",
+      "leftMinutes_other": "{{count}}분"
     },
     "textProofAsk": "Hilads에서 {{city}} 대표로 참여했어요: {{challenge}} {{question}}"
   },

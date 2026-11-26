@@ -296,7 +296,7 @@
     "youLabel": "Toi",
     "endsOn": "Fin le {{date}}",
     "passFinal": "Dernière semaine",
-    "passEnds": "Fin de saison",
+    "passEnds": "Dernier jour",
     "passDaysLeft": "Jours restants",
     "passNow": "Maintenant",
     "launchGift": "Notre cadeau de lancement. Le jeu reste le même : une photo par jour.",
@@ -515,6 +515,11 @@
       "shareTextFirst": "Embarquement immédiat pour le Launch Trip Hilads. Prends ta place ✈️",
       "cardSeats": "{{players}} / {{threshold}} places prises",
       "cardGrab": "Prends la tienne"
+    },
+    "prizeCta": "Voir le lot 🎁",
+    "prize": {
+      "conditionsTitle": "Dates et conditions",
+      "rulesLink": "Tout le règlement"
     }
   }
 }

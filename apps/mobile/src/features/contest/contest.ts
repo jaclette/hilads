@@ -21,7 +21,7 @@ export interface ContestSeason {
   /** What the #1 wins if the players' goal isn't reached (Admin; a placeholder until set). */
   fallbackPrize?: string;
   /** The campaign's tab: its label and Ionicons name (Admin; default "Trip" + airplane). */
-  tab?: { label: string; icon: string };
+  tab?: { label: string; icon: string; prizeCta?: string };
   points?: ContestPoints;
   /** The confirmed winner (Admin › Winner & export), else null. */
   winner?: { userId: string; username: string | null; displayName: string | null; photoUrl: string | null } | null;

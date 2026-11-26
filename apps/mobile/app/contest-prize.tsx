@@ -78,7 +78,7 @@ export default function ContestPrizeScreen() {
         </View>
       ) : (
         <ScrollView contentContainerStyle={{ paddingBottom: 120 + insets.bottom }} testID="contest-prize">
-          <PrizePhotos photos={s.photos ?? []} height={Math.min(560, Math.round(height * 0.58))}>
+          <PrizePhotos photos={s.photos ?? []} height={Math.min(560, Math.round(height * 0.58))} zoomable>
             <Text style={styles.kicker}>{upcoming ? t('contest.teaserTitle') : s.name}</Text>
             <Text style={styles.title} accessibilityRole="header">{s.prize?.title || s.name}</Text>
             <Text style={styles.winLine}>🏆 {t('contest.winLine')}</Text>
@@ -106,6 +106,27 @@ export default function ContestPrizeScreen() {
                 <Text style={styles.metaValue}>{final ? t('contest.passNow') : contestDate(s.finalWeekStart, i18n.language)}</Text></View>
               <View style={styles.metaCol}><Text style={styles.metaLabel}>{t('contest.passEnds')}</Text>
                 <Text style={styles.metaValue}>{contestDate(s.endDate, i18n.language)}</Text></View>
+            </View>
+            {/* Dates and conditions, in plain words, then the whole Rules section of the Trip tab. */}
+            <View style={styles.howCard}>
+              <Text style={styles.howTitle} accessibilityRole="header">{t('trip.prize.conditionsTitle')}</Text>
+              {[
+                t('trip.rules.final1', { date: contestDate(s.finalWeekStart, i18n.language) }),
+                t('trip.rules.how3'),
+                data?.counter ? t('trip.rules.goalText', { players: data.counter.threshold, photos: data.counter.photos }) : null,
+                t('trip.rules.fallbackText', { date: contestDate(s.endDate, i18n.language), prize: s.fallbackPrize ?? '' }),
+                `${t('trip.rules.who1')} ${t('trip.rules.who2')} ${t('trip.rules.who3')}`,
+              ].filter(Boolean).map((line, i) => (
+                <View key={i} style={styles.condRow}>
+                  <Ionicons name="checkmark" size={IconSize.sm} color={colors.green} />
+                  <Text style={[styles.text, { flex: 1 }]}>{line}</Text>
+                </View>
+              ))}
+              <Pressable onPress={() => { track('trip_cta', { cta: 'prize_rules', section: 'prize', phase: s.phase }); router.navigate({ pathname: '/(tabs)/trip', params: { section: 'rules' } } as never); }}
+                         accessibilityRole="link" hitSlop={8} style={[styles.link, { paddingBottom: Space.md }]} testID="prize-rules">
+                <Text style={styles.linkText}>{t('trip.prize.rulesLink')}</Text>
+                <Ionicons name="chevron-forward" size={IconSize.sm} color={colors.primaryText} />
+              </Pressable>
             </View>
             <View style={styles.howCard}>
               <Text style={styles.howTitle} accessibilityRole="header">{t('contest.howWinTitle')}</Text>
@@ -162,6 +183,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   warmHead:  { flexDirection: 'row', alignItems: 'center', gap: Space.xs },
   howCard:   { padding: Space.md, paddingBottom: 0, borderRadius: Radius.card, backgroundColor: c.bg2, borderWidth: 1, borderColor: c.line, gap: Space.sm, marginTop: Space.xs },
   howTitle:  { ...Type.title, color: c.text },
+  condRow:   { flexDirection: 'row', alignItems: 'flex-start', gap: Space.sm },
   text:      { ...Type.body, fontSize: 16, lineHeight: 24, color: c.text },
   muted:     { ...Type.caption, color: c.muted },
   meta:      { flexDirection: 'row', gap: Space.sm, marginTop: Space.xs },
