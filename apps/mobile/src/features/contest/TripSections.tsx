@@ -484,8 +484,8 @@ export function TripRules({ season: s, counter, onCta }: { season: ContestSeason
   const table: [string, string][] = [
     [t('trip.rules.play'), `+${p.play}`],
   ];
+  // The perfect-week bonus is not counted in the campaign (the game keeps it).
   const tableAfter: [string, string][] = [
-    [t('trip.rules.week'), `+${p.week}`],
     [t('trip.rules.friend', { count: p.friendsPerMonth }), `+${p.friend}`],
     [t('trip.rules.crew', { size: p.crewSize }), `+${p.crew}`],
   ];
@@ -524,7 +524,7 @@ export function TripRules({ season: s, counter, onCta }: { season: ContestSeason
             <Text style={styles.tableValue}>{value}</Text>
           </View>
         ))}
-        <Text style={styles.muted}>{t('trip.rules.pointsNote', { date: d(s.startDate) })}</Text>
+        <Text style={styles.muted}>{t('trip.rules.pointsNoteNoWeek', { date: d(s.startDate) })}</Text>
       </Card>
 
       <Card style={styles.card}>

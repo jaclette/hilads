@@ -694,7 +694,8 @@ function Rules({ s, counter, t, i18n, onCta }) {
   const hs = s.rules.headstartTopN
   const goal = contestGoal(counter)
   const table = [
-    [t('trip.rules.week'), `+${p.week}`], [t('trip.rules.friend', { count: p.friendsPerMonth }), `+${p.friend}`],
+    // The perfect-week bonus is not counted in the campaign (the game keeps it).
+    [t('trip.rules.friend', { count: p.friendsPerMonth }), `+${p.friend}`],
     [t('trip.rules.crew', { size: p.crewSize }), `+${p.crew}`],
   ]
   return (
@@ -713,7 +714,7 @@ function Rules({ s, counter, t, i18n, onCta }) {
           {p.podium.map((pts, i) => <div key={`p${i}`} className="tr-place"><dt><RankMedal rank={i + 1} podium size={28} />{t('trip.rules.place', { rank: i + 1 })}</dt><dd>+{pts}</dd></div>)}
           {table.map(([label, value], i) => <div key={i}><dt>{label}</dt><dd>{value}</dd></div>)}
         </dl>
-        <p className="tr-muted">{t('trip.rules.pointsNote', { date: d(s.startDate) })}</p>
+        <p className="tr-muted">{t('trip.rules.pointsNoteNoWeek', { date: d(s.startDate) })}</p>
       </section>
       <section className="tr-card">
         <h3 className="tr-card-title">{t('trip.rules.finalTitle')}</h3>

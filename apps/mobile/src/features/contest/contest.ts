@@ -2,7 +2,7 @@ import { api } from '@/api/client';
 
 /**
  * The campaign (GET /contest, "Launch Season" in the back office): a separate layer that reads the
- * regular Hilads points (play, podium, perfect week, friends) on its challenges, never writes them.
+ * regular Hilads points (play, podium, friends; not the perfect week) on its challenges, never writes them.
  * Phases: upcoming (teaser) · season (before the final week) · final · over (results being checked)
  * · ended (the winner, shown a few days, then the tab goes).
  */
@@ -11,7 +11,7 @@ export type ContestPhase = 'upcoming' | 'season' | 'final' | 'over' | 'ended';
 /** The regular points the campaign counts (config/scoring.php), for the Rules section. */
 export interface ContestPoints { play: number; podium: [number, number, number]; week: number; friend: number; crew: number; crewSize: number; friendsPerMonth: number }
 
-/** Points by kind: play, podium, perfect week, friends (+ crew bonus). */
+/** Points by kind: play, podium, friends (+ crew bonus); week is always 0 (the perfect week isn't counted). */
 export interface ContestBy { play: number; podium: number; week: number; friends: number }
 
 export interface ContestSeason {

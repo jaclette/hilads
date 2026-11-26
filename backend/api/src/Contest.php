@@ -11,8 +11,8 @@ declare(strict_types=1);
  * unchanged: a participant's points count for the campaign automatically.
  *
  * Scoring (since 2026-11-26, the owner's option B: one number everywhere): the campaign adds up
- * the REGULAR Hilads points (config/scoring.php season_kinds: play, podium, perfect week, friends,
- * crew bonus) earned on challenges dated inside the campaign, from the challenge day the player
+ * the REGULAR Hilads points (config/scoring.php season_kinds: play, podium, friends, crew bonus;
+ * NOT the perfect-week bonus, since 2026-11-26) earned on challenges dated inside the campaign, from the challenge day the player
  * joined. The regular invite rule applies as it is (the friend's first approved photo).
  * - Before the final week: points on challenges dated start_date … final_week_start - 1.
  * - At the final week the top headstart_top_n are frozen (N points for #1 … 1 for #N).
@@ -251,9 +251,15 @@ final class Contest
 
     // ── Standings ───────────────────────────────────────────────────────────
 
-    /** The regular points a campaign adds up, by group (config/scoring.php season_kinds). */
+    /**
+     * The regular points a campaign adds up, by group: the score_events the permanent scoring wrote
+     * (DailyPoints), read only. The perfect-week bonus is NOT one of them (2026-11-26): it keeps its +30
+     * in the game and its rankings, never in the campaign (neither the ranking before the final week,
+     * which sets the head start, nor the final week). The 'week' group stays in the payloads at 0 for
+     * older apps.
+     */
     public const KIND_GROUPS = ['daily_proof' => 'play', 'daily_top1' => 'podium', 'daily_top2' => 'podium', 'daily_top3' => 'podium',
-                                'perfect_week' => 'week', 'friend_joined' => 'friends', 'crew_bonus' => 'friends'];
+                                'friend_joined' => 'friends', 'crew_bonus' => 'friends'];
 
     /** The standings of a season (cached), the head-start frozen first when it is due. */
     public static function standings(array $season): array
@@ -780,10 +786,9 @@ Before {{start}}, the app may show a preview of the Contest. Points earned befor
 - To enter, tap "Join" in the app during the Contest, confirm you are 18 or older, choose your country and accept these rules.
 
 ## 4. Points
-The Contest uses the regular Hilads points, the same ones as in the app's rankings. They count for the Contest from the day you join, on the daily challenges dated during the Contest:
+The Contest uses the regular Hilads points, the same ones as in the app's rankings, except the perfect-week bonus, which doesn't count in the Contest. They count for the Contest from the day you join, on the daily challenges dated during the Contest:
 - **Play:** +{{play}} points for each daily challenge you play (one approved photo, once a day).
 - **Podium:** +{{top1}}, +{{top2}} or +{{top3}} points when your photo is 1st, 2nd or 3rd of the day worldwide (most likes; a tie goes to the photo posted first).
-- **Perfect week:** +{{week}} points when you play every published challenge of a Monday-to-Sunday week. It counts on the Sunday the week ends.
 - **Friends:** +{{friend}} points when a friend who signed up with your invite link has their first photo approved, for up to {{friends_month}} friends a calendar month, and +{{crew}} more points for your {{crew_size}}th friend of the month. A friend who already had an account, or who uses the same phone as you, doesn't count.
 
 Points earned before you join, or on challenges dated outside the Contest, don't count. Photos and points removed by moderation are removed from the Contest too.

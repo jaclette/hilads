@@ -50,10 +50,32 @@ final class ContestTest extends TestCase
             self::e('a', '2026-12-23', 'daily_vote', 99),     // not a campaign kind (no vote points in v2)
         ], [], []);
         $r = $st['rows']['a'];
-        self::assertSame(130, $r['seasonPoints']);
-        self::assertSame(['play' => 10, 'podium' => 30, 'week' => 30, 'friends' => 60], $r['seasonBy']);
+        self::assertSame(100, $r['seasonPoints'], 'the perfect week is not a campaign kind');
+        self::assertSame(['play' => 10, 'podium' => 30, 'week' => 0, 'friends' => 60], $r['seasonBy']);
         self::assertSame(20, $r['finalPoints'], 'the final week starts from zero');
         self::assertSame(['play' => 10, 'podium' => 10, 'week' => 0, 'friends' => 0], $r['finalBy']);
+    }
+
+    public function testThePerfectWeekNeverCountsInTheCampaignNorInTheHeadStart(): void
+    {
+        // b plays 7 days (70) + a perfect week (30 in the game); a plays 7 days (70) + a podium (+10).
+        $events = [];
+        foreach (range(1, 7) as $d) {
+            $date = sprintf('2026-12-%02d', $d);
+            $events[] = self::e('a', $date, 'daily_proof', 10);
+            $events[] = self::e('b', $date, 'daily_proof', 10, 500);
+        }
+        $events[] = self::e('b', '2026-12-07', 'perfect_week', 30, 600);
+        $events[] = self::e('a', '2026-12-07', 'daily_top3', 10);
+        // ... and a perfect week inside the final week doesn't count either.
+        $events[] = self::e('b', '2026-12-28', 'perfect_week', 30, 700);
+        $st = Contest::compute(self::SEASON, [self::p('a'), self::p('b')], $events, [], []);
+        self::assertSame(70, $st['rows']['b']['seasonPoints']);
+        self::assertSame(0, $st['rows']['b']['seasonBy']['week']);
+        self::assertSame(0, $st['rows']['b']['finalPoints']);
+        self::assertSame(['a', 'b'], $st['season'], 'a is ahead: without the perfect week b has 70, a has 80');
+        self::assertSame(Contest::headstartPoints(1, 10), 10);
+        self::assertNotContains('perfect_week', array_keys(Contest::KIND_GROUPS));
     }
 
     public function testPointsCountFromTheDayYouJoined(): void

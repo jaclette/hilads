@@ -468,7 +468,8 @@
       "podiumTitle": "Podium of the day (most likes worldwide)",
       "place": "{{rank, ordinal}} place",
       "goalProgress": "{{players}} of {{goal}} players on board so far.",
-      "goalReached": "Goal reached: {{goal}} players are on board 🎉"
+      "goalReached": "Goal reached: {{goal}} players are on board 🎉",
+      "pointsNoteNoWeek": "The same points as everywhere in Hilads, except the perfect-week bonus, from the day you join, on the challenges from {{date}} on."
     },
     "over": {
       "title": "The race is over",
