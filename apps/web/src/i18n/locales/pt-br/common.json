@@ -171,7 +171,7 @@
   "represent": {
     "locationNeeded": "Permita a localização para jogar por onde você está.",
     "pioneer": "Pioneer de {{city}}",
-    "spotOne": "Lugar #1 em {{city}}",
+    "spotOne": "Primeiro lugar em {{city}}",
     "mapEmpty": "{{city}} ainda não está no mapa do mundo. Bora colocar?",
     "invite": "Convide um amigo",
     "share": "Jogue por {{city}} comigo no Hilads.",

@@ -191,7 +191,7 @@ export default function PassportScreen({ account, guestName, guestMode, cityId, 
           <Row icon="people-outline" tone="night_out" label={t('passport.friends')} value={counts.friends !== null ? String(counts.friends) : ''} onClick={() => onOpen('friends')} />
           <Row label={t('passport.mostLocalAllTime')} icon={counts.alltime && counts.alltime <= 3 ? null : 'trophy-outline'} tone="gold"
                leading={counts.alltime && counts.alltime <= 3 ? <RankMedal rank={counts.alltime} size={36} /> : null}
-               value={counts.alltime ? (city ? t('passport.allTimeRank', { rank: counts.alltime, city }) : `#${counts.alltime}`) : ''}
+               value={counts.alltime ? (city ? t('passport.allTimeRank', { rank: counts.alltime, city }) : String(counts.alltime)) : ''}
                onClick={() => onOpen('alltime')} />
         </div>
 

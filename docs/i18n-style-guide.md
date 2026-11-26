@@ -203,6 +203,16 @@ When a term reads wrong in a specific sentence (grammar, idiom), keep the meanin
 - Numbers, decimals, distances and currencies go through `Intl` with the UI language: 1,5 km in fr / de / vi / es / it / pt / nl / id / ru, 1.5 km in en / ja / zh / ko / th / hi / fil / ar(Latin digits).
 - Dates and relative times: `Intl.DateTimeFormat` / `Intl.RelativeTimeFormat` with the UI language (app on Hermes: `common:time.*` keys, with plural forms).
 
+### Ranks: no "#", ever (owner's rule, 2026-11-26)
+
+A place in a ranking is never written with "#" ("#1", "#{{rank}}"), in the app, on the web, in pushes, emails and share cards.
+
+- **In sentences, use words.** "the winner", "finish first", "You're 12th", "2 likes from first place", "Your photo finished 3rd in the world". Not "the #1", "You're #12", "to #3".
+- **The number is an ordinal in the language**, through the `ordinal` formatter: write `{{rank, ordinal}}` (app and web) or `{rank_ordinal}` (pushes, `DailyPushText`). It gives en 1st / 2nd / 3rd / 12th, fr 1er / 2e, es 1.º, pt-pt 1.º, pt-br and it 1º, de 1., nl 1e, ru 1-й, ja 1位, ko 1위, zh 第1名, th อันดับ 1, vi hạng 1, id ke-1, fil ika-1, hi 1ला / 2रा / 5वां, ar الـ1. Build the sentence around it the way the language says a place ("Tu es 12e", "Bạn đang hạng 12", "你是第12名").
+- **First place reads as a word when the sentence allows it:** "the winner", "first place", "finish first" (fr "la première place", "finir premier").
+- **In lists and badges** (rankings, podiums, pills, the medal), show the plain number, or the medal (`RankMedal`, in the app and on the web) for the top 3. No "#" before it, no "No." either.
+- Exceptions: hashtags in Different Worlds captions (`#travel`), and colors (`#FF7A3C`). Nothing else.
+
 ## 7. Fonts
 
 - Latin-script locales (vi included) use Be Vietnam Pro. It has every Vietnamese glyph, but stacked capitals (Ẫ, Ễ, Ổ) rise 15% above its line box.

@@ -8,6 +8,7 @@ import { FlagSticker, themeColor } from '../joy/Joy'
 import { getLastToday, useDaily, useDc } from '../daily/dailyShared'
 import { shareLink } from '../../lib/shareLink'
 import i18n from '../../i18n'
+import { ordinal } from '../../lib/ordinal'
 import Icon from '../Icon'
 import { themeIcon } from '../../lib/icons'
 import { Confetti, FitText, MEDAL, Movement, Podium, RaceBar, RankRow, YouBar } from './parts'
@@ -239,7 +240,7 @@ function PhotoRow({ item, mine, week, single, onClick, rowRef }) {
   const who = handle(p.user)
   return (
     <button type="button" ref={rowRef} className={`r6-prow${mine ? ' r6-row--mine' : ''}`} onClick={onClick}
-            aria-label={`#${item.rank}, ${who}, ${p.voteCount} ❤️, ${p.commentCount ?? 0} 💬`}>
+            aria-label={`${ordinal(item.rank, i18n.language)}, ${who}, ${p.voteCount} ❤️, ${p.commentCount ?? 0} 💬`}>
       <span className="r6-prank-box">
         <span className="r6-prank">{item.rank}</span>
         {/* Week: since yesterday (▲2, ▼1, new), when the server sends it. */}
@@ -292,8 +293,8 @@ function Players({ data, failed, period, ghost }) {
   const you = !me ? t(period === 'season' ? 'ranks.you.seasonNone' : 'ranks.you.none')
     : period === 'season'
       ? me.rank === 1 ? t('ranks.you.seasonLead')
-        : behind > 0 ? t('ranks.you.seasonBehind', { rank: me.rank, count: behind, name: me.next ? handle(me.next) : `#${me.rank - 1}` })
-        : t('ranks.you.seasonTied', { rank: me.rank, name: me.next ? handle(me.next) : `#${me.rank - 1}` })
+        : behind > 0 ? t('ranks.you.seasonBehind', { rank: me.rank, count: behind, name: me.next ? handle(me.next) : ordinal(me.rank - 1, i18n.language) })
+        : t('ranks.you.seasonTied', { rank: me.rank, name: me.next ? handle(me.next) : ordinal(me.rank - 1, i18n.language) })
       : me.rank === 1 ? t('ranks.you.top') : t('ranks.you.player', { rank: me.rank, gap: me.gap ?? 0, name: me.next ? handle(me.next) : '' })
   return (
     <>

@@ -5,12 +5,15 @@ import { PixelRatio, Text, View, type TextStyle, type ViewStyle } from 'react-na
 import { useTranslation } from 'react-i18next';
 import type { ViewInstance } from 'react-native';
 import { appFont } from '@/scaling';
+import { ordinal } from '@/lib/ordinal';
 import { HalongArt, LS } from './HalongArt';
 
 /** What the Launch Season share card shows (ShareContent 'contest'). */
 export type ContestShareData = {
   prize: string; subtitle: string; when: string; username: string | null; photoUrl?: string | null;
   rank: number | null; points: number | null; isTest: boolean;
+  /** The Boarding card: the players' goal as seats on the flight (null = my rank card). */
+  boarding?: { players: number; threshold: number; showCount: boolean } | null;
 };
 
 const W = 1080 / PixelRatio.get();
@@ -24,7 +27,7 @@ const PAPER = '#FBF6F0', INK = '#241A12', MUTED = '#6E5D4E', RED_TEXT = '#C24A38
  * narrow-phone scaling must not touch a fixed-size image. No image to load: ready at once.
  */
 export const ContestShareCard = forwardRef<ViewInstance, { data: ContestShareData; onReady: () => void }>(function ContestShareCard({ data, onReady }, ref) {
-  const { t } = useTranslation('me');
+  const { t, i18n } = useTranslation('me');
   const done = useRef(false);
   const ready = () => { if (!done.current) { done.current = true; requestAnimationFrame(() => setTimeout(onReady, 150)); } };
   useEffect(() => {
@@ -46,19 +49,28 @@ export const ContestShareCard = forwardRef<ViewInstance, { data: ContestShareDat
         <View style={[s.notch, { right: -u(26) }]} />
       </View>
       <View style={s.body}>
-        <Text style={s.kicker}>Hilads · Launch Season</Text>
+        <Text style={s.kicker}>Hilads · Launch Trip</Text>
         <Text style={s.prize} numberOfLines={2}>{data.prize}</Text>
         {!!data.subtitle && <Text style={s.sub} numberOfLines={2}>{data.subtitle}</Text>}
+        {data.boarding ? (
+          <View style={s.board}>
+            {data.boarding.showCount ? (
+              <Text style={s.seats}>{t('trip.board.cardSeats', { players: data.boarding.players, threshold: data.boarding.threshold })}</Text>
+            ) : <Text style={s.seats}>{t('trip.board.first')}</Text>}
+            <Text style={s.grab}>{t('trip.board.cardGrab')} ✈️</Text>
+          </View>
+        ) : (
         <View style={s.statusRow}>
           {data.rank ? (
             <>
-              <View style={s.tag}><View style={s.tagHole} /><Text style={s.tagText}>#{data.rank}</Text></View>
+              <View style={s.tag}><View style={s.tagHole} /><Text style={s.tagText}>{ordinal(data.rank, i18n.language)}</Text></View>
               <Text style={s.status} numberOfLines={2}>
                 {[data.username ? '@' + data.username : null, data.points !== null ? t('contest.pts', { count: data.points }) : null].filter(Boolean).join(' · ')}
               </Text>
             </>
           ) : <Text style={[s.status, s.statusIn]}>{t('contest.shareCardIn')} ✈️</Text>}
         </View>
+        )}
         <Text style={s.when}>{data.when}</Text>
       </View>
       <View style={s.cta}>
@@ -91,6 +103,9 @@ const s: Record<string, ViewStyle & TextStyle> = {
   status:   { ...f('800', 17, INK), flexShrink: 1 },
   statusIn: { backgroundColor: '#FFE6D8', color: '#8A3A12', borderRadius: u(16), paddingHorizontal: u(14), paddingVertical: u(6), overflow: 'hidden' },
   when:     { ...f('700', 15, MUTED), marginTop: u(4) },
+  board:    { marginTop: u(10), gap: u(4) },
+  seats:    f('800', 26, INK, { letterSpacing: -u(0.4) }),
+  grab:     f('800', 20, RED_TEXT),
   cta:      { position: 'absolute', left: u(18), right: u(18), bottom: u(92), backgroundColor: LS.board, borderRadius: u(20), paddingVertical: u(14),
               paddingHorizontal: u(18), alignItems: 'center', gap: u(2) },
   ctaText:  { ...f('800', 19, LS.boardText), textAlign: 'center' },

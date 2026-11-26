@@ -2,13 +2,16 @@
 
 declare(strict_types=1);
 
+require_once __DIR__ . '/Ordinal.php';
+
 /**
  * Daily Challenge push phrases in the app's 18 other locales (English lives in
  * DailyPushes, unchanged). Fixed text written once, no provider. Phrased so no
- * plural or ordinal rule is needed ("#2", "Votes: 3"). Brand terms stay
- * English: Daily Challenge, Local Twist. "tu" form where the language has one.
+ * plural rule is needed ("Votes: 3"). A rank is never "#2": templates write
+ * {rank_ordinal} ("2nd", "2e", "第2名", see Ordinal), filled from the {rank} var.
+ * Brand terms stay English: Daily Challenge, Local Twist. "tu" form where the language has one.
  *
- * Placeholders: {text} challenge text, {rank}, {city}, {n}, {name}, {h} hours,
+ * Placeholders: {text} challenge text, {rank_ordinal} (from a rank var), {city}, {n}, {name}, {h} hours,
  * {date} a challenge date.
  */
 final class DailyPushText
@@ -26,9 +29,9 @@ final class DailyPushText
 
     private const T = [
         'fr' => [
-            'world' => "Ta photo d'hier a fini #{rank} dans le monde.",
+            'world' => "Ta photo d'hier a fini {rank_ordinal} dans le monde.",
             'city_best' => "Ta photo d'hier a fini première à {city}.",
-            'city_rank' => "Ta photo d'hier a fini #{rank} à {city}.",
+            'city_rank' => "Ta photo d'hier a fini {rank_ordinal} à {city}.",
             'votes' => "Ta photo d'hier a récolté {n} ♥.",
             'winner' => "{name} à {city} a gagné hier, avec {n} ♥.",
             'winner_nocity' => "{name} a gagné hier, avec {n} ♥.",
@@ -36,7 +39,7 @@ final class DailyPushText
             'digest_twist' => "Ton Local Twist a été relevé {n} fois.",
             'picked_tomorrow' => "Ton Local Twist a été choisi pour le Daily Challenge de demain à {city}",
             'picked_today' => "Ton Local Twist a été choisi pour le Daily Challenge du jour à {city}",
-            'top10' => "Tu es dans le top 10 du jour ! Ta photo est #{rank} dans le monde en ce moment.",
+            'top10' => "Tu es dans le top 10 du jour ! Ta photo est {rank_ordinal} dans le monde en ce moment.",
             'first_vote' => "Ta photo a reçu son premier vote !",
             'bell_vote' => "{name} a voté pour ta photo.",
             'bell_twist' => "{name} a relevé ton Local Twist à {city}.",
@@ -77,9 +80,9 @@ final class DailyPushText
             'halloween_body_nocity' => "Une photo qui fait peur pour ta ville !",
         ],
         'vi' => [
-            'world' => "Ảnh hôm qua của bạn đứng #{rank} thế giới!",
+            'world' => "Ảnh hôm qua của bạn đứng {rank_ordinal} thế giới!",
             'city_best' => "Ảnh hôm qua của bạn đẹp nhất {city}!",
-            'city_rank' => "Ảnh hôm qua của bạn đứng #{rank} ở {city}.",
+            'city_rank' => "Ảnh hôm qua của bạn đứng {rank_ordinal} ở {city}.",
             'votes' => "Ảnh hôm qua của bạn có {n} lượt bình chọn.",
             'winner' => "Hôm qua {name} ở {city} thắng với ♥ {n}.",
             'winner_nocity' => "Hôm qua {name} thắng với ♥ {n}.",
@@ -87,7 +90,7 @@ final class DailyPushText
             'digest_twist' => "{n} người đã chơi Local Twist của bạn.",
             'picked_tomorrow' => "Local Twist của bạn lên Daily Challenge ngày mai ở {city}!",
             'picked_today' => "Local Twist của bạn lên Daily Challenge hôm nay ở {city}!",
-            'top10' => "Bạn đang trong top 10 hôm nay! Ảnh của bạn đứng #{rank} thế giới lúc này.",
+            'top10' => "Bạn đang trong top 10 hôm nay! Ảnh của bạn đứng {rank_ordinal} thế giới lúc này.",
             'first_vote' => "Ảnh của bạn vừa có lượt bình chọn đầu tiên!",
             'bell_vote' => "{name} vừa bình chọn cho ảnh của bạn.",
             'bell_twist' => "{name} đã chơi Local Twist của bạn ở {city}.",
@@ -128,9 +131,9 @@ final class DailyPushText
             'halloween_body_nocity' => "Một tấm ảnh rùng rợn cho thành phố của bạn nào!",
         ],
         'es' => [
-            'world' => "Tu foto de ayer quedó #{rank} en el mundo.",
+            'world' => "Tu foto de ayer quedó en {rank_ordinal} lugar en el mundo.",
             'city_best' => "Tu foto de ayer fue la mejor de {city}.",
-            'city_rank' => "Tu foto de ayer quedó #{rank} en {city}.",
+            'city_rank' => "Tu foto de ayer quedó en {rank_ordinal} lugar en {city}.",
             'votes' => "Tu foto de ayer se llevó {n} ♥.",
             'winner' => "{name}, de {city}, ganó ayer con {n} ♥.",
             'winner_nocity' => "{name} ganó ayer con {n} ♥.",
@@ -138,7 +141,7 @@ final class DailyPushText
             'digest_twist' => "Personas que hicieron tu Local Twist: {n}.",
             'picked_tomorrow' => "Tu Local Twist sale en el Daily Challenge de mañana en {city}",
             'picked_today' => "Tu Local Twist sale hoy en el Daily Challenge de {city}",
-            'top10' => "¡Estás en el top 10 de hoy! Tu foto es #{rank} en el mundo ahora mismo.",
+            'top10' => "¡Estás en el top 10 de hoy! Tu foto va en {rank_ordinal} lugar en el mundo ahora mismo.",
             'first_vote' => "¡Tu foto recibió su primer voto!",
             'bell_vote' => "{name} votó por tu foto.",
             'bell_twist' => "{name} completó tu Local Twist en {city}.",
@@ -179,9 +182,9 @@ final class DailyPushText
             'halloween_body_nocity' => "¡Una foto que dé miedo para tu ciudad!",
         ],
         'it' => [
-            'world' => "La tua foto di ieri è arrivata #{rank} nel mondo.",
+            'world' => "La tua foto di ieri: {rank_ordinal} posto nel mondo.",
             'city_best' => "La tua foto di ieri è stata la migliore di {city}.",
-            'city_rank' => "La tua foto di ieri è arrivata #{rank} a {city}.",
+            'city_rank' => "La tua foto di ieri: {rank_ordinal} posto a {city}.",
             'votes' => "La tua foto di ieri ha preso {n} ♥.",
             'winner' => "Ieri ha vinto {name} da {city}, con {n} ♥.",
             'winner_nocity' => "Ieri ha vinto {name}, con {n} ♥.",
@@ -189,7 +192,7 @@ final class DailyPushText
             'digest_twist' => "Hanno fatto il tuo Local Twist: {n}.",
             'picked_tomorrow' => "Il tuo Local Twist è stato scelto! Domani è nella Daily Challenge di {city}",
             'picked_today' => "Il tuo Local Twist è stato scelto! Oggi è nella Daily Challenge di {city}",
-            'top10' => "Sei nella top 10 di oggi! La tua foto è #{rank} nel mondo in questo momento.",
+            'top10' => "Sei nella top 10 di oggi! La tua foto, in questo momento: {rank_ordinal} posto nel mondo.",
             'first_vote' => "La tua foto ha ricevuto il primo voto!",
             'bell_vote' => "{name} ha votato la tua foto.",
             'bell_twist' => "{name} ha fatto il tuo Local Twist a {city}.",
@@ -230,9 +233,9 @@ final class DailyPushText
             'halloween_body_nocity' => "Uno scatto da paura per la tua città!",
         ],
         'pt-br' => [
-            'world' => "Sua foto de ontem ficou em #{rank} no mundo.",
+            'world' => "Sua foto de ontem ficou em {rank_ordinal} lugar no mundo.",
             'city_best' => "Sua foto de ontem foi a melhor de {city}.",
-            'city_rank' => "Sua foto de ontem ficou em #{rank} em {city}.",
+            'city_rank' => "Sua foto de ontem ficou em {rank_ordinal} lugar em {city}.",
             'votes' => "Sua foto de ontem ganhou {n} ♥.",
             'winner' => "{name}, de {city}, venceu ontem com {n} ♥.",
             'winner_nocity' => "{name} venceu ontem com {n} ♥.",
@@ -240,7 +243,7 @@ final class DailyPushText
             'digest_twist' => "Seu Local Twist foi jogado {n}x.",
             'picked_tomorrow' => "Seu Local Twist vai pro Daily Challenge de amanhã em {city}!",
             'picked_today' => "Seu Local Twist está no Daily Challenge de hoje em {city}!",
-            'top10' => "Você está no top 10 de hoje! Sua foto está em #{rank} no mundo agora.",
+            'top10' => "Você está no top 10 de hoje! Sua foto está em {rank_ordinal} lugar no mundo agora.",
             'first_vote' => "Sua foto ganhou o primeiro voto!",
             'bell_vote' => "{name} votou na sua foto.",
             'bell_twist' => "{name} jogou seu Local Twist em {city}.",
@@ -281,9 +284,9 @@ final class DailyPushText
             'halloween_body_nocity' => "Uma foto de dar medo pela sua cidade!",
         ],
         'pt-pt' => [
-            'world' => "A tua foto de ontem ficou em #{rank} no mundo.",
+            'world' => "A tua foto de ontem ficou em {rank_ordinal} lugar no mundo.",
             'city_best' => "A tua foto de ontem foi a melhor de {city}.",
-            'city_rank' => "A tua foto de ontem ficou em #{rank} em {city}.",
+            'city_rank' => "A tua foto de ontem ficou em {rank_ordinal} lugar em {city}.",
             'votes' => "A tua foto de ontem recebeu {n} ♥.",
             'winner' => "Ontem ganhou {name}, em {city}, com {n} ♥.",
             'winner_nocity' => "Ontem ganhou {name}, com {n} ♥.",
@@ -291,7 +294,7 @@ final class DailyPushText
             'digest_twist' => "Quem já fez o teu Local Twist: {n}.",
             'picked_tomorrow' => "O teu Local Twist foi escolhido para o Daily Challenge de amanhã em {city}",
             'picked_today' => "O teu Local Twist foi escolhido para o Daily Challenge de hoje em {city}",
-            'top10' => "Estás no top 10 de hoje! A tua foto está em #{rank} no mundo neste momento.",
+            'top10' => "Estás no top 10 de hoje! A tua foto está em {rank_ordinal} lugar no mundo neste momento.",
             'first_vote' => "A tua foto recebeu o primeiro voto!",
             'bell_vote' => "{name} votou na tua foto.",
             'bell_twist' => "{name} completou o teu Local Twist em {city}.",
@@ -332,9 +335,9 @@ final class DailyPushText
             'halloween_body_nocity' => "Uma foto de arrepiar pela tua cidade!",
         ],
         'de' => [
-            'world' => "Gestern war dein Foto weltweit auf #{rank}.",
+            'world' => "Gestern landete dein Foto weltweit auf dem {rank_ordinal} Platz.",
             'city_best' => "Gestern war dein Foto das beste in {city}.",
-            'city_rank' => "Gestern war dein Foto in {city} auf #{rank}.",
+            'city_rank' => "Gestern landete dein Foto in {city} auf dem {rank_ordinal} Platz.",
             'votes' => "So viele Stimmen hat dein Foto von gestern geholt: {n}.",
             'winner' => "Gestern ganz vorn: {name} in {city} · ♥ {n}.",
             'winner_nocity' => "Gestern ganz vorn: {name} · ♥ {n}.",
@@ -342,7 +345,7 @@ final class DailyPushText
             'digest_twist' => "So viele haben bei deinem Local Twist mitgemacht: {n}.",
             'picked_tomorrow' => "Dein Local Twist ist morgen Teil der Daily Challenge in {city}",
             'picked_today' => "Dein Local Twist ist heute Teil der Daily Challenge in {city}",
-            'top10' => "Du bist in den Top 10 des Tages! Dein Foto ist gerade #{rank} weltweit.",
+            'top10' => "Du bist in den Top 10 des Tages! Dein Foto ist gerade weltweit auf dem {rank_ordinal} Platz.",
             'first_vote' => "Dein Foto hat seine erste Stimme bekommen!",
             'bell_vote' => "{name} hat für dein Foto gestimmt.",
             'bell_twist' => "{name} hat bei deinem Local Twist in {city} mitgemacht.",
@@ -383,9 +386,9 @@ final class DailyPushText
             'halloween_body_nocity' => "Ein gruseliges Foto für deine Stadt!",
         ],
         'nl' => [
-            'world' => "Gisteren was je foto #{rank} wereldwijd.",
+            'world' => "Gisteren eindigde je foto als {rank_ordinal} wereldwijd.",
             'city_best' => "Gisteren was je foto de beste in {city}.",
-            'city_rank' => "Gisteren was je foto #{rank} in {city}.",
+            'city_rank' => "Gisteren eindigde je foto als {rank_ordinal} in {city}.",
             'votes' => "Je foto van gisteren kreeg {n} ♥.",
             'winner' => "{name} uit {city} won gisteren, met {n} ♥.",
             'winner_nocity' => "{name} won gisteren, met {n} ♥.",
@@ -393,7 +396,7 @@ final class DailyPushText
             'digest_twist' => "Je Local Twist is al {n} keer gespeeld.",
             'picked_tomorrow' => "Je Local Twist is gekozen voor de Daily Challenge van morgen in {city}",
             'picked_today' => "Je Local Twist is gekozen voor de Daily Challenge van vandaag in {city}",
-            'top10' => "Je staat in de top 10 van vandaag! Je foto is nu #{rank} wereldwijd.",
+            'top10' => "Je staat in de top 10 van vandaag! Je foto staat nu {rank_ordinal} wereldwijd.",
             'first_vote' => "Eerste stem op je foto!",
             'bell_vote' => "{name} stemde op je foto.",
             'bell_twist' => "{name} speelde je Local Twist in {city}.",
@@ -434,9 +437,9 @@ final class DailyPushText
             'halloween_body_nocity' => "Eén griezelige foto voor je stad!",
         ],
         'zh-hans' => [
-            'world' => "昨天你的照片全球排名第 {rank}！",
+            'world' => "昨天你的照片获得全球{rank_ordinal}！",
             'city_best' => "昨天你的照片是 {city} 最棒的一张！",
-            'city_rank' => "昨天你的照片在 {city} 排名第 {rank}。",
+            'city_rank' => "昨天你的照片在 {city} 获得{rank_ordinal}。",
             'votes' => "你昨天的照片拿到了 {n} 票。",
             'winner' => "昨天的冠军是 {city} 的 {name} · ♥ {n}。",
             'winner_nocity' => "昨天的冠军是 {name} · ♥ {n}。",
@@ -444,7 +447,7 @@ final class DailyPushText
             'digest_twist' => "已有 {n} 人完成了你的 Local Twist。",
             'picked_tomorrow' => "你的 Local Twist 入选了！明天就是 {city} 的 Daily Challenge",
             'picked_today' => "你的 Local Twist 入选了！今天就是 {city} 的 Daily Challenge",
-            'top10' => "你进入了今天的前 10！你的照片目前全球排名第 {rank}。",
+            'top10' => "你进入了今天的前 10！你的照片目前位居全球{rank_ordinal}。",
             'first_vote' => "你的照片收到了第一票！",
             'bell_vote' => "{name} 给你的照片投了一票。",
             'bell_twist' => "{name} 在 {city} 完成了你的 Local Twist。",
@@ -485,9 +488,9 @@ final class DailyPushText
             'halloween_body_nocity' => "为你的城市拍一张吓人的照片！",
         ],
         'zh-hant' => [
-            'world' => "昨天你的照片拿下全球第 {rank} 名。",
+            'world' => "昨天你的照片拿下全球{rank_ordinal}。",
             'city_best' => "昨天你的照片是 {city} 最強的一張。",
-            'city_rank' => "昨天你的照片拿下 {city} 第 {rank} 名。",
+            'city_rank' => "昨天你的照片拿下 {city} {rank_ordinal}。",
             'votes' => "你昨天的照片拿到 {n} 票。",
             'winner' => "昨天的冠軍是 {city} 的 {name} · ♥ {n}。",
             'winner_nocity' => "昨天的冠軍是 {name} · ♥ {n}。",
@@ -495,7 +498,7 @@ final class DailyPushText
             'digest_twist' => "有 {n} 人完成了你的 Local Twist。",
             'picked_tomorrow' => "你的 Local Twist 入選明天 {city} 的 Daily Challenge！",
             'picked_today' => "你的 Local Twist 入選今天 {city} 的 Daily Challenge！",
-            'top10' => "你進入了今天的前 10！你的照片目前全球排名第 {rank}。",
+            'top10' => "你進入了今天的前 10！你的照片目前位居全球{rank_ordinal}。",
             'first_vote' => "你的照片拿到第一票了！",
             'bell_vote' => "{name} 投了你的照片一票。",
             'bell_twist' => "{name} 在 {city} 完成了你的 Local Twist。",
@@ -536,9 +539,9 @@ final class DailyPushText
             'halloween_body_nocity' => "為你的城市拍一張嚇人的照片！",
         ],
         'ja' => [
-            'world' => "昨日のあなたの写真、世界で{rank}位でした！",
+            'world' => "昨日のあなたの写真、世界で{rank_ordinal}でした！",
             'city_best' => "昨日のあなたの写真が{city}でいちばんに！",
-            'city_rank' => "昨日のあなたの写真は{city}で{rank}位でした。",
+            'city_rank' => "昨日のあなたの写真は{city}で{rank_ordinal}でした。",
             'votes' => "昨日の写真に{n}票入りました。",
             'winner' => "昨日の勝者は{city}の{name}さん（♥ {n}）。",
             'winner_nocity' => "昨日の勝者は{name}さん（♥ {n}）。",
@@ -546,7 +549,7 @@ final class DailyPushText
             'digest_twist' => "{n}人があなたのLocal Twistをクリアしました。",
             'picked_tomorrow' => "あなたのLocal Twistが、明日の{city}のDaily Challengeに選ばれました",
             'picked_today' => "あなたのLocal Twistが、今日の{city}のDaily Challengeに選ばれました",
-            'top10' => "今日のトップ10入り！あなたの写真は今、世界{rank}位です。",
+            'top10' => "今日のトップ10入り！あなたの写真は今、世界{rank_ordinal}です。",
             'first_vote' => "あなたの写真に初めての票が入りました！",
             'bell_vote' => "{name}さんがあなたの写真に投票しました。",
             'bell_twist' => "{name}さんが{city}であなたのLocal Twistをクリアしました。",
@@ -587,9 +590,9 @@ final class DailyPushText
             'halloween_body_nocity' => "あなたの街代表で、ゾッとする一枚を！",
         ],
         'ko' => [
-            'world' => "어제 내 사진이 세계 {rank}위였어요.",
+            'world' => "어제 내 사진이 세계 {rank_ordinal}였어요.",
             'city_best' => "어제 {city}에서 내 사진이 1위였어요!",
-            'city_rank' => "어제 내 사진이 {city}에서 {rank}위였어요.",
+            'city_rank' => "어제 내 사진이 {city}에서 {rank_ordinal}였어요.",
             'votes' => "어제 내 사진이 {n}표를 받았어요.",
             'winner' => "어제 {city}의 {name} 님이 ♥ {n}개로 우승했어요.",
             'winner_nocity' => "어제 {name} 님이 ♥ {n}개로 우승했어요.",
@@ -597,7 +600,7 @@ final class DailyPushText
             'digest_twist' => "{n}명이 내 Local Twist에 도전했어요.",
             'picked_tomorrow' => "내 Local Twist가 내일 {city} Daily Challenge에 뽑혔어요!",
             'picked_today' => "내 Local Twist가 오늘 {city} Daily Challenge에 뽑혔어요!",
-            'top10' => "오늘의 톱 10에 들었어요! 지금 당신의 사진은 세계 {rank}위예요.",
+            'top10' => "오늘의 톱 10에 들었어요! 지금 당신의 사진은 세계 {rank_ordinal}예요.",
             'first_vote' => "내 사진이 첫 투표를 받았어요!",
             'bell_vote' => "{name} 님이 내 사진에 투표했어요.",
             'bell_twist' => "{name} 님이 {city}에서 내 Local Twist에 도전했어요.",
@@ -638,9 +641,9 @@ final class DailyPushText
             'halloween_body_nocity' => "우리 도시 대표로 으스스한 사진 한 장!",
         ],
         'fil' => [
-            'world' => "#{rank} sa mundo ang photo mo kahapon!",
+            'world' => "Ang photo mo kahapon ay {rank_ordinal} sa mundo!",
             'city_best' => "Ang photo mo ang pinakamaganda sa {city} kahapon!",
-            'city_rank' => "#{rank} sa {city} ang photo mo kahapon.",
+            'city_rank' => "Ang photo mo kahapon ay {rank_ordinal} sa {city}.",
             'votes' => "May {n} boto ang photo mo kahapon.",
             'winner' => "Si {name} sa {city} ang nanalo kahapon, may ♥ {n}.",
             'winner_nocity' => "Si {name} ang nanalo kahapon, may ♥ {n}.",
@@ -648,7 +651,7 @@ final class DailyPushText
             'digest_twist' => "{n} na ang gumawa ng Local Twist mo.",
             'picked_tomorrow' => "Napili ang Local Twist mo para sa Daily Challenge bukas sa {city}!",
             'picked_today' => "Napili ang Local Twist mo para sa Daily Challenge ngayon sa {city}!",
-            'top10' => "Pasok ka sa top 10 ngayong araw! #{rank} sa mundo ang litrato mo ngayon.",
+            'top10' => "Pasok ka sa top 10 ngayong araw! Ang litrato mo ay {rank_ordinal} sa mundo ngayon.",
             'first_vote' => "May unang boto na ang photo mo!",
             'bell_vote' => "Binoto ni {name} ang photo mo.",
             'bell_twist' => "Ginawa ni {name} ang Local Twist mo sa {city}.",
@@ -689,9 +692,9 @@ final class DailyPushText
             'halloween_body_nocity' => "Isang nakakatakot na photo para sa city mo!",
         ],
         'th' => [
-            'world' => "เมื่อวานรูปของคุณได้อันดับ #{rank} ของโลก",
+            'world' => "เมื่อวานรูปของคุณได้{rank_ordinal} ของโลก",
             'city_best' => "เมื่อวานรูปของคุณดีที่สุดใน{city}",
-            'city_rank' => "เมื่อวานรูปของคุณอยู่อันดับ #{rank} ใน{city}",
+            'city_rank' => "เมื่อวานรูปของคุณอยู่{rank_ordinal} ใน{city}",
             'votes' => "เมื่อวานรูปของคุณได้ {n} โหวต",
             'winner' => "ผู้ชนะเมื่อวานคือ {name} จาก {city} · ♥ {n}",
             'winner_nocity' => "ผู้ชนะเมื่อวานคือ {name} · ♥ {n}",
@@ -699,7 +702,7 @@ final class DailyPushText
             'digest_twist' => "มี {n} คนเล่น Local Twist ของคุณ",
             'picked_tomorrow' => "Local Twist ของคุณได้รับเลือกให้อยู่ใน Daily Challenge พรุ่งนี้ที่ {city}",
             'picked_today' => "Local Twist ของคุณได้รับเลือกให้อยู่ใน Daily Challenge วันนี้ที่ {city}",
-            'top10' => "คุณติดท็อป 10 วันนี้! ตอนนี้รูปของคุณอยู่อันดับ #{rank} ของโลก",
+            'top10' => "คุณติดท็อป 10 วันนี้! ตอนนี้รูปของคุณอยู่{rank_ordinal} ของโลก",
             'first_vote' => "รูปของคุณได้โหวตแรกแล้ว!",
             'bell_vote' => "{name} โหวตให้รูปของคุณ",
             'bell_twist' => "{name} เล่น Local Twist ของคุณที่{city}แล้ว",
@@ -740,9 +743,9 @@ final class DailyPushText
             'halloween_body_nocity' => "ถ่ายรูปสยองๆ สักรูปให้เมืองของคุณ!",
         ],
         'id' => [
-            'world' => "Kemarin fotomu peringkat #{rank} di dunia.",
+            'world' => "Kemarin fotomu peringkat {rank_ordinal} di dunia.",
             'city_best' => "Kemarin fotomu jadi yang terbaik di {city}.",
-            'city_rank' => "Kemarin fotomu peringkat #{rank} di {city}.",
+            'city_rank' => "Kemarin fotomu peringkat {rank_ordinal} di {city}.",
             'votes' => "Fotomu kemarin dapat {n} vote.",
             'winner' => "Pemenang kemarin: {name} dari {city} dengan ♥ {n}.",
             'winner_nocity' => "Pemenang kemarin: {name} dengan ♥ {n}.",
@@ -750,7 +753,7 @@ final class DailyPushText
             'digest_twist' => "{n} orang menyelesaikan Local Twist-mu.",
             'picked_tomorrow' => "Local Twist-mu terpilih untuk Daily Challenge besok di {city}",
             'picked_today' => "Local Twist-mu terpilih untuk Daily Challenge hari ini di {city}",
-            'top10' => "Kamu masuk top 10 hari ini! Fotomu sekarang #{rank} di dunia.",
+            'top10' => "Kamu masuk top 10 hari ini! Fotomu sekarang peringkat {rank_ordinal} di dunia.",
             'first_vote' => "Fotomu dapat vote pertamanya!",
             'bell_vote' => "{name} nge-vote fotomu.",
             'bell_twist' => "{name} menyelesaikan Local Twist-mu di {city}.",
@@ -791,9 +794,9 @@ final class DailyPushText
             'halloween_body_nocity' => "Satu foto seram untuk kotamu!",
         ],
         'hi' => [
-            'world' => "कल आपकी फ़ोटो दुनिया में #{rank} पर रही!",
+            'world' => "कल दुनिया में आपकी फ़ोटो का स्थान {rank_ordinal} रहा!",
             'city_best' => "कल {city} की सबसे अच्छी फ़ोटो आपकी थी!",
-            'city_rank' => "कल आपकी फ़ोटो {city} में #{rank} पर रही।",
+            'city_rank' => "कल {city} में आपकी फ़ोटो का स्थान {rank_ordinal} रहा।",
             'votes' => "कल आपकी फ़ोटो {n} वोट तक पहुंची।",
             'winner' => "कल {city} के {name} जीते, ♥ {n} के साथ।",
             'winner_nocity' => "कल {name} जीते, ♥ {n} के साथ।",
@@ -801,7 +804,7 @@ final class DailyPushText
             'digest_twist' => "आपका Local Twist अब तक {n} बार पूरा हुआ।",
             'picked_tomorrow' => "आपका Local Twist चुना गया! कल यह {city} के Daily Challenge में होगा।",
             'picked_today' => "आपका Local Twist चुना गया! आज यह {city} के Daily Challenge में है।",
-            'top10' => "आप आज के टॉप 10 में हैं! अभी आपकी फ़ोटो दुनिया में #{rank} पर है।",
+            'top10' => "आप आज के टॉप 10 में हैं! अभी दुनिया में आपकी फ़ोटो का स्थान {rank_ordinal} है।",
             'first_vote' => "आपकी फ़ोटो को पहला वोट मिला!",
             'bell_vote' => "{name} ने आपकी फ़ोटो को वोट दिया।",
             'bell_twist' => "{name} ने {city} में आपका Local Twist पूरा किया।",
@@ -842,9 +845,9 @@ final class DailyPushText
             'halloween_body_nocity' => "अपने शहर के लिए एक डरावनी फ़ोटो खींचें!",
         ],
         'ru' => [
-            'world' => "Вчера твоё фото было #{rank} в мире.",
+            'world' => "Вчера твой снимок — {rank_ordinal} в мире.",
             'city_best' => "Вчера твоё фото было лучшим в городе {city}.",
-            'city_rank' => "Вчера твоё фото было #{rank} в городе {city}.",
+            'city_rank' => "Вчера твой снимок — {rank_ordinal} в городе {city}.",
             'votes' => "Голосов за твоё вчерашнее фото: {n}.",
             'winner' => "Вчерашний победитель: {name}, {city} · ♥ {n}.",
             'winner_nocity' => "Вчерашний победитель: {name} · ♥ {n}.",
@@ -852,7 +855,7 @@ final class DailyPushText
             'digest_twist' => "Твой Local Twist уже выполнили: {n}.",
             'picked_tomorrow' => "Твой Local Twist попал в завтрашний Daily Challenge в городе {city}",
             'picked_today' => "Твой Local Twist попал в сегодняшний Daily Challenge в городе {city}",
-            'top10' => "Ты в топ-10 дня! Твоё фото сейчас #{rank} в мире.",
+            'top10' => "Ты в топ-10 дня! Сейчас твой снимок — {rank_ordinal} в мире.",
             'first_vote' => "Первый голос за твоё фото!",
             'bell_vote' => "{name} голосует за твоё фото.",
             'bell_twist' => "{name}: твой Local Twist в городе {city} выполнен.",
@@ -893,9 +896,9 @@ final class DailyPushText
             'halloween_body_nocity' => "Жуткое фото за твой город!",
         ],
         'ar' => [
-            'world' => "أمس كانت صورتك #{rank} في العالم.",
+            'world' => "أمس كانت صورتك في المركز {rank_ordinal} في العالم.",
             'city_best' => "أمس كانت صورتك الأفضل في {city}.",
-            'city_rank' => "أمس كانت صورتك #{rank} في {city}.",
+            'city_rank' => "أمس كانت صورتك في المركز {rank_ordinal} في {city}.",
             'votes' => "عدد الأصوات على صورتك أمس: {n}.",
             'winner' => "فائز الأمس: {name} في {city} · ♥ {n}.",
             'winner_nocity' => "فائز الأمس: {name} · ♥ {n}.",
@@ -903,7 +906,7 @@ final class DailyPushText
             'digest_twist' => "عدد من خاضوا Local Twist الخاص بك: {n}.",
             'picked_tomorrow' => "اختير Local Twist الخاص بك لـ Daily Challenge الغد في {city}",
             'picked_today' => "اختير Local Twist الخاص بك لـ Daily Challenge اليوم في {city}",
-            'top10' => "أنت ضمن أفضل 10 اليوم! صورتك الآن #{rank} في العالم.",
+            'top10' => "أنت ضمن أفضل 10 اليوم! صورتك الآن في المركز {rank_ordinal} في العالم.",
             'first_vote' => "حصلت صورتك على أول صوت!",
             'bell_vote' => "{name} صوّت لصورتك.",
             'bell_twist' => "خاض {name} Local Twist الخاص بك في {city}.",
@@ -960,6 +963,10 @@ final class DailyPushText
         }
         if ($tpl === null) {
             return null;
+        }
+        // A rank is written as an ordinal in the language ({rank_ordinal}: "3rd", "3e", "第3名"), never "#3".
+        if (isset($vars['rank']) && !isset($vars['rank_ordinal'])) {
+            $vars['rank_ordinal'] = class_exists('Ordinal') ? Ordinal::format((int) $vars['rank'], $locale) : (string) $vars['rank'];
         }
         $repl = [];
         foreach ($vars as $k => $v) {

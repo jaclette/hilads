@@ -2,6 +2,8 @@ import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import Icon from '../Icon'
 import { FlagSticker } from '../joy/Joy'
 import { useDc } from '../daily/dailyShared'
+import i18n from '../../i18n'
+import { ordinal } from '../../lib/ordinal'
 
 /** Podium block colors: gold, silver, bronze (the saturated medal tokens, ink on top). */
 export const MEDAL = ['var(--medal-gold)', 'var(--medal-silver)', 'var(--medal-bronze)']
@@ -61,7 +63,7 @@ export function Podium({ items, ghost }) {
   return (
     <div className="r6-podium">
       {order.map((it, i) => (it ? (
-        <button key={it.key} type="button" className="r6-step" onClick={it.onClick} disabled={!it.onClick} aria-label={`#${it.rank} ${it.label}`}
+        <button key={it.key} type="button" className="r6-step" onClick={it.onClick} disabled={!it.onClick} aria-label={`${ordinal(it.rank, i18n.language)}, ${it.label}`}
                 style={{ animationDelay: `${[120, 0, 240][i]}ms` }}>
           <span className="r6-lead">{it.rank === 1 && <Crown />}{it.lead}</span>
           <span className="r6-podium-name">{it.label}</span>
@@ -104,7 +106,7 @@ function GhostStep({ rank, ghost, delay }) {
   const Tag = ghost.onClick ? 'button' : 'span'
   return (
     <Tag type={ghost.onClick ? 'button' : undefined} className={`r6-step r6-step--ghost${ghost.onClick ? '' : ' r6-step--muted'}`} onClick={ghost.onClick}
-         aria-label={`#${rank} ${ghost.label}`} style={{ '--medal': MEDAL[rank - 1], animationDelay: `${delay}ms` }}>
+         aria-label={`${ordinal(rank, i18n.language)}, ${ghost.label}`} style={{ '--medal': MEDAL[rank - 1], animationDelay: `${delay}ms` }}>
       <span className="r6-lead"><span className="r6-ghost-lead"><Icon name={ghost.icon} size={24} /></span></span>
       <span className="r6-ghost-label">{ghost.label}</span>
       <span className={`r6-block r6-block--${rank} r6-ghost-block`}><span>{rank}</span></span>
@@ -115,7 +117,7 @@ function GhostStep({ rank, ghost, delay }) {
 /** A row from #4: rank, leading visual, name and sub line, movement, value pill. */
 export function RankRow({ rank, lead, title, sub, movement, value, mine, onClick, extra, rowRef }) {
   return (
-    <button type="button" ref={rowRef} className={`r6-row${mine ? ' r6-row--mine' : ''}`} onClick={onClick} disabled={!onClick} aria-label={`#${rank} ${title}, ${value}`}>
+    <button type="button" ref={rowRef} className={`r6-row${mine ? ' r6-row--mine' : ''}`} onClick={onClick} disabled={!onClick} aria-label={`${ordinal(rank, i18n.language)}, ${title}, ${value}`}>
       <span className="r6-rank">{rank}</span>
       {lead}
       <span className="r6-row-body">

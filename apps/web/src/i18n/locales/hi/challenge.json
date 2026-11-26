@@ -65,8 +65,8 @@
   "leaderboard": {
     "title": "Most Local",
     "chip": {
-      "ranked": "#{{rank}}",
-      "rankedOver": "#100+",
+      "ranked": "{{rank, ordinal}}",
+      "rankedOver": "100+",
       "neutral": "टॉप चैलेंजर"
     },
     "scope": {
@@ -94,10 +94,10 @@
       "periodAll": "अब तक",
       "placeCity": "{{city}} में",
       "placeWorld": "दुनिया में",
-      "userNotTop": "🔥 मैं {{place}} {{period}} #{{rank}} पर हूँ: {{pts}} पॉइंट्स! @{{above}} ({{aPts}} पॉइंट्स) मेरे निशाने पर है 👀 और @{{below}} ({{bPts}} पॉइंट्स) मेरे पीछे। क्या आप मुझसे आगे निकल सकते हैं? 🏆",
-      "userTop": "👑 मैं {{place}} {{period}} #1 पर हूँ: {{pts}} पॉइंट्स! @{{below1}} ({{b1Pts}} पॉइंट्स) और @{{below2}} ({{b2Pts}} पॉइंट्स) ठीक मेरे पीछे हैं। आइए, ताज छीनकर दिखाइए 😏",
-      "cityNotTop": "🔥 {{place}} {{period}} सभी शहरों में #{{rank}} पर है: {{pts}} पॉइंट्स! {{above}} ({{aPts}} पॉइंट्स) के ठीक पीछे 👀 और {{below}} ({{bPts}} पॉइंट्स) से आगे। लोकल्स, चलिए ऊपर चढ़ते हैं 🏆",
-      "cityTop": "👑 {{place}} {{period}} सभी शहरों में #1 पर है: {{pts}} पॉइंट्स! {{below1}} ({{b1Pts}} पॉइंट्स) और {{below2}} ({{b2Pts}} पॉइंट्स) हमारा पीछा कर रहे हैं। लोकल्स, चलिए टॉप पर बने रहें 🔥"
+      "userNotTop": "🔥 {{place}} {{period}} मेरा {{rank, ordinal}} स्थान है: {{pts}} पॉइंट्स! @{{above}} ({{aPts}} पॉइंट्स) मेरे निशाने पर है 👀 और @{{below}} ({{bPts}} पॉइंट्स) मेरे पीछे। क्या आप मुझसे आगे निकल सकते हैं? 🏆",
+      "userTop": "👑 मैं {{place}} {{period}} पहले स्थान पर हूँ: {{pts}} पॉइंट्स! @{{below1}} ({{b1Pts}} पॉइंट्स) और @{{below2}} ({{b2Pts}} पॉइंट्स) ठीक मेरे पीछे हैं। आइए, ताज छीनकर दिखाइए 😏",
+      "cityNotTop": "🔥 {{period}} सभी शहरों में {{place}} का {{rank, ordinal}} स्थान है: {{pts}} पॉइंट्स! {{above}} ({{aPts}} पॉइंट्स) के ठीक पीछे 👀 और {{below}} ({{bPts}} पॉइंट्स) से आगे। लोकल्स, चलिए ऊपर चढ़ते हैं 🏆",
+      "cityTop": "👑 {{place}} {{period}} सभी शहरों में पहले स्थान पर है: {{pts}} पॉइंट्स! {{below1}} ({{b1Pts}} पॉइंट्स) और {{below2}} ({{b2Pts}} पॉइंट्स) हमारा पीछा कर रहे हैं। लोकल्स, चलिए टॉप पर बने रहें 🔥"
     }
   },
   "closeCta": "चैलेंज बंद करें",
@@ -185,9 +185,9 @@
   },
   "scoreCelebration": {
     "rank": {
-      "city": "{{city}} में #{{rank}}",
+      "city": "{{city}} में {{rank, ordinal}} स्थान",
       "cityBeyond": "अपने शहर में टॉप {{topN}} से बाहर",
-      "world": "दुनिया में #{{rank}}",
+      "world": "दुनिया में {{rank, ordinal}} स्थान",
       "worldBeyond": "दुनिया में टॉप {{topN}} से बाहर",
       "cityUnranked": "इस महीने {{city}} में कोई रैंक नहीं",
       "worldUnranked": "इस महीने दुनिया में कोई रैंक नहीं"
@@ -310,9 +310,9 @@
   },
   "spot": {
     "rankWeekFirst": "इस हफ़्ते {{city}} में सबसे ज़्यादा वोट",
-    "rankWeek": "इस हफ़्ते {{city}} में #{{rank}}",
+    "rankWeek": "इस हफ़्ते {{city}} में {{rank, ordinal}} स्थान",
     "rankAlltimeFirst": "{{city}} की सबसे ज़्यादा वोट वाली जगह",
-    "rankAlltime": "{{city}} में अब तक #{{rank}}",
+    "rankAlltime": "{{city}} में अब तक {{rank, ordinal}} स्थान",
     "photos": "फ़ोटो",
     "captions": "लोग क्या कहते हैं",
     "notFound": "यह जगह उपलब्ध नहीं है।",
@@ -405,7 +405,7 @@
       "validatedHint": "लोकल ने वैलिडेट किया: यहाँ रहने वाले किसी ने इस फ़ोटो को वोट किया।"
     },
     "results": {
-      "worldRank": "दुनिया में #{{rank}}"
+      "worldRank": "दुनिया में {{rank, ordinal}} स्थान"
     },
     "streak_one": "{{count}} दिन की स्ट्रीक",
     "streak_other": "{{count}} दिन की स्ट्रीक",
@@ -492,7 +492,7 @@
       "surprise": "सरप्राइज़ करो"
     },
     "leaderboard": {
-      "me": "आप: #{{rank}} · ♥ {{votes}}"
+      "me": "आप: {{rank, ordinal}} · ♥ {{votes}}"
     },
     "week": {
       "title": "इस हफ़्ते",
@@ -595,9 +595,9 @@
     },
     "spot": {
       "rankWeekFirst": "इस हफ़्ते {{city}} में सबसे ज़्यादा वोट",
-      "rankWeek": "इस हफ़्ते {{city}} में #{{rank}}",
+      "rankWeek": "इस हफ़्ते {{city}} में {{rank, ordinal}} स्थान",
       "rankAlltimeFirst": "{{city}} की सबसे ज़्यादा वोट वाली जगह",
-      "rankAlltime": "{{city}} में अब तक #{{rank}}",
+      "rankAlltime": "{{city}} में अब तक {{rank, ordinal}} स्थान",
       "photos": "फ़ोटो",
       "captions": "लोग क्या कहते हैं",
       "notFound": "यह जगह उपलब्ध नहीं है।",
@@ -798,35 +798,35 @@
       "bestPerCity": "हर शहर की बेस्ट फ़ोटो",
       "new": "नया",
       "you": {
-        "top": "आप · #1 · आपसे ऊपर कोई नहीं 👑",
-        "player": "आप · #{{rank}} · {{name}} से आगे निकलने के लिए {{gap}} पॉइंट ▲",
+        "top": "आप · पहला स्थान · आपसे ऊपर कोई नहीं 👑",
+        "player": "आप · {{rank, ordinal}} · {{name}} से आगे निकलने के लिए {{gap}} पॉइंट ▲",
         "none": "आज खेलें और बोर्ड पर आएं 🙋",
-        "photo_one": "तुम्हारी सबसे अच्छी: #{{rank}} · #{{next}} तक {{count}} ❤️",
-        "photo_other": "तुम्हारी सबसे अच्छी: #{{rank}} · #{{next}} तक {{count}} ❤️",
-        "photoTop": "तुम्हारी सबसे अच्छी: #1 · तुमसे ऊपर कोई नहीं 👑",
+        "photo_one": "तुम्हारी सबसे अच्छी: {{rank, ordinal}} · {{next, ordinal}} स्थान तक {{count}} ❤️",
+        "photo_other": "तुम्हारी सबसे अच्छी: {{rank, ordinal}} · {{next, ordinal}} स्थान तक {{count}} ❤️",
+        "photoTop": "तुम्हारी सबसे अच्छी: पहला स्थान · तुमसे ऊपर कोई नहीं 👑",
         "photoNone": "तुम्हारी कोई फ़ोटो अभी रैंक में नहीं ❤️",
-        "seasonLead": "इस सीज़न आप #1 हैं! अपना ताज बचाइए 👑",
-        "seasonBehind_one": "इस सीज़न आप #{{rank}} पर हैं, {{name}} से {{count}} पॉइंट पीछे",
-        "seasonBehind_other": "इस सीज़न आप #{{rank}} पर हैं, {{name}} से {{count}} पॉइंट्स पीछे",
-        "seasonTied": "इस सीज़न आप #{{rank}} पर हैं, {{name}} के बराबर",
+        "seasonLead": "इस सीज़न आप पहले स्थान पर हैं! अपना ताज बचाइए 👑",
+        "seasonBehind_one": "इस सीज़न आपका {{rank, ordinal}} स्थान है, {{name}} से {{count}} पॉइंट पीछे",
+        "seasonBehind_other": "इस सीज़न आपका {{rank, ordinal}} स्थान है, {{name}} से {{count}} पॉइंट्स पीछे",
+        "seasonTied": "इस सीज़न आपका {{rank, ordinal}} स्थान है, {{name}} के बराबर",
         "seasonNone": "इस सीज़न में आने के लिए आज खेलें 🙋"
       },
       "city": {
         "lineTop": "{{city}} रेस में सबसे आगे! 🏁",
-        "line_one": "{{city}} #{{rank}} पर है। {{next}} तक पहुंचने के लिए {{count}} फ़ोटो और!",
-        "line_other": "{{city}} #{{rank}} पर है। {{next}} तक पहुंचने के लिए {{count}} फ़ोटो और!",
-        "youBar_one": "{{city}} · #{{rank}} · {{next}} से {{count}} फ़ोटो पीछे",
-        "youBar_other": "{{city}} · #{{rank}} · {{next}} से {{count}} फ़ोटो पीछे"
+        "line_one": "{{city}} का {{rank, ordinal}} स्थान है। {{next}} तक पहुंचने के लिए {{count}} फ़ोटो और!",
+        "line_other": "{{city}} का {{rank, ordinal}} स्थान है। {{next}} तक पहुंचने के लिए {{count}} फ़ोटो और!",
+        "youBar_one": "{{city}} · {{rank, ordinal}} · {{next}} से {{count}} फ़ोटो पीछे",
+        "youBar_other": "{{city}} · {{rank, ordinal}} · {{next}} से {{count}} फ़ोटो पीछे"
       },
       "empty": {
         "photos": "अभी किसी फ़ोटो को लाइक नहीं मिले। अपनी पसंद की फ़ोटो को वोट करें ❤️",
-        "players": "अभी किसी ने पॉइंट नहीं बनाए। खेलें और #1 पाएं 🙋",
+        "players": "अभी किसी ने पॉइंट नहीं बनाए। खेलें और पहला स्थान पाएं 🙋",
         "cities": "अभी कोई शहर बोर्ड पर नहीं। अपना शहर सबसे पहले लाएं 🌍"
       },
       "results": {
         "dismiss": "बंद करें",
-        "world": "🏆 कल तुम्हारी फ़ोटो दुनिया में #{{rank}} रही",
-        "city": "🏆 कल तुम्हारी फ़ोटो {{city}} में #{{rank}} रही",
+        "world": "🏆 कल दुनिया में तुम्हारी फ़ोटो का {{rank, ordinal}} स्थान रहा",
+        "city": "🏆 कल {{city}} में तुम्हारी फ़ोटो का {{rank, ordinal}} स्थान रहा",
         "best": "🏆 कल तुम्हारी फ़ोटो {{city}} में सबसे अच्छी रही",
         "votes_one": "🏆 कल तुम्हारी फ़ोटो को {{count}} ❤️ मिले",
         "votes_other": "🏆 कल तुम्हारी फ़ोटो को {{count}} ❤️ मिले",
@@ -841,7 +841,7 @@
         "photo": "तुम्हारी फ़ोटो यहाँ? 📸",
         "player": "ये जगह ले लो 🙋",
         "city": "तुम्हारा शहर यहाँ? 🌍",
-        "invite": "🎯 #{{rank}} कौन लेगा? किसी दोस्त को बुलाओ",
+        "invite": "🎯 {{rank, ordinal}} स्थान कौन लेगा? किसी दोस्त को बुलाओ",
         "empty": "यह जगह किसी ने नहीं ली"
       },
       "seasonEnds_one": "सीज़न {{count}} दिन में ख़त्म",
@@ -865,9 +865,9 @@
     },
     "season": {
       "resultsKicker": "{{season}} · सीज़न के नतीजे",
-      "medalTitle": "आप #{{rank}} पर रहे! 🎉",
-      "rankTitle_one": "{{count}} खिलाड़ी में आप #{{rank}} पर रहे",
-      "rankTitle_other": "{{count}} खिलाड़ियों में आप #{{rank}} पर रहे",
+      "medalTitle": "आपका {{rank, ordinal}} स्थान रहा! 🎉",
+      "rankTitle_one": "{{count}} खिलाड़ी में आपका {{rank, ordinal}} स्थान रहा",
+      "rankTitle_other": "{{count}} खिलाड़ियों में आपका {{rank, ordinal}} स्थान रहा",
       "stats": "पॉइंट्स: {{points}} · खेले गए दिन: {{days}} · पोडियम: {{podiums}}",
       "newSeason": "नया सीज़न शुरू हो गया। सब फिर से 0 पर।",
       "play": "📸 आज का चैलेंज खेलें",
@@ -898,7 +898,7 @@
       "city": "{{city}} में",
       "world": "दुनिया",
       "cities": "शहरों में {{city}}",
-      "citiesTop": "{{city}} नंबर 1 शहर"
+      "citiesTop": "{{city}} पहला शहर"
     },
     "up": "{{count}} ऊपर",
     "new": "नया",
@@ -914,15 +914,15 @@
     "ranks": "🏆 रैंकिंग देखो",
     "share": "📤 मेरी जीत शेयर करो",
     "shareLine": {
-      "city_today": "मैं आज {{city}} में #{{rank}} हूँ",
-      "city_week": "मैं इस हफ़्ते {{city}} में #{{rank}} हूँ",
-      "city_alltime": "मैं {{city}} में #{{rank}} हूँ",
-      "world_today": "मैं आज दुनिया में #{{rank}} हूँ",
-      "world_week": "मैं इस हफ़्ते दुनिया में #{{rank}} हूँ",
-      "world_alltime": "मैं दुनिया में #{{rank}} हूँ",
-      "cities_today": "{{city}} आज शहरों में #{{rank}} है",
-      "cities_week": "{{city}} इस हफ़्ते शहरों में #{{rank}} है",
-      "cities_alltime": "{{city}} शहरों में #{{rank}} है"
+      "city_today": "आज {{city}} में मेरा {{rank, ordinal}} स्थान है",
+      "city_week": "इस हफ़्ते {{city}} में मेरा {{rank, ordinal}} स्थान है",
+      "city_alltime": "{{city}} में मेरा {{rank, ordinal}} स्थान है",
+      "world_today": "आज दुनिया में मेरा {{rank, ordinal}} स्थान है",
+      "world_week": "इस हफ़्ते दुनिया में मेरा {{rank, ordinal}} स्थान है",
+      "world_alltime": "दुनिया में मेरा {{rank, ordinal}} स्थान है",
+      "cities_today": "आज शहरों में {{city}} का {{rank, ordinal}} स्थान है",
+      "cities_week": "इस हफ़्ते शहरों में {{city}} का {{rank, ordinal}} स्थान है",
+      "cities_alltime": "शहरों में {{city}} का {{rank, ordinal}} स्थान है"
     }
   }
 }

@@ -111,7 +111,7 @@
   "pp": {
     "passport": {
       "title": "護照",
-      "weekRank": "本週第 {{rank}} 名",
+      "weekRank": "本週{{rank, ordinal}}",
       "weekNone": "本週尚未上榜",
       "mostLocalIn": "{{city}} Most Local",
       "mostLocalWorld": "全球 Most Local",
@@ -123,7 +123,7 @@
       "myProposals": "我的提議",
       "friends": "好友",
       "mostLocalAllTime": "Most Local 歷來榜",
-      "allTimeRank": "{{city}} 第 {{rank}} 名",
+      "allTimeRank": "{{city}} {{rank, ordinal}}",
       "howPoints": "積分怎麼算",
       "gotIt": "知道了",
       "close": "關閉",
@@ -148,7 +148,7 @@
       "rivals": "你的對手",
       "rivalsEmpty": "玩幾個挑戰，認識你的第一批對手 🌍",
       "duels_other": "{{count}} 場對決",
-      "seasonRank": "本賽季第 {{rank}} 名",
+      "seasonRank": "本賽季{{rank, ordinal}}",
       "seasonNone": "玩一局就能加入本賽季",
       "viewAsOthers": "查看別人眼中的我"
     },
@@ -212,7 +212,7 @@
     },
     "seasons": {
       "medals": "賽季獎牌",
-      "medalA11y": "第 {{rank}} 名，{{season}}，{{points}} 分"
+      "medalA11y": "{{rank, ordinal}}，{{season}}，{{points}} 分"
     },
     "invite": {
       "title": "召集你的小隊",
@@ -263,7 +263,7 @@
       "title": "Launch Trip",
       "test": "TEST",
       "cardJoined": "你已參加 · {{points}} 分",
-      "cardRank": "第 {{rank}} 名",
+      "cardRank": "{{rank, ordinal}}",
       "phase": {
         "upcoming": "{{date}} 開始",
         "season": "{{date}} 結束",
@@ -314,9 +314,9 @@
       "launchGift": "我們的上線禮物。遊戲不變：每天一張照片。",
       "unlockPlayers": "名玩家",
       "unlockHint": "當 {{max}} 名玩家各發布 {{photos}} 張通過審核的照片後，旅行即解鎖。",
-      "unlocked": "旅行已確定 🎉 現在衝擊決賽週第 1 名，把它贏回家。",
+      "unlocked": "旅行已確定 🎉 現在拿下決賽週第一，把它贏回家。",
       "myFinalScore": "你的最終得分",
-      "behind": "落後第 {{rank}} 名 {{count}} 分",
+      "behind": "距{{rank, ordinal}}還差 {{count}} 分",
       "inviteTitle": "帶上你的好友",
       "inviteText": "每位透過你的連結加入並發布 {{count}} 張通過審核照片的好友，你得 +{{points}} 分。",
       "inviteStamp": "每位好友",
@@ -336,7 +336,7 @@
       "startsIn": "{{time}}後開始",
       "endsIn": "{{time}}後結束",
       "share": "分享",
-      "shareRank": "我在 Hilads Launch Trip 排名第 {{rank}}。{{prize}}：來和我一起玩！",
+      "shareRank": "我在 Hilads Launch Trip 排{{rank, ordinal}}。{{prize}}：來和我一起玩！",
       "shareJoin": "我參加了 Hilads Launch Trip。{{prize}}：來和我一起玩！",
       "shareCardIn": "我已參加",
       "shareCardJoin": "來 Hilads 和我一起玩",
@@ -345,14 +345,14 @@
       "seeRanking": "查看完整排名",
       "rankingTitle": "排名",
       "rulesShort": "規則",
-      "winLine": "決賽週排行榜第 1 名贏得這次旅行 ✈️",
+      "winLine": "決賽週冠軍贏得這次旅行 ✈️",
       "howWinTitle": "如何獲勝",
       "step1Title": "{{date}} 之前：累積積分",
       "step1Text": "發布每日照片：每個讚 = 1 分（每張照片最多 {{cap}} 分）。每位透過你的連結加入並發布 {{min}} 張通過審核照片的好友 +{{points}}。",
       "step2Title": "前 {{count}} 名獲得領先分",
-      "step2Text": "{{date}}，本季前 {{count}} 名帶著領先分進入決賽週：第 1 名 {{count}} 分，依次遞減到第 {{count}} 名 1 分。",
-      "step3Title": "決賽週：第 1 名獲勝",
-      "step3Text": "按讚從零重新計算，再加上你的領先分和邀請積分。{{date}} 時排名第 1 的玩家贏得這次旅行 ✈️",
+      "step2Text": "{{date}}，前 {{count}} 名帶著領先分進入決賽週：第一名 {{count}} 分，依次遞減到{{count, ordinal}} 1 分。",
+      "step3Title": "決賽週：第一名獲勝",
+      "step3Text": "積分重新從零開始，再加上你的領先分。{{date}} 時排名第一的玩家贏得這次旅行 ✈️",
       "hsBadge": "+{{count}} 領先分",
       "hsHint": "前 {{count}} 名帶著領先分進入決賽週。",
       "itTitle": "你的越南一週",
@@ -361,9 +361,9 @@
       "founderTitle": "創辦人的話",
       "founderSign": "{{name}}，Hilads 創辦人",
       "todayKicker": "真的有旅行可以贏",
-      "todayWin": "拿下決賽週第 1 名，旅行就是你的",
+      "todayWin": "拿下決賽週第一，旅行就是你的",
       "todayJoin": "加入並贏取大獎",
-      "unlockWin": "拿下決賽週第 1 名，贏得這次旅行 ✈️",
+      "unlockWin": "拿下決賽週第一，贏得這次旅行 ✈️",
       "souvenirLine": "決賽週第 2 至 {{to}} 名每人贏得一份越南紀念品禮包，寄到你家 🎁",
       "teaserKicker": "即將開始",
       "teaserTitle": "Launch Trip 即將來臨",
@@ -381,7 +381,7 @@
         "friends": "好友",
         "rules": "規則"
       },
-      "forFirst": "獻給決賽週第 1 名",
+      "forFirst": "獻給決賽週的冠軍",
       "chip": {
         "cdStarts": "後開始",
         "cdFinal": "後進入決賽週",
@@ -401,23 +401,11 @@
         "now": "現在",
         "done": "已完成"
       },
-      "goal": {
-        "title": "一起解鎖旅行",
-        "players": "名玩家",
-        "what": "玩家發布 {{photos}} 張通過審核的照片後即計入。",
-        "mine": "你：{{n}} / {{photos}} 張照片。",
-        "mineDone": "你已計入 ✓",
-        "fallback": "{{date}} 前不足 {{players}} 名玩家？第 1 名照樣贏得{{prize}}。",
-        "reached": "旅行已解鎖 🎉",
-        "reachedText": "{{players}} 名玩家做到了。現在衝擊決賽週第 1 名，把旅行贏回家。",
-        "notReachedText": "目標未達成：第 1 名將贏得{{prize}}，而不是旅行。"
-      },
       "me": {
-        "rank": "你是第 {{rank}} 名",
+        "rank": "你是{{rank, ordinal}}",
         "inRace": "你已在比賽中",
         "finalLive": "決賽週 · 進行中",
-        "gap": "落後第 {{rank}} 名 {{count}} 分",
-        "tie": "與第 {{rank}} 名同分：按讚數決定",
+        "tie": "與{{rank, ordinal}}同分：按讚數決定",
         "leading": "你暫時領先",
         "headstart": "含你的 +{{count}} 領先分",
         "notScored": "玩一局即可參賽",
@@ -428,7 +416,9 @@
         "upcomingTitle": "做好準備",
         "upcomingText": "比賽於 {{date}} 開始，屆時開始計分。",
         "closed": "目前已停止報名。",
-        "cantJoin": "此帳號無法參加本次活動。"
+        "cantJoin": "此帳號無法參加本次活動。",
+        "gap_one": "距{{rank, ordinal}}還差 {{count}} 分",
+        "gap_other": "距{{rank, ordinal}}還差 {{count}} 分"
       },
       "cta": {
         "play": "玩今天的挑戰",
@@ -449,7 +439,7 @@
         "empty": "還沒有人得分。玩今天的挑戰，搶下第一。",
         "emptyUpcoming": "比賽於 {{date}} 開始。",
         "noteBefore": "決賽週從 {{date}} 開始：積分從零開始。前 {{count}} 名保留領先分（最多 +{{count}}）。",
-        "noteFinal": "積分已於 {{date}} 從零開始。此前的前 {{count}} 名保留了領先分（最多 +{{count}}）。{{end}} 時的第 1 名獲勝。",
+        "noteFinal": "積分已於 {{date}} 從零開始。此前的前 {{count}} 名保留了領先分（最多 +{{count}}）。{{end}} 時排名第一的玩家獲勝。",
         "ties": "同分時：先比決賽週按讚數，再比誰先達到該分數。"
       },
       "friends": {
@@ -474,28 +464,29 @@
         "howTitle": "如何獲勝",
         "how1": "玩每日挑戰：你的 Hilads 積分計入比賽。",
         "how2": "在 {{date}} 前進入前 {{count}} 名，帶著領先分開啟決賽週。",
-        "how3": "{{date}} 時成為決賽週第 1 名：旅行就是你的。",
+        "how3": "拿下決賽週第一，贏得這次旅行。",
         "pointsTitle": "積分怎麼算",
         "play": "玩一局每日挑戰",
-        "podium": "當日頒獎台（第 1 / 2 / 3 名）",
         "week": "完美一週（週一到週日每個挑戰都玩）",
         "friend": "好友的第一張照片（每月最多 {{count}} 位）",
         "crew": "本月第 {{size}} 位好友",
         "pointsNote": "與 Hilads 各處相同的積分，從你加入當天起，計算 {{date}} 起的挑戰。",
         "finalTitle": "決賽週",
         "final1": "{{date}} 積分從零開始。",
-        "final2": "此前的前 {{count}} 名帶著領先分開始：第 1 名 +{{count}}，依次遞減到 +1。",
+        "final2": "此前的前 {{count}} 名帶著領先分開始：第一名 +{{count}}，依次遞減到{{count, ordinal}} +1。",
         "final3": "同分時：先比決賽週按讚數，再比誰先達到該分數。",
         "prizeTitle": "獎品",
-        "goalTitle": "玩家共同目標",
-        "goalText": "當 {{players}} 名玩家各發布 {{photos}} 張通過審核的照片後，旅行即解鎖。",
-        "fallbackText": "{{date}} 前未達成？第 1 名照樣贏得{{prize}}。",
+        "goalTitle": "登機：玩家的目標",
+        "goalText": "航班共有 {{players}} 個座位。擁有 {{photos}} 張通過審核的照片，即可獲得登機證和一個座位。所有座位坐滿後，旅行就會解鎖。",
+        "fallbackText": "{{date}} 前沒坐滿？冠軍仍可獲得{{prize}}。",
         "whoTitle": "誰可以參加",
         "who1": "免費，無需購買。",
         "who2": "年滿 18 歲。",
         "who3": "一人一個帳號。",
         "who4": "在 App 中加入並接受正式規則。",
-        "full": "完整正式規則"
+        "full": "完整正式規則",
+        "podiumTitle": "今日頒獎台（全球按讚最多）",
+        "place": "{{rank, ordinal}}"
       },
       "over": {
         "title": "比賽結束了",
@@ -504,16 +495,37 @@
         "winnerTitle": "{{name}} 獲勝！",
         "winnerTrip": "{{name}} 贏得{{prize}}。",
         "winnerFallback": "玩家共同目標未達成：{{name}} 贏得{{prize}}。",
-        "yourRank": "你最終排名第 {{rank}}"
+        "yourRank": "你的最終排名：{{rank, ordinal}}"
       },
       "banner": {
-        "rank": "你是第 {{rank}} 名 · {{count}} 分",
+        "rank": "你是{{rank, ordinal}} · {{count}} 分",
         "play": "玩一局即可參賽",
         "join": "加入比賽",
         "starts": "{{time}} 後開始",
         "toFinal": "{{time}} 後進入決賽週",
         "ends": "{{time}} 後結束",
         "over": "查看獲勝者"
+      },
+      "board": {
+        "title": "✈️ 登機",
+        "seats": "{{threshold}} 個座位已佔 {{players}} 個",
+        "first": "搶先登機",
+        "takeoff": "所有座位坐滿後，航班就起飛。",
+        "what": "擁有 {{photos}} 張通過審核的照片，即可獲得登機證和座位。",
+        "pass": "你的登機證",
+        "passProgress": "{{n}} / {{photos}} 張照片",
+        "passEarned": "已獲得登機證",
+        "passEarnedText": "你的座位已確認 ✓",
+        "fallback": "{{date}} 前沒坐滿？冠軍仍可獲得{{prize}}。",
+        "full": "所有座位已坐滿 🎉",
+        "fullText": "航班起飛。現在拿下決賽週第一，贏得這次旅行。",
+        "notFullText": "航班沒坐滿：冠軍將獲得{{prize}}，代替這次旅行。",
+        "invite": "邀請",
+        "a11y": "登機：{{status}}。打開分享，邀請好友。",
+        "shareText": "Hilads Launch Trip 已佔 {{players}} / {{threshold}} 個座位。快來搶你的座位 ✈️",
+        "shareTextFirst": "Hilads Launch Trip 正在登機。快來搶座位 ✈️",
+        "cardSeats": "已佔 {{players}} / {{threshold}} 個座位",
+        "cardGrab": "搶座位"
       }
     }
   },

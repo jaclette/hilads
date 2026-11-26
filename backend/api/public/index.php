@@ -116,6 +116,7 @@ if (str_starts_with($uri, '/admin')) {
     require_once __DIR__ . '/../src/PlacesMigration.php';
     require_once __DIR__ . '/../src/DailyTwistProposals.php';
     require_once __DIR__ . '/../src/DailyI18n.php';
+    require_once __DIR__ . '/../src/Ordinal.php';
     require_once __DIR__ . '/../src/DailyPushText.php';
     require_once __DIR__ . '/../src/NotificationPreferencesRepository.php';
     require_once __DIR__ . '/../src/DailyPushes.php';
@@ -312,6 +313,7 @@ require_once __DIR__ . '/../src/SpotsAdmin.php';
 require_once __DIR__ . '/../src/PlacesMigration.php';
 require_once __DIR__ . '/../src/DailyTwistProposals.php';
 require_once __DIR__ . '/../src/DailyI18n.php';
+require_once __DIR__ . '/../src/Ordinal.php';
 require_once __DIR__ . '/../src/DailyPushText.php';
 require_once __DIR__ . '/../src/DailyPushes.php';
 require_once __DIR__ . '/../src/DailyLeaderboard.php';

@@ -88,7 +88,7 @@
   "themeDark": "Donker",
   "passport": {
     "title": "Paspoort",
-    "weekRank": "Nr. {{rank}} deze week",
+    "weekRank": "{{rank, ordinal}} deze week",
     "weekNone": "Deze week nog niet in het klassement",
     "mostLocalIn": "Most Local in {{city}}",
     "mostLocalWorld": "Most Local wereldwijd",
@@ -100,7 +100,7 @@
     "myProposals": "Mijn voorstellen",
     "friends": "Vrienden",
     "mostLocalAllTime": "Most Local aller tijden",
-    "allTimeRank": "#{{rank}} in {{city}}",
+    "allTimeRank": "{{rank, ordinal}} in {{city}}",
     "howPoints": "Zo werken punten",
     "gotIt": "Begrepen",
     "close": "Sluiten",
@@ -136,7 +136,7 @@
     "rivalsEmpty": "Speel een paar challenges om je eerste rivalen te ontmoeten 🌍",
     "duels_one": "{{count}} duel",
     "duels_other": "{{count}} duels",
-    "seasonRank": "#{{rank}} dit seizoen",
+    "seasonRank": "{{rank, ordinal}} dit seizoen",
     "seasonNone": "Speel om in het seizoen te komen",
     "viewAsOthers": "Bekijk hoe anderen me zien"
   },
@@ -187,7 +187,7 @@
   },
   "seasons": {
     "medals": "Seizoensmedailles",
-    "medalA11y": "#{{rank}}, {{season}}, {{points}} punten"
+    "medalA11y": "{{rank, ordinal}}, {{season}}, {{points}} punten"
   },
   "invite": {
     "title": "Breng je crew mee",
@@ -238,7 +238,7 @@
     "title": "Launch Trip",
     "test": "TEST",
     "cardJoined": "Je doet mee · {{points}} ptn",
-    "cardRank": "#{{rank}}",
+    "cardRank": "{{rank, ordinal}}",
     "phase": {
       "upcoming": "Start op {{date}}",
       "season": "Eindigt op {{date}}",
@@ -289,9 +289,9 @@
     "launchGift": "Ons lanceringscadeau. Het spel blijft hetzelfde: één foto per dag.",
     "unlockPlayers": "spelers",
     "unlockHint": "De reis wordt ontgrendeld zodra {{max}} spelers elk {{photos}} goedgekeurde foto's hebben gepost.",
-    "unlocked": "De reis gaat door 🎉 Word nu #1 in de laatste week om hem te winnen.",
+    "unlocked": "De reis gaat door 🎉 Word nu eerste in de laatste week om hem te winnen.",
     "myFinalScore": "Jouw eindscore",
-    "behind": "{{count}} ptn achter #{{rank}}",
+    "behind": "{{count}} ptn achter de {{rank, ordinal}} plaats",
     "inviteTitle": "Neem je vrienden mee",
     "inviteText": "+{{points}} punten voor elke vriend die via jouw link meedoet en {{count}} goedgekeurde foto's post.",
     "inviteStamp": "per vriend",
@@ -311,7 +311,7 @@
     "startsIn": "Start over {{time}}",
     "endsIn": "Eindigt over {{time}}",
     "share": "Delen",
-    "shareRank": "Ik sta #{{rank}} in de Hilads Launch Trip. {{prize}}: speel mee!",
+    "shareRank": "Ik sta {{rank, ordinal}} in de Hilads Launch Trip. {{prize}}: speel mee!",
     "shareJoin": "Ik doe mee aan de Hilads Launch Trip. {{prize}}: speel mee!",
     "shareCardIn": "Ik doe mee",
     "shareCardJoin": "Speel mee op Hilads",
@@ -320,14 +320,14 @@
     "seeRanking": "Volledige ranglijst",
     "rankingTitle": "Ranglijst",
     "rulesShort": "Reglement",
-    "winLine": "De #1 van de ranglijst in de laatste week wint de reis ✈️",
+    "winLine": "De winnaar van de laatste week wint de reis ✈️",
     "howWinTitle": "Zo win je",
     "step1Title": "Tot {{date}}: punten scoren",
     "step1Text": "Post je dagelijkse foto: elke like = 1 punt (max. {{cap}} per foto). +{{points}} voor elke vriend die via jouw link meedoet en {{min}} goedgekeurde foto's post.",
     "step2Title": "De top {{count}} krijgt een voorsprong",
-    "step2Text": "Op {{date}} start de top {{count}} van het seizoen de laatste week met een voorsprong: {{count}} punten voor #1, tot 1 voor #{{count}}.",
-    "step3Title": "Laatste week: de #1 wint",
-    "step3Text": "Likes tellen weer vanaf nul, plus je voorsprong en je uitnodigingspunten. De #1 op {{date}} wint de reis ✈️",
+    "step2Text": "Op {{date}} begint de top {{count}} met voorsprong aan de laatste week: {{count}} punten voor de eerste plaats, aflopend tot 1 voor de {{count, ordinal}} plaats.",
+    "step3Title": "Laatste week: de eerste plaats wint",
+    "step3Text": "De punten beginnen weer bij nul, plus je voorsprong. Wie op {{date}} eerste staat, wint de reis ✈️",
     "hsBadge": "+{{count}} voorsprong",
     "hsHint": "De top {{count}} start de laatste week met een voorsprong.",
     "itTitle": "Jouw week in Vietnam",
@@ -336,9 +336,9 @@
     "founderTitle": "Een woord van de oprichter",
     "founderSign": "{{name}}, oprichter van Hilads",
     "todayKicker": "Een echte reis te winnen",
-    "todayWin": "Word #1 in de laatste week en de reis is van jou",
+    "todayWin": "Word eerste in de laatste week en de reis is van jou",
     "todayJoin": "Doe mee en speel om te winnen",
-    "unlockWin": "Word #1 in de laatste week om de reis te winnen ✈️",
+    "unlockWin": "Word eerste in de laatste week om de reis te winnen ✈️",
     "souvenirLine": "Plek 2 tot en met {{to}} van de laatste week wint elk een Vietnam-souvenirpakket, thuisbezorgd 🎁",
     "teaserKicker": "Binnenkort",
     "teaserTitle": "De Launch Trip komt eraan",
@@ -356,7 +356,7 @@
       "friends": "Vrienden",
       "rules": "Reglement"
     },
-    "forFirst": "Voor de #1 van de laatste week",
+    "forFirst": "Voor de winnaar van de laatste week",
     "chip": {
       "cdStarts": "tot de start",
       "cdFinal": "tot de laatste week",
@@ -376,23 +376,11 @@
       "now": "Nu",
       "done": "Klaar"
     },
-    "goal": {
-      "title": "Ontgrendel samen de reis",
-      "players": "spelers",
-      "what": "Een speler telt mee zodra die {{photos}} goedgekeurde foto's heeft gepost.",
-      "mine": "Jij: {{n}} / {{photos}} foto's.",
-      "mineDone": "Jij telt mee ✓",
-      "fallback": "Minder dan {{players}} spelers op {{date}}? De #1 wint toch {{prize}}.",
-      "reached": "De reis is ontgrendeld 🎉",
-      "reachedText": "{{players}} spelers hebben het gehaald. Word nu #1 in de laatste week om hem te winnen.",
-      "notReachedText": "Het doel is niet gehaald: de #1 wint {{prize}} in plaats van de reis."
-    },
     "me": {
-      "rank": "Je bent #{{rank}}",
+      "rank": "Je staat {{rank, ordinal}}",
       "inRace": "Je doet mee in de race",
       "finalLive": "Laatste week · live",
-      "gap": "{{count}} ptn achter #{{rank}}",
-      "tie": "Gelijk met #{{rank}}: likes beslissen",
+      "tie": "Gelijk met de {{rank, ordinal}} plaats: likes beslissen",
       "leading": "Je staat bovenaan",
       "headstart": "Inclusief je +{{count}} voorsprong",
       "notScored": "Speel om mee te doen in de race",
@@ -403,7 +391,9 @@
       "upcomingTitle": "Maak je klaar",
       "upcomingText": "De race start op {{date}}. Vanaf dan tellen de punten.",
       "closed": "Aanmelden is nu gesloten.",
-      "cantJoin": "Dit account kan niet meedoen aan deze campagne."
+      "cantJoin": "Dit account kan niet meedoen aan deze campagne.",
+      "gap_one": "{{count}} pt achter de {{rank, ordinal}} plaats",
+      "gap_other": "{{count}} ptn achter de {{rank, ordinal}} plaats"
     },
     "cta": {
       "play": "Speel de challenge van vandaag",
@@ -424,7 +414,7 @@
       "empty": "Nog niemand heeft gescoord. Speel de challenge van vandaag en wees de eerste.",
       "emptyUpcoming": "De race start op {{date}}.",
       "noteBefore": "Laatste week vanaf {{date}}: de punten beginnen weer bij nul. De top {{count}} houdt een voorsprong (tot +{{count}}).",
-      "noteFinal": "De punten begonnen op {{date}} weer bij nul. De top {{count}} daarvoor hield een voorsprong (tot +{{count}}). De #1 op {{end}} wint.",
+      "noteFinal": "De punten begonnen op {{date}} weer bij nul. De top {{count}} daarvoor hield een voorsprong (tot +{{count}}). Wie op {{end}} eerste staat, wint.",
       "ties": "Gelijke stand: de meeste likes in de laatste week, daarna wie de score het eerst haalde."
     },
     "friends": {
@@ -449,28 +439,29 @@
       "howTitle": "Zo win je",
       "how1": "Speel de dagelijkse challenge: je Hilads-punten tellen voor de race.",
       "how2": "Sta voor {{date}} in de top {{count}} om de laatste week met voorsprong te beginnen.",
-      "how3": "Wees op {{date}} #1 van de laatste week: je wint de reis.",
+      "how3": "Word eerste in de laatste week en win de reis.",
       "pointsTitle": "Zo worden punten geteld",
       "play": "Een dagelijkse challenge spelen",
-      "podium": "Podium van de dag (1e / 2e / 3e)",
       "week": "Perfecte week (elke challenge, maandag tot zondag)",
       "friend": "De eerste foto van een vriend (tot {{count}} per maand)",
       "crew": "Je {{size}}e vriend van de maand",
       "pointsNote": "Dezelfde punten als overal in Hilads, vanaf de dag dat je meedoet, voor de challenges vanaf {{date}}.",
       "finalTitle": "Laatste week",
       "final1": "Op {{date}} beginnen de punten weer bij nul.",
-      "final2": "De top {{count}} daarvoor begint met voorsprong: +{{count}} voor #1, aflopend tot +1.",
+      "final2": "De top {{count}} daarvoor begint met voorsprong: +{{count}} voor de eerste plaats, aflopend tot +1 voor de {{count, ordinal}} plaats.",
       "final3": "Gelijke stand: de meeste likes in de laatste week, daarna wie de score het eerst haalde.",
       "prizeTitle": "De prijs",
-      "goalTitle": "Het spelersdoel",
-      "goalText": "De reis wordt ontgrendeld als {{players}} spelers elk {{photos}} goedgekeurde foto's hebben gepost.",
-      "fallbackText": "Niet gehaald op {{date}}? De #1 wint toch {{prize}}.",
+      "goalTitle": "Boarding: het doel van de spelers",
+      "goalText": "Het vliegtuig heeft {{players}} stoelen. Met {{photos}} goedgekeurde foto's krijg je je instapkaart, en een stoel. De reis wordt ontgrendeld zodra alle stoelen bezet zijn.",
+      "fallbackText": "Niet vol op {{date}}? De winnaar wint toch {{prize}}.",
       "whoTitle": "Wie mag meedoen",
       "who1": "Gratis, geen aankoop nodig.",
       "who2": "18 jaar of ouder.",
       "who3": "Eén persoon, één account.",
       "who4": "Meld je aan in de app en accepteer het officiële reglement.",
-      "full": "Volledig officieel reglement"
+      "full": "Volledig officieel reglement",
+      "podiumTitle": "Podium van de dag (meeste likes wereldwijd)",
+      "place": "{{rank, ordinal}} plaats"
     },
     "over": {
       "title": "De race is voorbij",
@@ -479,16 +470,37 @@
       "winnerTitle": "{{name}} wint!",
       "winnerTrip": "{{name}} wint {{prize}}.",
       "winnerFallback": "Het spelersdoel is niet gehaald: {{name}} wint {{prize}}.",
-      "yourRank": "Je bent #{{rank}} geworden"
+      "yourRank": "Je bent {{rank, ordinal}} geworden"
     },
     "banner": {
-      "rank": "Je bent #{{rank}} · {{count}} ptn",
+      "rank": "Je staat {{rank, ordinal}} · {{count}} ptn",
       "play": "Speel om mee te doen in de race",
       "join": "Doe mee aan de race",
       "starts": "Start over {{time}}",
       "toFinal": "laatste week over {{time}}",
       "ends": "eindigt over {{time}}",
       "over": "Bekijk de winnaar"
+    },
+    "board": {
+      "title": "✈️ Boarding",
+      "seats": "{{players}} van {{threshold}} stoelen bezet",
+      "first": "Ga als een van de eersten aan boord",
+      "takeoff": "Het vliegtuig vertrekt zodra alle stoelen bezet zijn.",
+      "what": "Met {{photos}} goedgekeurde foto's krijg je je instapkaart, en je stoel.",
+      "pass": "Je instapkaart",
+      "passProgress": "{{n}} / {{photos}} foto's",
+      "passEarned": "Instapkaart binnen",
+      "passEarnedText": "Je stoel is van jou ✓",
+      "fallback": "Niet vol op {{date}}? De winnaar wint toch {{prize}}.",
+      "full": "Alle stoelen zijn bezet 🎉",
+      "fullText": "Het vliegtuig vertrekt. Word nu eerste in de laatste week om de reis te winnen.",
+      "notFullText": "Het vliegtuig is niet volgeraakt: de winnaar krijgt {{prize}} in plaats van de reis.",
+      "invite": "Uitnodigen",
+      "a11y": "Boarding: {{status}}. Opent delen om vrienden uit te nodigen.",
+      "shareText": "{{players}} / {{threshold}} stoelen bezet voor de Hilads Launch Trip. Pak de jouwe ✈️",
+      "shareTextFirst": "De Hilads Launch Trip is aan het boarden. Pak je stoel ✈️",
+      "cardSeats": "{{players}} / {{threshold}} stoelen bezet",
+      "cardGrab": "Pak de jouwe"
     }
   }
 }

@@ -12,6 +12,8 @@ import { RankMedal } from '@/features/daily/RankMedal';
 import { useCelebrationTurn } from '@/lib/celebrationQueue';
 import { track } from '@/services/analytics';
 import { fetchSeasonResult, markSeasonSeen, seasonName, type SeasonResult } from './points';
+import i18n from '@/i18n';
+import { ordinal } from '@/lib/ordinal';
 
 /**
  * The season's results (scoring v2): once a month, after the drop of the 1st froze the
@@ -63,7 +65,7 @@ function SeasonResultCard({ result, onClose }: { result: SeasonResult; onClose: 
       <Confetti run={result.medal} count={result.medal ? 40 : 0} />
       <View style={styles.card} accessibilityViewIsModal>
         <Text style={styles.kicker}>{t('season.resultsKicker', { season: name })}</Text>
-        {result.medal ? <RankMedal rank={result.rank} podium size={88} /> : <Text style={styles.rankBig}>#{result.rank}</Text>}
+        {result.medal ? <RankMedal rank={result.rank} podium size={88} /> : <Text style={styles.rankBig}>{result.rank}</Text>}
         <Text style={styles.title} accessibilityRole="header">
           {result.medal ? t('season.medalTitle', { rank: result.rank }) : t('season.rankTitle', { rank: result.rank, count: result.players })}
         </Text>
@@ -71,7 +73,7 @@ function SeasonResultCard({ result, onClose }: { result: SeasonResult; onClose: 
         {result.podium.length > 0 && (
           <View style={styles.podium}>
             {result.podium.map(p => (
-              <View key={p.rank} style={styles.place} accessible accessibilityLabel={`#${p.rank} ${p.user.username ? '@' + p.user.username : p.user.displayName ?? ''}, ${t('a11y.points', { count: p.points })}`}>
+              <View key={p.rank} style={styles.place} accessible accessibilityLabel={`${ordinal(p.rank, i18n.language)} ${p.user.username ? '@' + p.user.username : p.user.displayName ?? ''}, ${t('a11y.points', { count: p.points })}`}>
                 <RankMedal rank={p.rank} podium size={28} />
                 <Avatar uri={p.user.photoUrl} name={p.user.displayName ?? p.user.username ?? ''} size={32} />
                 <Text style={styles.placeName} numberOfLines={1}>{p.user.username ? '@' + p.user.username : p.user.displayName}</Text>

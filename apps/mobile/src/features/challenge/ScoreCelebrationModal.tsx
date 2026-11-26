@@ -17,6 +17,8 @@ import { ThemeIcon } from '@/ui/ThemeIcon';
 import { themeColor } from '@/ui/joy';
 import type { ScoreCelebration, ScoreWin, ScoreWinMedal } from '@/api/challenges';
 import { FontSizes } from '@/constants';
+import i18n from '@/i18n';
+import { ordinal } from '@/lib/ordinal';
 
 /** Where a medal or the main button leads: the Ranks tab, segment, scope and period. */
 export type RanksTarget = { tab: 'players' | 'cities'; scope: 'city' | 'world'; period: 'today' | 'week' | 'alltime' };
@@ -425,13 +427,13 @@ function Medal({ medal, step, t, onPress }: { medal: ScoreWinMedal; step: Shared
   return (
     <Animated.View style={[styles.medalWrap, st]}>
       <Pressable onPress={onPress} style={({ pressed }) => [styles.medal3d, pressed && styles.pressed]} accessibilityRole="button"
-                 accessibilityLabel={`#${medal.rank}, ${label}${up && up > 0 ? `, ${t('scoreWin.up', { count: up })}` : ''}`} testID={`win-medal-${medal.key}`}>
+                 accessibilityLabel={`${ordinal(medal.rank, i18n.language)}, ${label}${up && up > 0 ? `, ${t('scoreWin.up', { count: up })}` : ''}`} testID={`win-medal-${medal.key}`}>
         <View style={styles.medal}>
           <View style={[styles.disc, { backgroundColor: tone.bg }]}>
             <View style={[styles.ring, { borderColor: tone.fg }]} />
             <Text style={styles.discIcon}>{icon}</Text>
           </View>
-          <Text style={styles.rank} numberOfLines={1} adjustsFontSizeToFit>#{medal.rank}</Text>
+          <Text style={styles.rank} numberOfLines={1} adjustsFontSizeToFit>{ordinal(medal.rank, i18n.language)}</Text>
           <Text style={styles.medalLabel} numberOfLines={2} adjustsFontSizeToFit minimumFontScale={0.8}>{label}</Text>
           {up !== null && up > 0 ? <Text style={styles.up}>▲ {up}</Text>
             : medal.prevRank === null ? <Text style={styles.up}>{t('scoreWin.new')}</Text> : null}

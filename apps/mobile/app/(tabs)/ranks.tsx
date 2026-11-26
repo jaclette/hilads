@@ -31,6 +31,8 @@ import { useScope } from '@/context/ScopeContext';
 import { IndexCarousel } from '@/features/index/IndexCarousel';
 import { RivalsBlock } from '@/features/ranks/RivalsBlock';
 import { seasonEnd, seasonStart } from '@/features/scoring/points';
+import i18n from '@/i18n';
+import { ordinal } from '@/lib/ordinal';
 
 // The last answer of each view (segment, period, scope, city), in memory.
 const ranksCache = new Map<string, PlayersRanks | CitiesRanks | PhotosRanks>();
@@ -376,7 +378,7 @@ const PhotoRankRow = memo(function PhotoRankRow({ item, mine, week, single, onPr
   const who = p.user.username ? `@${p.user.username}` : p.user.displayName ?? '';
   return (
     <Tappable onPress={onPress} style={[styles.pRow, mine && styles.pRowMine]} accessibilityRole="button"
-              accessibilityLabel={[`#${item.rank}`, who, p.city?.name ? shortCityName(p.city.name) : null, t('a11y.likes', { count: p.voteCount }),
+              accessibilityLabel={[ordinal(item.rank, i18n.language), who, p.city?.name ? shortCityName(p.city.name) : null, t('a11y.likes', { count: p.voteCount }),
                                   p.commentCount ? t('comments.count', { count: p.commentCount }) : null].filter(Boolean).join(', ')}>
       <View style={styles.pRankBox}>
         <Text style={styles.pRank} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.6}>{item.rank}</Text>
@@ -451,13 +453,13 @@ function PlayersView({ data, header, failed, refreshing, onRefresh, period, list
     lead: <View style={[styles.podiumAvatar, { borderColor: medalColor(colors, e.rank) }]}><Avatar uri={e.user.photoUrl} name={e.user.displayName ?? e.user.username ?? ''} size={56} /></View>,
   }));
   const me = data?.me ?? null;
-  // This season: "You're #2 this season, 15 pts behind @kitty_3" (gap = the points to pass them).
+  // This season: "You're 2nd this season, 15 pts behind @kitty_3" (gap = the points to pass them).
   const behind = Math.max(0, (me?.gap ?? 1) - 1);
   const youText = me
     ? period === 'season'
       ? me.rank === 1 ? t('ranks.you.seasonLead')
-        : behind > 0 ? t('ranks.you.seasonBehind', { rank: me.rank, count: behind, name: me.next ? nameOf(me.next) : `#${me.rank - 1}` })
-        : t('ranks.you.seasonTied', { rank: me.rank, name: me.next ? nameOf(me.next) : `#${me.rank - 1}` })
+        : behind > 0 ? t('ranks.you.seasonBehind', { rank: me.rank, count: behind, name: me.next ? nameOf(me.next) : ordinal(me.rank - 1, i18n.language) })
+        : t('ranks.you.seasonTied', { rank: me.rank, name: me.next ? nameOf(me.next) : ordinal(me.rank - 1, i18n.language) })
       : me.rank === 1 ? t('ranks.you.lead')
       : me.rank === 2 ? t('ranks.you.playerCrown', { count: Math.max(1, me.gap ?? 1) })
       : t('ranks.you.playerClimb', { rank: me.rank, count: Math.max(1, me.gap ?? 1), next: me.rank - 1 })

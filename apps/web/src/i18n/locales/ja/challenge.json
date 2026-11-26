@@ -65,8 +65,8 @@
   "leaderboard": {
     "title": "Most Local",
     "chip": {
-      "ranked": "#{{rank}}",
-      "rankedOver": "#100+",
+      "ranked": "{{rank, ordinal}}",
+      "rankedOver": "100+",
       "neutral": "トップ挑戦者"
     },
     "scope": {
@@ -94,10 +94,10 @@
       "periodAll": "歴代",
       "placeCity": "{{city}}で",
       "placeWorld": "世界で",
-      "userNotTop": "🔥 {{place}}{{period}}#{{rank}}、{{pts}}pt！@{{above}}（{{aPts}}pt）を追いかけつつ 👀、@{{below}}（{{bPts}}pt）を引き離し中。追い抜けるかな？🏆",
-      "userTop": "👑 {{place}}{{period}}#1、{{pts}}pt！@{{below1}}（{{b1Pts}}pt）と@{{below2}}（{{b2Pts}}pt）がすぐ後ろに迫ってる。王座を奪いに来て 😏",
-      "cityNotTop": "🔥 {{place}}は{{period}}すべての街の中で#{{rank}}、{{pts}}pt！{{above}}（{{aPts}}pt）のすぐ後ろ 👀、{{below}}（{{bPts}}pt）より上。地元のみんな、もっと上を目指そう 🏆",
-      "cityTop": "👑 {{place}}は{{period}}すべての街の中で#1、{{pts}}pt！{{below1}}（{{b1Pts}}pt）と{{below2}}（{{b2Pts}}pt）が追ってきてる。地元のみんな、トップを守ろう 🔥"
+      "userNotTop": "🔥 {{place}}{{period}}{{rank, ordinal}}、{{pts}}pt！@{{above}}（{{aPts}}pt）を追いかけつつ 👀、@{{below}}（{{bPts}}pt）を引き離し中。追い抜けるかな？🏆",
+      "userTop": "👑 {{place}}{{period}}1位、{{pts}}pt！@{{below1}}（{{b1Pts}}pt）と@{{below2}}（{{b2Pts}}pt）がすぐ後ろに迫ってる。王座を奪いに来て 😏",
+      "cityNotTop": "🔥 {{place}}は{{period}}すべての街の中で{{rank, ordinal}}、{{pts}}pt！{{above}}（{{aPts}}pt）のすぐ後ろ 👀、{{below}}（{{bPts}}pt）より上。地元のみんな、もっと上を目指そう 🏆",
+      "cityTop": "👑 {{place}}は{{period}}すべての街の中で1位、{{pts}}pt！{{below1}}（{{b1Pts}}pt）と{{below2}}（{{b2Pts}}pt）が追ってきてる。地元のみんな、トップを守ろう 🔥"
     }
   },
   "closeCta": "チャレンジを終了する",
@@ -185,9 +185,9 @@
   },
   "scoreCelebration": {
     "rank": {
-      "city": "{{city}}で{{rank}}位",
+      "city": "{{city}}で{{rank, ordinal}}",
       "cityBeyond": "街のトップ{{topN}}圏外",
-      "world": "世界で{{rank}}位",
+      "world": "世界で{{rank, ordinal}}",
       "worldBeyond": "世界のトップ{{topN}}圏外",
       "cityUnranked": "今月は{{city}}でランク外",
       "worldUnranked": "今月は世界でランク外"
@@ -304,9 +304,9 @@
   },
   "spot": {
     "rankWeekFirst": "今週の{{city}}で最多得票",
-    "rankWeek": "今週の{{city}}で{{rank}}位",
+    "rankWeek": "今週の{{city}}で{{rank, ordinal}}",
     "rankAlltimeFirst": "{{city}}で最も票を集めたスポット",
-    "rankAlltime": "{{city}}の歴代{{rank}}位",
+    "rankAlltime": "{{city}}の歴代{{rank, ordinal}}",
     "photos": "写真",
     "captions": "みんなの声",
     "notFound": "このスポットは利用できません。",
@@ -396,7 +396,7 @@
       "validatedHint": "地元の人のお墨付き：ここに住む人がこの写真に投票しました。"
     },
     "results": {
-      "worldRank": "世界{{rank}}位"
+      "worldRank": "世界{{rank, ordinal}}"
     },
     "streak_other": "{{count}}日連続",
     "twist": {
@@ -480,7 +480,7 @@
       "surprise": "おまかせ"
     },
     "leaderboard": {
-      "me": "あなた：#{{rank}} · ♥ {{votes}}"
+      "me": "あなた：{{rank, ordinal}} · ♥ {{votes}}"
     },
     "week": {
       "title": "今週",
@@ -581,9 +581,9 @@
     },
     "spot": {
       "rankWeekFirst": "今週の{{city}}で最多得票",
-      "rankWeek": "今週の{{city}}で{{rank}}位",
+      "rankWeek": "今週の{{city}}で{{rank, ordinal}}",
       "rankAlltimeFirst": "{{city}}で最も票を集めたスポット",
-      "rankAlltime": "{{city}}の歴代{{rank}}位",
+      "rankAlltime": "{{city}}の歴代{{rank, ordinal}}",
       "photos": "写真",
       "captions": "みんなの声",
       "notFound": "このスポットは利用できません。",
@@ -776,21 +776,21 @@
       "new": "NEW",
       "you": {
         "top": "あなた · 1位 · 上には誰もいないよ 👑",
-        "player": "あなた · {{rank}}位 · あと{{gap}}ptで{{name}}を抜ける ▲",
+        "player": "あなた · {{rank, ordinal}} · あと{{gap}}ptで{{name}}を抜ける ▲",
         "none": "今日参加してランクインしよう 🙋",
-        "photo_other": "あなたのベスト：#{{rank}} · #{{next}}まであと{{count}} ❤️",
-        "photoTop": "あなたのベスト：#1 · あなたより上はいません 👑",
+        "photo_other": "あなたのベスト：{{rank, ordinal}} · {{next, ordinal}}まであと{{count}} ❤️",
+        "photoTop": "あなたのベスト：1位 · あなたより上はいません 👑",
         "photoNone": "まだランクインした写真はありません ❤️",
-        "seasonLead": "今シーズン #1！王座を守ろう 👑",
-        "seasonBehind_one": "今シーズン #{{rank}}、{{name}}まであと {{count}} pt",
-        "seasonBehind_other": "今シーズン #{{rank}}、{{name}}まであと {{count}} pt",
-        "seasonTied": "今シーズン #{{rank}}、{{name}}と同点",
+        "seasonLead": "今シーズン1位！王座を守ろう 👑",
+        "seasonBehind_one": "今シーズン{{rank, ordinal}}、{{name}}まであと {{count}} pt",
+        "seasonBehind_other": "今シーズン{{rank, ordinal}}、{{name}}まであと {{count}} pt",
+        "seasonTied": "今シーズン{{rank, ordinal}}、{{name}}と同点",
         "seasonNone": "今日プレイして今シーズンに参加しよう 🙋"
       },
       "city": {
         "lineTop": "{{city}}がトップを独走中！🏁",
-        "line_other": "{{city}}は{{rank}}位。あと{{count}}枚で{{next}}に追いつく！",
-        "youBar_other": "{{city}} · {{rank}}位 · {{next}}まであと{{count}}枚"
+        "line_other": "{{city}}は{{rank, ordinal}}。あと{{count}}枚で{{next}}に追いつく！",
+        "youBar_other": "{{city}} · {{rank, ordinal}} · {{next}}まであと{{count}}枚"
       },
       "empty": {
         "photos": "いいねされた写真はまだないよ。お気に入りに投票しよう ❤️",
@@ -799,8 +799,8 @@
       },
       "results": {
         "dismiss": "閉じる",
-        "world": "🏆 昨日、あなたの写真は世界#{{rank}}でした",
-        "city": "🏆 昨日、あなたの写真は{{city}}で#{{rank}}でした",
+        "world": "🏆 昨日、あなたの写真は世界{{rank, ordinal}}でした",
+        "city": "🏆 昨日、あなたの写真は{{city}}で{{rank, ordinal}}でした",
         "best": "🏆 昨日、あなたの写真が{{city}}でいちばんでした",
         "votes_other": "🏆 昨日、あなたの写真に{{count}} ❤️",
         "generic": "🏆 昨日の結果が出ました",
@@ -812,7 +812,7 @@
         "photo": "ここに君の写真を? 📸",
         "player": "この順位を取ろう 🙋",
         "city": "ここに君の街を? 🌍",
-        "invite": "🎯 #{{rank}}を取るのは誰？友だちを招待",
+        "invite": "🎯 {{rank, ordinal}}を取るのは誰？友だちを招待",
         "empty": "この順位はまだ空いています"
       },
       "seasonEnds_one": "シーズン終了まであと{{count}}日",
@@ -835,9 +835,9 @@
     },
     "season": {
       "resultsKicker": "{{season}} · シーズン結果",
-      "medalTitle": "#{{rank}} でフィニッシュ！🎉",
-      "rankTitle_one": "{{count}}人中 #{{rank}} でフィニッシュ",
-      "rankTitle_other": "{{count}}人中 #{{rank}} でフィニッシュ",
+      "medalTitle": "{{rank, ordinal}}でフィニッシュ！🎉",
+      "rankTitle_one": "{{count}}人中{{rank, ordinal}}でフィニッシュ",
+      "rankTitle_other": "{{count}}人中{{rank, ordinal}}でフィニッシュ",
       "stats": "ポイント：{{points}} · プレイ日数：{{days}} · 表彰台：{{podiums}}",
       "newSeason": "新しいシーズンがスタート。みんな0からやり直し。",
       "play": "📸 今日のチャレンジをプレイ",
@@ -884,15 +884,15 @@
     "ranks": "🏆 ランキングを見る",
     "share": "📤 勝利をシェア",
     "shareLine": {
-      "city_today": "今日、{{city}}で{{rank}}位！",
-      "city_week": "今週、{{city}}で{{rank}}位！",
-      "city_alltime": "{{city}}で{{rank}}位！",
-      "world_today": "今日、世界で{{rank}}位！",
-      "world_week": "今週、世界で{{rank}}位！",
-      "world_alltime": "世界で{{rank}}位！",
-      "cities_today": "今日、{{city}}は都市で{{rank}}位！",
-      "cities_week": "今週、{{city}}は都市で{{rank}}位！",
-      "cities_alltime": "{{city}}は都市で{{rank}}位！"
+      "city_today": "今日、{{city}}で{{rank, ordinal}}！",
+      "city_week": "今週、{{city}}で{{rank, ordinal}}！",
+      "city_alltime": "{{city}}で{{rank, ordinal}}！",
+      "world_today": "今日、世界で{{rank, ordinal}}！",
+      "world_week": "今週、世界で{{rank, ordinal}}！",
+      "world_alltime": "世界で{{rank, ordinal}}！",
+      "cities_today": "今日、{{city}}は都市で{{rank, ordinal}}！",
+      "cities_week": "今週、{{city}}は都市で{{rank, ordinal}}！",
+      "cities_alltime": "{{city}}は都市で{{rank, ordinal}}！"
     }
   }
 }

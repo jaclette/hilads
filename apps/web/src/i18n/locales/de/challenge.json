@@ -65,8 +65,8 @@
   "leaderboard": {
     "title": "Most Local",
     "chip": {
-      "ranked": "#{{rank}}",
-      "rankedOver": "#100+",
+      "ranked": "{{rank, ordinal}}",
+      "rankedOver": "100+",
       "neutral": "Top-Challenger"
     },
     "scope": {
@@ -94,10 +94,10 @@
       "periodAll": "aller Zeiten",
       "placeCity": "in {{city}}",
       "placeWorld": "weltweit",
-      "userNotTop": "🔥 Ich bin #{{rank}} {{place}} {{period}}: {{pts}} Pkt.! Ich jage @{{above}} ({{aPts}} Pkt.) 👀 und halte @{{below}} ({{bPts}} Pkt.) hinter mir. Glaubst du, du ziehst an mir vorbei? 🏆",
-      "userTop": "👑 Ich bin #1 {{place}} {{period}}: {{pts}} Pkt.! @{{below1}} ({{b1Pts}} Pkt.) und @{{below2}} ({{b2Pts}} Pkt.) sitzen mir im Nacken. Komm, hol dir die Krone 😏",
-      "cityNotTop": "🔥 {{place}} ist #{{rank}} unter allen Städten {{period}}: {{pts}} Pkt.! Direkt hinter {{above}} ({{aPts}} Pkt.) 👀 und vor {{below}} ({{bPts}} Pkt.). Locals, auf geht's nach oben 🏆",
-      "cityTop": "👑 {{place}} ist #1 unter allen Städten {{period}}: {{pts}} Pkt.! {{below1}} ({{b1Pts}} Pkt.) und {{below2}} ({{b2Pts}} Pkt.) sind uns auf den Fersen. Locals, wir bleiben oben 🔥"
+      "userNotTop": "🔥 Ich bin auf dem {{rank, ordinal}} Platz {{place}} {{period}}: {{pts}} Pkt.! Ich jage @{{above}} ({{aPts}} Pkt.) 👀 und halte @{{below}} ({{bPts}} Pkt.) hinter mir. Glaubst du, du ziehst an mir vorbei? 🏆",
+      "userTop": "👑 Ich bin auf dem ersten Platz {{place}} {{period}}: {{pts}} Pkt.! @{{below1}} ({{b1Pts}} Pkt.) und @{{below2}} ({{b2Pts}} Pkt.) sitzen mir im Nacken. Komm, hol dir die Krone 😏",
+      "cityNotTop": "🔥 {{place}} ist auf dem {{rank, ordinal}} Platz unter allen Städten {{period}}: {{pts}} Pkt.! Direkt hinter {{above}} ({{aPts}} Pkt.) 👀 und vor {{below}} ({{bPts}} Pkt.). Locals, auf geht's nach oben 🏆",
+      "cityTop": "👑 {{place}} ist an der Spitze aller Städte {{period}}: {{pts}} Pkt.! {{below1}} ({{b1Pts}} Pkt.) und {{below2}} ({{b2Pts}} Pkt.) sind uns auf den Fersen. Locals, wir bleiben oben 🔥"
     }
   },
   "closeCta": "Challenge beenden",
@@ -185,9 +185,9 @@
   },
   "scoreCelebration": {
     "rank": {
-      "city": "#{{rank}} in {{city}}",
+      "city": "{{rank, ordinal}} Platz in {{city}}",
       "cityBeyond": "Nicht in den Top {{topN}} deiner Stadt",
-      "world": "#{{rank}} weltweit",
+      "world": "{{rank, ordinal}} Platz weltweit",
       "worldBeyond": "Nicht in den Top {{topN}} weltweit",
       "cityUnranked": "Diesen Monat noch kein Rang in {{city}}",
       "worldUnranked": "Diesen Monat noch kein Rang weltweit"
@@ -310,9 +310,9 @@
   },
   "spot": {
     "rankWeekFirst": "Meiste Stimmen diese Woche in {{city}}",
-    "rankWeek": "Nr. {{rank}} diese Woche in {{city}}",
+    "rankWeek": "{{rank, ordinal}} Platz diese Woche in {{city}}",
     "rankAlltimeFirst": "Spot mit den meisten Stimmen in {{city}}",
-    "rankAlltime": "Nr. {{rank}} aller Zeiten in {{city}}",
+    "rankAlltime": "{{rank, ordinal}} Platz aller Zeiten in {{city}}",
     "photos": "Fotos",
     "captions": "Was die Leute sagen",
     "notFound": "Dieser Spot ist nicht verfügbar.",
@@ -405,7 +405,7 @@
       "validatedHint": "Von einem Local bestätigt: Jemand, der hier lebt, hat für dieses Foto gestimmt."
     },
     "results": {
-      "worldRank": "#{{rank}} weltweit"
+      "worldRank": "{{rank, ordinal}} Platz weltweit"
     },
     "streak_one": "{{count}}-Tag-Serie",
     "streak_other": "{{count}}-Tage-Serie",
@@ -492,7 +492,7 @@
       "surprise": "Überrasch mich"
     },
     "leaderboard": {
-      "me": "Du: #{{rank}} · ♥ {{votes}}"
+      "me": "Du: {{rank, ordinal}} Platz · ♥ {{votes}}"
     },
     "week": {
       "title": "Diese Woche",
@@ -595,9 +595,9 @@
     },
     "spot": {
       "rankWeekFirst": "Meiste Stimmen diese Woche in {{city}}",
-      "rankWeek": "Nr. {{rank}} diese Woche in {{city}}",
+      "rankWeek": "{{rank, ordinal}} Platz diese Woche in {{city}}",
       "rankAlltimeFirst": "Spot mit den meisten Stimmen in {{city}}",
-      "rankAlltime": "Nr. {{rank}} aller Zeiten in {{city}}",
+      "rankAlltime": "{{rank, ordinal}} Platz aller Zeiten in {{city}}",
       "photos": "Fotos",
       "captions": "Was die Leute sagen",
       "notFound": "Dieser Spot ist nicht verfügbar.",
@@ -798,35 +798,35 @@
       "bestPerCity": "Bestes Foto pro Stadt",
       "new": "neu",
       "you": {
-        "top": "Du · #1 · Niemand vor dir 👑",
-        "player": "Du · #{{rank}} · {{gap}} Pkt. bis {{name}} ▲",
+        "top": "Du · erster Platz · Niemand vor dir 👑",
+        "player": "Du · {{rank, ordinal}} Platz · {{gap}} Pkt. bis {{name}} ▲",
         "none": "Spiel heute, um aufs Board zu kommen 🙋",
-        "photo_one": "Dein bestes: #{{rank}} · {{count}} ❤️ bis #{{next}}",
-        "photo_other": "Dein bestes: #{{rank}} · {{count}} ❤️ bis #{{next}}",
-        "photoTop": "Dein bestes: #1 · niemand vor dir 👑",
+        "photo_one": "Dein bestes: {{rank, ordinal}} Platz · {{count}} ❤️ bis zum {{next, ordinal}} Platz",
+        "photo_other": "Dein bestes: {{rank, ordinal}} Platz · {{count}} ❤️ bis zum {{next, ordinal}} Platz",
+        "photoTop": "Dein bestes: erster Platz · niemand vor dir 👑",
         "photoNone": "Noch keins deiner Fotos ist platziert ❤️",
-        "seasonLead": "Du bist #1 diese Saison! Verteidige deine Krone 👑",
-        "seasonBehind_one": "Du bist #{{rank}} diese Saison, {{count}} Pkt hinter {{name}}",
-        "seasonBehind_other": "Du bist #{{rank}} diese Saison, {{count}} Pkt hinter {{name}}",
-        "seasonTied": "Du bist #{{rank}} diese Saison, punktgleich mit {{name}}",
+        "seasonLead": "Du bist diese Saison an der Spitze! Verteidige deine Krone 👑",
+        "seasonBehind_one": "Du bist diese Saison auf dem {{rank, ordinal}} Platz, {{count}} Pkt hinter {{name}}",
+        "seasonBehind_other": "Du bist diese Saison auf dem {{rank, ordinal}} Platz, {{count}} Pkt hinter {{name}}",
+        "seasonTied": "Du bist diese Saison auf dem {{rank, ordinal}} Platz, punktgleich mit {{name}}",
         "seasonNone": "Spiel heute, um in die Saison einzusteigen 🙋"
       },
       "city": {
         "lineTop": "{{city}} führt das Rennen an! 🏁",
-        "line_one": "{{city}} ist #{{rank}}. Noch {{count}} Foto, um {{next}} einzuholen!",
-        "line_other": "{{city}} ist #{{rank}}. Noch {{count}} Fotos, um {{next}} einzuholen!",
-        "youBar_one": "{{city}} · #{{rank}} · {{count}} Foto hinter {{next}}",
-        "youBar_other": "{{city}} · #{{rank}} · {{count}} Fotos hinter {{next}}"
+        "line_one": "{{city}} ist auf dem {{rank, ordinal}} Platz. Noch {{count}} Foto, um {{next}} einzuholen!",
+        "line_other": "{{city}} ist auf dem {{rank, ordinal}} Platz. Noch {{count}} Fotos, um {{next}} einzuholen!",
+        "youBar_one": "{{city}} · {{rank, ordinal}} Platz · {{count}} Foto hinter {{next}}",
+        "youBar_other": "{{city}} · {{rank, ordinal}} Platz · {{count}} Fotos hinter {{next}}"
       },
       "empty": {
         "photos": "Noch keine gelikten Fotos. Stimm für deine Favoriten ab ❤️",
-        "players": "Noch hat niemand Punkte. Spiel und hol dir Platz 1 🙋",
+        "players": "Noch hat niemand Punkte. Spiel und hol dir den ersten Platz 🙋",
         "cities": "Noch keine Stadt im Ranking. Bring deine nach vorn 🌍"
       },
       "results": {
         "dismiss": "Schließen",
-        "world": "🏆 Dein Foto wurde gestern #{{rank}} weltweit",
-        "city": "🏆 Dein Foto wurde gestern #{{rank}} in {{city}}",
+        "world": "🏆 Dein Foto wurde gestern {{rank, ordinal}} weltweit",
+        "city": "🏆 Dein Foto wurde gestern {{rank, ordinal}} in {{city}}",
         "best": "🏆 Dein Foto war gestern das beste in {{city}}",
         "votes_one": "🏆 Dein Foto bekam gestern {{count}} ❤️",
         "votes_other": "🏆 Dein Foto bekam gestern {{count}} ❤️",
@@ -841,7 +841,7 @@
         "photo": "Dein Foto hier? 📸",
         "player": "Hol dir den Platz 🙋",
         "city": "Deine Stadt hier? 🌍",
-        "invite": "🎯 Wer holt Platz {{rank}}? Lade jemanden ein",
+        "invite": "🎯 Wer holt den {{rank, ordinal}} Platz? Lade jemanden ein",
         "empty": "Diesen Platz hat niemand geholt"
       },
       "seasonEnds_one": "Die Saison endet in {{count}} Tag",
@@ -865,9 +865,9 @@
     },
     "season": {
       "resultsKicker": "{{season}} · Saisonergebnis",
-      "medalTitle": "Du bist #{{rank}}! 🎉",
-      "rankTitle_one": "Du bist #{{rank}} von {{count}} Spieler",
-      "rankTitle_other": "Du bist #{{rank}} von {{count}} Spielern",
+      "medalTitle": "Du bist {{rank, ordinal}} geworden! 🎉",
+      "rankTitle_one": "Du bist {{rank, ordinal}} von {{count}} Spieler",
+      "rankTitle_other": "Du bist {{rank, ordinal}} von {{count}} Spielern",
       "stats": "Punkte: {{points}} · Gespielte Tage: {{days}} · Podien: {{podiums}}",
       "newSeason": "Eine neue Saison beginnt. Alle starten wieder bei 0.",
       "play": "📸 Spiel die heutige Challenge",
@@ -914,15 +914,15 @@
     "ranks": "🏆 Rangliste ansehen",
     "share": "📤 Meinen Sieg teilen",
     "shareLine": {
-      "city_today": "Ich bin heute #{{rank}} in {{city}}",
-      "city_week": "Ich bin diese Woche #{{rank}} in {{city}}",
-      "city_alltime": "Ich bin #{{rank}} in {{city}}",
-      "world_today": "Ich bin heute #{{rank}} weltweit",
-      "world_week": "Ich bin diese Woche #{{rank}} weltweit",
-      "world_alltime": "Ich bin #{{rank}} weltweit",
-      "cities_today": "{{city}} ist heute #{{rank}} der Städte",
-      "cities_week": "{{city}} ist diese Woche #{{rank}} der Städte",
-      "cities_alltime": "{{city}} ist #{{rank}} der Städte"
+      "city_today": "Ich bin heute auf dem {{rank, ordinal}} Platz in {{city}}",
+      "city_week": "Ich bin diese Woche auf dem {{rank, ordinal}} Platz in {{city}}",
+      "city_alltime": "Ich bin auf dem {{rank, ordinal}} Platz in {{city}}",
+      "world_today": "Ich bin heute weltweit auf dem {{rank, ordinal}} Platz",
+      "world_week": "Ich bin diese Woche weltweit auf dem {{rank, ordinal}} Platz",
+      "world_alltime": "Ich bin weltweit auf dem {{rank, ordinal}} Platz",
+      "cities_today": "{{city}} ist heute auf dem {{rank, ordinal}} Platz der Städte",
+      "cities_week": "{{city}} ist diese Woche auf dem {{rank, ordinal}} Platz der Städte",
+      "cities_alltime": "{{city}} ist auf dem {{rank, ordinal}} Platz der Städte"
     }
   }
 }

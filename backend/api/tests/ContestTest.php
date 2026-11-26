@@ -7,6 +7,7 @@ use PHPUnit\Framework\TestCase;
 require_once __DIR__ . '/../src/DailyClock.php';
 require_once __DIR__ . '/../src/DailyProofRepository.php';
 require_once __DIR__ . '/../src/Scoring.php';
+require_once __DIR__ . '/../src/Ordinal.php';
 require_once __DIR__ . '/../src/Contest.php';
 
 /**
@@ -114,7 +115,7 @@ final class ContestTest extends TestCase
     {
         $photos = [self::photo('a', '2026-12-02', 0), self::photo('a', '2026-12-03', 0), self::photo('b', '2026-12-02', 0), self::photo('b', '2026-12-03', 0)];
         $st = Contest::compute(self::SEASON, [self::p('a'), self::p('b')], [], $photos, []);
-        self::assertSame(['players' => 2, 'threshold' => 2, 'photos' => 2, 'reached' => true], $st['counter']);
+        self::assertSame(['players' => 2, 'threshold' => 2, 'photos' => 2, 'reached' => true, 'showFrom' => 0], $st['counter']);
     }
 
     public function testHeadstartPoints(): void
@@ -162,6 +163,9 @@ final class ContestTest extends TestCase
         self::assertStringContainsString('they receive a Vietnam souvenir pack instead of the trip', $md);
         self::assertStringContainsString('ranks 2 to 8 of the final-week ranking', $md);
         self::assertStringNotContainsString('capped at', $md, 'likes no longer score');
+        self::assertStringNotContainsString('#', (string) preg_replace('/^#+ /m', '', $md), 'no "#" rank notation (markdown headings aside)');
+        self::assertStringContainsString('10 points for first place, down to 1 point for 10th place', $md);
+        self::assertStringContainsString('every seat is taken', $md);
         self::assertStringContainsString('[TBD:', $md, 'open points stay visible until the text is final');
         self::assertStringNotContainsString('DRAFT', Contest::placeholderRules());
     }

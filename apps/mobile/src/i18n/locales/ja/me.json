@@ -87,7 +87,7 @@
   "themeDark": "ダーク",
   "passport": {
     "title": "パスポート",
-    "weekRank": "今週{{rank}}位",
+    "weekRank": "今週{{rank, ordinal}}",
     "weekNone": "今週はまだランク外",
     "mostLocalIn": "{{city}}の Most Local",
     "mostLocalWorld": "世界の Most Local",
@@ -99,7 +99,7 @@
     "myProposals": "自分の提案",
     "friends": "友達",
     "mostLocalAllTime": "歴代 Most Local",
-    "allTimeRank": "{{city}}で{{rank}}位",
+    "allTimeRank": "{{city}}で{{rank, ordinal}}",
     "howPoints": "ポイントの仕組み",
     "gotIt": "了解",
     "close": "閉じる",
@@ -126,7 +126,7 @@
     "rivals": "ライバル",
     "rivalsEmpty": "チャレンジをいくつか遊んで、最初のライバルに出会おう 🌍",
     "duels_other": "{{count}}戦",
-    "seasonRank": "今シーズン #{{rank}}",
+    "seasonRank": "今シーズン{{rank, ordinal}}",
     "seasonNone": "プレイして今シーズンに参加しよう",
     "viewAsOthers": "ほかの人からの見え方を確認"
   },
@@ -174,7 +174,7 @@
   },
   "seasons": {
     "medals": "シーズンメダル",
-    "medalA11y": "#{{rank}}、{{season}}、{{points}}ポイント"
+    "medalA11y": "{{rank, ordinal}}、{{season}}、{{points}}ポイント"
   },
   "invite": {
     "title": "仲間を呼ぼう",
@@ -225,7 +225,7 @@
     "title": "Launch Trip",
     "test": "TEST",
     "cardJoined": "参加中 · {{points}} pt",
-    "cardRank": "{{rank}} 位",
+    "cardRank": "{{rank, ordinal}}",
     "phase": {
       "upcoming": "{{date}} スタート",
       "season": "{{date}} 終了",
@@ -276,9 +276,9 @@
     "launchGift": "ローンチ記念のプレゼント。ゲームはそのまま：1 日 1 枚。",
     "unlockPlayers": "人",
     "unlockHint": "承認写真を {{photos}} 枚以上投稿したプレイヤーが {{max}} 人に達すると、旅行が解放されます。",
-    "unlocked": "旅行が決定 🎉 あとはファイナルウィークで1位を目指そう。",
+    "unlocked": "旅行が決定 🎉 あとはファイナルウィークで1位になって手に入れよう。",
     "myFinalScore": "最終スコア",
-    "behind": "{{rank}} 位まであと {{count}} pt",
+    "behind": "{{rank, ordinal}}まであと {{count}} pt",
     "inviteTitle": "友だちを誘おう",
     "inviteText": "あなたのリンクで参加し、承認写真を {{count}} 枚投稿した友だち 1 人につき +{{points}} pt。",
     "inviteStamp": "友だち 1 人",
@@ -298,7 +298,7 @@
     "startsIn": "{{time}}後にスタート",
     "endsIn": "{{time}}後に終了",
     "share": "シェア",
-    "shareRank": "Hilads の Launch Trip で {{rank}} 位！{{prize}}：一緒にプレイしよう！",
+    "shareRank": "Hilads の Launch Trip で{{rank, ordinal}}！{{prize}}：一緒にプレイしよう！",
     "shareJoin": "Hilads の Launch Trip に参加中！{{prize}}：一緒にプレイしよう！",
     "shareCardIn": "参加中",
     "shareCardJoin": "Hilads で一緒に遊ぼう",
@@ -307,14 +307,14 @@
     "seeRanking": "ランキングをすべて見る",
     "rankingTitle": "ランキング",
     "rulesShort": "規約",
-    "winLine": "ファイナルウィークのランキング1位が旅行をゲット ✈️",
+    "winLine": "ファイナルウィークの優勝者が旅行をゲット ✈️",
     "howWinTitle": "勝ち方",
     "step1Title": "{{date}}まで：ポイントを貯めよう",
     "step1Text": "毎日の写真を投稿：いいね1つ = 1 pt（1枚につき最大 {{cap}} pt）。あなたのリンクで参加し承認写真を {{min}} 枚投稿した友だち1人につき +{{points}}。",
     "step2Title": "上位 {{count}} 人はリードを獲得",
-    "step2Text": "{{date}}、シーズン上位 {{count}} 人がリードを持ってファイナルウィークへ：1位は {{count}} pt、{{count}}位は 1 pt。",
+    "step2Text": "{{date}}、上位 {{count}} 人がリードを持ってファイナルウィークをスタート：1位は {{count}} ポイント、以下{{count, ordinal}}の 1 ポイントまで。",
     "step3Title": "ファイナルウィーク：1位が優勝",
-    "step3Text": "いいねはゼロから数え直し、リードと招待ポイントを加算。{{date}}時点の1位が旅行をゲット ✈️",
+    "step3Text": "ポイントはゼロから再スタート、そこにリードを加算。{{date}} 時点の1位が旅行をゲット ✈️",
     "hsBadge": "+{{count}} リード",
     "hsHint": "上位 {{count}} 人はリードを持ってファイナルウィークへ。",
     "itTitle": "ベトナムでの1週間",
@@ -343,7 +343,7 @@
       "friends": "友だち",
       "rules": "規約"
     },
-    "forFirst": "ファイナルウィークの1位に",
+    "forFirst": "ファイナルウィークの優勝者に",
     "chip": {
       "cdStarts": "開始まで",
       "cdFinal": "ファイナルまで",
@@ -363,23 +363,11 @@
       "now": "開催中",
       "done": "完了"
     },
-    "goal": {
-      "title": "みんなで旅行を解放しよう",
-      "players": "人",
-      "what": "承認写真を {{photos}} 枚投稿したプレイヤーがカウントされます。",
-      "mine": "あなた：{{n}} / {{photos}} 枚",
-      "mineDone": "カウント済み ✓",
-      "fallback": "{{date}} までに {{players}} 人に届かなかったら？それでも1位は{{prize}}をゲット。",
-      "reached": "旅行が解放されました 🎉",
-      "reachedText": "{{players}} 人が達成！あとはファイナルウィークで1位になって旅行をゲットしよう。",
-      "notReachedText": "目標に届きませんでした：1位は旅行の代わりに{{prize}}をゲット。"
-    },
     "me": {
-      "rank": "あなたは {{rank}} 位",
+      "rank": "あなたは{{rank, ordinal}}",
       "inRace": "レースに参加中",
       "finalLive": "ファイナルウィーク · ライブ",
-      "gap": "{{rank}} 位まであと {{count}} pt",
-      "tie": "{{rank}} 位と同点：いいね数で決定",
+      "tie": "{{rank, ordinal}}と同点：いいね数で決定",
       "leading": "あなたがトップ",
       "headstart": "+{{count}} のリードを含む",
       "notScored": "プレイしてレースに参加",
@@ -390,7 +378,9 @@
       "upcomingTitle": "準備しよう",
       "upcomingText": "レースは {{date}} にスタート。その日からポイントがカウントされます。",
       "closed": "現在、参加受付は終了しています。",
-      "cantJoin": "このアカウントはこのキャンペーンに参加できません。"
+      "cantJoin": "このアカウントはこのキャンペーンに参加できません。",
+      "gap_one": "{{rank, ordinal}}まであと {{count}} pt",
+      "gap_other": "{{rank, ordinal}}まであと {{count}} pt"
     },
     "cta": {
       "play": "今日のチャレンジをプレイ",
@@ -436,28 +426,29 @@
       "howTitle": "勝ち方",
       "how1": "デイリーチャレンジをプレイ：Hilads のポイントがレースにカウントされます。",
       "how2": "{{date}} までに上位 {{count}} 人に入れば、リードを持ってファイナルウィークをスタート。",
-      "how3": "{{date}} 時点でファイナルウィークの1位なら、旅行をゲット。",
+      "how3": "ファイナルウィークで1位になって旅行をゲット。",
       "pointsTitle": "ポイントの数え方",
       "play": "デイリーチャレンジをプレイ",
-      "podium": "その日の表彰台（1位 / 2位 / 3位）",
       "week": "パーフェクトウィーク（月曜から日曜まで全チャレンジ）",
       "friend": "友だちの最初の写真（月 {{count}} 人まで）",
       "crew": "今月 {{size}} 人目の友だち",
       "pointsNote": "Hilads のどこでも同じポイント。参加した日から、{{date}} 以降のチャレンジが対象です。",
       "finalTitle": "ファイナルウィーク",
       "final1": "{{date}} にポイントがゼロからスタート。",
-      "final2": "その前の上位 {{count}} 人はリードを持ってスタート：1位は +{{count}}、以下 +1 まで。",
+      "final2": "その前の上位 {{count}} 人はリードを持ってスタート：1位は +{{count}}、以下{{count, ordinal}}の +1 まで。",
       "final3": "同点の場合：ファイナルウィークのいいね数が多い人、次にそのスコアに先に到達した人。",
       "prizeTitle": "賞品",
-      "goalTitle": "プレイヤーみんなの目標",
-      "goalText": "承認写真を {{photos}} 枚ずつ投稿したプレイヤーが {{players}} 人に達すると、旅行が解放されます。",
-      "fallbackText": "{{date}} までに届かなかったら？それでも1位は{{prize}}をゲット。",
+      "goalTitle": "搭乗：プレイヤーの目標",
+      "goalText": "飛行機の座席は {{players}} 席。承認写真 {{photos}} 枚で、搭乗券と座席をゲット。全席が埋まると旅行が解放されます。",
+      "fallbackText": "{{date}} までに満席にならなかったら？それでも優勝者には {{prize}}。",
       "whoTitle": "参加できる人",
       "who1": "無料、購入不要。",
       "who2": "18歳以上。",
       "who3": "1人1アカウント。",
       "who4": "アプリで参加し、公式規約に同意してください。",
-      "full": "公式規約の全文"
+      "full": "公式規約の全文",
+      "podiumTitle": "今日の表彰台（世界で最もいいねが多い写真）",
+      "place": "{{rank, ordinal}}"
     },
     "over": {
       "title": "レースは終了しました",
@@ -466,16 +457,37 @@
       "winnerTitle": "{{name}} が優勝！",
       "winnerTrip": "{{name}} が{{prize}}をゲット。",
       "winnerFallback": "プレイヤーみんなの目標には届きませんでした：{{name}} が{{prize}}をゲット。",
-      "yourRank": "あなたの最終順位は {{rank}} 位"
+      "yourRank": "最終順位：{{rank, ordinal}}"
     },
     "banner": {
-      "rank": "あなたは {{rank}} 位 · {{count}} pt",
+      "rank": "あなたは{{rank, ordinal}} · {{count}} pt",
       "play": "プレイしてレースに参加",
       "join": "レースに参加",
       "starts": "あと {{time}} でスタート",
       "toFinal": "ファイナルまで {{time}}",
       "ends": "終了まで {{time}}",
       "over": "優勝者を見る"
+    },
+    "board": {
+      "title": "✈️ 搭乗",
+      "seats": "{{threshold}} 席中 {{players}} 席が埋まりました",
+      "first": "いち早く搭乗しよう",
+      "takeoff": "全席が埋まると、飛行機が離陸します。",
+      "what": "承認写真 {{photos}} 枚で、搭乗券と座席をゲット。",
+      "pass": "あなたの搭乗券",
+      "passProgress": "{{n}} / {{photos}} 枚",
+      "passEarned": "搭乗券をゲット",
+      "passEarnedText": "座席を確保しました ✓",
+      "fallback": "{{date}} までに満席にならなかったら？それでも優勝者には {{prize}}。",
+      "full": "全席が埋まりました 🎉",
+      "fullText": "飛行機が離陸します。あとはファイナルウィークで1位になって旅行をゲットしよう。",
+      "notFullText": "満席になりませんでした：優勝者には旅行の代わりに {{prize}}。",
+      "invite": "招待",
+      "a11y": "搭乗：{{status}}。友だちを招待する共有メニューを開きます。",
+      "shareText": "Hilads の Launch Trip は {{players}} / {{threshold}} 席が埋まりました。あなたの席も確保しよう ✈️",
+      "shareTextFirst": "Hilads の Launch Trip、ただいま搭乗受付中。席を確保しよう ✈️",
+      "cardSeats": "{{players}} / {{threshold}} 席が埋まりました",
+      "cardGrab": "席を確保"
     }
   }
 }

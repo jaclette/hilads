@@ -333,8 +333,10 @@ export default async function handler(req, res) {
       const data = await fetchJson(`${API_BASE}/api/v1/daily/proofs/${id}/share`);
       if (data?.challenge) {
         const p = data.proof;
-        const rank = p && p.worldRank && p.worldRank <= 3 ? `#${p.worldRank} in the world`
-          : p && p.cityRank && p.cityRank <= 3 && p.city ? `#${p.cityRank} in ${p.city.name}` : null;
+        // Ranks as words, never "#1" (owner's rule 2026-11-26). Only the podium shows.
+        const ORD = ['1st', '2nd', '3rd'];
+        const rank = p && p.worldRank && p.worldRank <= 3 ? `${ORD[p.worldRank - 1]} in the world`
+          : p && p.cityRank && p.cityRank <= 3 && p.city ? `${ORD[p.cityRank - 1]} in ${p.city.name}` : null;
         element = ShareCard({
           // A proof in review never shows its photo: the challenge's cover instead.
           photo: p ? p.photoUrl : (data.challenge.coverUrl || themeCoverUrl(data.challenge.theme, data.challenge.special)),

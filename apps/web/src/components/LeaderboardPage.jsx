@@ -1,6 +1,8 @@
 import { thumbUrl } from '../lib/imageThumb'
 import { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import i18n from '../i18n'
+import { ordinal } from '../lib/ordinal'
 import { fetchLeaderboard } from '../api'
 import { localizeCityName } from '../i18n/cityName'
 import { cityDemonym } from '../lib/cityDemonym'
@@ -283,14 +285,14 @@ export default function LeaderboardPage({ account, city, cityChannelId, onBack, 
   )
 }
 
-// A rank in a round seal: #1 on gold, #2-#3 on the primary tint, the rest a
-// plain "#n" (mobile RankMedal; replaces medal emoji as chrome).
+// A rank in a round seal: 1st on gold, 2nd-3rd on the primary tint, the rest a
+// plain number, never "#n" (mobile RankMedal; replaces medal emoji as chrome).
 function RankDisc({ rank }) {
-  if (rank == null || rank > 3) return <>#{rank}</>
+  if (rank == null || rank > 3) return <>{rank}</>
   const isGold = rank === 1
   return (
     <span
-      aria-label={`#${rank}`}
+      aria-label={ordinal(rank, i18n.language)}
       style={{
         display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
         width: 30, height: 30, borderRadius: '50%', fontSize: 'var(--fs-xs)', fontWeight: 800,

@@ -371,7 +371,7 @@ export function renderToday(data, locale, prefixed) {
         var box = $('top3-rows'); box.textContent = '';
         rows.forEach(function (e) {
           var row = document.createElement('div'); row.className = 'row';
-          var m = document.createElement('span'); m.className = 'medal'; m.textContent = MEDALS[e.rank - 1] || ('#' + e.rank);
+          var m = document.createElement('span'); m.className = 'medal'; m.textContent = MEDALS[e.rank - 1] || String(e.rank);
           var img = document.createElement(e.thumbUrl ? 'img' : 'span');
           if (e.thumbUrl) { img.src = e.thumbUrl; img.alt = ''; img.loading = 'lazy'; } else { img.className = 'ph'; }
           var who = document.createElement('span'); who.className = 'who';

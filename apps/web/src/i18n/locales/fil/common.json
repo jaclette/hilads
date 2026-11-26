@@ -171,7 +171,7 @@
   "represent": {
     "locationNeeded": "Payagan ang location para maglaro para sa kung nasaan ka.",
     "pioneer": "Pioneer ng {{city}}",
-    "spotOne": "Spot #1 sa {{city}}",
+    "spotOne": "Unang spot sa {{city}}",
     "mapEmpty": "Wala pa sa world map ang {{city}}. Ilagay mo na.",
     "invite": "Mag-invite ng friend",
     "share": "Maglaro tayo para sa {{city}} sa Hilads.",

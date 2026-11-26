@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+require_once __DIR__ . '/Ordinal.php';
+
 /**
  * The Ranks tab (V6): players (Most Local points), cities (the race: photos,
  * players, likes) and photos (most liked), for today, this week or all time
@@ -362,7 +364,7 @@ final class Ranks
                     if (!NotificationRepository::enabledFor((string) $userId, 'daily_rank')) continue;
                     $data = ['date' => $date, 'scope' => (string) $cityId, 'cityId' => (string) $cityId, 'cityName' => $name,
                              'rank' => $rank, 'prevRank' => $before, 'period' => 'season'];
-                    $body = '▲ You climbed to #' . $rank . ' in ' . CityNames::short((string) $name) . ' this season';
+                    $body = '▲ You climbed to ' . Ordinal::format((int) $rank, 'en') . ' in ' . CityNames::short((string) $name) . ' this season';
                     $n += NotificationRepository::createUnchecked((string) $userId, 'daily_rank', 'Most Local', $body, $data, null, false) !== [] ? 1 : 0;
                 }
             }

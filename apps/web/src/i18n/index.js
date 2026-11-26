@@ -22,6 +22,7 @@ import en_city          from './locales/en/city.json'
 import en_cityNames          from './locales/en/cityNames.json'
 import en_venue         from './locales/en/venue.json'
 import en_chat          from './locales/en/chat.json'
+import { ordinal } from '../lib/ordinal'
 
 export const SUPPORTED      = ['en', 'fr', 'vi', 'es', 'it', 'pt-br', 'pt-pt', 'de', 'nl', 'zh-hans', 'zh-hant', 'ja', 'ko', 'fil', 'th', 'id', 'hi', 'ru', 'ar']
 // Right-to-left locales - drive <html dir="rtl">.
@@ -413,6 +414,9 @@ i18n.use(initReactI18next).init({
   returnEmptyString: false,
   react: { useSuspense: false },          // we preload before render ourselves
 })
+
+// Ranks are ordinals, never "#3": "You're {{rank, ordinal}}" → "You're 3rd", "Tu es 3e" (lib/ordinal).
+i18n.services.formatter?.add('ordinal', (value, lng) => ordinal(value, lng ?? i18n.language))
 
 const loaded = { en: true, fr: false, vi: false, es: false, it: false, 'pt-br': false, 'pt-pt': false, de: false, nl: false, 'zh-hans': false, 'zh-hant': false, ja: false, ko: false, fil: false, th: false, id: false, hi: false, ru: false, ar: false }
 

@@ -121,10 +121,10 @@ final class DailyI18nTest extends TestCase
     public function testPushCatalogIsComplete(): void
     {
         $expected = [
-            'world' => ['{rank}'], 'city_best' => ['{city}'], 'city_rank' => ['{city}', '{rank}'],
+            'world' => ['{rank_ordinal}'], 'city_best' => ['{city}'], 'city_rank' => ['{city}', '{rank_ordinal}'],
             'votes' => ['{n}'], 'winner' => ['{city}', '{name}', '{n}'], 'winner_nocity' => ['{name}', '{n}'],
             'digest_votes' => ['{n}'], 'digest_twist' => ['{n}'],
-            'picked_tomorrow' => ['{city}'], 'picked_today' => ['{city}'], 'top10' => ['{rank}'],
+            'picked_tomorrow' => ['{city}'], 'picked_today' => ['{city}'], 'top10' => ['{rank_ordinal}'],
             'first_vote' => [],
             'bell_vote' => ['{name}'], 'bell_twist' => ['{city}', '{name}'], 'bell_local_pass' => ['{city}'], 'proposal_approved' => ['{date}'],
             'proposal_reserve' => [], 'proposal_rejected' => ['{reason}'], 'proposal_day' => [], 'proposal_result' => ['{n}'], 'proposal_result_one' => [],
@@ -142,12 +142,15 @@ final class DailyI18nTest extends TestCase
         foreach ($catalog as $locale => $phrases) {
             $this->assertSame(DailyPushText::KEYS, array_keys($phrases), $locale);
             foreach ($phrases as $key => $tpl) {
-                preg_match_all('/\{[a-z]+\}/', $tpl, $m);
+                preg_match_all('/\{[a-z_]+\}/', $tpl, $m);
                 $found = array_values(array_unique($m[0]));
                 sort($found);
                 $this->assertSame($expected[$key], $found, "{$locale}.{$key}");
             }
             $this->assertStringContainsString('Local Twist', $phrases['digest_twist'], $locale);
+            foreach ($phrases as $key => $tpl) {
+                $this->assertDoesNotMatchRegularExpression('/#\s*\{|#\d/u', $tpl, "{$locale}.{$key}: no '#' rank");
+            }
         }
     }
 
@@ -157,10 +160,10 @@ final class DailyI18nTest extends TestCase
         $this->assertSame('fr', DailyPushes::morningLocale($c, 'fr'));
         $this->assertSame('en', DailyPushes::morningLocale($c, 'vi'));   // not translated: all English, no mix
         $line = DailyPushes::outcomeLine(['worldRank' => 2, 'cityRank' => 1, 'cityBest' => true, 'votes' => 9, 'cityName' => 'Paris'], null, 'fr');
-        $this->assertSame('Ta photo d\'hier a fini #2 dans le monde.', $line);
+        $this->assertSame('Ta photo d\'hier a fini 2e dans le monde.', $line);
         $fr = DailyPushes::morningMessage($c + ['theme' => 'taste'], $line, 'fr');
         $this->assertSame("🍜 Aujourd'hui : Saveur", $fr['title']);
-        $this->assertSame('Mange Ta photo d\'hier a fini #2 dans le monde.', $fr['body']);
+        $this->assertSame('Mange Ta photo d\'hier a fini 2e dans le monde.', $fr['body']);
         $this->assertSame('Eat', DailyPushes::morningMessage($c, null, 'en')['body']);
         $this->assertSame("Anh a gagné hier, avec 1 ♥.",
                           DailyPushes::outcomeLine(null, ['name' => 'Anh', 'cityName' => null, 'votes' => 1], 'fr'));

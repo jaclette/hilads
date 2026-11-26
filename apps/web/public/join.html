@@ -310,6 +310,29 @@
       autocapture: false, capture_pageleave: false, disable_session_recording: true, disable_toolbar: true,
     });
     function cap(ev, props){ try { posthog.capture(ev, props); } catch (e) {} }
+    /* A rank as an ordinal in the language ("1st", "1er", "1位"), never "#1": same table as src/lib/ordinal.js. */
+    function ordinal(n, l){
+      var HI = { 1: 'ला', 2: 'रा', 3: 'रा', 4: 'था', 6: 'ठा' };
+      switch (String(l || 'en').toLowerCase()) {
+        case 'fr': return n === 1 ? '1er' : n + 'e';
+        case 'es': case 'pt-pt': return n + '.º';
+        case 'pt-br': case 'it': return n + 'º';
+        case 'de': return n + '.';
+        case 'nl': return n + 'e';
+        case 'ru': return n + '-й';
+        case 'ja': return n + '位';
+        case 'ko': return n + '위';
+        case 'zh-hans': case 'zh-hant': return '第' + n + '名';
+        case 'th': return 'อันดับ ' + n;
+        case 'vi': return 'hạng ' + n;
+        case 'id': return 'ke-' + n;
+        case 'fil': return 'ika-' + n;
+        case 'hi': return n + (HI[n] || 'वां');
+        case 'ar': return 'الـ' + n;
+        default: var m10 = n % 10, m100 = n % 100;
+          return n + (m10 === 1 && m100 !== 11 ? 'st' : m10 === 2 && m100 !== 12 ? 'nd' : m10 === 3 && m100 !== 13 ? 'rd' : 'th');
+      }
+    }
     function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
     function flag(code){
       if (typeof code!=='string') return '🌍';
@@ -376,25 +399,25 @@
     };
     /* Slide 2 & 3 strings (leaderboard + international challenges). */
     var LB = {
-      en:{ lbTitle:"🏆 Global leaderboard", lbSub:"<b>jaclette</b> is #{rank} in the world 👑 Sign up and take the crown.", pts:"pts", cue1:"🏆 See the world's top 10", cue2:"🌍 Live international challenges", chTitle:"🌍 International challenges, live", chSub:"One city dares another, right now. Jump in.", heroBadge:"Dethrone jaclette · #{rank} worldwide", nav1:"Home", nav2:"Ranking", nav3:"Challenges" },
-      fr:{ lbTitle:"🏆 Classement mondial", lbSub:"<b>jaclette</b> est n°{rank} mondial 👑 Inscris-toi et détrône-le.", pts:"pts", cue1:"🏆 Vois le top 10 mondial", cue2:"🌍 Les défis internationaux", chTitle:"🌍 Défis internationaux en cours", chSub:"Une ville en défie une autre, là maintenant. Rejoins le mouvement.", heroBadge:"Détrône jaclette · n°{rank} mondial", nav1:"Accueil", nav2:"Classement", nav3:"Défis" },
-      vi:{ lbTitle:"🏆 Bảng xếp hạng thế giới", lbSub:"<b>jaclette</b> đang hạng {rank} thế giới 👑 Đăng ký và soán ngôi đi.", pts:"điểm", cue1:"🏆 Xem top 10 thế giới", cue2:"🌍 Thử thách quốc tế", chTitle:"🌍 Thử thách quốc tế đang diễn ra", chSub:"Thành phố này thách thức thành phố kia, ngay lúc này. Tham gia ngay.", heroBadge:"Soán ngôi jaclette · hạng {rank} thế giới", nav1:"Trang chủ", nav2:"Xếp hạng", nav3:"Thử thách" },
-      es:{ lbTitle:"🏆 Ranking mundial", lbSub:"<b>jaclette</b> es el n.º {rank} del mundo 👑 Regístrate y destrónalo.", pts:"pts", cue1:"🏆 Mira el top 10 mundial", cue2:"🌍 Retos internacionales", chTitle:"🌍 Retos internacionales en directo", chSub:"Una ciudad reta a otra, ahora mismo. Únete.", heroBadge:"Destrona a jaclette · n.º {rank} del mundo", nav1:"Inicio", nav2:"Ranking", nav3:"Retos" },
-      it:{ lbTitle:"🏆 Classifica mondiale", lbSub:"<b>jaclette</b> è n°{rank} al mondo 👑 Iscriviti e detronizzalo.", pts:"pts", cue1:"🏆 Guarda la top 10 mondiale", cue2:"🌍 Sfide internazionali", chTitle:"🌍 Sfide internazionali in corso", chSub:"Una città ne sfida un'altra, proprio ora. Unisciti.", heroBadge:"Detronizza jaclette · n°{rank} al mondo", nav1:"Home", nav2:"Classifica", nav3:"Sfide" },
-      "pt-br":{ lbTitle:"🏆 Ranking mundial", lbSub:"<b>jaclette</b> é o nº {rank} do mundo 👑 Cadastre-se e destrone ele.", pts:"pts", cue1:"🏆 Veja o top 10 mundial", cue2:"🌍 Desafios internacionais", chTitle:"🌍 Desafios internacionais ao vivo", chSub:"Uma cidade desafia a outra, agora mesmo. Entra nessa.", heroBadge:"Destrone jaclette · nº {rank} do mundo", nav1:"Início", nav2:"Ranking", nav3:"Desafios" },
-      "pt-pt":{ lbTitle:"🏆 Ranking mundial", lbSub:"<b>jaclette</b> é o nº {rank} do mundo 👑 Regista-te e destrona-o.", pts:"pts", cue1:"🏆 Vê o top 10 mundial", cue2:"🌍 Desafios internacionais", chTitle:"🌍 Desafios internacionais em direto", chSub:"Uma cidade desafia a outra, agora mesmo. Entra nisto.", heroBadge:"Destrona jaclette · nº {rank} do mundo", nav1:"Início", nav2:"Ranking", nav3:"Desafios" },
-      de:{ lbTitle:"🏆 Weltrangliste", lbSub:"<b>jaclette</b> ist weltweit auf Platz {rank} 👑 Registrier dich und stürze ihn.", pts:"Pkt.", cue1:"🏆 Sieh dir die Top 10 an", cue2:"🌍 Internationale Challenges", chTitle:"🌍 Internationale Challenges, live", chSub:"Eine Stadt fordert die andere heraus, genau jetzt. Mach mit.", heroBadge:"Stürze jaclette · Platz {rank} weltweit", nav1:"Start", nav2:"Rangliste", nav3:"Challenges" },
-      nl:{ lbTitle:"🏆 Wereldranglijst", lbSub:"<b>jaclette</b> is #{rank} van de wereld 👑 Meld je aan en onttroon 'm.", pts:"ptn", cue1:"🏆 Bekijk de wereld-top 10", cue2:"🌍 Internationale challenges", chTitle:"🌍 Internationale challenges, live", chSub:"De ene stad daagt de andere uit, nu meteen. Doe mee.", heroBadge:"Onttroon jaclette · #{rank} wereldwijd", nav1:"Home", nav2:"Ranglijst", nav3:"Challenges" },
-      "zh-hans":{ lbTitle:"🏆 全球排行榜", lbSub:"<b>jaclette</b> 全球第 {rank} 名 👑 注册，把他拉下王座。", pts:"分", cue1:"🏆 看看全球前十", cue2:"🌍 国际挑战", chTitle:"🌍 正在进行的国际挑战", chSub:"此刻，一座城市正在挑战另一座。加入吧。", heroBadge:"把 jaclette 拉下王座 · 全球第 {rank}", nav1:"首页", nav2:"排行榜", nav3:"挑战" },
-      "zh-hant":{ lbTitle:"🏆 全球排行榜", lbSub:"<b>jaclette</b> 全球第 {rank} 名 👑 註冊，把他拉下王座。", pts:"分", cue1:"🏆 看看全球前十", cue2:"🌍 國際挑戰", chTitle:"🌍 正在進行的國際挑戰", chSub:"此刻，一座城市正在挑戰另一座。加入吧。", heroBadge:"把 jaclette 拉下王座 · 全球第 {rank}", nav1:"首頁", nav2:"排行榜", nav3:"挑戰" },
-      ja:{ lbTitle:"🏆 世界ランキング", lbSub:"<b>jaclette</b> は世界{rank}位 👑 登録して王座を奪おう。", pts:"pt", cue1:"🏆 世界トップ10を見る", cue2:"🌍 世界の挑戦", chTitle:"🌍 進行中の国際チャレンジ", chSub:"今この瞬間、街が街に挑んでいる。君も参加しよう。", heroBadge:"jaclette を倒せ · 世界{rank}位", nav1:"ホーム", nav2:"ランキング", nav3:"チャレンジ" },
-      ko:{ lbTitle:"🏆 글로벌 랭킹", lbSub:"<b>jaclette</b> 는 세계 {rank}위 👑 가입하고 왕좌를 뺏으세요.", pts:"점", cue1:"🏆 세계 톱10 보기", cue2:"🌍 국제 챌린지", chTitle:"🌍 진행 중인 국제 챌린지", chSub:"지금 한 도시가 다른 도시에 도전 중이에요. 함께해요.", heroBadge:"jaclette 를 꺾어라 · 세계 {rank}위", nav1:"홈", nav2:"랭킹", nav3:"챌린지" },
-      fil:{ lbTitle:"🏆 Global leaderboard", lbSub:"<b>jaclette</b> ang #{rank} sa mundo 👑 Mag-sign up at agawin ang korona.", pts:"puntos", cue1:"🏆 Tingnan ang world top 10", cue2:"🌍 International challenges", chTitle:"🌍 International challenges, live", chSub:"May city na naghahamon sa iba, ngayon mismo. Sali na.", heroBadge:"Talunin si jaclette · #{rank} sa mundo", nav1:"Home", nav2:"Ranking", nav3:"Challenges" },
-      th:{ lbTitle:"🏆 อันดับโลก", lbSub:"<b>jaclette</b> อันดับ {rank} ของโลก 👑 สมัครแล้วโค่นเขาเลย", pts:"แต้ม", cue1:"🏆 ดูท็อป 10 ของโลก", cue2:"🌍 ชาเลนจ์ระดับโลก", chTitle:"🌍 ชาเลนจ์ระดับโลกที่กำลังเกิดขึ้น", chSub:"ตอนนี้เมืองหนึ่งกำลังท้าอีกเมือง มาร่วมสนุกกัน", heroBadge:"โค่น jaclette · อันดับ {rank} ของโลก", nav1:"หน้าแรก", nav2:"อันดับ", nav3:"ชาเลนจ์" },
+      en:{ lbTitle:"🏆 Global leaderboard", lbSub:"<b>jaclette</b> is {rank} in the world 👑 Sign up and take the crown.", pts:"pts", cue1:"🏆 See the world's top 10", cue2:"🌍 Live international challenges", chTitle:"🌍 International challenges, live", chSub:"One city dares another, right now. Jump in.", heroBadge:"Dethrone jaclette · {rank} worldwide", nav1:"Home", nav2:"Ranking", nav3:"Challenges" },
+      fr:{ lbTitle:"🏆 Classement mondial", lbSub:"<b>jaclette</b> est {rank} mondial 👑 Inscris-toi et détrône-le.", pts:"pts", cue1:"🏆 Vois le top 10 mondial", cue2:"🌍 Les défis internationaux", chTitle:"🌍 Défis internationaux en cours", chSub:"Une ville en défie une autre, là maintenant. Rejoins le mouvement.", heroBadge:"Détrône jaclette · {rank} mondial", nav1:"Accueil", nav2:"Classement", nav3:"Défis" },
+      vi:{ lbTitle:"🏆 Bảng xếp hạng thế giới", lbSub:"<b>jaclette</b> đang {rank} thế giới 👑 Đăng ký và soán ngôi đi.", pts:"điểm", cue1:"🏆 Xem top 10 thế giới", cue2:"🌍 Thử thách quốc tế", chTitle:"🌍 Thử thách quốc tế đang diễn ra", chSub:"Thành phố này thách thức thành phố kia, ngay lúc này. Tham gia ngay.", heroBadge:"Soán ngôi jaclette · {rank} thế giới", nav1:"Trang chủ", nav2:"Xếp hạng", nav3:"Thử thách" },
+      es:{ lbTitle:"🏆 Ranking mundial", lbSub:"<b>jaclette</b> es el {rank} del mundo 👑 Regístrate y destrónalo.", pts:"pts", cue1:"🏆 Mira el top 10 mundial", cue2:"🌍 Retos internacionales", chTitle:"🌍 Retos internacionales en directo", chSub:"Una ciudad reta a otra, ahora mismo. Únete.", heroBadge:"Destrona a jaclette · {rank} del mundo", nav1:"Inicio", nav2:"Ranking", nav3:"Retos" },
+      it:{ lbTitle:"🏆 Classifica mondiale", lbSub:"<b>jaclette</b> è {rank} al mondo 👑 Iscriviti e detronizzalo.", pts:"pts", cue1:"🏆 Guarda la top 10 mondiale", cue2:"🌍 Sfide internazionali", chTitle:"🌍 Sfide internazionali in corso", chSub:"Una città ne sfida un'altra, proprio ora. Unisciti.", heroBadge:"Detronizza jaclette · {rank} al mondo", nav1:"Home", nav2:"Classifica", nav3:"Sfide" },
+      "pt-br":{ lbTitle:"🏆 Ranking mundial", lbSub:"<b>jaclette</b> é o {rank} do mundo 👑 Cadastre-se e destrone ele.", pts:"pts", cue1:"🏆 Veja o top 10 mundial", cue2:"🌍 Desafios internacionais", chTitle:"🌍 Desafios internacionais ao vivo", chSub:"Uma cidade desafia a outra, agora mesmo. Entra nessa.", heroBadge:"Destrone jaclette · {rank} do mundo", nav1:"Início", nav2:"Ranking", nav3:"Desafios" },
+      "pt-pt":{ lbTitle:"🏆 Ranking mundial", lbSub:"<b>jaclette</b> é o {rank} do mundo 👑 Regista-te e destrona-o.", pts:"pts", cue1:"🏆 Vê o top 10 mundial", cue2:"🌍 Desafios internacionais", chTitle:"🌍 Desafios internacionais em direto", chSub:"Uma cidade desafia a outra, agora mesmo. Entra nisto.", heroBadge:"Destrona jaclette · {rank} do mundo", nav1:"Início", nav2:"Ranking", nav3:"Desafios" },
+      de:{ lbTitle:"🏆 Weltrangliste", lbSub:"<b>jaclette</b> liegt weltweit auf dem {rank} Platz 👑 Registrier dich und stürze ihn.", pts:"Pkt.", cue1:"🏆 Sieh dir die Top 10 an", cue2:"🌍 Internationale Challenges", chTitle:"🌍 Internationale Challenges, live", chSub:"Eine Stadt fordert die andere heraus, genau jetzt. Mach mit.", heroBadge:"Stürze jaclette · {rank} Platz weltweit", nav1:"Start", nav2:"Rangliste", nav3:"Challenges" },
+      nl:{ lbTitle:"🏆 Wereldranglijst", lbSub:"<b>jaclette</b> is {rank} van de wereld 👑 Meld je aan en onttroon 'm.", pts:"ptn", cue1:"🏆 Bekijk de wereld-top 10", cue2:"🌍 Internationale challenges", chTitle:"🌍 Internationale challenges, live", chSub:"De ene stad daagt de andere uit, nu meteen. Doe mee.", heroBadge:"Onttroon jaclette · {rank} wereldwijd", nav1:"Home", nav2:"Ranglijst", nav3:"Challenges" },
+      "zh-hans":{ lbTitle:"🏆 全球排行榜", lbSub:"<b>jaclette</b> 全球{rank} 👑 注册，把他拉下王座。", pts:"分", cue1:"🏆 看看全球前十", cue2:"🌍 国际挑战", chTitle:"🌍 正在进行的国际挑战", chSub:"此刻，一座城市正在挑战另一座。加入吧。", heroBadge:"把 jaclette 拉下王座 · 全球{rank}", nav1:"首页", nav2:"排行榜", nav3:"挑战" },
+      "zh-hant":{ lbTitle:"🏆 全球排行榜", lbSub:"<b>jaclette</b> 全球{rank} 👑 註冊，把他拉下王座。", pts:"分", cue1:"🏆 看看全球前十", cue2:"🌍 國際挑戰", chTitle:"🌍 正在進行的國際挑戰", chSub:"此刻，一座城市正在挑戰另一座。加入吧。", heroBadge:"把 jaclette 拉下王座 · 全球{rank}", nav1:"首頁", nav2:"排行榜", nav3:"挑戰" },
+      ja:{ lbTitle:"🏆 世界ランキング", lbSub:"<b>jaclette</b> は世界{rank} 👑 登録して王座を奪おう。", pts:"pt", cue1:"🏆 世界トップ10を見る", cue2:"🌍 世界の挑戦", chTitle:"🌍 進行中の国際チャレンジ", chSub:"今この瞬間、街が街に挑んでいる。君も参加しよう。", heroBadge:"jaclette を倒せ · 世界{rank}", nav1:"ホーム", nav2:"ランキング", nav3:"チャレンジ" },
+      ko:{ lbTitle:"🏆 글로벌 랭킹", lbSub:"<b>jaclette</b> 는 세계 {rank} 👑 가입하고 왕좌를 뺏으세요.", pts:"점", cue1:"🏆 세계 톱10 보기", cue2:"🌍 국제 챌린지", chTitle:"🌍 진행 중인 국제 챌린지", chSub:"지금 한 도시가 다른 도시에 도전 중이에요. 함께해요.", heroBadge:"jaclette 를 꺾어라 · 세계 {rank}", nav1:"홈", nav2:"랭킹", nav3:"챌린지" },
+      fil:{ lbTitle:"🏆 Global leaderboard", lbSub:"<b>jaclette</b> ang {rank} sa mundo 👑 Mag-sign up at agawin ang korona.", pts:"puntos", cue1:"🏆 Tingnan ang world top 10", cue2:"🌍 International challenges", chTitle:"🌍 International challenges, live", chSub:"May city na naghahamon sa iba, ngayon mismo. Sali na.", heroBadge:"Talunin si jaclette · {rank} sa mundo", nav1:"Home", nav2:"Ranking", nav3:"Challenges" },
+      th:{ lbTitle:"🏆 อันดับโลก", lbSub:"<b>jaclette</b> {rank} ของโลก 👑 สมัครแล้วโค่นเขาเลย", pts:"แต้ม", cue1:"🏆 ดูท็อป 10 ของโลก", cue2:"🌍 ชาเลนจ์ระดับโลก", chTitle:"🌍 ชาเลนจ์ระดับโลกที่กำลังเกิดขึ้น", chSub:"ตอนนี้เมืองหนึ่งกำลังท้าอีกเมือง มาร่วมสนุกกัน", heroBadge:"โค่น jaclette · {rank} ของโลก", nav1:"หน้าแรก", nav2:"อันดับ", nav3:"ชาเลนจ์" },
       id:{ lbTitle:"🏆 Peringkat dunia", lbSub:"<b>jaclette</b> peringkat {rank} dunia 👑 Daftar dan rebut takhtanya.", pts:"poin", cue1:"🏆 Lihat top 10 dunia", cue2:"🌍 Tantangan internasional", chTitle:"🌍 Tantangan internasional, live", chSub:"Satu kota menantang kota lain, sekarang juga. Ikutan yuk.", heroBadge:"Rebut takhta jaclette · peringkat {rank} dunia", nav1:"Beranda", nav2:"Peringkat", nav3:"Tantangan" },
-      hi:{ lbTitle:"🏆 वर्ल्ड लीडरबोर्ड", lbSub:"<b>jaclette</b> दुनिया में #{rank} पर है 👑 साइन अप करो और ताज छीन लो।", pts:"पॉइंट", cue1:"🏆 वर्ल्ड टॉप 10 देखो", cue2:"🌍 इंटरनेशनल चैलेंज", chTitle:"🌍 लाइव इंटरनेशनल चैलेंज", chSub:"अभी एक शहर दूसरे को चैलेंज कर रहा है। तुम भी जुड़ो।", heroBadge:"jaclette को हराओ · दुनिया में #{rank}", nav1:"होम", nav2:"रैंकिंग", nav3:"चैलेंज" },
-      ru:{ lbTitle:"🏆 Мировой рейтинг", lbSub:"<b>jaclette</b> — №{rank} в мире 👑 Зарегистрируйся и свергни его.", pts:"очк.", cue1:"🏆 Смотри топ-10 мира", cue2:"🌍 Международные челленджи", chTitle:"🌍 Международные челленджи прямо сейчас", chSub:"Прямо сейчас один город бросает вызов другому. Присоединяйся.", heroBadge:"Свергни jaclette · №{rank} в мире", nav1:"Главная", nav2:"Рейтинг", nav3:"Челленджи" },
-      ar:{ lbTitle:"🏆 التصنيف العالمي", lbSub:"<b>jaclette</b> رقم {rank} عالميًا 👑 سجّل وأطِح به عن العرش.", pts:"نقطة", cue1:"🏆 شاهد أفضل 10 في العالم", cue2:"🌍 تحديات دولية", chTitle:"🌍 تحديات دولية جارية الآن", chSub:"مدينة تتحدّى أخرى الآن. انضمّ إلى الحدث.", heroBadge:"أطِح بـ jaclette · رقم {rank} عالميًا", nav1:"الرئيسية", nav2:"التصنيف", nav3:"التحديات" },
+      hi:{ lbTitle:"🏆 वर्ल्ड लीडरबोर्ड", lbSub:"<b>jaclette</b> दुनिया में {rank} स्थान पर है 👑 साइन अप करो और ताज छीन लो।", pts:"पॉइंट", cue1:"🏆 वर्ल्ड टॉप 10 देखो", cue2:"🌍 इंटरनेशनल चैलेंज", chTitle:"🌍 लाइव इंटरनेशनल चैलेंज", chSub:"अभी एक शहर दूसरे को चैलेंज कर रहा है। तुम भी जुड़ो।", heroBadge:"jaclette को हराओ · दुनिया में {rank} स्थान", nav1:"होम", nav2:"रैंकिंग", nav3:"चैलेंज" },
+      ru:{ lbTitle:"🏆 Мировой рейтинг", lbSub:"<b>jaclette</b> — {rank} в мире 👑 Зарегистрируйся и свергни его.", pts:"очк.", cue1:"🏆 Смотри топ-10 мира", cue2:"🌍 Международные челленджи", chTitle:"🌍 Международные челленджи прямо сейчас", chSub:"Прямо сейчас один город бросает вызов другому. Присоединяйся.", heroBadge:"Свергни jaclette · {rank} в мире", nav1:"Главная", nav2:"Рейтинг", nav3:"Челленджи" },
+      ar:{ lbTitle:"🏆 التصنيف العالمي", lbSub:"<b>jaclette</b> {rank} عالميًا 👑 سجّل وأطِح به عن العرش.", pts:"نقطة", cue1:"🏆 شاهد أفضل 10 في العالم", cue2:"🌍 تحديات دولية", chTitle:"🌍 تحديات دولية جارية الآن", chSub:"مدينة تتحدّى أخرى الآن. انضمّ إلى الحدث.", heroBadge:"أطِح بـ jaclette · {rank} عالميًا", nav1:"الرئيسية", nav2:"التصنيف", nav3:"التحديات" },
     };
 
     // Challenge types — the app's 4 types, exact gradient colours + icons, with
@@ -476,7 +499,7 @@
       var medals = ['🥇','🥈','🥉'], html = '', jac = null;
       items.forEach(function (e) {
         if (e.name === 'jaclette') jac = e.rank;
-        var badge = medals[e.rank - 1] || ('#' + e.rank);
+        var badge = medals[e.rank - 1] || String(e.rank);
         var av = e.avatar
           ? '<img class="lb-av" loading="lazy" alt="" src="' + esc(e.avatar) + '">'
           : '<div class="lb-av">' + esc((e.name || '?').charAt(0).toUpperCase()) + '</div>';
@@ -488,11 +511,11 @@
       });
       $('lb-list').innerHTML = html;
       var subEl = $('lb-sub');
-      if (jac != null) subEl.innerHTML = lb.lbSub.replace('{rank}', jac); else subEl.hidden = true;
+      if (jac != null) subEl.innerHTML = lb.lbSub.replace('{rank}', ordinal(jac, L)); else subEl.hidden = true;
       // Hero badge: jaclette's live international rank + medal + "dethrone" hook.
       if (jac != null) {
         var hb = $('hero-badge');
-        hb.textContent = (medals[jac - 1] || ('#' + jac)) + ' ' + lb.heroBadge.replace('{rank}', jac);
+        hb.textContent = (medals[jac - 1] ? medals[jac - 1] + ' ' : '') + lb.heroBadge.replace('{rank}', ordinal(jac, L));
         hb.hidden = false;
       }
       cue('cue1', 's2');

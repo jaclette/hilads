@@ -5128,6 +5128,9 @@ run($pdo, "ALTER TABLE contest_seasons ADD COLUMN IF NOT EXISTS founder JSONB NO
 // Reversal: ALTER TABLE contest_seasons DROP COLUMN fallback_prize_i18n, DROP COLUMN tab.
 run($pdo, "ALTER TABLE contest_seasons ADD COLUMN IF NOT EXISTS fallback_prize_i18n JSONB NOT NULL DEFAULT '{}'::jsonb", 'contest_seasons.fallback_prize_i18n');
 run($pdo, "ALTER TABLE contest_seasons ADD COLUMN IF NOT EXISTS tab JSONB NOT NULL DEFAULT '{}'::jsonb", 'contest_seasons.tab');
+// Boarding (2026-11-26): below this many players with enough photos the apps say "Be among the first to board"
+// instead of "3 of 500 seats taken" (never a count near 0). Reversal: DROP COLUMN seats_show_from.
+run($pdo, "ALTER TABLE contest_seasons ADD COLUMN IF NOT EXISTS seats_show_from INTEGER NOT NULL DEFAULT 20 CHECK (seats_show_from >= 0)", 'contest_seasons.seats_show_from');
 
 // ── Admin accounts (back office) ──────────────────────────────────────────
 // One account per person instead of the shared ADMIN_USERNAME / ADMIN_PASSWORD login.

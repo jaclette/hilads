@@ -65,8 +65,8 @@
   "leaderboard": {
     "title": "Most Local",
     "chip": {
-      "ranked": "#{{rank}}",
-      "rankedOver": "#100+",
+      "ranked": "{{rank, ordinal}}",
+      "rankedOver": "100+",
       "neutral": "Топ челленджеров"
     },
     "scope": {
@@ -94,10 +94,10 @@
       "periodAll": "за всё время",
       "placeCity": "в городе {{city}}",
       "placeWorld": "в мире",
-      "userNotTop": "🔥 Я #{{rank}} {{place}} {{period}}, на счету {{pts}} очк. Догоняю @{{above}} ({{aPts}} очк.) 👀, а @{{below}} ({{bPts}} очк.) дышит мне в спину. Думаешь, обгонишь? 🏆",
-      "userTop": "👑 Я #1 {{place}} {{period}}, на счету {{pts}} очк. @{{below1}} ({{b1Pts}} очк.) и @{{below2}} ({{b2Pts}} очк.) дышат мне в спину. Попробуй отобрать корону 😏",
-      "cityNotTop": "🔥 {{place}} — #{{rank}} среди всех городов {{period}}: {{pts}} очк. Выше нас — {{above}} ({{aPts}} очк.) 👀, ниже — {{below}} ({{bPts}} очк.). Местные, поднажмём 🏆",
-      "cityTop": "👑 {{place}} — #1 среди всех городов {{period}}: {{pts}} очк. За нами гонятся {{below1}} ({{b1Pts}} очк.) и {{below2}} ({{b2Pts}} очк.). Местные, держим первое место 🔥"
+      "userNotTop": "🔥 Я {{rank, ordinal}} {{place}} {{period}}, на счету {{pts}} очк. Догоняю @{{above}} ({{aPts}} очк.) 👀, а @{{below}} ({{bPts}} очк.) дышит мне в спину. Думаешь, обгонишь? 🏆",
+      "userTop": "👑 Я первый {{place}} {{period}}, на счету {{pts}} очк. @{{below1}} ({{b1Pts}} очк.) и @{{below2}} ({{b2Pts}} очк.) дышат мне в спину. Попробуй отобрать корону 😏",
+      "cityNotTop": "🔥 {{place}} — {{rank, ordinal}} среди всех городов {{period}}: {{pts}} очк. Выше нас — {{above}} ({{aPts}} очк.) 👀, ниже — {{below}} ({{bPts}} очк.). Местные, поднажмём 🏆",
+      "cityTop": "👑 {{place}} — первый среди всех городов {{period}}: {{pts}} очк. За нами гонятся {{below1}} ({{b1Pts}} очк.) и {{below2}} ({{b2Pts}} очк.). Местные, держим первое место 🔥"
     }
   },
   "closeCta": "Закрыть челлендж",
@@ -185,9 +185,9 @@
   },
   "scoreCelebration": {
     "rank": {
-      "city": "#{{rank}} в городе {{city}}",
+      "city": "{{rank, ordinal}} в городе {{city}}",
       "cityBeyond": "Вне топ-{{topN}} в твоём городе",
-      "world": "#{{rank}} в мире",
+      "world": "{{rank, ordinal}} в мире",
       "worldBeyond": "Вне топ-{{topN}} в мире",
       "cityUnranked": "{{city}}: в этом месяце без места в рейтинге",
       "worldUnranked": "В этом месяце без места в мировом рейтинге"
@@ -322,9 +322,9 @@
   },
   "spot": {
     "rankWeekFirst": "Лидер недели в городе {{city}}",
-    "rankWeek": "№{{rank}} за неделю в городе {{city}}",
+    "rankWeek": "{{rank, ordinal}} за неделю в городе {{city}}",
     "rankAlltimeFirst": "Самое популярное место в городе {{city}}",
-    "rankAlltime": "№{{rank}} за всё время в городе {{city}}",
+    "rankAlltime": "{{rank, ordinal}} за всё время в городе {{city}}",
     "photos": "Фото",
     "captions": "Что говорят",
     "notFound": "Это место недоступно.",
@@ -423,7 +423,7 @@
       "validatedHint": "Подтверждено местным: за это фото проголосовал тот, кто здесь живёт."
     },
     "results": {
-      "worldRank": "#{{rank}} в мире"
+      "worldRank": "{{rank, ordinal}} в мире"
     },
     "streak_one": "{{count}} день подряд",
     "streak_few": "{{count}} дня подряд",
@@ -516,7 +516,7 @@
       "surprise": "Удиви меня"
     },
     "leaderboard": {
-      "me": "Ты: #{{rank}} · ♥ {{votes}}"
+      "me": "Ты: {{rank, ordinal}} · ♥ {{votes}}"
     },
     "week": {
       "title": "Эта неделя",
@@ -623,9 +623,9 @@
     },
     "spot": {
       "rankWeekFirst": "Лидер недели в городе {{city}}",
-      "rankWeek": "№{{rank}} за неделю в городе {{city}}",
+      "rankWeek": "{{rank, ordinal}} за неделю в городе {{city}}",
       "rankAlltimeFirst": "Самое популярное место в городе {{city}}",
-      "rankAlltime": "№{{rank}} за всё время в городе {{city}}",
+      "rankAlltime": "{{rank, ordinal}} за всё время в городе {{city}}",
       "photos": "Фото",
       "captions": "Что говорят",
       "notFound": "Это место недоступно.",
@@ -844,43 +844,43 @@
       "bestPerCity": "Лучшее фото каждого города",
       "new": "новый",
       "you": {
-        "top": "Ты · #1 · Выше никого 👑",
-        "player": "Ты · #{{rank}} · {{gap}} очк. до {{name}} ▲",
+        "top": "Ты · первое место · Выше никого 👑",
+        "player": "Ты · {{rank, ordinal}} · {{gap}} очк. до {{name}} ▲",
         "none": "Сыграй сегодня, чтобы попасть в рейтинг 🙋",
-        "photo_one": "Твоё лучшее: #{{rank}} · {{count}} ❤️ до #{{next}}",
-        "photo_few": "Твоё лучшее: #{{rank}} · {{count}} ❤️ до #{{next}}",
-        "photo_many": "Твоё лучшее: #{{rank}} · {{count}} ❤️ до #{{next}}",
-        "photo_other": "Твоё лучшее: #{{rank}} · {{count}} ❤️ до #{{next}}",
-        "photoTop": "Твоё лучшее: #1 · выше никого 👑",
+        "photo_one": "Твоё лучшее: {{rank, ordinal}} · {{count}} ❤️ до позиции {{next}}",
+        "photo_few": "Твоё лучшее: {{rank, ordinal}} · {{count}} ❤️ до позиции {{next}}",
+        "photo_many": "Твоё лучшее: {{rank, ordinal}} · {{count}} ❤️ до позиции {{next}}",
+        "photo_other": "Твоё лучшее: {{rank, ordinal}} · {{count}} ❤️ до позиции {{next}}",
+        "photoTop": "Твоё лучшее: первое место · выше никого 👑",
         "photoNone": "Твоих фото пока нет в рейтинге ❤️",
-        "seasonLead": "Ты #1 в этом сезоне! Защити корону 👑",
-        "seasonBehind_one": "Ты #{{rank}} в этом сезоне, {{count}} очко до {{name}}",
-        "seasonBehind_few": "Ты #{{rank}} в этом сезоне, {{count}} очка до {{name}}",
-        "seasonBehind_many": "Ты #{{rank}} в этом сезоне, {{count}} очков до {{name}}",
-        "seasonBehind_other": "Ты #{{rank}} в этом сезоне, {{count}} очка до {{name}}",
-        "seasonTied": "Ты #{{rank}} в этом сезоне, наравне с {{name}}",
+        "seasonLead": "Ты первый в этом сезоне! Защити корону 👑",
+        "seasonBehind_one": "Ты {{rank, ordinal}} в этом сезоне, {{count}} очко до {{name}}",
+        "seasonBehind_few": "Ты {{rank, ordinal}} в этом сезоне, {{count}} очка до {{name}}",
+        "seasonBehind_many": "Ты {{rank, ordinal}} в этом сезоне, {{count}} очков до {{name}}",
+        "seasonBehind_other": "Ты {{rank, ordinal}} в этом сезоне, {{count}} очка до {{name}}",
+        "seasonTied": "Ты {{rank, ordinal}} в этом сезоне, наравне с {{name}}",
         "seasonNone": "Сыграй сегодня, чтобы попасть в сезон 🙋"
       },
       "city": {
         "lineTop": "{{city}} лидирует в гонке! 🏁",
-        "line_one": "{{city}} на #{{rank}}. Ещё {{count}} фото, чтобы догнать {{next}}!",
-        "line_few": "{{city}} на #{{rank}}. Ещё {{count}} фото, чтобы догнать {{next}}!",
-        "line_many": "{{city}} на #{{rank}}. Ещё {{count}} фото, чтобы догнать {{next}}!",
-        "line_other": "{{city}} на #{{rank}}. Ещё {{count}} фото, чтобы догнать {{next}}!",
-        "youBar_one": "{{city}} · #{{rank}} · {{count}} фото до {{next}}",
-        "youBar_few": "{{city}} · #{{rank}} · {{count}} фото до {{next}}",
-        "youBar_many": "{{city}} · #{{rank}} · {{count}} фото до {{next}}",
-        "youBar_other": "{{city}} · #{{rank}} · {{count}} фото до {{next}}"
+        "line_one": "{{city}} — {{rank, ordinal}}. Ещё {{count}} фото, чтобы догнать {{next}}!",
+        "line_few": "{{city}} — {{rank, ordinal}}. Ещё {{count}} фото, чтобы догнать {{next}}!",
+        "line_many": "{{city}} — {{rank, ordinal}}. Ещё {{count}} фото, чтобы догнать {{next}}!",
+        "line_other": "{{city}} — {{rank, ordinal}}. Ещё {{count}} фото, чтобы догнать {{next}}!",
+        "youBar_one": "{{city}} · {{rank, ordinal}} · {{count}} фото до {{next}}",
+        "youBar_few": "{{city}} · {{rank, ordinal}} · {{count}} фото до {{next}}",
+        "youBar_many": "{{city}} · {{rank, ordinal}} · {{count}} фото до {{next}}",
+        "youBar_other": "{{city}} · {{rank, ordinal}} · {{count}} фото до {{next}}"
       },
       "empty": {
         "photos": "Пока нет фото с лайками. Проголосуй за любимые ❤️",
-        "players": "Пока никто не набрал очков. Сыграй и займи #1 🙋",
+        "players": "Пока никто не набрал очков. Сыграй и займи первое место 🙋",
         "cities": "В рейтинге пока нет городов. Поставь свой первым 🌍"
       },
       "results": {
         "dismiss": "Закрыть",
-        "world": "🏆 Твоё фото вчера заняло #{{rank}} в мире",
-        "city": "🏆 Твоё фото вчера заняло #{{rank}} в городе {{city}}",
+        "world": "🏆 Твоё фото вчера: {{rank, ordinal}} в мире",
+        "city": "🏆 Твоё фото вчера: {{rank, ordinal}} в городе {{city}}",
         "best": "🏆 Твоё фото вчера было лучшим в городе {{city}}",
         "votes_one": "🏆 Твоё фото вчера собрало {{count}} ❤️",
         "votes_few": "🏆 Твоё фото вчера собрало {{count}} ❤️",
@@ -901,7 +901,7 @@
         "photo": "Твоё фото здесь? 📸",
         "player": "Займи это место 🙋",
         "city": "Твой город здесь? 🌍",
-        "invite": "🎯 Кто займёт #{{rank}}? Позови друга",
+        "invite": "🎯 Кто будет {{rank, ordinal}}? Позови друга",
         "empty": "Это место никто не занял"
       },
       "seasonEnds_one": "Сезон закончится через {{count}} день",
@@ -929,11 +929,11 @@
     },
     "season": {
       "resultsKicker": "{{season}} · Итоги сезона",
-      "medalTitle": "Ты на #{{rank}} месте! 🎉",
-      "rankTitle_one": "Ты на #{{rank}} месте из {{count}} игрока",
-      "rankTitle_few": "Ты на #{{rank}} месте из {{count}} игроков",
-      "rankTitle_many": "Ты на #{{rank}} месте из {{count}} игроков",
-      "rankTitle_other": "Ты на #{{rank}} месте из {{count}} игрока",
+      "medalTitle": "Ты {{rank, ordinal}}! 🎉",
+      "rankTitle_one": "Ты {{rank, ordinal}} из {{count}} игрока",
+      "rankTitle_few": "Ты {{rank, ordinal}} из {{count}} игроков",
+      "rankTitle_many": "Ты {{rank, ordinal}} из {{count}} игроков",
+      "rankTitle_other": "Ты {{rank, ordinal}} из {{count}} игрока",
       "stats": "Очки: {{points}} · Дней в игре: {{days}} · Подиумы: {{podiums}}",
       "newSeason": "Начинается новый сезон. У всех снова 0.",
       "play": "📸 Сыграть в задание дня",
@@ -964,7 +964,7 @@
       "city": "в городе {{city}}",
       "world": "Мир",
       "cities": "{{city}} среди городов",
-      "citiesTop": "{{city}} — город №1"
+      "citiesTop": "{{city}} — первый город"
     },
     "up": "вверх на {{count}}",
     "new": "Новое",
@@ -984,15 +984,15 @@
     "ranks": "🏆 Смотреть рейтинг",
     "share": "📤 Поделиться победой",
     "shareLine": {
-      "city_today": "Я №{{rank}} в городе {{city}} сегодня",
-      "city_week": "Я №{{rank}} в городе {{city}} на этой неделе",
-      "city_alltime": "Я №{{rank}} в городе {{city}}",
-      "world_today": "Я №{{rank}} в мире сегодня",
-      "world_week": "Я №{{rank}} в мире на этой неделе",
-      "world_alltime": "Я №{{rank}} в мире",
-      "cities_today": "{{city}} — №{{rank}} среди городов сегодня",
-      "cities_week": "{{city}} — №{{rank}} среди городов на этой неделе",
-      "cities_alltime": "{{city}} — №{{rank}} среди городов"
+      "city_today": "Я {{rank, ordinal}} в городе {{city}} сегодня",
+      "city_week": "Я {{rank, ordinal}} в городе {{city}} на этой неделе",
+      "city_alltime": "Я {{rank, ordinal}} в городе {{city}}",
+      "world_today": "Я {{rank, ordinal}} в мире сегодня",
+      "world_week": "Я {{rank, ordinal}} в мире на этой неделе",
+      "world_alltime": "Я {{rank, ordinal}} в мире",
+      "cities_today": "{{city}} — {{rank, ordinal}} среди городов сегодня",
+      "cities_week": "{{city}} — {{rank, ordinal}} среди городов на этой неделе",
+      "cities_alltime": "{{city}} — {{rank, ordinal}} среди городов"
     }
   }
 }

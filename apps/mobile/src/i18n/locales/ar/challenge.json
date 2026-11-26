@@ -147,8 +147,8 @@
   "leaderboard": {
     "title": "Most Local",
     "chip": {
-      "ranked": "🏆 #{{rank}}",
-      "rankedOver": "🏆 #100+",
+      "ranked": "🏆 {{rank}}",
+      "rankedOver": "🏆 100+",
       "neutral": "🏆 أفضل المتحدّين"
     },
     "scope": {
@@ -162,7 +162,7 @@
     },
     "points": "{{points}} نقطة",
     "me": {
-      "ranked": "أنت · #{{rank}} · {{points}} نقطة",
+      "ranked": "أنت · المركز {{rank, ordinal}} · {{points}} نقطة",
       "unranked": "خُض تحدّيًا لتدخل الترتيب"
     },
     "empty": {
@@ -182,10 +182,10 @@
       "periodAll": "على الإطلاق",
       "placeCity": "في {{city}}",
       "placeWorld": "في العالم",
-      "userNotTop": "🔥 أنا رقم {{rank}} {{place}} {{period}} بـ{{pts}} نقطة! أطارد @{{above}} ({{aPts}} نقطة) 👀 وأترك @{{below}} ({{bPts}} نقطة) خلفي. تظن أنك تستطيع تجاوزي؟ 🏆",
-      "userTop": "👑 أنا رقم 1 {{place}} {{period}} بـ{{pts}} نقطة! @{{below1}} ({{b1Pts}} نقطة) و@{{below2}} ({{b2Pts}} نقطة) يلاحقانني. تعال وانتزع التاج 😏",
-      "cityNotTop": "🔥 {{place}} في المرتبة {{rank}} بين كل المدن {{period}} بـ{{pts}} نقطة! خلف {{above}} ({{aPts}} نقطة) مباشرة 👀 وأمام {{below}} ({{bPts}} نقطة). يا أهل المدينة، هيا نتقدّم 🏆",
-      "cityTop": "👑 {{place}} في المرتبة 1 بين كل المدن {{period}} بـ{{pts}} نقطة! {{below1}} ({{b1Pts}} نقطة) و{{below2}} ({{b2Pts}} نقطة) يلاحقاننا. يا أهل المدينة، لنبقَ في القمة 🔥"
+      "userNotTop": "🔥 أنا في المرتبة {{rank, ordinal}} {{place}} {{period}} بـ{{pts}} نقطة! أطارد @{{above}} ({{aPts}} نقطة) 👀 وأترك @{{below}} ({{bPts}} نقطة) خلفي. تظن أنك تستطيع تجاوزي؟ 🏆",
+      "userTop": "👑 أنا في المركز الأول {{place}} {{period}} بـ{{pts}} نقطة! @{{below1}} ({{b1Pts}} نقطة) و@{{below2}} ({{b2Pts}} نقطة) يلاحقانني. تعال وانتزع التاج 😏",
+      "cityNotTop": "🔥 {{place}} في المرتبة {{rank, ordinal}} بين كل المدن {{period}} بـ{{pts}} نقطة! خلف {{above}} ({{aPts}} نقطة) مباشرة 👀 وأمام {{below}} ({{bPts}} نقطة). يا أهل المدينة، هيا نتقدّم 🏆",
+      "cityTop": "👑 {{place}} في المرتبة الأولى بين كل المدن {{period}} بـ{{pts}} نقطة! {{below1}} ({{b1Pts}} نقطة) و{{below2}} ({{b2Pts}} نقطة) يلاحقاننا. يا أهل المدينة، لنبقَ في القمة 🔥"
     }
   },
   "debrief": {
@@ -302,9 +302,9 @@
   },
   "scoreCelebration": {
     "rank": {
-      "city": "رقم {{rank}} في {{city}}",
+      "city": "المركز {{rank, ordinal}} في {{city}}",
       "cityBeyond": "خارج أفضل {{topN}} في مدينتك",
-      "world": "رقم {{rank}} في العالم",
+      "world": "المركز {{rank, ordinal}} في العالم",
       "worldBeyond": "خارج أفضل {{topN}} في العالم",
       "cityUnranked": "خارج الترتيب هذا الشهر في {{city}}",
       "worldUnranked": "خارج الترتيب العالمي هذا الشهر"
@@ -461,15 +461,15 @@
     "ranks": "🏆 شاهد الترتيب",
     "share": "📤 شارك فوزي",
     "shareLine": {
-      "city_today": "أنا رقم {{rank}} في {{city}} اليوم",
-      "city_week": "أنا رقم {{rank}} في {{city}} هذا الأسبوع",
-      "city_alltime": "أنا رقم {{rank}} في {{city}}",
-      "world_today": "أنا رقم {{rank}} في العالم اليوم",
-      "world_week": "أنا رقم {{rank}} في العالم هذا الأسبوع",
-      "world_alltime": "أنا رقم {{rank}} في العالم",
-      "cities_today": "{{city}} رقم {{rank}} بين المدن اليوم",
-      "cities_week": "{{city}} رقم {{rank}} بين المدن هذا الأسبوع",
-      "cities_alltime": "{{city}} رقم {{rank}} بين المدن"
+      "city_today": "أنا في المرتبة {{rank, ordinal}} في {{city}} اليوم",
+      "city_week": "أنا في المرتبة {{rank, ordinal}} في {{city}} هذا الأسبوع",
+      "city_alltime": "أنا في المرتبة {{rank, ordinal}} في {{city}}",
+      "world_today": "أنا في المرتبة {{rank, ordinal}} في العالم اليوم",
+      "world_week": "أنا في المرتبة {{rank, ordinal}} في العالم هذا الأسبوع",
+      "world_alltime": "أنا في المرتبة {{rank, ordinal}} في العالم",
+      "cities_today": "{{city}} في المرتبة {{rank, ordinal}} بين المدن اليوم",
+      "cities_week": "{{city}} في المرتبة {{rank, ordinal}} بين المدن هذا الأسبوع",
+      "cities_alltime": "{{city}} في المرتبة {{rank, ordinal}} بين المدن"
     }
   }
 }

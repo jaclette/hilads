@@ -122,7 +122,7 @@ export default function ContestPrizeScreen() {
                 <Text style={styles.linkText}>{t('contest.rules')}</Text>
                 <Ionicons name="open-outline" size={IconSize.sm} color={colors.primaryText} />
               </Pressable>
-              <Pressable onPress={share.open} accessibilityRole="button" hitSlop={8} style={styles.link} testID="contest-share">
+              <Pressable onPress={() => share.open()} accessibilityRole="button" hitSlop={8} style={styles.link} testID="contest-share">
                 <Ionicons name="share-outline" size={IconSize.sm} color={colors.primaryText} />
                 <Text style={styles.linkText}>{t('contest.share')}</Text>
               </Pressable>

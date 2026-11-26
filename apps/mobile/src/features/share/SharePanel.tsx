@@ -252,7 +252,8 @@ function SharePanel({ content, source, previewHeight = 300, compact = false }, r
       {/* The card at full size, scaled down to the preview: what gets captured. */}
       {!proof ? scaled([{ k: 'card:story', dp: CARD_DP, node: (ref, onReady) => content.type === 'contest'
         ? <ContestShareCard ref={ref} onReady={onReady} data={{ prize: content.text, subtitle: content.subtitle, when: content.when, username: content.username,
-                                                                 rank: content.rank, points: content.points, isTest: content.isTest, photoUrl: content.photoUrl }} />
+                                                                 rank: content.rank, points: content.points, isTest: content.isTest, photoUrl: content.photoUrl,
+                                                                 boarding: content.boarding ?? null }} />
         : <ShareCard ref={ref} content={content} onReady={onReady} /> }]) : others === null ? (
         <View style={[styles.preview, styles.loading, { height: previewHeight, width: cardW }]}><ActivityIndicator /></View>
       ) : (

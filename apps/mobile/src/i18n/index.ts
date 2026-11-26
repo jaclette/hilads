@@ -369,6 +369,7 @@ import ar_cityNames  from './locales/ar/cityNames.json';
 import ar_upcoming from './locales/ar/upcoming.json';
 import ar_archive from './locales/ar/archive.json';
 import ar_daily   from './locales/ar/daily.json';
+import { ordinal } from '@/lib/ordinal';
 
 export const SUPPORTED = ['en', 'fr', 'vi', 'es', 'it', 'pt-br', 'pt-pt', 'de', 'nl', 'zh-hans', 'zh-hant', 'ja', 'ko', 'fil', 'th', 'id', 'hi', 'ru', 'ar'] as const;
 export type Locale = (typeof SUPPORTED)[number];
@@ -456,6 +457,10 @@ i18n.use(initReactI18next).init({
   returnEmptyString: false,
   react: { useSuspense: false }, // resources are bundled - no async load to suspend on
 });
+
+// Ranks are ordinals, never "#3": "You're {{rank, ordinal}}" → "You're 3rd", "Tu es 3e" (lib/ordinal).
+i18n.services.formatter?.add('ordinal', (value, lng) => ordinal(value, lng ?? i18n.language));
+
 
 /**
  * Apply a manually-saved locale (overrides the device default). Call once during

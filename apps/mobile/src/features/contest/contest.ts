@@ -75,7 +75,8 @@ export interface ContestMeNotJoined {
 
 export interface ContestOverview {
   season: ContestSeason | null;
-  counter?: { players: number; threshold: number; photos: number; reached?: boolean };
+  /** The players' goal, told as boarding a flight: seats taken / seats; showFrom = below it the app says "Be among the first to board" (never "0"). */
+  counter?: { players: number; threshold: number; photos: number; reached?: boolean; showFrom?: number };
   participants?: number;
   me?: ContestMeJoined | ContestMeNotJoined | null;
 }

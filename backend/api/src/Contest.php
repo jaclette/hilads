@@ -41,8 +41,8 @@ final class Contest
     ]];
 
     /**
-     * What the #1 wins if the players' goal isn't reached (Admin › Launch Season › Prize), a noun phrase
-     * ("the #1 still wins {prize}"). PLACEHOLDER until the owner sets the real one: the admin flags it.
+     * What the winner wins if the players' goal isn't reached (Admin › Launch Season › Prize), a noun phrase
+     * ("the winner still wins {prize}"). PLACEHOLDER until the owner sets the real one: the admin flags it.
      */
     public const DEFAULT_FALLBACK = [
         'en' => 'a prize to be announced', 'fr' => 'un lot annoncé prochainement', 'vi' => 'một giải thưởng sẽ được công bố',
@@ -56,7 +56,7 @@ final class Contest
     /** The Ionicons a campaign tab may use (Admin). */
     public const TAB_ICONS = ['airplane', 'trophy', 'gift', 'star', 'flag', 'rocket', 'sparkles', 'globe', 'ribbon', 'medal'];
     public const SETTINGS = ['vote_cap_per_photo', 'referral_points', 'referral_min_photos', 'referral_cap',
-                             'headstart_top_n', 'prize_threshold_players', 'prize_threshold_photos'];
+                             'headstart_top_n', 'prize_threshold_players', 'prize_threshold_photos', 'seats_show_from'];
 
     /** The locales the prize text can be written in (the apps' 19). */
     public const LOCALES = ['en', 'fr', 'vi', 'es', 'it', 'pt-br', 'pt-pt', 'de', 'nl', 'zh-hans', 'zh-hant', 'ja', 'ko', 'fil', 'th', 'id', 'hi', 'ru', 'ar'];
@@ -107,7 +107,7 @@ final class Contest
     private static function normalizeSeason(array $r): array
     {
         $r['id'] = (int) $r['id'];
-        foreach (self::SETTINGS as $k) $r[$k] = (int) $r[$k];
+        foreach (self::SETTINGS as $k) $r[$k] = (int) ($r[$k] ?? 0);
         $r['is_test'] = DailyProofRepository::bool($r['is_test']);
         $r['paused']  = DailyProofRepository::bool($r['paused']);
         $prize = json_decode((string) ($r['prize_i18n'] ?? ''), true);
@@ -418,7 +418,8 @@ final class Contest
             'rows'    => $rows,
             'season'  => $seasonOrder,
             'final'   => $finalOrder,
-            'counter' => ['players' => $qualified, 'threshold' => $players, 'photos' => $threshold, 'reached' => $qualified >= $players],
+            'counter' => ['players' => $qualified, 'threshold' => $players, 'photos' => $threshold, 'reached' => $qualified >= $players,
+                          'showFrom' => (int) ($season['seats_show_from'] ?? 0)],
             'totals'  => ['participants' => count($rows), 'photos' => array_sum(array_column($rows, 'photos'))],
         ];
     }
@@ -472,7 +473,7 @@ final class Contest
         return ['title' => (string) ($p['title'] ?? ''), 'subtitle' => (string) ($p['subtitle'] ?? ''), 'description' => (string) ($p['description'] ?? '')];
     }
 
-    /** What the #1 wins if the goal isn't reached, in a locale (else English, else the placeholder). */
+    /** What the winner wins if the goal isn't reached, in a locale (else English, else the placeholder). */
     public static function fallbackPrize(array $s, ?string $locale): string
     {
         $all = $s['fallback_prize_i18n'] ?? [];
@@ -702,7 +703,7 @@ final class Contest
      * itself shows the DRAFT banner until the admin ticks Final. [TBD: …] = for the owner / lawyer.
      */
     public const RULES_TOKENS = ['season', 'start', 'final_start', 'end', 'weeks', 'season_weeks', 'play', 'top1', 'top2', 'top3', 'week',
-                                 'friend', 'crew', 'crew_size', 'friends_month', 'hs_top', 'players', 'photos', 'fallback', 'souvenir_to'];
+                                 'friend', 'crew', 'crew_size', 'friends_month', 'hs_top', 'hs_top_place', 'players', 'photos', 'fallback', 'souvenir_to'];
 
     public static function placeholderRules(?array $s = null): string
     {
@@ -736,17 +737,17 @@ Points earned before you join, or on challenges dated outside the Contest, don't
 
 ## 5. Final week and winner
 - The final week has its own ranking. Points start from zero on {{final_start}}: only points from the final week's challenges count in it.
-- **Head start:** the top {{hs_top}} of the ranking before the final week start it with a bonus: {{hs_top}} points for #1, down to 1 point for #{{hs_top}}.
+- **Head start:** the top {{hs_top}} of the ranking before the final week start it with a bonus: {{hs_top}} points for first place, down to 1 point for {{hs_top_place}} place.
 - **Ties:** the player whose photos got the most likes during the final week is ahead; if still tied, the first to reach the score.
-- The winner is the #1 of the final-week ranking when the Contest ends on {{end}}, after the checks in section 9. Hilads announces the result in the app within [TBD] days and contacts the winner in the app and by email. If the winner doesn't answer within [TBD] days, or isn't eligible, the next eligible participant in the final-week ranking wins.
+- The winner is the player who finishes first in the final-week ranking when the Contest ends on {{end}}, after the checks in section 9. Hilads announces the result in the app within [TBD] days and contacts the winner in the app and by email. If the winner doesn't answer within [TBD] days, or isn't eligible, the next eligible participant in the final-week ranking wins.
 
-## 6. Players' goal
-The trip is unlocked when at least {{players}} different participants have each posted {{photos}} or more approved photos during the Contest. The app shows the progress at all times.
+## 6. Boarding: the players' goal
+The flight has {{players}} seats. A participant takes a seat (gets their boarding pass) once they have posted {{photos}} or more approved photos during the Contest. The trip is unlocked when every seat is taken, that is when at least {{players}} different participants have their boarding pass. The app shows the seats taken at all times.
 
-If the goal isn't reached when the Contest ends, the #1 of the final week still wins: they receive {{fallback}} instead of the trip.
+If the flight isn't full when the Contest ends, the winner of the final week still wins: they receive {{fallback}} instead of the trip.
 
 ## 7. Prize
-If the players' goal is reached, a one-week trip to Vietnam for the winner:
+If every seat is taken (section 6), a one-week trip to Vietnam for the winner:
 - A round-trip international economy flight from the airport nearest the winner's home, up to USD 2,000. If the flight costs more than USD 2,000, the winner pays the difference or picks cheaper dates.
 - Lodging and transport in Vietnam are included.
 - Not included: visa, travel insurance, meals and personal expenses.
@@ -802,6 +803,7 @@ MD;
             'week' => (string) $pt['week'], 'friend' => (string) $pt['friend'], 'crew' => (string) $pt['crew'],
             'crew_size' => (string) $pt['crewSize'], 'friends_month' => (string) $pt['friendsPerMonth'],
             'hs_top' => (string) $s['headstart_top_n'],
+            'hs_top_place' => class_exists('Ordinal') ? Ordinal::format((int) $s['headstart_top_n'], $locale) : (string) $s['headstart_top_n'],
             'players' => (string) $s['prize_threshold_players'], 'photos' => (string) $s['prize_threshold_photos'],
             'fallback' => self::fallbackPrize($s, $locale),
             'souvenir_to' => (string) max(2, min(50, (int) ((is_array($sv) ? $sv['to'] ?? null : null) ?? 10))),

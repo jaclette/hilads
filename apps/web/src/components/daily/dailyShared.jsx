@@ -30,6 +30,7 @@ export function useHere() {
 import { thumbFallback } from '../../lib/thumbFallback'
 import { useBackLayer } from '../../lib/backLayers'
 import { thumbUrl } from '../../lib/imageThumb'
+import { ordinal } from '../../lib/ordinal'
 import { placeholderStyle } from '../../lib/thumbhash'
 
 // Shared pieces of the web Daily Challenge screens (W2, ports of the app's
@@ -69,15 +70,15 @@ export function useDc() {
 const INLINE = { display: 'inline-flex', alignItems: 'center', gap: 4 }
 
 /**
- * A rank in a round seal: #1 on gold, #2 and #3 on the primary tint, the rest
- * as a plain "#n" (the app's RankMedal; replaces the medal emoji). podium:
+ * A rank in a round seal: 1st on gold, 2nd and 3rd on the primary tint, the rest
+ * as a plain number, never "#n" (the app's RankMedal; replaces the medal emoji). podium:
  * gold, silver and bronze (yesterday's podium).
  */
 export function RankMedal({ rank, size = 26, podium = false }) {
-  if (rank > 3) return <span>#{rank}</span>
+  if (rank > 3) return <span aria-label={ordinal(rank, i18n.language)}>{rank}</span>
   const tone = rank === 1 ? ' dc-medal--gold' : podium ? (rank === 2 ? ' dc-medal--silver' : ' dc-medal--bronze') : ''
   return (
-    <span className={`dc-medal${tone}`} style={{ width: size, height: size }} aria-label={`#${rank}`}>
+    <span className={`dc-medal${tone}`} style={{ width: size, height: size }} aria-label={ordinal(rank, i18n.language)}>
       {rank}
     </span>
   )

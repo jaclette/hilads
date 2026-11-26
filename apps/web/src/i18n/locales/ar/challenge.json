@@ -65,8 +65,8 @@
   "leaderboard": {
     "title": "Most Local",
     "chip": {
-      "ranked": "#{{rank}}",
-      "rankedOver": "#100+",
+      "ranked": "{{rank, ordinal}}",
+      "rankedOver": "100+",
       "neutral": "أبرز المتحدّين"
     },
     "scope": {
@@ -94,10 +94,10 @@
       "periodAll": "على الإطلاق",
       "placeCity": "في {{city}}",
       "placeWorld": "في العالم",
-      "userNotTop": "🔥 أنا رقم {{rank}} {{place}} {{period}} بـ{{pts}} نقطة! أطارد @{{above}} ({{aPts}} نقطة) 👀 وأترك @{{below}} ({{bPts}} نقطة) خلفي. تظن أنك تستطيع تجاوزي؟ 🏆",
-      "userTop": "👑 أنا رقم 1 {{place}} {{period}} بـ{{pts}} نقطة! @{{below1}} ({{b1Pts}} نقطة) و@{{below2}} ({{b2Pts}} نقطة) يلاحقانني. تعال وانتزع التاج 😏",
-      "cityNotTop": "🔥 {{place}} في المرتبة {{rank}} بين كل المدن {{period}} بـ{{pts}} نقطة! خلف {{above}} ({{aPts}} نقطة) مباشرة 👀 وأمام {{below}} ({{bPts}} نقطة). يا أهل المدينة، هيا نتقدّم 🏆",
-      "cityTop": "👑 {{place}} في المرتبة 1 بين كل المدن {{period}} بـ{{pts}} نقطة! {{below1}} ({{b1Pts}} نقطة) و{{below2}} ({{b2Pts}} نقطة) يلاحقاننا. يا أهل المدينة، لنبقَ في القمة 🔥"
+      "userNotTop": "🔥 أنا في المركز {{rank, ordinal}} {{place}} {{period}} بـ{{pts}} نقطة! أطارد @{{above}} ({{aPts}} نقطة) 👀 وأترك @{{below}} ({{bPts}} نقطة) خلفي. تظن أنك تستطيع تجاوزي؟ 🏆",
+      "userTop": "👑 أنا الأول {{place}} {{period}} بـ{{pts}} نقطة! @{{below1}} ({{b1Pts}} نقطة) و@{{below2}} ({{b2Pts}} نقطة) يلاحقانني. تعال وانتزع التاج 😏",
+      "cityNotTop": "🔥 {{place}} في المرتبة {{rank, ordinal}} بين كل المدن {{period}} بـ{{pts}} نقطة! خلف {{above}} ({{aPts}} نقطة) مباشرة 👀 وأمام {{below}} ({{bPts}} نقطة). يا أهل المدينة، هيا نتقدّم 🏆",
+      "cityTop": "👑 {{place}} في المرتبة الأولى بين كل المدن {{period}} بـ{{pts}} نقطة! {{below1}} ({{b1Pts}} نقطة) و{{below2}} ({{b2Pts}} نقطة) يلاحقاننا. يا أهل المدينة، لنبقَ في القمة 🔥"
     }
   },
   "closeCta": "إغلاق التحدّي",
@@ -185,9 +185,9 @@
   },
   "scoreCelebration": {
     "rank": {
-      "city": "رقم {{rank}} في {{city}}",
+      "city": "المركز {{rank, ordinal}} في {{city}}",
       "cityBeyond": "خارج أفضل {{topN}} في مدينتك",
-      "world": "رقم {{rank}} في العالم",
+      "world": "المركز {{rank, ordinal}} في العالم",
       "worldBeyond": "خارج أفضل {{topN}} في العالم",
       "cityUnranked": "خارج الترتيب هذا الشهر في {{city}}",
       "worldUnranked": "خارج الترتيب العالمي هذا الشهر"
@@ -334,9 +334,9 @@
   },
   "spot": {
     "rankWeekFirst": "الأكثر تصويتًا هذا الأسبوع في {{city}}",
-    "rankWeek": "المرتبة {{rank}} هذا الأسبوع في {{city}}",
+    "rankWeek": "المرتبة {{rank, ordinal}} هذا الأسبوع في {{city}}",
     "rankAlltimeFirst": "المكان الأكثر تصويتًا في {{city}}",
-    "rankAlltime": "المرتبة {{rank}} على الإطلاق في {{city}}",
+    "rankAlltime": "المرتبة {{rank, ordinal}} على الإطلاق في {{city}}",
     "photos": "الصور",
     "captions": "ماذا يقول الناس",
     "notFound": "هذا المكان غير متاح.",
@@ -441,7 +441,7 @@
       "validatedHint": "بتأكيد أحد السكان المحليين: شخص يعيش هنا صوّت لهذه الصورة."
     },
     "results": {
-      "worldRank": "#{{rank}} في العالم"
+      "worldRank": "المركز {{rank, ordinal}} في العالم"
     },
     "streak_zero": "{{count}} يوم متتالٍ",
     "streak_one": "يوم متتالٍ واحد",
@@ -540,7 +540,7 @@
       "surprise": "فاجئني"
     },
     "leaderboard": {
-      "me": "أنت: #{{rank}} · ♥ {{votes}}"
+      "me": "أنت: {{rank, ordinal}} · ♥ {{votes}}"
     },
     "week": {
       "title": "هذا الأسبوع",
@@ -651,9 +651,9 @@
     },
     "spot": {
       "rankWeekFirst": "الأكثر تصويتًا هذا الأسبوع في {{city}}",
-      "rankWeek": "المرتبة {{rank}} هذا الأسبوع في {{city}}",
+      "rankWeek": "المرتبة {{rank, ordinal}} هذا الأسبوع في {{city}}",
       "rankAlltimeFirst": "المكان الأكثر تصويتًا في {{city}}",
-      "rankAlltime": "المرتبة {{rank}} على الإطلاق في {{city}}",
+      "rankAlltime": "المرتبة {{rank, ordinal}} على الإطلاق في {{city}}",
       "photos": "الصور",
       "captions": "ماذا يقول الناس",
       "notFound": "هذا المكان غير متاح.",
@@ -890,41 +890,41 @@
       "bestPerCity": "أفضل صورة في كل مدينة",
       "new": "جديد",
       "you": {
-        "top": "أنت · #1 · لا أحد فوقك 👑",
-        "player": "أنت · #{{rank}} · {{gap}} نقطة لتتجاوز {{name}} ▲",
+        "top": "أنت · المركز الأول · لا أحد فوقك 👑",
+        "player": "أنت · المركز {{rank, ordinal}} · {{gap}} نقطة لتتجاوز {{name}} ▲",
         "none": "العب اليوم لتظهر في الترتيب 🙋",
-        "photo_zero": "أفضل صورك: #{{rank}} · {{count}} ❤️ للمركز #{{next}}",
-        "photo_one": "أفضل صورك: #{{rank}} · {{count}} ❤️ للمركز #{{next}}",
-        "photo_two": "أفضل صورك: #{{rank}} · {{count}} ❤️ للمركز #{{next}}",
-        "photo_few": "أفضل صورك: #{{rank}} · {{count}} ❤️ للمركز #{{next}}",
-        "photo_many": "أفضل صورك: #{{rank}} · {{count}} ❤️ للمركز #{{next}}",
-        "photo_other": "أفضل صورك: #{{rank}} · {{count}} ❤️ للمركز #{{next}}",
-        "photoTop": "أفضل صورك: #1 · لا أحد فوقك 👑",
+        "photo_zero": "أفضل صورك: المركز {{rank, ordinal}} · {{count}} ❤️ للمركز {{next, ordinal}}",
+        "photo_one": "أفضل صورك: المركز {{rank, ordinal}} · {{count}} ❤️ للمركز {{next, ordinal}}",
+        "photo_two": "أفضل صورك: المركز {{rank, ordinal}} · {{count}} ❤️ للمركز {{next, ordinal}}",
+        "photo_few": "أفضل صورك: المركز {{rank, ordinal}} · {{count}} ❤️ للمركز {{next, ordinal}}",
+        "photo_many": "أفضل صورك: المركز {{rank, ordinal}} · {{count}} ❤️ للمركز {{next, ordinal}}",
+        "photo_other": "أفضل صورك: المركز {{rank, ordinal}} · {{count}} ❤️ للمركز {{next, ordinal}}",
+        "photoTop": "أفضل صورك: المركز الأول · لا أحد فوقك 👑",
         "photoNone": "لا توجد أي صورة لك في الترتيب بعد ❤️",
-        "seasonLead": "أنت #1 هذا الموسم! دافع عن تاجك 👑",
-        "seasonBehind_zero": "أنت #{{rank}} هذا الموسم، والفارق مع {{name}}: {{count}} نقطة",
-        "seasonBehind_one": "أنت #{{rank}} هذا الموسم، والفارق مع {{name}}: {{count}} نقطة",
-        "seasonBehind_two": "أنت #{{rank}} هذا الموسم، والفارق مع {{name}}: {{count}} نقطة",
-        "seasonBehind_few": "أنت #{{rank}} هذا الموسم، والفارق مع {{name}}: {{count}} نقطة",
-        "seasonBehind_many": "أنت #{{rank}} هذا الموسم، والفارق مع {{name}}: {{count}} نقطة",
-        "seasonBehind_other": "أنت #{{rank}} هذا الموسم، والفارق مع {{name}}: {{count}} نقطة",
-        "seasonTied": "أنت #{{rank}} هذا الموسم، بالتساوي مع {{name}}",
+        "seasonLead": "أنت الأول هذا الموسم! دافع عن تاجك 👑",
+        "seasonBehind_zero": "أنت في المركز {{rank, ordinal}} هذا الموسم، والفارق مع {{name}}: {{count}} نقطة",
+        "seasonBehind_one": "أنت في المركز {{rank, ordinal}} هذا الموسم، والفارق مع {{name}}: {{count}} نقطة",
+        "seasonBehind_two": "أنت في المركز {{rank, ordinal}} هذا الموسم، والفارق مع {{name}}: {{count}} نقطة",
+        "seasonBehind_few": "أنت في المركز {{rank, ordinal}} هذا الموسم، والفارق مع {{name}}: {{count}} نقطة",
+        "seasonBehind_many": "أنت في المركز {{rank, ordinal}} هذا الموسم، والفارق مع {{name}}: {{count}} نقطة",
+        "seasonBehind_other": "أنت في المركز {{rank, ordinal}} هذا الموسم، والفارق مع {{name}}: {{count}} نقطة",
+        "seasonTied": "أنت في المركز {{rank, ordinal}} هذا الموسم، بالتساوي مع {{name}}",
         "seasonNone": "العب اليوم لتدخل هذا الموسم 🙋"
       },
       "city": {
         "lineTop": "{{city}} تتصدر السباق! 🏁",
-        "line_zero": "{{city}} في المركز {{rank}}. {{count}} صورة لتلحق بـ{{next}}!",
-        "line_one": "{{city}} في المركز {{rank}}. صورة واحدة لتلحق بـ{{next}}!",
-        "line_two": "{{city}} في المركز {{rank}}. صورتان لتلحق بـ{{next}}!",
-        "line_few": "{{city}} في المركز {{rank}}. {{count}} صور لتلحق بـ{{next}}!",
-        "line_many": "{{city}} في المركز {{rank}}. {{count}} صورة لتلحق بـ{{next}}!",
-        "line_other": "{{city}} في المركز {{rank}}. {{count}} صورة لتلحق بـ{{next}}!",
-        "youBar_zero": "{{city}} · #{{rank}} · خلف {{next}} بـ{{count}} صورة",
-        "youBar_one": "{{city}} · #{{rank}} · خلف {{next}} بصورة",
-        "youBar_two": "{{city}} · #{{rank}} · خلف {{next}} بصورتين",
-        "youBar_few": "{{city}} · #{{rank}} · خلف {{next}} بـ{{count}} صور",
-        "youBar_many": "{{city}} · #{{rank}} · خلف {{next}} بـ{{count}} صورة",
-        "youBar_other": "{{city}} · #{{rank}} · خلف {{next}} بـ{{count}} صورة"
+        "line_zero": "{{city}} في المركز {{rank, ordinal}}. {{count}} صورة لتلحق بـ{{next}}!",
+        "line_one": "{{city}} في المركز {{rank, ordinal}}. صورة واحدة لتلحق بـ{{next}}!",
+        "line_two": "{{city}} في المركز {{rank, ordinal}}. صورتان لتلحق بـ{{next}}!",
+        "line_few": "{{city}} في المركز {{rank, ordinal}}. {{count}} صور لتلحق بـ{{next}}!",
+        "line_many": "{{city}} في المركز {{rank, ordinal}}. {{count}} صورة لتلحق بـ{{next}}!",
+        "line_other": "{{city}} في المركز {{rank, ordinal}}. {{count}} صورة لتلحق بـ{{next}}!",
+        "youBar_zero": "{{city}} · المركز {{rank, ordinal}} · خلف {{next}} بـ{{count}} صورة",
+        "youBar_one": "{{city}} · المركز {{rank, ordinal}} · خلف {{next}} بصورة",
+        "youBar_two": "{{city}} · المركز {{rank, ordinal}} · خلف {{next}} بصورتين",
+        "youBar_few": "{{city}} · المركز {{rank, ordinal}} · خلف {{next}} بـ{{count}} صور",
+        "youBar_many": "{{city}} · المركز {{rank, ordinal}} · خلف {{next}} بـ{{count}} صورة",
+        "youBar_other": "{{city}} · المركز {{rank, ordinal}} · خلف {{next}} بـ{{count}} صورة"
       },
       "empty": {
         "photos": "لا صور معجب بها بعد. صوّت لصورك المفضلة ❤️",
@@ -933,8 +933,8 @@
       },
       "results": {
         "dismiss": "إغلاق",
-        "world": "🏆 حلّت صورتك في المركز #{{rank}} عالميًا أمس",
-        "city": "🏆 حلّت صورتك في المركز #{{rank}} في {{city}} أمس",
+        "world": "🏆 حلّت صورتك في المركز {{rank, ordinal}} عالميًا أمس",
+        "city": "🏆 حلّت صورتك في المركز {{rank, ordinal}} في {{city}} أمس",
         "best": "🏆 كانت صورتك الأفضل في {{city}} أمس",
         "votes_zero": "🏆 حصلت صورتك على {{count}} ❤️ أمس",
         "votes_one": "🏆 حصلت صورتك على {{count}} ❤️ أمس",
@@ -961,7 +961,7 @@
         "photo": "صورتك هنا؟ 📸",
         "player": "خذ هذا المركز 🙋",
         "city": "مدينتك هنا؟ 🌍",
-        "invite": "🎯 من يأخذ المركز #{{rank}}؟ ادعُ صديقًا",
+        "invite": "🎯 من يأخذ المركز {{rank, ordinal}}؟ ادعُ صديقًا",
         "empty": "لم يأخذ أحد هذا المركز"
       },
       "seasonEnds_zero": "الأيام المتبقية في الموسم: {{count}}",
@@ -993,13 +993,13 @@
     },
     "season": {
       "resultsKicker": "{{season}} · نتائج الموسم",
-      "medalTitle": "أنهيت في المركز #{{rank}}! 🎉",
-      "rankTitle_zero": "أنهيت في المركز #{{rank}} من أصل {{count}} لاعبين",
-      "rankTitle_one": "أنهيت في المركز #{{rank}} من أصل {{count}} لاعبين",
-      "rankTitle_two": "أنهيت في المركز #{{rank}} من أصل {{count}} لاعبين",
-      "rankTitle_few": "أنهيت في المركز #{{rank}} من أصل {{count}} لاعبين",
-      "rankTitle_many": "أنهيت في المركز #{{rank}} من أصل {{count}} لاعبين",
-      "rankTitle_other": "أنهيت في المركز #{{rank}} من أصل {{count}} لاعبين",
+      "medalTitle": "أنهيت في المركز {{rank, ordinal}}! 🎉",
+      "rankTitle_zero": "أنهيت في المركز {{rank, ordinal}} من أصل {{count}} لاعبين",
+      "rankTitle_one": "أنهيت في المركز {{rank, ordinal}} من أصل {{count}} لاعبين",
+      "rankTitle_two": "أنهيت في المركز {{rank, ordinal}} من أصل {{count}} لاعبين",
+      "rankTitle_few": "أنهيت في المركز {{rank, ordinal}} من أصل {{count}} لاعبين",
+      "rankTitle_many": "أنهيت في المركز {{rank, ordinal}} من أصل {{count}} لاعبين",
+      "rankTitle_other": "أنهيت في المركز {{rank, ordinal}} من أصل {{count}} لاعبين",
       "stats": "النقاط: {{points}} · أيام اللعب: {{days}} · منصات التتويج: {{podiums}}",
       "newSeason": "يبدأ موسم جديد الآن. الجميع يعود إلى 0.",
       "play": "📸 العب تحدي اليوم",
@@ -1054,15 +1054,15 @@
     "ranks": "🏆 شاهد الترتيب",
     "share": "📤 شارك فوزي",
     "shareLine": {
-      "city_today": "أنا رقم {{rank}} في {{city}} اليوم",
-      "city_week": "أنا رقم {{rank}} في {{city}} هذا الأسبوع",
-      "city_alltime": "أنا رقم {{rank}} في {{city}}",
-      "world_today": "أنا رقم {{rank}} في العالم اليوم",
-      "world_week": "أنا رقم {{rank}} في العالم هذا الأسبوع",
-      "world_alltime": "أنا رقم {{rank}} في العالم",
-      "cities_today": "{{city}} رقم {{rank}} بين المدن اليوم",
-      "cities_week": "{{city}} رقم {{rank}} بين المدن هذا الأسبوع",
-      "cities_alltime": "{{city}} رقم {{rank}} بين المدن"
+      "city_today": "أنا في المركز {{rank, ordinal}} في {{city}} اليوم",
+      "city_week": "أنا في المركز {{rank, ordinal}} في {{city}} هذا الأسبوع",
+      "city_alltime": "أنا في المركز {{rank, ordinal}} في {{city}}",
+      "world_today": "أنا في المركز {{rank, ordinal}} في العالم اليوم",
+      "world_week": "أنا في المركز {{rank, ordinal}} في العالم هذا الأسبوع",
+      "world_alltime": "أنا في المركز {{rank, ordinal}} في العالم",
+      "cities_today": "{{city}} في المركز {{rank, ordinal}} بين المدن اليوم",
+      "cities_week": "{{city}} في المركز {{rank, ordinal}} بين المدن هذا الأسبوع",
+      "cities_alltime": "{{city}} في المركز {{rank, ordinal}} بين المدن"
     }
   }
 }

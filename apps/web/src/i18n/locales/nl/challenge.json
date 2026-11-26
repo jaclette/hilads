@@ -65,8 +65,8 @@
   "leaderboard": {
     "title": "Most Local",
     "chip": {
-      "ranked": "#{{rank}}",
-      "rankedOver": "#100+",
+      "ranked": "{{rank, ordinal}}",
+      "rankedOver": "100+",
       "neutral": "Beste Challengers"
     },
     "scope": {
@@ -94,10 +94,10 @@
       "periodAll": "aller tijden",
       "placeCity": "in {{city}}",
       "placeWorld": "in de wereld",
-      "userNotTop": "🔥 Ik ben #{{rank}} {{place}} {{period}}: {{pts}} ptn! Ik zit @{{above}} ({{aPts}} ptn) op de hielen 👀 en houd @{{below}} ({{bPts}} ptn) achter me. Denk je dat je me inhaalt? 🏆",
-      "userTop": "👑 Ik ben #1 {{place}} {{period}}: {{pts}} ptn! @{{below1}} ({{b1Pts}} ptn) en @{{below2}} ({{b2Pts}} ptn) zitten me op de hielen. Kom de kroon maar halen 😏",
-      "cityNotTop": "🔥 {{place}} is #{{rank}} van alle steden {{period}}: {{pts}} ptn! Vlak achter {{above}} ({{aPts}} ptn) 👀 en voor {{below}} ({{bPts}} ptn). Locals, we gaan klimmen 🏆",
-      "cityTop": "👑 {{place}} is #1 van alle steden {{period}}: {{pts}} ptn! {{below1}} ({{b1Pts}} ptn) en {{below2}} ({{b2Pts}} ptn) zitten ons op de hielen. Locals, we blijven bovenaan 🔥"
+      "userNotTop": "🔥 Ik ben {{rank, ordinal}} {{place}} {{period}}: {{pts}} ptn! Ik zit @{{above}} ({{aPts}} ptn) op de hielen 👀 en houd @{{below}} ({{bPts}} ptn) achter me. Denk je dat je me inhaalt? 🏆",
+      "userTop": "👑 Ik ben de eerste {{place}} {{period}}: {{pts}} ptn! @{{below1}} ({{b1Pts}} ptn) en @{{below2}} ({{b2Pts}} ptn) zitten me op de hielen. Kom de kroon maar halen 😏",
+      "cityNotTop": "🔥 {{place}} is {{rank, ordinal}} van alle steden {{period}}: {{pts}} ptn! Vlak achter {{above}} ({{aPts}} ptn) 👀 en voor {{below}} ({{bPts}} ptn). Locals, we gaan klimmen 🏆",
+      "cityTop": "👑 {{place}} is de eerste van alle steden {{period}}: {{pts}} ptn! {{below1}} ({{b1Pts}} ptn) en {{below2}} ({{b2Pts}} ptn) zitten ons op de hielen. Locals, we blijven bovenaan 🔥"
     }
   },
   "closeCta": "Challenge sluiten",
@@ -185,9 +185,9 @@
   },
   "scoreCelebration": {
     "rank": {
-      "city": "#{{rank}} in {{city}}",
+      "city": "{{rank, ordinal}} in {{city}}",
       "cityBeyond": "Buiten de top {{topN}} in jouw stad",
-      "world": "#{{rank}} wereldwijd",
+      "world": "{{rank, ordinal}} wereldwijd",
       "worldBeyond": "Buiten de top {{topN}} wereldwijd",
       "cityUnranked": "Deze maand nog niet in het klassement van {{city}}",
       "worldUnranked": "Deze maand nog niet in het wereldklassement"
@@ -310,9 +310,9 @@
   },
   "spot": {
     "rankWeekFirst": "Meeste stemmen deze week in {{city}}",
-    "rankWeek": "Nr. {{rank}} deze week in {{city}}",
+    "rankWeek": "{{rank, ordinal}} deze week in {{city}}",
     "rankAlltimeFirst": "De plek met de meeste stemmen in {{city}}",
-    "rankAlltime": "Nr. {{rank}} aller tijden in {{city}}",
+    "rankAlltime": "{{rank, ordinal}} aller tijden in {{city}}",
     "photos": "Foto's",
     "captions": "Wat mensen zeggen",
     "notFound": "Deze plek is niet beschikbaar.",
@@ -405,7 +405,7 @@
       "validatedHint": "Bevestigd door een local: iemand die hier woont, stemde op deze foto."
     },
     "results": {
-      "worldRank": "#{{rank}} ter wereld"
+      "worldRank": "{{rank, ordinal}} ter wereld"
     },
     "streak_one": "{{count}} dag op rij",
     "streak_other": "{{count}} dagen op rij",
@@ -492,7 +492,7 @@
       "surprise": "Verras me"
     },
     "leaderboard": {
-      "me": "Jij: #{{rank}} · ♥ {{votes}}"
+      "me": "Jij: {{rank, ordinal}} · ♥ {{votes}}"
     },
     "week": {
       "title": "Deze week",
@@ -595,9 +595,9 @@
     },
     "spot": {
       "rankWeekFirst": "Meeste stemmen deze week in {{city}}",
-      "rankWeek": "Nr. {{rank}} deze week in {{city}}",
+      "rankWeek": "{{rank, ordinal}} deze week in {{city}}",
       "rankAlltimeFirst": "De plek met de meeste stemmen in {{city}}",
-      "rankAlltime": "Nr. {{rank}} aller tijden in {{city}}",
+      "rankAlltime": "{{rank, ordinal}} aller tijden in {{city}}",
       "photos": "Foto's",
       "captions": "Wat mensen zeggen",
       "notFound": "Deze plek is niet beschikbaar.",
@@ -798,35 +798,35 @@
       "bestPerCity": "Beste foto per stad",
       "new": "nieuw",
       "you": {
-        "top": "Jij · #1 · Niemand boven je 👑",
-        "player": "Jij · #{{rank}} · {{gap}} ptn om {{name}} in te halen ▲",
+        "top": "Jij · eerste plek · Niemand boven je 👑",
+        "player": "Jij · {{rank, ordinal}} · {{gap}} ptn om {{name}} in te halen ▲",
         "none": "Speel vandaag om op het bord te komen 🙋",
-        "photo_one": "Jouw beste: #{{rank}} · {{count}} ❤️ tot #{{next}}",
-        "photo_other": "Jouw beste: #{{rank}} · {{count}} ❤️ tot #{{next}}",
-        "photoTop": "Jouw beste: #1 · niemand boven je 👑",
+        "photo_one": "Jouw beste: {{rank, ordinal}} · {{count}} ❤️ tot de {{next, ordinal}} plek",
+        "photo_other": "Jouw beste: {{rank, ordinal}} · {{count}} ❤️ tot de {{next, ordinal}} plek",
+        "photoTop": "Jouw beste: eerste plek · niemand boven je 👑",
         "photoNone": "Nog geen foto van jou in de ranking ❤️",
-        "seasonLead": "Je staat #1 dit seizoen! Verdedig je kroon 👑",
-        "seasonBehind_one": "Je staat #{{rank}} dit seizoen, {{count}} pt achter {{name}}",
-        "seasonBehind_other": "Je staat #{{rank}} dit seizoen, {{count}} ptn achter {{name}}",
-        "seasonTied": "Je staat #{{rank}} dit seizoen, gelijk met {{name}}",
+        "seasonLead": "Je staat eerste dit seizoen! Verdedig je kroon 👑",
+        "seasonBehind_one": "Je staat {{rank, ordinal}} dit seizoen, {{count}} pt achter {{name}}",
+        "seasonBehind_other": "Je staat {{rank, ordinal}} dit seizoen, {{count}} ptn achter {{name}}",
+        "seasonTied": "Je staat {{rank, ordinal}} dit seizoen, gelijk met {{name}}",
         "seasonNone": "Speel vandaag om in het seizoen te komen 🙋"
       },
       "city": {
         "lineTop": "{{city}} leidt de race! 🏁",
-        "line_one": "{{city}} is #{{rank}}. Nog {{count}} foto om {{next}} in te halen!",
-        "line_other": "{{city}} is #{{rank}}. Nog {{count}} foto's om {{next}} in te halen!",
-        "youBar_one": "{{city}} · #{{rank}} · {{count}} foto achter {{next}}",
-        "youBar_other": "{{city}} · #{{rank}} · {{count}} foto's achter {{next}}"
+        "line_one": "{{city}} is {{rank, ordinal}}. Nog {{count}} foto om {{next}} in te halen!",
+        "line_other": "{{city}} is {{rank, ordinal}}. Nog {{count}} foto's om {{next}} in te halen!",
+        "youBar_one": "{{city}} · {{rank, ordinal}} · {{count}} foto achter {{next}}",
+        "youBar_other": "{{city}} · {{rank, ordinal}} · {{count}} foto's achter {{next}}"
       },
       "empty": {
         "photos": "Nog geen gelikete foto's. Ga stemmen op je favorieten ❤️",
-        "players": "Nog niemand heeft punten. Speel en pak de #1 🙋",
+        "players": "Nog niemand heeft punten. Speel en pak de eerste plek 🙋",
         "cities": "Nog geen stad op de ranglijst. Zet de jouwe bovenaan 🌍"
       },
       "results": {
         "dismiss": "Sluiten",
-        "world": "🏆 Je foto werd gisteren #{{rank}} van de wereld",
-        "city": "🏆 Je foto werd gisteren #{{rank}} in {{city}}",
+        "world": "🏆 Je foto werd gisteren {{rank, ordinal}} van de wereld",
+        "city": "🏆 Je foto werd gisteren {{rank, ordinal}} in {{city}}",
         "best": "🏆 Je foto was gisteren de beste van {{city}}",
         "votes_one": "🏆 Je foto kreeg gisteren {{count}} ❤️",
         "votes_other": "🏆 Je foto kreeg gisteren {{count}} ❤️",
@@ -841,7 +841,7 @@
         "photo": "Jouw foto hier? 📸",
         "player": "Pak deze plek 🙋",
         "city": "Jouw stad hier? 🌍",
-        "invite": "🎯 Wie pakt #{{rank}}? Nodig iemand uit",
+        "invite": "🎯 Wie pakt de {{rank, ordinal}} plek? Nodig iemand uit",
         "empty": "Niemand pakte deze plek"
       },
       "seasonEnds_one": "Het seizoen eindigt over {{count}} dag",
@@ -865,9 +865,9 @@
     },
     "season": {
       "resultsKicker": "{{season}} · Seizoensuitslag",
-      "medalTitle": "Je eindigt op #{{rank}}! 🎉",
-      "rankTitle_one": "Je eindigt op #{{rank}} van {{count}} speler",
-      "rankTitle_other": "Je eindigt op #{{rank}} van {{count}} spelers",
+      "medalTitle": "Je eindigt als {{rank, ordinal}}! 🎉",
+      "rankTitle_one": "Je eindigt als {{rank, ordinal}} van {{count}} speler",
+      "rankTitle_other": "Je eindigt als {{rank, ordinal}} van {{count}} spelers",
       "stats": "Punten: {{points}} · Dagen gespeeld: {{days}} · Podiums: {{podiums}}",
       "newSeason": "Er begint een nieuw seizoen. Iedereen staat weer op 0.",
       "play": "📸 Speel de challenge van vandaag",
@@ -914,15 +914,15 @@
     "ranks": "🏆 Bekijk de ranglijst",
     "share": "📤 Deel mijn winst",
     "shareLine": {
-      "city_today": "Ik ben vandaag #{{rank}} in {{city}}",
-      "city_week": "Ik ben deze week #{{rank}} in {{city}}",
-      "city_alltime": "Ik ben #{{rank}} in {{city}}",
-      "world_today": "Ik ben vandaag #{{rank}} van de wereld",
-      "world_week": "Ik ben deze week #{{rank}} van de wereld",
-      "world_alltime": "Ik ben #{{rank}} van de wereld",
-      "cities_today": "{{city}} is vandaag #{{rank}} van de steden",
-      "cities_week": "{{city}} is deze week #{{rank}} van de steden",
-      "cities_alltime": "{{city}} is #{{rank}} van de steden"
+      "city_today": "Ik ben vandaag {{rank, ordinal}} in {{city}}",
+      "city_week": "Ik ben deze week {{rank, ordinal}} in {{city}}",
+      "city_alltime": "Ik ben {{rank, ordinal}} in {{city}}",
+      "world_today": "Ik ben vandaag {{rank, ordinal}} van de wereld",
+      "world_week": "Ik ben deze week {{rank, ordinal}} van de wereld",
+      "world_alltime": "Ik ben {{rank, ordinal}} van de wereld",
+      "cities_today": "{{city}} is vandaag {{rank, ordinal}} van de steden",
+      "cities_week": "{{city}} is deze week {{rank, ordinal}} van de steden",
+      "cities_alltime": "{{city}} is {{rank, ordinal}} van de steden"
     }
   }
 }

@@ -111,7 +111,7 @@
   "pp": {
     "passport": {
       "title": "Hộ chiếu",
-      "weekRank": "#{{rank}} tuần này",
+      "weekRank": "{{rank, ordinal}} tuần này",
       "weekNone": "Tuần này chưa có hạng",
       "mostLocalIn": "Thổ địa {{city}}",
       "mostLocalWorld": "Thổ địa toàn cầu",
@@ -123,7 +123,7 @@
       "myProposals": "Đề xuất của tôi",
       "friends": "Bạn bè",
       "mostLocalAllTime": "Thổ địa mọi thời đại",
-      "allTimeRank": "#{{rank}} ở {{city}}",
+      "allTimeRank": "{{rank, ordinal}} ở {{city}}",
       "howPoints": "Cách tính điểm",
       "gotIt": "Hiểu rồi",
       "close": "Đóng",
@@ -148,7 +148,7 @@
       "rivals": "Đối thủ của bạn",
       "rivalsEmpty": "Chơi vài thử thách để gặp đối thủ đầu tiên nha 🌍",
       "duels_other": "{{count}} trận",
-      "seasonRank": "#{{rank}} mùa này",
+      "seasonRank": "{{rank, ordinal}} mùa này",
       "seasonNone": "Chơi để vào mùa giải",
       "viewAsOthers": "Xem như người khác thấy mình"
     },
@@ -212,7 +212,7 @@
     },
     "seasons": {
       "medals": "Huy chương mùa giải",
-      "medalA11y": "#{{rank}}, {{season}}, {{points}} điểm"
+      "medalA11y": "{{rank, ordinal}}, {{season}}, {{points}} điểm"
     },
     "invite": {
       "title": "Rủ hội bạn",
@@ -263,7 +263,7 @@
       "title": "Launch Trip",
       "test": "TEST",
       "cardJoined": "Bạn đã tham gia · {{points}} điểm",
-      "cardRank": "#{{rank}}",
+      "cardRank": "{{rank, ordinal}}",
       "phase": {
         "upcoming": "Bắt đầu {{date}}",
         "season": "Kết thúc {{date}}",
@@ -314,9 +314,9 @@
       "launchGift": "Quà ra mắt của chúng tôi. Trò chơi vẫn vậy: mỗi ngày một ảnh.",
       "unlockPlayers": "người chơi",
       "unlockHint": "Chuyến đi được mở khóa khi {{max}} người chơi mỗi người đăng {{photos}} ảnh được duyệt.",
-      "unlocked": "Chuyến đi đã sẵn sàng 🎉 Giờ hãy đứng #1 tuần cuối để thắng.",
+      "unlocked": "Chuyến đi đã sẵn sàng 🎉 Giờ hãy về nhất tuần cuối để thắng.",
       "myFinalScore": "Điểm chung cuộc",
-      "behind": "Kém #{{rank}} {{count}} điểm",
+      "behind": "Kém {{rank, ordinal}} {{count}} điểm",
       "inviteTitle": "Rủ bạn bè",
       "inviteText": "+{{points}} điểm cho mỗi người bạn tham gia bằng link của bạn và đăng {{count}} ảnh được duyệt.",
       "inviteStamp": "mỗi bạn",
@@ -336,7 +336,7 @@
       "startsIn": "Bắt đầu sau {{time}}",
       "endsIn": "Kết thúc sau {{time}}",
       "share": "Chia sẻ",
-      "shareRank": "Mình đang hạng #{{rank}} ở Launch Trip của Hilads. {{prize}}: chơi cùng mình nhé!",
+      "shareRank": "Mình đang {{rank, ordinal}} ở Launch Trip của Hilads. {{prize}}: chơi cùng mình nhé!",
       "shareJoin": "Mình đã tham gia Launch Trip của Hilads. {{prize}}: chơi cùng mình nhé!",
       "shareCardIn": "Mình tham gia rồi",
       "shareCardJoin": "Chơi cùng mình trên Hilads",
@@ -345,14 +345,14 @@
       "seeRanking": "Xem toàn bộ bảng xếp hạng",
       "rankingTitle": "Bảng xếp hạng",
       "rulesShort": "Thể lệ",
-      "winLine": "Người đứng #1 bảng xếp hạng tuần cuối thắng chuyến đi ✈️",
+      "winLine": "Người thắng tuần cuối nhận chuyến đi ✈️",
       "howWinTitle": "Cách chiến thắng",
       "step1Title": "Đến {{date}}: ghi điểm",
       "step1Text": "Đăng ảnh mỗi ngày: mỗi lượt thích = 1 điểm (tối đa {{cap}} điểm mỗi ảnh). +{{points}} cho mỗi người bạn tham gia bằng link của bạn và đăng {{min}} ảnh được duyệt.",
       "step2Title": "Top {{count}} được điểm cộng trước",
-      "step2Text": "Ngày {{date}}, top {{count}} của mùa bước vào tuần cuối với lợi thế: {{count}} điểm cho #1, giảm dần đến 1 điểm cho #{{count}}.",
-      "step3Title": "Tuần cuối: người #1 chiến thắng",
-      "step3Text": "Lượt thích tính lại từ đầu, cộng điểm cộng trước và điểm mời bạn. Người #1 vào ngày {{date}} thắng chuyến đi ✈️",
+      "step2Text": "Vào {{date}}, top {{count}} bắt đầu tuần cuối với điểm cộng trước: {{count}} điểm cho người về nhất, giảm dần đến 1 cho {{count, ordinal}}.",
+      "step3Title": "Tuần cuối: người về nhất thắng",
+      "step3Text": "Điểm tính lại từ đầu, cộng điểm cộng trước của bạn. Người về nhất vào {{date}} thắng chuyến đi ✈️",
       "hsBadge": "+{{count}} điểm cộng trước",
       "hsHint": "Top {{count}} bước vào tuần cuối với điểm cộng trước.",
       "itTitle": "Tuần của bạn ở Việt Nam",
@@ -361,9 +361,9 @@
       "founderTitle": "Đôi lời từ nhà sáng lập",
       "founderSign": "{{name}}, nhà sáng lập Hilads",
       "todayKicker": "Một chuyến đi thật để giành",
-      "todayWin": "Đứng #1 tuần cuối và chuyến đi là của bạn",
+      "todayWin": "Về nhất tuần cuối và chuyến đi là của bạn",
       "todayJoin": "Tham gia và chơi để thắng",
-      "unlockWin": "Đứng #1 tuần cuối để thắng chuyến đi ✈️",
+      "unlockWin": "Về nhất tuần cuối để thắng chuyến đi ✈️",
       "souvenirLine": "Hạng 2 đến {{to}} của tuần cuối mỗi người nhận một gói quà lưu niệm Việt Nam, gửi tận nơi 🎁",
       "teaserKicker": "Sắp diễn ra",
       "teaserTitle": "Launch Trip sắp bắt đầu",
@@ -381,7 +381,7 @@
         "friends": "Bạn bè",
         "rules": "Thể lệ"
       },
-      "forFirst": "Dành cho người #1 tuần cuối",
+      "forFirst": "Dành cho người thắng tuần cuối",
       "chip": {
         "cdStarts": "đến lúc bắt đầu",
         "cdFinal": "đến tuần cuối",
@@ -401,23 +401,11 @@
         "now": "Bây giờ",
         "done": "Xong"
       },
-      "goal": {
-        "title": "Cùng nhau mở khóa chuyến đi",
-        "players": "người chơi",
-        "what": "Một người chơi được tính khi đã đăng {{photos}} ảnh được duyệt.",
-        "mine": "Bạn: {{n}} / {{photos}} ảnh.",
-        "mineDone": "Bạn đã được tính ✓",
-        "fallback": "Dưới {{players}} người chơi vào {{date}}? Người #1 vẫn thắng {{prize}}.",
-        "reached": "Chuyến đi đã được mở khóa 🎉",
-        "reachedText": "{{players}} người chơi đã làm được. Giờ hãy đứng #1 tuần cuối để thắng chuyến đi.",
-        "notReachedText": "Mục tiêu chưa đạt: người #1 thắng {{prize}} thay cho chuyến đi."
-      },
       "me": {
-        "rank": "Bạn đang #{{rank}}",
+        "rank": "Bạn đang {{rank, ordinal}}",
         "inRace": "Bạn đang trong cuộc đua",
         "finalLive": "Tuần cuối · trực tiếp",
-        "gap": "Kém #{{rank}} {{count}} điểm",
-        "tie": "Bằng điểm #{{rank}}: lượt thích quyết định",
+        "tie": "Bằng điểm {{rank, ordinal}}: lượt thích quyết định",
         "leading": "Bạn đang dẫn đầu",
         "headstart": "Gồm +{{count}} điểm cộng trước của bạn",
         "notScored": "Chơi để vào cuộc đua",
@@ -428,7 +416,9 @@
         "upcomingTitle": "Sẵn sàng nhé",
         "upcomingText": "Cuộc đua bắt đầu {{date}}. Điểm được tính từ lúc đó.",
         "closed": "Hiện đã đóng đăng ký.",
-        "cantJoin": "Tài khoản này không thể tham gia chiến dịch này."
+        "cantJoin": "Tài khoản này không thể tham gia chiến dịch này.",
+        "gap_one": "Kém {{rank, ordinal}} {{count}} điểm",
+        "gap_other": "Kém {{rank, ordinal}} {{count}} điểm"
       },
       "cta": {
         "play": "Chơi thử thách hôm nay",
@@ -449,7 +439,7 @@
         "empty": "Chưa ai ghi điểm. Chơi thử thách hôm nay để là người đầu tiên.",
         "emptyUpcoming": "Cuộc đua bắt đầu {{date}}.",
         "noteBefore": "Tuần cuối từ {{date}}: điểm tính lại từ đầu. Top {{count}} được giữ điểm cộng trước (tối đa +{{count}}).",
-        "noteFinal": "Điểm đã tính lại từ đầu vào {{date}}. Top {{count}} trước đó được giữ điểm cộng trước (tối đa +{{count}}). Người #1 vào {{end}} thắng.",
+        "noteFinal": "Điểm đã tính lại từ đầu vào {{date}}. Top {{count}} trước đó được giữ điểm cộng trước (tối đa +{{count}}). Người về nhất vào {{end}} thắng.",
         "ties": "Bằng điểm: nhiều lượt thích nhất trong tuần cuối, sau đó là người đạt số điểm đó trước."
       },
       "friends": {
@@ -474,28 +464,29 @@
         "howTitle": "Cách chiến thắng",
         "how1": "Chơi thử thách hằng ngày: điểm Hilads của bạn được tính cho cuộc đua.",
         "how2": "Vào top {{count}} trước {{date}} để bắt đầu tuần cuối với lợi thế.",
-        "how3": "Đứng #1 tuần cuối vào {{date}}: bạn thắng chuyến đi.",
+        "how3": "Về nhất tuần cuối và thắng chuyến đi.",
         "pointsTitle": "Cách tính điểm",
         "play": "Chơi một thử thách hằng ngày",
-        "podium": "Bục vinh quang của ngày (hạng 1 / 2 / 3)",
         "week": "Tuần hoàn hảo (mọi thử thách, từ thứ Hai đến Chủ nhật)",
         "friend": "Ảnh đầu tiên của một người bạn (tối đa {{count}} mỗi tháng)",
         "crew": "Người bạn thứ {{size}} trong tháng",
         "pointsNote": "Cùng điểm như mọi nơi trong Hilads, từ ngày bạn tham gia, cho các thử thách từ {{date}} trở đi.",
         "finalTitle": "Tuần cuối",
         "final1": "Vào {{date}}, điểm được tính lại từ đầu.",
-        "final2": "Top {{count}} trước đó bắt đầu với điểm cộng trước: +{{count}} cho #1, giảm dần đến +1.",
+        "final2": "Top {{count}} trước đó bắt đầu với điểm cộng trước: +{{count}} cho người về nhất, giảm dần đến +1 cho {{count, ordinal}}.",
         "final3": "Bằng điểm: nhiều lượt thích nhất trong tuần cuối, sau đó là người đạt số điểm đó trước.",
         "prizeTitle": "Giải thưởng",
-        "goalTitle": "Mục tiêu chung của người chơi",
-        "goalText": "Chuyến đi được mở khóa khi {{players}} người chơi mỗi người đăng {{photos}} ảnh được duyệt.",
-        "fallbackText": "Chưa đạt vào {{date}}? Người #1 vẫn thắng {{prize}}.",
+        "goalTitle": "Lên máy bay: mục tiêu của người chơi",
+        "goalText": "Máy bay có {{players}} ghế. Bạn nhận thẻ lên máy bay, và một ghế, với {{photos}} ảnh được duyệt. Chuyến đi được mở khi mọi ghế đều kín.",
+        "fallbackText": "Chưa kín ghế trước {{date}}? Người thắng vẫn nhận {{prize}}.",
         "whoTitle": "Ai được chơi",
         "who1": "Miễn phí, không cần mua gì.",
         "who2": "Từ 18 tuổi trở lên.",
         "who3": "Mỗi người một tài khoản.",
         "who4": "Tham gia trong ứng dụng và chấp nhận thể lệ chính thức.",
-        "full": "Toàn bộ thể lệ chính thức"
+        "full": "Toàn bộ thể lệ chính thức",
+        "podiumTitle": "Bục vinh quang hôm nay (nhiều lượt thích nhất thế giới)",
+        "place": "{{rank, ordinal}}"
       },
       "over": {
         "title": "Cuộc đua đã kết thúc",
@@ -504,16 +495,37 @@
         "winnerTitle": "{{name}} thắng!",
         "winnerTrip": "{{name}} thắng {{prize}}.",
         "winnerFallback": "Mục tiêu chung chưa đạt: {{name}} thắng {{prize}}.",
-        "yourRank": "Bạn về đích ở #{{rank}}"
+        "yourRank": "Bạn kết thúc ở {{rank, ordinal}}"
       },
       "banner": {
-        "rank": "Bạn đang #{{rank}} · {{count}} điểm",
+        "rank": "Bạn đang {{rank, ordinal}} · {{count}} điểm",
         "play": "Chơi để vào cuộc đua",
         "join": "Tham gia cuộc đua",
         "starts": "Bắt đầu sau {{time}}",
         "toFinal": "tuần cuối sau {{time}}",
         "ends": "kết thúc sau {{time}}",
         "over": "Xem người thắng"
+      },
+      "board": {
+        "title": "✈️ Lên máy bay",
+        "seats": "Đã kín {{players}} trên {{threshold}} ghế",
+        "first": "Lên máy bay trong số những người đầu tiên",
+        "takeoff": "Máy bay cất cánh khi mọi ghế đều kín.",
+        "what": "Bạn nhận thẻ lên máy bay, và ghế của mình, với {{photos}} ảnh được duyệt.",
+        "pass": "Thẻ lên máy bay của bạn",
+        "passProgress": "{{n}} / {{photos}} ảnh",
+        "passEarned": "Đã nhận thẻ lên máy bay",
+        "passEarnedText": "Ghế của bạn đã được giữ ✓",
+        "fallback": "Chưa kín ghế trước {{date}}? Người thắng vẫn nhận {{prize}}.",
+        "full": "Mọi ghế đã kín 🎉",
+        "fullText": "Máy bay cất cánh. Giờ hãy về nhất tuần cuối để thắng chuyến đi.",
+        "notFullText": "Máy bay chưa kín ghế: người thắng nhận {{prize}} thay cho chuyến đi.",
+        "invite": "Mời",
+        "a11y": "Lên máy bay: {{status}}. Mở chia sẻ để mời bạn bè.",
+        "shareText": "Đã kín {{players}} / {{threshold}} ghế trên Hilads Launch Trip. Giữ ghế của bạn ✈️",
+        "shareTextFirst": "Hilads Launch Trip đang mời hành khách lên máy bay. Giữ ghế của bạn ✈️",
+        "cardSeats": "Đã kín {{players}} / {{threshold}} ghế",
+        "cardGrab": "Giữ ghế ngay"
       }
     }
   },

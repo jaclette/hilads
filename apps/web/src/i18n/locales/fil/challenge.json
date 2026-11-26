@@ -65,8 +65,8 @@
   "leaderboard": {
     "title": "Most Local",
     "chip": {
-      "ranked": "#{{rank}}",
-      "rankedOver": "#100+",
+      "ranked": "{{rank, ordinal}}",
+      "rankedOver": "100+",
       "neutral": "Top challengers"
     },
     "scope": {
@@ -94,10 +94,10 @@
       "periodAll": "sa lahat ng panahon",
       "placeCity": "sa {{city}}",
       "placeWorld": "sa buong mundo",
-      "userNotTop": "🔥 #{{rank}} ako {{place}} {{period}}: {{pts}} pts! Hinahabol ko si @{{above}} ({{aPts}} pts) 👀 at nasa likod ko si @{{below}} ({{bPts}} pts). Kaya mo ba akong lampasan? 🏆",
-      "userTop": "👑 #1 ako {{place}} {{period}}: {{pts}} pts! Nakabuntot sina @{{below1}} ({{b1Pts}} pts) at @{{below2}} ({{b2Pts}} pts). Agawin mo ang korona kung kaya mo 😏",
-      "cityNotTop": "🔥 #{{rank}} ang {{place}} sa lahat ng city {{period}}: {{pts}} pts! Kasunod lang ng {{above}} ({{aPts}} pts) 👀 at nauuna sa {{below}} ({{bPts}} pts). Locals, akyat tayo 🏆",
-      "cityTop": "👑 #1 ang {{place}} sa lahat ng city {{period}}: {{pts}} pts! Hinahabol tayo ng {{below1}} ({{b1Pts}} pts) at {{below2}} ({{b2Pts}} pts). Locals, dito lang tayo sa tuktok 🔥"
+      "userNotTop": "🔥 {{rank, ordinal}} ako {{place}} {{period}}: {{pts}} pts! Hinahabol ko si @{{above}} ({{aPts}} pts) 👀 at nasa likod ko si @{{below}} ({{bPts}} pts). Kaya mo ba akong lampasan? 🏆",
+      "userTop": "👑 Una ako {{place}} {{period}}: {{pts}} pts! Nakabuntot sina @{{below1}} ({{b1Pts}} pts) at @{{below2}} ({{b2Pts}} pts). Agawin mo ang korona kung kaya mo 😏",
+      "cityNotTop": "🔥 {{rank, ordinal}} ang {{place}} sa lahat ng city {{period}}: {{pts}} pts! Kasunod lang ng {{above}} ({{aPts}} pts) 👀 at nauuna sa {{below}} ({{bPts}} pts). Locals, akyat tayo 🏆",
+      "cityTop": "👑 Una ang {{place}} sa lahat ng city {{period}}: {{pts}} pts! Hinahabol tayo ng {{below1}} ({{b1Pts}} pts) at {{below2}} ({{b2Pts}} pts). Locals, dito lang tayo sa tuktok 🔥"
     }
   },
   "closeCta": "Isara ang challenge",
@@ -185,9 +185,9 @@
   },
   "scoreCelebration": {
     "rank": {
-      "city": "#{{rank}} sa {{city}}",
+      "city": "{{rank, ordinal}} sa {{city}}",
       "cityBeyond": "Wala ka sa top {{topN}} ng city mo",
-      "world": "#{{rank}} sa buong mundo",
+      "world": "{{rank, ordinal}} sa buong mundo",
       "worldBeyond": "Wala ka sa top {{topN}} sa buong mundo",
       "cityUnranked": "Wala ka pang rank ngayong buwan sa {{city}}",
       "worldUnranked": "Wala ka pang rank ngayong buwan sa buong mundo"
@@ -310,9 +310,9 @@
   },
   "spot": {
     "rankWeekFirst": "Pinakamaraming votes ngayong linggo sa {{city}}",
-    "rankWeek": "#{{rank}} ngayong linggo sa {{city}}",
+    "rankWeek": "{{rank, ordinal}} ngayong linggo sa {{city}}",
     "rankAlltimeFirst": "Spot na may pinakamaraming votes sa {{city}}",
-    "rankAlltime": "#{{rank}} all time sa {{city}}",
+    "rankAlltime": "{{rank, ordinal}} all time sa {{city}}",
     "photos": "Photos",
     "captions": "Sabi ng mga tao",
     "notFound": "Hindi available ang spot na 'to.",
@@ -405,7 +405,7 @@
       "validatedHint": "Kumpirmado ng isang local: may taga-rito na nag-vote sa photo na 'to."
     },
     "results": {
-      "worldRank": "#{{rank}} sa mundo"
+      "worldRank": "{{rank, ordinal}} sa mundo"
     },
     "streak_one": "{{count}}-day streak",
     "streak_other": "{{count}}-day streak",
@@ -492,7 +492,7 @@
       "surprise": "Surprise me"
     },
     "leaderboard": {
-      "me": "Ikaw: #{{rank}} · ♥ {{votes}}"
+      "me": "Ikaw: {{rank, ordinal}} · ♥ {{votes}}"
     },
     "week": {
       "title": "Ngayong linggo",
@@ -595,9 +595,9 @@
     },
     "spot": {
       "rankWeekFirst": "Pinakamaraming votes ngayong linggo sa {{city}}",
-      "rankWeek": "#{{rank}} ngayong linggo sa {{city}}",
+      "rankWeek": "{{rank, ordinal}} ngayong linggo sa {{city}}",
       "rankAlltimeFirst": "Spot na may pinakamaraming votes sa {{city}}",
-      "rankAlltime": "#{{rank}} all time sa {{city}}",
+      "rankAlltime": "{{rank, ordinal}} all time sa {{city}}",
       "photos": "Photos",
       "captions": "Sabi ng mga tao",
       "notFound": "Hindi available ang spot na 'to.",
@@ -798,35 +798,35 @@
       "bestPerCity": "Best photo kada city",
       "new": "bago",
       "you": {
-        "top": "Ikaw · #1 · Wala nang nasa taas mo 👑",
-        "player": "Ikaw · #{{rank}} · {{gap}} pts para malampasan si {{name}} ▲",
+        "top": "Ikaw · unang puwesto · Wala nang nasa taas mo 👑",
+        "player": "Ikaw · {{rank, ordinal}} · {{gap}} pts para malampasan si {{name}} ▲",
         "none": "Maglaro ngayon para makapasok sa board 🙋",
-        "photo_one": "Pinakamaganda mo: #{{rank}} · {{count}} ❤️ papuntang #{{next}}",
-        "photo_other": "Pinakamaganda mo: #{{rank}} · {{count}} ❤️ papuntang #{{next}}",
-        "photoTop": "Pinakamaganda mo: #1 · walang nasa itaas mo 👑",
+        "photo_one": "Pinakamaganda mo: {{rank, ordinal}} · {{count}} ❤️ papuntang {{next, ordinal}} puwesto",
+        "photo_other": "Pinakamaganda mo: {{rank, ordinal}} · {{count}} ❤️ papuntang {{next, ordinal}} puwesto",
+        "photoTop": "Pinakamaganda mo: unang puwesto · walang nasa itaas mo 👑",
         "photoNone": "Wala ka pang litrato sa ranking ❤️",
-        "seasonLead": "Ikaw ang #1 ngayong season! Ipagtanggol ang korona mo 👑",
-        "seasonBehind_one": "Ikaw ay #{{rank}} ngayong season, {{count}} pt ang layo kay {{name}}",
-        "seasonBehind_other": "Ikaw ay #{{rank}} ngayong season, {{count}} pts ang layo kay {{name}}",
-        "seasonTied": "Ikaw ay #{{rank}} ngayong season, tabla kay {{name}}",
+        "seasonLead": "Ikaw ang una ngayong season! Ipagtanggol ang korona mo 👑",
+        "seasonBehind_one": "Ikaw ay {{rank, ordinal}} ngayong season, {{count}} pt ang layo kay {{name}}",
+        "seasonBehind_other": "Ikaw ay {{rank, ordinal}} ngayong season, {{count}} pts ang layo kay {{name}}",
+        "seasonTied": "Ikaw ay {{rank, ordinal}} ngayong season, tabla kay {{name}}",
         "seasonNone": "Maglaro ngayon para makasali sa season 🙋"
       },
       "city": {
         "lineTop": "Nangunguna ang {{city}}! 🏁",
-        "line_one": "#{{rank}} ang {{city}}. {{count}} photo pa para mahabol ang {{next}}!",
-        "line_other": "#{{rank}} ang {{city}}. {{count}} photos pa para mahabol ang {{next}}!",
-        "youBar_one": "{{city}} · #{{rank}} · {{count}} photo ang layo sa {{next}}",
-        "youBar_other": "{{city}} · #{{rank}} · {{count}} photos ang layo sa {{next}}"
+        "line_one": "{{rank, ordinal}} ang {{city}}. {{count}} photo pa para mahabol ang {{next}}!",
+        "line_other": "{{rank, ordinal}} ang {{city}}. {{count}} photos pa para mahabol ang {{next}}!",
+        "youBar_one": "{{city}} · {{rank, ordinal}} · {{count}} photo ang layo sa {{next}}",
+        "youBar_other": "{{city}} · {{rank, ordinal}} · {{count}} photos ang layo sa {{next}}"
       },
       "empty": {
         "photos": "Wala pang naka-like na photo. Mag-vote sa mga paborito mo ❤️",
-        "players": "Wala pang may points. Maglaro at kunin ang #1 🙋",
+        "players": "Wala pang may points. Maglaro at kunin ang unang puwesto 🙋",
         "cities": "Wala pang city sa board. Unahin mo ang city mo 🌍"
       },
       "results": {
         "dismiss": "Isara",
-        "world": "🏆 Pang-#{{rank}} sa mundo ang litrato mo kahapon",
-        "city": "🏆 Pang-#{{rank}} sa {{city}} ang litrato mo kahapon",
+        "world": "🏆 {{rank, ordinal}} sa mundo ang litrato mo kahapon",
+        "city": "🏆 {{rank, ordinal}} sa {{city}} ang litrato mo kahapon",
         "best": "🏆 Ang litrato mo ang pinakamaganda sa {{city}} kahapon",
         "votes_one": "🏆 Nakakuha ng {{count}} ❤️ ang litrato mo kahapon",
         "votes_other": "🏆 Nakakuha ng {{count}} ❤️ ang litrato mo kahapon",
@@ -841,7 +841,7 @@
         "photo": "Litrato mo rito? 📸",
         "player": "Kunin ang puwestong ito 🙋",
         "city": "Lungsod mo rito? 🌍",
-        "invite": "🎯 Sino ang kukuha ng #{{rank}}? Mag-imbita ng kaibigan",
+        "invite": "🎯 Sino ang kukuha ng {{rank, ordinal}} puwesto? Mag-imbita ng kaibigan",
         "empty": "Walang kumuha ng puwestong ito"
       },
       "seasonEnds_one": "Matatapos ang season sa loob ng {{count}} araw",
@@ -865,9 +865,9 @@
     },
     "season": {
       "resultsKicker": "{{season}} · Resulta ng season",
-      "medalTitle": "Natapos ka sa #{{rank}}! 🎉",
-      "rankTitle_one": "Natapos ka sa #{{rank}} sa {{count}} player",
-      "rankTitle_other": "Natapos ka sa #{{rank}} sa {{count}} players",
+      "medalTitle": "Natapos ka sa {{rank, ordinal}} puwesto! 🎉",
+      "rankTitle_one": "Natapos ka sa {{rank, ordinal}} puwesto sa {{count}} player",
+      "rankTitle_other": "Natapos ka sa {{rank, ordinal}} puwesto sa {{count}} players",
       "stats": "Points: {{points}} · Araw na naglaro: {{days}} · Podium: {{podiums}}",
       "newSeason": "Magsisimula na ang bagong season. Balik sa 0 ang lahat.",
       "play": "📸 Laruin ang challenge ngayon",
@@ -914,15 +914,15 @@
     "ranks": "🏆 Tingnan ang ranking",
     "share": "📤 I-share ang panalo ko",
     "shareLine": {
-      "city_today": "#{{rank}} ako sa {{city}} ngayon",
-      "city_week": "#{{rank}} ako sa {{city}} ngayong linggo",
-      "city_alltime": "#{{rank}} ako sa {{city}}",
-      "world_today": "#{{rank}} ako sa mundo ngayon",
-      "world_week": "#{{rank}} ako sa mundo ngayong linggo",
-      "world_alltime": "#{{rank}} ako sa mundo",
-      "cities_today": "#{{rank}} ang {{city}} sa mga lungsod ngayon",
-      "cities_week": "#{{rank}} ang {{city}} sa mga lungsod ngayong linggo",
-      "cities_alltime": "#{{rank}} ang {{city}} sa mga lungsod"
+      "city_today": "{{rank, ordinal}} ako sa {{city}} ngayon",
+      "city_week": "{{rank, ordinal}} ako sa {{city}} ngayong linggo",
+      "city_alltime": "{{rank, ordinal}} ako sa {{city}}",
+      "world_today": "{{rank, ordinal}} ako sa mundo ngayon",
+      "world_week": "{{rank, ordinal}} ako sa mundo ngayong linggo",
+      "world_alltime": "{{rank, ordinal}} ako sa mundo",
+      "cities_today": "{{rank, ordinal}} ang {{city}} sa mga lungsod ngayon",
+      "cities_week": "{{rank, ordinal}} ang {{city}} sa mga lungsod ngayong linggo",
+      "cities_alltime": "{{rank, ordinal}} ang {{city}} sa mga lungsod"
     }
   }
 }

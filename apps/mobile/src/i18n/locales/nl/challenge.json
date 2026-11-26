@@ -143,8 +143,8 @@
   "leaderboard": {
     "title": "Most Local",
     "chip": {
-      "ranked": "🏆 #{{rank}}",
-      "rankedOver": "🏆 #100+",
+      "ranked": "🏆 {{rank}}",
+      "rankedOver": "🏆 100+",
       "neutral": "🏆 Topchallengers"
     },
     "scope": {
@@ -158,7 +158,7 @@
     },
     "points": "{{points}} ptn",
     "me": {
-      "ranked": "Jij · #{{rank}} · {{points}} ptn",
+      "ranked": "Jij · {{rank, ordinal}} · {{points}} ptn",
       "unranked": "Ga een challenge aan en kom in het klassement"
     },
     "empty": {
@@ -178,10 +178,10 @@
       "periodAll": "aller tijden",
       "placeCity": "in {{city}}",
       "placeWorld": "in de wereld",
-      "userNotTop": "🔥 Ik ben #{{rank}} {{place}} {{period}}: {{pts}} ptn! Ik zit @{{above}} ({{aPts}} ptn) op de hielen 👀 en houd @{{below}} ({{bPts}} ptn) achter me. Denk je dat je me inhaalt? 🏆",
-      "userTop": "👑 Ik ben #1 {{place}} {{period}}: {{pts}} ptn! @{{below1}} ({{b1Pts}} ptn) en @{{below2}} ({{b2Pts}} ptn) zitten me op de hielen. Kom de kroon maar halen 😏",
-      "cityNotTop": "🔥 {{place}} is #{{rank}} van alle steden {{period}}: {{pts}} ptn! Vlak achter {{above}} ({{aPts}} ptn) 👀 en voor {{below}} ({{bPts}} ptn). Locals, we gaan klimmen 🏆",
-      "cityTop": "👑 {{place}} is #1 van alle steden {{period}}: {{pts}} ptn! {{below1}} ({{b1Pts}} ptn) en {{below2}} ({{b2Pts}} ptn) zitten ons op de hielen. Locals, we blijven bovenaan 🔥"
+      "userNotTop": "🔥 Ik sta {{rank, ordinal}} {{place}} {{period}}: {{pts}} ptn! Ik zit @{{above}} ({{aPts}} ptn) op de hielen 👀 en houd @{{below}} ({{bPts}} ptn) achter me. Denk je dat je me inhaalt? 🏆",
+      "userTop": "👑 Ik sta bovenaan {{place}} {{period}}: {{pts}} ptn! @{{below1}} ({{b1Pts}} ptn) en @{{below2}} ({{b2Pts}} ptn) zitten me op de hielen. Kom de kroon maar halen 😏",
+      "cityNotTop": "🔥 {{place}} staat {{rank, ordinal}} van alle steden {{period}}: {{pts}} ptn! Vlak achter {{above}} ({{aPts}} ptn) 👀 en voor {{below}} ({{bPts}} ptn). Locals, we gaan klimmen 🏆",
+      "cityTop": "👑 {{place}} staat bovenaan alle steden {{period}}: {{pts}} ptn! {{below1}} ({{b1Pts}} ptn) en {{below2}} ({{b2Pts}} ptn) zitten ons op de hielen. Locals, we blijven bovenaan 🔥"
     }
   },
   "debrief": {
@@ -298,9 +298,9 @@
   },
   "scoreCelebration": {
     "rank": {
-      "city": "#{{rank}} in {{city}}",
+      "city": "{{rank, ordinal}} in {{city}}",
       "cityBeyond": "Buiten de top {{topN}} in jouw stad",
-      "world": "#{{rank}} wereldwijd",
+      "world": "{{rank, ordinal}} wereldwijd",
       "worldBeyond": "Buiten de top {{topN}} wereldwijd",
       "cityUnranked": "Deze maand nog niet in het klassement van {{city}}",
       "worldUnranked": "Deze maand nog niet in het wereldklassement"
@@ -441,15 +441,15 @@
     "ranks": "🏆 Bekijk de ranglijst",
     "share": "📤 Deel mijn winst",
     "shareLine": {
-      "city_today": "Ik ben vandaag #{{rank}} in {{city}}",
-      "city_week": "Ik ben deze week #{{rank}} in {{city}}",
-      "city_alltime": "Ik ben #{{rank}} in {{city}}",
-      "world_today": "Ik ben vandaag #{{rank}} van de wereld",
-      "world_week": "Ik ben deze week #{{rank}} van de wereld",
-      "world_alltime": "Ik ben #{{rank}} van de wereld",
-      "cities_today": "{{city}} is vandaag #{{rank}} van de steden",
-      "cities_week": "{{city}} is deze week #{{rank}} van de steden",
-      "cities_alltime": "{{city}} is #{{rank}} van de steden"
+      "city_today": "Ik sta vandaag {{rank, ordinal}} in {{city}}",
+      "city_week": "Ik sta deze week {{rank, ordinal}} in {{city}}",
+      "city_alltime": "Ik sta {{rank, ordinal}} in {{city}}",
+      "world_today": "Ik sta vandaag {{rank, ordinal}} van de wereld",
+      "world_week": "Ik sta deze week {{rank, ordinal}} van de wereld",
+      "world_alltime": "Ik sta {{rank, ordinal}} van de wereld",
+      "cities_today": "{{city}} staat vandaag {{rank, ordinal}} van de steden",
+      "cities_week": "{{city}} staat deze week {{rank, ordinal}} van de steden",
+      "cities_alltime": "{{city}} staat {{rank, ordinal}} van de steden"
     }
   }
 }

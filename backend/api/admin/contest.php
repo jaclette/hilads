@@ -84,7 +84,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 throw new InvalidArgumentException('Dates: start ≤ final week start ≤ end.');
             }
             // The campaign counts the regular points (2026-11-26): only these settings are used and posted.
-            foreach (['headstart_top_n', 'prize_threshold_players', 'prize_threshold_photos'] as $k) $fields[$k] = $intField($k, $k === 'headstart_top_n' ? 0 : 1);
+            foreach (['headstart_top_n', 'prize_threshold_players', 'prize_threshold_photos', 'seats_show_from'] as $k) $fields[$k] = $intField($k, in_array($k, ['headstart_top_n', 'seats_show_from'], true) ? 0 : 1);
             $fields['is_test'] = !empty($_POST['is_test']) ? 'true' : 'false';
             $id = (int) ($_POST['id'] ?? 0);
             if ($id > 0) {
@@ -373,9 +373,9 @@ admin_nav('/admin/launch-season');
   $form = static function (?array $s) use ($esc, $pdo): void {
       $v = static fn(string $k, $d = '') => $esc($s[$k] ?? $d);
       // Points are the regular Hilads points (config/scoring.php): no likes cap or referral settings any more.
-      $defaults = ['headstart_top_n' => 10, 'prize_threshold_players' => 500, 'prize_threshold_photos' => 10];
+      $defaults = ['headstart_top_n' => 10, 'prize_threshold_players' => 500, 'prize_threshold_photos' => 10, 'seats_show_from' => 20];
       $labels = ['headstart_top_n' => 'Head-start top N', 'prize_threshold_players' => "Players' goal: players needed",
-                 'prize_threshold_photos' => "Players' goal: photos each"];
+                 'prize_threshold_photos' => "Players' goal: photos each", 'seats_show_from' => 'Show "x of 500 seats taken" from (players)'];
       ?>
       <form method="post" class="form-card" style="max-width:none">
         <?= csrf_input() ?><input type="hidden" name="do" value="save_season"><input type="hidden" name="id" value="<?= (int) ($s['id'] ?? 0) ?>">
@@ -546,7 +546,7 @@ admin_nav('/admin/launch-season');
     </form>
     <h2 id="fallback" style="font-size:15px;color:var(--text);margin-top:24px">If the players' goal isn't reached</h2>
     <?php $fbSet = $season['fallback_prize_i18n'] !== []; ?>
-    <p class="ls-muted">What the #1 of the final week wins instead of the trip when fewer than <?= (int) $season['prize_threshold_players'] ?> players reach <?= (int) $season['prize_threshold_photos'] ?> photos. Shown from day one on the goal card ("Under <?= (int) $season['prize_threshold_players'] ?> players? The #1 still wins …"), in the app's Rules section and on the rules page ({{fallback}}). Write it to follow "still wins", e.g. "a Vietnam souvenir pack". English is required; an empty language shows the English text.</p>
+    <p class="ls-muted">What the winner of the final week wins instead of the trip when fewer than <?= (int) $season['prize_threshold_players'] ?> players reach <?= (int) $season['prize_threshold_photos'] ?> photos. Shown from day one on the goal card ("Not full by the end? The winner still wins …"), in the app's Rules section and on the rules page ({{fallback}}). Write it to follow "still wins", e.g. "a Vietnam souvenir pack". English is required; an empty language shows the English text.</p>
     <?php if (!$fbSet): ?><div class="callout warn" style="margin-bottom:10px">Not set yet: the apps show the placeholder "<?= $esc(Contest::DEFAULT_FALLBACK['en']) ?>". Set the real fallback prize before the season goes live.</div><?php endif; ?>
     <form method="post" class="form-card" style="max-width:none">
       <?= csrf_input() ?><input type="hidden" name="do" value="save_fallback">
@@ -577,7 +577,7 @@ admin_nav('/admin/launch-season');
 
     <h2 id="souvenir" style="font-size:15px;color:var(--text);margin-top:24px">Souvenir prizes (ranks 2 to N)</h2>
     <?php $sv = json_decode((string) ($season['souvenir'] ?? '{}'), true); $sv = is_array($sv) ? $sv : []; ?>
-    <p class="ls-muted">The #1 of the final week wins the prize above; when this is on, ranks 2 to N each get a Vietnam souvenir pack, shipped to them (that is N − 1 parcels to send worldwide). Shown on the Prize screen and the ranking. Leave a line empty for the app's own wording ("Ranks 2 to N of the final week each win a Vietnam souvenir pack, shipped to them"), translated; a line you type replaces it in that language (empty = English). Not part of the score. Remember the rules page.</p>
+    <p class="ls-muted">The winner of the final week wins the prize above; when this is on, ranks 2 to N each get a Vietnam souvenir pack, shipped to them (that is N − 1 parcels to send worldwide). Shown on the Prize screen and the ranking. Leave a line empty for the app's own wording ("Ranks 2 to N of the final week each win a Vietnam souvenir pack, shipped to them"), translated; a line you type replaces it in that language (empty = English). Not part of the score. Remember the rules page.</p>
     <form method="post" class="form-card" style="max-width:none">
       <?= csrf_input() ?><input type="hidden" name="do" value="save_souvenir">
       <div class="ls-inline" style="gap:16px;margin-bottom:8px">
@@ -865,7 +865,7 @@ admin_nav('/admin/launch-season');
       <strong><?= $leader ? $who($st['rows'][$leader]) . ' · ' . $st['rows'][$leader]['finalPoints'] . ' pts' : '—' ?></strong></p>
     <p>Winner: <strong><?= $winnerName ? '@' . $esc($winnerName) : 'not set' ?></strong>
       <?php if ($leader): ?>
-        <form method="post" class="ls-inline" onsubmit="return confirm('Set the winner to the #1 of the final ranking?')"><?= csrf_input() ?><input type="hidden" name="do" value="winner"><input type="hidden" name="field" value="winner_user_id"><input type="hidden" name="user" value="<?= $esc($leader) ?>"><button class="btn btn-secondary btn-sm">Set #1 as the winner</button></form>
+        <form method="post" class="ls-inline" onsubmit="return confirm('Set the winner to the first of the final ranking?')"><?= csrf_input() ?><input type="hidden" name="do" value="winner"><input type="hidden" name="field" value="winner_user_id"><input type="hidden" name="user" value="<?= $esc($leader) ?>"><button class="btn btn-secondary btn-sm">Set the leader as the winner</button></form>
       <?php endif; ?>
     </p>
     <div class="toolbar" style="gap:8px"><?php $flag('winner_contacted_at', 'Winner contacted'); $flag('winner_confirmed_at', 'Winner confirmed'); $flag('prize_sent_at', 'Prize sent'); ?></div>

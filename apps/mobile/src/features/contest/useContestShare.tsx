@@ -17,7 +17,8 @@ export function useContestShare(data: ContestOverview | null) {
   const { account } = useApp();
   const [content, setContent] = useState<ShareContent | null>(null);
 
-  const open = async () => {
+  /** opts.boarding: the Boarding card (seats taken) instead of my rank card. */
+  const open = async (opts?: { boarding?: boolean }) => {
     const s = data?.season;
     if (!s) return;
     let link = `${BASE_URL}/today`;
@@ -35,9 +36,12 @@ export function useContestShare(data: ContestOverview | null) {
       when: s.phase === 'upcoming' ? t('contest.phase.upcoming', { date: contestDate(s.startDate, i18n.language) })
         : t('contest.endsOn', { date: contestDate(s.endDate, i18n.language) }),
       username: account?.username ?? null, rank, points,
+      boarding: opts?.boarding && data?.counter
+        ? { players: data.counter.players, threshold: data.counter.threshold, showCount: data.counter.players > 0 && data.counter.players >= (data.counter.showFrom ?? 0) }
+        : null,
     });
   };
 
-  const sheet = <ShareSheet content={content} source="launch_season" onClose={() => setContent(null)} />;
+  const sheet = <ShareSheet content={content} source={content?.type === 'contest' && content.boarding ? 'trip_boarding' : 'launch_season'} onClose={() => setContent(null)} />;
   return { open, sheet };
 }

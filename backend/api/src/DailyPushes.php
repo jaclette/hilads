@@ -558,7 +558,7 @@ final class DailyPushes
         return [
             'title' => 'Daily Challenge',
             'body'  => DailyPushText::render('top10', $locale, ['rank' => $rank])
-                       ?? "You're in today's top 10! Your photo is #{$rank} in the world right now.",
+                       ?? "You're in today's top 10! Your photo is " . Ordinal::format($rank, 'en') . ' in the world right now.',
             'data'  => self::data($date),
         ];
     }

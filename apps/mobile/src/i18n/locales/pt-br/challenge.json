@@ -144,8 +144,8 @@
   "leaderboard": {
     "title": "Most Local",
     "chip": {
-      "ranked": "🏆 #{{rank}}",
-      "rankedOver": "🏆 #100+",
+      "ranked": "🏆 {{rank}}",
+      "rankedOver": "🏆 100+",
       "neutral": "🏆 Top desafiantes"
     },
     "scope": {
@@ -159,7 +159,7 @@
     },
     "points": "{{points}} pts",
     "me": {
-      "ranked": "Você · #{{rank}} · {{points}} pts",
+      "ranked": "Você · {{rank, ordinal}} · {{points}} pts",
       "unranked": "Aceite um desafio pra entrar no ranking"
     },
     "empty": {
@@ -179,10 +179,10 @@
       "periodAll": "de todos os tempos",
       "placeCity": "em {{city}}",
       "placeWorld": "no mundo",
-      "userNotTop": "🔥 Tô no #{{rank}} {{place}} {{period}}: {{pts}} pts! Correndo atrás de @{{above}} ({{aPts}} pts) 👀 e segurando @{{below}} ({{bPts}} pts) atrás de mim. Acha que me passa? 🏆",
-      "userTop": "👑 Tô no #1 {{place}} {{period}}: {{pts}} pts! @{{below1}} ({{b1Pts}} pts) e @{{below2}} ({{b2Pts}} pts) estão na minha cola. Vem pegar a coroa 😏",
-      "cityNotTop": "🔥 {{place}} está no #{{rank}} entre todas as cidades {{period}}: {{pts}} pts! Logo atrás de {{above}} ({{aPts}} pts) 👀 e na frente de {{below}} ({{bPts}} pts). Galera daqui, bora subir 🏆",
-      "cityTop": "👑 {{place}} está no #1 entre todas as cidades {{period}}: {{pts}} pts! {{below1}} ({{b1Pts}} pts) e {{below2}} ({{b2Pts}} pts) estão na nossa cola. Galera daqui, bora ficar no topo 🔥"
+      "userNotTop": "🔥 Tô em {{rank, ordinal}} lugar {{place}} {{period}}: {{pts}} pts! Correndo atrás de @{{above}} ({{aPts}} pts) 👀 e segurando @{{below}} ({{bPts}} pts) atrás de mim. Acha que me passa? 🏆",
+      "userTop": "👑 Tô em primeiro lugar {{place}} {{period}}: {{pts}} pts! @{{below1}} ({{b1Pts}} pts) e @{{below2}} ({{b2Pts}} pts) estão na minha cola. Vem pegar a coroa 😏",
+      "cityNotTop": "🔥 {{place}} está em {{rank, ordinal}} lugar entre todas as cidades {{period}}: {{pts}} pts! Logo atrás de {{above}} ({{aPts}} pts) 👀 e na frente de {{below}} ({{bPts}} pts). Galera daqui, bora subir 🏆",
+      "cityTop": "👑 {{place}} está em primeiro lugar entre todas as cidades {{period}}: {{pts}} pts! {{below1}} ({{b1Pts}} pts) e {{below2}} ({{b2Pts}} pts) estão na nossa cola. Galera daqui, bora ficar no topo 🔥"
     }
   },
   "debrief": {
@@ -299,9 +299,9 @@
   },
   "scoreCelebration": {
     "rank": {
-      "city": "#{{rank}} em {{city}}",
+      "city": "{{rank, ordinal}} em {{city}}",
       "cityBeyond": "Fora do top {{topN}} da sua cidade",
-      "world": "#{{rank}} no mundo",
+      "world": "{{rank, ordinal}} no mundo",
       "worldBeyond": "Fora do top {{topN}} mundial",
       "cityUnranked": "Fora do ranking deste mês em {{city}}",
       "worldUnranked": "Fora do ranking deste mês no mundo"
@@ -428,7 +428,7 @@
       "city": "em {{city}}",
       "world": "Mundo",
       "cities": "{{city}} entre as cidades",
-      "citiesTop": "{{city}} cidade nº 1"
+      "citiesTop": "{{city}} primeira cidade"
     },
     "up": "subiu {{count}}",
     "new": "Novo",
@@ -444,15 +444,15 @@
     "ranks": "🏆 Ver o ranking",
     "share": "📤 Compartilhar minha vitória",
     "shareLine": {
-      "city_today": "Sou o nº {{rank}} em {{city}} hoje",
-      "city_week": "Sou o nº {{rank}} em {{city}} nesta semana",
-      "city_alltime": "Sou o nº {{rank}} em {{city}}",
-      "world_today": "Sou o nº {{rank}} no mundo hoje",
-      "world_week": "Sou o nº {{rank}} no mundo nesta semana",
-      "world_alltime": "Sou o nº {{rank}} no mundo",
-      "cities_today": "{{city}} é a nº {{rank}} entre as cidades hoje",
-      "cities_week": "{{city}} é a nº {{rank}} entre as cidades nesta semana",
-      "cities_alltime": "{{city}} é a nº {{rank}} entre as cidades"
+      "city_today": "Tô em {{rank, ordinal}} lugar em {{city}} hoje",
+      "city_week": "Tô em {{rank, ordinal}} lugar em {{city}} nesta semana",
+      "city_alltime": "Tô em {{rank, ordinal}} lugar em {{city}}",
+      "world_today": "Tô em {{rank, ordinal}} lugar no mundo hoje",
+      "world_week": "Tô em {{rank, ordinal}} lugar no mundo nesta semana",
+      "world_alltime": "Tô em {{rank, ordinal}} lugar no mundo",
+      "cities_today": "{{city}} está em {{rank, ordinal}} lugar entre as cidades hoje",
+      "cities_week": "{{city}} está em {{rank, ordinal}} lugar entre as cidades nesta semana",
+      "cities_alltime": "{{city}} está em {{rank, ordinal}} lugar entre as cidades"
     }
   }
 }

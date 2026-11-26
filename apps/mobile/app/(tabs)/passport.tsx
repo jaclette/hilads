@@ -29,6 +29,8 @@ import { PioneerBadges } from '@/features/passport/PioneerBadges';
 import { PointsHelpSheet } from '@/features/passport/PointsHelpSheet';
 import { CrewCard, InvitedBy, SeasonMedals, WeekCard } from '@/features/passport/ScoringCards';
 import type { DailyLocalPassProgress, DailyUserStats } from '@/types';
+import i18n from '@/i18n';
+import { ordinal } from '@/lib/ordinal';
 
 interface Counts { spots: number | null; proposals: number | null; friends: number | null; week: number | null; alltime: number | null }
 
@@ -261,7 +263,7 @@ export default function PassportScreen() {
           <ListRow divider title={t('passport.mostLocalAllTime')}
                    icon={counts.alltime && counts.alltime <= 3 ? undefined : 'trophy-outline'} tone={{ fill: colors.medalGold, ink: colors.gold }}
                    leading={counts.alltime && counts.alltime <= 3 ? <RankMedal rank={counts.alltime} size={36} /> : undefined}
-                   value={counts.alltime ? (cityName ? t('passport.allTimeRank', { rank: counts.alltime, city: cityName }) : `#${counts.alltime}`) : ''}
+                   value={counts.alltime ? (cityName ? t('passport.allTimeRank', { rank: counts.alltime, city: cityName }) : ordinal(counts.alltime, i18n.language)) : ''}
                    onPress={() => router.navigate(`/ranks?tab=players&period=alltime&scope=${cityKey ? 'city' : 'world'}` as never)} />
         </RowGroup>
 

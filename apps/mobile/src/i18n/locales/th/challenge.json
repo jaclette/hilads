@@ -142,8 +142,8 @@
   "leaderboard": {
     "title": "Most Local",
     "chip": {
-      "ranked": "🏆 #{{rank}}",
-      "rankedOver": "🏆 #100+",
+      "ranked": "🏆 {{rank}}",
+      "rankedOver": "🏆 100+",
       "neutral": "🏆 สุดยอดผู้ท้า"
     },
     "scope": {
@@ -157,7 +157,7 @@
     },
     "points": "{{points}} คะแนน",
     "me": {
-      "ranked": "คุณ · #{{rank}} · {{points}} คะแนน",
+      "ranked": "คุณ · {{rank, ordinal}} · {{points}} คะแนน",
       "unranked": "เล่นชาเลนจ์เพื่อติดอันดับ"
     },
     "empty": {
@@ -177,10 +177,10 @@
       "periodAll": "ตลอดกาล",
       "placeCity": "ใน {{city}}",
       "placeWorld": "ทั่วโลก",
-      "userNotTop": "🔥 ฉันอยู่อันดับ #{{rank}} {{place}} {{period}}: {{pts}} คะแนน! กำลังไล่ @{{above}} ({{aPts}} คะแนน) 👀 และทิ้ง @{{below}} ({{bPts}} คะแนน) ไว้ข้างหลัง คิดว่าแซงฉันได้เหรอ? 🏆",
-      "userTop": "👑 ฉันอันดับ #1 {{place}} {{period}}: {{pts}} คะแนน! @{{below1}} ({{b1Pts}} คะแนน) กับ @{{below2}} ({{b2Pts}} คะแนน) ตามมาติดๆ มาแย่งมงกุฎไปสิ 😏",
-      "cityNotTop": "🔥 {{place}} อยู่อันดับ #{{rank}} จากทุกเมือง {{period}}: {{pts}} คะแนน! ตามหลัง {{above}} ({{aPts}} คะแนน) ติดๆ 👀 และนำ {{below}} ({{bPts}} คะแนน) อยู่ คนท้องถิ่นทั้งหลาย ไต่ขึ้นไปกัน 🏆",
-      "cityTop": "👑 {{place}} อันดับ #1 จากทุกเมือง {{period}}: {{pts}} คะแนน! {{below1}} ({{b1Pts}} คะแนน) กับ {{below2}} ({{b2Pts}} คะแนน) กำลังไล่ตามมา คนท้องถิ่นทั้งหลาย รักษาที่หนึ่งไว้ให้ได้ 🔥"
+      "userNotTop": "🔥 ฉันอยู่{{rank, ordinal}} {{place}} {{period}}: {{pts}} คะแนน! กำลังไล่ @{{above}} ({{aPts}} คะแนน) 👀 และทิ้ง @{{below}} ({{bPts}} คะแนน) ไว้ข้างหลัง คิดว่าแซงฉันได้เหรอ? 🏆",
+      "userTop": "👑 ฉันอันดับหนึ่ง {{place}} {{period}}: {{pts}} คะแนน! @{{below1}} ({{b1Pts}} คะแนน) กับ @{{below2}} ({{b2Pts}} คะแนน) ตามมาติดๆ มาแย่งมงกุฎไปสิ 😏",
+      "cityNotTop": "🔥 {{place}} อยู่{{rank, ordinal}} จากทุกเมือง {{period}}: {{pts}} คะแนน! ตามหลัง {{above}} ({{aPts}} คะแนน) ติดๆ 👀 และนำ {{below}} ({{bPts}} คะแนน) อยู่ คนท้องถิ่นทั้งหลาย ไต่ขึ้นไปกัน 🏆",
+      "cityTop": "👑 {{place}} อันดับหนึ่ง จากทุกเมือง {{period}}: {{pts}} คะแนน! {{below1}} ({{b1Pts}} คะแนน) กับ {{below2}} ({{b2Pts}} คะแนน) กำลังไล่ตามมา คนท้องถิ่นทั้งหลาย รักษาที่หนึ่งไว้ให้ได้ 🔥"
     }
   },
   "debrief": {
@@ -297,9 +297,9 @@
   },
   "scoreCelebration": {
     "rank": {
-      "city": "อันดับ {{rank}} ใน {{city}}",
+      "city": "{{rank, ordinal}} ใน {{city}}",
       "cityBeyond": "ยังไม่ติด {{topN}} อันดับแรกในเมืองของคุณ",
-      "world": "อันดับ {{rank}} ของโลก",
+      "world": "{{rank, ordinal}} ของโลก",
       "worldBeyond": "ยังไม่ติด {{topN}} อันดับแรกของโลก",
       "cityUnranked": "เดือนนี้ยังไม่ติดอันดับใน {{city}}",
       "worldUnranked": "เดือนนี้ยังไม่ติดอันดับโลก"
@@ -438,15 +438,15 @@
     "ranks": "🏆 ดูอันดับ",
     "share": "📤 แชร์ชัยชนะของฉัน",
     "shareLine": {
-      "city_today": "วันนี้ฉันอันดับ #{{rank}} ใน{{city}}",
-      "city_week": "สัปดาห์นี้ฉันอันดับ #{{rank}} ใน{{city}}",
-      "city_alltime": "ฉันอันดับ #{{rank}} ใน{{city}}",
-      "world_today": "วันนี้ฉันอันดับ #{{rank}} ของโลก",
-      "world_week": "สัปดาห์นี้ฉันอันดับ #{{rank}} ของโลก",
-      "world_alltime": "ฉันอันดับ #{{rank}} ของโลก",
-      "cities_today": "วันนี้{{city}}อันดับ #{{rank}} ในบรรดาเมือง",
-      "cities_week": "สัปดาห์นี้{{city}}อันดับ #{{rank}} ในบรรดาเมือง",
-      "cities_alltime": "{{city}}อันดับ #{{rank}} ในบรรดาเมือง"
+      "city_today": "วันนี้ฉัน{{rank, ordinal}} ใน{{city}}",
+      "city_week": "สัปดาห์นี้ฉัน{{rank, ordinal}} ใน{{city}}",
+      "city_alltime": "ฉัน{{rank, ordinal}} ใน{{city}}",
+      "world_today": "วันนี้ฉัน{{rank, ordinal}} ของโลก",
+      "world_week": "สัปดาห์นี้ฉัน{{rank, ordinal}} ของโลก",
+      "world_alltime": "ฉัน{{rank, ordinal}} ของโลก",
+      "cities_today": "วันนี้{{city}}{{rank, ordinal}} ในบรรดาเมือง",
+      "cities_week": "สัปดาห์นี้{{city}}{{rank, ordinal}} ในบรรดาเมือง",
+      "cities_alltime": "{{city}}{{rank, ordinal}} ในบรรดาเมือง"
     }
   }
 }

@@ -142,8 +142,8 @@
   "leaderboard": {
     "title": "Most Local",
     "chip": {
-      "ranked": "🏆 #{{rank}}",
-      "rankedOver": "🏆 #100+",
+      "ranked": "🏆 {{rank}}",
+      "rankedOver": "🏆 100+",
       "neutral": "🏆 상위 랭커"
     },
     "scope": {
@@ -157,7 +157,7 @@
     },
     "points": "{{points}}점",
     "me": {
-      "ranked": "나 · #{{rank}} · {{points}}점",
+      "ranked": "나 · {{rank, ordinal}} · {{points}}점",
       "unranked": "챌린지에 도전하고 랭킹에 올라 보세요"
     },
     "empty": {
@@ -177,9 +177,9 @@
       "periodAll": "역대",
       "placeCity": "{{city}}에서",
       "placeWorld": "전 세계에서",
-      "userNotTop": "🔥 {{place}} {{period}} {{rank}}위, {{pts}}점! @{{above}}({{aPts}}점) 추격 중 👀 @{{below}}({{bPts}}점)보다는 앞서 있어요. 나를 넘어설 수 있겠어요? 🏆",
+      "userNotTop": "🔥 {{place}} {{period}} {{rank, ordinal}}, {{pts}}점! @{{above}}({{aPts}}점) 추격 중 👀 @{{below}}({{bPts}}점)보다는 앞서 있어요. 나를 넘어설 수 있겠어요? 🏆",
       "userTop": "👑 {{place}} {{period}} 1위, {{pts}}점! @{{below1}}({{b1Pts}}점)도 @{{below2}}({{b2Pts}}점)도 바짝 쫓아오고 있어요. 왕관을 뺏으러 와 보세요 😏",
-      "cityNotTop": "🔥 {{place}}, {{period}} 전체 도시 중 {{rank}}위, {{pts}}점! {{above}}({{aPts}}점) 바로 뒤 👀 {{below}}({{bPts}}점)보다는 앞이에요. 현지인 여러분, 더 올라가 봐요 🏆",
+      "cityNotTop": "🔥 {{place}}, {{period}} 전체 도시 중 {{rank, ordinal}}, {{pts}}점! {{above}}({{aPts}}점) 바로 뒤 👀 {{below}}({{bPts}}점)보다는 앞이에요. 현지인 여러분, 더 올라가 봐요 🏆",
       "cityTop": "👑 {{place}}, {{period}} 전체 도시 중 1위, {{pts}}점! {{below1}}({{b1Pts}}점)도 {{below2}}({{b2Pts}}점)도 바짝 쫓아오고 있어요. 현지인 여러분, 1위를 지켜요 🔥"
     }
   },
@@ -297,9 +297,9 @@
   },
   "scoreCelebration": {
     "rank": {
-      "city": "{{city}} {{rank}}위",
+      "city": "{{city}} {{rank, ordinal}}",
       "cityBeyond": "내 도시 상위 {{topN}}위 밖",
-      "world": "전 세계 {{rank}}위",
+      "world": "전 세계 {{rank, ordinal}}",
       "worldBeyond": "전 세계 상위 {{topN}}위 밖",
       "cityUnranked": "이번 달 {{city}} 순위 없음",
       "worldUnranked": "이번 달 전 세계 순위 없음"
@@ -438,15 +438,15 @@
     "ranks": "🏆 랭킹 보기",
     "share": "📤 내 승리 공유",
     "shareLine": {
-      "city_today": "오늘 {{city}}에서 {{rank}}위!",
-      "city_week": "이번 주 {{city}}에서 {{rank}}위!",
-      "city_alltime": "{{city}}에서 {{rank}}위!",
-      "world_today": "오늘 세계 {{rank}}위!",
-      "world_week": "이번 주 세계 {{rank}}위!",
-      "world_alltime": "세계 {{rank}}위!",
-      "cities_today": "오늘 {{city}}는 도시 중 {{rank}}위!",
-      "cities_week": "이번 주 {{city}}는 도시 중 {{rank}}위!",
-      "cities_alltime": "{{city}}는 도시 중 {{rank}}위!"
+      "city_today": "오늘 {{city}}에서 {{rank, ordinal}}!",
+      "city_week": "이번 주 {{city}}에서 {{rank, ordinal}}!",
+      "city_alltime": "{{city}}에서 {{rank, ordinal}}!",
+      "world_today": "오늘 세계 {{rank, ordinal}}!",
+      "world_week": "이번 주 세계 {{rank, ordinal}}!",
+      "world_alltime": "세계 {{rank, ordinal}}!",
+      "cities_today": "오늘 {{city}}는 도시 중 {{rank, ordinal}}!",
+      "cities_week": "이번 주 {{city}}는 도시 중 {{rank, ordinal}}!",
+      "cities_alltime": "{{city}}는 도시 중 {{rank, ordinal}}!"
     }
   }
 }

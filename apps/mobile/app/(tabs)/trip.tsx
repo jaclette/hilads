@@ -16,6 +16,7 @@ import { PrizeCover } from '@/features/contest/PrizePhotos';
 import { LS } from '@/features/contest/HalongArt';
 import { countdownTarget, shortLeft, useLiveNow } from '@/features/contest/Countdown';
 import { fetchCrew, type Crew } from '@/features/invites/invite';
+import { useContestShare } from '@/features/contest/useContestShare';
 import { TripOverview, TripRanking, TripFriends, TripRules, SECTIONS, type TripSection } from '@/features/contest/TripSections';
 import { track } from '@/services/analytics';
 
@@ -40,6 +41,7 @@ export default function TripScreen() {
   const params = useLocalSearchParams<{ section?: string }>();
   const data = useContestOverview();
   const s = data?.season ?? null;
+  const share = useContestShare(data);
 
   const HERO_H = insets.top + Math.round(Math.min(300, Math.max(230, height * 0.33)));
   const SLIM_H = insets.top + SLIM_BAR;
@@ -146,13 +148,15 @@ export default function TripScreen() {
         <View style={{ height: MENU_H }} />
         <GestureDetector gesture={swipe}>
           <Animated.View style={[styles.body, { opacity: fade }]} collapsable={false}>
-            {section === 'overview' && <TripOverview data={data} ranking={ranking} crew={crew} onSection={next => go(next, 'cta')} onCta={cta} />}
+            {section === 'overview' && <TripOverview data={data} ranking={ranking} crew={crew} onSection={next => go(next, 'cta')} onCta={cta}
+                                                         onShareBoarding={() => share.open({ boarding: true })} />}
             {section === 'ranking'  && <TripRanking season={s} ranking={ranking} meId={account?.id ?? null} />}
             {section === 'friends'  && <TripFriends season={s} crew={crew} onCta={cta} />}
             {section === 'rules'    && <TripRules season={s} counter={data.counter ?? null} onCta={cta} />}
           </Animated.View>
         </GestureDetector>
       </Animated.ScrollView>
+      {share.sheet}
 
       {/* The slim header once the photo has scrolled away. */}
       <Animated.View style={[styles.slim, { height: SLIM_H, paddingTop: insets.top, opacity: slimOpacity }]} pointerEvents={collapsed ? 'auto' : 'none'}>

@@ -171,7 +171,7 @@
   "represent": {
     "locationNeeded": "Bật vị trí để chơi cho nơi bạn đang ở.",
     "pioneer": "Pioneer của {{city}}",
-    "spotOne": "Địa điểm #1 ở {{city}}",
+    "spotOne": "Địa điểm đầu tiên ở {{city}}",
     "mapEmpty": "{{city}} chưa có trên bản đồ thế giới. Đưa lên đi!",
     "invite": "Mời bạn bè",
     "share": "Cùng mình chơi cho {{city}} trên Hilads.",

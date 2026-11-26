@@ -8,6 +8,8 @@ import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { Confetti, tint } from '@/ui/joy';
 import { Crown } from '@/ui/Crown';
 import { Tappable } from '@/ui/Tappable';
+import i18n from '@/i18n';
+import { ordinal } from '@/lib/ordinal';
 
 /** A podium place's medal color (1 gold, 2 silver, 3 bronze): the saturated medal fills, ink (`onMedal`) on top. */
 export function medalColor(c: ThemeColors, rank: number): string {
@@ -93,7 +95,7 @@ function PodiumStep({ item, delay }: { item: PodiumItem; delay: number }) {
   const color = medalColor(colors, item.rank);
   return (
     <Tappable style={styles.step} onPress={item.onPress} disabled={!item.onPress} accessibilityRole="button"
-              accessibilityLabel={`#${item.rank}, ${item.label}, ${item.spoken ?? item.format(item.value)}`}>
+              accessibilityLabel={`${ordinal(item.rank, i18n.language)}, ${item.label}, ${item.spoken ?? item.format(item.value)}`}>
       <Animated.View style={[styles.lead, lead]}>
         {item.rank === 1 && <View style={styles.crown}><Crown size={30} fill={colors.medalGold} stroke={colors.onMedal} /></View>}
         {item.lead}
@@ -118,7 +120,7 @@ function GhostStep({ rank, ghost: make }: { rank: number; ghost: PodiumGhost }) 
   const color = medalColor(colors, rank);
   return (
     <Tappable style={styles.step} onPress={ghost.onPress} disabled={!ghost.onPress} accessibilityRole={ghost.onPress ? 'button' : 'text'}
-              accessibilityLabel={`#${rank} ${ghost.label}`} testID={`ranks-ghost-${rank}`}>
+              accessibilityLabel={`${ordinal(rank, i18n.language)} ${ghost.label}`} testID={`ranks-ghost-${rank}`}>
       <View style={styles.lead}>
         <View style={[styles.ghostLead, { borderColor: color, backgroundColor: tint(color, 0.14) }]}>
           <Ionicons name={ghost.icon} size={24} color={color} />
@@ -132,7 +134,7 @@ function GhostStep({ rank, ghost: make }: { rank: number; ghost: PodiumGhost }) 
   );
 }
 
-/** A row from #4: rank, leading visual, name and sub line, movement, value pill. `mine`: highlighted. */
+/** A row from 4th place: rank, leading visual, name and sub line, movement, value pill. `mine`: highlighted. */
 export function RankRow({ rank, lead, title, sub, movement, value, spoken, mine, onPress, extra }: {
   rank: number; lead: ReactNode; title: string; sub?: ReactNode; movement?: ReactNode; value: string; mine?: boolean; onPress?: () => void; extra?: ReactNode;
   /** The value as a screen reader says it ("120 points"); else `value`. */
@@ -141,7 +143,7 @@ export function RankRow({ rank, lead, title, sub, movement, value, spoken, mine,
   const styles = useThemedStyles(makeStyles);
   return (
     <Tappable onPress={onPress} disabled={!onPress} style={[styles.row, mine && styles.rowMine]} accessibilityRole="button"
-              accessibilityLabel={`#${rank}, ${title}, ${spoken ?? value}`}>
+              accessibilityLabel={`${ordinal(rank, i18n.language)}, ${title}, ${spoken ?? value}`}>
       <Text style={styles.rank}>{rank}</Text>
       {lead}
       <View style={styles.rowBody}>

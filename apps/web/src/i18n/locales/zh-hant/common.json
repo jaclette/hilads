@@ -171,7 +171,7 @@
   "represent": {
     "locationNeeded": "允許定位，為你所在的城市出戰。",
     "pioneer": "{{city}}的 Pioneer",
-    "spotOne": "{{city}}的第 1 個地點",
+    "spotOne": "{{city}}的第一個地點",
     "mapEmpty": "{{city}}還沒上世界地圖。把它放上去吧。",
     "invite": "邀請朋友",
     "share": "和我一起在 Hilads 為{{city}}出戰。",

@@ -142,8 +142,8 @@
   "leaderboard": {
     "title": "Thổ địa",
     "chip": {
-      "ranked": "🏆 #{{rank}}",
-      "rankedOver": "🏆 #100+",
+      "ranked": "🏆 {{rank}}",
+      "rankedOver": "🏆 100+",
       "neutral": "🏆 Top Challenger"
     },
     "scope": {
@@ -157,7 +157,7 @@
     },
     "points": "{{points}} điểm",
     "me": {
-      "ranked": "Bạn · #{{rank}} · {{points}} điểm",
+      "ranked": "Bạn · {{rank, ordinal}} · {{points}} điểm",
       "unranked": "Nhận một thử thách để lên bảng"
     },
     "empty": {
@@ -177,10 +177,10 @@
       "periodAll": "mọi thời đại",
       "placeCity": "ở {{city}}",
       "placeWorld": "trên Thế giới",
-      "userNotTop": "🔥 Mình đang hạng #{{rank}} {{place}} {{period}}: {{pts}} điểm! Đang bám sát @{{above}} ({{aPts}} điểm) 👀 và bỏ @{{below}} ({{bPts}} điểm) lại phía sau. Nghĩ vượt được mình không? 🏆",
-      "userTop": "👑 Mình đang hạng #1 {{place}} {{period}}: {{pts}} điểm! @{{below1}} ({{b1Pts}} điểm) và @{{below2}} ({{b2Pts}} điểm) đang bám đuôi. Tới giành ngôi đi 😏",
-      "cityNotTop": "🔥 {{place}} đang hạng #{{rank}} trong mọi thành phố {{period}}: {{pts}} điểm! Ngay sau {{above}} ({{aPts}} điểm) 👀 và trên {{below}} ({{bPts}} điểm). Dân địa phương ơi, leo lên nào 🏆",
-      "cityTop": "👑 {{place}} đang hạng #1 trong mọi thành phố {{period}}: {{pts}} điểm! {{below1}} ({{b1Pts}} điểm) và {{below2}} ({{b2Pts}} điểm) đang đuổi theo. Dân địa phương ơi, giữ vững ngôi đầu nha 🔥"
+      "userNotTop": "🔥 Mình đang {{rank, ordinal}} {{place}} {{period}}: {{pts}} điểm! Đang bám sát @{{above}} ({{aPts}} điểm) 👀 và bỏ @{{below}} ({{bPts}} điểm) lại phía sau. Nghĩ vượt được mình không? 🏆",
+      "userTop": "👑 Mình đang hạng nhất {{place}} {{period}}: {{pts}} điểm! @{{below1}} ({{b1Pts}} điểm) và @{{below2}} ({{b2Pts}} điểm) đang bám đuôi. Tới giành ngôi đi 😏",
+      "cityNotTop": "🔥 {{place}} đang {{rank, ordinal}} trong mọi thành phố {{period}}: {{pts}} điểm! Ngay sau {{above}} ({{aPts}} điểm) 👀 và trên {{below}} ({{bPts}} điểm). Dân địa phương ơi, leo lên nào 🏆",
+      "cityTop": "👑 {{place}} đang hạng nhất trong mọi thành phố {{period}}: {{pts}} điểm! {{below1}} ({{b1Pts}} điểm) và {{below2}} ({{b2Pts}} điểm) đang đuổi theo. Dân địa phương ơi, giữ vững ngôi đầu nha 🔥"
     }
   },
   "debrief": {
@@ -297,9 +297,9 @@
   },
   "scoreCelebration": {
     "rank": {
-      "city": "#{{rank}} ở {{city}}",
+      "city": "Đứng {{rank, ordinal}} ở {{city}}",
       "cityBeyond": "Ngoài top {{topN}} thành phố của bạn",
-      "world": "#{{rank}} toàn cầu",
+      "world": "Đứng {{rank, ordinal}} thế giới",
       "worldBeyond": "Ngoài top {{topN}} toàn cầu",
       "cityUnranked": "Tháng này chưa có hạng ở {{city}}",
       "worldUnranked": "Tháng này chưa có hạng toàn cầu"
@@ -422,7 +422,7 @@
       "city": "ở {{city}}",
       "world": "Thế giới",
       "cities": "{{city}} giữa các thành phố",
-      "citiesTop": "{{city}} thành phố số 1"
+      "citiesTop": "{{city}} thành phố dẫn đầu"
     },
     "up": "tăng {{count}}",
     "new": "Mới",
@@ -438,15 +438,15 @@
     "ranks": "🏆 Xem bảng xếp hạng",
     "share": "📤 Chia sẻ chiến thắng",
     "shareLine": {
-      "city_today": "Mình hạng #{{rank}} ở {{city}} hôm nay",
-      "city_week": "Mình hạng #{{rank}} ở {{city}} tuần này",
-      "city_alltime": "Mình hạng #{{rank}} ở {{city}}",
-      "world_today": "Mình hạng #{{rank}} thế giới hôm nay",
-      "world_week": "Mình hạng #{{rank}} thế giới tuần này",
-      "world_alltime": "Mình hạng #{{rank}} thế giới",
-      "cities_today": "{{city}} hạng #{{rank}} giữa các thành phố hôm nay",
-      "cities_week": "{{city}} hạng #{{rank}} giữa các thành phố tuần này",
-      "cities_alltime": "{{city}} hạng #{{rank}} giữa các thành phố"
+      "city_today": "Mình {{rank, ordinal}} ở {{city}} hôm nay",
+      "city_week": "Mình {{rank, ordinal}} ở {{city}} tuần này",
+      "city_alltime": "Mình {{rank, ordinal}} ở {{city}}",
+      "world_today": "Mình {{rank, ordinal}} thế giới hôm nay",
+      "world_week": "Mình {{rank, ordinal}} thế giới tuần này",
+      "world_alltime": "Mình {{rank, ordinal}} thế giới",
+      "cities_today": "{{city}} {{rank, ordinal}} giữa các thành phố hôm nay",
+      "cities_week": "{{city}} {{rank, ordinal}} giữa các thành phố tuần này",
+      "cities_alltime": "{{city}} {{rank, ordinal}} giữa các thành phố"
     }
   }
 }

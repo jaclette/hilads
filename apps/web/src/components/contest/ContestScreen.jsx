@@ -1,3 +1,4 @@
+import i18next from 'i18next'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import BackButton from '../BackButton'
@@ -8,6 +9,7 @@ import { mediumUrl } from '../../lib/imageThumb'
 import { fetchContest, fetchContestRanking, fetchCrew, joinContest, notifyContest } from '../../api'
 import { shareLink } from '../../lib/shareLink'
 import { track } from '../../lib/analytics'
+import { ordinal } from '../../lib/ordinal'
 
 const useT = () => useTranslation('profile', { keyPrefix: 'pp' })
 
@@ -363,7 +365,7 @@ export default function ContestScreen({ account, onBack, onOpenProfile, onOpenIn
           <section className="ls-board">
             <div className="ls-board-head">
               <strong>{t(final ? 'contest.myFinalScore' : 'contest.myScore')}</strong>
-              {rank ? <span className="ls-tag"><i />#{rank}</span> : <small>{t('contest.notRanked')}</small>}
+              {rank ? <span className="ls-tag"><i />{rank}</span> : <small>{t('contest.notRanked')}</small>}
             </div>
             <div className="ls-tiles">
               <Tile label={t('contest.votes')} value={final ? pts.finalVotes : pts.votes} />
@@ -491,7 +493,7 @@ export function Podium({ rows, meId, t, onOpenProfile, bonusFor }) {
         const name = row.username ? '@' + row.username : row.displayName ?? ''
         return (
           <button key={row.userId} type="button" className={`ls-step ${cls[place] ?? ''}${place === 0 ? ' first' : ''}`} onClick={() => onOpenProfile(row.userId, row.displayName ?? row.username)}
-            aria-label={`#${row.rank} ${name}, ${t('contest.pts', { count: row.points })}`}>
+            aria-label={`${ordinal(row.rank, i18next.language)}, ${name}, ${t('contest.pts', { count: row.points })}`}>
             {place === 0 && <svg className="ls-crown" width="26" height="21" viewBox="0 0 30 24" aria-hidden="true"><path d="M3 8.5 L8.5 14 L15 4.5 L21.5 14 L27 8.5 L25 21 L5 21 Z" fill="var(--medal-gold)" stroke="var(--on-medal)" strokeWidth="1.8" strokeLinejoin="round" /><circle cx="3" cy="7.5" r="2.2" fill="var(--medal-gold)" stroke="var(--on-medal)" strokeWidth="1.5" /><circle cx="15" cy="3.5" r="2.2" fill="var(--medal-gold)" stroke="var(--on-medal)" strokeWidth="1.5" /><circle cx="27" cy="7.5" r="2.2" fill="var(--medal-gold)" stroke="var(--on-medal)" strokeWidth="1.5" /></svg>}
             <span className="ls-ring"><AvatarWithFlag userId={row.userId} displayName={row.displayName ?? row.username} photoUrl={row.photoUrl} size={place === 0 ? 58 : 48} /></span>
             <span className="ls-step-name">{name}</span>

@@ -171,7 +171,7 @@
   "represent": {
     "locationNeeded": "지금 있는 곳 대표로 참여하려면 위치를 허용해 주세요.",
     "pioneer": "{{city}} Pioneer",
-    "spotOne": "{{city}} 1호 장소",
+    "spotOne": "{{city}}의 첫 번째 장소",
     "mapEmpty": "아직 세계 지도에 {{city}} 사진이 없어요. 첫 사진을 올려 주세요.",
     "invite": "친구 초대하기",
     "share": "Hilads에서 나랑 같이 {{city}} 대표로 참여해요.",

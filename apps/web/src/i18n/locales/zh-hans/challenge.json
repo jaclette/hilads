@@ -65,8 +65,8 @@
   "leaderboard": {
     "title": "Most Local",
     "chip": {
-      "ranked": "#{{rank}}",
-      "rankedOver": "#100+",
+      "ranked": "{{rank, ordinal}}",
+      "rankedOver": "100+",
       "neutral": "顶尖挑战者"
     },
     "scope": {
@@ -94,10 +94,10 @@
       "periodAll": "总榜",
       "placeCity": "在{{city}}",
       "placeWorld": "在全球",
-      "userNotTop": "🔥 我{{place}}{{period}}排第 {{rank}}：{{pts}} 分！正追着 @{{above}}（{{aPts}} 分）👀，把 @{{below}}（{{bPts}} 分）甩在身后。你能超过我吗？🏆",
-      "userTop": "👑 我{{place}}{{period}}排第 1：{{pts}} 分！@{{below1}}（{{b1Pts}} 分）和 @{{below2}}（{{b2Pts}} 分）紧追不舍。来抢王冠吧 😏",
-      "cityNotTop": "🔥 所有城市{{period}}排名，{{place}} 排第 {{rank}}：{{pts}} 分！紧跟 {{above}}（{{aPts}} 分）👀，领先 {{below}}（{{bPts}} 分）。本地人们，一起冲 🏆",
-      "cityTop": "👑 所有城市{{period}}排名，{{place}} 第 1：{{pts}} 分！{{below1}}（{{b1Pts}} 分）和 {{below2}}（{{b2Pts}} 分）正在追我们。本地人们，守住第一 🔥"
+      "userNotTop": "🔥 我{{place}}{{period}}排{{rank, ordinal}}：{{pts}} 分！正追着 @{{above}}（{{aPts}} 分）👀，把 @{{below}}（{{bPts}} 分）甩在身后。你能超过我吗？🏆",
+      "userTop": "👑 我{{place}}{{period}}排第一：{{pts}} 分！@{{below1}}（{{b1Pts}} 分）和 @{{below2}}（{{b2Pts}} 分）紧追不舍。来抢王冠吧 😏",
+      "cityNotTop": "🔥 所有城市{{period}}排名，{{place}} 排{{rank, ordinal}}：{{pts}} 分！紧跟 {{above}}（{{aPts}} 分）👀，领先 {{below}}（{{bPts}} 分）。本地人们，一起冲 🏆",
+      "cityTop": "👑 所有城市{{period}}排名，{{place}} 第一：{{pts}} 分！{{below1}}（{{b1Pts}} 分）和 {{below2}}（{{b2Pts}} 分）正在追我们。本地人们，守住第一 🔥"
     }
   },
   "closeCta": "关闭挑战",
@@ -185,9 +185,9 @@
   },
   "scoreCelebration": {
     "rank": {
-      "city": "{{city}} 第 {{rank}} 名",
+      "city": "{{city}} {{rank, ordinal}}",
       "cityBeyond": "城市排名前 {{topN}} 以外",
-      "world": "全球第 {{rank}} 名",
+      "world": "全球{{rank, ordinal}}",
       "worldBeyond": "全球排名前 {{topN}} 以外",
       "cityUnranked": "本月在 {{city}} 还没上榜",
       "worldUnranked": "本月全球还没上榜"
@@ -304,9 +304,9 @@
   },
   "spot": {
     "rankWeekFirst": "本周 {{city}} 得票最多",
-    "rankWeek": "本周 {{city}} 第 {{rank}} 名",
+    "rankWeek": "本周 {{city}} {{rank, ordinal}}",
     "rankAlltimeFirst": "{{city}} 得票最多的地点",
-    "rankAlltime": "{{city}} 历史第 {{rank}} 名",
+    "rankAlltime": "{{city}} 历史{{rank, ordinal}}",
     "photos": "照片",
     "captions": "大家怎么说",
     "notFound": "这个地点已经不可用了。",
@@ -396,7 +396,7 @@
       "validatedHint": "本地人认证：住在这里的人给这张照片投了票。"
     },
     "results": {
-      "worldRank": "全球第 {{rank}} 名"
+      "worldRank": "全球{{rank, ordinal}}"
     },
     "streak_other": "连续 {{count}} 天",
     "twist": {
@@ -480,7 +480,7 @@
       "surprise": "给我惊喜"
     },
     "leaderboard": {
-      "me": "你：#{{rank}} · ♥ {{votes}}"
+      "me": "你：{{rank, ordinal}} · ♥ {{votes}}"
     },
     "week": {
       "title": "本周",
@@ -581,9 +581,9 @@
     },
     "spot": {
       "rankWeekFirst": "本周 {{city}} 得票最多",
-      "rankWeek": "本周 {{city}} 第 {{rank}} 名",
+      "rankWeek": "本周 {{city}} {{rank, ordinal}}",
       "rankAlltimeFirst": "{{city}} 得票最多的地点",
-      "rankAlltime": "{{city}} 历史第 {{rank}} 名",
+      "rankAlltime": "{{city}} 历史{{rank, ordinal}}",
       "photos": "照片",
       "captions": "大家怎么说",
       "notFound": "这个地点已经不可用了。",
@@ -775,32 +775,32 @@
       "bestPerCity": "每座城市的最佳照片",
       "new": "新",
       "you": {
-        "top": "你 · 第 1 名 · 无人能及 👑",
-        "player": "你 · 第 {{rank}} 名 · 再拿 {{gap}} 分超过 {{name}} ▲",
+        "top": "你 · 第一名 · 无人能及 👑",
+        "player": "你 · {{rank, ordinal}} · 再拿 {{gap}} 分超过 {{name}} ▲",
         "none": "今天出战就能上榜 🙋",
-        "photo_other": "你的最佳：第 {{rank}} 名 · 再 {{count}} ❤️ 到第 {{next}} 名",
-        "photoTop": "你的最佳：第 1 名 · 没人在你之上 👑",
+        "photo_other": "你的最佳：{{rank, ordinal}} · 再 {{count}} ❤️ 到{{next, ordinal}}",
+        "photoTop": "你的最佳：第一名 · 没人在你之上 👑",
         "photoNone": "你还没有照片上榜 ❤️",
-        "seasonLead": "你是本赛季第 1 名！守住王冠 👑",
-        "seasonBehind_one": "你本赛季排第 {{rank}}，落后 {{name}} {{count}} 分",
-        "seasonBehind_other": "你本赛季排第 {{rank}}，落后 {{name}} {{count}} 分",
-        "seasonTied": "你本赛季排第 {{rank}}，与 {{name}} 同分",
+        "seasonLead": "你是本赛季第一名！守住王冠 👑",
+        "seasonBehind_one": "你本赛季排{{rank, ordinal}}，落后 {{name}} {{count}} 分",
+        "seasonBehind_other": "你本赛季排{{rank, ordinal}}，落后 {{name}} {{count}} 分",
+        "seasonTied": "你本赛季排{{rank, ordinal}}，与 {{name}} 同分",
         "seasonNone": "今天玩一局就能加入本赛季 🙋"
       },
       "city": {
         "lineTop": "{{city}} 领跑！🏁",
-        "line_other": "{{city}} 排第 {{rank}}。再多 {{count}} 张照片就能追上 {{next}}！",
-        "youBar_other": "{{city}} · 第 {{rank}} 名 · 落后 {{next}} {{count}} 张照片"
+        "line_other": "{{city}} 排{{rank, ordinal}}。再多 {{count}} 张照片就能追上 {{next}}！",
+        "youBar_other": "{{city}} · {{rank, ordinal}} · 落后 {{next}} {{count}} 张照片"
       },
       "empty": {
         "photos": "还没有被点赞的照片。去给喜欢的照片投票吧 ❤️",
-        "players": "还没人得分。出战抢下第 1 名 🙋",
+        "players": "还没人得分。出战抢下第一名 🙋",
         "cities": "还没有城市上榜。让你的城市第一个上 🌍"
       },
       "results": {
         "dismiss": "关闭",
-        "world": "🏆 你的照片昨天全球第 {{rank}} 名",
-        "city": "🏆 你的照片昨天在{{city}}第 {{rank}} 名",
+        "world": "🏆 你的照片昨天全球排{{rank, ordinal}}",
+        "city": "🏆 你的照片昨天在{{city}}排{{rank, ordinal}}",
         "best": "🏆 你的照片昨天是{{city}}最佳",
         "votes_other": "🏆 你的照片昨天获得 {{count}} ❤️",
         "generic": "🏆 昨天的结果出来了",
@@ -812,7 +812,7 @@
         "photo": "你的照片放这里？📸",
         "player": "抢下这个位置 🙋",
         "city": "你的城市放这里？🌍",
-        "invite": "🎯 谁能拿下第 {{rank}} 名？邀请朋友",
+        "invite": "🎯 谁能拿下{{rank, ordinal}}？邀请朋友",
         "empty": "这个位置还没人拿下"
       },
       "seasonEnds_one": "赛季还剩 {{count}} 天结束",
@@ -835,9 +835,9 @@
     },
     "season": {
       "resultsKicker": "{{season}} · 赛季结果",
-      "medalTitle": "你获得第 {{rank}} 名！🎉",
-      "rankTitle_one": "你在 {{count}} 位玩家中排第 {{rank}}",
-      "rankTitle_other": "你在 {{count}} 位玩家中排第 {{rank}}",
+      "medalTitle": "你获得{{rank, ordinal}}！🎉",
+      "rankTitle_one": "你在 {{count}} 位玩家中排{{rank, ordinal}}",
+      "rankTitle_other": "你在 {{count}} 位玩家中排{{rank, ordinal}}",
       "stats": "积分：{{points}} · 参与天数：{{days}} · 登上领奖台：{{podiums}}",
       "newSeason": "新赛季开始了，所有人从 0 分重新出发。",
       "play": "📸 玩今天的挑战",
@@ -884,15 +884,15 @@
     "ranks": "🏆 查看排行榜",
     "share": "📤 分享我的胜利",
     "shareLine": {
-      "city_today": "我今天在{{city}}排名第 {{rank}}",
-      "city_week": "我本周在{{city}}排名第 {{rank}}",
-      "city_alltime": "我在{{city}}排名第 {{rank}}",
-      "world_today": "我今天全球排名第 {{rank}}",
-      "world_week": "我本周全球排名第 {{rank}}",
-      "world_alltime": "我全球排名第 {{rank}}",
-      "cities_today": "{{city}}今天在城市中排名第 {{rank}}",
-      "cities_week": "{{city}}本周在城市中排名第 {{rank}}",
-      "cities_alltime": "{{city}}在城市中排名第 {{rank}}"
+      "city_today": "我今天在{{city}}排{{rank, ordinal}}",
+      "city_week": "我本周在{{city}}排{{rank, ordinal}}",
+      "city_alltime": "我在{{city}}排{{rank, ordinal}}",
+      "world_today": "我今天全球排{{rank, ordinal}}",
+      "world_week": "我本周全球排{{rank, ordinal}}",
+      "world_alltime": "我全球排{{rank, ordinal}}",
+      "cities_today": "{{city}}今天在城市中排{{rank, ordinal}}",
+      "cities_week": "{{city}}本周在城市中排{{rank, ordinal}}",
+      "cities_alltime": "{{city}}在城市中排{{rank, ordinal}}"
     }
   }
 }

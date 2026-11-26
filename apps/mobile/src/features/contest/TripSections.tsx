@@ -14,6 +14,8 @@ import { contestDate, notifyContest, type ContestMeJoined, type ContestMeNotJoin
          type ContestRow, type ContestSeason } from './contest';
 import { setContestOverview } from './useContestTab';
 import { Podium } from './RankingParts';
+import { RankMedal } from '@/features/daily/RankMedal';
+import { ordinal } from '@/lib/ordinal';
 import { SouvenirLine } from './SouvenirLine';
 import { LS } from './HalongArt';
 
@@ -41,8 +43,8 @@ function dayBefore(date: string): string {
 
 // ── Overview ──────────────────────────────────────────────────────────────────
 
-export function TripOverview({ data, ranking, crew, onSection, onCta }: {
-  data: ContestOverview; ranking: ContestRanking | null; crew: Crew | null; onSection: (s: TripSection) => void; onCta: Cta;
+export function TripOverview({ data, ranking, crew, onSection, onCta, onShareBoarding }: {
+  data: ContestOverview; ranking: ContestRanking | null; crew: Crew | null; onSection: (s: TripSection) => void; onCta: Cta; onShareBoarding: () => void;
 }) {
   const s = data.season!;
   const styles = useThemedStyles(makeStyles);
@@ -57,7 +59,7 @@ export function TripOverview({ data, ranking, crew, onSection, onCta }: {
       )}
       {isOver(s) && <WinnerCard data={data} ranking={ranking} />}
       <PhaseTimeline season={s} />
-      {data.counter && <GoalCard season={s} counter={data.counter} me={data.me ?? null} />}
+      {data.counter && <BoardingCard season={s} counter={data.counter} me={data.me ?? null} onShare={() => { onCta('boarding_share'); onShareBoarding(); }} />}
       {!isOver(s) && <MyStatus data={data} />}
       <PrimaryCta data={data} crew={crew} onSection={onSection} onCta={onCta} />
     </View>
@@ -93,13 +95,21 @@ function PhaseTimeline({ season: s }: { season: ContestSeason }) {
   );
 }
 
-/** "186 / 500 players", the plane along the route to the gift, what counts, my photos, the fallback. */
-function GoalCard({ season: s, counter, me }: { season: ContestSeason; counter: NonNullable<ContestOverview['counter']>; me: ContestOverview['me'] | null }) {
+/**
+ * Boarding: the players' goal told as a flight. "186 of 500 seats taken" with the plane along its
+ * route (below the server's showFrom: "Be among the first to board", never a count near 0), the
+ * rule, my boarding pass (a ticket: "6 / 10 photos", gold once earned), the fallback. The whole block
+ * and its Invite button open the Boarding share (my invite link, so friends who join count for me).
+ */
+function BoardingCard({ season: s, counter, me, onShare }: {
+  season: ContestSeason; counter: NonNullable<ContestOverview['counter']>; me: ContestOverview['me'] | null; onShare: () => void;
+}) {
   const styles = useThemedStyles(makeStyles);
   const { colors } = useTheme();
   const { t, i18n } = useTranslation('me');
   const reached = counter.reached ?? counter.players >= counter.threshold;
-  const pct = Math.min(1, counter.players / Math.max(1, counter.threshold));
+  const showCount = reached || (counter.players > 0 && counter.players >= (counter.showFrom ?? 0));
+  const pct = showCount ? Math.min(1, counter.players / Math.max(1, counter.threshold)) : 0;
   const [width, setWidth] = useState(0);
   const pos = useRef(new Animated.Value(0)).current;
   useEffect(() => {
@@ -110,41 +120,62 @@ function GoalCard({ season: s, counter, me }: { season: ContestSeason; counter: 
       Animated.timing(pos, { toValue: to, duration: 1200, easing: Easing.out(Easing.cubic), useNativeDriver: true }).start();
     }).catch(() => pos.setValue(to));
   }, [width, pct, pos]);
-  const joined = me?.joined === true ? (me as ContestMeJoined) : null;
-  const myPhotos = joined?.photos ?? null;
+  const joined = me?.joined === true && !(me as ContestMeJoined).excluded ? (me as ContestMeJoined) : null;
+  const myPhotos = joined ? joined.photos ?? 0 : null;
+  const earned = myPhotos !== null && myPhotos >= counter.photos;
   const fallback = s.fallbackPrize ?? '';
+  const status = showCount ? t('trip.board.seats', { players: counter.players, threshold: counter.threshold }) : t('trip.board.first');
   return (
-    <Card style={[styles.card, reached && styles.cardReached]}>
-      <View style={styles.rowBetween}>
-        <Text style={styles.cardTitle} accessibilityRole="header">{reached ? t('trip.goal.reached') : t('trip.goal.title')}</Text>
-        {reached && <Ionicons name="sparkles" size={IconSize.md} color={colors.medalGold} />}
-      </View>
-      <View style={styles.goalCount} accessible accessibilityLabel={`${counter.players} / ${counter.threshold} ${t('trip.goal.players')}`}>
-        <Text style={styles.goalN}>{counter.players}</Text>
-        <Text style={styles.goalOf}>/ {counter.threshold} {t('trip.goal.players')}</Text>
-      </View>
-      <View style={styles.track} onLayout={e => setWidth(e.nativeEvent.layout.width)} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
-        <View style={styles.trackBg} />
-        <View style={[styles.trackFill, { width: `${pct * 100}%` }]} />
-        <Animated.View style={[styles.trackPlane, { transform: [{ translateX: pos }] }]}>
-          <Ionicons name="airplane" size={22} color={colors.primaryText} />
-        </Animated.View>
-        <View style={styles.trackGift}><Ionicons name="gift" size={22} color={reached ? colors.medalGold : colors.muted} /></View>
-      </View>
-      <Text style={styles.muted}>
-        {reached ? t('trip.goal.reachedText', { players: counter.threshold }) : t('trip.goal.what', { photos: counter.photos })}
-        {myPhotos !== null && !reached ? ' ' + (myPhotos >= counter.photos ? t('trip.goal.mineDone') : t('trip.goal.mine', { n: myPhotos, photos: counter.photos })) : ''}
-      </Text>
-      {!reached && (
-        <View style={styles.fallback}>
-          <Ionicons name="gift-outline" size={IconSize.sm} color={colors.primaryOnTint} />
-          <Text style={styles.fallbackText}>
-            {isOver(s) ? t('trip.goal.notReachedText', { prize: fallback })
-              : t('trip.goal.fallback', { players: counter.threshold, date: contestDate(s.endDate, i18n.language), prize: fallback })}
-          </Text>
+    <Pressable onPress={onShare} accessibilityRole="button" accessibilityLabel={t('trip.board.a11y', { status })} testID="trip-boarding"
+               style={({ pressed }) => [pressed && { transform: [{ scale: 0.99 }] }]}>
+      <Card style={[styles.card, reached && styles.cardReached]}>
+        <View style={styles.rowBetween}>
+          <Text style={styles.cardTitle} accessibilityRole="header">{reached ? t('trip.board.full') : t('trip.board.title')}</Text>
+          <View style={styles.inviteChip}>
+            <Ionicons name="share-outline" size={IconSize.sm} color={colors.onCta} />
+            <Text style={styles.inviteText}>{t('trip.board.invite')}</Text>
+          </View>
         </View>
-      )}
-    </Card>
+        <Text style={showCount ? styles.seats : styles.seatsFirst}>{status}</Text>
+        <View style={styles.track} onLayout={e => setWidth(e.nativeEvent.layout.width)} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
+          <View style={styles.trackBg} />
+          <View style={[styles.trackFill, { width: `${pct * 100}%` }]} />
+          <Animated.View style={[styles.trackPlane, { transform: [{ translateX: pos }] }]}>
+            <Ionicons name="airplane" size={22} color={colors.primaryText} />
+          </Animated.View>
+          <View style={styles.trackGift}><Ionicons name="gift" size={22} color={reached ? colors.medalGold : colors.muted} /></View>
+        </View>
+        <Text style={styles.muted}>{reached ? t('trip.board.fullText') : `${t('trip.board.takeoff')} ${t('trip.board.what', { photos: counter.photos })}`}</Text>
+        {myPhotos !== null && (
+          <View style={[styles.pass, earned && styles.passEarned]} accessible
+                accessibilityLabel={earned ? `${t('trip.board.passEarned')}. ${t('trip.board.passEarnedText')}` : `${t('trip.board.pass')}: ${t('trip.board.passProgress', { n: myPhotos, photos: counter.photos })}`}>
+            <View style={[styles.passNotch, styles.passNotchL]} /><View style={[styles.passNotch, styles.passNotchR]} />
+            <Ionicons name={earned ? 'airplane' : 'ticket-outline'} size={20} color={earned ? colors.onMedal : colors.primaryText} />
+            <View style={{ flex: 1 }}>
+              <Text style={[styles.passLabel, earned && { color: colors.onMedal }]}>{earned ? t('trip.board.passEarned') : t('trip.board.pass')}</Text>
+              <Text style={[styles.passValue, earned && { color: colors.onMedal }]}>
+                {earned ? t('trip.board.passEarnedText') : t('trip.board.passProgress', { n: myPhotos, photos: counter.photos })}
+              </Text>
+            </View>
+            {earned ? <Ionicons name="sparkles" size={20} color={colors.onMedal} /> : (
+              <View style={styles.passDots}>
+                {Array.from({ length: Math.min(counter.photos, 10) }).map((_, i) => (
+                  <View key={i} style={[styles.passDot, i < Math.round((myPhotos / Math.max(1, counter.photos)) * Math.min(counter.photos, 10)) && styles.passDotOn]} />
+                ))}
+              </View>
+            )}
+          </View>
+        )}
+        {!reached && (
+          <View style={styles.fallback}>
+            <Ionicons name="gift-outline" size={IconSize.sm} color={colors.primaryOnTint} />
+            <Text style={styles.fallbackText}>
+              {isOver(s) ? t('trip.board.notFullText', { prize: fallback }) : t('trip.board.fallback', { date: contestDate(s.endDate, i18n.language), prize: fallback })}
+            </Text>
+          </View>
+        )}
+      </Card>
+    </Pressable>
   );
 }
 
@@ -208,9 +239,10 @@ function MyStatus({ data }: { data: ContestOverview }) {
     <View style={styles.board} accessible
           accessibilityLabel={`${t('trip.me.rank', { rank: race.rank })}. ${t('contest.pts', { count: race.points })}. ${line}`}>
       <View style={styles.boardTop}>
-        <Text style={styles.rankTag}>#{race.rank}</Text>
+        <Text style={styles.rankTag}>{race.rank}</Text>
         <View style={{ flex: 1 }}>
-          <Text style={styles.boardTitle}>{final ? t('trip.me.finalLive') : t('trip.me.inRace')}</Text>
+          {final && <Text style={styles.boardKicker}>{t('trip.me.finalLive')}</Text>}
+          <Text style={styles.boardTitle}>{t('trip.me.rank', { rank: race.rank })}</Text>
           <Text style={styles.boardMuted}>{t('contest.pts', { count: race.points })} · {line}</Text>
         </View>
         {moved !== null && moved !== 0 && (
@@ -364,7 +396,7 @@ export function TripRanking({ season: s, ranking, meId }: { season: ContestSeaso
 function RaceRow({ row, me, bonus = 0 }: { row: ContestRow; me: boolean; bonus?: number }) {
   const styles = useThemedStyles(makeStyles);
   const { colors } = useTheme();
-  const { t } = useTranslation('me');
+  const { t, i18n } = useTranslation('me');
   const router = useRouter();
   const name = row.username ? '@' + row.username : row.displayName ?? '';
   const moved = row.prevRank != null ? row.prevRank - row.rank : null;
@@ -372,7 +404,7 @@ function RaceRow({ row, me, bonus = 0 }: { row: ContestRow; me: boolean; bonus?:
   const moveA11y = moved === null ? (move ? t('trip.ranking.new') : '') : moved > 0 ? t('trip.ranking.up', { count: moved }) : moved < 0 ? t('trip.ranking.down', { count: -moved }) : '';
   return (
     <Pressable style={[styles.raceRow, me && styles.raceRowMe]} onPress={() => router.push({ pathname: '/user/[id]', params: { id: row.userId } })}
-               accessibilityRole="button" accessibilityLabel={`#${row.rank} ${name}${me ? `, ${t('contest.youLabel')}` : ''}, ${t('contest.pts', { count: row.points })}${moveA11y ? `, ${moveA11y}` : ''}`}>
+               accessibilityRole="button" accessibilityLabel={`${ordinal(row.rank, i18n.language)}, ${name}${me ? `, ${t('contest.youLabel')}` : ''}, ${t('contest.pts', { count: row.points })}${moveA11y ? `, ${moveA11y}` : ''}`}>
       <Text style={styles.raceNum}>{row.rank}</Text>
       <Avatar uri={row.photoUrl} name={row.displayName ?? row.username ?? ''} size={36} />
       <View style={{ flex: 1, gap: 2 }}>
@@ -483,7 +515,8 @@ export function TripRules({ season: s, counter, onCta }: { season: ContestSeason
   const hs = s.rules.headstartTopN;
   const table: [string, string][] = [
     [t('trip.rules.play'), `+${p.play}`],
-    [t('trip.rules.podium'), `+${p.podium[0]} / +${p.podium[1]} / +${p.podium[2]}`],
+  ];
+  const tableAfter: [string, string][] = [
     [t('trip.rules.week'), `+${p.week}`],
     [t('trip.rules.friend', { count: p.friendsPerMonth }), `+${p.friend}`],
     [t('trip.rules.crew', { size: p.crewSize }), `+${p.crew}`],
@@ -504,6 +537,21 @@ export function TripRules({ season: s, counter, onCta }: { season: ContestSeason
         <Text style={styles.cardTitle} accessibilityRole="header">{t('trip.rules.pointsTitle')}</Text>
         {table.map(([label, value], i) => (
           <View key={i} style={styles.tableRow} accessible accessibilityLabel={`${label}: ${value}`}>
+            <Text style={[styles.text, { flex: 1 }]}>{label}</Text>
+            <Text style={styles.tableValue}>{value}</Text>
+          </View>
+        ))}
+        {/* The podium of the day: one line per place with its medal, as on "How it works". */}
+        <View style={styles.tableRow}><Text style={[styles.text, { flex: 1 }]}>{t('trip.rules.podiumTitle')}</Text></View>
+        {p.podium.map((pts, i) => (
+          <View key={`p${i}`} style={styles.placeRow} accessible accessibilityLabel={`${t('trip.rules.place', { rank: i + 1 })}: +${pts}`}>
+            <RankMedal rank={i + 1} podium size={28} />
+            <Text style={[styles.text, { flex: 1 }]}>{t('trip.rules.place', { rank: i + 1 })}</Text>
+            <Text style={styles.tableValue}>+{pts}</Text>
+          </View>
+        ))}
+        {tableAfter.map(([label, value], i) => (
+          <View key={`a${i}`} style={styles.tableRow} accessible accessibilityLabel={`${label}: ${value}`}>
             <Text style={[styles.text, { flex: 1 }]}>{label}</Text>
             <Text style={styles.tableValue}>{value}</Text>
           </View>
@@ -569,9 +617,22 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   phaseTitle: { ...Type.caption, fontWeight: '800', color: c.text, textAlign: 'center' },
   phaseWhen:  { ...Type.caption, fontSize: 11, lineHeight: 14, color: c.muted, textAlign: 'center' },
   // Goal.
-  goalCount:  { flexDirection: 'row', alignItems: 'baseline', gap: Space.xs },
-  goalN:      { ...Type.display, color: c.text, fontVariant: ['tabular-nums'] },
-  goalOf:     { ...Type.label, fontSize: 15, color: c.muted },
+  seats:      { ...Type.title, color: c.text, fontVariant: ['tabular-nums'] },
+  seatsFirst: { ...Type.title, color: c.primaryText },
+  inviteChip: { flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: c.cta, borderRadius: Radius.control, paddingHorizontal: Space.md, minHeight: 36 },
+  inviteText: { ...Type.caption, fontWeight: '800', color: c.onCta },
+  // My boarding pass: a little ticket (notches on its sides), gold once earned.
+  pass:       { flexDirection: 'row', alignItems: 'center', gap: Space.sm, padding: Space.sm, paddingHorizontal: Space.md, borderRadius: 12,
+                borderWidth: 1.5, borderStyle: 'dashed', borderColor: c.primaryText, backgroundColor: c.primaryTint, overflow: 'hidden' },
+  passEarned: { borderStyle: 'solid', borderColor: c.medalGold, backgroundColor: c.medalGold },
+  passNotch:  { position: 'absolute', top: '50%', marginTop: -8, width: 16, height: 16, borderRadius: 8, backgroundColor: c.bg2 },
+  passNotchL: { left: -9 },
+  passNotchR: { right: -9 },
+  passLabel:  { ...Type.caption, fontSize: 12, lineHeight: 15, color: c.primaryOnTint },
+  passValue:  { ...Type.label, fontSize: 16, color: c.text, fontVariant: ['tabular-nums'] },
+  passDots:   { flexDirection: 'row', gap: 3 },
+  passDot:    { width: 6, height: 6, borderRadius: 3, backgroundColor: c.line },
+  passDotOn:  { backgroundColor: c.primaryText },
   track:      { height: 34, justifyContent: 'center', marginRight: 26 },
   trackBg:    { position: 'absolute', left: 0, right: 0, height: 12, borderRadius: 6, backgroundColor: c.primaryTint },
   trackFill:  { position: 'absolute', left: 0, height: 12, borderRadius: 6, backgroundColor: c.cta },
@@ -583,6 +644,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   board:      { backgroundColor: LS.board, borderRadius: Radius.card, padding: Space.md, gap: Space.sm },
   boardTop:   { flexDirection: 'row', alignItems: 'center', gap: Space.md },
   boardTitle: { ...Type.label, color: LS.boardText },
+  boardKicker:{ ...Type.caption, fontSize: 12, lineHeight: 15, fontWeight: '800', color: LS.mango },
   boardMuted: { ...Type.caption, color: LS.boardMuted },
   rankTag:    { ...Type.title, color: c.onMedal, backgroundColor: c.medalGold, borderRadius: 12, paddingHorizontal: 10, paddingVertical: 4, overflow: 'hidden',
                 transform: [{ rotate: '-4deg' }], fontVariant: ['tabular-nums'] },
@@ -628,5 +690,6 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   howNumText: { ...Type.caption, fontWeight: '900', color: c.primaryOnTint },
   tableRow:   { flexDirection: 'row', alignItems: 'center', gap: Space.sm, paddingVertical: Space.xs, borderTopWidth: 1, borderTopColor: c.line },
   tableValue: { ...Type.label, fontSize: 16, color: c.primaryText, fontVariant: ['tabular-nums'] },
+  placeRow:   { flexDirection: 'row', alignItems: 'center', gap: Space.sm, paddingVertical: 4, paddingLeft: Space.sm },
   whoRow:     { flexDirection: 'row', alignItems: 'flex-start', gap: Space.sm },
 });

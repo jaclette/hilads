@@ -5,6 +5,7 @@ import { Space, Radius, Type, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { Avatar, Crown } from '@/ui';
 import type { ContestRow } from './contest';
+import { ordinal } from '@/lib/ordinal';
 
 /** The Launch Season ranking's parts (the home's preview, the full ranking screen). */
 
@@ -12,7 +13,7 @@ import type { ContestRow } from './contest';
 export function Podium({ rows, meId, bonusFor }: { rows: ContestRow[]; meId: string | null; bonusFor?: (row: ContestRow) => number }) {
   const styles = useThemedStyles(makeStyles);
   const { colors } = useTheme();
-  const { t } = useTranslation('me');
+  const { t, i18n } = useTranslation('me');
   const router = useRouter();
   const medal = [colors.medalGold, colors.medalSilver, colors.medalBronze];
   const heights = [88, 64, 48];
@@ -26,7 +27,7 @@ export function Podium({ rows, meId, bonusFor }: { rows: ContestRow[]; meId: str
         const me = row.userId === meId;
         return (
           <Pressable key={row.userId} style={[styles.step, place === 0 && { flex: 1.15 }]} onPress={() => router.push({ pathname: '/user/[id]', params: { id: row.userId } })}
-                     accessibilityRole="button" accessibilityLabel={`#${row.rank} ${name}, ${t('contest.pts', { count: row.points })}${me ? `, ${t('contest.youLabel')}` : ''}`}>
+                     accessibilityRole="button" accessibilityLabel={`${ordinal(row.rank, i18n.language)}, ${name}, ${t('contest.pts', { count: row.points })}${me ? `, ${t('contest.youLabel')}` : ''}`}>
             {place === 0 && <View style={styles.crown}><Crown size={24} /></View>}
             <View style={[styles.ring, { borderColor: medal[place] ?? colors.line }]}>
               <Avatar uri={row.photoUrl} name={row.displayName ?? row.username ?? ''} size={place === 0 ? 58 : 48} />
@@ -47,14 +48,14 @@ export function Podium({ rows, meId, bonusFor }: { rows: ContestRow[]; meId: str
 
 export function RankRow({ row, me, bonus = 0 }: { row: ContestRow; me: boolean; bonus?: number }) {
   const styles = useThemedStyles(makeStyles);
-  const { t } = useTranslation('me');
+  const { t, i18n } = useTranslation('me');
   const router = useRouter();
   const name = row.username ? '@' + row.username : row.displayName ?? '';
   const detail = [row.votes > 0 ? `${t('contest.votes')} ${row.votes}` : null, row.referral > 0 ? `${t('contest.referral')} ${row.referral}` : null,
                   ].filter(Boolean).join(' · ');
   return (
     <Pressable style={[styles.rankRow, me && styles.rankRowMe]} onPress={() => router.push({ pathname: '/user/[id]', params: { id: row.userId } })}
-               accessibilityRole="button" accessibilityLabel={`#${row.rank} ${name}, ${t('contest.pts', { count: row.points })}`}>
+               accessibilityRole="button" accessibilityLabel={`${ordinal(row.rank, i18n.language)}, ${name}, ${t('contest.pts', { count: row.points })}`}>
       <Text style={styles.rankNum}>{row.rank}</Text>
       <Avatar uri={row.photoUrl} name={row.displayName ?? row.username ?? ''} size={38} />
       <View style={{ flex: 1 }}>

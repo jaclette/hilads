@@ -112,7 +112,7 @@
   "pp": {
     "passport": {
       "title": "Passport",
-      "weekRank": "#{{rank}} ngayong linggo",
+      "weekRank": "{{rank, ordinal}} ngayong linggo",
       "weekNone": "Wala ka pang rank ngayong linggo",
       "mostLocalIn": "Most Local sa {{city}}",
       "mostLocalWorld": "Most Local sa buong mundo",
@@ -124,7 +124,7 @@
       "myProposals": "Mga suggestion ko",
       "friends": "Mga kaibigan",
       "mostLocalAllTime": "Most Local, all time",
-      "allTimeRank": "#{{rank}} sa {{city}}",
+      "allTimeRank": "{{rank, ordinal}} sa {{city}}",
       "howPoints": "Paano gumagana ang points",
       "gotIt": "Gets",
       "close": "Isara",
@@ -156,7 +156,7 @@
       "rivalsEmpty": "Maglaro ng ilang challenge para makilala ang mga unang rival mo 🌍",
       "duels_one": "{{count}} duel",
       "duels_other": "{{count}} duels",
-      "seasonRank": "#{{rank}} ngayong season",
+      "seasonRank": "{{rank, ordinal}} ngayong season",
       "seasonNone": "Maglaro para makasali sa season",
       "viewAsOthers": "Tingnan kung paano ako nakikita ng iba"
     },
@@ -224,7 +224,7 @@
     },
     "seasons": {
       "medals": "Mga medalya ng season",
-      "medalA11y": "#{{rank}}, {{season}}, {{points}} points"
+      "medalA11y": "{{rank, ordinal}}, {{season}}, {{points}} points"
     },
     "invite": {
       "title": "Isama ang crew mo",
@@ -275,7 +275,7 @@
       "title": "Launch Trip",
       "test": "TEST",
       "cardJoined": "Kasali ka · {{points}} pts",
-      "cardRank": "#{{rank}}",
+      "cardRank": "{{rank, ordinal}}",
       "phase": {
         "upcoming": "Magsisimula sa {{date}}",
         "season": "Matatapos sa {{date}}",
@@ -326,9 +326,9 @@
       "launchGift": "Ang aming launch gift. Pareho pa rin ang laro: isang photo kada araw.",
       "unlockPlayers": "players",
       "unlockHint": "Mabubuksan ang trip kapag {{max}} players ang nakapag-post ng tig-{{photos}} approved photos.",
-      "unlocked": "Tuloy na ang trip 🎉 Ngayon, maging #1 sa huling linggo para mapanalunan ito.",
+      "unlocked": "Tuloy na ang trip 🎉 Ngayon, mag-first place sa huling linggo para mapanalunan ito.",
       "myFinalScore": "Final score mo",
-      "behind": "{{count}} pts kulang sa #{{rank}}",
+      "behind": "{{count}} pts ang layo sa {{rank, ordinal}} na puwesto",
       "inviteTitle": "Isama ang friends mo",
       "inviteText": "+{{points}} points sa bawat friend na sumali gamit ang link mo at nag-post ng {{count}} approved photos.",
       "inviteStamp": "bawat friend",
@@ -348,7 +348,7 @@
       "startsIn": "Magsisimula sa loob ng {{time}}",
       "endsIn": "Matatapos sa loob ng {{time}}",
       "share": "I-share",
-      "shareRank": "#{{rank}} ako sa Hilads Launch Trip. {{prize}}: laro tayo!",
+      "shareRank": "Nasa {{rank, ordinal}} na puwesto ako sa Hilads Launch Trip. {{prize}}: laro tayo!",
       "shareJoin": "Kasali ako sa Hilads Launch Trip. {{prize}}: laro tayo!",
       "shareCardIn": "Kasali ako",
       "shareCardJoin": "Samahan mo ako sa Hilads",
@@ -357,14 +357,14 @@
       "seeRanking": "Buong ranking",
       "rankingTitle": "Ranking",
       "rulesShort": "Rules",
-      "winLine": "Ang #1 sa leaderboard ng huling linggo ang mananalo ng trip ✈️",
+      "winLine": "Ang mananalo sa huling linggo ang makakakuha ng trip ✈️",
       "howWinTitle": "Paano manalo",
       "step1Title": "Hanggang {{date}}: mag-ipon ng points",
       "step1Text": "I-post ang daily photo mo: bawat like = 1 point (max {{cap}} bawat photo). +{{points}} sa bawat friend na sumali gamit ang link mo at nag-post ng {{min}} approved photos.",
       "step2Title": "May head start ang top {{count}}",
-      "step2Text": "Sa {{date}}, magsisimula ang top {{count}} ng season sa huling linggo nang lamang: {{count}} points sa #1, pababa hanggang 1 sa #{{count}}.",
-      "step3Title": "Huling linggo: ang #1 ang panalo",
-      "step3Text": "Mula zero ulit ang likes, dagdag ang head start at invite points mo. Ang #1 sa {{date}} ang mananalo ng trip ✈️",
+      "step2Text": "Sa {{date}}, may head start ang top {{count}} sa pagsimula ng huling linggo: {{count}} points para sa first place, pababa hanggang 1 para sa {{count, ordinal}} na puwesto.",
+      "step3Title": "Huling linggo: ang first place ang panalo",
+      "step3Text": "Mula zero ulit ang points, dagdag ang head start mo. Ang first place sa {{date}} ang mananalo ng trip ✈️",
       "hsBadge": "+{{count}} head start",
       "hsHint": "May head start ang top {{count}} sa huling linggo.",
       "itTitle": "Ang linggo mo sa Vietnam",
@@ -373,9 +373,9 @@
       "founderTitle": "Mensahe mula sa founder",
       "founderSign": "{{name}}, founder ng Hilads",
       "todayKicker": "May totoong trip na mapapanalunan",
-      "todayWin": "Maging #1 sa huling linggo at sa 'yo na ang trip",
+      "todayWin": "Mag-first place sa huling linggo at sa 'yo na ang trip",
       "todayJoin": "Sumali at maglaro para manalo",
-      "unlockWin": "Maging #1 sa huling linggo para manalo ng trip ✈️",
+      "unlockWin": "Mag-first place sa huling linggo para manalo ng trip ✈️",
       "souvenirLine": "Ang rank 2 hanggang {{to}} sa huling linggo ay mananalo ng Vietnam souvenir pack, ipapadala sa kanila 🎁",
       "teaserKicker": "Malapit na",
       "teaserTitle": "Parating na ang Launch Trip",
@@ -393,7 +393,7 @@
         "friends": "Friends",
         "rules": "Rules"
       },
-      "forFirst": "Para sa #1 player ng huling linggo",
+      "forFirst": "Para sa mananalo ng huling linggo",
       "chip": {
         "cdStarts": "bago magsimula",
         "cdFinal": "bago ang huling linggo",
@@ -413,23 +413,11 @@
         "now": "Ngayon",
         "done": "Tapos"
       },
-      "goal": {
-        "title": "Sama-sama, i-unlock ang trip",
-        "players": "players",
-        "what": "Bilang ang player kapag nakapag-post na siya ng {{photos}} approved photos.",
-        "mine": "Ikaw: {{n}} / {{photos}} photos.",
-        "mineDone": "Bilang ka na ✓",
-        "fallback": "Kulang sa {{players}} players pagdating ng {{date}}? Mananalo pa rin ang #1 ng {{prize}}.",
-        "reached": "Unlocked na ang trip 🎉",
-        "reachedText": "{{players}} players ang nakaabot. Ngayon, maging #1 sa huling linggo para mapanalunan ito.",
-        "notReachedText": "Hindi naabot ang goal: {{prize}} ang mapapanalunan ng #1 imbes na ang trip."
-      },
       "me": {
-        "rank": "Ikaw ang #{{rank}}",
+        "rank": "Nasa {{rank, ordinal}} na puwesto ka",
         "inRace": "Kasali ka sa race",
         "finalLive": "Huling linggo · live",
-        "gap": "{{count}} pts kulang sa #{{rank}}",
-        "tie": "Tabla kayo ng #{{rank}}: likes ang magpapasya",
+        "tie": "Tabla kayo ng {{rank, ordinal}} na puwesto: likes ang magpapasya",
         "leading": "Ikaw ang nangunguna",
         "headstart": "Kasama ang +{{count}} head start mo",
         "notScored": "Maglaro para makasali sa race",
@@ -440,7 +428,9 @@
         "upcomingTitle": "Maghanda ka",
         "upcomingText": "Magsisimula ang race sa {{date}}. Mula noon bibilangin ang points.",
         "closed": "Sarado muna ang pagsali.",
-        "cantJoin": "Hindi puwedeng sumali ang account na ito sa campaign na ito."
+        "cantJoin": "Hindi puwedeng sumali ang account na ito sa campaign na ito.",
+        "gap_one": "{{count}} pt ang layo mo sa {{rank, ordinal}} na puwesto",
+        "gap_other": "{{count}} pts ang layo mo sa {{rank, ordinal}} na puwesto"
       },
       "cta": {
         "play": "Laruin ang challenge ngayon",
@@ -461,7 +451,7 @@
         "empty": "Wala pang naka-score. Laruin ang challenge ngayon para mauna.",
         "emptyUpcoming": "Magsisimula ang race sa {{date}}.",
         "noteBefore": "Huling linggo mula {{date}}: babalik sa zero ang points. May head start ang top {{count}} (hanggang +{{count}}).",
-        "noteFinal": "Bumalik sa zero ang points noong {{date}}. May head start ang top {{count}} bago noon (hanggang +{{count}}). Ang #1 sa {{end}} ang panalo.",
+        "noteFinal": "Bumalik sa zero ang points noong {{date}}. May head start ang top {{count}} bago noon (hanggang +{{count}}). Ang nasa first place sa {{end}} ang panalo.",
         "ties": "Kapag tabla: pinakamaraming likes sa huling linggo, tapos ang naunang umabot sa score."
       },
       "friends": {
@@ -486,28 +476,29 @@
         "howTitle": "Paano manalo",
         "how1": "Laruin ang daily challenge: bilang sa race ang Hilads points mo.",
         "how2": "Mapasama sa top {{count}} bago ang {{date}} para may head start ka sa huling linggo.",
-        "how3": "Maging #1 sa huling linggo sa {{date}}: sa 'yo ang trip.",
+        "how3": "Mag-first place sa huling linggo at manalo ng trip.",
         "pointsTitle": "Paano binibilang ang points",
         "play": "Maglaro ng daily challenge",
-        "podium": "Podium ng araw (1st / 2nd / 3rd)",
         "week": "Perfect week (lahat ng challenge, Lunes hanggang Linggo)",
         "friend": "Unang photo ng isang friend (hanggang {{count}} kada buwan)",
         "crew": "Ang ika-{{size}} mong friend ngayong buwan",
         "pointsNote": "Parehong points gaya sa buong Hilads, mula sa araw na sumali ka, sa mga challenge mula {{date}}.",
         "finalTitle": "Huling linggo",
         "final1": "Sa {{date}}, babalik sa zero ang points.",
-        "final2": "May head start ang top {{count}} bago noon: +{{count}} para sa #1, pababa hanggang +1.",
+        "final2": "May head start ang top {{count}} bago noon: +{{count}} para sa first place, pababa hanggang +1 para sa {{count, ordinal}} na puwesto.",
         "final3": "Kapag tabla: pinakamaraming likes sa huling linggo, tapos ang naunang umabot sa score.",
         "prizeTitle": "Ang premyo",
-        "goalTitle": "Goal ng mga player",
-        "goalText": "Mabubuksan ang trip kapag {{players}} players ang nakapag-post ng tig-{{photos}} approved photos.",
-        "fallbackText": "Hindi naabot pagdating ng {{date}}? Mananalo pa rin ang #1 ng {{prize}}.",
+        "goalTitle": "Boarding: ang goal ng mga player",
+        "goalText": "May {{players}} na upuan ang eroplano. Makukuha mo ang boarding pass mo, at isang upuan, sa {{photos}} na approved na photo. Mau-unlock ang trip kapag puno na ang lahat ng upuan.",
+        "fallbackText": "Hindi napuno pagsapit ng {{date}}? Makukuha pa rin ng mananalo ang {{prize}}.",
         "whoTitle": "Sino ang puwedeng maglaro",
         "who1": "Libre, walang kailangang bilhin.",
         "who2": "18 taong gulang pataas.",
         "who3": "Isang tao, isang account.",
         "who4": "Sumali sa app at tanggapin ang official rules.",
-        "full": "Buong official rules"
+        "full": "Buong official rules",
+        "podiumTitle": "Podium ng araw (pinakamaraming likes sa buong mundo)",
+        "place": "{{rank, ordinal}} na puwesto"
       },
       "over": {
         "title": "Tapos na ang race",
@@ -516,16 +507,37 @@
         "winnerTitle": "Panalo si {{name}}!",
         "winnerTrip": "Panalo si {{name}} ng {{prize}}.",
         "winnerFallback": "Hindi naabot ang goal ng mga player: panalo si {{name}} ng {{prize}}.",
-        "yourRank": "Nagtapos ka sa #{{rank}}"
+        "yourRank": "Natapos ka sa {{rank, ordinal}} na puwesto"
       },
       "banner": {
-        "rank": "Ikaw ang #{{rank}} · {{count}} pts",
+        "rank": "Nasa {{rank, ordinal}} na puwesto ka · {{count}} pts",
         "play": "Maglaro para makasali sa race",
         "join": "Sumali sa race",
         "starts": "Magsisimula sa loob ng {{time}}",
         "toFinal": "huling linggo sa loob ng {{time}}",
         "ends": "matatapos sa loob ng {{time}}",
         "over": "Tingnan ang panalo"
+      },
+      "board": {
+        "title": "✈️ Boarding",
+        "seats": "{{players}} sa {{threshold}} na upuan ang okupado",
+        "first": "Maging isa sa mga unang sasakay",
+        "takeoff": "Lilipad ang eroplano kapag puno na ang lahat ng upuan.",
+        "what": "Makukuha mo ang boarding pass mo, at ang upuan mo, sa {{photos}} na approved na photo.",
+        "pass": "Ang boarding pass mo",
+        "passProgress": "{{n}} / {{photos}} photo",
+        "passEarned": "Nakuha na ang boarding pass",
+        "passEarnedText": "Sa 'yo na ang upuan ✓",
+        "fallback": "Hindi napuno pagsapit ng {{date}}? Makukuha pa rin ng mananalo ang {{prize}}.",
+        "full": "Puno na ang lahat ng upuan 🎉",
+        "fullText": "Lilipad na ang eroplano. Ngayon, mag-first place sa huling linggo para manalo ng trip.",
+        "notFullText": "Hindi napuno ang eroplano: {{prize}} ang makukuha ng mananalo kapalit ng trip.",
+        "invite": "Mag-invite",
+        "a11y": "Boarding: {{status}}. Bubuksan ang sharing para mag-invite ng friends.",
+        "shareText": "{{players}} / {{threshold}} na upuan ang okupado sa Hilads Launch Trip. Kunin na ang sa 'yo ✈️",
+        "shareTextFirst": "Boarding na ang Hilads Launch Trip. Kunin na ang upuan mo ✈️",
+        "cardSeats": "{{players}} / {{threshold}} na upuan okupado",
+        "cardGrab": "Kunin na ang sa 'yo"
       }
     }
   },

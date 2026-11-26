@@ -319,9 +319,9 @@ final class DailyPushesTest extends TestCase
     public function testTop10Text(): void
     {
         $m = DailyPushes::top10Message('2026-11-02', 4);
-        $this->assertSame("You're in today's top 10! Your photo is #4 in the world right now.", $m['body']);
+        $this->assertSame("You're in today's top 10! Your photo is 4th in the world right now.", $m['body']);
         $this->assertSame('2026-11-02', $m['data']['date']);
-        $this->assertSame('Tu es dans le top 10 du jour ! Ta photo est #4 dans le monde en ce moment.',
+        $this->assertSame('Tu es dans le top 10 du jour ! Ta photo est 4e dans le monde en ce moment.',
                           DailyPushes::top10Message('2026-11-02', 4, 'fr')['body']);
     }
 

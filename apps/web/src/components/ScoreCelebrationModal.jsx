@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import i18n from '../i18n'
+import { ordinal } from '../lib/ordinal'
 import { countryToFlag } from '../lib/countryFlag'
 import { themeIcon } from '../lib/icons'
 import { thumbUrl } from '../lib/imageThumb'
@@ -203,9 +205,9 @@ export default function ScoreCelebrationModal({ data, visible, onClose, onOpenRa
               const icon = m.key === 'world' ? '🌍' : m.key === 'cities' ? '🏙️' : (countryToFlag(m.city?.country ?? null) || '📍')
               return (
                 <button key={m.key} type="button" className={`win-medal win-medal--${m.key}`} onClick={(e) => { e.stopPropagation(); onOpenRanks(target(m)) }}
-                        aria-label={`#${m.rank}, ${label}${up > 0 ? `, ${t('scoreWin.up', { count: up })}` : ''}`}>
+                        aria-label={`${ordinal(m.rank, i18n.language)}, ${label}${up > 0 ? `, ${t('scoreWin.up', { count: up })}` : ''}`}>
                   <span className="win-m">{icon}</span>
-                  <span className="win-r">#{m.rank}</span>
+                  <span className="win-r">{m.rank}</span>
                   <span className="win-l">{label}</span>
                   {up > 0 ? <span className="win-up">▲ {up}</span> : m.prevRank == null ? <span className="win-up">{t('scoreWin.new')}</span> : null}
                 </button>

@@ -88,7 +88,7 @@
   "themeDark": "Dunkel",
   "passport": {
     "title": "Reisepass",
-    "weekRank": "Nr. {{rank}} diese Woche",
+    "weekRank": "{{rank, ordinal}} Platz diese Woche",
     "weekNone": "Diese Woche noch kein Rang",
     "mostLocalIn": "Most Local in {{city}}",
     "mostLocalWorld": "Most Local weltweit",
@@ -100,7 +100,7 @@
     "myProposals": "Meine Vorschläge",
     "friends": "Freunde",
     "mostLocalAllTime": "Most Local aller Zeiten",
-    "allTimeRank": "Nr. {{rank}} in {{city}}",
+    "allTimeRank": "{{rank, ordinal}} Platz in {{city}}",
     "howPoints": "So funktionieren Punkte",
     "gotIt": "Verstanden",
     "close": "Schließen",
@@ -136,7 +136,7 @@
     "rivalsEmpty": "Spiel ein paar Challenges, um deine ersten Rivalen zu treffen 🌍",
     "duels_one": "{{count}} Duell",
     "duels_other": "{{count}} Duelle",
-    "seasonRank": "#{{rank}} diese Saison",
+    "seasonRank": "{{rank, ordinal}} Platz diese Saison",
     "seasonNone": "Spiel, um in die Saison einzusteigen",
     "viewAsOthers": "So sehen mich andere"
   },
@@ -187,7 +187,7 @@
   },
   "seasons": {
     "medals": "Saisonmedaillen",
-    "medalA11y": "#{{rank}}, {{season}}, {{points}} Punkte"
+    "medalA11y": "{{rank, ordinal}} Platz, {{season}}, {{points}} Punkte"
   },
   "invite": {
     "title": "Hol deine Crew",
@@ -238,7 +238,7 @@
     "title": "Launch Trip",
     "test": "TEST",
     "cardJoined": "Du bist dabei · {{points}} Pkt.",
-    "cardRank": "Platz {{rank}}",
+    "cardRank": "{{rank, ordinal}}",
     "phase": {
       "upcoming": "Startet am {{date}}",
       "season": "Endet am {{date}}",
@@ -289,9 +289,9 @@
     "launchGift": "Unser Launch-Geschenk. Das Spiel bleibt gleich: ein Foto pro Tag.",
     "unlockPlayers": "Spieler",
     "unlockHint": "Die Reise wird freigeschaltet, sobald {{max}} Spieler je {{photos}} freigegebene Fotos gepostet haben.",
-    "unlocked": "Die Reise steht fest 🎉 Jetzt werde Platz 1 der Finalwoche, um sie zu gewinnen.",
+    "unlocked": "Die Reise steht fest 🎉 Jetzt werde Erster in der Finalwoche, um sie zu gewinnen.",
     "myFinalScore": "Dein Endstand",
-    "behind": "{{count}} Pkt. hinter Platz {{rank}}",
+    "behind": "{{count}} Pkt. hinter dem {{rank, ordinal}} Platz",
     "inviteTitle": "Bring deine Freunde mit",
     "inviteText": "+{{points}} Punkte für jeden Freund, der über deinen Link beitritt und {{count}} freigegebene Fotos postet.",
     "inviteStamp": "pro Freund",
@@ -311,7 +311,7 @@
     "startsIn": "Startet in {{time}}",
     "endsIn": "Endet in {{time}}",
     "share": "Teilen",
-    "shareRank": "Ich bin Platz {{rank}} im Hilads Launch Trip. {{prize}}: Spiel mit!",
+    "shareRank": "Ich bin auf dem {{rank, ordinal}} Platz im Hilads Launch Trip. {{prize}}: Spiel mit!",
     "shareJoin": "Ich bin beim Hilads Launch Trip dabei. {{prize}}: Spiel mit!",
     "shareCardIn": "Ich bin dabei",
     "shareCardJoin": "Spiel mit mir auf Hilads",
@@ -320,14 +320,14 @@
     "seeRanking": "Ganze Rangliste ansehen",
     "rankingTitle": "Rangliste",
     "rulesShort": "Regeln",
-    "winLine": "Platz 1 der Finalwochen-Rangliste gewinnt die Reise ✈️",
+    "winLine": "Der Sieger der Finalwoche gewinnt die Reise ✈️",
     "howWinTitle": "So gewinnst du",
     "step1Title": "Bis {{date}}: Punkte sammeln",
     "step1Text": "Poste dein Tagesfoto: jedes Like = 1 Punkt (max. {{cap}} pro Foto). +{{points}} für jeden Freund, der über deinen Link beitritt und {{min}} freigegebene Fotos postet.",
     "step2Title": "Die Top {{count}} starten mit Vorsprung",
-    "step2Text": "Am {{date}} starten die Top {{count}} der Saison mit Vorsprung in die Finalwoche: {{count}} Punkte für Platz 1, bis 1 Punkt für Platz {{count}}.",
-    "step3Title": "Finalwoche: Platz 1 gewinnt",
-    "step3Text": "Likes zählen wieder ab null, dazu dein Vorsprung und deine Einladungspunkte. Wer am {{date}} auf Platz 1 ist, gewinnt die Reise ✈️",
+    "step2Text": "Am {{date}} starten die Top {{count}} mit Vorsprung in die Finalwoche: {{count}} Punkte für den ersten Platz, bis hinunter zu 1 für den {{count, ordinal}} Platz.",
+    "step3Title": "Finalwoche: Der erste Platz gewinnt",
+    "step3Text": "Die Punkte starten wieder bei null, plus dein Vorsprung. Wer am {{date}} Erster ist, gewinnt die Reise ✈️",
     "hsBadge": "+{{count}} Vorsprung",
     "hsHint": "Die Top {{count}} starten mit Vorsprung in die Finalwoche.",
     "itTitle": "Deine Woche in Vietnam",
@@ -336,9 +336,9 @@
     "founderTitle": "Ein Wort vom Gründer",
     "founderSign": "{{name}}, Gründer von Hilads",
     "todayKicker": "Eine echte Reise zu gewinnen",
-    "todayWin": "Werde Platz 1 der Finalwoche und die Reise gehört dir",
+    "todayWin": "Werde Erster in der Finalwoche und die Reise gehört dir",
     "todayJoin": "Mitmachen und gewinnen",
-    "unlockWin": "Werde Platz 1 der Finalwoche und gewinne die Reise ✈️",
+    "unlockWin": "Werde Erster in der Finalwoche, um die Reise zu gewinnen ✈️",
     "souvenirLine": "Platz 2 bis {{to}} der Finalwoche gewinnt je ein Vietnam-Souvenirpaket, zu dir nach Hause geschickt 🎁",
     "teaserKicker": "Bald",
     "teaserTitle": "Der Launch Trip kommt",
@@ -356,7 +356,7 @@
       "friends": "Freunde",
       "rules": "Regeln"
     },
-    "forFirst": "Für Platz 1 der Finalwoche",
+    "forFirst": "Für den Sieger der Finalwoche",
     "chip": {
       "cdStarts": "bis zum Start",
       "cdFinal": "bis zur Finalwoche",
@@ -376,23 +376,11 @@
       "now": "Jetzt",
       "done": "Erledigt"
     },
-    "goal": {
-      "title": "Schaltet die Reise gemeinsam frei",
-      "players": "Spieler",
-      "what": "Ein Spieler zählt, sobald er {{photos}} freigegebene Fotos gepostet hat.",
-      "mine": "Du: {{n}} / {{photos}} Fotos.",
-      "mineDone": "Du zählst ✓",
-      "fallback": "Unter {{players}} Spielern bis {{date}}? Platz 1 gewinnt trotzdem {{prize}}.",
-      "reached": "Die Reise ist freigeschaltet 🎉",
-      "reachedText": "{{players}} Spieler haben es geschafft. Jetzt werde Platz 1 der Finalwoche, um sie zu gewinnen.",
-      "notReachedText": "Das Ziel wurde nicht erreicht: Platz 1 gewinnt {{prize}} statt der Reise."
-    },
     "me": {
-      "rank": "Du bist auf Platz {{rank}}",
+      "rank": "Du bist auf dem {{rank, ordinal}} Platz",
       "inRace": "Du bist im Rennen",
       "finalLive": "Finalwoche · live",
-      "gap": "{{count}} Pkt. hinter Platz {{rank}}",
-      "tie": "Gleichstand mit Platz {{rank}}: Likes entscheiden",
+      "tie": "Gleichstand mit dem {{rank, ordinal}} Platz: Likes entscheiden",
       "leading": "Du führst",
       "headstart": "Inklusive deiner +{{count}} Vorsprung",
       "notScored": "Spiel mit, um ins Rennen zu kommen",
@@ -403,7 +391,9 @@
       "upcomingTitle": "Mach dich bereit",
       "upcomingText": "Das Rennen startet am {{date}}. Ab dann zählen die Punkte.",
       "closed": "Die Anmeldung ist gerade geschlossen.",
-      "cantJoin": "Dieses Konto kann an dieser Kampagne nicht teilnehmen."
+      "cantJoin": "Dieses Konto kann an dieser Kampagne nicht teilnehmen.",
+      "gap_one": "{{count}} Pkt. hinter dem {{rank, ordinal}} Platz",
+      "gap_other": "{{count}} Pkt. hinter dem {{rank, ordinal}} Platz"
     },
     "cta": {
       "play": "Heutige Challenge spielen",
@@ -424,7 +414,7 @@
       "empty": "Noch hat niemand gepunktet. Spiel die heutige Challenge und sei der Erste.",
       "emptyUpcoming": "Das Rennen startet am {{date}}.",
       "noteBefore": "Finalwoche ab {{date}}: Die Punkte starten wieder bei null. Die Top {{count}} behalten einen Vorsprung (bis zu +{{count}}).",
-      "noteFinal": "Die Punkte starteten am {{date}} wieder bei null. Die Top {{count}} davor behielten einen Vorsprung (bis zu +{{count}}). Platz 1 am {{end}} gewinnt.",
+      "noteFinal": "Die Punkte starteten am {{date}} wieder bei null. Die Top {{count}} davor behielten einen Vorsprung (bis zu +{{count}}). Wer am {{end}} Erster ist, gewinnt.",
       "ties": "Gleichstand: die meisten Likes in der Finalwoche, dann wer den Punktestand zuerst erreicht hat."
     },
     "friends": {
@@ -449,28 +439,29 @@
       "howTitle": "So gewinnst du",
       "how1": "Spiel die tägliche Challenge: Deine Hilads-Punkte zählen für das Rennen.",
       "how2": "Sei vor dem {{date}} in den Top {{count}}, um die Finalwoche mit Vorsprung zu starten.",
-      "how3": "Sei am {{date}} Platz 1 der Finalwoche: Du gewinnst die Reise.",
+      "how3": "Werde Erster in der Finalwoche und gewinne die Reise.",
       "pointsTitle": "So werden Punkte gezählt",
       "play": "Eine tägliche Challenge spielen",
-      "podium": "Podium des Tages (1. / 2. / 3.)",
       "week": "Perfekte Woche (jede Challenge, Montag bis Sonntag)",
       "friend": "Das erste Foto eines Freundes (bis zu {{count}} pro Monat)",
       "crew": "Dein {{size}}. Freund des Monats",
       "pointsNote": "Dieselben Punkte wie überall in Hilads, ab dem Tag, an dem du mitmachst, für die Challenges ab dem {{date}}.",
       "finalTitle": "Finalwoche",
       "final1": "Am {{date}} starten die Punkte wieder bei null.",
-      "final2": "Die Top {{count}} davor starten mit Vorsprung: +{{count}} für Platz 1, bis hinunter zu +1.",
+      "final2": "Die Top {{count}} davor starten mit Vorsprung: +{{count}} für den ersten Platz, bis hinunter zu +1 für den {{count, ordinal}} Platz.",
       "final3": "Gleichstand: die meisten Likes in der Finalwoche, dann wer den Punktestand zuerst erreicht hat.",
       "prizeTitle": "Der Preis",
-      "goalTitle": "Das Ziel der Spieler",
-      "goalText": "Die Reise wird freigeschaltet, wenn {{players}} Spieler je {{photos}} freigegebene Fotos gepostet haben.",
-      "fallbackText": "Bis {{date}} nicht erreicht? Platz 1 gewinnt trotzdem {{prize}}.",
+      "goalTitle": "Boarding: das Ziel der Spieler",
+      "goalText": "Der Flug hat {{players}} Plätze. Mit {{photos}} freigegebenen Fotos bekommst du deine Bordkarte und einen Platz. Die Reise wird freigeschaltet, sobald alle Plätze belegt sind.",
+      "fallbackText": "Bis zum {{date}} nicht voll? Der Sieger gewinnt trotzdem {{prize}}.",
       "whoTitle": "Wer mitspielen kann",
       "who1": "Kostenlos, kein Kauf nötig.",
       "who2": "Ab 18 Jahren.",
       "who3": "Eine Person, ein Konto.",
       "who4": "Melde dich in der App an und akzeptiere die offiziellen Regeln.",
-      "full": "Vollständige offizielle Regeln"
+      "full": "Vollständige offizielle Regeln",
+      "podiumTitle": "Podium des Tages (meiste Likes weltweit)",
+      "place": "{{rank, ordinal}} Platz"
     },
     "over": {
       "title": "Das Rennen ist vorbei",
@@ -479,16 +470,37 @@
       "winnerTitle": "{{name}} gewinnt!",
       "winnerTrip": "{{name}} gewinnt {{prize}}.",
       "winnerFallback": "Das Ziel der Spieler wurde nicht erreicht: {{name}} gewinnt {{prize}}.",
-      "yourRank": "Du bist auf Platz {{rank}} gelandet"
+      "yourRank": "Du bist {{rank, ordinal}} geworden"
     },
     "banner": {
-      "rank": "Du bist auf Platz {{rank}} · {{count}} Pkt.",
+      "rank": "{{rank, ordinal}} Platz · {{count}} Pkt.",
       "play": "Spiel mit, um ins Rennen zu kommen",
       "join": "Beim Rennen mitmachen",
       "starts": "Startet in {{time}}",
       "toFinal": "Finalwoche in {{time}}",
       "ends": "endet in {{time}}",
       "over": "Zum Gewinner"
+    },
+    "board": {
+      "title": "✈️ Boarding",
+      "seats": "{{players}} von {{threshold}} Plätzen belegt",
+      "first": "Sei unter den Ersten an Bord",
+      "takeoff": "Der Flug startet, sobald alle Plätze belegt sind.",
+      "what": "Mit {{photos}} freigegebenen Fotos bekommst du deine Bordkarte und deinen Platz.",
+      "pass": "Deine Bordkarte",
+      "passProgress": "{{n}} / {{photos}} Fotos",
+      "passEarned": "Bordkarte erhalten",
+      "passEarnedText": "Dein Platz ist sicher ✓",
+      "fallback": "Bis zum {{date}} nicht voll? Der Sieger gewinnt trotzdem {{prize}}.",
+      "full": "Alle Plätze belegt 🎉",
+      "fullText": "Der Flug startet. Jetzt werde Erster in der Finalwoche, um die Reise zu gewinnen.",
+      "notFullText": "Der Flug wurde nicht voll: Der Sieger bekommt {{prize}} statt der Reise.",
+      "invite": "Einladen",
+      "a11y": "Boarding: {{status}}. Öffnet das Teilen, um Freunde einzuladen.",
+      "shareText": "{{players}} / {{threshold}} Plätze belegt beim Hilads Launch Trip. Sichere dir deinen ✈️",
+      "shareTextFirst": "Boarding für den Hilads Launch Trip. Sichere dir deinen Platz ✈️",
+      "cardSeats": "{{players}} / {{threshold}} Plätze belegt",
+      "cardGrab": "Sichere dir deinen"
     }
   }
 }

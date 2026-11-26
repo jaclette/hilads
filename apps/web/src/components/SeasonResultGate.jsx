@@ -28,7 +28,7 @@ export default function SeasonResultGate({ account, onPlay }) {
       <button type="button" className="v3-sheet-scrim" onClick={() => close(false)} aria-label={t('season.close')} />
       <div className="v3-sheet season-result-card">
         <p className="dc-muted season-result-kicker">{t('season.resultsKicker', { season: name })}</p>
-        {result.medal ? <RankMedal rank={result.rank} size={88} /> : <p className="season-result-rank">#{result.rank}</p>}
+        {result.medal ? <RankMedal rank={result.rank} size={88} /> : <p className="season-result-rank">{result.rank}</p>}
         <p className="v3-sheet-title">{result.medal ? t('season.medalTitle', { rank: result.rank }) : t('season.rankTitle', { rank: result.rank, count: result.players })}</p>
         <p className="dc-muted">{t('season.stats', { points: result.points, days: result.days, podiums: result.podiums })}</p>
         {result.podium.map(p => (

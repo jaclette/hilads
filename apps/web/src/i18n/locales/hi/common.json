@@ -171,7 +171,7 @@
   "represent": {
     "locationNeeded": "जहाँ आप हैं, उसके लिए खेलना है तो लोकेशन की अनुमति दें।",
     "pioneer": "{{city}} के Pioneer",
-    "spotOne": "{{city}} की जगह #1",
+    "spotOne": "{{city}} की पहली जगह",
     "mapEmpty": "{{city}} अभी दुनिया के मैप पर नहीं है। इसे वहाँ लाएँ।",
     "invite": "दोस्त को बुलाएँ",
     "share": "Hilads पर मेरे साथ {{city}} के लिए खेलें।",

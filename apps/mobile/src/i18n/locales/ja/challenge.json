@@ -142,8 +142,8 @@
   "leaderboard": {
     "title": "Most Local",
     "chip": {
-      "ranked": "🏆 #{{rank}}",
-      "rankedOver": "🏆 #100+",
+      "ranked": "🏆 {{rank}}",
+      "rankedOver": "🏆 100+",
       "neutral": "🏆 トップ挑戦者"
     },
     "scope": {
@@ -157,7 +157,7 @@
     },
     "points": "{{points}}pt",
     "me": {
-      "ranked": "あなた · #{{rank}} · {{points}}pt",
+      "ranked": "あなた · {{rank, ordinal}} · {{points}}pt",
       "unranked": "チャレンジに挑戦してランクインしよう"
     },
     "empty": {
@@ -177,10 +177,10 @@
       "periodAll": "歴代",
       "placeCity": "{{city}}で",
       "placeWorld": "世界で",
-      "userNotTop": "🔥 {{place}}{{period}}#{{rank}}、{{pts}}pt！@{{above}}（{{aPts}}pt）を追いかけつつ 👀、@{{below}}（{{bPts}}pt）を引き離し中。追い抜けるかな？🏆",
-      "userTop": "👑 {{place}}{{period}}#1、{{pts}}pt！@{{below1}}（{{b1Pts}}pt）と@{{below2}}（{{b2Pts}}pt）がすぐ後ろに迫ってる。王座を奪いに来て 😏",
-      "cityNotTop": "🔥 {{place}}は{{period}}すべての街の中で#{{rank}}、{{pts}}pt！{{above}}（{{aPts}}pt）のすぐ後ろ 👀、{{below}}（{{bPts}}pt）より上。地元のみんな、もっと上を目指そう 🏆",
-      "cityTop": "👑 {{place}}は{{period}}すべての街の中で#1、{{pts}}pt！{{below1}}（{{b1Pts}}pt）と{{below2}}（{{b2Pts}}pt）が追ってきてる。地元のみんな、トップを守ろう 🔥"
+      "userNotTop": "🔥 {{place}}{{period}}{{rank, ordinal}}、{{pts}}pt！@{{above}}（{{aPts}}pt）を追いかけつつ 👀、@{{below}}（{{bPts}}pt）を引き離し中。追い抜けるかな？🏆",
+      "userTop": "👑 {{place}}{{period}}1位、{{pts}}pt！@{{below1}}（{{b1Pts}}pt）と@{{below2}}（{{b2Pts}}pt）がすぐ後ろに迫ってる。王座を奪いに来て 😏",
+      "cityNotTop": "🔥 {{place}}は{{period}}すべての街の中で{{rank, ordinal}}、{{pts}}pt！{{above}}（{{aPts}}pt）のすぐ後ろ 👀、{{below}}（{{bPts}}pt）より上。地元のみんな、もっと上を目指そう 🏆",
+      "cityTop": "👑 {{place}}は{{period}}すべての街の中で1位、{{pts}}pt！{{below1}}（{{b1Pts}}pt）と{{below2}}（{{b2Pts}}pt）が追ってきてる。地元のみんな、トップを守ろう 🔥"
     }
   },
   "debrief": {
@@ -297,9 +297,9 @@
   },
   "scoreCelebration": {
     "rank": {
-      "city": "{{city}}で{{rank}}位",
+      "city": "{{city}}で{{rank, ordinal}}",
       "cityBeyond": "街のトップ{{topN}}圏外",
-      "world": "世界で{{rank}}位",
+      "world": "世界で{{rank, ordinal}}",
       "worldBeyond": "世界のトップ{{topN}}圏外",
       "cityUnranked": "今月は{{city}}でランク外",
       "worldUnranked": "今月は世界でランク外"
@@ -438,15 +438,15 @@
     "ranks": "🏆 ランキングを見る",
     "share": "📤 勝利をシェア",
     "shareLine": {
-      "city_today": "今日、{{city}}で{{rank}}位！",
-      "city_week": "今週、{{city}}で{{rank}}位！",
-      "city_alltime": "{{city}}で{{rank}}位！",
-      "world_today": "今日、世界で{{rank}}位！",
-      "world_week": "今週、世界で{{rank}}位！",
-      "world_alltime": "世界で{{rank}}位！",
-      "cities_today": "今日、{{city}}は都市で{{rank}}位！",
-      "cities_week": "今週、{{city}}は都市で{{rank}}位！",
-      "cities_alltime": "{{city}}は都市で{{rank}}位！"
+      "city_today": "今日、{{city}}で{{rank, ordinal}}！",
+      "city_week": "今週、{{city}}で{{rank, ordinal}}！",
+      "city_alltime": "{{city}}で{{rank, ordinal}}！",
+      "world_today": "今日、世界で{{rank, ordinal}}！",
+      "world_week": "今週、世界で{{rank, ordinal}}！",
+      "world_alltime": "世界で{{rank, ordinal}}！",
+      "cities_today": "今日、{{city}}は都市で{{rank, ordinal}}！",
+      "cities_week": "今週、{{city}}は都市で{{rank, ordinal}}！",
+      "cities_alltime": "{{city}}は都市で{{rank, ordinal}}！"
     }
   }
 }

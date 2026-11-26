@@ -142,8 +142,8 @@
   "leaderboard": {
     "title": "Most Local",
     "chip": {
-      "ranked": "🏆 #{{rank}}",
-      "rankedOver": "🏆 #100+",
+      "ranked": "🏆 {{rank}}",
+      "rankedOver": "🏆 100+",
       "neutral": "🏆 頂尖挑戰者"
     },
     "scope": {
@@ -157,7 +157,7 @@
     },
     "points": "{{points}} 分",
     "me": {
-      "ranked": "你 · #{{rank}} · {{points}} 分",
+      "ranked": "你 · {{rank, ordinal}} · {{points}} 分",
       "unranked": "接受挑戰，登上排行榜"
     },
     "empty": {
@@ -177,10 +177,10 @@
       "periodAll": "累計",
       "placeCity": "在 {{city}}",
       "placeWorld": "在全世界",
-      "userNotTop": "🔥 我{{place}}{{period}}排第 {{rank}} 名，{{pts}} 分！正在追 @{{above}}（{{aPts}} 分）👀，也把 @{{below}}（{{bPts}} 分）甩在後面。你有本事超過我嗎？🏆",
-      "userTop": "👑 我{{place}}{{period}}排第 1 名，{{pts}} 分！@{{below1}}（{{b1Pts}} 分）和 @{{below2}}（{{b2Pts}} 分）緊追在後。來搶王座吧 😏",
-      "cityNotTop": "🔥 {{place}}{{period}}在所有城市中排第 {{rank}} 名，{{pts}} 分！緊追 {{above}}（{{aPts}} 分）👀，領先 {{below}}（{{bPts}} 分）。在地人，一起衝 🏆",
-      "cityTop": "👑 {{place}}{{period}}在所有城市中排第 1 名，{{pts}} 分！{{below1}}（{{b1Pts}} 分）和 {{below2}}（{{b2Pts}} 分）正在追我們。在地人，一起守住第一 🔥"
+      "userNotTop": "🔥 我{{place}}{{period}}排{{rank, ordinal}}，{{pts}} 分！正在追 @{{above}}（{{aPts}} 分）👀，也把 @{{below}}（{{bPts}} 分）甩在後面。你有本事超過我嗎？🏆",
+      "userTop": "👑 我{{place}}{{period}}排第一名，{{pts}} 分！@{{below1}}（{{b1Pts}} 分）和 @{{below2}}（{{b2Pts}} 分）緊追在後。來搶王座吧 😏",
+      "cityNotTop": "🔥 {{place}}{{period}}在所有城市中排{{rank, ordinal}}，{{pts}} 分！緊追 {{above}}（{{aPts}} 分）👀，領先 {{below}}（{{bPts}} 分）。在地人，一起衝 🏆",
+      "cityTop": "👑 {{place}}{{period}}在所有城市中排第一名，{{pts}} 分！{{below1}}（{{b1Pts}} 分）和 {{below2}}（{{b2Pts}} 分）正在追我們。在地人，一起守住第一 🔥"
     }
   },
   "debrief": {
@@ -297,9 +297,9 @@
   },
   "scoreCelebration": {
     "rank": {
-      "city": "{{city}} 第 {{rank}} 名",
+      "city": "{{city}} {{rank, ordinal}}",
       "cityBeyond": "在你的城市排名 {{topN}} 名以外",
-      "world": "全球第 {{rank}} 名",
+      "world": "全球{{rank, ordinal}}",
       "worldBeyond": "全球排名 {{topN}} 名以外",
       "cityUnranked": "本月在 {{city}} 還沒上榜",
       "worldUnranked": "本月全球還沒上榜"
@@ -438,15 +438,15 @@
     "ranks": "🏆 查看排行榜",
     "share": "📤 分享我的勝利",
     "shareLine": {
-      "city_today": "我今天在{{city}}排名第 {{rank}}",
-      "city_week": "我本週在{{city}}排名第 {{rank}}",
-      "city_alltime": "我在{{city}}排名第 {{rank}}",
-      "world_today": "我今天全球排名第 {{rank}}",
-      "world_week": "我本週全球排名第 {{rank}}",
-      "world_alltime": "我全球排名第 {{rank}}",
-      "cities_today": "{{city}}今天在城市中排名第 {{rank}}",
-      "cities_week": "{{city}}本週在城市中排名第 {{rank}}",
-      "cities_alltime": "{{city}}在城市中排名第 {{rank}}"
+      "city_today": "我今天在{{city}}排{{rank, ordinal}}",
+      "city_week": "我本週在{{city}}排{{rank, ordinal}}",
+      "city_alltime": "我在{{city}}排{{rank, ordinal}}",
+      "world_today": "我今天全球排{{rank, ordinal}}",
+      "world_week": "我本週全球排{{rank, ordinal}}",
+      "world_alltime": "我全球排{{rank, ordinal}}",
+      "cities_today": "{{city}}今天在城市中排{{rank, ordinal}}",
+      "cities_week": "{{city}}本週在城市中排{{rank, ordinal}}",
+      "cities_alltime": "{{city}}在城市中排{{rank, ordinal}}"
     }
   }
 }

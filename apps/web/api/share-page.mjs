@@ -25,6 +25,7 @@
 import { API_BASE, sizedPhoto } from './_daily.mjs'
 import { TODAY_STRINGS } from './_today-i18n.mjs'
 import { SHARE_STRINGS } from './_share-i18n.mjs'
+import { ordinal } from '../src/lib/ordinal.js'
 
 const SITE = 'https://hilads.live'
 const LOCALES = Object.keys(SHARE_STRINGS)
@@ -143,8 +144,8 @@ function body(data, S, SS, locale) {
       <div class="from" id="ask-from"></div>
       <div class="ask-q">${esc((c && c.shareQuestion) || SS.ask)}</div>
     </section>`
-    const rank = p.worldRank && p.worldRank <= 3 ? fmt(SS.rankWorld, { rank: p.worldRank })
-      : p.cityRank && p.cityRank <= 3 && p.city ? fmt(SS.rankCity, { rank: p.cityRank, city: p.city.name }) : null
+    const rank = p.worldRank && p.worldRank <= 3 ? fmt(SS.rankWorld, { rank: ordinal(p.worldRank, locale) })
+      : p.cityRank && p.cityRank <= 3 && p.city ? fmt(SS.rankCity, { rank: ordinal(p.cityRank, locale), city: p.city.name }) : null
     return `${ask}<figure class="photo"><img src="${esc(sizedPhoto(p.photoUrl, 'medium'))}" alt="${esc(p.caption || '')}" decoding="async" />${rank ? `<span class="rank">${esc(rank)}</span>` : ''}</figure>
     ${card(`
       <div class="kicker">Daily Challenge</div>${challenge}`, `

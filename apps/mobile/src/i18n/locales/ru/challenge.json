@@ -145,8 +145,8 @@
   "leaderboard": {
     "title": "Most Local",
     "chip": {
-      "ranked": "🏆 #{{rank}}",
-      "rankedOver": "🏆 #100+",
+      "ranked": "🏆 {{rank}}",
+      "rankedOver": "🏆 100+",
       "neutral": "🏆 Топ челленджеров"
     },
     "scope": {
@@ -160,7 +160,7 @@
     },
     "points": "{{points}} очк.",
     "me": {
-      "ranked": "Ты · #{{rank}} · {{points}} очк.",
+      "ranked": "Ты · {{rank, ordinal}} · {{points}} очк.",
       "unranked": "Прими челлендж, чтобы попасть в рейтинг"
     },
     "empty": {
@@ -180,10 +180,10 @@
       "periodAll": "за всё время",
       "placeCity": "в городе {{city}}",
       "placeWorld": "в мире",
-      "userNotTop": "🔥 Я #{{rank}} {{place}} {{period}}, на счету {{pts}} очк. Догоняю @{{above}} ({{aPts}} очк.) 👀, а @{{below}} ({{bPts}} очк.) дышит мне в спину. Думаешь, обгонишь? 🏆",
-      "userTop": "👑 Я #1 {{place}} {{period}}, на счету {{pts}} очк. @{{below1}} ({{b1Pts}} очк.) и @{{below2}} ({{b2Pts}} очк.) дышат мне в спину. Попробуй отобрать корону 😏",
-      "cityNotTop": "🔥 {{place}} — #{{rank}} среди всех городов {{period}}: {{pts}} очк. Выше нас — {{above}} ({{aPts}} очк.) 👀, ниже — {{below}} ({{bPts}} очк.). Местные, поднажмём 🏆",
-      "cityTop": "👑 {{place}} — #1 среди всех городов {{period}}: {{pts}} очк. За нами гонятся {{below1}} ({{b1Pts}} очк.) и {{below2}} ({{b2Pts}} очк.). Местные, держим первое место 🔥"
+      "userNotTop": "🔥 Я {{rank, ordinal}} {{place}} {{period}}, на счету {{pts}} очк. Догоняю @{{above}} ({{aPts}} очк.) 👀, а @{{below}} ({{bPts}} очк.) дышит мне в спину. Думаешь, обгонишь? 🏆",
+      "userTop": "👑 Я на первом месте {{place}} {{period}}, на счету {{pts}} очк. @{{below1}} ({{b1Pts}} очк.) и @{{below2}} ({{b2Pts}} очк.) дышат мне в спину. Попробуй отобрать корону 😏",
+      "cityNotTop": "🔥 {{place}} — {{rank, ordinal}} среди всех городов {{period}}: {{pts}} очк. Выше нас — {{above}} ({{aPts}} очк.) 👀, ниже — {{below}} ({{bPts}} очк.). Местные, поднажмём 🏆",
+      "cityTop": "👑 {{place}} — на первом месте среди всех городов {{period}}: {{pts}} очк. За нами гонятся {{below1}} ({{b1Pts}} очк.) и {{below2}} ({{b2Pts}} очк.). Местные, держим первое место 🔥"
     }
   },
   "debrief": {
@@ -300,9 +300,9 @@
   },
   "scoreCelebration": {
     "rank": {
-      "city": "#{{rank}} в городе {{city}}",
+      "city": "{{rank, ordinal}} в городе {{city}}",
       "cityBeyond": "Вне топ-{{topN}} в твоём городе",
-      "world": "#{{rank}} в мире",
+      "world": "{{rank, ordinal}} в мире",
       "worldBeyond": "Вне топ-{{topN}} в мире",
       "cityUnranked": "{{city}}: в этом месяце без места в рейтинге",
       "worldUnranked": "В этом месяце без места в мировом рейтинге"
@@ -431,7 +431,7 @@
       "city": "в городе {{city}}",
       "world": "Мир",
       "cities": "{{city}} среди городов",
-      "citiesTop": "{{city}} — город №1"
+      "citiesTop": "{{city}} — первый город"
     },
     "up": "вверх на {{count}}",
     "new": "Новое",
@@ -451,15 +451,15 @@
     "ranks": "🏆 Смотреть рейтинг",
     "share": "📤 Поделиться победой",
     "shareLine": {
-      "city_today": "Я №{{rank}} в городе {{city}} сегодня",
-      "city_week": "Я №{{rank}} в городе {{city}} на этой неделе",
-      "city_alltime": "Я №{{rank}} в городе {{city}}",
-      "world_today": "Я №{{rank}} в мире сегодня",
-      "world_week": "Я №{{rank}} в мире на этой неделе",
-      "world_alltime": "Я №{{rank}} в мире",
-      "cities_today": "{{city}} — №{{rank}} среди городов сегодня",
-      "cities_week": "{{city}} — №{{rank}} среди городов на этой неделе",
-      "cities_alltime": "{{city}} — №{{rank}} среди городов"
+      "city_today": "Я {{rank, ordinal}} в городе {{city}} сегодня",
+      "city_week": "Я {{rank, ordinal}} в городе {{city}} на этой неделе",
+      "city_alltime": "Я {{rank, ordinal}} в городе {{city}}",
+      "world_today": "Я {{rank, ordinal}} в мире сегодня",
+      "world_week": "Я {{rank, ordinal}} в мире на этой неделе",
+      "world_alltime": "Я {{rank, ordinal}} в мире",
+      "cities_today": "{{city}} — {{rank, ordinal}} среди городов сегодня",
+      "cities_week": "{{city}} — {{rank, ordinal}} среди городов на этой неделе",
+      "cities_alltime": "{{city}} — {{rank, ordinal}} среди городов"
     }
   }
 }

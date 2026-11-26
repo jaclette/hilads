@@ -143,8 +143,8 @@
   "leaderboard": {
     "title": "Most Local",
     "chip": {
-      "ranked": "🏆 #{{rank}}",
-      "rankedOver": "🏆 #100+",
+      "ranked": "🏆 {{rank}}",
+      "rankedOver": "🏆 100+",
       "neutral": "🏆 Top challengers"
     },
     "scope": {
@@ -158,7 +158,7 @@
     },
     "points": "{{points}} pts",
     "me": {
-      "ranked": "Ikaw · #{{rank}} · {{points}} pts",
+      "ranked": "Ikaw · {{rank, ordinal}} · {{points}} pts",
       "unranked": "Tumanggap ng challenge para mapasama sa board"
     },
     "empty": {
@@ -178,10 +178,10 @@
       "periodAll": "sa lahat ng panahon",
       "placeCity": "sa {{city}}",
       "placeWorld": "sa buong mundo",
-      "userNotTop": "🔥 #{{rank}} ako {{place}} {{period}}: {{pts}} pts! Hinahabol ko si @{{above}} ({{aPts}} pts) 👀 at nasa likod ko si @{{below}} ({{bPts}} pts). Kaya mo ba akong lampasan? 🏆",
-      "userTop": "👑 #1 ako {{place}} {{period}}: {{pts}} pts! Nakabuntot sina @{{below1}} ({{b1Pts}} pts) at @{{below2}} ({{b2Pts}} pts). Agawin mo ang korona kung kaya mo 😏",
-      "cityNotTop": "🔥 #{{rank}} ang {{place}} sa lahat ng city {{period}}: {{pts}} pts! Kasunod lang ng {{above}} ({{aPts}} pts) 👀 at nauuna sa {{below}} ({{bPts}} pts). Locals, akyat tayo 🏆",
-      "cityTop": "👑 #1 ang {{place}} sa lahat ng city {{period}}: {{pts}} pts! Hinahabol tayo ng {{below1}} ({{b1Pts}} pts) at {{below2}} ({{b2Pts}} pts). Locals, dito lang tayo sa tuktok 🔥"
+      "userNotTop": "🔥 Nasa {{rank, ordinal}} na puwesto ako {{place}} {{period}}: {{pts}} pts! Hinahabol ko si @{{above}} ({{aPts}} pts) 👀 at nasa likod ko si @{{below}} ({{bPts}} pts). Kaya mo ba akong lampasan? 🏆",
+      "userTop": "👑 Ako ang nangunguna {{place}} {{period}}: {{pts}} pts! Nakabuntot sina @{{below1}} ({{b1Pts}} pts) at @{{below2}} ({{b2Pts}} pts). Agawin mo ang korona kung kaya mo 😏",
+      "cityNotTop": "🔥 Nasa {{rank, ordinal}} na puwesto ang {{place}} sa lahat ng city {{period}}: {{pts}} pts! Kasunod lang ng {{above}} ({{aPts}} pts) 👀 at nauuna sa {{below}} ({{bPts}} pts). Locals, akyat tayo 🏆",
+      "cityTop": "👑 Nangunguna ang {{place}} sa lahat ng city {{period}}: {{pts}} pts! Hinahabol tayo ng {{below1}} ({{b1Pts}} pts) at {{below2}} ({{b2Pts}} pts). Locals, dito lang tayo sa tuktok 🔥"
     }
   },
   "debrief": {
@@ -298,9 +298,9 @@
   },
   "scoreCelebration": {
     "rank": {
-      "city": "#{{rank}} sa {{city}}",
+      "city": "Nasa {{rank, ordinal}} sa {{city}}",
       "cityBeyond": "Wala ka sa top {{topN}} ng city mo",
-      "world": "#{{rank}} sa buong mundo",
+      "world": "Nasa {{rank, ordinal}} sa mundo",
       "worldBeyond": "Wala ka sa top {{topN}} sa buong mundo",
       "cityUnranked": "Wala ka pang rank ngayong buwan sa {{city}}",
       "worldUnranked": "Wala ka pang rank ngayong buwan sa buong mundo"
@@ -441,15 +441,15 @@
     "ranks": "🏆 Tingnan ang ranking",
     "share": "📤 I-share ang panalo ko",
     "shareLine": {
-      "city_today": "#{{rank}} ako sa {{city}} ngayon",
-      "city_week": "#{{rank}} ako sa {{city}} ngayong linggo",
-      "city_alltime": "#{{rank}} ako sa {{city}}",
-      "world_today": "#{{rank}} ako sa mundo ngayon",
-      "world_week": "#{{rank}} ako sa mundo ngayong linggo",
-      "world_alltime": "#{{rank}} ako sa mundo",
-      "cities_today": "#{{rank}} ang {{city}} sa mga lungsod ngayon",
-      "cities_week": "#{{rank}} ang {{city}} sa mga lungsod ngayong linggo",
-      "cities_alltime": "#{{rank}} ang {{city}} sa mga lungsod"
+      "city_today": "Nasa {{rank, ordinal}} na puwesto ako sa {{city}} ngayon",
+      "city_week": "Nasa {{rank, ordinal}} na puwesto ako sa {{city}} ngayong linggo",
+      "city_alltime": "Nasa {{rank, ordinal}} na puwesto ako sa {{city}}",
+      "world_today": "Nasa {{rank, ordinal}} na puwesto ako sa mundo ngayon",
+      "world_week": "Nasa {{rank, ordinal}} na puwesto ako sa mundo ngayong linggo",
+      "world_alltime": "Nasa {{rank, ordinal}} na puwesto ako sa mundo",
+      "cities_today": "Nasa {{rank, ordinal}} na puwesto ang {{city}} sa mga lungsod ngayon",
+      "cities_week": "Nasa {{rank, ordinal}} na puwesto ang {{city}} sa mga lungsod ngayong linggo",
+      "cities_alltime": "Nasa {{rank, ordinal}} na puwesto ang {{city}} sa mga lungsod"
     }
   }
 }

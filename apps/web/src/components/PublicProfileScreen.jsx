@@ -147,8 +147,8 @@ export default function PublicProfileScreen({ userId, account, onBack, onSendDm,
           {card && (card.season.city || card.season.world) && (<>
             <h2 className="pp2-h">{card.season.pre ? tp('preSeason') : tp('season')}</h2>
             <div className="pp2-ranks">
-              {card.season.city && <div className="pp2-rank pp2-rank--city"><b>#{card.season.city.rank}</b><div>{tp('inCity', { city: shortCityName(card.season.city.city.name ?? '') })}<span><FlagSticker country={card.season.city.city.country} size={12} /> {i18n.t('dc.ranks.pts', { ns: 'challenge', count: card.season.city.points })}</span></div></div>}
-              {card.season.world && <div className="pp2-rank pp2-rank--world"><b>#{card.season.world.rank}</b><div>{tp('world')}<span>🌍 {i18n.t('dc.ranks.pts', { ns: 'challenge', count: card.season.world.points })}</span></div></div>}
+              {card.season.city && <div className="pp2-rank pp2-rank--city"><b>{card.season.city.rank}</b><div>{tp('inCity', { city: shortCityName(card.season.city.city.name ?? '') })}<span><FlagSticker country={card.season.city.city.country} size={12} /> {i18n.t('dc.ranks.pts', { ns: 'challenge', count: card.season.city.points })}</span></div></div>}
+              {card.season.world && <div className="pp2-rank pp2-rank--world"><b>{card.season.world.rank}</b><div>{tp('world')}<span>🌍 {i18n.t('dc.ranks.pts', { ns: 'challenge', count: card.season.world.points })}</span></div></div>}
             </div>
           </>)}
 

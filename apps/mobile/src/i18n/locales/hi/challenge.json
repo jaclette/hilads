@@ -143,8 +143,8 @@
   "leaderboard": {
     "title": "Most Local",
     "chip": {
-      "ranked": "🏆 #{{rank}}",
-      "rankedOver": "🏆 #100+",
+      "ranked": "🏆 {{rank}}",
+      "rankedOver": "🏆 100+",
       "neutral": "🏆 टॉप चैलेंजर्स"
     },
     "scope": {
@@ -158,7 +158,7 @@
     },
     "points": "{{points}} पॉइंट्स",
     "me": {
-      "ranked": "आप · #{{rank}} · {{points}} पॉइंट्स",
+      "ranked": "आप · {{rank, ordinal}} · {{points}} पॉइंट्स",
       "unranked": "बोर्ड पर आने के लिए चैलेंज लें"
     },
     "empty": {
@@ -178,10 +178,10 @@
       "periodAll": "अब तक",
       "placeCity": "{{city}} में",
       "placeWorld": "दुनिया में",
-      "userNotTop": "🔥 मैं {{place}} {{period}} #{{rank}} पर हूँ: {{pts}} पॉइंट्स! @{{above}} ({{aPts}} पॉइंट्स) मेरे निशाने पर है 👀 और @{{below}} ({{bPts}} पॉइंट्स) मेरे पीछे। क्या आप मुझसे आगे निकल सकते हैं? 🏆",
-      "userTop": "👑 मैं {{place}} {{period}} #1 पर हूँ: {{pts}} पॉइंट्स! @{{below1}} ({{b1Pts}} पॉइंट्स) और @{{below2}} ({{b2Pts}} पॉइंट्स) ठीक मेरे पीछे हैं। आइए, ताज छीनकर दिखाइए 😏",
-      "cityNotTop": "🔥 {{place}} {{period}} सभी शहरों में #{{rank}} पर है: {{pts}} पॉइंट्स! {{above}} ({{aPts}} पॉइंट्स) के ठीक पीछे 👀 और {{below}} ({{bPts}} पॉइंट्स) से आगे। लोकल्स, चलिए ऊपर चढ़ते हैं 🏆",
-      "cityTop": "👑 {{place}} {{period}} सभी शहरों में #1 पर है: {{pts}} पॉइंट्स! {{below1}} ({{b1Pts}} पॉइंट्स) और {{below2}} ({{b2Pts}} पॉइंट्स) हमारा पीछा कर रहे हैं। लोकल्स, चलिए टॉप पर बने रहें 🔥"
+      "userNotTop": "🔥 {{place}} {{period}} मेरा स्थान {{rank, ordinal}} है: {{pts}} पॉइंट्स! @{{above}} ({{aPts}} पॉइंट्स) मेरे निशाने पर है 👀 और @{{below}} ({{bPts}} पॉइंट्स) मेरे पीछे। क्या आप मुझसे आगे निकल सकते हैं? 🏆",
+      "userTop": "👑 मैं {{place}} {{period}} पहले स्थान पर हूँ: {{pts}} पॉइंट्स! @{{below1}} ({{b1Pts}} पॉइंट्स) और @{{below2}} ({{b2Pts}} पॉइंट्स) ठीक मेरे पीछे हैं। आइए, ताज छीनकर दिखाइए 😏",
+      "cityNotTop": "🔥 {{period}} सभी शहरों में {{place}} का स्थान {{rank, ordinal}} है: {{pts}} पॉइंट्स! {{above}} ({{aPts}} पॉइंट्स) के ठीक पीछे 👀 और {{below}} ({{bPts}} पॉइंट्स) से आगे। लोकल्स, चलिए ऊपर चढ़ते हैं 🏆",
+      "cityTop": "👑 {{place}} {{period}} सभी शहरों में पहले स्थान पर है: {{pts}} पॉइंट्स! {{below1}} ({{b1Pts}} पॉइंट्स) और {{below2}} ({{b2Pts}} पॉइंट्स) हमारा पीछा कर रहे हैं। लोकल्स, चलिए टॉप पर बने रहें 🔥"
     }
   },
   "debrief": {
@@ -298,9 +298,9 @@
   },
   "scoreCelebration": {
     "rank": {
-      "city": "{{city}} में #{{rank}}",
+      "city": "{{city}} में {{rank, ordinal}}",
       "cityBeyond": "अपने शहर में टॉप {{topN}} से बाहर",
-      "world": "दुनिया में #{{rank}}",
+      "world": "दुनिया में {{rank, ordinal}}",
       "worldBeyond": "दुनिया में टॉप {{topN}} से बाहर",
       "cityUnranked": "इस महीने {{city}} में कोई रैंक नहीं",
       "worldUnranked": "इस महीने दुनिया में कोई रैंक नहीं"
@@ -425,7 +425,7 @@
       "city": "{{city}} में",
       "world": "दुनिया",
       "cities": "शहरों में {{city}}",
-      "citiesTop": "{{city}} नंबर 1 शहर"
+      "citiesTop": "{{city}} पहला शहर"
     },
     "up": "{{count}} ऊपर",
     "new": "नया",
@@ -441,15 +441,15 @@
     "ranks": "🏆 रैंकिंग देखो",
     "share": "📤 मेरी जीत शेयर करो",
     "shareLine": {
-      "city_today": "मैं आज {{city}} में #{{rank}} हूँ",
-      "city_week": "मैं इस हफ़्ते {{city}} में #{{rank}} हूँ",
-      "city_alltime": "मैं {{city}} में #{{rank}} हूँ",
-      "world_today": "मैं आज दुनिया में #{{rank}} हूँ",
-      "world_week": "मैं इस हफ़्ते दुनिया में #{{rank}} हूँ",
-      "world_alltime": "मैं दुनिया में #{{rank}} हूँ",
-      "cities_today": "{{city}} आज शहरों में #{{rank}} है",
-      "cities_week": "{{city}} इस हफ़्ते शहरों में #{{rank}} है",
-      "cities_alltime": "{{city}} शहरों में #{{rank}} है"
+      "city_today": "आज {{city}} में मेरा स्थान {{rank, ordinal}} है",
+      "city_week": "इस हफ़्ते {{city}} में मेरा स्थान {{rank, ordinal}} है",
+      "city_alltime": "{{city}} में मेरा स्थान {{rank, ordinal}} है",
+      "world_today": "आज दुनिया में मेरा स्थान {{rank, ordinal}} है",
+      "world_week": "इस हफ़्ते दुनिया में मेरा स्थान {{rank, ordinal}} है",
+      "world_alltime": "दुनिया में मेरा स्थान {{rank, ordinal}} है",
+      "cities_today": "आज शहरों में {{city}} का स्थान {{rank, ordinal}} है",
+      "cities_week": "इस हफ़्ते शहरों में {{city}} का स्थान {{rank, ordinal}} है",
+      "cities_alltime": "शहरों में {{city}} का स्थान {{rank, ordinal}} है"
     }
   }
 }

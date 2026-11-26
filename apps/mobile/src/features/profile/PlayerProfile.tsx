@@ -32,6 +32,8 @@ import { socket } from '@/lib/socket';
 import { goBack } from '@/lib/nav';
 import { track } from '@/services/analytics';
 import type { DailyLocalPassProgress, DailyUserStats, HiladsEvent, PublicProfile } from '@/types';
+import i18n from '@/i18n';
+import { ordinal } from '@/lib/ordinal';
 
 type FriendState = 'none' | 'pending_out' | 'pending_in' | 'friend';
 
@@ -400,8 +402,8 @@ function RankCard({ colors, rank, label, sub, flag, globe }: { colors: [string, 
   const styles = useThemedStyles(makeStyles);
   return (
     <LinearGradient colors={colors} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.rankCard}>
-      <View accessible accessibilityLabel={`#${rank} ${label}, ${sub}`} style={styles.rankInner}>
-        <Text style={styles.rankNum} maxFontSizeMultiplier={1.3}>#{rank}</Text>
+      <View accessible accessibilityLabel={`${ordinal(rank, i18n.language)} ${label}, ${sub}`} style={styles.rankInner}>
+        <Text style={styles.rankNum} maxFontSizeMultiplier={1.3}>{ordinal(rank, i18n.language)}</Text>
         <View style={styles.rankBody}>
           <Text style={styles.rankLabel} numberOfLines={1}>{label}</Text>
           <View style={styles.rankSubRow}>

@@ -65,8 +65,8 @@
   "leaderboard": {
     "title": "Most Local",
     "chip": {
-      "ranked": "#{{rank}}",
-      "rankedOver": "#100+",
+      "ranked": "{{rank, ordinal}}",
+      "rankedOver": "100+",
       "neutral": "Penantang teratas"
     },
     "scope": {
@@ -94,10 +94,10 @@
       "periodAll": "sepanjang masa",
       "placeCity": "di {{city}}",
       "placeWorld": "di dunia",
-      "userNotTop": "🔥 Aku #{{rank}} {{place}} {{period}}: {{pts}} poin! Lagi ngejar @{{above}} ({{aPts}} poin) 👀 dan nahan @{{below}} ({{bPts}} poin) di belakangku. Yakin bisa nyalip aku? 🏆",
-      "userTop": "👑 Aku #1 {{place}} {{period}}: {{pts}} poin! @{{below1}} ({{b1Pts}} poin) dan @{{below2}} ({{b2Pts}} poin) nempel di belakangku. Sini rebut mahkotanya 😏",
-      "cityNotTop": "🔥 {{place}} #{{rank}} dari semua kota {{period}}: {{pts}} poin! Tepat di belakang {{above}} ({{aPts}} poin) 👀 dan di depan {{below}} ({{bPts}} poin). Warga lokal, yuk naik 🏆",
-      "cityTop": "👑 {{place}} #1 dari semua kota {{period}}: {{pts}} poin! {{below1}} ({{b1Pts}} poin) dan {{below2}} ({{b2Pts}} poin) lagi ngejar kita. Warga lokal, yuk tetap di puncak 🔥"
+      "userNotTop": "🔥 Aku peringkat {{rank, ordinal}} {{place}} {{period}}: {{pts}} poin! Lagi ngejar @{{above}} ({{aPts}} poin) 👀 dan nahan @{{below}} ({{bPts}} poin) di belakangku. Yakin bisa nyalip aku? 🏆",
+      "userTop": "👑 Aku peringkat pertama {{place}} {{period}}: {{pts}} poin! @{{below1}} ({{b1Pts}} poin) dan @{{below2}} ({{b2Pts}} poin) nempel di belakangku. Sini rebut mahkotanya 😏",
+      "cityNotTop": "🔥 {{place}} peringkat {{rank, ordinal}} dari semua kota {{period}}: {{pts}} poin! Tepat di belakang {{above}} ({{aPts}} poin) 👀 dan di depan {{below}} ({{bPts}} poin). Warga lokal, yuk naik 🏆",
+      "cityTop": "👑 {{place}} peringkat pertama dari semua kota {{period}}: {{pts}} poin! {{below1}} ({{b1Pts}} poin) dan {{below2}} ({{b2Pts}} poin) lagi ngejar kita. Warga lokal, yuk tetap di puncak 🔥"
     }
   },
   "closeCta": "Tutup tantangan",
@@ -185,9 +185,9 @@
   },
   "scoreCelebration": {
     "rank": {
-      "city": "#{{rank}} di {{city}}",
+      "city": "Peringkat {{rank, ordinal}} di {{city}}",
       "cityBeyond": "Di luar top {{topN}} di kotamu",
-      "world": "#{{rank}} sedunia",
+      "world": "Peringkat {{rank, ordinal}} sedunia",
       "worldBeyond": "Di luar top {{topN}} sedunia",
       "cityUnranked": "Belum masuk peringkat bulan ini di {{city}}",
       "worldUnranked": "Belum masuk peringkat dunia bulan ini"
@@ -304,9 +304,9 @@
   },
   "spot": {
     "rankWeekFirst": "Vote terbanyak minggu ini di {{city}}",
-    "rankWeek": "#{{rank}} minggu ini di {{city}}",
+    "rankWeek": "Peringkat {{rank, ordinal}} minggu ini di {{city}}",
     "rankAlltimeFirst": "Tempat dengan vote terbanyak di {{city}}",
-    "rankAlltime": "#{{rank}} sepanjang masa di {{city}}",
+    "rankAlltime": "Peringkat {{rank, ordinal}} sepanjang masa di {{city}}",
     "photos": "Foto",
     "captions": "Kata orang-orang",
     "notFound": "Tempat ini nggak tersedia.",
@@ -396,7 +396,7 @@
       "validatedHint": "Divalidasi warga lokal: seseorang yang tinggal di sini memberi vote untuk foto ini."
     },
     "results": {
-      "worldRank": "#{{rank}} di dunia"
+      "worldRank": "Peringkat {{rank, ordinal}} di dunia"
     },
     "streak_other": "{{count}} hari beruntun",
     "twist": {
@@ -480,7 +480,7 @@
       "surprise": "Kejutkan aku"
     },
     "leaderboard": {
-      "me": "Kamu: #{{rank}} · ♥ {{votes}}"
+      "me": "Kamu: peringkat {{rank, ordinal}} · ♥ {{votes}}"
     },
     "week": {
       "title": "Minggu ini",
@@ -581,9 +581,9 @@
     },
     "spot": {
       "rankWeekFirst": "Vote terbanyak minggu ini di {{city}}",
-      "rankWeek": "#{{rank}} minggu ini di {{city}}",
+      "rankWeek": "Peringkat {{rank, ordinal}} minggu ini di {{city}}",
       "rankAlltimeFirst": "Tempat dengan vote terbanyak di {{city}}",
-      "rankAlltime": "#{{rank}} sepanjang masa di {{city}}",
+      "rankAlltime": "Peringkat {{rank, ordinal}} sepanjang masa di {{city}}",
       "photos": "Foto",
       "captions": "Kata orang-orang",
       "notFound": "Tempat ini nggak tersedia.",
@@ -775,32 +775,32 @@
       "bestPerCity": "Foto terbaik tiap kota",
       "new": "baru",
       "you": {
-        "top": "Kamu · #1 · Nggak ada di atasmu 👑",
-        "player": "Kamu · #{{rank}} · {{gap}} poin lagi buat nyalip {{name}} ▲",
+        "top": "Kamu · peringkat pertama · Nggak ada di atasmu 👑",
+        "player": "Kamu · peringkat {{rank, ordinal}} · {{gap}} poin lagi buat nyalip {{name}} ▲",
         "none": "Main hari ini biar masuk papan 🙋",
-        "photo_other": "Terbaikmu: #{{rank}} · {{count}} ❤️ ke #{{next}}",
-        "photoTop": "Terbaikmu: #1 · tak ada yang di atasmu 👑",
+        "photo_other": "Terbaikmu: peringkat {{rank, ordinal}} · {{count}} ❤️ ke peringkat {{next, ordinal}}",
+        "photoTop": "Terbaikmu: peringkat pertama · tak ada yang di atasmu 👑",
         "photoNone": "Belum ada fotomu di peringkat ❤️",
-        "seasonLead": "Kamu #1 musim ini! Pertahankan mahkotamu 👑",
-        "seasonBehind_one": "Kamu #{{rank}} musim ini, {{count}} poin di belakang {{name}}",
-        "seasonBehind_other": "Kamu #{{rank}} musim ini, {{count}} poin di belakang {{name}}",
-        "seasonTied": "Kamu #{{rank}} musim ini, seri dengan {{name}}",
+        "seasonLead": "Kamu peringkat pertama musim ini! Pertahankan mahkotamu 👑",
+        "seasonBehind_one": "Kamu peringkat {{rank, ordinal}} musim ini, {{count}} poin di belakang {{name}}",
+        "seasonBehind_other": "Kamu peringkat {{rank, ordinal}} musim ini, {{count}} poin di belakang {{name}}",
+        "seasonTied": "Kamu peringkat {{rank, ordinal}} musim ini, seri dengan {{name}}",
         "seasonNone": "Main hari ini untuk masuk musim ini 🙋"
       },
       "city": {
         "lineTop": "{{city}} memimpin balapan! 🏁",
-        "line_other": "{{city}} di #{{rank}}. {{count}} foto lagi buat ngejar {{next}}!",
-        "youBar_other": "{{city}} · #{{rank}} · kalah {{count}} foto dari {{next}}"
+        "line_other": "{{city}} di peringkat {{rank, ordinal}}. {{count}} foto lagi buat ngejar {{next}}!",
+        "youBar_other": "{{city}} · peringkat {{rank, ordinal}} · kalah {{count}} foto dari {{next}}"
       },
       "empty": {
         "photos": "Belum ada foto yang disukai. Yuk vote favoritmu ❤️",
-        "players": "Belum ada yang dapat poin. Main dan rebut #1 🙋",
+        "players": "Belum ada yang dapat poin. Main dan rebut peringkat pertama 🙋",
         "cities": "Belum ada kota di papan. Taruh kotamu di depan 🌍"
       },
       "results": {
         "dismiss": "Tutup",
-        "world": "🏆 Fotomu peringkat #{{rank}} dunia kemarin",
-        "city": "🏆 Fotomu peringkat #{{rank}} di {{city}} kemarin",
+        "world": "🏆 Fotomu peringkat {{rank, ordinal}} dunia kemarin",
+        "city": "🏆 Fotomu peringkat {{rank, ordinal}} di {{city}} kemarin",
         "best": "🏆 Fotomu yang terbaik di {{city}} kemarin",
         "votes_other": "🏆 Fotomu dapat {{count}} ❤️ kemarin",
         "generic": "🏆 Hasil kemarin sudah keluar",
@@ -812,7 +812,7 @@
         "photo": "Fotomu di sini? 📸",
         "player": "Ambil posisi ini 🙋",
         "city": "Kotamu di sini? 🌍",
-        "invite": "🎯 Siapa ambil #{{rank}}? Ajak teman",
+        "invite": "🎯 Siapa ambil peringkat {{rank, ordinal}}? Ajak teman",
         "empty": "Belum ada yang ambil posisi ini"
       },
       "seasonEnds_one": "Musim berakhir dalam {{count}} hari",
@@ -835,9 +835,9 @@
     },
     "season": {
       "resultsKicker": "{{season}} · Hasil musim",
-      "medalTitle": "Kamu finis #{{rank}}! 🎉",
-      "rankTitle_one": "Kamu finis #{{rank}} dari {{count}} pemain",
-      "rankTitle_other": "Kamu finis #{{rank}} dari {{count}} pemain",
+      "medalTitle": "Kamu finis peringkat {{rank, ordinal}}! 🎉",
+      "rankTitle_one": "Kamu finis peringkat {{rank, ordinal}} dari {{count}} pemain",
+      "rankTitle_other": "Kamu finis peringkat {{rank, ordinal}} dari {{count}} pemain",
       "stats": "Poin: {{points}} · Hari bermain: {{days}} · Podium: {{podiums}}",
       "newSeason": "Musim baru dimulai. Semua kembali ke 0.",
       "play": "📸 Mainkan tantangan hari ini",
@@ -884,15 +884,15 @@
     "ranks": "🏆 Lihat peringkat",
     "share": "📤 Bagikan kemenanganku",
     "shareLine": {
-      "city_today": "Aku #{{rank}} di {{city}} hari ini",
-      "city_week": "Aku #{{rank}} di {{city}} minggu ini",
-      "city_alltime": "Aku #{{rank}} di {{city}}",
-      "world_today": "Aku #{{rank}} di dunia hari ini",
-      "world_week": "Aku #{{rank}} di dunia minggu ini",
-      "world_alltime": "Aku #{{rank}} di dunia",
-      "cities_today": "{{city}} #{{rank}} di antara kota hari ini",
-      "cities_week": "{{city}} #{{rank}} di antara kota minggu ini",
-      "cities_alltime": "{{city}} #{{rank}} di antara kota"
+      "city_today": "Aku peringkat {{rank, ordinal}} di {{city}} hari ini",
+      "city_week": "Aku peringkat {{rank, ordinal}} di {{city}} minggu ini",
+      "city_alltime": "Aku peringkat {{rank, ordinal}} di {{city}}",
+      "world_today": "Aku peringkat {{rank, ordinal}} di dunia hari ini",
+      "world_week": "Aku peringkat {{rank, ordinal}} di dunia minggu ini",
+      "world_alltime": "Aku peringkat {{rank, ordinal}} di dunia",
+      "cities_today": "{{city}} peringkat {{rank, ordinal}} di antara kota hari ini",
+      "cities_week": "{{city}} peringkat {{rank, ordinal}} di antara kota minggu ini",
+      "cities_alltime": "{{city}} peringkat {{rank, ordinal}} di antara kota"
     }
   }
 }
