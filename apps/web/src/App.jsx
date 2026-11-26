@@ -50,6 +50,7 @@ import { searchCities, pickCity, setMyCity } from './api'
 import LandingPage from './components/LandingPage'
 import StoriesLanding from './components/StoriesLanding'
 import { FEATURED_CITY, MIN_LIVE_COUNT } from './config/featuredCity'
+import { saigonRecheckOutcome } from './lib/saigonRecheck'
 import AttendeeAvatars from './components/AttendeeAvatars'
 import useMentions from './hooks/useMentions'
 import { splitContentByMentions } from './lib/mentions'
@@ -913,17 +914,22 @@ function loadGuestId() {
   return (id && /^[a-f0-9]{32}$/.test(id)) ? id : null
 }
 
-function saveIdentity(nickname, channelId, city, timezone = null) {
-  localStorage.setItem(IDENTITY_KEY, JSON.stringify({ nickname, channelId, city, timezone }))
+// how: 'ip' (placed by the IP lookup) or 'picked' (chosen: picker, city switch, "Stay"). A re-save of the
+// same city keeps it. Identities saved before 2026-11-26 have none (see the Saigon re-check below).
+function saveIdentity(nickname, channelId, city, timezone = null, how = undefined) {
+  let prev = null
+  try { prev = JSON.parse(localStorage.getItem(IDENTITY_KEY) || 'null') } catch { prev = null }
+  const keep = how ?? (prev && String(prev.channelId) === String(channelId) ? prev.how : undefined)
+  localStorage.setItem(IDENTITY_KEY, JSON.stringify({ nickname, channelId, city, timezone, ...(keep ? { how: keep } : {}) }))
 }
 
 function loadIdentity() {
   try {
     const raw = localStorage.getItem(IDENTITY_KEY)
     if (!raw) return null
-    const { nickname, channelId, city, timezone } = JSON.parse(raw)
+    const { nickname, channelId, city, timezone, how } = JSON.parse(raw)
     if (!nickname?.trim() || !channelId) return null
-    return { nickname: nickname.trim(), channelId, city: city ?? null, timezone: timezone ?? null }
+    return { nickname: nickname.trim(), channelId, city: city ?? null, timezone: timezone ?? null, how: how ?? null }
   } catch {
     return null
   }
@@ -2047,7 +2053,7 @@ export default function App() {
   //   anything else (unknown / data centre / too slow / error) → null: the caller shows the city
   //   picker. NEVER a default city (it used to be Saigon for everyone not found in time).
   const GEO_BUDGET_MS = 1500
-  function fetchGeo(path) {
+  function fetchGeo(path, { raw = false } = {}) {
     const t0 = performance.now()
     let timedOut = false
     return Promise.race([
@@ -2061,6 +2067,7 @@ export default function App() {
         km: geo?.km ?? null, visitor_country: geo?.visitorCountry ?? null, city: geo?.city ?? null,
         server_ms: geo?.ms ?? null, client_ms: Math.round(performance.now() - t0), list: geo?.list ?? null,
       })
+      if (raw) return geo
       const ok = geo && (geo.state === 'city_matched' || geo.state === 'country_matched') && geo.channelId
       return ok ? geo : null
     })
@@ -2084,7 +2091,7 @@ export default function App() {
           const n = Number(ch?.activeUsers ?? 0)
           if (n > 0) setPreviewLiveCount(n)
         }).catch(() => {})
-        return { channelId: geo.channelId, city: geo.city, timezone: geo.timezone, country: geo.country }
+        return { channelId: geo.channelId, city: geo.city, timezone: geo.timezone, country: geo.country, how: 'ip' }
       }
       // No confident city: the picker, never a default city. The featured city only fills the
       // landing's preview behind it.
@@ -2168,7 +2175,7 @@ export default function App() {
         // budget only covers a cold lambda boot). Failure/timeout → origin.
         const geo = await fetchGeo('challenge')
         const loc = geo
-          ? { channelId: geo.channelId, city: geo.city, timezone: geo.timezone, country: geo.country }
+          ? { channelId: geo.channelId, city: geo.city, timezone: geo.timezone, country: geo.country, how: 'ip' }
           : origin
         showEntryCity(loc.city, loc.country ?? null, loc.timezone ?? 'UTC')
         return loc
@@ -2990,6 +2997,7 @@ export default function App() {
             city:      savedIdentity.city     ?? null,
             timezone:  savedIdentity.timezone ?? 'UTC',
             country:   null,
+            saved:     true,
           }
         }
       } else if (savedIdentity?.channelId) {
@@ -2999,6 +3007,7 @@ export default function App() {
           city:      savedIdentity.city     ?? null,
           timezone:  savedIdentity.timezone ?? 'UTC',
           country:   null,
+          saved:     true,   // re-saved below without changing how it was first set (ip / picked / before the fix)
         }
         console.debug('[hilads:join] path=saved-identity channelId=' + savedIdentity.channelId + ' ms=' + Math.round(performance.now() - _t0))
       } else {
@@ -3195,7 +3204,8 @@ export default function App() {
       }
       trackDeferred('joined_city', { city: location.city ?? rejoinData?.city ?? null, channel_id: location.channelId })
 
-      saveIdentity(name, location.channelId, location.city ?? rejoinData?.city ?? null, location.timezone ?? null)
+      saveIdentity(name, location.channelId, location.city ?? rejoinData?.city ?? null, location.timezone ?? null,
+                   rejoinData || location.saved ? undefined : (location.how ?? 'picked'))
       if (joinKey) scheduleEphemeral(joinKey)
       injectWelcomeCard(location.channelId, location.city ?? rejoinData?.city ?? null)
       // /challenges: the past challenges (Today's archive); /challenge/{date}-{slug}: that day's sheet.
@@ -3887,6 +3897,11 @@ export default function App() {
   }
 
   function stayInCity() {
+    if (cityProposal?.guest) {
+      // "Stay in Saigon" is a choice: never asked again.
+      const id = loadIdentity()
+      if (id) saveIdentity(id.nickname, id.channelId, id.city, id.timezone, 'picked')
+    }
     if (cityProposal) {
       try {
         const stayed = JSON.parse(sessionStorage.getItem(STAY_KEY) || '[]')
@@ -3902,12 +3917,49 @@ export default function App() {
     setCityProposal(null)
     if (!to) return
     track('city_switch_proposal', { choice: 'switch', to: to.city, platform_surface: 'web' })
-    try {
-      await setMyCity({ channelId: to.channelId })
-      setHereVersion(v => v + 1)
-    } catch { /* the next GPS fix asks again */ }
+    if (account) {
+      try {
+        await setMyCity({ channelId: to.channelId })
+        setHereVersion(v => v + 1)
+      } catch { /* the next GPS fix asks again */ }
+    }
     switchCity(to.channelId, to.city, to.timezone ?? 'UTC', to.country)
   }
+
+  // One-time Saigon re-check (2026-11-26). Before the geo fix, the web joined visitors whose city it
+  // could not find in time to Saigon, and saved it. A visitor WITHOUT an account, whose saved city is
+  // Saigon and was saved before the fix (no "how" marker: we can't tell an automatic join from a
+  // choice), gets one IP lookup on their next visit:
+  //   - in Vietnam (or unknown / a data centre / no answer): nothing happens;
+  //   - abroad, with a Hilads city found: "You're in {city}. Switch / Stay in Saigon" (one tap);
+  //   - abroad, no Hilads city found: the city picker opens (closing it keeps Saigon).
+  // Nobody is moved without a tap; accounts are never touched. Runs once per browser.
+  const RECHECK_KEY = 'hilads_saigon_recheck_v1'
+  useEffect(() => {
+    if (status !== 'ready' || account || localStorage.getItem(AUTH_FLAG_KEY)) return
+    let done = false
+    try { done = !!localStorage.getItem(RECHECK_KEY) } catch { done = true }
+    const id = loadIdentity()
+    if (done || !id || id.how) return
+    let cancelled = false
+    ;(async () => {
+      const saigon = await fetchCityBySlug(FEATURED_CITY.slug).catch(() => null)
+      if (cancelled || !saigon) return
+      if (String(id.channelId) !== String(saigon.channelId)) { try { localStorage.setItem(RECHECK_KEY, 'not_saigon') } catch {} return }
+      const geo = await fetchGeo('recheck', { raw: true })
+      if (cancelled) return
+      const outcome = saigonRecheckOutcome({ identity: id, saigonId: saigon.channelId, geo, hasAccount: false })
+      if (outcome === 'proposed') {
+        setCityProposal({ guest: true, to: { channelId: geo.channelId, city: geo.city, timezone: geo.timezone, country: geo.country },
+                          from: { city: saigon.city ?? id.city ?? 'Saigon' } })
+      } else if (outcome === 'picker') {
+        openCityPicker('browse')
+      }
+      track('saigon_recheck', { outcome, visitor_country: geo?.visitorCountry ?? null, state: geo?.state ?? 'timeout', to: outcome === 'proposed' ? geo.city : null })
+      try { localStorage.setItem(RECHECK_KEY, outcome) } catch {}
+    })()
+    return () => { cancelled = true }
+  }, [status, account])
 
   function renderCityProposal() {
     if (!cityProposal) return null
@@ -3915,13 +3967,13 @@ export default function App() {
     const from = shortCityName(cityProposal.from.city)
     return (
       <div className="v3-sheet-wrap" role="dialog" aria-modal="true" aria-label={t('switchSheet.title', { city: to })}>
-        <button type="button" className="v3-sheet-scrim" onClick={stayInCity} aria-label={t('switchSheet.stay', { city: from })} />
+        <button type="button" className="v3-sheet-scrim" onClick={stayInCity} aria-label={t('switchSheet.stay', { from })} />
         <div className="v3-sheet">
           <span className="v3-sheet-grabber" aria-hidden="true" />
           <p className="v3-sheet-title"><CityFlag country={cityProposal.to.country} /> {t('switchSheet.title', { city: to })}</p>
           <p className="city-switch-sub">{t('switchSheet.body', { city: to, from })}</p>
           <button type="button" className="city-switch-btn" onClick={acceptCitySwitch}>{t('switchSheet.switch', { city: to })}</button>
-          <button type="button" className="city-switch-stay" onClick={stayInCity}>{t('switchSheet.stay', { city: from })}</button>
+          <button type="button" className="city-switch-stay" onClick={stayInCity}>{t('switchSheet.stay', { from })}</button>
         </div>
       </div>
     )
@@ -4393,7 +4445,7 @@ export default function App() {
     cityMsgBufferRef.current     = []
     setCity(newCityName)
     setChannelId(newChannelId)
-    saveIdentity(activeNickname, newChannelId, newCityName, newCityTimezone ?? null)
+    saveIdentity(activeNickname, newChannelId, newCityName, newCityTimezone ?? null, 'picked')
     setCityTimezone(newCityTimezone ?? 'UTC')
     setEvents([])
     setCityEvents([])
