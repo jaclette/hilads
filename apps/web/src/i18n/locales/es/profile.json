@@ -590,6 +590,24 @@
       "landing": {
         "getApp": "Descarga la app",
         "text": "Juega cada día desde tu móvil."
+      },
+      "ticket": {
+        "kicker": "HILADS AIR · TARJETA DE EMBARQUE",
+        "yourCity": "Tu ciudad",
+        "you": "¿Tú? 👀",
+        "passenger": "Pasajero",
+        "boarding": "Embarque",
+        "price": "Precio",
+        "free": "Gratis",
+        "photos": "Fotos",
+        "seat": "Asiento",
+        "stamp": "A bordo",
+        "grab": "🎟️ Quiero mi asiento",
+        "helper": "Gratis · un minuto más o menos · tus puntos cuentan desde el día que te unes",
+        "remind": "🔔 Avísame cuando empiece",
+        "remindOn": "🔔 Te avisaremos",
+        "a11yGuest": "Tarjeta de embarque {{route}}, asiento {{seat}}, embarque el {{date}}. Toca para conseguir tu asiento.",
+        "a11yMember": "Tu tarjeta de embarque {{route}}, asiento {{seat}}, embarque el {{date}}, {{value}}"
       }
     }
   },

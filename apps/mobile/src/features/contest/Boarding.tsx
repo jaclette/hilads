@@ -11,6 +11,7 @@ import { Avatar, Card, Sheet, SheetScrollView, SheetTitle } from '@/ui';
 import { SharePanel } from '@/features/share/SharePanel';
 import type { ShareContent } from '@/features/share/content';
 import { contestDate, contestGoal, type ContestMeJoined, type ContestOverview, type ContestSeason } from './contest';
+import { BoardingTicket } from './BoardingTicket';
 
 /**
  * Boarding on the Trip's Overview, one row: the latest players' avatars, "186 players on board"
@@ -91,14 +92,11 @@ export function BoardingSheet({ visible, season: s, counter, me, buildShare, onC
     buildShare().then(setContent).catch(() => {});
   }, [visible]);   // eslint-disable-line react-hooks/exhaustive-deps
 
-  const joined = me?.joined === true && !(me as ContestMeJoined).excluded ? (me as ContestMeJoined) : null;
-  const myPhotos = joined ? joined.photos ?? 0 : null;
-  const earned = myPhotos !== null && myPhotos >= counter.photos;
   const pct = goal === null ? 1 : showCount ? Math.min(1, counter.players / Math.max(1, goal)) : 0;
   const status = !showCount ? t('trip.board.first')
     : goal !== null ? t('trip.board.seats', { players: counter.players, threshold: goal }) : t('trip.board.onBoard', { count: counter.players });
   const fallback = s.fallbackPrize ?? '';
-  const signUp = () => { onClose(); router.push('/auth-gate?reason=contest&returnTo=%2Ftrip' as never); };
+  const signUp = () => { onClose(); router.push(`/auth-gate?reason=contest&returnTo=${encodeURIComponent(s.phase === 'upcoming' ? '/trip' : '/contest-join')}` as never); };
 
   return (
     <Sheet visible={visible} onClose={onClose} closeLabel={t('back', { ns: 'daily' })}>
@@ -111,26 +109,8 @@ export function BoardingSheet({ visible, season: s, counter, me, buildShare, onC
             : reached ? t('trip.board.fullText') : `${t('trip.board.takeoff', { count: goal })} ${t('trip.board.what', { photos: counter.photos })}`}
         </Text>
 
-        {/* My boarding pass, or the locked one for people without an account. */}
-        {goal !== null && (account ? myPhotos !== null && (
-          <View style={[styles.pass, earned && styles.passEarned]} accessible
-                accessibilityLabel={earned ? `${t('trip.board.passEarned')}. ${t('trip.board.passEarnedText')}` : `${t('trip.board.pass')}: ${t('trip.board.passProgress', { n: myPhotos, photos: counter.photos })}`}>
-            <Ionicons name={earned ? 'airplane' : 'ticket-outline'} size={20} color={earned ? colors.onMedal : colors.primaryText} />
-            <View style={{ flex: 1 }}>
-              <Text style={[styles.passLabel, earned && { color: colors.onMedal }]}>{earned ? t('trip.board.passEarned') : t('trip.board.pass')}</Text>
-              <Text style={[styles.passValue, earned && { color: colors.onMedal }]}>
-                {earned ? t('trip.board.passEarnedText') : t('trip.board.passProgress', { n: myPhotos, photos: counter.photos })}
-              </Text>
-            </View>
-            {earned ? <Ionicons name="sparkles" size={20} color={colors.onMedal} /> : (
-              <View style={styles.passDots}>
-                {Array.from({ length: Math.min(counter.photos, 10) }).map((_, i) => (
-                  <View key={i} style={[styles.passDot, i < Math.round((myPhotos / Math.max(1, counter.photos)) * Math.min(counter.photos, 10)) && styles.passDotOn]} />
-                ))}
-              </View>
-            )}
-          </View>
-        ) : <LockedPass onPress={signUp} />)}
+        {/* My boarding pass (the ticket), or a guest's waiting for its passenger. */}
+        {!isOver(s) && <TripTicket season={s} counter={counter} me={me} onPress={account ? () => {} : signUp} />}
 
         {goal !== null && !reached && (
           <View style={styles.fallback}>
@@ -146,6 +126,26 @@ export function BoardingSheet({ visible, season: s, counter, me, buildShare, onC
         {content ? <SharePanel content={content} source="trip_boarding" compact previewHeight={250} /> : <View style={{ height: 120 }} />}
       </SheetScrollView>
     </Sheet>
+  );
+}
+
+/**
+ * My boarding pass ticket from the overview: a guest's (passenger "You? 👀", the next free seat), a member
+ * who hasn't joined yet (my handle, the next seat), or mine (my seat, my photos with a goal, the stamp).
+ */
+export function TripTicket({ season: s, counter, me, onPress }: {
+  season: ContestSeason; counter: Counter; me: ContestOverview['me'] | null; onPress: () => void;
+}) {
+  const { account, city } = useApp();
+  const goal = contestGoal(counter);
+  const joined = account && me?.joined === true && !(me as ContestMeJoined).excluded && !(me as ContestMeJoined).disqualified ? (me as ContestMeJoined) : null;
+  const photos = joined && goal !== null ? { n: joined.photos ?? 0, of: counter.photos } : null;
+  const earned = !!joined && (goal === null || (joined.photos ?? 0) >= counter.photos);
+  const handle = account ? (account.username ? '@' + account.username : account.display_name ?? null) : null;
+  return (
+    <BoardingTicket seasonId={s.id} from={city?.name ?? null} destination={s.tab?.destination || 'Vietnam'} startDate={s.startDate}
+                    seat={joined?.seat ?? counter.seatNext ?? counter.players + 1} passenger={handle} photos={photos} earned={earned}
+                    onPress={onPress} testID="trip-ticket" />
   );
 }
 
@@ -208,14 +208,6 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   seatsFirst: { ...Type.title, color: c.primaryText },
   muted:      { ...Type.caption, color: c.muted },
   inviteTitle:{ ...Type.label, color: c.text, marginTop: Space.sm },
-  pass:       { flexDirection: 'row', alignItems: 'center', gap: Space.sm, padding: Space.sm, paddingHorizontal: Space.md, borderRadius: 12,
-                borderWidth: 1.5, borderStyle: 'dashed', borderColor: c.primaryText, backgroundColor: c.primaryTint },
-  passEarned: { borderStyle: 'solid', borderColor: c.medalGold, backgroundColor: c.medalGold },
-  passLabel:  { ...Type.caption, fontSize: 12, lineHeight: 15, color: c.primaryOnTint },
-  passValue:  { ...Type.label, fontSize: 16, color: c.text, fontVariant: ['tabular-nums'] },
-  passDots:   { flexDirection: 'row', gap: 3 },
-  passDot:    { width: 6, height: 6, borderRadius: 3, backgroundColor: c.line },
-  passDotOn:  { backgroundColor: c.primaryText },
   locked:     { flexDirection: 'row', alignItems: 'center', gap: Space.sm, padding: Space.md, borderRadius: Radius.card,
                 borderWidth: 1.5, borderStyle: 'dashed', borderColor: c.primaryText, backgroundColor: c.primaryTint, minHeight: 64 },
   lockedIcon: { width: 40, height: 40, borderRadius: 12, backgroundColor: c.bg2, alignItems: 'center', justifyContent: 'center', transform: [{ rotate: '-4deg' }] },

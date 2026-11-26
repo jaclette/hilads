@@ -17,7 +17,7 @@ import { RankMedal } from '@/features/daily/RankMedal';
 import { ordinal } from '@/lib/ordinal';
 import { SouvenirLine } from './SouvenirLine';
 import { LS } from './HalongArt';
-import { BoardingRow, BoardingSheet, LockedPass } from './Boarding';
+import { BoardingRow, BoardingSheet, LockedPass, TripTicket } from './Boarding';
 import type { ShareContent } from '@/features/share/content';
 import { useTripNotify } from './useTripNotify';
 
@@ -71,9 +71,50 @@ export function TripOverview({ data, ranking, crew, onSection, onCta, onShareBoa
                          onClose={() => setSheet(false)} />
         </>
       )}
+      {!isOver(s) && data.counter && <TicketBlock data={data} onCta={onCta} onOpen={() => { onCta('ticket'); setSheet(true); }} />}
       {!isOver(s) && <MyStatus data={data} />}
       <PrimaryCta data={data} crew={crew} onSection={onSection} onCta={onCta} />
     </View>
+  );
+}
+
+/** Where "Grab my seat" leads: sign-up, then the race's join form once it's on (else back to the Trip). */
+export function grabSeatPath(s: ContestSeason): string {
+  return `/auth-gate?reason=contest&returnTo=${encodeURIComponent(s.phase === 'upcoming' ? '/trip' : '/contest-join')}`;
+}
+
+/**
+ * The boarding pass on the overview. A guest: the ticket waiting for its passenger, "🎟️ Grab my seat"
+ * (sign-up → the join form → back to Trip, the invite code kept), the honest helper line, and before
+ * the start "🔔 Remind me when it starts" (outlined). A member: the same ticket as my boarding pass
+ * (my handle, my city, my seat, my photos); joining / notify stay in the primary button below.
+ */
+function TicketBlock({ data, onCta, onOpen }: { data: ContestOverview; onCta: Cta; onOpen: () => void }) {
+  const styles = useThemedStyles(makeStyles);
+  const router = useRouter();
+  const { t } = useTranslation('me');
+  const { account } = useApp();
+  const notify = useTripNotify(data);
+  const s = data.season!;
+  const me = data.me;
+  const grab = () => { onCta('grab_seat'); router.push(grabSeatPath(s) as never); };
+  if (!account) {
+    return (
+      <View style={styles.ticketBlock}>
+        <TripTicket season={s} counter={data.counter!} me={null} onPress={grab} />
+        <Button label={t('trip.ticket.grab')} onPress={grab} testID="trip-cta" />
+        <Text style={styles.ticketHelp}>{t('trip.ticket.helper')}</Text>
+        {s.phase === 'upcoming' && (
+          <Button variant="secondary" label={t(notify.notified ? 'trip.ticket.remindOn' : 'trip.ticket.remind')} loading={notify.busy}
+                  onPress={() => { if (!notify.notified) { onCta('notify', { guest: true }); notify.notify(); } }} testID="trip-remind" />
+        )}
+      </View>
+    );
+  }
+  const joinable = me?.joined === false && me.canJoin;
+  return (
+    <TripTicket season={s} counter={data.counter!} me={me ?? null}
+                onPress={joinable ? () => { onCta('join'); router.push('/contest-join' as never); } : onOpen} />
   );
 }
 
@@ -116,13 +157,12 @@ function PhaseTimeline({ season: s }: { season: ContestSeason }) {
 /** My place: rank tag, points, the gap to the next rank; "Play to enter the race" before my first points (never "#1" with 0). */
 function MyStatus({ data }: { data: ContestOverview }) {
   const styles = useThemedStyles(makeStyles);
-  const router = useRouter();
   const { t, i18n } = useTranslation('me');
   const { account } = useApp();
   const s = data.season!;
   const me = data.me;
   // No account: the friendly locked card (my rank, my boarding pass come with an account).
-  if (!account) return <LockedPass onPress={() => router.push('/auth-gate?reason=contest&returnTo=%2Ftrip' as never)} />;
+  if (!account) return null;   // the ticket block above speaks to guests
   if (s.phase === 'upcoming') {
     return (
       <View style={styles.board}>
@@ -202,20 +242,18 @@ function PrimaryCta({ data, crew, onSection, onCta }: { data: ContestOverview; c
   const notify = useTripNotify(data);
   const s = data.season!;
   const me = data.me;
-  const signUp = () => { onCta('sign_up'); router.push('/auth-gate?reason=contest&returnTo=%2Ftrip' as never); };
-
   if (isOver(s)) {
     return <Button variant="secondary" icon="podium-outline" label={t('trip.cta.ranking')} onPress={() => { onCta('see_ranking'); onSection('ranking'); }} testID="trip-cta" />;
   }
+  if (!account) return null;   // guests: "Grab my seat" and "Remind me" sit under the ticket
   if (s.phase === 'upcoming') {
-    // "Notify me when it starts": members and app guests alike (push permission asked on the tap).
+    // "Notify me when it starts" (push permission asked on the tap).
     return (
       <Button icon={notify.notified ? 'checkmark-circle-outline' : 'notifications-outline'} variant={notify.notified ? 'secondary' : 'primary'} loading={notify.busy}
               label={t(notify.notified ? 'trip.cta.notifyOn' : 'trip.cta.notify')} testID="trip-cta"
               onPress={() => { if (!notify.notified) { onCta('notify', { guest: !account }); notify.notify(); } }} />
     );
   }
-  if (!account) return <Button icon="rocket-outline" label={t('trip.cta.join')} onPress={signUp} testID="trip-cta" />;
   if (!me) return null;
   if (me.joined === false) {
     return me.canJoin
@@ -606,4 +644,6 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   tableValue: { ...Type.label, fontSize: 16, color: c.primaryText, fontVariant: ['tabular-nums'] },
   placeRow:   { flexDirection: 'row', alignItems: 'center', gap: Space.sm, paddingVertical: 4, paddingLeft: Space.sm },
   whoRow:     { flexDirection: 'row', alignItems: 'flex-start', gap: Space.sm },
+  ticketBlock:{ gap: Space.sm },
+  ticketHelp: { ...Type.caption, color: c.muted, textAlign: 'center', fontWeight: '700' },
 });

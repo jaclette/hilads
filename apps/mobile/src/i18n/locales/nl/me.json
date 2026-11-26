@@ -528,6 +528,24 @@
     "prize": {
       "conditionsTitle": "Data en voorwaarden",
       "rulesLink": "Alle regels"
+    },
+    "ticket": {
+      "kicker": "HILADS AIR · INSTAPKAART",
+      "yourCity": "Jouw stad",
+      "you": "Jij? 👀",
+      "passenger": "Passagier",
+      "boarding": "Boarding",
+      "price": "Prijs",
+      "free": "Gratis",
+      "photos": "Foto's",
+      "seat": "Stoel",
+      "stamp": "Aan boord",
+      "grab": "🎟️ Pak mijn plek",
+      "helper": "Gratis · ongeveer een minuut · je punten tellen vanaf de dag dat je meedoet",
+      "remind": "🔔 Herinner me als het begint",
+      "remindOn": "🔔 We herinneren je",
+      "a11yGuest": "Instapkaart {{route}}, stoel {{seat}}, boarding op {{date}}. Tik om je plek te pakken.",
+      "a11yMember": "Jouw instapkaart {{route}}, stoel {{seat}}, boarding op {{date}}, {{value}}"
     }
   }
 }

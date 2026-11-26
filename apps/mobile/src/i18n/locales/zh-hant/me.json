@@ -515,6 +515,24 @@
     "prize": {
       "conditionsTitle": "日期和條件",
       "rulesLink": "查看全部規則"
+    },
+    "ticket": {
+      "kicker": "HILADS AIR · 登機證",
+      "yourCity": "你的城市",
+      "you": "你？👀",
+      "passenger": "乘客",
+      "boarding": "登機",
+      "price": "票價",
+      "free": "免費",
+      "photos": "照片",
+      "seat": "座位",
+      "stamp": "已登機",
+      "grab": "🎟️ 搶我的座位",
+      "helper": "免費 · 約一分鐘 · 積分從你加入當天開始計算",
+      "remind": "🔔 開始時提醒我",
+      "remindOn": "🔔 我們會提醒你",
+      "a11yGuest": "登機證 {{route}}，座位 {{seat}}，登機日期 {{date}}。點按搶座。",
+      "a11yMember": "你的登機證 {{route}}，座位 {{seat}}，登機日期 {{date}}，{{value}}"
     }
   }
 }

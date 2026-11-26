@@ -61,6 +61,13 @@ final class Contest
         'id' => 'Lihat hadiahnya 🎁', 'hi' => 'इनाम देखें 🎁', 'ru' => 'Смотреть приз 🎁', 'ar' => 'شاهد الجائزة 🎁',
     ];
 
+    /** The boarding pass's destination ("YOUR CITY ✈️ VIETNAM"), Admin › Launch Season › Prize: tab.destination per language. */
+    public const DEFAULT_DESTINATION = [
+        'en' => 'Vietnam', 'fr' => 'Vietnam', 'vi' => 'Việt Nam', 'es' => 'Vietnam', 'it' => 'Vietnam', 'pt-br' => 'Vietnã', 'pt-pt' => 'Vietname',
+        'de' => 'Vietnam', 'nl' => 'Vietnam', 'zh-hans' => '越南', 'zh-hant' => '越南', 'ja' => 'ベトナム', 'ko' => '베트남', 'fil' => 'Vietnam',
+        'th' => 'เวียดนาม', 'id' => 'Vietnam', 'hi' => 'वियतनाम', 'ru' => 'Вьетнам', 'ar' => 'فيتنام',
+    ];
+
     /** The Ionicons a campaign tab may use (Admin). */
     public const TAB_ICONS = ['airplane', 'trophy', 'gift', 'star', 'flag', 'rocket', 'sparkles', 'globe', 'ribbon', 'medal'];
     public const SETTINGS = ['vote_cap_per_photo', 'referral_points', 'referral_min_photos', 'referral_cap',
@@ -439,7 +446,8 @@ final class Contest
             'season'  => $seasonOrder,
             'final'   => $finalOrder,
             // threshold: 0 when there's no goal (older apps read it as reached).
-            'counter' => ['players' => $onBoard, 'threshold' => $goal ?? 0, 'goal' => $goal, 'photos' => $threshold,
+            // The boarding pass's seat: everyone in the race has one, by the order they joined; the next one is free.
+            'counter' => ['players' => $onBoard, 'threshold' => $goal ?? 0, 'goal' => $goal, 'photos' => $threshold, 'seatNext' => count($inRace) + 1,
                           'reached' => $goal === null || $qualified >= $goal, 'showFrom' => (int) ($season['seats_show_from'] ?? 0),
                           'recent' => $recent],
             'totals'  => ['participants' => count($rows), 'photos' => array_sum(array_column($rows, 'photos'))],
@@ -514,7 +522,10 @@ final class Contest
         $ctas   = is_array($tab['prize_cta'] ?? null) ? array_filter($tab['prize_cta'], static fn($v): bool => is_string($v) && trim($v) !== '') : [];
         $cta    = ($locale !== null ? ($ctas[$locale] ?? null) : null) ?? ($ctas['en'] ?? null)
             ?? (self::DEFAULT_PRIZE_CTA[$locale ?? 'en'] ?? self::DEFAULT_PRIZE_CTA['en']);
-        return ['label' => trim((string) $label), 'icon' => $icon, 'prizeCta' => trim((string) $cta)];
+        $dests  = is_array($tab['destination'] ?? null) ? array_filter($tab['destination'], static fn($v): bool => is_string($v) && trim($v) !== '') : [];
+        $dest   = ($locale !== null ? ($dests[$locale] ?? null) : null) ?? ($dests['en'] ?? null)
+            ?? (self::DEFAULT_DESTINATION[$locale ?? 'en'] ?? self::DEFAULT_DESTINATION['en']);
+        return ['label' => trim((string) $label), 'icon' => $icon, 'prizeCta' => trim((string) $cta), 'destination' => trim((string) $dest)];
     }
 
     /**
@@ -648,6 +659,8 @@ final class Contest
                     'points' => ['votes' => $r['seasonLikes'], 'finalVotes' => $r['finalLikes'], 'referral' => 0,
                                  'headstart' => $r['headstart'], 'season' => $r['seasonPoints'], 'final' => $r['finalPoints']],
                     'photos' => $r['photos'], 'days' => $r['days'],
+                    // My seat on the boarding pass: my place in the order players joined (the disqualified left out).
+                    'seat' => self::seatOf($st['rows'], $userId),
                 ];
             } elseif (self::participant($season['id'], $userId) !== null) {
                 $me = ['joined' => true, 'disqualified' => false, 'excluded' => true];
@@ -667,6 +680,19 @@ final class Contest
             'participants' => $st['totals']['participants'] ?? 0,
             'me'      => $me,
         ];
+    }
+
+    /** A player's seat: 1 + the players in the race who joined before them (ties by id), null when out of it. */
+    public static function seatOf(array $rows, string $userId): ?int
+    {
+        $me = $rows[$userId] ?? null;
+        if ($me === null || $me['disqualified']) return null;
+        $seat = 1;
+        foreach ($rows as $id => $r) {
+            if ($r['disqualified'] || (string) $id === $userId) continue;
+            if ([$r['joinedAt'], (string) $id] < [$me['joinedAt'], $userId]) $seat++;
+        }
+        return $seat;
     }
 
     /** GET /contest/ranking: the ranking before the final week ('season') or the final week's, top $limit + me. */

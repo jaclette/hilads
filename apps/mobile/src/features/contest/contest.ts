@@ -21,7 +21,7 @@ export interface ContestSeason {
   /** What the #1 wins if the players' goal isn't reached (Admin; a placeholder until set). */
   fallbackPrize?: string;
   /** The campaign's tab: its label and Ionicons name (Admin; default "Trip" + airplane). */
-  tab?: { label: string; icon: string; prizeCta?: string };
+  tab?: { label: string; icon: string; prizeCta?: string; destination?: string };
   points?: ContestPoints;
   /** The confirmed winner (Admin › Winner & export), else null. */
   winner?: { userId: string; username: string | null; displayName: string | null; photoUrl: string | null } | null;
@@ -62,6 +62,8 @@ export interface ContestMeJoined {
   days?: number;
   referrals?: { active: number; cap: number; minPhotos: number; friends: { username: string | null; photos: number; status: ContestFriendStatus }[] };
   /** My place in the current race (before the final week, or the final week's). */
+  /** My seat on the boarding pass (my place in the order players joined). */
+  seat?: number | null;
   race?: { part: 'season' | 'final'; rank: number | null; prevRank: number | null; points: number; by: ContestBy; headstart: number;
            likes: number; gap: number | null; ranked: number };
 }
@@ -81,6 +83,8 @@ export interface ContestOverview {
   counter?: { players: number; threshold: number; photos: number; reached?: boolean; showFrom?: number;
               /** The players' goal (the trip unlocks at it), null = no goal: the prize is unconditional (older API: absent = threshold). */
               goal?: number | null;
+              /** The next free seat on the boarding pass (players in the race + 1). */
+              seatNext?: number;
               /** The latest players on board (stacked avatars). */
               recent?: { userId: string; name: string | null; photoUrl: string | null }[] };
   participants?: number;

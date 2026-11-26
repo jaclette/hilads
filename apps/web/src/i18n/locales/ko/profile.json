@@ -565,6 +565,24 @@
       "landing": {
         "getApp": "앱 받기",
         "text": "매일 휴대폰으로 플레이하세요."
+      },
+      "ticket": {
+        "kicker": "HILADS AIR · 탑승권",
+        "yourCity": "내 도시",
+        "you": "당신? 👀",
+        "passenger": "탑승객",
+        "boarding": "탑승",
+        "price": "가격",
+        "free": "무료",
+        "photos": "사진",
+        "seat": "좌석",
+        "stamp": "탑승 완료",
+        "grab": "🎟️ 내 자리 잡기",
+        "helper": "무료 · 약 1분 · 포인트는 가입한 날부터 집계돼요",
+        "remind": "🔔 시작하면 알려 주세요",
+        "remindOn": "🔔 알려 드릴게요",
+        "a11yGuest": "탑승권 {{route}}, 좌석 {{seat}}, 탑승 {{date}}. 탭해서 자리를 잡으세요.",
+        "a11yMember": "내 탑승권 {{route}}, 좌석 {{seat}}, 탑승 {{date}}, {{value}}"
       }
     }
   },

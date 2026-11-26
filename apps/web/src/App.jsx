@@ -5130,7 +5130,7 @@ export default function App() {
     // race" signs up (the invite code is kept), then the join lands on the Trip tab (openScreenOnJoin).
     if (tripLanding && !obPickingCity) {
       return (
-        <TripScreen account={null} initialSection={parseDeepLink()?.section ?? 'overview'}
+        <TripScreen account={null} cityName={(detectedCity && detectedCity !== 'unknown' ? detectedCity : null) ?? loadIdentity()?.city ?? null} initialSection={parseDeepLink()?.section ?? 'overview'}
           onOpenToday={() => handleJoin(null, null, { featured: true })}
           onSignUp={() => { setObAuthInitialTab('signup'); setObShowAuth(true) }}
           onOpenProfile={() => {}} />
@@ -6246,7 +6246,7 @@ export default function App() {
 
       <>
         {showTrip && !showMap && !showProfileDrawer && (
-          <TripScreen account={account} initialSection={tripSection} onOpenToday={goToTodayTab}
+          <TripScreen account={account} cityName={city || null} initialSection={tripSection} onOpenToday={goToTodayTab}
             onSignUp={() => setGateAuth({ tab: 'signup', action: 'passport' })}
             onOpenProfile={(uid, name) => openProfile(uid, name)} />
         )}

@@ -565,6 +565,24 @@
       "landing": {
         "getApp": "下载应用",
         "text": "每天用手机玩。"
+      },
+      "ticket": {
+        "kicker": "HILADS AIR · 登机牌",
+        "yourCity": "你的城市",
+        "you": "你？👀",
+        "passenger": "乘客",
+        "boarding": "登机",
+        "price": "票价",
+        "free": "免费",
+        "photos": "照片",
+        "seat": "座位",
+        "stamp": "已登机",
+        "grab": "🎟️ 抢我的座位",
+        "helper": "免费 · 约一分钟 · 积分从你加入当天开始计算",
+        "remind": "🔔 开始时提醒我",
+        "remindOn": "🔔 我们会提醒你",
+        "a11yGuest": "登机牌 {{route}}，座位 {{seat}}，登机日期 {{date}}。点按抢座。",
+        "a11yMember": "你的登机牌 {{route}}，座位 {{seat}}，登机日期 {{date}}，{{value}}"
       }
     }
   },

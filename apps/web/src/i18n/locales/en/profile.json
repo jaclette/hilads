@@ -577,6 +577,24 @@
       "landing": {
         "getApp": "Get the app",
         "text": "Play every day from your phone."
+      },
+      "ticket": {
+        "kicker": "HILADS AIR · BOARDING PASS",
+        "yourCity": "Your city",
+        "you": "You? 👀",
+        "passenger": "Passenger",
+        "boarding": "Boarding",
+        "price": "Price",
+        "free": "Free",
+        "photos": "Photos",
+        "seat": "Seat",
+        "stamp": "Boarded",
+        "grab": "🎟️ Grab my seat",
+        "helper": "Free · about a minute · your points count from the day you join",
+        "remind": "🔔 Remind me when it starts",
+        "remindOn": "🔔 We'll remind you",
+        "a11yGuest": "Boarding pass {{route}}, seat {{seat}}, boarding {{date}}. Tap to grab your seat.",
+        "a11yMember": "Your boarding pass {{route}}, seat {{seat}}, boarding {{date}}, {{value}}"
       }
     }
   },

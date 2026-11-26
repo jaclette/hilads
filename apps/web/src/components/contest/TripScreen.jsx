@@ -28,7 +28,7 @@ const shortDate = (date, locale) => new Date(`${date}T12:00:00Z`).toLocaleDateSt
 const shift = (date, days) => { const d = new Date(`${date}T12:00:00Z`); d.setUTCDate(d.getUTCDate() + days); return d.toISOString().slice(0, 10) }
 const isOver = s => s.phase === 'over' || s.phase === 'ended'
 
-export default function TripScreen({ account, initialSection = 'overview', onOpenToday, onOpenProfile, onSignUp }) {
+export default function TripScreen({ account, cityName = null, initialSection = 'overview', onOpenToday, onOpenProfile, onSignUp }) {
   const { t, i18n } = useT()
   const [data, setData] = useState(null)
   const [failed, setFailed] = useState(false)
@@ -161,7 +161,7 @@ export default function TripScreen({ account, initialSection = 'overview', onOpe
         </div>
 
         <div className="tr-body" onTouchStart={onTouchStart} onTouchEnd={onTouchEnd} key={section}>
-          {section === 'overview' && <Overview data={data} ranking={ranking} crew={crew} account={account} t={t} i18n={i18n} onCta={cta}
+          {section === 'overview' && <Overview data={data} ranking={ranking} crew={crew} account={account} cityName={cityName} t={t} i18n={i18n} onCta={cta}
                                                onSection={k => go(k, 'cta')} onJoin={() => { cta('join'); setOverlay('join') }} onSignUp={onSignUp}
                                                onOpenToday={onOpenToday} onOpenProfile={onOpenProfile} setData={setData} />}
           {section === 'ranking' && <Ranking s={s} ranking={ranking} meId={account?.id ?? null} t={t} i18n={i18n} onOpenProfile={onOpenProfile} />}
@@ -192,7 +192,7 @@ function Chip({ s, small }) {
 
 // ── Overview ──────────────────────────────────────────────────────────────────
 
-function Overview({ data, ranking, crew, account, t, i18n, onCta, onSection, onJoin, onSignUp, onOpenToday, onOpenProfile, setData }) {
+function Overview({ data, ranking, crew, account, cityName, t, i18n, onCta, onSection, onJoin, onSignUp, onOpenToday, onOpenProfile, setData }) {
   const s = data.season
   const [sheet, setSheet] = useState(false)
   return (
@@ -201,7 +201,9 @@ function Overview({ data, ranking, crew, account, t, i18n, onCta, onSection, onJ
       {isOver(s) && <Winner data={data} ranking={ranking} t={t} onOpenProfile={onOpenProfile} />}
       <Timeline s={s} t={t} i18n={i18n} />
       {data.counter && <BoardingRow s={s} counter={data.counter} t={t} onOpen={() => { onCta('boarding_open'); setSheet(true) }} />}
-      {sheet && <BoardingSheet s={s} counter={data.counter} me={data.me} account={account} t={t} i18n={i18n} onSignUp={onSignUp} onClose={() => setSheet(false)} />}
+      {sheet && <BoardingSheet s={s} counter={data.counter} me={data.me} account={account} cityName={cityName} t={t} i18n={i18n} onSignUp={onSignUp} onClose={() => setSheet(false)} />}
+      {!isOver(s) && data.counter && <TicketBlock data={data} account={account} cityName={cityName} t={t} i18n={i18n} onCta={onCta}
+                                                   onGrab={() => { onCta('grab_seat'); onSignUp() }} onJoin={onJoin} onOpen={() => { onCta('ticket'); setSheet(true) }} />}
       {!isOver(s) && <MyStatus data={data} account={account} t={t} i18n={i18n} onSignUp={() => { onCta('sign_up'); onSignUp() }} />}
       <PrimaryCta data={data} crew={crew} account={account} t={t} i18n={i18n} onCta={onCta} onSection={onSection} onJoin={onJoin}
                   onSignUp={onSignUp} onOpenToday={onOpenToday} setData={setData} />
@@ -283,7 +285,7 @@ function BoardingRow({ s, counter, t, onOpen }) {
 
 // The Boarding sheet: the whole explanation (the goal and its progress, my boarding pass or the locked one, the fallback),
 // then the invite: a preview of the Boarding card, my link (?ref=, a friend who joins counts for me), WhatsApp / Messenger / Copy / Share.
-function BoardingSheet({ s, counter, me, account, t, i18n, onSignUp, onClose }) {
+function BoardingSheet({ s, counter, me, account, cityName, t, i18n, onSignUp, onClose }) {
   const { goal, reached, showCount } = boardingState(counter)
   const [code, setCode] = useState(null)
   const [copied, setCopied] = useState(false)
@@ -293,9 +295,6 @@ function BoardingSheet({ s, counter, me, account, t, i18n, onSignUp, onClose }) 
     const onKey = e => { if (e.key === 'Escape') onClose() }
     window.addEventListener('keydown', onKey); return () => window.removeEventListener('keydown', onKey)
   }, [onClose])
-  const joined = me?.joined && !me.excluded ? me : null
-  const myPhotos = joined ? joined.photos ?? 0 : null
-  const earned = myPhotos !== null && myPhotos >= counter.photos
   const pct = goal === null ? 1 : showCount ? Math.min(1, counter.players / Math.max(1, goal)) : 0
   const status = !showCount ? t('trip.board.first') : goal !== null ? t('trip.board.seats', { players: counter.players, threshold: goal }) : t('trip.board.onBoard', { count: counter.players })
   const text = !showCount ? t('trip.board.shareTextFirst')
@@ -315,7 +314,6 @@ function BoardingSheet({ s, counter, me, account, t, i18n, onSignUp, onClose }) 
     window.open(url, '_blank', 'noopener'); done(ch)
   }
   const cover = s.photos?.[0]
-  const dots = Math.min(counter.photos, 10)
   const targets = [['whatsapp', 'chatbubble-ellipses-outline', 'WhatsApp'], ['messenger', 'chatbubbles-outline', 'Messenger'],
                    ['copy_link', copied ? 'checkmark' : 'link-outline', copied ? t('invite.copied') : t('invite.channel.copy_link')], ['share_sheet', 'share-outline', t('invite.share')]]
   // In a portal: the page itself is transformed (a fixed sheet inside it would sit under the tab bar).
@@ -333,18 +331,8 @@ function BoardingSheet({ s, counter, me, account, t, i18n, onSignUp, onClose }) 
         )}
         <p className="tr-muted">{goal === null ? t('trip.board.noGoalText')
           : reached ? t('trip.board.fullText') : `${t('trip.board.takeoff', { count: goal })} ${t('trip.board.what', { photos: counter.photos })}`}</p>
-        {goal !== null && (account ? myPhotos !== null && (
-          <div className={`tr-pass${earned ? ' is-earned' : ''}`}
-               aria-label={earned ? `${t('trip.board.passEarned')}. ${t('trip.board.passEarnedText')}` : `${t('trip.board.pass')}: ${t('trip.board.passProgress', { n: myPhotos, photos: counter.photos })}`}>
-            <Icon name={earned ? 'airplane-outline' : 'ticket-outline'} size={20} />
-            <span className="tr-pass-text"><small>{earned ? t('trip.board.passEarned') : t('trip.board.pass')}</small>
-              <b>{earned ? t('trip.board.passEarnedText') : t('trip.board.passProgress', { n: myPhotos, photos: counter.photos })}</b></span>
-            {earned ? <Icon name="sparkles" size={20} /> : (
-              <span className="tr-pass-dots" aria-hidden="true">{Array.from({ length: dots }).map((_, i) =>
-                <i key={i} className={i < Math.round((myPhotos / Math.max(1, counter.photos)) * dots) ? 'on' : ''} />)}</span>
-            )}
-          </div>
-        ) : <Locked t={t} onClick={() => { onClose(); onSignUp() }} />)}
+        {!isOver(s) && <TripTicket s={s} counter={counter} me={me} account={account} cityName={cityName} t={t} i18n={i18n}
+                                   onClick={account ? undefined : () => { onClose(); onSignUp() }} />}
         {goal !== null && !reached && (
           <p className="tr-fallback"><Icon name="gift-outline" size={16} />
             <span>{isOver(s) ? t('trip.board.notFullText', { prize: s.fallbackPrize ?? '' })
@@ -366,6 +354,81 @@ function BoardingSheet({ s, counter, me, account, t, i18n, onSignUp, onClose }) 
     </div>,
     document.body,
   )
+}
+
+// The Launch Trip boarding pass (docs/mockups/hilads_boarding_pass_mockup.html, the app's BoardingTicket): a tilted yellow
+// ticket, notches, a dashed tear line and the stub. Route: my city ✈️ the campaign's destination; passenger "You? 👀" (a guest)
+// or my handle; the boarding date; the price (Free) or my photos (with a goal); the seat (honest: a guest's is the next free one,
+// mine my place in the join order) with a barcode. The plane drifts (not with reduce motion); the "Boarded" stamp lands once.
+function TripTicket({ s, counter, me, account, cityName, t, i18n, onClick }) {
+  const goal = contestGoal(counter)
+  const joined = account && me?.joined && !me.excluded && !me.disqualified ? me : null
+  const photos = joined && goal !== null ? { n: joined.photos ?? 0, of: counter.photos } : null
+  const earned = !!joined && (goal === null || (joined.photos ?? 0) >= counter.photos)
+  const seat = joined?.seat ?? counter.seatNext ?? counter.players + 1
+  const handle = account ? (account.username ? '@' + account.username : account.display_name ?? null) : null
+  const from = cityName || t('trip.ticket.yourCity')
+  const dest = s.tab?.destination || 'Vietnam'
+  const date = shortDate(s.startDate, i18n.language)
+  const third = photos ? [t('trip.ticket.photos'), `${Math.min(photos.n, photos.of)} / ${photos.of}`] : [t('trip.ticket.price'), t('trip.ticket.free')]
+  const route = `${from} ✈ ${dest}`
+  const chars = [...from].length + [...dest].length
+  const routeSize = chars <= 12 ? 21 : chars <= 16 ? 18 : chars <= 21 ? 15 : chars <= 27 ? 12.5 : 11
+  const label = handle ? t('trip.ticket.a11yMember', { route, seat, date, value: third.join(' ') }) + (earned ? `. ${t('trip.ticket.stamp')}` : '')
+    : t('trip.ticket.a11yGuest', { route, seat, date })
+  // The stamp lands once per campaign (then it's just there).
+  const [stampAnim] = useState(() => {
+    if (!earned) return false
+    try { const k = `hilads_trip_stamp_${s.id}`; if (localStorage.getItem(k)) return false; localStorage.setItem(k, '1'); return true } catch { return false }
+  })
+  const bars = []
+  let x = (seat * 9301 + 49297) % 233280
+  for (let i = 0; i < 18; i++) { x = (x * 9301 + 49297) % 233280; bars.push(1 + (x % 3)) }
+  const Tag = onClick ? 'button' : 'div'
+  return (
+    <Tag type={onClick ? 'button' : undefined} className={`tr-ticket${onClick ? ' is-tap' : ''}`} onClick={onClick} aria-label={label} role={onClick ? undefined : 'img'}>
+      <span className="tr-ticket-main">
+        <small className="tr-ticket-kick">{t('trip.ticket.kicker')}</small>
+        {/* The route shrinks to fit (a long city name), never cut. */}
+        <span className="tr-ticket-route" style={{ '--rs': routeSize }}><b>{from}</b><i aria-hidden="true">✈️</i><b>{dest}</b></span>
+        <span className="tr-ticket-fields">
+          <span className="grow"><small>{t('trip.ticket.passenger')}</small><b>{handle ?? t('trip.ticket.you')}</b></span>
+          <span><small>{t('trip.ticket.boarding')}</small><b>{date}</b></span>
+          <span><small>{third[0]}</small><b>{third[1]}</b></span>
+        </span>
+        {earned && <span className={`tr-ticket-stamp${stampAnim ? ' is-new' : ''}`} aria-hidden="true">{t('trip.ticket.stamp')} ✓</span>}
+      </span>
+      <span className="tr-ticket-stub">
+        <small>{t('trip.ticket.seat')}</small>
+        <b>{seat}</b>
+        <span className="tr-ticket-bars" aria-hidden="true">{bars.map((w, i) => <i key={i} style={{ width: w, background: i % 2 ? 'transparent' : undefined }} />)}</span>
+      </span>
+    </Tag>
+  )
+}
+
+// The boarding pass on the overview. A guest: the ticket waiting for its passenger, "🎟️ Grab my seat" (sign-up, the invite code
+// kept), the honest helper line, and before the start "🔔 Remind me when it starts" (outlined; on the web it asks for an email).
+// A member: the same ticket as my boarding pass; joining / notify stay in the primary button below.
+function TicketBlock({ data, account, cityName, t, i18n, onCta, onGrab, onJoin, onOpen }) {
+  const s = data.season
+  const me = data.me
+  const [remind, setRemind] = useState(false)
+  if (!account) {
+    return (
+      <div className="tr-ticket-block">
+        <TripTicket s={s} counter={data.counter} me={null} account={null} cityName={cityName} t={t} i18n={i18n} onClick={onGrab} />
+        <button type="button" className="tr-cta tr-grab" onClick={onGrab}>{t('trip.ticket.grab')}</button>
+        <p className="tr-ticket-help">{t('trip.ticket.helper')}</p>
+        {s.phase === 'upcoming' && (remind
+          ? <NotifyEmail s={s} t={t} i18n={i18n} onCta={onCta} />
+          : <button type="button" className="tr-cta is-secondary tr-remind" onClick={() => setRemind(true)}>{t('trip.ticket.remind')}</button>)}
+      </div>
+    )
+  }
+  const joinable = me?.joined === false && me.canJoin
+  return <TripTicket s={s} counter={data.counter} me={me} account={account} cityName={cityName} t={t} i18n={i18n}
+                     onClick={joinable ? () => { onCta('join'); onJoin() } : onOpen} />
 }
 
 // "Create your account to get your boarding pass": the friendly locked card for people without an account.
@@ -400,7 +463,7 @@ function MyStatus({ data, account, t, i18n, onSignUp }) {
   const me = data.me
   const board = (title, text) => <section className="tr-board"><b>{title}</b>{text && <p>{text}</p>}</section>
   // No account: the friendly locked card (my rank and boarding pass come with an account).
-  if (!account) return <Locked t={t} onClick={onSignUp} />
+  if (!account) return null   // the ticket block speaks to guests
   if (s.phase === 'upcoming') return board(t('trip.me.upcomingTitle'), t('trip.me.upcomingText', { date: shortDate(s.startDate, i18n.language) }))
   if (!me) return board(t('trip.me.joinTitle'), t('trip.me.joinText'))
   if (me.joined === false) return board(t('trip.me.joinTitle'), me.canJoin ? t('trip.me.joinText') : me.reason === 'closed' ? t('trip.me.closed') : t('trip.me.cantJoin'))
@@ -442,9 +505,9 @@ function PrimaryCta({ data, crew, account, t, i18n, onCta, onSection, onJoin, on
     <button type="button" className={`tr-cta${secondary ? ' is-secondary' : ''}`} onClick={onClick} disabled={busy}><Icon name={icon} size={20} />{label}</button>
   )
   if (isOver(s)) return btn('podium-outline', t('trip.cta.ranking'), () => { onCta('see_ranking'); onSection('ranking') }, true)
+  if (!account) return null   // guests: "Grab my seat" and "Remind me" sit under the ticket
   if (s.phase === 'upcoming') {
-    // "Notify me when it starts": members by account, people without one by email (one email at the start).
-    if (!account) return <NotifyEmail s={s} t={t} i18n={i18n} onCta={onCta} />
+    // "Notify me when it starts" (members; people without an account leave an email under the ticket).
     const notified = me?.joined === true || !!me?.notified
     return btn(notified ? 'checkmark-circle-outline' : 'notifications-outline', t(notified ? 'trip.cta.notifyOn' : 'trip.cta.notify'), () => {
       if (notified) return
@@ -452,7 +515,6 @@ function PrimaryCta({ data, crew, account, t, i18n, onCta, onSection, onJoin, on
       notifyContest(s.id, i18n.language).then(setData).catch(() => {}).finally(() => setBusy(false))
     }, notified)
   }
-  if (!account) return btn('rocket-outline', t('trip.cta.join'), () => { onCta('sign_up'); onSignUp() })
   if (!me) return null
   if (me.joined === false) return me.canJoin ? btn('rocket-outline', t('trip.cta.join'), onJoin) : null
   if (me.disqualified || me.excluded) return null

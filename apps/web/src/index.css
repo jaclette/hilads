@@ -12890,6 +12890,50 @@ html[data-event="halloween"] { --header-art: #FFA552; --header-art-opacity: 0.28
 .tr-stores { display: flex; gap: 8px; }
 .tr-stores a { flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 46px; border-radius: 14px; background: var(--text); color: var(--bg); font-weight: 800; font-size: 14px; text-decoration: none; }
 .tr-stores a:focus-visible { outline: 3px solid var(--primary); outline-offset: 2px; }
+/* The Launch Trip boarding pass (a printed ticket: fixed colors in every theme; the notches take the page's color). */
+.tr-ticket-block { display: flex; flex-direction: column; gap: 10px; }
+.tr-ticket { --tk-ink: #2B1A12; position: relative; display: flex; width: 100%; margin: 4px 0 10px; padding: 0; border: 0; border-radius: 20px; text-align: start; font: inherit; color: var(--tk-ink);
+  background: linear-gradient(135deg, #FFD55A, #FFB52E); transform: rotate(-1.5deg); box-shadow: 0 6px 0 #D9930F, 0 16px 24px rgba(120,60,0,.22); overflow: hidden; }
+.tr-ticket.is-tap { cursor: pointer; }
+.tr-ticket.is-tap:active { transform: rotate(-1.5deg) scale(.985); }
+.tr-ticket:focus-visible { outline: 3px solid var(--primary); outline-offset: 4px; }
+.tr-ticket::before, .tr-ticket::after { content: ""; position: absolute; left: calc(68% - 11px); width: 22px; height: 22px; border-radius: 50%; background: var(--bg); }
+.tr-ticket::before { top: -11px; } .tr-ticket::after { bottom: -11px; }
+.tr-ticket-main { position: relative; flex: 68; min-width: 0; display: flex; flex-direction: column; gap: 4px; padding: 12px 14px; }
+.tr-ticket-kick, .tr-ticket small { font-size: 9.5px; line-height: 12px; font-weight: 900; letter-spacing: .6px; text-transform: uppercase; opacity: .75; color: var(--tk-ink); }
+.tr-ticket-kick { letter-spacing: 1.3px; }
+.tr-ticket-route { display: flex; align-items: center; gap: 6px; min-width: 0; }
+.tr-ticket-route { min-height: 26px; font-size: calc(var(--rs, 21) * 1px); }
+.tr-ticket-route b { font-size: inherit; line-height: 1.25; font-weight: 900; text-transform: uppercase; white-space: nowrap; min-width: 0; overflow: hidden; }
+.tr-ticket-route i { font-style: normal; font-size: 16px; flex-shrink: 0; animation: tr-fly 2.6s ease-in-out infinite; }
+@keyframes tr-fly { 0%, 100% { transform: translateX(-3px); } 50% { transform: translateX(5px); } }
+.tr-ticket-fields { display: flex; gap: 14px; margin-top: 2px; min-width: 0; }
+.tr-ticket-fields > span { display: flex; flex-direction: column; flex-shrink: 0; min-width: 0; }
+.tr-ticket-fields small { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tr-ticket-fields > span.grow { flex-shrink: 1; min-width: 0; }
+.tr-ticket-fields b { font-size: 13.5px; line-height: 17px; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-variant-numeric: tabular-nums; }
+.tr-ticket-stub { flex: 32; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; padding: 10px 8px; border-left: 2.5px dashed rgba(60,30,0,.35); }
+.tr-ticket-stub b { font-size: 28px; line-height: 32px; font-weight: 900; font-variant-numeric: tabular-nums; }
+.tr-ticket-bars { display: flex; justify-content: center; height: 22px; width: 72%; overflow: hidden; }
+.tr-ticket-bars i { display: block; height: 100%; background: var(--tk-ink); }
+.tr-ticket-stamp { position: absolute; right: 6px; bottom: 8px; padding: 2px 8px; border: 2.5px solid #B3261E; border-radius: 8px; color: #B3261E; font-size: 14px; font-weight: 900;
+  letter-spacing: 1px; text-transform: uppercase; background: rgba(255,255,255,.18); transform: rotate(-12deg); }
+.tr-ticket-stamp.is-new { animation: tr-stamp .5s cubic-bezier(.2, 1.6, .4, 1) .45s both; }
+@keyframes tr-stamp { from { opacity: 0; transform: rotate(-12deg) scale(2.2); } to { opacity: 1; transform: rotate(-12deg) scale(1); } }
+/* Small phones: the whole ticket a size down. */
+@media (max-width: 360px) {
+  .tr-ticket-main { padding: 10px 10px 10px 12px; }
+  .tr-ticket-route { font-size: calc(var(--rs, 21) * .78px); gap: 4px; }
+  .tr-ticket-route i { font-size: 13px; }
+  .tr-ticket-fields { gap: 8px; }
+  .tr-ticket-fields b { font-size: 12px; line-height: 15px; }
+  .tr-ticket small { font-size: 8.5px; letter-spacing: .3px; }
+  .tr-ticket-stub b { font-size: 24px; line-height: 28px; }
+}
+@media (prefers-reduced-motion: reduce) { .tr-ticket-route i, .tr-ticket-stamp.is-new { animation: none; } }
+.tr-grab { font-size: 16px; }
+.tr-ticket-help { margin: -2px 0 0; text-align: center; color: var(--muted); font-size: 12.5px; font-weight: 700; }
+.tr-remind { width: 100%; }
 /* The Trip header's "See the prize" pill, the slim header's link, the prize photos full screen. */
 .tr-prize-btn { align-self: flex-start; display: inline-flex; align-items: center; gap: 4px; min-height: 36px; margin-top: 8px; padding: 0 14px; border-radius: 999px;
   background: rgba(255,255,255,.24); border: 1px solid rgba(255,255,255,.55); color: #fff; font: inherit; font-size: 14px; font-weight: 800; cursor: pointer;

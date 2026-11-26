@@ -577,6 +577,24 @@
       "landing": {
         "getApp": "Hol dir die App",
         "text": "Spiel jeden Tag auf deinem Handy."
+      },
+      "ticket": {
+        "kicker": "HILADS AIR · BORDKARTE",
+        "yourCity": "Deine Stadt",
+        "you": "Du? 👀",
+        "passenger": "Passagier",
+        "boarding": "Boarding",
+        "price": "Preis",
+        "free": "Gratis",
+        "photos": "Fotos",
+        "seat": "Sitz",
+        "stamp": "An Bord",
+        "grab": "🎟️ Platz sichern",
+        "helper": "Gratis · etwa eine Minute · deine Punkte zählen ab dem Tag, an dem du dabei bist",
+        "remind": "🔔 Erinnere mich zum Start",
+        "remindOn": "🔔 Wir erinnern dich",
+        "a11yGuest": "Bordkarte {{route}}, Sitz {{seat}}, Boarding am {{date}}. Tippen, um deinen Platz zu sichern.",
+        "a11yMember": "Deine Bordkarte {{route}}, Sitz {{seat}}, Boarding am {{date}}, {{value}}"
       }
     }
   },

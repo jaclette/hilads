@@ -590,6 +590,24 @@
       "landing": {
         "getApp": "Scarica l’app",
         "text": "Gioca ogni giorno dal tuo telefono."
+      },
+      "ticket": {
+        "kicker": "HILADS AIR · CARTA D’IMBARCO",
+        "yourCity": "La tua città",
+        "you": "Tu? 👀",
+        "passenger": "Passeggero",
+        "boarding": "Imbarco",
+        "price": "Prezzo",
+        "free": "Gratis",
+        "photos": "Foto",
+        "seat": "Posto",
+        "stamp": "A bordo",
+        "grab": "🎟️ Prendo il mio posto",
+        "helper": "Gratis · circa un minuto · i tuoi punti contano dal giorno in cui ti iscrivi",
+        "remind": "🔔 Ricordamelo quando inizia",
+        "remindOn": "🔔 Te lo ricorderemo",
+        "a11yGuest": "Carta d’imbarco {{route}}, posto {{seat}}, imbarco il {{date}}. Tocca per prendere il tuo posto.",
+        "a11yMember": "La tua carta d’imbarco {{route}}, posto {{seat}}, imbarco il {{date}}, {{value}}"
       }
     }
   },

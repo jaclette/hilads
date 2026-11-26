@@ -565,6 +565,24 @@
       "landing": {
         "getApp": "アプリを入手",
         "text": "毎日スマホでプレイしよう。"
+      },
+      "ticket": {
+        "kicker": "HILADS AIR · 搭乗券",
+        "yourCity": "あなたの街",
+        "you": "あなた？👀",
+        "passenger": "搭乗者",
+        "boarding": "搭乗日",
+        "price": "料金",
+        "free": "無料",
+        "photos": "写真",
+        "seat": "座席",
+        "stamp": "搭乗済み",
+        "grab": "🎟️ 席を確保する",
+        "helper": "無料 · 約1分 · ポイントは参加した日からカウント",
+        "remind": "🔔 開始したら知らせて",
+        "remindOn": "🔔 お知らせします",
+        "a11yGuest": "搭乗券 {{route}}、座席 {{seat}}、搭乗日 {{date}}。タップして席を確保。",
+        "a11yMember": "あなたの搭乗券 {{route}}、座席 {{seat}}、搭乗日 {{date}}、{{value}}"
       }
     }
   },

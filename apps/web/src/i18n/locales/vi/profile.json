@@ -565,6 +565,24 @@
       "landing": {
         "getApp": "Tải ứng dụng",
         "text": "Chơi mỗi ngày trên điện thoại."
+      },
+      "ticket": {
+        "kicker": "HILADS AIR · THẺ LÊN MÁY BAY",
+        "yourCity": "Thành phố của bạn",
+        "you": "Bạn? 👀",
+        "passenger": "Hành khách",
+        "boarding": "Lên máy bay",
+        "price": "Giá",
+        "free": "Miễn phí",
+        "photos": "Ảnh",
+        "seat": "Ghế",
+        "stamp": "Đã lên",
+        "grab": "🎟️ Giữ chỗ của tôi",
+        "helper": "Miễn phí · khoảng một phút · điểm được tính từ ngày bạn tham gia",
+        "remind": "🔔 Nhắc tôi khi bắt đầu",
+        "remindOn": "🔔 Chúng tôi sẽ nhắc bạn",
+        "a11yGuest": "Thẻ lên máy bay {{route}}, ghế {{seat}}, lên máy bay {{date}}. Chạm để giữ chỗ.",
+        "a11yMember": "Thẻ lên máy bay của bạn {{route}}, ghế {{seat}}, lên máy bay {{date}}, {{value}}"
       }
     }
   },

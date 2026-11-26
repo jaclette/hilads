@@ -577,6 +577,24 @@
       "landing": {
         "getApp": "Kunin ang app",
         "text": "Maglaro araw-araw sa phone mo."
+      },
+      "ticket": {
+        "kicker": "HILADS AIR · BOARDING PASS",
+        "yourCity": "Lungsod mo",
+        "you": "Ikaw? 👀",
+        "passenger": "Pasahero",
+        "boarding": "Boarding",
+        "price": "Presyo",
+        "free": "Libre",
+        "photos": "Photo",
+        "seat": "Upuan",
+        "stamp": "Nakasakay",
+        "grab": "🎟️ Kunin ang upuan ko",
+        "helper": "Libre · mga isang minuto · bibilang ang points mo mula sa araw na sumali ka",
+        "remind": "🔔 Paalalahanan ako pag nagsimula",
+        "remindOn": "🔔 Paaalalahanan ka namin",
+        "a11yGuest": "Boarding pass {{route}}, upuan {{seat}}, boarding sa {{date}}. I-tap para kunin ang upuan mo.",
+        "a11yMember": "Ang boarding pass mo {{route}}, upuan {{seat}}, boarding sa {{date}}, {{value}}"
       }
     }
   },

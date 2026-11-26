@@ -542,6 +542,24 @@
     "prize": {
       "conditionsTitle": "Datas e condições",
       "rulesLink": "Todas as regras"
+    },
+    "ticket": {
+      "kicker": "HILADS AIR · CARTÃO DE EMBARQUE",
+      "yourCity": "Sua cidade",
+      "you": "Você? 👀",
+      "passenger": "Passageiro",
+      "boarding": "Embarque",
+      "price": "Preço",
+      "free": "Grátis",
+      "photos": "Fotos",
+      "seat": "Assento",
+      "stamp": "A bordo",
+      "grab": "🎟️ Quero meu lugar",
+      "helper": "Grátis · cerca de um minuto · seus pontos contam desde o dia em que você entra",
+      "remind": "🔔 Me lembre quando começar",
+      "remindOn": "🔔 A gente te lembra",
+      "a11yGuest": "Cartão de embarque {{route}}, assento {{seat}}, embarque em {{date}}. Toque para garantir seu lugar.",
+      "a11yMember": "Seu cartão de embarque {{route}}, assento {{seat}}, embarque em {{date}}, {{value}}"
     }
   }
 }

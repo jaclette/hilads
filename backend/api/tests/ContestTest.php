@@ -115,7 +115,7 @@ final class ContestTest extends TestCase
     {
         $photos = [self::photo('a', '2026-12-02', 0), self::photo('a', '2026-12-03', 0), self::photo('b', '2026-12-02', 0), self::photo('b', '2026-12-03', 0)];
         $st = Contest::compute(self::SEASON, [self::p('a'), self::p('b')], [], $photos, []);
-        self::assertSame(['players' => 2, 'threshold' => 2, 'goal' => 2, 'photos' => 2, 'reached' => true, 'showFrom' => 0, 'recent' => []], $st['counter']);
+        self::assertSame(['players' => 2, 'threshold' => 2, 'goal' => 2, 'photos' => 2, 'seatNext' => 3, 'reached' => true, 'showFrom' => 0, 'recent' => []], $st['counter']);
     }
 
     public function testNoGoalMeansEveryoneInTheRaceIsOnBoardAndThePrizeIsUnconditional(): void
@@ -126,6 +126,16 @@ final class ContestTest extends TestCase
         self::assertSame(0, $st['counter']['threshold']);
         self::assertSame(2, $st['counter']['players']);
         self::assertTrue($st['counter']['reached']);
+    }
+
+    public function testSeatsFollowTheJoinOrderWithoutTheDisqualified(): void
+    {
+        $p = static fn(string $id, string $at, bool $dq = false) => ['joined_at' => $at] + self::p($id, '2026-12-01', $dq);
+        $st = Contest::compute(self::SEASON, [$p('late', '2026-12-03 10:00:00'), $p('dq', '2026-12-01 09:00:00', true), $p('first', '2026-12-01 10:00:00')], [], [], []);
+        self::assertSame(1, Contest::seatOf($st['rows'], 'first'));
+        self::assertSame(2, Contest::seatOf($st['rows'], 'late'));
+        self::assertNull(Contest::seatOf($st['rows'], 'dq'));
+        self::assertSame(3, $st['counter']['seatNext']);
     }
 
     public function testRecentPlayersAreTheLatestWithAPhotoNewestFirst(): void
@@ -164,8 +174,8 @@ final class ContestTest extends TestCase
     {
         self::assertSame(Contest::DEFAULT_FALLBACK['fr'], Contest::fallbackPrize(self::SEASON, 'fr'));
         self::assertSame('a souvenir pack', Contest::fallbackPrize(self::SEASON + ['fallback_prize_i18n' => ['en' => 'a souvenir pack']], 'fr'));
-        self::assertSame(['label' => 'Voyage', 'icon' => 'airplane', 'prizeCta' => 'Voir le lot 🎁'], Contest::tab(self::SEASON, 'fr'));
-        self::assertSame(['label' => 'Win', 'icon' => 'trophy', 'prizeCta' => 'Zum Preis 🎁'], Contest::tab(self::SEASON + ['tab' => ['icon' => 'trophy', 'label' => ['en' => 'Win']]], 'de'));
+        self::assertSame(['label' => 'Voyage', 'icon' => 'airplane', 'prizeCta' => 'Voir le lot 🎁', 'destination' => 'Vietnam'], Contest::tab(self::SEASON, 'fr'));
+        self::assertSame(['label' => 'Win', 'icon' => 'trophy', 'prizeCta' => 'Zum Preis 🎁', 'destination' => 'Vietnam'], Contest::tab(self::SEASON + ['tab' => ['icon' => 'trophy', 'label' => ['en' => 'Win']]], 'de'));
         self::assertSame('airplane', Contest::tab(self::SEASON + ['tab' => ['icon' => 'not-an-icon']], 'en')['icon']);
         self::assertCount(19, Contest::DEFAULT_TAB['label']);
         self::assertCount(19, Contest::DEFAULT_FALLBACK);

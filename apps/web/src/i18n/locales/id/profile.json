@@ -565,6 +565,24 @@
       "landing": {
         "getApp": "Dapatkan aplikasinya",
         "text": "Main setiap hari dari ponselmu."
+      },
+      "ticket": {
+        "kicker": "HILADS AIR · BOARDING PASS",
+        "yourCity": "Kotamu",
+        "you": "Kamu? 👀",
+        "passenger": "Penumpang",
+        "boarding": "Boarding",
+        "price": "Harga",
+        "free": "Gratis",
+        "photos": "Foto",
+        "seat": "Kursi",
+        "stamp": "Sudah naik",
+        "grab": "🎟️ Ambil kursiku",
+        "helper": "Gratis · sekitar semenit · poinmu dihitung sejak hari kamu bergabung",
+        "remind": "🔔 Ingatkan aku saat dimulai",
+        "remindOn": "🔔 Kami ingatkan",
+        "a11yGuest": "Boarding pass {{route}}, kursi {{seat}}, boarding {{date}}. Ketuk untuk ambil kursimu.",
+        "a11yMember": "Boarding pass-mu {{route}}, kursi {{seat}}, boarding {{date}}, {{value}}"
       }
     }
   },
