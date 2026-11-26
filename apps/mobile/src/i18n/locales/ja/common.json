@@ -173,7 +173,8 @@
     "map": "マップ",
     "passport": "パスポート",
     "season": "搭乗",
-    "new": "新着"
+    "new": "新着",
+    "trip": "旅行"
   },
   "scope": {
     "title": "表示",

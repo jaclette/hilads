@@ -480,7 +480,7 @@ function Tile({ label, value, total }) {
   return <span className={`ls-tile${total ? ' total' : ''}`}><b>{value}</b><small>{label}</small></span>
 }
 
-function Podium({ rows, meId, t, onOpenProfile, bonusFor }) {
+export function Podium({ rows, meId, t, onOpenProfile, bonusFor }) {
   const order = [rows[1], rows[0], rows[2]]
   const cls = ['gold', 'silver', 'bronze']
   return (
@@ -523,7 +523,7 @@ function RankRow({ row, me, t, onOpenProfile, bonus = 0 }) {
   )
 }
 
-function JoinForm({ season, suggested, onBack, onDone }) {
+export function JoinForm({ season, suggested, onBack, onDone }) {
   const { t, i18n } = useT()
   const [age, setAge] = useState(false)
   const [rules, setRules] = useState(false)

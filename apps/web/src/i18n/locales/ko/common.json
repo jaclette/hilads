@@ -129,7 +129,8 @@
     "chat": "Hi",
     "passport": "여권",
     "ranks": "랭킹",
-    "season": "탑승"
+    "season": "탑승",
+    "trip": "여행"
   },
   "scope": {
     "title": "보기",

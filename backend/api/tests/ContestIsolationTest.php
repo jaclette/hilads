@@ -5,7 +5,8 @@ declare(strict_types=1);
 use PHPUnit\Framework\TestCase;
 
 /**
- * Launch Season isolation: the contest code never writes the permanent score, never sends
+ * Launch Season isolation: the contest code only READS the permanent score (score_events),
+ * never writes it, never sends
  * a push or a notification (one exception: ContestNotify's single "season is live" push to the
  * Notify-me taps), and only writes contest_* tables. A source check, so a later change that
  * breaks the rule fails here.
@@ -33,7 +34,12 @@ final class ContestIsolationTest extends TestCase
     public function testNoPermanentScoreWriteNoPushNoNotification(): void
     {
         foreach (self::sources() as $file => $src) {
-            foreach (['score_events', 'MonthlyRankService', 'PushService', 'MobilePushService', 'PushBroadcastService',
+            // The campaign READS the regular points (score_events) since 2026-11-26; writing them is
+            // caught by testWritesOnlyContestTables, and any other use of the table here fails below.
+            preg_match_all('/\bscore_events\b/', $src, $all);
+            preg_match_all('/\b(?:FROM|JOIN)\s+score_events\b/i', $src, $reads);
+            self::assertSame(count($all[0]), count($reads[0]), basename($file) . ' only reads score_events (FROM / JOIN)');
+            foreach (['MonthlyRankService', 'PushService', 'MobilePushService', 'PushBroadcastService',
                       'NotificationRepository', 'DailyNotify', 'DailyPushes', 'Invites::notify', 'score_alltime', 'score_month'] as $needle) {
                 self::assertFalse(str_contains($src, $needle), basename($file) . " must not use {$needle}");
             }

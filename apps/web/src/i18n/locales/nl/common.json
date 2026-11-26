@@ -129,7 +129,8 @@
     "chat": "Hi",
     "passport": "Paspoort",
     "ranks": "Ranglijst",
-    "season": "Boarding"
+    "season": "Boarding",
+    "trip": "Reis"
   },
   "scope": {
     "title": "Tonen",

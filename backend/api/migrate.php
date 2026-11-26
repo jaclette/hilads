@@ -5123,6 +5123,11 @@ run($pdo, "ALTER TABLE contest_seasons ADD COLUMN IF NOT EXISTS photos JSONB NOT
 // (itinerary) / hidden (founder). Reversal: ALTER TABLE contest_seasons DROP COLUMN itinerary, DROP COLUMN founder.
 run($pdo, "ALTER TABLE contest_seasons ADD COLUMN IF NOT EXISTS itinerary JSONB NOT NULL DEFAULT '[]'::jsonb", 'contest_seasons.itinerary');
 run($pdo, "ALTER TABLE contest_seasons ADD COLUMN IF NOT EXISTS founder JSONB NOT NULL DEFAULT '{}'::jsonb", 'contest_seasons.founder');
+// Campaign screen (2026-11-26): the fallback prize when the players' goal isn't reached ({locale: text},
+// empty = placeholder) and the campaign tab ({icon, label: {locale: text}}, empty = "Trip" + a plane).
+// Reversal: ALTER TABLE contest_seasons DROP COLUMN fallback_prize_i18n, DROP COLUMN tab.
+run($pdo, "ALTER TABLE contest_seasons ADD COLUMN IF NOT EXISTS fallback_prize_i18n JSONB NOT NULL DEFAULT '{}'::jsonb", 'contest_seasons.fallback_prize_i18n');
+run($pdo, "ALTER TABLE contest_seasons ADD COLUMN IF NOT EXISTS tab JSONB NOT NULL DEFAULT '{}'::jsonb", 'contest_seasons.tab');
 
 // ── Admin accounts (back office) ──────────────────────────────────────────
 // One account per person instead of the shared ADMIN_USERNAME / ADMIN_PASSWORD login.

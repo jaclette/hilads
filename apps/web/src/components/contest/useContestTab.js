@@ -3,13 +3,14 @@ import i18n from 'i18next'
 import { fetchContest } from '../../api'
 
 /**
- * The temporary Launch Season tab (the app's useContestTab): shown only while a season I can see
- * is Upcoming (teaser) or Running; gone when it ends. A launcher to the teaser / Prize screen, or
- * my contest home once joined. A dot when something is new (the tab appeared, the season
- * launched, the final week started), cleared on tap (per-browser, localStorage).
+ * The campaign's temporary Trip tab (the app's useContestTab): shown only while a campaign I can
+ * see is Upcoming, Running, being checked (over) or just ended (the winner, a few days); gone after.
+ * Its label and icon come from the server (Admin › Launch Season), else "Trip" and a plane. A dot
+ * when something is new (the tab appeared, the campaign launched, the final week, the winner),
+ * cleared on tap (per browser, localStorage).
  */
 const SEEN_KEY = 'contest_tab_seen'
-const LIVE = new Set(['upcoming', 'season', 'final'])
+const LIVE = new Set(['upcoming', 'season', 'final', 'over', 'ended'])
 const OPENED_KEY = 'contest_tab_opened'
 const readSeen = () => { try { return localStorage.getItem(SEEN_KEY) } catch { return null } }
 const readOpened = () => { try { return localStorage.getItem(OPENED_KEY) === '1' } catch { return true } }
@@ -30,9 +31,10 @@ export function useContestTab() {
   }, [])
   const s = data?.season
   if (!s || !LIVE.has(s.phase)) return null
-  const stamp = `${s.id}:${s.phase}`
+  const stamp = `${s.id}:${s.phase}${s.winner ? ':w' : ''}`
   return {
-    sub: s.phase !== 'upcoming' && data.me?.joined ? 'contest' : 'contest-prize',
+    label: s.tab?.label || null,
+    icon: s.tab?.icon || 'airplane',
     isTest: !!s.isTest,
     isNew: seen !== stamp,
     glide: !opened,

@@ -129,7 +129,8 @@
     "chat": "Hi",
     "passport": "Paspor",
     "ranks": "Peringkat",
-    "season": "Boarding"
+    "season": "Boarding",
+    "trip": "Trip"
   },
   "scope": {
     "title": "Tampilkan",

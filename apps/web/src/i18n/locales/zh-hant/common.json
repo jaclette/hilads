@@ -129,7 +129,8 @@
     "chat": "Hi",
     "passport": "護照",
     "ranks": "排行",
-    "season": "登機"
+    "season": "登機",
+    "trip": "旅行"
   },
   "scope": {
     "title": "顯示",

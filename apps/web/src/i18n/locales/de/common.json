@@ -129,7 +129,8 @@
     "chat": "Hi",
     "passport": "Reisepass",
     "ranks": "Ranking",
-    "season": "Boarding"
+    "season": "Boarding",
+    "trip": "Reise"
   },
   "scope": {
     "title": "Anzeigen",

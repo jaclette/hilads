@@ -173,7 +173,8 @@
     "map": "Peta",
     "passport": "Paspor",
     "season": "Boarding",
-    "new": "baru"
+    "new": "baru",
+    "trip": "Trip"
   },
   "scope": {
     "title": "Tampilkan",

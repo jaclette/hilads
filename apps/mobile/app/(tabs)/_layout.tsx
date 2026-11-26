@@ -45,8 +45,9 @@ const TABS: TabDef[] = [
   { name: 'passport', label: 'tabs.passport', icon: 'id-card-outline' },
 ];
 
-// The Launch Season's temporary tab (not a route: it opens the contest screens).
-const SEASON_TAB: TabDef = { name: 'season', label: 'tabs.season', icon: 'airplane-outline' };
+// The campaign's temporary tab (the "trip" route), in the middle; its label and icon come from the
+// server (Admin › Launch Season), else "Trip" and a plane.
+const TRIP_TAB: TabDef = { name: 'trip', label: 'tabs.trip', icon: 'airplane' };
 
 // expo-router 58: the first tab is set here (Tabs no longer takes initialRouteName).
 export const unstable_settings = { initialRouteName: 'today' };
@@ -89,10 +90,10 @@ function CustomTabBar({ state, emitter, navigateToTab }: BottomTabBarProps) {
     markNotificationTypesRead(b.types).then(refreshNotifCounts);
   }, [activeTab, badges]);  
 
-  // The Launch Season (temporary 5th tab, a plane in the middle): only while a season is Upcoming
-  // or Running; a launcher to the teaser / Prize screen or my contest home. Gone when it ends.
+  // The campaign (temporary 5th tab in the middle, highlighted): a real destination while a campaign
+  // is on (and a few days after it ends, for the winner); gone afterwards.
   const contest = useContestTab();
-  const tabs: TabDef[] = contest ? [...TABS.slice(0, 2), SEASON_TAB, ...TABS.slice(2)] : TABS;
+  const tabs: TabDef[] = contest ? [...TABS.slice(0, 2), TRIP_TAB, ...TABS.slice(2)] : TABS;
 
   if (keyboardUp) return null;
 
@@ -103,27 +104,33 @@ function CustomTabBar({ state, emitter, navigateToTab }: BottomTabBarProps) {
       paddingBottom:   Math.max(12, insets.bottom),
     }]}>
       {tabs.map(tab => {
-        if (tab.name === SEASON_TAB.name && contest) {
-          const label = t(tab.label);
+        if (tab.name === TRIP_TAB.name && contest) {
+          const label = contest.label ?? t(tab.label);
+          const focused = activeTab === 'trip';
+          const icon = (focused ? contest.icon : `${contest.icon}-outline`) as TabDef['icon'];
           return (
-            <Pressable key={tab.name} accessibilityRole="button" testID="tab-season"
+            <Pressable key={tab.name} accessibilityRole="tab" testID="tab-trip" accessibilityState={{ selected: focused }}
                        accessibilityLabel={`${label}${contest.isTest ? ' (TEST)' : ''}${contest.isNew ? `, ${t('tabs.new')}` : ''}`}
                        style={styles.tab}
                        onPress={() => {
-                         track('tab_pressed', { from: activeTab ?? null, to: 'season' });
-                         if (Platform.OS !== 'web') Haptics.selectionAsync().catch(() => {});
                          contest.markSeen();
                          markSeasonTabOpened();
-                         router.push(contest.route as never);
+                         const routeIndex = state.routes.findIndex(r => r.name === 'trip');
+                         const route = state.routes[routeIndex];
+                         if (!route || state.index === routeIndex) return;
+                         markTabPress('trip');
+                         track('tab_pressed', { from: activeTab ?? null, to: 'trip' });
+                         if (Platform.OS !== 'web') Haptics.selectionAsync().catch(() => {});
+                         navigateToTab(route.key);
                        }}>
-              <View>
-                <SeasonPlane icon={tab.icon} color={colors.primaryText} />
+              {/* Raised gold pill (gold = prizes): it stands out from the four tabs, focused or not. */}
+              <View style={[styles.tripPill, { backgroundColor: colors.medalGold, shadowColor: colors.shadow }, focused && styles.tripPillOn]}>
+                <SeasonPlane icon={icon} color={colors.onMedal} />
                 {contest.isTest
                   ? <Text style={[styles.test, { color: '#FFFFFF', backgroundColor: colors.red, borderColor: colors.bg2 }]} maxFontSizeMultiplier={1.2}>TEST</Text>
-                  : contest.isNew && <View style={[styles.dot, { backgroundColor: colors.cta, borderColor: colors.bg2 }]} />}
-                {contest.isTest && contest.isNew && <View style={[styles.dot, styles.dotLeft, { backgroundColor: colors.cta, borderColor: colors.bg2 }]} />}
+                  : contest.isNew && !focused && <View style={[styles.dot, { backgroundColor: colors.red, borderColor: colors.bg2 }]} />}
               </View>
-              <Text style={[styles.label, styles.labelActive, { color: colors.primaryText }]} numberOfLines={1} maxFontSizeMultiplier={1.4} adjustsFontSizeToFit minimumFontScale={0.8}>{label}</Text>
+              <Text style={[styles.label, styles.labelActive, { color: colors.text }]} numberOfLines={1} maxFontSizeMultiplier={1.4} adjustsFontSizeToFit minimumFontScale={0.8}>{label}</Text>
             </Pressable>
           );
         }
@@ -277,6 +284,9 @@ const styles = StyleSheet.create({
   test:        { position: 'absolute', top: -6, right: -16, fontSize: 8, lineHeight: 11, fontWeight: '900', paddingHorizontal: 3,
                  borderRadius: 4, borderWidth: 1, overflow: 'hidden' },
   labelActive: { fontWeight: '700' },
+  tripPill:    { width: 52, height: 40, marginTop: -14, borderRadius: 20, alignItems: 'center', justifyContent: 'center',
+                 shadowOpacity: 0.18, shadowRadius: 6, shadowOffset: { width: 0, height: 3 }, elevation: 4 },
+  tripPillOn:  { transform: [{ scale: 1.06 }] },
 });
 
 // ── Layout ────────────────────────────────────────────────────────────────────
@@ -323,6 +333,8 @@ export default function TabsLayout() {
       <Tabs.Screen name="ranks"    options={{ title: 'Ranks' }} />
       <Tabs.Screen name="chat"     options={{ title: 'Chat' }} />
       <Tabs.Screen name="passport" options={{ title: 'Passport' }} />
+      {/* The campaign's destination: on the bar only while a campaign is on (useContestTab). */}
+      <Tabs.Screen name="trip"     options={{ title: 'Trip' }} />
       {/* Off the bar, still routes so every push and link keeps working:
           challenges → redirects to Today; events (Hi Local) until V3-09;
           me (?tab=…) until V3-10; here from the Chat "nearby" pill. */}

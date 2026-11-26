@@ -129,7 +129,8 @@
     "chat": "Hi",
     "passport": "جواز السفر",
     "ranks": "الترتيب",
-    "season": "الصعود"
+    "season": "الصعود",
+    "trip": "الرحلة"
   },
   "scope": {
     "title": "عرض",

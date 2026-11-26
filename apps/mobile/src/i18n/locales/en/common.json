@@ -174,7 +174,8 @@
     "map": "Map",
     "passport": "Passport",
     "season": "Boarding",
-    "new": "new"
+    "new": "new",
+    "trip": "Trip"
   },
   "scope": {
     "title": "Show",

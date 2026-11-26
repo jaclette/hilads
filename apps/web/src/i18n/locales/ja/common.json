@@ -129,7 +129,8 @@
     "chat": "Hi",
     "passport": "パスポート",
     "ranks": "ランキング",
-    "season": "搭乗"
+    "season": "搭乗",
+    "trip": "旅行"
   },
   "scope": {
     "title": "表示",

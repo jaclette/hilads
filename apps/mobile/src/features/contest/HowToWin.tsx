@@ -6,8 +6,8 @@ import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { contestDate, type ContestSeason } from './contest';
 
 /**
- * "How to win", the three steps of a season (it is a ranking, never a draw): the season's
- * points, the head start of the top N, the final week whose #1 wins. Every number and date
+ * "How to win", the three steps of the campaign (it is a ranking, never a draw): the regular
+ * Hilads points, the head start of the top N, the final week whose #1 wins. Every number and date
  * comes from the season (GET /contest).
  */
 export function HowToWin({ season: s }: { season: ContestSeason }) {
@@ -17,11 +17,11 @@ export function HowToWin({ season: s }: { season: ContestSeason }) {
   const r = s.rules;
   const steps = [
     { icon: 'camera-outline' as const, title: t('contest.step1Title', { date: contestDate(s.finalWeekStart, i18n.language) }),
-      text: t('contest.step1Text', { cap: r.voteCap, points: r.referralPoints, min: r.referralMinPhotos }) },
+      text: t('trip.rules.how1') },
     { icon: 'podium-outline' as const, title: t('contest.step2Title', { count: r.headstartTopN }),
-      text: t('contest.step2Text', { count: r.headstartTopN, date: contestDate(s.finalWeekStart, i18n.language) }) },
+      text: t('trip.rules.how2', { count: r.headstartTopN, date: contestDate(s.finalWeekStart, i18n.language) }) },
     { icon: 'trophy-outline' as const, title: t('contest.step3Title'),
-      text: t('contest.step3Text', { date: contestDate(s.endDate, i18n.language) }) },
+      text: t('trip.rules.how3', { date: contestDate(s.endDate, i18n.language) }) },
   ];
   return (
     <View style={styles.wrap}>

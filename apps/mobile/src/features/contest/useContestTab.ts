@@ -78,23 +78,23 @@ export function useContestOverview(): ContestOverview | null {
 export function reloadContestOverview() { load(); }
 
 /**
- * The temporary Launch Season tab (the plane): shown only while a season I can see is Upcoming
- * (the teaser) or Running (season / final week); gone when it ends or when there is none, so the
- * app is back to its 4 tabs. A launcher: it opens the teaser / Prize screen, or my contest home
- * once I joined. A dot when something is new for me: the tab just appeared, the season launched,
- * the final week started (one stamp per season and phase, cleared on tap).
+ * The campaign's temporary tab ("Trip" + a plane by default; label and icon from the server, Admin ›
+ * Launch Season › Prize): shown only while a campaign I can see is Upcoming, Running, being checked
+ * (over) or just ended (the winner, a few days); gone after that, so the app is back to its 4 tabs.
+ * A dot when something is new for me: the tab just appeared, the campaign launched, the final
+ * week started, the winner is out (one stamp per campaign and phase, cleared on tap).
  */
-export type ContestTab = { route: string; isTest: boolean; isNew: boolean; markSeen: () => void } | null;
-const LIVE = new Set(['upcoming', 'season', 'final']);
+export type ContestTab = { label: string | null; icon: string; isTest: boolean; isNew: boolean; markSeen: () => void } | null;
+const LIVE = new Set(['upcoming', 'season', 'final', 'over', 'ended']);
 
 export function useContestTab(): ContestTab {
   const d = useContestOverview();
   const s = d?.season;
   if (!s || !LIVE.has(s.phase)) return null;
-  const stamp = `${s.id}:${s.phase}`;
-  const joined = d?.me?.joined === true;
+  const stamp = `${s.id}:${s.phase}${s.winner ? ':w' : ''}`;
   return {
-    route: s.phase !== 'upcoming' && joined ? '/contest' : '/contest-prize',
+    label: s.tab?.label || null,
+    icon: s.tab?.icon || 'airplane',
     isTest: !!s.isTest,
     isNew: seen !== stamp,
     markSeen: () => {

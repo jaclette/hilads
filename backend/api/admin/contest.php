@@ -64,7 +64,7 @@ $copyContent = static function (int $dst, int $src) use ($pdo): string {
     if ($dst === $src) throw new InvalidArgumentException('Pick another season to copy from.');
     $from = Contest::season($src) ?? throw new InvalidArgumentException('Unknown season to copy from.');
     $pdo->prepare("UPDATE contest_seasons d SET photos = s.photos, itinerary = s.itinerary, founder = s.founder,
-                          prize_i18n = s.prize_i18n, souvenir = s.souvenir, updated_at = now()
+                          prize_i18n = s.prize_i18n, souvenir = s.souvenir, fallback_prize_i18n = s.fallback_prize_i18n, tab = s.tab, updated_at = now()
                    FROM contest_seasons s WHERE d.id = ? AND s.id = ?")->execute([$dst, $src]);
     Contest::log($dst, 'copy_content', null, ['from' => $src]);
     Contest::forget($dst);
@@ -83,7 +83,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (!($fields['start_date'] <= $fields['final_week_start'] && $fields['final_week_start'] <= $fields['end_date'])) {
                 throw new InvalidArgumentException('Dates: start ≤ final week start ≤ end.');
             }
-            foreach (Contest::SETTINGS as $k) $fields[$k] = $intField($k, in_array($k, ['referral_points', 'referral_cap', 'headstart_top_n'], true) ? 0 : 1);
+            // The campaign counts the regular points (2026-11-26): only these settings are used and posted.
+            foreach (['headstart_top_n', 'prize_threshold_players', 'prize_threshold_photos'] as $k) $fields[$k] = $intField($k, $k === 'headstart_top_n' ? 0 : 1);
             $fields['is_test'] = !empty($_POST['is_test']) ? 'true' : 'false';
             $id = (int) ($_POST['id'] ?? 0);
             if ($id > 0) {
@@ -135,6 +136,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 ->execute([json_encode($prize, JSON_UNESCAPED_UNICODE), $season['id']]);
             Contest::log($season['id'], 'prize', null, ['en' => $prize['en'], 'locales' => array_keys($prize)]);
             flash_set('success', 'Prize saved: the app and the web show it at their next refresh (no new app version required).');
+        } elseif ($season !== null && $do === 'save_fallback') {
+            $fb = [];
+            foreach (Contest::LOCALES as $l) {
+                $t = trim((string) ($_POST['fallback'][$l] ?? ''));
+                if ($t === '') continue;
+                if (mb_strlen($t) > 120) throw new InvalidArgumentException("Fallback prize ({$l}): 120 characters max.");
+                $fb[$l] = $t;
+            }
+            if ($fb !== [] && empty($fb['en'])) throw new InvalidArgumentException('The English fallback prize is required (other languages fall back to it).');
+            $pdo->prepare("UPDATE contest_seasons SET fallback_prize_i18n = ?::jsonb, updated_at = now() WHERE id = ?")
+                ->execute([json_encode((object) $fb, JSON_UNESCAPED_UNICODE), $season['id']]);
+            Contest::log($season['id'], 'fallback_prize', null, ['en' => $fb['en'] ?? null, 'locales' => array_keys($fb)]);
+            Contest::forget($season['id']);
+            flash_set('success', $fb === [] ? 'Fallback prize cleared: the apps show the placeholder ("a prize to be announced").' : 'Fallback prize saved: shown on the goal card, the rules section and the rules page.');
+        } elseif ($season !== null && $do === 'save_tab') {
+            $icon = (string) ($_POST['tab_icon'] ?? 'airplane');
+            if (!in_array($icon, Contest::TAB_ICONS, true)) throw new InvalidArgumentException('Pick one of the icons.');
+            $labels = [];
+            foreach (Contest::LOCALES as $l) {
+                $t = trim((string) ($_POST['tab_label'][$l] ?? ''));
+                if ($t === '') continue;
+                if (mb_strlen($t) > 12) throw new InvalidArgumentException("Tab label ({$l}): 12 characters max (it sits under an icon).");
+                $labels[$l] = $t;
+            }
+            $pdo->prepare("UPDATE contest_seasons SET tab = ?::jsonb, updated_at = now() WHERE id = ?")
+                ->execute([json_encode(['icon' => $icon, 'label' => (object) $labels], JSON_UNESCAPED_UNICODE), $season['id']]);
+            Contest::log($season['id'], 'tab', null, ['icon' => $icon, 'en' => $labels['en'] ?? null]);
+            flash_set('success', 'Tab saved: the apps show it at their next refresh.');
         } elseif ($season !== null && $do === 'copy_content') {
             $name = $copyContent((int) $season['id'], (int) ($_POST['copy_from'] ?? 0));
             flash_set('success', "Content copied from \"{$name}\": photos, sample itinerary, founder word, prize text and souvenir prizes. Participants, testers, rules and scores untouched.");
@@ -343,16 +372,15 @@ admin_nav('/admin/launch-season');
   <?php
   $form = static function (?array $s) use ($esc, $pdo): void {
       $v = static fn(string $k, $d = '') => $esc($s[$k] ?? $d);
-      $defaults = ['vote_cap_per_photo' => 20, 'referral_points' => 20, 'referral_min_photos' => 5, 'referral_cap' => 10,
-                   'headstart_top_n' => 10, 'prize_threshold_players' => 500, 'prize_threshold_photos' => 10];
-      $labels = ['vote_cap_per_photo' => 'Vote cap per photo', 'referral_points' => 'Referral points', 'referral_min_photos' => 'Referral: min photos',
-                 'referral_cap' => 'Referral cap (friends)', 'headstart_top_n' => 'Head-start top N', 'prize_threshold_players' => 'Prize: players needed',
-                 'prize_threshold_photos' => 'Prize: photos each'];
+      // Points are the regular Hilads points (config/scoring.php): no likes cap or referral settings any more.
+      $defaults = ['headstart_top_n' => 10, 'prize_threshold_players' => 500, 'prize_threshold_photos' => 10];
+      $labels = ['headstart_top_n' => 'Head-start top N', 'prize_threshold_players' => "Players' goal: players needed",
+                 'prize_threshold_photos' => "Players' goal: photos each"];
       ?>
       <form method="post" class="form-card" style="max-width:none">
         <?= csrf_input() ?><input type="hidden" name="do" value="save_season"><input type="hidden" name="id" value="<?= (int) ($s['id'] ?? 0) ?>">
         <div class="ls-grid">
-          <label>Name<input type="text" name="name" value="<?= $v('name', 'Launch Season') ?>" required></label>
+          <label>Name<input type="text" name="name" value="<?= $v('name', 'Launch Trip') ?>" required></label>
           <label>Start date<input type="date" name="start_date" value="<?= $v('start_date') ?>" required></label>
           <label>Final week starts<input type="date" name="final_week_start" value="<?= $v('final_week_start') ?>" required></label>
           <label>End date<input type="date" name="end_date" value="<?= $v('end_date') ?>" required></label>
@@ -503,7 +531,7 @@ admin_nav('/admin/launch-season');
     </div>
 
     <h2 style="font-size:15px;color:var(--text);margin-top:24px">Prize</h2>
-    <p class="ls-muted">What the app and the web show as the hero (the Today card, the contest screen). Change it any time, e.g. to the souvenir prize if the player threshold isn't met. English is required; an empty language shows the English text.</p>
+    <p class="ls-muted">What the app and the web show as the hero (the Trip tab's header, the Today banner). Change it any time. English is required; an empty language shows the English text.</p>
     <form method="post" class="form-card" style="max-width:none">
       <?= csrf_input() ?><input type="hidden" name="do" value="save_prize">
       <div class="table-wrapper"><table><thead><tr><th style="width:70px">Lang</th><th>Title (60 max)</th><th>Line under it (140 max)</th><th>Prize screen description (400 max)</th></tr></thead><tbody>
@@ -516,6 +544,37 @@ admin_nav('/admin/launch-season');
       </tbody></table></div>
       <div class="form-actions"><button class="btn btn-primary">Save prize</button></div>
     </form>
+    <h2 id="fallback" style="font-size:15px;color:var(--text);margin-top:24px">If the players' goal isn't reached</h2>
+    <?php $fbSet = $season['fallback_prize_i18n'] !== []; ?>
+    <p class="ls-muted">What the #1 of the final week wins instead of the trip when fewer than <?= (int) $season['prize_threshold_players'] ?> players reach <?= (int) $season['prize_threshold_photos'] ?> photos. Shown from day one on the goal card ("Under <?= (int) $season['prize_threshold_players'] ?> players? The #1 still wins …"), in the app's Rules section and on the rules page ({{fallback}}). Write it to follow "still wins", e.g. "a Vietnam souvenir pack". English is required; an empty language shows the English text.</p>
+    <?php if (!$fbSet): ?><div class="callout warn" style="margin-bottom:10px">Not set yet: the apps show the placeholder "<?= $esc(Contest::DEFAULT_FALLBACK['en']) ?>". Set the real fallback prize before the season goes live.</div><?php endif; ?>
+    <form method="post" class="form-card" style="max-width:none">
+      <?= csrf_input() ?><input type="hidden" name="do" value="save_fallback">
+      <div class="table-wrapper"><table><thead><tr><th style="width:70px">Lang</th><th>Fallback prize (120 max)</th></tr></thead><tbody>
+        <?php foreach (Contest::LOCALES as $l): ?>
+          <tr><td><?= $esc($l) ?></td><td><input type="text" name="fallback[<?= $esc($l) ?>]" value="<?= $esc($season['fallback_prize_i18n'][$l] ?? '') ?>" maxlength="120" placeholder="<?= $esc(Contest::DEFAULT_FALLBACK[$l] ?? '') ?>" style="width:100%;background:var(--surface);border:1px solid var(--line);color:var(--text);padding:5px 8px;border-radius:4px"<?= $l === 'ar' ? ' dir="rtl"' : '' ?>></td></tr>
+        <?php endforeach; ?>
+      </tbody></table></div>
+      <div class="form-actions"><button class="btn btn-primary">Save fallback prize</button></div>
+    </form>
+
+    <h2 id="tab" style="font-size:15px;color:var(--text);margin-top:24px">The campaign's tab</h2>
+    <?php $tabNow = Contest::tab($season, 'en'); ?>
+    <p class="ls-muted">The temporary tab in the middle of the app's tab bar while this season is on (and 7 days after it ends, for the winner). Empty labels = "Trip" in each language. 12 characters max: it sits under the icon.</p>
+    <form method="post" class="form-card" style="max-width:none">
+      <?= csrf_input() ?><input type="hidden" name="do" value="save_tab">
+      <label style="display:flex;gap:8px;align-items:center;margin-bottom:10px">Icon
+        <select name="tab_icon" style="background:var(--surface);border:1px solid var(--line);color:var(--text);padding:4px 6px;border-radius:4px">
+          <?php foreach (Contest::TAB_ICONS as $ic): ?><option value="<?= $esc($ic) ?>"<?= $tabNow['icon'] === $ic ? ' selected' : '' ?>><?= $esc($ic) ?></option><?php endforeach; ?>
+        </select></label>
+      <div class="table-wrapper"><table><thead><tr><th style="width:70px">Lang</th><th>Label (12 max)</th></tr></thead><tbody>
+        <?php foreach (Contest::LOCALES as $l): ?>
+          <tr><td><?= $esc($l) ?></td><td><input type="text" name="tab_label[<?= $esc($l) ?>]" value="<?= $esc($season['tab']['label'][$l] ?? '') ?>" maxlength="12" placeholder="<?= $esc(Contest::DEFAULT_TAB['label'][$l] ?? '') ?>" style="width:100%;background:var(--surface);border:1px solid var(--line);color:var(--text);padding:5px 8px;border-radius:4px"<?= $l === 'ar' ? ' dir="rtl"' : '' ?>></td></tr>
+        <?php endforeach; ?>
+      </tbody></table></div>
+      <div class="form-actions"><button class="btn btn-primary">Save tab</button></div>
+    </form>
+
     <h2 id="souvenir" style="font-size:15px;color:var(--text);margin-top:24px">Souvenir prizes (ranks 2 to N)</h2>
     <?php $sv = json_decode((string) ($season['souvenir'] ?? '{}'), true); $sv = is_array($sv) ? $sv : []; ?>
     <p class="ls-muted">The #1 of the final week wins the prize above; when this is on, ranks 2 to N each get a Vietnam souvenir pack, shipped to them (that is N − 1 parcels to send worldwide). Shown on the Prize screen and the ranking. Leave a line empty for the app's own wording ("Ranks 2 to N of the final week each win a Vietnam souvenir pack, shipped to them"), translated; a line you type replaces it in that language (empty = English). Not part of the score. Remember the rules page.</p>
@@ -630,15 +689,16 @@ admin_nav('/admin/launch-season');
   $pct = min(100, $c['players'] / max(1, $c['threshold']) * 100);
   $table = static function (array $order, string $phase) use ($st, $who, $esc, $url): void { ?>
     <div class="table-wrapper"><table>
-      <thead><tr><th>#</th><th>Player</th><th>Points</th><th>Votes</th><th>Referral</th><?= $phase === 'final' ? '<th>Head-start</th>' : '' ?><th>Days</th><th>Photos</th><th>Likes (all)</th></tr></thead>
+      <thead><tr><th>#</th><th>Player</th><th>Points</th><th>Play</th><th>Podium</th><th>Perfect week</th><th>Friends</th><?= $phase === 'final' ? '<th>Head-start</th>' : '' ?><th>Likes (tie-break)</th><th>Days</th><th>Photos</th></tr></thead>
       <tbody>
       <?php foreach (array_slice($order, 0, 100) as $i => $id): $r = $st['rows'][$id]; ?>
         <tr><td><?= $i + 1 ?></td><td><a href="<?= $esc($url('participants', ['user' => $id])) ?>"><?= $who($r) ?></a></td>
           <td><strong><?= $phase === 'final' ? $r['finalPoints'] : $r['seasonPoints'] ?></strong></td>
-          <td><?= $phase === 'final' ? $r['finalVotes'] : $r['seasonVotes'] ?></td>
-          <td><?= $r['referralBonus'] ?> <span class="ls-muted">(<?= $r['referralsCounted'] ?>)</span></td>
+          <?php $by = $phase === 'final' ? $r['finalBy'] : $r['seasonBy']; ?>
+          <td><?= $by['play'] ?></td><td><?= $by['podium'] ?></td><td><?= $by['week'] ?></td><td><?= $by['friends'] ?></td>
           <?= $phase === 'final' ? '<td>' . $r['headstart'] . '</td>' : '' ?>
-          <td><?= $r['days'] ?></td><td><?= $r['photos'] ?></td><td><?= $r['allVotes'] ?></td></tr>
+          <td><?= $phase === 'final' ? $r['finalLikes'] : $r['seasonLikes'] ?></td>
+          <td><?= $r['days'] ?></td><td><?= $r['photos'] ?></td></tr>
       <?php endforeach; ?>
       <?php if ($order === []): ?><tr><td colspan="9" class="no-results">Nobody yet.</td></tr><?php endif; ?>
       </tbody></table></div>
@@ -701,17 +761,12 @@ admin_nav('/admin/launch-season');
       <p class="ls-muted">Joined <?= $esc(substr((string) $part['joined_at'], 0, 16)) ?> · <?= $esc($part['country']) ?> · 18+ <?= DailyProofRepository::bool($part['age_confirmed']) ? 'yes' : 'no' ?> · rules v<?= (int) $part['rules_version'] ?></p>
       <?php if ($r !== null): ?>
         <div class="stats-row">
-          <div class="stat-card"><div class="stat-value"><?= $r['seasonPoints'] ?></div><div class="stat-label">Season (#<?= $r['seasonRank'] ?? '–' ?>): <?= $r['seasonVotes'] ?> votes + <?= $r['referralBonus'] ?> ref.</div></div>
-          <div class="stat-card"><div class="stat-value"><?= $r['finalPoints'] ?></div><div class="stat-label">Final (#<?= $r['finalRank'] ?? '–' ?>): <?= $r['finalVotes'] ?> + <?= $r['referralBonus'] ?> + <?= $r['headstart'] ?> head-start</div></div>
-          <div class="stat-card"><div class="stat-value"><?= $r['days'] ?></div><div class="stat-label">Days · <?= $r['allVotes'] ?> likes uncapped</div></div>
+          <?php $sb = $r['seasonBy']; $fb = $r['finalBy']; ?>
+          <div class="stat-card"><div class="stat-value"><?= $r['seasonPoints'] ?></div><div class="stat-label">Before the final week (#<?= $r['seasonRank'] ?? '–' ?>): play <?= $sb['play'] ?> · podium <?= $sb['podium'] ?> · week <?= $sb['week'] ?> · friends <?= $sb['friends'] ?></div></div>
+          <div class="stat-card"><div class="stat-value"><?= $r['finalPoints'] ?></div><div class="stat-label">Final week (#<?= $r['finalRank'] ?? '–' ?>): play <?= $fb['play'] ?> · podium <?= $fb['podium'] ?> · week <?= $fb['week'] ?> · friends <?= $fb['friends'] ?> + <?= $r['headstart'] ?> head-start</div></div>
+          <div class="stat-card"><div class="stat-value"><?= $r['days'] ?></div><div class="stat-label">Days · <?= $r['allLikes'] ?> likes (tie-break) · points counted from <?= $esc($r['joinDate']) ?></div></div>
         </div>
-        <h3 style="font-size:14px;color:var(--text)">Referrals (<?= $r['referrals'] ?> active, <?= $r['referralsCounted'] ?> counted)</h3>
-        <div class="table-wrapper"><table><tbody>
-          <?php foreach ($r['referralFriends'] as $f): ?>
-            <tr><td><a href="<?= $esc($url('participants', ['user' => $f['userId']])) ?>">@<?= $esc($f['username']) ?></a></td><td><?= $f['photos'] ?> photos</td><td><?= $esc($f['status']) ?></td></tr>
-          <?php endforeach; ?>
-          <?php if ($r['referralFriends'] === []): ?><tr><td class="no-results">No invited participant.</td></tr><?php endif; ?>
-        </tbody></table></div>
+        <p class="ls-muted">Points are the player's regular Hilads points on the season's challenges (Scoring). Invalidating a photo here removes its points and likes from the campaign only.</p>
       <?php else: ?>
         <p class="ls-muted">Not in the standings (an excluded account: review, demo, fake, hidden, deleted or a tester in a real season).</p>
       <?php endif; ?>

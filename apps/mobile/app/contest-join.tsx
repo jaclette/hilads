@@ -49,7 +49,7 @@ export default function ContestJoinScreen() {
 
   const season = data?.season;
   const ready = !!season && age && rules && !!country && !busy;
-  const back = () => (router.canGoBack() ? router.back() : router.replace('/contest' as never));
+  const back = () => (router.canGoBack() ? router.back() : router.navigate('/(tabs)/trip' as never));
 
   const join = async () => {
     if (!ready || !season || !country) return;
@@ -60,7 +60,8 @@ export default function ContestJoinScreen() {
       refreshContestTab();
       void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       track('contest_joined', { test: season.isTest });
-      router.replace('/contest' as never);
+      // The campaign is a tab: back to it (navigate pops this screen instead of stacking a copy).
+      router.navigate('/(tabs)/trip' as never);
     } catch (e) {
       const code = (e as { body?: { code?: string } })?.body?.code;
       setError(code === 'closed' ? t('contest.closed') : t('contest.cantJoin'));

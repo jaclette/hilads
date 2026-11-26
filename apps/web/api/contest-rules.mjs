@@ -54,7 +54,7 @@ export function renderMarkdown(md) {
 }
 
 function page(r, locale) {
-  const title = `${r.season?.name || 'Launch Season'} — Rules · Hilads`
+  const title = `${r.season?.name || 'Launch Trip'} — Rules · Hilads`
   const draft = !r.isFinal
   const updated = r.updatedAt ? new Date(r.updatedAt).toISOString().slice(0, 10) : null
   return `<!doctype html>
@@ -63,7 +63,7 @@ function page(r, locale) {
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${esc(title)}</title>
-<meta name="description" content="${esc(`The official rules of the Hilads ${r.season?.name || 'Launch Season'}.`)}">
+<meta name="description" content="${esc(`The official rules of the Hilads ${r.season?.name || 'Launch Trip'}.`)}">
 ${draft ? '<meta name="robots" content="noindex">' : ''}
 <link rel="icon" href="/favicon.ico">
 <style>

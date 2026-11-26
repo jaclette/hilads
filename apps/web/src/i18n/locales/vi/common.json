@@ -129,7 +129,8 @@
     "chat": "Hi",
     "passport": "Hộ chiếu",
     "ranks": "Xếp hạng",
-    "season": "Boarding"
+    "season": "Boarding",
+    "trip": "Chuyến đi"
   },
   "scope": {
     "title": "Xem",

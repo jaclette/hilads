@@ -1,12 +1,30 @@
 import { api } from '@/api/client';
 
-/** Launch Season (GET /contest): a separate contest layer, never the game's points. */
-export type ContestPhase = 'upcoming' | 'season' | 'final' | 'over';
+/**
+ * The campaign (GET /contest, "Launch Season" in the back office): a separate layer that reads the
+ * regular Hilads points (play, podium, perfect week, friends) on its challenges, never writes them.
+ * Phases: upcoming (teaser) · season (before the final week) · final · over (results being checked)
+ * · ended (the winner, shown a few days, then the tab goes).
+ */
+export type ContestPhase = 'upcoming' | 'season' | 'final' | 'over' | 'ended';
+
+/** The regular points the campaign counts (config/scoring.php), for the Rules section. */
+export interface ContestPoints { play: number; podium: [number, number, number]; week: number; friend: number; crew: number; crewSize: number; friendsPerMonth: number }
+
+/** Points by kind: play, podium, perfect week, friends (+ crew bonus). */
+export interface ContestBy { play: number; podium: number; week: number; friends: number }
 
 export interface ContestSeason {
   id: number;
   /** The prize, set per season in Admin › Launch Season (in the app's language, else English). */
   prize?: { title: string; subtitle: string; description?: string };
+  /** What the #1 wins if the players' goal isn't reached (Admin; a placeholder until set). */
+  fallbackPrize?: string;
+  /** The campaign's tab: its label and Ionicons name (Admin; default "Trip" + airplane). */
+  tab?: { label: string; icon: string };
+  points?: ContestPoints;
+  /** The confirmed winner (Admin › Winner & export), else null. */
+  winner?: { userId: string; username: string | null; displayName: string | null; photoUrl: string | null } | null;
   /** Ranks 2..to of the final week each win a souvenir (Admin › Launch Season), null when off. */
   souvenir?: { from: number; to: number; text: string | null } | null;
   /** Real photos from Admin › Launch Season › Photos (Pixabay picks or our own), in order; empty = the illustration. */
@@ -25,7 +43,7 @@ export interface ContestSeason {
   startsAt?: string | null;
   finalAt?: string | null;
   endsAt?: string | null;
-  rules: { voteCap: number; referralPoints: number; referralMinPhotos: number; referralCap: number; headstartTopN: number };
+  rules: { headstartTopN: number; voteCap: number; referralPoints: number; referralMinPhotos: number; referralCap: number };
   rulesUrl: string;
 }
 
@@ -41,6 +59,9 @@ export interface ContestMeJoined {
   photos?: number;
   days?: number;
   referrals?: { active: number; cap: number; minPhotos: number; friends: { username: string | null; photos: number; status: ContestFriendStatus }[] };
+  /** My place in the current race (before the final week, or the final week's). */
+  race?: { part: 'season' | 'final'; rank: number | null; prevRank: number | null; points: number; by: ContestBy; headstart: number;
+           likes: number; gap: number | null; ranked: number };
 }
 
 export interface ContestMeNotJoined {
@@ -54,13 +75,17 @@ export interface ContestMeNotJoined {
 
 export interface ContestOverview {
   season: ContestSeason | null;
-  counter?: { players: number; threshold: number; photos: number };
+  counter?: { players: number; threshold: number; photos: number; reached?: boolean };
   participants?: number;
   me?: ContestMeJoined | ContestMeNotJoined | null;
 }
 
 export interface ContestRow {
   rank: number;
+  /** The rank before today's challenge (null: not ranked then), for the movement arrows. */
+  prevRank?: number | null;
+  likes?: number;
+  by?: ContestBy;
   userId: string;
   username: string | null;
   displayName: string | null;

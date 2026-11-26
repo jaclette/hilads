@@ -129,7 +129,8 @@
     "chat": "Hi",
     "passport": "Passaporto",
     "ranks": "Classifica",
-    "season": "Imbarco"
+    "season": "Imbarco",
+    "trip": "Viaggio"
   },
   "scope": {
     "title": "Mostra",

@@ -174,7 +174,8 @@
     "map": "Karte",
     "passport": "Reisepass",
     "season": "Boarding",
-    "new": "neu"
+    "new": "neu",
+    "trip": "Reise"
   },
   "scope": {
     "title": "Anzeigen",

@@ -86,7 +86,7 @@ final class ContestNotify
                 [$title, $body] = self::text($r['locale'] ?? null);
                 try {
                     NotificationRepository::createUnchecked($r['user_id'], self::TYPE, $title, $body,
-                        ['deepLink' => '/contest-prize', 'seasonId' => (int) $s['id']], $r['locale'] ?? null);
+                        ['deepLink' => '/contest', 'seasonId' => (int) $s['id']], $r['locale'] ?? null);
                     $sent++;
                 } catch (\Throwable $e) {
                     error_log('[contest-live] push failed for user=' . $r['user_id'] . ' err=' . $e->getMessage());

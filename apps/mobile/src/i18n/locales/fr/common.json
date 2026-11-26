@@ -175,7 +175,8 @@
     "map": "Carte",
     "passport": "Passeport",
     "season": "Boarding",
-    "new": "nouveau"
+    "new": "nouveau",
+    "trip": "Voyage"
   },
   "scope": {
     "title": "Afficher",

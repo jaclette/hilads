@@ -22,7 +22,8 @@ import { NextPlanRow, PlanLine, QuestionCard, ScrollToLatest } from './component
 import SeasonResultGate from './components/SeasonResultGate'
 import { FriendsScreen, MyPhotosScreen, MySpotsScreen } from './components/passport/FriendsScreens'
 import InviteScreen from './components/passport/InviteScreen'
-import ContestScreen, { ContestPrize, ContestRanking } from './components/contest/ContestScreen'
+import { ContestPrize } from './components/contest/ContestScreen'
+import TripScreen from './components/contest/TripScreen'
 import CalendarScreen from './components/daily/CalendarScreen'
 import { ProposeScreen, TwistScreen, ProposalsScreen } from './components/daily/ProposalScreens'
 import { DailyContext, VoteButton, LocalPassBadge, seedStates, useHere, useOriginal, OriginalToggle, getLastToday } from './components/daily/dailyShared'
@@ -35,7 +36,7 @@ import DailyPinBar from './components/chat/DailyPinBar'
 import QuickStart from './components/chat/QuickStart'
 import { createSocket } from './socket'
 import { cityFlag } from './cityMeta'
-import Icon from './components/Icon'
+import Icon, { hasIcon } from './components/Icon'
 import { useContestTab } from './components/contest/useContestTab'
 import { THEME_ICON, eventIcon, VIBE_ICONS, TOPIC_ICONS, CHALLENGE_TYPE_ICONS } from './lib/icons'
 import { badgeLabel } from './badgeMeta'
@@ -198,6 +199,8 @@ function parseDeepLink() {
   // The app's own screens (UX audit: a URL per screen, kept as the top screen changes).
   if (path === '/world')         return { type: 'leaderboard', scope: params.get('scope') ?? 'city', period: params.get('period') ?? 'week' }
   if (path === '/passport')      return { type: 'passport' }
+  // The campaign's Trip tab (and the older Launch Season addresses).
+  if (path === '/trip' || path === '/launch-season' || path === '/contest') return { type: 'trip', section: params.get('section') ?? 'overview' }
   if (path === '/settings')      return { type: 'settings' }
   if (path === '/challenges')    return { type: 'challenges' }
   if (path === '/map')           return { type: 'map' }
@@ -1083,7 +1086,9 @@ export default function App() {
   // Passport (W4): Settings behind the gear, and the screens behind its rows.
   const [showSettings, setShowSettings] = useState(false)
   const [passportSub, setPassportSub] = useState(null) // 'photos' | 'spots' | 'friends' | null
-  const [contestTab, setContestTab] = useState('season')   // the Launch Season full ranking's tab
+  // The campaign's Trip tab (a full page while a campaign is on) and its section.
+  const [showTrip, setShowTrip] = useState(false)
+  const [tripSection, setTripSection] = useState('overview')
   const [worldActivity, setWorldActivity] = useState(null) // { online, cities, crossCity }
   const [worldArrivals, setWorldArrivals] = useState([])   // global recent arrivals
   const [showWorldArrivals, setShowWorldArrivals] = useState(false)
@@ -1595,6 +1600,7 @@ export default function App() {
     : showEventDrawer ? 'events'
     : showCityPicker ? 'switch-city'
     : showMap ? 'map'
+    : showTrip ? 'trip'
     : topDaily ? (DAILY_SCREEN[topDaily.name] ?? `daily/${topDaily.name}`)
     : showLeaderboard ? 'ranks'
     : showToday ? 'today'
@@ -1612,7 +1618,7 @@ export default function App() {
   // (parseDeepLink reads them back). setUrl replaces the current history entry, so each back
   // layer's entry keeps its screen's address and back restores it. Today and Hi share the
   // city's address (hlHome tells them apart on reload); an event keeps its own (set where it opens).
-  const SCREEN_PATH = { ranks: '/world', map: '/map', passport: '/passport', notifications: '/notifications',
+  const SCREEN_PATH = { trip: '/trip', ranks: '/world', map: '/map', passport: '/passport', notifications: '/notifications',
     messages: '/conversations', settings: '/settings', 'notification-settings': '/settings', 'daily/archive': '/challenges' }
   const topDailyDate = topDaily?.name === 'challenge' && /^\d{4}-\d{2}-\d{2}$/.test(topDaily.params?.date ?? '') ? topDaily.params.date : null
   useEffect(() => {
@@ -1948,7 +1954,7 @@ export default function App() {
 
   // V6: opening a tab clears its badge (the notifications behind it are read).
   const chatTabActive = !showToday && !showMap && !showProfileDrawer && !showEventDrawer && !showCityPicker
-    && !showPeopleDrawer && !showConversations && !showNotifications && !showLeaderboard
+    && !showPeopleDrawer && !showConversations && !showNotifications && !showLeaderboard && !showTrip
   const badgeTab = chatTabActive ? 'chat' : showProfileDrawer ? 'passport' : showLeaderboard ? 'ranks' : null
   useEffect(() => {
     const types = { chat: ['mention', 'city_here'], passport: ['daily_local_pass'], ranks: ['daily_result', 'daily_rank'] }[badgeTab]
@@ -2219,6 +2225,7 @@ export default function App() {
     if (link.type === 'conversations')   openScreenOnJoinRef.current = 'conversations'
     if (link.type === 'notifications')   openScreenOnJoinRef.current = 'notifications'
     if (link.type === 'passport')        openScreenOnJoinRef.current = 'passport'
+    if (link.type === 'trip')            openScreenOnJoinRef.current = `trip:${link.section}`
     if (link.type === 'settings')        openScreenOnJoinRef.current = 'settings'
     if (link.type === 'reset-password')  setResetPasswordToken(link.token)
     if (link.type === 'forgot-password') setShowForgotPassword(true)
@@ -3219,6 +3226,7 @@ export default function App() {
       if (openScreenOnJoinRef.current === 'conversations') { setShowConversations(true); openScreenOnJoinRef.current = null }
       if (openScreenOnJoinRef.current === 'notifications') { setShowNotifications(true); openScreenOnJoinRef.current = null }
       if (openScreenOnJoinRef.current === 'passport')      { goToMeTab(); openScreenOnJoinRef.current = null }
+      if (String(openScreenOnJoinRef.current).startsWith('trip:')) { goToTripTab(openScreenOnJoinRef.current.slice(5)); openScreenOnJoinRef.current = null }
       if (openScreenOnJoinRef.current === 'settings')      { goToMeTab(); setShowSettings(true); openScreenOnJoinRef.current = null }
       if (openScreenOnJoinRef.current === 'leaderboard')   { openRanks(ranksFromLeaderboard(leaderboardScope, leaderboardPeriod));  openScreenOnJoinRef.current = null }
 
@@ -4010,6 +4018,7 @@ export default function App() {
   // bottom-nav tabs actually swap screens instead of staying buried under
   // a stuck Topic/Challenge/Create page. Called from every goTo* handler.
   function dismissFullPageOverlays() {
+    setShowTrip(false)
     setShowSettings(false)
     setShowLeaderboard(false)
     setPassportSub(null)
@@ -4172,6 +4181,23 @@ export default function App() {
     setShowLeaderboard(true)
   }
   function goToRanksTab() { openRanks({ ...ranksParams, focus: null }) }
+  // An older link or screen asking for the campaign home or ranking as a Passport sub-screen: the Trip tab now.
+  useEffect(() => {
+    if (passportSub === 'contest' || passportSub === 'contest-ranking') goToTripTab(passportSub === 'contest-ranking' ? 'ranking' : 'overview')
+  }, [passportSub]) // eslint-disable-line react-hooks/exhaustive-deps
+  // The campaign's Trip tab, on a section (overview / ranking / friends / rules).
+  function goToTripTab(section = 'overview') {
+    setShowCityPicker(false)
+    setShowEventDrawer(false)
+    setShowPeopleDrawer(false)
+    setShowProfileDrawer(false)
+    setShowConversations(false)
+    setShowNotifications(false)
+    setViewingProfile(null)
+    dismissFullPageOverlays()
+    setTripSection(section)
+    setShowTrip(true)
+  }
   // An old leaderboard link (scope city / cities / world, period month / alltime) → its Ranks segment.
   const ranksFromLeaderboard = (scope, period) => ({
     tab: scope === 'cities' ? 'cities' : 'players', period: period === 'alltime' ? 'alltime' : scope === 'cities' ? 'week' : 'season', scope: scope === 'world' ? 'world' : 'city',
@@ -6159,7 +6185,7 @@ export default function App() {
         <nav className={`bottom-nav${seasonTab ? ' bottom-nav--five' : ''}`} aria-label={i18n.t('a11y.mainNav', { ns: 'common' })}>
           {(() => {
             const onPassport = showProfileDrawer
-            const onChat = !showToday && !showMap && !onPassport && !showEventDrawer &&
+            const onChat = !showToday && !showMap && !onPassport && !showEventDrawer && !showTrip &&
               !showCityPicker && !showPeopleDrawer && !showConversations && !showNotifications && !showLeaderboard
             // Four tabs (UX audit option B, as the app): Today, World (the ranks), Map, Passport.
             // Hi is a screen of the city, opened from Today: Today stays lit while it's open.
@@ -6171,21 +6197,22 @@ export default function App() {
             ]
             // V6 tab badges (dots): Passport = a new Local Pass, World = results out. Hi's mentions: the bell, the inbox.
             const badge = { passport: notifCounts.badges.passport, ranks: notifCounts.badges.ranks }
-            // The Launch Season's temporary tab (a plane in the middle, only while a season is Upcoming or
-            // Running): a launcher to the teaser / Prize screen or my contest home (Passport sub-screens).
+            // The campaign's temporary Trip tab (in the middle, a raised gold pill), only while a campaign
+            // is on; label and icon from the server (Admin › Launch Season), else "Trip" and a plane.
             if (seasonTab) {
-              tabs.splice(2, 0, { key: 'season', label: 'tabs.season', active: false, season: true,
-                onClick: () => { seasonTab.markSeen(); goToMeTab(); setPassportSub(seasonTab.sub) },
-                Icon: () => <Icon name="airplane-outline" size={26} /> })
+              tabs.splice(2, 0, { key: 'trip', label: seasonTab.label ?? 'tabs.trip', active: showTrip && !showProfileDrawer, season: true,
+                onClick: () => { seasonTab.markSeen(); track('tab_pressed', { from: null, to: 'trip', platform_surface: 'web' }); goToTripTab() },
+                Icon: () => <Icon name={[`${seasonTab.icon}-outline`, seasonTab.icon].find(hasIcon) ?? 'airplane-outline'} size={24} /> })
             }
             return tabs.map(({ key, label, active, onClick, Icon, season }) => season ? (
-              <button key={key} type="button" className="bottom-nav-tab bottom-nav-tab--season" onClick={onClick}
-                      aria-label={`${t(label, { ns: 'common' })}${seasonTab.isTest ? ' (TEST)' : ''}`}>
-                <span className="bottom-nav-icon"><span className={seasonTab.glide ? 'season-plane is-glide' : 'season-plane'}><Icon /></span>
+              <button key={key} type="button" className={`bottom-nav-tab bottom-nav-tab--season${active ? ' active' : ''}`} onClick={onClick}
+                      aria-current={active ? 'page' : undefined}
+                      aria-label={`${seasonTab.label ?? t(label, { ns: 'common' })}${seasonTab.isTest ? ' (TEST)' : ''}`}>
+                <span className="bottom-nav-icon trip-pill"><span className={seasonTab.glide ? 'season-plane is-glide' : 'season-plane'}><Icon /></span>
                   {seasonTab.isTest && <span className="bottom-nav-test">TEST</span>}
                   {seasonTab.isNew && <span className={`n6-tab-dot${seasonTab.isTest ? ' n6-tab-dot--left' : ''}`} />}
                 </span>
-                <span className="bottom-nav-label">{t(label, { ns: 'common' })}</span>
+                <span className="bottom-nav-label">{seasonTab.label ?? t(label, { ns: 'common' })}</span>
               </button>
             ) : (
               <button key={key} type="button" className={`bottom-nav-tab${active ? ' active' : ''}`} onClick={onClick}
@@ -6204,11 +6231,16 @@ export default function App() {
       {/* ── Full-screen pages ─────────────────────────── */}
 
       <>
+        {showTrip && !showMap && !showProfileDrawer && (
+          <TripScreen account={account} initialSection={tripSection} onOpenToday={goToTodayTab}
+            onSignUp={() => setGateAuth({ tab: 'signup', action: 'passport' })}
+            onOpenProfile={(uid, name) => openProfile(uid, name)} />
+        )}
         {showLeaderboard && !showMap && !showProfileDrawer && (
           <RanksScreen header={renderAppHeader()} initial={ranksParams} />
         )}
         {showToday && !showMap && !showProfileDrawer && !showLeaderboard && (
-          <TodayScreen header={renderAppHeader()} onOpenContest={(sub) => { goToMeTab(); setPassportSub(sub || 'contest') }} />
+          <TodayScreen header={renderAppHeader()} onOpenContest={() => goToTripTab()} />
         )}
       </>
 
@@ -7097,20 +7129,8 @@ export default function App() {
         <MySpotsScreen onBack={() => setPassportSub(null)} onOpenSpot={(id) => { goToMapTab(); setMapSpotId(id) }} />
       )}
       {showProfileDrawer && passportSub === 'contest-prize' && (
-        <ContestPrize account={account} onBack={() => setPassportSub(null)} onOpenHome={() => setPassportSub('contest')}
+        <ContestPrize account={account} onBack={() => setPassportSub(null)} onOpenHome={() => goToTripTab()}
           onSignUp={() => setGateAuth({ tab: 'signup', action: 'passport' })} />
-      )}
-      {showProfileDrawer && passportSub === 'contest-ranking' && (
-        <ContestRanking account={account} initialTab={contestTab} onBack={() => setPassportSub('contest')}
-          onOpenProfile={(uid, name) => { setShowProfileDrawer(false); openProfile(uid, name) }} />
-      )}
-      {showProfileDrawer && passportSub === 'contest' && (
-        <ContestScreen account={account} onBack={() => setPassportSub(null)}
-          onOpenInvite={() => setPassportSub('invite')}
-          onOpenPrize={() => setPassportSub('contest-prize')}
-          onOpenRanking={(tab) => { setContestTab(tab); setPassportSub('contest-ranking') }}
-          onSignUp={() => setGateAuth({ tab: 'signup', action: 'passport' })}
-          onOpenProfile={(uid, name) => { setShowProfileDrawer(false); openProfile(uid, name) }} />
       )}
       {showProfileDrawer && passportSub === 'invite' && account && (
         <InviteScreen account={account} onBack={() => setPassportSub(null)}

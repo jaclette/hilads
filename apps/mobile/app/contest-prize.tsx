@@ -43,7 +43,7 @@ export default function ContestPrizeScreen() {
     track('contest_prize_viewed', {});
   }, [i18n.language]));
 
-  const back = () => (router.canGoBack() ? router.back() : router.replace('/(tabs)/today' as never));
+  const back = () => (router.canGoBack() ? router.back() : router.navigate('/(tabs)/trip' as never));
   const s = data?.season;
   const me = data?.me;
   const joined = me?.joined === true;
@@ -61,11 +61,11 @@ export default function ContestPrizeScreen() {
     notifyContest(s.id, i18n.language).then(d => { setData(d); setContestOverview(d); }).catch(() => {}).finally(() => setBusy(false));
   };
   const cta = upcoming
-    ? !account ? { label: t('contest.notifyMe'), go: () => router.push('/auth-gate?reason=contest&returnTo=%2Fcontest-prize' as never) }
+    ? !account ? { label: t('contest.notifyMe'), go: () => router.push('/auth-gate?reason=contest&returnTo=%2Ftrip' as never) }
       : { label: t(notified ? 'contest.notifyOn' : 'contest.notifyMe'), go: notify }
     : !account
-    ? { label: t('contest.join'), go: () => router.push('/auth-gate?reason=contest&returnTo=%2Fcontest-prize' as never) }
-    : joined ? { label: t('contest.prizeYoureIn'), go: () => router.push('/contest' as never) }
+    ? { label: t('contest.join'), go: () => router.push('/auth-gate?reason=contest&returnTo=%2Ftrip' as never) }
+    : joined ? { label: t('contest.prizeYoureIn'), go: () => router.navigate('/(tabs)/trip' as never) }
     : me && me.joined === false && me.canJoin ? { label: t('contest.join'), go: () => router.push('/contest-join' as never) }
     : null;
 

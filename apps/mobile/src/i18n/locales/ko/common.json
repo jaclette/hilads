@@ -173,7 +173,8 @@
     "map": "지도",
     "passport": "여권",
     "season": "탑승",
-    "new": "새 소식"
+    "new": "새 소식",
+    "trip": "여행"
   },
   "scope": {
     "title": "보기",

@@ -3,33 +3,58 @@
 declare(strict_types=1);
 
 /**
- * Launch Season: a time-limited contest on top of the game (Admin › Launch Season).
+ * Launch Season: a time-limited campaign on top of the game (Admin › Launch Season).
  *
- * A SEPARATE LAYER. It reads daily_proofs / daily_votes / users / user_devices and writes
- * only the contest_* tables: never score_events, never users.score_*, never a push or a
- * notification (ContestIsolationTest checks this file for it). Posting and voting are the
- * game's own, unchanged: a participant's photos count for the contest automatically.
+ * A SEPARATE LAYER that READS the game and writes only the contest_* tables: never the
+ * permanent score (it only reads score_events), never users.score_*, never a push or a
+ * notification (ContestIsolationTest checks this file for it). Playing is the game's own,
+ * unchanged: a participant's points count for the campaign automatically.
  *
- * - A contest photo: approved, not demo / seed / suggestion, its challenge dated in the
- *   season, posted after its author joined, not invalidated for the contest.
- * - A contest vote: a like on a contest photo, not from a review / demo / fake / hidden
- *   account, not invalidated. 1 vote = 1 point, at most vote_cap_per_photo per photo.
- * - Referral: a participant B whose users.invited_by_user_id is A (a participant), invited
- *   during the season and before B joined, on a distinct device (Invites::blockReason),
- *   with at least referral_min_photos contest photos: +referral_points for A, at most
- *   referral_cap of them.
- * - Season ranking (photos dated before final_week_start) = capped votes + referral bonus.
- *   At the final week the top headstart_top_n are frozen (N points for #1 … 1 for #N).
- *   Final = capped votes on final-week photos + referral bonus + head-start.
- *   Ties: days played, then all votes uncapped, then the earliest join.
- * - Everything is computed on read (cached CACHE_TTL s): a setting or an invalidation
- *   changes the standings at once. Only the head-start is stored.
+ * Scoring (since 2026-11-26, the owner's option B: one number everywhere): the campaign adds up
+ * the REGULAR Hilads points (config/scoring.php season_kinds: play, podium, perfect week, friends,
+ * crew bonus) earned on challenges dated inside the campaign, from the challenge day the player
+ * joined. The regular invite rule applies as it is (the friend's first approved photo).
+ * - Before the final week: points on challenges dated start_date … final_week_start - 1.
+ * - At the final week the top headstart_top_n are frozen (N points for #1 … 1 for #N).
+ *   Final = points on final-week challenges + head-start.
+ * - Ties: most likes received on the phase's photos, then the first to reach the score.
+ * - Only players with points are ranked ("Play to enter the race", never "#1" with 0).
+ * - The prize goal: prize_threshold_players participants with prize_threshold_photos approved
+ *   photos each; not reached = the fallback prize (Admin › Launch Season › Prize).
+ * - Everything is computed on read (cached CACHE_TTL s); only the head-start is stored.
+ * - Invalidating a photo for the campaign removes its points and its likes here (the game keeps them).
  * - Test seasons (is_test): only contest_testers see and join them; testers never join a
  *   real season; a dev build (X-App-Build: dev) joins only a test season.
  */
 final class Contest
 {
     public const CACHE_TTL = 30;
+
+    /** An ended campaign keeps its tab (the winner screen) this many days after its end date, then it goes. */
+    public const ENDED_VISIBLE_DAYS = 7;
+
+    /** The campaign's tab in the apps (Admin › Launch Season › Prize): an Ionicons name and a label per language. */
+    public const DEFAULT_TAB = ['icon' => 'airplane', 'label' => [
+        'en' => 'Trip', 'fr' => 'Voyage', 'vi' => 'Chuyến đi', 'es' => 'Viaje', 'it' => 'Viaggio', 'pt-br' => 'Viagem', 'pt-pt' => 'Viagem',
+        'de' => 'Reise', 'nl' => 'Reis', 'zh-hans' => '旅行', 'zh-hant' => '旅行', 'ja' => '旅行', 'ko' => '여행', 'fil' => 'Biyahe',
+        'th' => 'ทริป', 'id' => 'Trip', 'hi' => 'ट्रिप', 'ru' => 'Поездка', 'ar' => 'الرحلة',
+    ]];
+
+    /**
+     * What the #1 wins if the players' goal isn't reached (Admin › Launch Season › Prize), a noun phrase
+     * ("the #1 still wins {prize}"). PLACEHOLDER until the owner sets the real one: the admin flags it.
+     */
+    public const DEFAULT_FALLBACK = [
+        'en' => 'a prize to be announced', 'fr' => 'un lot annoncé prochainement', 'vi' => 'một giải thưởng sẽ được công bố',
+        'es' => 'un premio por anunciar', 'it' => 'un premio che sarà annunciato', 'pt-br' => 'um prêmio a ser anunciado',
+        'pt-pt' => 'um prémio a anunciar', 'de' => 'ein Preis, der noch bekannt gegeben wird', 'nl' => 'een prijs die nog bekend wordt gemaakt',
+        'zh-hans' => '一份即将公布的奖品', 'zh-hant' => '一份即將公布的獎品', 'ja' => '後日発表の賞品', 'ko' => '추후 공개될 상품',
+        'fil' => 'isang premyong iaanunsyo pa', 'th' => 'ของรางวัลที่จะประกาศภายหลัง', 'id' => 'hadiah yang akan diumumkan',
+        'hi' => 'एक इनाम जिसकी घोषणा जल्द होगी', 'ru' => 'приз, который объявим позже', 'ar' => 'جائزة سيُعلن عنها لاحقًا',
+    ];
+
+    /** The Ionicons a campaign tab may use (Admin). */
+    public const TAB_ICONS = ['airplane', 'trophy', 'gift', 'star', 'flag', 'rocket', 'sparkles', 'globe', 'ribbon', 'medal'];
     public const SETTINGS = ['vote_cap_per_photo', 'referral_points', 'referral_min_photos', 'referral_cap',
                              'headstart_top_n', 'prize_threshold_players', 'prize_threshold_photos'];
 
@@ -87,6 +112,10 @@ final class Contest
         $r['paused']  = DailyProofRepository::bool($r['paused']);
         $prize = json_decode((string) ($r['prize_i18n'] ?? ''), true);
         $r['prize_i18n'] = is_array($prize) && $prize !== [] ? $prize : self::DEFAULT_PRIZE;
+        $fb = json_decode((string) ($r['fallback_prize_i18n'] ?? ''), true);
+        $r['fallback_prize_i18n'] = is_array($fb) ? array_filter($fb, static fn($v): bool => is_string($v) && trim($v) !== '') : [];
+        $tab = json_decode((string) ($r['tab'] ?? ''), true);
+        $r['tab'] = is_array($tab) ? $tab : [];
         return $r;
     }
 
@@ -119,16 +148,20 @@ final class Contest
     public static function visibleFor(?string $userId): ?array
     {
         $pdo = Database::pdo();
+        // Running (not paused), or ended less than ENDED_VISIBLE_DAYS after its end date (the winner screen).
+        $live = "((s.status = 'running' AND NOT s.paused) OR (s.status = 'ended' AND s.end_date >= ?::date - " . self::ENDED_VISIBLE_DAYS . "))";
+        $today = DailyClock::currentDate();
         if ($userId !== null) {
             $stmt = $pdo->prepare("
                 SELECT s.* FROM contest_seasons s JOIN contest_testers t ON t.season_id = s.id AND t.user_id = ?
-                WHERE s.is_test AND s.status = 'running' AND NOT s.paused ORDER BY s.id DESC LIMIT 1
+                WHERE s.is_test AND {$live} ORDER BY (s.status = 'running') DESC, s.id DESC LIMIT 1
             ");
-            $stmt->execute([$userId]);
+            $stmt->execute([$userId, $today]);
             if ($r = $stmt->fetch(PDO::FETCH_ASSOC)) return self::normalizeSeason($r);
         }
-        $r = $pdo->query("SELECT * FROM contest_seasons WHERE NOT is_test AND status = 'running' AND NOT paused ORDER BY id DESC LIMIT 1")
-                 ->fetch(PDO::FETCH_ASSOC);
+        $stmt = $pdo->prepare("SELECT s.* FROM contest_seasons s WHERE NOT s.is_test AND {$live} ORDER BY (s.status = 'running') DESC, s.id DESC LIMIT 1");
+        $stmt->execute([$today]);
+        $r = $stmt->fetch(PDO::FETCH_ASSOC);
         return $r ? self::normalizeSeason($r) : null;
     }
 
@@ -200,6 +233,10 @@ final class Contest
 
     // ── Standings ───────────────────────────────────────────────────────────
 
+    /** The regular points a campaign adds up, by group (config/scoring.php season_kinds). */
+    public const KIND_GROUPS = ['daily_proof' => 'play', 'daily_top1' => 'podium', 'daily_top2' => 'podium', 'daily_top3' => 'podium',
+                                'perfect_week' => 'week', 'friend_joined' => 'friends', 'crew_bonus' => 'friends'];
+
     /** The standings of a season (cached), the head-start frozen first when it is due. */
     public static function standings(array $season): array
     {
@@ -208,8 +245,8 @@ final class Contest
             $season = self::season($season['id']) ?? $season;
         }
         return Cache::remember(self::cacheKey($season['id']), self::CACHE_TTL, static function () use ($season): array {
-            [$participants, $photos, $headstart] = self::load($season);
-            return self::compute($season, $participants, $photos, $headstart);
+            [$participants, $events, $photos, $headstart] = self::load($season);
+            return self::compute($season, $participants, $events, $photos, $headstart, DailyClock::currentDate());
         }) ?? [];
     }
 
@@ -220,7 +257,7 @@ final class Contest
 
     private static function cacheKey(int $seasonId): string
     {
-        return "contest_standings_v1_{$seasonId}";
+        return "contest_standings_v2_{$seasonId}";
     }
 
     /** SQL shared by the standings and the admin: the accounts that never count. */
@@ -231,8 +268,8 @@ final class Contest
     }
 
     /**
-     * The raw rows: participants (with their inviter and whether the device rule blocks
-     * that invite), contest photos (with their valid votes), the frozen head-start.
+     * The raw rows: participants (+ the challenge day they joined), their regular points on the
+     * season's challenges (read only), their approved photos with valid likes, the frozen head-start.
      */
     private static function load(array $season): array
     {
@@ -240,34 +277,45 @@ final class Contest
         $sid  = $season['id'];
         $test = $season['is_test'];
         $stmt = $pdo->prepare("
-            SELECT cp.user_id, cp.joined_at, cp.disqualified, cp.dq_reason, cp.country, cp.referred_by,
-                   u.username, u.display_name, u.profile_thumb_photo_url AS thumb,
-                   u.invited_by_user_id, u.invited_at
+            SELECT cp.user_id, cp.joined_at, cp.disqualified, cp.dq_reason, cp.country,
+                   u.username, u.display_name, u.profile_thumb_photo_url AS thumb
             FROM contest_participants cp JOIN users u ON u.id = cp.user_id
             WHERE cp.season_id = ? AND u.deleted_at IS NULL AND NOT (" . self::excludedSql('u', $test) . ")
             " . ($test ? '' : "AND NOT EXISTS (SELECT 1 FROM contest_testers t WHERE t.user_id = cp.user_id)") . "
         ");
         $stmt->execute([$sid]);
         $participants = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-        $ids = array_flip(array_column($participants, 'user_id'));
         foreach ($participants as &$p) {
-            $p['ref_blocked'] = null;
-            $a = $p['invited_by_user_id'];
-            if ($a !== null && isset($ids[$a])) {
-                $p['ref_blocked'] = Invites::blockReason((string) $a, (string) $p['user_id']);
+            try {
+                $p['join_date'] = DailyClock::currentDate(new DateTimeImmutable((string) $p['joined_at']));
+            } catch (\Throwable) {
+                $p['join_date'] = $season['start_date'];
             }
         }
         unset($p);
 
+        $kinds = array_keys(self::KIND_GROUPS);
+        $in    = implode(',', array_fill(0, count($kinds), '?'));
+        $stmt  = $pdo->prepare("
+            SELECT se.user_id, se.kind, se.points, extract(epoch FROM se.created_at)::bigint AS at, dc.challenge_date::text AS date
+            FROM contest_participants cp
+            JOIN score_events se     ON se.user_id = cp.user_id
+            JOIN daily_challenges dc ON dc.id = se.daily_challenge_id
+            WHERE cp.season_id = ? AND se.kind IN ({$in}) AND dc.challenge_date BETWEEN ? AND ?
+              AND (se.daily_proof_id IS NULL OR NOT EXISTS (SELECT 1 FROM contest_invalidations ci WHERE ci.season_id = cp.season_id
+                   AND ci.kind = 'photo' AND ci.target_id = se.daily_proof_id AND ci.undone_at IS NULL))
+        ");
+        $stmt->execute(array_merge([$sid], $kinds, [$season['start_date'], $season['end_date']]));
+        $events = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
         $stmt = $pdo->prepare("
-            SELECT dp.id, dp.user_id, dc.challenge_date::text AS date, dp.created_at,
+            SELECT dp.id, dp.user_id, dc.challenge_date::text AS date,
                    (SELECT count(*) FROM daily_votes v JOIN users vu ON vu.id = v.voter_user_id
                     WHERE v.proof_id = dp.id AND NOT (" . self::excludedSql('vu', false) . ")
                       AND NOT EXISTS (SELECT 1 FROM contest_invalidations ci WHERE ci.season_id = cp.season_id AND ci.kind = 'vote'
                                       AND ci.target_id = v.id::text AND ci.undone_at IS NULL)) AS votes
             FROM contest_participants cp
-            JOIN daily_proofs dp     ON dp.user_id = cp.user_id AND dp.created_at >= cp.joined_at
+            JOIN daily_proofs dp     ON dp.user_id = cp.user_id
             JOIN daily_challenges dc ON dc.id = dp.challenge_id
             WHERE cp.season_id = ? AND dc.challenge_date BETWEEN ? AND ?
               AND dp.moderation_status = 'approved' AND NOT dp.is_demo AND NOT dp.is_seed AND NOT dp.is_suggestion
@@ -281,99 +329,96 @@ final class Contest
         $stmt->execute([$sid]);
         $headstart = array_map('intval', $stmt->fetchAll(PDO::FETCH_KEY_PAIR));
 
-        return [$participants, $photos, $headstart];
+        return [$participants, $events, $photos, $headstart];
     }
 
     /**
      * The standings from raw rows (pure: ContestTest drives it).
      *
-     * @param list<array>        $participants user_id, joined_at, disqualified, invited_by_user_id, invited_at, ref_blocked (+ display fields)
-     * @param list<array>        $photos       id, user_id, date (Y-m-d), votes (valid, uncapped)
+     * @param list<array>        $participants user_id, joined_at, join_date (Y-m-d), disqualified (+ display fields)
+     * @param list<array>        $events       user_id, kind, points, at (unix), date (the challenge's Y-m-d)
+     * @param list<array>        $photos       id, user_id, date (Y-m-d), votes (valid likes)
      * @param array<string,int>  $headstart    user_id => points (frozen)
+     * @param string|null        $today        the current challenge date: points of today's challenge and later
+     *                                         are left out of the "previous" ranks (the movement arrows)
      * @return array{rows: array<string,array>, season: list<string>, final: list<string>, counter: array, totals: array}
      */
-    public static function compute(array $season, array $participants, array $photos, array $headstart): array
+    public static function compute(array $season, array $participants, array $events, array $photos, array $headstart, ?string $today = null): array
     {
-        $cap = (int) $season['vote_cap_per_photo'];
-        $fws = (string) $season['final_week_start'];
-        $windowStart = $season['start_date'] . ' 00:00:00+00';
+        $fws  = (string) $season['final_week_start'];
+        $zero = ['play' => 0, 'podium' => 0, 'week' => 0, 'friends' => 0];
         $rows = [];
         foreach ($participants as $p) {
             $id = (string) $p['user_id'];
             $rows[$id] = [
                 'userId' => $id, 'username' => $p['username'] ?? null, 'displayName' => $p['display_name'] ?? null,
                 'thumb' => $p['thumb'] ?? null, 'country' => $p['country'] ?? null,
-                'joinedAt' => (string) $p['joined_at'], 'disqualified' => DailyProofRepository::bool($p['disqualified'] ?? false),
-                'dqReason' => $p['dq_reason'] ?? null,
-                'seasonVotes' => 0, 'finalVotes' => 0, 'allVotes' => 0, 'photos' => 0, 'dates' => [],
-                'referrals' => 0, 'referralBonus' => 0, 'referralFriends' => [], 'headstart' => (int) ($headstart[$id] ?? 0),
+                'joinedAt' => (string) $p['joined_at'], 'joinDate' => (string) ($p['join_date'] ?? $season['start_date']),
+                'disqualified' => DailyProofRepository::bool($p['disqualified'] ?? false), 'dqReason' => $p['dq_reason'] ?? null,
+                'photos' => 0, 'dates' => [], 'seasonLikes' => 0, 'finalLikes' => 0, 'allLikes' => 0,
+                'seasonBy' => $zero, 'finalBy' => $zero, 'seasonPoints' => 0, 'finalPoints' => 0,
+                'prevSeasonPoints' => 0, 'prevFinalPoints' => 0, 'seasonReached' => 0, 'finalReached' => 0,
+                'headstart' => (int) ($headstart[$id] ?? 0),
             ];
         }
         foreach ($photos as $ph) {
             $id = (string) $ph['user_id'];
-            if (!isset($rows[$id])) continue;
-            $votes = (int) $ph['votes'];
-            $pts   = min($votes, $cap);
-            $rows[$id][(string) $ph['date'] < $fws ? 'seasonVotes' : 'finalVotes'] += $pts;
-            $rows[$id]['allVotes'] += $votes;
+            if (!isset($rows[$id]) || (string) $ph['date'] < $rows[$id]['joinDate']) continue;
+            $likes = (int) $ph['votes'];
+            $rows[$id][(string) $ph['date'] < $fws ? 'seasonLikes' : 'finalLikes'] += $likes;
+            $rows[$id]['allLikes'] += $likes;
             $rows[$id]['photos']++;
             $rows[$id]['dates'][(string) $ph['date']] = true;
         }
-
-        // Referrals: B counts for A once B is an active contest player.
-        foreach ($participants as $b) {
-            $a = $b['invited_by_user_id'] ?? null;
-            $bid = (string) $b['user_id'];
-            if ($a === null || !isset($rows[$a]) || $a === $bid) continue;
-            $friend = ['userId' => $bid, 'username' => $b['username'] ?? null, 'photos' => $rows[$bid]['photos'], 'status' => 'pending'];
-            $invitedAt = (string) ($b['invited_at'] ?? '');
-            if ($invitedAt === '' || strtotime($invitedAt) < strtotime($windowStart)) {
-                $friend['status'] = 'before_season';
-            } elseif (strtotime($invitedAt) >= strtotime((string) $b['joined_at'])) {
-                $friend['status'] = 'invited_after_join';
-            } elseif (!empty($b['ref_blocked'])) {
-                $friend['status'] = 'same_device';
-            } elseif ($rows[$bid]['disqualified']) {
-                $friend['status'] = 'disqualified';
-            } elseif ($rows[$bid]['photos'] >= (int) $season['referral_min_photos']) {
-                $friend['status'] = 'active';
-                $rows[$a]['referrals']++;
-            }
-            $rows[$a]['referralFriends'][] = $friend;
+        foreach ($events as $e) {
+            $id = (string) $e['user_id'];
+            $group = self::KIND_GROUPS[(string) $e['kind']] ?? null;
+            if ($group === null || !isset($rows[$id]) || (string) $e['date'] < $rows[$id]['joinDate']) continue;
+            $part = (string) $e['date'] < $fws ? 'season' : 'final';
+            $pts  = (int) $e['points'];
+            $rows[$id][$part . 'By'][$group] += $pts;
+            $rows[$id][$part . 'Points'] += $pts;
+            $rows[$id][$part . 'Reached'] = max($rows[$id][$part . 'Reached'], (int) $e['at']);
+            if ($today === null || (string) $e['date'] < $today) $rows[$id]['prev' . ucfirst($part) . 'Points'] += $pts;
         }
 
         $threshold = (int) $season['prize_threshold_photos'];
         $qualified = 0;
-        foreach ($rows as $id => &$r) {
-            $r['days']          = count($r['dates']);
+        foreach ($rows as &$r) {
+            $r['days'] = count($r['dates']);
             unset($r['dates']);
-            $r['referralsCounted'] = min($r['referrals'], (int) $season['referral_cap']);
-            $r['referralBonus'] = $r['referralsCounted'] * (int) $season['referral_points'];
-            $r['seasonPoints']  = $r['seasonVotes'] + $r['referralBonus'];
-            $r['finalPoints']   = $r['finalVotes'] + $r['referralBonus'] + $r['headstart'];
+            $r['finalPoints']     += $r['headstart'];
+            $r['prevFinalPoints'] += $r['headstart'];
             if (!$r['disqualified'] && $r['photos'] >= $threshold) $qualified++;
         }
         unset($r);
 
-        $order = static function (string $field) use ($rows): array {
-            $ids = array_keys(array_filter($rows, static fn(array $r): bool => !$r['disqualified']));
-            usort($ids, static function (string $x, string $y) use ($rows, $field): int {
+        // Only players with points are ranked. Ties: most likes on the phase's photos, then the first to the score.
+        $order = static function (string $points, string $likes, string $reached) use ($rows): array {
+            $ids = array_keys(array_filter($rows, static fn(array $r): bool => !$r['disqualified'] && $r[$points] > 0));
+            usort($ids, static function ($x, $y) use ($rows, $points, $likes, $reached): int {
                 $a = $rows[$x]; $b = $rows[$y];
-                return [$b[$field], $b['days'], $b['allVotes'], strtotime($a['joinedAt'])]
-                   <=> [$a[$field], $a['days'], $a['allVotes'], strtotime($b['joinedAt'])];
+                return [$b[$points], $b[$likes], $a[$reached] ?: PHP_INT_MAX, (string) $x] <=> [$a[$points], $a[$likes], $b[$reached] ?: PHP_INT_MAX, (string) $y];
             });
             return array_map('strval', $ids);
         };
-        $seasonOrder = $order('seasonPoints');
-        $finalOrder  = $order('finalPoints');
+        $seasonOrder = $order('seasonPoints', 'seasonLikes', 'seasonReached');
+        $finalOrder  = $order('finalPoints', 'finalLikes', 'finalReached');
+        $prevSeason  = $order('prevSeasonPoints', 'seasonLikes', 'seasonReached');
+        $prevFinal   = $order('prevFinalPoints', 'finalLikes', 'finalReached');
+        foreach ($rows as &$r) { $r['seasonRank'] = $r['finalRank'] = $r['prevSeasonRank'] = $r['prevFinalRank'] = null; }
+        unset($r);
         foreach ($seasonOrder as $i => $id) $rows[$id]['seasonRank'] = $i + 1;
         foreach ($finalOrder as $i => $id)  $rows[$id]['finalRank']  = $i + 1;
+        foreach ($prevSeason as $i => $id)  $rows[$id]['prevSeasonRank'] = $i + 1;
+        foreach ($prevFinal as $i => $id)   $rows[$id]['prevFinalRank']  = $i + 1;
 
+        $players = (int) $season['prize_threshold_players'];
         return [
             'rows'    => $rows,
             'season'  => $seasonOrder,
             'final'   => $finalOrder,
-            'counter' => ['players' => $qualified, 'threshold' => (int) $season['prize_threshold_players'], 'photos' => $threshold],
+            'counter' => ['players' => $qualified, 'threshold' => $players, 'photos' => $threshold, 'reached' => $qualified >= $players],
             'totals'  => ['participants' => count($rows), 'photos' => array_sum(array_column($rows, 'photos'))],
         ];
     }
@@ -398,8 +443,8 @@ final class Contest
             $lock->execute([$season['id']]);
             if ($lock->rowCount() !== 1) { $pdo->rollBack(); return 0; }
             $pdo->prepare("DELETE FROM contest_headstart WHERE season_id = ?")->execute([$season['id']]);
-            [$participants, $photos] = self::load($season);
-            $s   = self::compute($season, $participants, $photos, []);
+            [$participants, $events, $photos] = self::load($season);
+            $s   = self::compute($season, $participants, $events, $photos, []);
             $ins = $pdo->prepare("INSERT INTO contest_headstart (season_id, user_id, rank, points) VALUES (?, ?, ?, ?)");
             $n   = 0;
             foreach ($s['season'] as $i => $id) {
@@ -427,6 +472,25 @@ final class Contest
         return ['title' => (string) ($p['title'] ?? ''), 'subtitle' => (string) ($p['subtitle'] ?? ''), 'description' => (string) ($p['description'] ?? '')];
     }
 
+    /** What the #1 wins if the goal isn't reached, in a locale (else English, else the placeholder). */
+    public static function fallbackPrize(array $s, ?string $locale): string
+    {
+        $all = $s['fallback_prize_i18n'] ?? [];
+        if ($all === []) return self::DEFAULT_FALLBACK[$locale ?? 'en'] ?? self::DEFAULT_FALLBACK['en'];
+        return trim((string) (($locale !== null ? ($all[$locale] ?? '') : '') ?: ($all['en'] ?? self::DEFAULT_FALLBACK['en'])));
+    }
+
+    /** The campaign's tab: {label, icon} in a locale (Admin; default "Trip" and a plane). */
+    public static function tab(array $s, ?string $locale): array
+    {
+        $tab    = $s['tab'] ?? [];
+        $labels = is_array($tab['label'] ?? null) ? array_filter($tab['label'], static fn($v): bool => is_string($v) && trim($v) !== '') : [];
+        $label  = ($locale !== null ? ($labels[$locale] ?? null) : null) ?? ($labels['en'] ?? null)
+            ?? (self::DEFAULT_TAB['label'][$locale ?? 'en'] ?? self::DEFAULT_TAB['label']['en']);
+        $icon   = in_array($tab['icon'] ?? null, self::TAB_ICONS, true) ? $tab['icon'] : self::DEFAULT_TAB['icon'];
+        return ['label' => trim((string) $label), 'icon' => $icon];
+    }
+
     /**
      * The secondary prizes (Admin › Launch Season › Souvenir prizes): ranks 2 to N of the final week
      * each get a souvenir pack. Off by default (parcels to ship worldwide), a season setting; null when
@@ -443,10 +507,22 @@ final class Contest
         return ['from' => 2, 'to' => $to, 'text' => $text !== '' ? $text : null];
     }
 
+    /** The regular points the campaign counts (config/scoring.php), for the apps' rules and explainers. */
+    public static function pointsTable(): array
+    {
+        $cfg = Scoring::config();
+        $pt  = static fn(string $k): int => (int) ($cfg['points'][$k] ?? 0);
+        return ['play' => $pt('daily_proof'), 'podium' => [$pt('daily_top1'), $pt('daily_top2'), $pt('daily_top3')], 'week' => $pt('perfect_week'),
+                'friend' => $pt('friend_joined'), 'crew' => $pt('crew_bonus'), 'crewSize' => (int) ($cfg['crew_size'] ?? 5),
+                'friendsPerMonth' => (int) ($cfg['invites_per_season'] ?? 5)];
+    }
+
     public static function seasonPayload(array $s, ?string $locale = null): array
     {
         return [
             'prize' => self::prize($s, $locale),
+            'fallbackPrize' => self::fallbackPrize($s, $locale),
+            'tab' => self::tab($s, $locale),
             'souvenir' => self::souvenir($s, $locale),
             'photos' => class_exists('ContestPhotos') ? ContestPhotos::payload($s) : [],
         ] + (class_exists('ContestTrip') ? ContestTrip::payload($s, $locale) : []) + [
@@ -456,13 +532,28 @@ final class Contest
             // challenge's drop, the final week at its first day's, and it ends at the drop after its last day.
             'startsAt' => self::dropIso($s['start_date']), 'finalAt' => self::dropIso($s['final_week_start']),
             'endsAt' => self::dropIso((new DateTimeImmutable($s['end_date'] . ' 12:00:00', new DateTimeZone('UTC')))->modify('+1 day')->format('Y-m-d')),
+            'points' => self::pointsTable(),
             'rules' => [
+                'headstartTopN' => $s['headstart_top_n'],
+                // Older apps (likes + referral scoring) read these; the campaign no longer uses them.
                 'voteCap' => $s['vote_cap_per_photo'], 'referralPoints' => $s['referral_points'],
                 'referralMinPhotos' => $s['referral_min_photos'], 'referralCap' => $s['referral_cap'],
-                'headstartTopN' => $s['headstart_top_n'],
             ],
+            'winner' => self::winner($s),
             'rulesUrl' => 'https://hilads.live/launch-season/rules' . ($s['is_test'] ? '?season=' . $s['id'] : ''),
         ];
+    }
+
+    /** The winner, once the admin confirmed them (Winner & export): {username, displayName, photoUrl}, else null. */
+    private static function winner(array $s): ?array
+    {
+        if (empty($s['winner_user_id']) || empty($s['winner_confirmed_at'])) return null;
+        $stmt = Database::pdo()->prepare("SELECT username, display_name, profile_thumb_photo_url AS thumb FROM users WHERE id = ? AND deleted_at IS NULL");
+        $stmt->execute([$s['winner_user_id']]);
+        $u = $stmt->fetch(PDO::FETCH_ASSOC);
+        if (!$u) return null;
+        return ['userId' => (string) $s['winner_user_id'], 'username' => $u['username'], 'displayName' => $u['display_name'],
+                'photoUrl' => class_exists('R2Uploader') ? R2Uploader::thumbProxy($u['thumb']) : $u['thumb']];
     }
 
     private static function dropIso(string $date): ?string
@@ -474,16 +565,26 @@ final class Contest
         }
     }
 
-    /** One standings row for the app / web. */
-    public static function rowPayload(array $r, string $phase): array
+    /** Which ranking a phase shows: the final week's from the final week on, else the one before it. */
+    public static function racePart(string $phase): string
     {
+        return in_array($phase, ['final', 'over', 'ended'], true) ? 'final' : 'season';
+    }
+
+    /** One standings row for the app / web. */
+    public static function rowPayload(array $r, string $part): array
+    {
+        $final = $part === 'final';
+        $likes = $final ? $r['finalLikes'] : $r['seasonLikes'];
         return [
-            'rank' => $phase === 'final' ? ($r['finalRank'] ?? null) : ($r['seasonRank'] ?? null),
+            'rank' => $final ? $r['finalRank'] : $r['seasonRank'],
+            'prevRank' => $final ? $r['prevFinalRank'] : $r['prevSeasonRank'],
             'userId' => $r['userId'], 'username' => $r['username'], 'displayName' => $r['displayName'],
             'photoUrl' => class_exists('R2Uploader') ? R2Uploader::thumbProxy($r['thumb']) : $r['thumb'],
-            'points' => $phase === 'final' ? $r['finalPoints'] : $r['seasonPoints'],
-            'votes' => $phase === 'final' ? $r['finalVotes'] : $r['seasonVotes'],
-            'referral' => $r['referralBonus'], 'headstart' => $phase === 'final' ? $r['headstart'] : 0,
+            'points' => $final ? $r['finalPoints'] : $r['seasonPoints'],
+            'by' => $final ? $r['finalBy'] : $r['seasonBy'],
+            'likes' => $likes, 'votes' => $likes, 'referral' => 0,
+            'headstart' => $final ? $r['headstart'] : 0,
             'days' => $r['days'], 'photos' => $r['photos'],
         ];
     }
@@ -495,19 +596,30 @@ final class Contest
         if ($season === null) return ['season' => null];
         $st    = self::standings($season);
         $phase = self::phase($season);
+        $part  = self::racePart($phase);
         $me    = null;
         if ($userId !== null) {
             if (isset($st['rows'][$userId])) {
-                $r  = $st['rows'][$userId];
+                $r     = $st['rows'][$userId];
+                $order = $st[$part] ?? [];
+                $rank  = $part === 'final' ? $r['finalRank'] : $r['seasonRank'];
+                $pts   = $part === 'final' ? $r['finalPoints'] : $r['seasonPoints'];
+                $above = $rank !== null && $rank > 1 ? $st['rows'][$order[$rank - 2]] : null;
                 $me = [
                     'joined' => true, 'disqualified' => $r['disqualified'],
-                    'seasonRank' => $r['seasonRank'] ?? null, 'finalRank' => $r['finalRank'] ?? null,
-                    'points' => ['votes' => $r['seasonVotes'], 'finalVotes' => $r['finalVotes'], 'referral' => $r['referralBonus'],
+                    'seasonRank' => $r['seasonRank'], 'finalRank' => $r['finalRank'],
+                    'race' => [
+                        'part' => $part, 'rank' => $rank, 'prevRank' => $part === 'final' ? $r['prevFinalRank'] : $r['prevSeasonRank'],
+                        'points' => $pts, 'by' => $part === 'final' ? $r['finalBy'] : $r['seasonBy'], 'headstart' => $part === 'final' ? $r['headstart'] : 0,
+                        'likes' => $part === 'final' ? $r['finalLikes'] : $r['seasonLikes'],
+                        // Points behind the player just above (ties are broken by likes, so 0 is possible).
+                        'gap' => $above !== null ? max(0, ($part === 'final' ? $above['finalPoints'] : $above['seasonPoints']) - $pts) : null,
+                        'ranked' => count($order),
+                    ],
+                    // Older apps read this shape.
+                    'points' => ['votes' => $r['seasonLikes'], 'finalVotes' => $r['finalLikes'], 'referral' => 0,
                                  'headstart' => $r['headstart'], 'season' => $r['seasonPoints'], 'final' => $r['finalPoints']],
                     'photos' => $r['photos'], 'days' => $r['days'],
-                    'referrals' => ['active' => $r['referrals'], 'cap' => $season['referral_cap'], 'minPhotos' => $season['referral_min_photos'],
-                                    'friends' => array_map(static fn(array $f): array => ['username' => $f['username'], 'photos' => $f['photos'], 'status' => $f['status']],
-                                                           $r['referralFriends'])],
                 ];
             } elseif (self::participant($season['id'], $userId) !== null) {
                 $me = ['joined' => true, 'disqualified' => false, 'excluded' => true];
@@ -529,19 +641,19 @@ final class Contest
         ];
     }
 
-    /** GET /contest/ranking: the season (weeks 1…) or final-week ranking, top $limit + me. */
-    public static function ranking(?string $userId, string $phase, int $limit = 100): ?array
+    /** GET /contest/ranking: the ranking before the final week ('season') or the final week's, top $limit + me. */
+    public static function ranking(?string $userId, string $part, int $limit = 100): ?array
     {
         $season = self::visibleFor($userId);
         if ($season === null) return null;
         $st    = self::standings($season);
-        $phase = $phase === 'final' ? 'final' : 'season';
-        $order = $st[$phase] ?? [];
+        $part  = $part === 'final' ? 'final' : 'season';
+        $order = $st[$part] ?? [];
         $rows  = [];
-        foreach (array_slice($order, 0, $limit) as $id) $rows[] = self::rowPayload($st['rows'][$id], $phase);
+        foreach (array_slice($order, 0, $limit) as $id) $rows[] = self::rowPayload($st['rows'][$id], $part);
         $me = $userId !== null && isset($st['rows'][$userId]) && !$st['rows'][$userId]['disqualified']
-            ? self::rowPayload($st['rows'][$userId], $phase) : null;
-        return ['phase' => $phase, 'frozen' => $season['headstart_frozen_at'] !== null, 'rows' => $rows, 'me' => $me, 'total' => count($order)];
+            ? self::rowPayload($st['rows'][$userId], $part) : null;
+        return ['phase' => $part, 'frozen' => $season['headstart_frozen_at'] !== null, 'rows' => $rows, 'me' => $me, 'total' => count($order)];
     }
 
     // ── Rules ───────────────────────────────────────────────────────────────
@@ -589,8 +701,8 @@ final class Contest
      * so the text and its translations never go stale when a date or a number changes. The page
      * itself shows the DRAFT banner until the admin ticks Final. [TBD: …] = for the owner / lawyer.
      */
-    public const RULES_TOKENS = ['season', 'start', 'final_start', 'end', 'weeks', 'season_weeks', 'vote_cap', 'ref_points',
-                                 'ref_min', 'ref_cap', 'hs_top', 'players', 'photos', 'souvenir_to'];
+    public const RULES_TOKENS = ['season', 'start', 'final_start', 'end', 'weeks', 'season_weeks', 'play', 'top1', 'top2', 'top3', 'week',
+                                 'friend', 'crew', 'crew_size', 'friends_month', 'hs_top', 'players', 'photos', 'fallback', 'souvenir_to'];
 
     public static function placeholderRules(?array $s = null): string
     {
@@ -601,9 +713,9 @@ final class Contest
 The {{season}} (the "Contest") is organised by [TBD: organiser's legal name, legal form, registered address and company number] ("Hilads", "we"), the publisher of the Hilads app and website.
 
 ## 2. Dates
-The Contest runs from {{start}} to {{end}} ({{weeks}} weeks): a season of {{season_weeks}} weeks, then a final week from {{final_start}} to {{end}}. Days follow the Hilads daily challenge: each day starts at the daily drop.
+The Contest runs from {{start}} to {{end}} ({{weeks}} weeks): a first part of {{season_weeks}} weeks, then a final week from {{final_start}} to {{end}}. Days follow the Hilads daily challenge: each day starts at the daily drop.
 
-Before {{start}}, the app may show a preview of the Contest. Playing the daily game during that time is normal Hilads play: it counts for the permanent Hilads ranking, never for the Contest. Contest points only count from {{start}}.
+Before {{start}}, the app may show a preview of the Contest. Points earned before {{start}} don't count for the Contest.
 
 ## 3. Who can enter
 - Entry is free. No purchase is needed.
@@ -611,39 +723,44 @@ Before {{start}}, the app may show a preview of the Contest. Playing the daily g
 - One person, one account, one entry. Using several accounts leads to disqualification.
 - Residents of [TBD: excluded countries] and of any country where this kind of contest is not allowed cannot enter.
 - [TBD: confirm] Hilads employees and their households cannot win.
-- To enter, tap "Join" in the app during the season, confirm you are 18 or older, choose your country and accept these rules.
+- To enter, tap "Join" in the app during the Contest, confirm you are 18 or older, choose your country and accept these rules.
 
-## 4. How to qualify
-To be ranked, post at least one valid photo approved by Hilads during the season, after joining. A valid photo is your own photo, taken for the day's challenge and respecting the Hilads community rules. Photos posted before you join, or before {{start}}, don't count.
+## 4. Points
+The Contest uses the regular Hilads points, the same ones as in the app's rankings. They count for the Contest from the day you join, on the daily challenges dated during the Contest:
+- **Play:** +{{play}} points for each daily challenge you play (one approved photo, once a day).
+- **Podium:** +{{top1}}, +{{top2}} or +{{top3}} points when your photo is 1st, 2nd or 3rd of the day worldwide (most likes; a tie goes to the photo posted first).
+- **Perfect week:** +{{week}} points when you play every published challenge of a Monday-to-Sunday week. It counts on the Sunday the week ends.
+- **Friends:** +{{friend}} points when a friend who signed up with your invite link has their first photo approved, for up to {{friends_month}} friends a calendar month, and +{{crew}} more points for your {{crew_size}}th friend of the month. A friend who already had an account, or who uses the same phone as you, doesn't count.
 
-## 5. Scoring
-- **Likes:** each like on your valid photos = 1 point, capped at {{vote_cap}} points per photo.
-- **Friends:** +{{ref_points}} points for each active referred friend, up to {{ref_cap}} friends. An active friend joins Hilads with your invite link during the season, joins the Contest and posts at least {{ref_min}} valid photos. A friend who already had an account, who joined before your invite or who uses the same device as you doesn't count.
-- **Head start:** when the final week starts, the top {{hs_top}} of the season ranking get a head-start bonus: {{hs_top}} points for #1, down to 1 point for #{{hs_top}}.
-- **Final week:** the final-week ranking counts the likes of the final week only, plus your head start and your friend points.
-- **Ties:** most days played, then most likes over the whole season (uncapped), then the earliest to join.
+Points earned before you join, or on challenges dated outside the Contest, don't count. Photos and points removed by moderation are removed from the Contest too.
 
-## 6. Winner
-The winner is the #1 of the final-week leaderboard when the Contest ends on {{end}}, after the checks in section 9. Hilads announces the result in the app within [TBD] days and contacts the winner in the app and by email. If the winner doesn't answer within [TBD] days, or isn't eligible, the next eligible participant in the final-week ranking wins.
+## 5. Final week and winner
+- The final week has its own ranking. Points start from zero on {{final_start}}: only points from the final week's challenges count in it.
+- **Head start:** the top {{hs_top}} of the ranking before the final week start it with a bonus: {{hs_top}} points for #1, down to 1 point for #{{hs_top}}.
+- **Ties:** the player whose photos got the most likes during the final week is ahead; if still tied, the first to reach the score.
+- The winner is the #1 of the final-week ranking when the Contest ends on {{end}}, after the checks in section 9. Hilads announces the result in the app within [TBD] days and contacts the winner in the app and by email. If the winner doesn't answer within [TBD] days, or isn't eligible, the next eligible participant in the final-week ranking wins.
+
+## 6. Players' goal
+The trip is unlocked when at least {{players}} different participants have each posted {{photos}} or more approved photos during the Contest. The app shows the progress at all times.
+
+If the goal isn't reached when the Contest ends, the #1 of the final week still wins: they receive {{fallback}} instead of the trip.
 
 ## 7. Prize
-A one-week trip to Vietnam for the winner:
+If the players' goal is reached, a one-week trip to Vietnam for the winner:
 - A round-trip international economy flight from the airport nearest the winner's home, up to USD 2,000. If the flight costs more than USD 2,000, the winner pays the difference or picks cheaper dates.
 - Lodging and transport in Vietnam are included.
 - Not included: visa, travel insurance, meals and personal expenses.
 - The travel dates are agreed between the winner and Hilads, [TBD: within which period].
 
-**Prize condition:** the trip is awarded only if at least {{players}} different participants each post {{photos}} or more valid photos during the season. Otherwise, the winner receives a Vietnam souvenir pack instead of the trip.
-
-**Souvenir prizes:** [TBD: keep only if souvenir prizes are on for this season] ranks 2 to {{souvenir_to}} of the final-week leaderboard each receive a Vietnam souvenir pack, shipped to them.
+**Souvenir prizes:** [TBD: keep only if souvenir prizes are on for this Contest] ranks 2 to {{souvenir_to}} of the final-week ranking each receive a Vietnam souvenir pack, shipped to them.
 
 Prizes are personal and non-transferable, and cannot be exchanged for cash. If a prize cannot be delivered, Hilads may replace it with a prize of similar value.
 
-## 8. A separate ranking
-The Contest ranking is separate from the permanent Hilads ranking. Joining doesn't change your game: your photos and likes still count for Hilads as usual, and Contest points never count for the Hilads ranking.
+## 8. Your game doesn't change
+Joining doesn't change how you play or how your Hilads points are counted: the Contest only reads them. Leaving the Contest or being disqualified never removes your Hilads points.
 
 ## 9. Fair play and moderation
-Hilads moderates photos and may invalidate photos, likes or referred friends, and disqualify an entry, in case of fraud or rule breaking: fake or multiple accounts, bought or exchanged likes, automated activity, photos that aren't yours, or anything against the Hilads community rules. Before awarding a prize, Hilads may ask the winner to prove their identity, age and country.
+Hilads moderates photos and may invalidate photos, likes or referred friends for the Contest, and disqualify an entry, in case of fraud or rule breaking: fake or multiple accounts, bought or exchanged likes, automated activity, photos that aren't yours, or anything against the Hilads community rules. Before awarding a prize, Hilads may ask the winner to prove their identity, age and country.
 
 ## 10. Your photos
 You keep the rights to your photos. By posting during the Contest, you allow Hilads to show your photos, credited with your username, in the app, on the website and in Hilads communications about the Contest, worldwide, for free, [TBD: for how long]. Only post photos you took yourself; if a person can be recognised, make sure they agree.
@@ -665,8 +782,7 @@ MD;
     /** The rules text with its {{tokens}} filled from the season (dates in English words, else ISO). */
     public static function fillRules(string $body, ?array $s, string $locale = 'en'): string
     {
-        $s ??= ['name' => 'Launch Season', 'start_date' => null, 'end_date' => null, 'final_week_start' => null,
-                'vote_cap_per_photo' => 20, 'referral_points' => 20, 'referral_min_photos' => 5, 'referral_cap' => 10,
+        $s ??= ['name' => 'Launch Trip', 'start_date' => null, 'end_date' => null, 'final_week_start' => null,
                 'headstart_top_n' => 10, 'prize_threshold_players' => 500, 'prize_threshold_photos' => 10];
         $date = static function (?string $d) use ($locale): string {
             if (!$d) return '…';
@@ -677,13 +793,17 @@ MD;
         $weeks = (int) round($days($s['start_date'], $s['end_date']) / 7);
         $sv = $s['souvenir'] ?? [];
         if (is_string($sv)) $sv = json_decode($sv, true);
+        $pt = self::pointsTable();
         $vals = [
             'season' => (string) $s['name'], 'start' => $date($s['start_date']), 'final_start' => $date($s['final_week_start']),
             'end' => $date($s['end_date']), 'weeks' => (string) $weeks,
             'season_weeks' => (string) ($s['start_date'] && $s['final_week_start'] ? max(0, (int) round((strtotime($s['final_week_start']) - strtotime($s['start_date'])) / 86400 / 7)) : 0),
-            'vote_cap' => (string) $s['vote_cap_per_photo'], 'ref_points' => (string) $s['referral_points'],
-            'ref_min' => (string) $s['referral_min_photos'], 'ref_cap' => (string) $s['referral_cap'], 'hs_top' => (string) $s['headstart_top_n'],
+            'play' => (string) $pt['play'], 'top1' => (string) $pt['podium'][0], 'top2' => (string) $pt['podium'][1], 'top3' => (string) $pt['podium'][2],
+            'week' => (string) $pt['week'], 'friend' => (string) $pt['friend'], 'crew' => (string) $pt['crew'],
+            'crew_size' => (string) $pt['crewSize'], 'friends_month' => (string) $pt['friendsPerMonth'],
+            'hs_top' => (string) $s['headstart_top_n'],
             'players' => (string) $s['prize_threshold_players'], 'photos' => (string) $s['prize_threshold_photos'],
+            'fallback' => self::fallbackPrize($s, $locale),
             'souvenir_to' => (string) max(2, min(50, (int) ((is_array($sv) ? $sv['to'] ?? null : null) ?? 10))),
         ];
         return preg_replace_callback('/\{\{(\w+)\}\}/', static fn(array $m): string => $vals[$m[1]] ?? $m[0], $body) ?? $body;

@@ -34,13 +34,13 @@ if ($what === 'ranking') {
     Contest::log($season['id'], 'export_ranking');
     $rows = [];
     foreach ($st['rows'] as $id => $r) {
-        $rows[] = [$r['finalRank'] ?? '', $r['seasonRank'] ?? '', $r['username'], $r['finalPoints'], $r['finalVotes'], $r['seasonPoints'],
-                   $r['seasonVotes'], $r['referralBonus'], $r['referralsCounted'], $r['headstart'], $r['days'], $r['photos'], $r['allVotes'],
-                   $r['disqualified'] ? 'yes' : '', $r['dqReason'] ?? ''];
+        $rows[] = [$r['finalRank'] ?? '', $r['seasonRank'] ?? '', $r['username'], $r['finalPoints'], $r['finalBy']['play'], $r['finalBy']['podium'],
+                   $r['finalBy']['week'], $r['finalBy']['friends'], $r['headstart'], $r['finalLikes'], $r['seasonPoints'], $r['seasonLikes'],
+                   $r['days'], $r['photos'], $r['disqualified'] ? 'yes' : '', $r['dqReason'] ?? ''];
     }
     usort($rows, static fn($a, $b) => [$a[0] === '' ? PHP_INT_MAX : $a[0]] <=> [$b[0] === '' ? PHP_INT_MAX : $b[0]]);
-    $csv("{$slug}-ranking.csv", ['final_rank', 'season_rank', 'username', 'final_points', 'final_votes', 'season_points', 'season_votes',
-         'referral_points', 'referrals_counted', 'headstart', 'days_played', 'photos', 'likes_uncapped', 'disqualified', 'dq_reason'], $rows);
+    $csv("{$slug}-ranking.csv", ['final_rank', 'season_rank', 'username', 'final_points', 'final_play', 'final_podium', 'final_perfect_week',
+         'final_friends', 'headstart', 'final_likes', 'season_points', 'season_likes', 'days_played', 'photos', 'disqualified', 'dq_reason'], $rows);
 }
 
 if ($what === 'participants') {

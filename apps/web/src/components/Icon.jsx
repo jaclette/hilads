@@ -149,6 +149,9 @@ const PATHS = {
 /** Names this set has (a special day's icon from the back office may not be one). */
 export const ICON_NAMES = new Set(Object.keys(PATHS))
 
+/** Whether the icon set has this name (a server-chosen icon falls back to its -outline, then to a plane). */
+export const hasIcon = name => !!PATHS[name]
+
 export default function Icon({ name, size = 20, className, style, title }) {
   const paths = PATHS[name]
   if (!paths) return null

@@ -175,7 +175,8 @@
     "map": "Mapa",
     "passport": "Passaporte",
     "season": "Embarque",
-    "new": "novo"
+    "new": "novo",
+    "trip": "Viagem"
   },
   "scope": {
     "title": "Mostrar",

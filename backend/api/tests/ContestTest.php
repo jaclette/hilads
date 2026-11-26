@@ -6,22 +6,32 @@ use PHPUnit\Framework\TestCase;
 
 require_once __DIR__ . '/../src/DailyClock.php';
 require_once __DIR__ . '/../src/DailyProofRepository.php';
+require_once __DIR__ . '/../src/Scoring.php';
 require_once __DIR__ . '/../src/Contest.php';
 
-/** Launch Season: the pure standings (votes cap, referrals, head-start, ties, counter). */
+/**
+ * Launch Season: the pure standings. Since 2026-11-26 the campaign adds up the regular Hilads
+ * points (play, podium, perfect week, friends) on the season's challenges, from the day a player
+ * joined; the final week starts from zero plus the head-start; ties go to likes, then the first
+ * to the score; only players with points are ranked.
+ */
 final class ContestTest extends TestCase
 {
     private const SEASON = [
         'id' => 1, 'name' => 'Launch Season', 'status' => 'running', 'is_test' => true, 'paused' => false,
         'start_date' => '2026-12-01', 'final_week_start' => '2026-12-22', 'end_date' => '2026-12-28',
         'vote_cap_per_photo' => 20, 'referral_points' => 20, 'referral_min_photos' => 2, 'referral_cap' => 1,
-        'headstart_top_n' => 10, 'prize_threshold_players' => 500, 'prize_threshold_photos' => 2,
+        'headstart_top_n' => 10, 'prize_threshold_players' => 2, 'prize_threshold_photos' => 2,
     ];
 
-    private static function p(string $id, string $joined = '2026-12-01 10:00:00+00', ?string $by = null, ?string $at = null, bool $dq = false, ?string $blocked = null): array
+    private static function p(string $id, string $joinDate = '2026-12-01', bool $dq = false): array
     {
-        return ['user_id' => $id, 'username' => $id, 'joined_at' => $joined, 'disqualified' => $dq,
-                'invited_by_user_id' => $by, 'invited_at' => $at, 'ref_blocked' => $blocked];
+        return ['user_id' => $id, 'username' => $id, 'joined_at' => $joinDate . ' 10:00:00+00', 'join_date' => $joinDate, 'disqualified' => $dq];
+    }
+
+    private static function e(string $user, string $date, string $kind, int $points, int $at = 1000): array
+    {
+        return ['user_id' => $user, 'date' => $date, 'kind' => $kind, 'points' => $points, 'at' => $at];
     }
 
     private static function photo(string $user, string $date, int $votes): array
@@ -29,119 +39,82 @@ final class ContestTest extends TestCase
         return ['id' => $user . $date, 'user_id' => $user, 'date' => $date, 'votes' => $votes];
     }
 
-    public function testVotesAreCappedPerPhotoAndSplitAtTheFinalWeek(): void
+    public function testRegularPointsAreAddedUpAndSplitAtTheFinalWeek(): void
     {
-        $s = Contest::compute(self::SEASON, [self::p('a')], [
-            self::photo('a', '2026-12-02', 35),   // capped at 20
-            self::photo('a', '2026-12-21', 5),    // last day before the final week: season
-            self::photo('a', '2026-12-22', 7),    // final week
-        ], []);
-        $a = $s['rows']['a'];
-        self::assertSame(25, $a['seasonVotes']);
-        self::assertSame(7, $a['finalVotes']);
-        self::assertSame(47, $a['allVotes']);
-        self::assertSame(3, $a['days']);
-        self::assertSame(25, $a['seasonPoints']);
-        self::assertSame(7, $a['finalPoints']);
+        $st = Contest::compute(self::SEASON, [self::p('a')], [
+            self::e('a', '2026-12-02', 'daily_proof', 10), self::e('a', '2026-12-02', 'daily_top1', 30),
+            self::e('a', '2026-12-06', 'perfect_week', 30), self::e('a', '2026-12-07', 'friend_joined', 10),
+            self::e('a', '2026-12-07', 'crew_bonus', 50), self::e('a', '2026-12-22', 'daily_proof', 10),
+            self::e('a', '2026-12-23', 'daily_top3', 10),
+            self::e('a', '2026-12-23', 'daily_vote', 99),     // not a campaign kind (no vote points in v2)
+        ], [], []);
+        $r = $st['rows']['a'];
+        self::assertSame(130, $r['seasonPoints']);
+        self::assertSame(['play' => 10, 'podium' => 30, 'week' => 30, 'friends' => 60], $r['seasonBy']);
+        self::assertSame(20, $r['finalPoints'], 'the final week starts from zero');
+        self::assertSame(['play' => 10, 'podium' => 10, 'week' => 0, 'friends' => 0], $r['finalBy']);
     }
 
-    public function testReferralNeedsTheSeasonWindowJoinOrderDeviceAndPhotos(): void
+    public function testPointsCountFromTheDayYouJoined(): void
     {
-        $in = '2026-12-02 08:00:00+00';
-        $s = Contest::compute(self::SEASON, [
-            self::p('a'),
-            self::p('b', '2026-12-02 09:00:00+00', 'a', $in),                       // active
-            self::p('c', '2026-12-02 09:00:00+00', 'a', '2026-11-20 08:00:00+00'),  // invited before the season
-            self::p('d', '2026-12-02 07:00:00+00', 'a', $in),                       // joined before the invite
-            self::p('e', '2026-12-02 09:00:00+00', 'a', $in, false, 'same_device'),
-            self::p('f', '2026-12-02 09:00:00+00', 'a', $in),                       // 1 photo: pending
-            self::p('g', '2026-12-02 09:00:00+00', 'a', $in, true),                 // disqualified
-        ], [
-            self::photo('b', '2026-12-03', 0), self::photo('b', '2026-12-04', 0),
-            self::photo('c', '2026-12-03', 0), self::photo('c', '2026-12-04', 0),
-            self::photo('d', '2026-12-03', 0), self::photo('d', '2026-12-04', 0),
-            self::photo('e', '2026-12-03', 0), self::photo('e', '2026-12-04', 0),
-            self::photo('f', '2026-12-03', 0),
-            self::photo('g', '2026-12-03', 0), self::photo('g', '2026-12-04', 0),
-        ], []);
-        $status = array_column($s['rows']['a']['referralFriends'], 'status', 'userId');
-        self::assertSame(['b' => 'active', 'c' => 'before_season', 'd' => 'invited_after_join', 'e' => 'same_device',
-                          'f' => 'pending', 'g' => 'disqualified'], $status);
-        self::assertSame(1, $s['rows']['a']['referrals']);
-        self::assertSame(20, $s['rows']['a']['referralBonus']);
-        self::assertSame(20, $s['rows']['a']['seasonPoints']);
+        $st = Contest::compute(self::SEASON, [self::p('a', '2026-12-05')], [
+            self::e('a', '2026-12-04', 'daily_proof', 10), self::e('a', '2026-12-05', 'daily_proof', 10),
+        ], [self::photo('a', '2026-12-04', 3), self::photo('a', '2026-12-05', 2)], []);
+        self::assertSame(10, $st['rows']['a']['seasonPoints']);
+        self::assertSame(1, $st['rows']['a']['photos']);
+        self::assertSame(2, $st['rows']['a']['seasonLikes']);
     }
 
-    public function testReferralBonusIsCapped(): void
+    public function testFinalScoreAddsTheHeadstart(): void
     {
-        $in = '2026-12-02 08:00:00+00';
-        $people = [self::p('a')];
-        $photos = [];
-        foreach (['b', 'c', 'd'] as $f) {
-            $people[] = self::p($f, '2026-12-02 09:00:00+00', 'a', $in);
-            $photos[] = self::photo($f, '2026-12-03', 0);
-            $photos[] = self::photo($f, '2026-12-04', 0);
-        }
-        $s = Contest::compute(self::SEASON, $people, $photos, []);
-        self::assertSame(3, $s['rows']['a']['referrals']);
-        self::assertSame(1, $s['rows']['a']['referralsCounted']);
-        self::assertSame(20, $s['rows']['a']['referralBonus']);
+        $st = Contest::compute(self::SEASON, [self::p('a'), self::p('b')], [
+            self::e('a', '2026-12-02', 'daily_proof', 10), self::e('b', '2026-12-22', 'daily_proof', 10),
+        ], [], ['a' => 10]);
+        self::assertSame(10, $st['rows']['a']['finalPoints']);
+        self::assertSame(10, $st['rows']['b']['finalPoints']);
     }
 
-    public function testInviterOutsideTheContestEarnsNothing(): void
+    public function testTiesGoToLikesThenTheFirstToTheScore(): void
     {
-        $s = Contest::compute(self::SEASON, [self::p('b', '2026-12-02 09:00:00+00', 'zz', '2026-12-02 08:00:00+00')],
-                              [self::photo('b', '2026-12-03', 0), self::photo('b', '2026-12-04', 0)], []);
-        self::assertSame(0, $s['rows']['b']['referralBonus']);
+        $events = [self::e('a', '2026-12-22', 'daily_proof', 10, 300), self::e('b', '2026-12-22', 'daily_proof', 10, 200),
+                   self::e('c', '2026-12-22', 'daily_proof', 10, 100)];
+        $photos = [self::photo('a', '2026-12-22', 5), self::photo('b', '2026-12-22', 2), self::photo('c', '2026-12-22', 2)];
+        $st = Contest::compute(self::SEASON, [self::p('a'), self::p('b'), self::p('c')], $events, $photos, []);
+        self::assertSame(['a', 'c', 'b'], $st['final'], 'most likes first, then the earliest to reach the score');
     }
 
-    public function testFinalScoreAddsHeadstartAndReferralOnly(): void
+    public function testOnlyPlayersWithPointsAreRanked(): void
     {
-        $s = Contest::compute(self::SEASON, [self::p('a'), self::p('b')], [
-            self::photo('a', '2026-12-05', 20), self::photo('a', '2026-12-23', 3),
-            self::photo('b', '2026-12-05', 1),  self::photo('b', '2026-12-23', 10),
-        ], ['a' => 10, 'b' => 9]);
-        self::assertSame(['a', 'b'], $s['season']);
-        self::assertSame(13, $s['rows']['a']['finalPoints']);
-        self::assertSame(19, $s['rows']['b']['finalPoints']);
-        self::assertSame(['b', 'a'], $s['final']);
-        self::assertSame(1, $s['rows']['b']['finalRank']);
+        $st = Contest::compute(self::SEASON, [self::p('a'), self::p('zero')], [self::e('a', '2026-12-02', 'daily_proof', 10)], [], []);
+        self::assertSame(['a'], $st['season']);
+        self::assertNull($st['rows']['zero']['seasonRank'], 'never "#1" with 0 points');
     }
 
-    public function testTiesBreakOnDaysThenAllVotesThenEarliestJoin(): void
+    public function testMovementComparesWithBeforeTodaysChallenge(): void
     {
-        $s = Contest::compute(['vote_cap_per_photo' => 10] + self::SEASON, [
-            self::p('late',  '2026-12-01 12:00:00+00'),
-            self::p('early', '2026-12-01 08:00:00+00'),
-            self::p('days',  '2026-12-01 13:00:00+00'),
-            self::p('votes', '2026-12-01 14:00:00+00'),
-        ], [
-            self::photo('late', '2026-12-02', 10),
-            self::photo('early', '2026-12-02', 10),
-            self::photo('days', '2026-12-02', 5), self::photo('days', '2026-12-03', 5),
-            self::photo('votes', '2026-12-02', 30),   // 10 capped, 30 overall
-        ], []);
-        // All on 10 points: 2 days first, then 30 likes overall, then the earliest join.
-        self::assertSame(['days', 'votes', 'early', 'late'], $s['season']);
+        $events = [self::e('a', '2026-12-02', 'daily_proof', 10), self::e('b', '2026-12-02', 'daily_proof', 10, 2000),
+                   self::e('b', '2026-12-03', 'daily_top1', 30)];
+        $st = Contest::compute(self::SEASON, [self::p('a'), self::p('b')], $events, [], [], '2026-12-03');
+        self::assertSame(1, $st['rows']['b']['seasonRank']);
+        self::assertSame(2, $st['rows']['b']['prevSeasonRank']);
+        self::assertSame(1, $st['rows']['a']['prevSeasonRank']);
     }
 
-    public function testDisqualifiedAreOutOfRankingsAndCounter(): void
+    public function testDisqualifiedAreOutOfRankingsAndTheGoal(): void
     {
-        $s = Contest::compute(self::SEASON, [self::p('a'), self::p('b', '2026-12-01 10:00:00+00', null, null, true)], [
-            self::photo('a', '2026-12-02', 1), self::photo('a', '2026-12-03', 1),
-            self::photo('b', '2026-12-02', 50), self::photo('b', '2026-12-03', 50),
-        ], []);
-        self::assertSame(['a'], $s['season']);
-        self::assertSame(1, $s['counter']['players']);
-        self::assertSame(2, $s['totals']['participants']);
+        $st = Contest::compute(self::SEASON, [self::p('a'), self::p('dq', '2026-12-01', true)],
+            [self::e('a', '2026-12-02', 'daily_proof', 10), self::e('dq', '2026-12-02', 'daily_proof', 10)],
+            [self::photo('a', '2026-12-02', 0), self::photo('a', '2026-12-03', 0), self::photo('dq', '2026-12-02', 0), self::photo('dq', '2026-12-03', 0)], []);
+        self::assertSame(['a'], $st['season']);
+        self::assertSame(1, $st['counter']['players']);
+        self::assertFalse($st['counter']['reached']);
     }
 
-    public function testCounterNeedsEnoughPhotos(): void
+    public function testTheGoalNeedsEnoughPlayersWithEnoughPhotos(): void
     {
-        $s = Contest::compute(self::SEASON, [self::p('a'), self::p('b')], [
-            self::photo('a', '2026-12-02', 0), self::photo('a', '2026-12-03', 0), self::photo('b', '2026-12-02', 0),
-        ], []);
-        self::assertSame(['players' => 1, 'threshold' => 500, 'photos' => 2], $s['counter']);
+        $photos = [self::photo('a', '2026-12-02', 0), self::photo('a', '2026-12-03', 0), self::photo('b', '2026-12-02', 0), self::photo('b', '2026-12-03', 0)];
+        $st = Contest::compute(self::SEASON, [self::p('a'), self::p('b')], [], $photos, []);
+        self::assertSame(['players' => 2, 'threshold' => 2, 'photos' => 2, 'reached' => true], $st['counter']);
     }
 
     public function testHeadstartPoints(): void
@@ -164,16 +137,32 @@ final class ContestTest extends TestCase
         self::assertSame('over', Contest::phase($s, '2026-12-29'));
         self::assertSame('draft', Contest::phase(['status' => 'draft'] + $s, '2026-12-05'));
         self::assertSame('ended', Contest::phase(['status' => 'ended'] + $s, '2026-12-05'));
+        self::assertSame('final', Contest::racePart('over'));
+        self::assertSame('season', Contest::racePart('upcoming'));
+    }
+
+    public function testFallbackPrizeAndTabDefaults(): void
+    {
+        self::assertSame(Contest::DEFAULT_FALLBACK['fr'], Contest::fallbackPrize(self::SEASON, 'fr'));
+        self::assertSame('a souvenir pack', Contest::fallbackPrize(self::SEASON + ['fallback_prize_i18n' => ['en' => 'a souvenir pack']], 'fr'));
+        self::assertSame(['label' => 'Voyage', 'icon' => 'airplane'], Contest::tab(self::SEASON, 'fr'));
+        self::assertSame(['label' => 'Win', 'icon' => 'trophy'], Contest::tab(self::SEASON + ['tab' => ['icon' => 'trophy', 'label' => ['en' => 'Win']]], 'de'));
+        self::assertSame('airplane', Contest::tab(self::SEASON + ['tab' => ['icon' => 'not-an-icon']], 'en')['icon']);
+        self::assertCount(19, Contest::DEFAULT_TAB['label']);
+        self::assertCount(19, Contest::DEFAULT_FALLBACK);
     }
 
     public function testRulesTemplateIsFilledFromTheSeason(): void
     {
-        $md = Contest::fillRules(Contest::placeholderRules(), self::SEASON + ['souvenir' => ['enabled' => true, 'to' => 8]]);
+        $md = Contest::fillRules(Contest::placeholderRules(), self::SEASON + ['souvenir' => ['enabled' => true, 'to' => 8],
+                                                                               'fallback_prize_i18n' => ['en' => 'a Vietnam souvenir pack']]);
         self::assertStringNotContainsString('{{', $md, 'every placeholder is filled');
-        self::assertStringContainsString('capped at ' . self::SEASON['vote_cap_per_photo'] . ' points per photo', $md);
-        self::assertStringContainsString('ranks 2 to 8 of the final-week leaderboard', $md);
+        self::assertStringContainsString('+10 points for each daily challenge you play', $md);
+        self::assertStringContainsString('+30, +20 or +10 points', $md);
+        self::assertStringContainsString('they receive a Vietnam souvenir pack instead of the trip', $md);
+        self::assertStringContainsString('ranks 2 to 8 of the final-week ranking', $md);
+        self::assertStringNotContainsString('capped at', $md, 'likes no longer score');
         self::assertStringContainsString('[TBD:', $md, 'open points stay visible until the text is final');
-        // The DRAFT banner is the page's (until Final is ticked), not part of the text.
         self::assertStringNotContainsString('DRAFT', Contest::placeholderRules());
     }
 }

@@ -174,7 +174,8 @@
     "map": "Kaart",
     "passport": "Paspoort",
     "season": "Boarding",
-    "new": "nieuw"
+    "new": "nieuw",
+    "trip": "Reis"
   },
   "scope": {
     "title": "Tonen",
