@@ -486,7 +486,16 @@
       "starts": "Start over {{time}}",
       "toFinal": "laatste week over {{time}}",
       "ends": "eindigt over {{time}}",
-      "over": "Bekijk de winnaar"
+      "over": "Bekijk de winnaar",
+      "finalIn": "Laatste week over {{time}}",
+      "endsIn": "Eindigt over {{time}}",
+      "onBoard_one": "{{count}} aan boord",
+      "onBoard_other": "{{count}} aan boord",
+      "grab": "Pak mijn plek →",
+      "enter": "Doe mee aan de race →",
+      "rankSee": "Je bent {{rank, ordinal}} · Bekijk de race →",
+      "see": "Bekijk de race →",
+      "overCta": "Bekijk de winnaar →"
     },
     "board": {
       "title": "✈️ Boarding",

@@ -20,6 +20,7 @@ import { fetchCrew, type Crew } from '@/features/invites/invite';
 import { useContestShare } from '@/features/contest/useContestShare';
 import { TripOverview, TripRanking, TripFriends, TripRules, SECTIONS, type TripSection } from '@/features/contest/TripSections';
 import { track } from '@/services/analytics';
+import { countTripOpen } from '@/features/contest/tripOpens';
 
 /**
  * The campaign's destination (the temporary "Trip" tab, docs/mockups/hilads_season_mockup.html):
@@ -78,6 +79,7 @@ export default function TripScreen() {
   // Analytics: the screen once per focus, then each section shown.
   const viewed = useRef<string | null>(null);
   useFocusEffect(useCallback(() => {
+    if (s) countTripOpen(s.id);   // the Today banner moves below the feed after the 3rd open
     if (s) track('trip_viewed', { section, phase: s.phase, test: s.isTest });
     viewed.current = section;
   }, [s?.id]));   // eslint-disable-line react-hooks/exhaustive-deps

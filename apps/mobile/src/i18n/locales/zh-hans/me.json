@@ -473,7 +473,16 @@
       "starts": "{{time}} 后开始",
       "toFinal": "{{time}} 后进入决赛周",
       "ends": "{{time}} 后结束",
-      "over": "查看获胜者"
+      "over": "查看获胜者",
+      "finalIn": "距决赛周 {{time}}",
+      "endsIn": "{{time}} 后结束",
+      "onBoard_one": "{{count}} 人已登机",
+      "onBoard_other": "{{count}} 人已登机",
+      "grab": "抢我的座位 →",
+      "enter": "加入比赛 →",
+      "rankSee": "你是{{rank, ordinal}} · 查看比赛 →",
+      "see": "查看比赛 →",
+      "overCta": "查看获胜者 →"
     },
     "board": {
       "title": "✈️ 登机",

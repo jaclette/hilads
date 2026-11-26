@@ -486,7 +486,16 @@
       "starts": "Magsisimula sa loob ng {{time}}",
       "toFinal": "huling linggo sa loob ng {{time}}",
       "ends": "matatapos sa loob ng {{time}}",
-      "over": "Tingnan ang panalo"
+      "over": "Tingnan ang panalo",
+      "finalIn": "Huling linggo sa loob ng {{time}}",
+      "endsIn": "Matatapos sa loob ng {{time}}",
+      "onBoard_one": "{{count}} ang sakay",
+      "onBoard_other": "{{count}} ang sakay",
+      "grab": "Kunin ang upuan ko →",
+      "enter": "Sumali sa race →",
+      "rankSee": "Nasa {{rank, ordinal}} na puwesto ka · Tingnan ang race →",
+      "see": "Tingnan ang race →",
+      "overCta": "Tingnan ang nanalo →"
     },
     "board": {
       "title": "✈️ Boarding",

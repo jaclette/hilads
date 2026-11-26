@@ -13,6 +13,7 @@ import { getLastToday, RankMedal } from '../daily/dailyShared'
 import { ordinal } from '../../lib/ordinal'
 import { contestGoal, countdownTarget, shortLeft, useLiveNow, SouvenirLine, Podium, JoinForm, ContestPrize } from './ContestScreen'
 import { pendingInvite } from '../../lib/invite'
+import { countTripOpen } from './LaunchSeasonCard'
 import { storeLink } from '../../lib/storeLinks.mjs'
 
 /**
@@ -52,7 +53,11 @@ export default function TripScreen({ account, cityName = null, initialSection = 
     fetchContestRanking(part).then(setRanking).catch(() => {})
     if (account) fetchCrew().then(setCrew).catch(() => {})
   }, [s?.id, part, account?.id]) // eslint-disable-line react-hooks/exhaustive-deps
-  useEffect(() => { if (s) track('trip_viewed', { section, phase: s.phase, test: !!s.isTest, platform_surface: 'web' }) }, [s?.id]) // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    if (!s) return
+    countTripOpen(s.id)   // the Today banner moves below the feed after the 3rd open
+    track('trip_viewed', { section, phase: s.phase, test: !!s.isTest, platform_surface: 'web' })
+  }, [s?.id]) // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => { if (SECTIONS.includes(initialSection)) setSection(initialSection) }, [initialSection])
 
   const onScroll = () => {

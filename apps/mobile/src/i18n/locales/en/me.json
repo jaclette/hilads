@@ -486,7 +486,16 @@
       "starts": "Starts in {{time}}",
       "toFinal": "final week in {{time}}",
       "ends": "ends in {{time}}",
-      "over": "See the winner"
+      "over": "See the winner",
+      "finalIn": "Final week in {{time}}",
+      "endsIn": "Ends in {{time}}",
+      "onBoard_one": "{{count}} on board",
+      "onBoard_other": "{{count}} on board",
+      "grab": "Grab my seat →",
+      "enter": "Enter the race →",
+      "rankSee": "You're {{rank, ordinal}} · See the race →",
+      "see": "See the race →",
+      "overCta": "See the winner →"
     },
     "board": {
       "title": "✈️ Boarding",

@@ -97,9 +97,9 @@ export default function TodayScreen({ header, onOpenContest }) {
         <WhileAwayCard account={account} />
         <ResultsCard account={account} />
         <Ticket data={data} countries={countries} loading={loading} />
+        {/* The campaign, while one runs: here until the Trip tab was opened 3 times, then below the feed. */}
+        <LaunchSeasonCard onOpen={onOpenContest} account={account} placement="top" />
         {/* A seasonal event's countdown (teaser days). */}
-        {/* The Launch Season contest, while one runs (its own layer, never the game's points). */}
-        <LaunchSeasonCard onOpen={onOpenContest} />
         <SeasonalTeaser />
         {/* Around the world today: one card per city (the mosaic), "See all"; yesterday's best on an empty day. */}
         <TodayCountries today={data} data={countries} />
@@ -107,6 +107,7 @@ export default function TodayScreen({ header, onOpenContest }) {
         <CityChatRow />
         {/* Your week: the streak, tomorrow's theme, the week strip and every past challenge. */}
         <Week today={data} />
+        <LaunchSeasonCard onOpen={onOpenContest} account={account} placement="bottom" />
       </div>
     </div>
   )

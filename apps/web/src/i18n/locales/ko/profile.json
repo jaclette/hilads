@@ -511,7 +511,16 @@
         "starts": "{{time}} 후 시작",
         "toFinal": "{{time}} 후 파이널 위크",
         "ends": "{{time}} 후 종료",
-        "over": "우승자 보기"
+        "over": "우승자 보기",
+        "finalIn": "파이널 위크까지 {{time}}",
+        "endsIn": "종료까지 {{time}}",
+        "onBoard_one": "{{count}}명 탑승",
+        "onBoard_other": "{{count}}명 탑승",
+        "grab": "내 자리 잡기 →",
+        "enter": "레이스 참가 →",
+        "rankSee": "지금 {{rank, ordinal}} · 레이스 보기 →",
+        "see": "레이스 보기 →",
+        "overCta": "우승자 보기 →"
       },
       "board": {
         "title": "✈️ 탑승",

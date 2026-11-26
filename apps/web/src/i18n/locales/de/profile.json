@@ -523,7 +523,16 @@
         "starts": "Startet in {{time}}",
         "toFinal": "Finalwoche in {{time}}",
         "ends": "endet in {{time}}",
-        "over": "Zum Gewinner"
+        "over": "Zum Gewinner",
+        "finalIn": "Finalwoche in {{time}}",
+        "endsIn": "Endet in {{time}}",
+        "onBoard_one": "{{count}} an Bord",
+        "onBoard_other": "{{count}} an Bord",
+        "grab": "Platz sichern →",
+        "enter": "Ins Rennen →",
+        "rankSee": "Du bist {{rank, ordinal}} · Zum Rennen →",
+        "see": "Zum Rennen →",
+        "overCta": "Zum Gewinner →"
       },
       "board": {
         "title": "✈️ Boarding",

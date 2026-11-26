@@ -473,7 +473,16 @@
       "starts": "あと {{time}} でスタート",
       "toFinal": "ファイナルまで {{time}}",
       "ends": "終了まで {{time}}",
-      "over": "優勝者を見る"
+      "over": "優勝者を見る",
+      "finalIn": "ファイナルウィークまで {{time}}",
+      "endsIn": "終了まで {{time}}",
+      "onBoard_one": "{{count}}人が搭乗中",
+      "onBoard_other": "{{count}}人が搭乗中",
+      "grab": "席を確保する →",
+      "enter": "レースに参加 →",
+      "rankSee": "あなたは{{rank, ordinal}} · レースを見る →",
+      "see": "レースを見る →",
+      "overCta": "勝者を見る →"
     },
     "board": {
       "title": "✈️ 搭乗",

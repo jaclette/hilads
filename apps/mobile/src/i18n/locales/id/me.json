@@ -473,7 +473,16 @@
       "starts": "Mulai dalam {{time}}",
       "toFinal": "minggu final dalam {{time}}",
       "ends": "berakhir dalam {{time}}",
-      "over": "Lihat pemenang"
+      "over": "Lihat pemenang",
+      "finalIn": "Minggu final dalam {{time}}",
+      "endsIn": "Berakhir dalam {{time}}",
+      "onBoard_one": "{{count}} sudah naik",
+      "onBoard_other": "{{count}} sudah naik",
+      "grab": "Ambil kursiku →",
+      "enter": "Ikut balapan →",
+      "rankSee": "Kamu peringkat {{rank, ordinal}} · Lihat balapan →",
+      "see": "Lihat balapan →",
+      "overCta": "Lihat pemenangnya →"
     },
     "board": {
       "title": "✈️ Boarding",

@@ -473,7 +473,16 @@
       "starts": "Bắt đầu sau {{time}}",
       "toFinal": "tuần cuối sau {{time}}",
       "ends": "kết thúc sau {{time}}",
-      "over": "Xem người thắng"
+      "over": "Xem người thắng",
+      "finalIn": "Tuần cuối sau {{time}}",
+      "endsIn": "Kết thúc sau {{time}}",
+      "onBoard_one": "{{count}} người đã lên",
+      "onBoard_other": "{{count}} người đã lên",
+      "grab": "Giữ chỗ của tôi →",
+      "enter": "Vào cuộc đua →",
+      "rankSee": "Bạn hạng {{rank, ordinal}} · Xem cuộc đua →",
+      "see": "Xem cuộc đua →",
+      "overCta": "Xem người thắng →"
     },
     "board": {
       "title": "✈️ Lên máy bay",

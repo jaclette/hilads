@@ -500,7 +500,16 @@
       "starts": "Começa em {{time}}",
       "toFinal": "última semana em {{time}}",
       "ends": "termina em {{time}}",
-      "over": "Ver o vencedor"
+      "over": "Ver o vencedor",
+      "finalIn": "Última semana em {{time}}",
+      "endsIn": "Termina em {{time}}",
+      "onBoard_one": "{{count}} a bordo",
+      "onBoard_other": "{{count}} a bordo",
+      "grab": "Quero meu lugar →",
+      "enter": "Entre na corrida →",
+      "rankSee": "Você está em {{rank, ordinal}} · Ver a corrida →",
+      "see": "Ver a corrida →",
+      "overCta": "Ver o vencedor →"
     },
     "board": {
       "title": "✈️ Embarque",

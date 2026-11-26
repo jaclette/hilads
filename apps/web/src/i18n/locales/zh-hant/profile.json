@@ -511,7 +511,16 @@
         "starts": "{{time}} 後開始",
         "toFinal": "{{time}} 後進入決賽週",
         "ends": "{{time}} 後結束",
-        "over": "查看獲勝者"
+        "over": "查看獲勝者",
+        "finalIn": "距決賽週 {{time}}",
+        "endsIn": "{{time}} 後結束",
+        "onBoard_one": "{{count}} 人已登機",
+        "onBoard_other": "{{count}} 人已登機",
+        "grab": "搶我的座位 →",
+        "enter": "加入比賽 →",
+        "rankSee": "你是{{rank, ordinal}} · 查看比賽 →",
+        "see": "查看比賽 →",
+        "overCta": "查看獲勝者 →"
       },
       "board": {
         "title": "✈️ 登機",

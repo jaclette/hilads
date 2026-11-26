@@ -486,7 +486,16 @@
       "starts": "{{time}} में शुरू",
       "toFinal": "फ़ाइनल वीक {{time}} में",
       "ends": "{{time}} में खत्म",
-      "over": "विजेता देखें"
+      "over": "विजेता देखें",
+      "finalIn": "फ़ाइनल वीक {{time}} में",
+      "endsIn": "{{time}} में ख़त्म",
+      "onBoard_one": "{{count}} सवार",
+      "onBoard_other": "{{count}} सवार",
+      "grab": "मेरी सीट लें →",
+      "enter": "रेस में शामिल हों →",
+      "rankSee": "आपका स्थान: {{rank, ordinal}} · रेस देखें →",
+      "see": "रेस देखें →",
+      "overCta": "विजेता देखें →"
     },
     "board": {
       "title": "✈️ बोर्डिंग",

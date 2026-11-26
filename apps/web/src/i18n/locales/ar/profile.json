@@ -579,7 +579,20 @@
         "starts": "يبدأ بعد {{time}}",
         "toFinal": "الأسبوع الأخير بعد {{time}}",
         "ends": "ينتهي بعد {{time}}",
-        "over": "شاهد الفائز"
+        "over": "شاهد الفائز",
+        "finalIn": "الأسبوع الأخير بعد {{time}}",
+        "endsIn": "ينتهي بعد {{time}}",
+        "onBoard_one": "{{count}} على متن الطائرة",
+        "onBoard_other": "{{count}} على متن الطائرة",
+        "grab": "احجز مقعدي ←",
+        "enter": "ادخل السباق ←",
+        "rankSee": "أنت في المركز {{rank, ordinal}} · شاهد السباق ←",
+        "see": "شاهد السباق ←",
+        "overCta": "شاهد الفائز ←",
+        "onBoard_zero": "{{count}} على متن الطائرة",
+        "onBoard_two": "{{count}} على متن الطائرة",
+        "onBoard_few": "{{count}} على متن الطائرة",
+        "onBoard_many": "{{count}} على متن الطائرة"
       },
       "board": {
         "title": "✈️ الصعود إلى الطائرة",
