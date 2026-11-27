@@ -249,9 +249,13 @@ final class PhotoComments
     {
         $stmt = Database::pdo()->prepare("
             SELECT c.id, c.photo_id, c.body, c.created_at, c.hidden_at, u.username, u.display_name, p.photo_url,
-                   count(r.id) AS report_count, string_agg(DISTINCT r.reason_code, ',') AS reasons
+                   count(r.id) AS report_count, string_agg(DISTINCT r.reason_code, ',') AS reasons,
+                   json_agg(json_build_object('userId', r.reporter_user_id, 'username', ru.username, 'name', ru.display_name,
+                                              'guestId', r.reporter_guest_id, 'reason', r.reason_code,
+                                              'at', extract(epoch FROM r.created_at)::bigint) ORDER BY r.created_at) AS reporters
             FROM photo_comment_reports r
             JOIN photo_comments c ON c.id = r.comment_id AND c.deleted_at IS NULL
+            LEFT JOIN users ru    ON ru.id = r.reporter_user_id
             JOIN users u          ON u.id = c.user_id
             JOIN daily_proofs p   ON p.id = c.photo_id
             WHERE r.status = 'open'

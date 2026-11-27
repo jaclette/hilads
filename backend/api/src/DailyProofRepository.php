@@ -664,15 +664,20 @@ final class DailyProofRepository
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    /** Approved proofs with open reports, most reported first, with report_count and reasons. */
+    /** Approved proofs with open reports, most reported first, with report_count, reasons and reporters (JSON). */
     public static function listReported(int $limit): array
     {
         $stmt = Database::pdo()->prepare("
-            SELECT x.*, r.report_count, r.reasons
+            SELECT x.*, r.report_count, r.reasons, r.reporters
             FROM (" . self::SELECT . " WHERE p.moderation_status = 'approved') x
             JOIN (
-                SELECT proof_id, count(*) AS report_count, string_agg(DISTINCT reason_code, ',') AS reasons
-                FROM daily_proof_reports WHERE status = 'open' GROUP BY proof_id
+                SELECT dr.proof_id, count(*) AS report_count, string_agg(DISTINCT dr.reason_code, ',') AS reasons,
+                       -- Who reported (the back office only): account or guest, reason, note, when; oldest first.
+                       json_agg(json_build_object('userId', dr.reporter_user_id, 'username', ru.username, 'name', ru.display_name,
+                                                  'guestId', dr.reporter_guest_id, 'reason', dr.reason_code, 'details', dr.details,
+                                                  'at', extract(epoch FROM dr.created_at)::bigint) ORDER BY dr.created_at) AS reporters
+                FROM daily_proof_reports dr LEFT JOIN users ru ON ru.id = dr.reporter_user_id
+                WHERE dr.status = 'open' GROUP BY dr.proof_id
             ) r ON r.proof_id = x.id
             ORDER BY r.report_count DESC, x.approved_at DESC
             LIMIT ?

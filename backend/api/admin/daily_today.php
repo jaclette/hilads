@@ -123,12 +123,34 @@ daily_styles();
     <?php if ($queue['pending'] === []): ?><tr><td class="no-results">Nothing waiting. 🎉</td></tr><?php endif; ?>
     </tbody></table></div>
 
+    <?php
+    // Who reported, one line each: the account (linked) or the guest, the reason, the note, when.
+    $reportersList = static function ($json): string {
+        $list = is_string($json) ? (json_decode($json, true) ?: []) : (is_array($json) ? $json : []);
+        if ($list === []) return '';
+        $out = '';
+        foreach ($list as $x) {
+            if (!empty($x['userId'])) {
+                $who = '<a href="/admin/users/' . dh(rawurlencode((string) $x['userId'])) . '/edit">'
+                     . dh(!empty($x['username']) ? '@' . $x['username'] : (string) ($x['name'] ?? 'account')) . '</a>';
+            } elseif (!empty($x['guestId'])) {
+                $who = '<span class="muted" title="' . dh((string) $x['guestId']) . '">Guest ' . dh(substr((string) $x['guestId'], 0, 8)) . '</span>';
+            } else {
+                $who = '<span class="muted">unknown</span>';
+            }
+            $out .= '<li>' . $who . ' · ' . dh(str_replace('_', ' ', (string) ($x['reason'] ?? '')))
+                  . (!empty($x['details']) ? ' · <em>“' . dh(mb_substr((string) $x['details'], 0, 200)) . '”</em>' : '')
+                  . ' <span class="muted">· ' . date('M j, H:i', (int) ($x['at'] ?? 0)) . '</span></li>';
+        }
+        return '<ul style="margin:4px 0 0;padding-left:18px;color:var(--text);font-size:12px">' . $out . '</ul>';
+    };
+    ?>
     <?php if ($queue['reported'] !== []): ?>
         <h3 style="margin:18px 0 8px">Reported (still visible)</h3>
         <div class="table-wrapper"><table class="daily-stack"><tbody>
         <?php foreach ($queue['reported'] as $r): ?>
             <tr>
-                <td><?= $proofCell($r) ?><div style="margin-top:6px;color:var(--bad)"><?= (int) $r['report_count'] ?> report(s): <?= dh(str_replace(',', ', ', (string) $r['reasons'])) ?></div></td>
+                <td><?= $proofCell($r) ?><div style="margin-top:6px;color:var(--bad)"><?= (int) $r['report_count'] ?> report(s): <?= dh(str_replace(',', ', ', (string) $r['reasons'])) ?></div><?= $reportersList($r['reporters'] ?? null) ?></td>
                 <td class="td-actions" style="min-width:300px">
                     <form method="POST" action="<?= $self ?>" style="display:inline"><?= csrf_input() ?>
                         <input type="hidden" name="action" value="dismiss_reports"><input type="hidden" name="proof_id" value="<?= dh($r['id']) ?>">
@@ -156,6 +178,7 @@ daily_styles();
                             <?= $c['hidden_at'] !== null ? '<span style="color:var(--bad)">· hidden</span>' : '' ?>
                             <div style="margin-top:4px;white-space:pre-wrap"><?= dh((string) $c['body']) ?></div>
                             <div style="margin-top:6px;color:var(--bad)"><?= (int) $c['report_count'] ?> report(s): <?= dh(str_replace(',', ', ', (string) $c['reasons'])) ?></div>
+                            <?= $reportersList($c['reporters'] ?? null) ?>
                         </div>
                     </div>
                 </td>
