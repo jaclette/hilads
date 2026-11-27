@@ -672,7 +672,8 @@
     "worldSays": {
       "title": "Kata dunia",
       "first": "Jadilah yang pertama main",
-      "more_other": "+{{count}} lagi"
+      "more_other": "+{{count}} lagi",
+      "you": "Kamu"
     },
     "myCity": {
       "in_other": "Di {{city}} · {{count}} foto",

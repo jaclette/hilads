@@ -1106,6 +1106,19 @@ export interface DailyTodayProofs {
 }
 
 /** GET /daily/today/countries: Today's stories row and mosaic, today's players' photos by country. */
+/** GET /daily/today/countries?answers=1: one compact entry per photo ("The world says"). */
+export interface DailyWorldAnswer {
+  id:       string;
+  city:     { id: number; name: string; country: string };
+  caption:  string | null;
+  answer:   DailyAnswer | null;
+  backHome: boolean;
+  spot:     string | null;
+  place:    string | null;
+  mine:     boolean;
+  votes:    number;
+}
+
 export interface DailyTodayCountries {
   date:      string;
   total:     number;                       // photos
@@ -1114,6 +1127,8 @@ export interface DailyTodayCountries {
   /** By city (V3 polish): absent from an older server. My city first, then unseen, then the most recent. */
   cityCount?: number;
   cities?:   DailyCityGroup[];
+  /** ?answers=1 only (absent from an older server): every photo's answer, newest first. */
+  answers?:  DailyWorldAnswer[];
 }
 
 export interface DailyCityGroup {

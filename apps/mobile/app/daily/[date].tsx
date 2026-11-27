@@ -13,7 +13,7 @@ import { shortCityName } from '@/i18n/cityName';
 import { canAccessProfile } from '@/lib/profileAccess';
 import { goBack } from '@/lib/nav';
 import { track } from '@/services/analytics';
-import { deleteDailyProof, fetchDailyProof, fetchDailySheet, fetchDailyToday, fetchDailyTodayCountries } from '@/api/daily';
+import { deleteDailyProof, fetchDailyProof, fetchDailyProofsByIds, fetchDailySheet, fetchDailyToday, fetchDailyTodayCountries } from '@/api/daily';
 import { formatCountdown, isFinalHours, useCountdown, useDailySheet, useHere, getLastToday } from '@/hooks/useDaily';
 import { SheetSkeleton } from '@/features/daily/SheetSkeleton';
 import { openPhotoFeed } from '@/features/daily/openFeed';
@@ -26,6 +26,7 @@ import { ProposedBy } from '@/features/daily/DailyChannelCard';
 import { themeName, isPlaceTheme } from '@/features/daily/themes';
 import { answerText } from '@/features/compare/format';
 import { WorldBubbles } from '@/features/challenge/WorldBubbles';
+import { answerChips } from '@/features/challenge/worldAnswers';
 import { themeCover } from '@/features/today/covers';
 import { ShareSheet } from '@/features/share/ShareSheet';
 import { todayShare, type ShareContent } from '@/features/share/content';
@@ -132,7 +133,7 @@ function Challenge({ date, openProofId, source, pushType, shareProof, commentPar
   const myCityName = here?.name ?? sheet?.city?.name ?? null;
   const [mine, setMine] = useState<{ top: DailyProof | null; count: number } | null>(null);
   useEffect(() => {
-    fetchDailyTodayCountries({ date: isToday ? null : date, cityId: myCityId, guestId }).then(setCountries).catch(() => {});
+    fetchDailyTodayCountries({ date: isToday ? null : date, cityId: myCityId, guestId, answers: true }).then(setCountries).catch(() => {});
   }, [date, isToday, myCityId, guestId]);
   useEffect(() => {
     if (!myCityId) { setMine(null); return; }
@@ -182,6 +183,14 @@ function Challenge({ date, openProofId, source, pushType, shareProof, commentPar
     if (myProof) { openProof(myProof, 'challenge_mine'); return; }
     if (!account) { router.push('/auth-gate?reason=daily_proof&returnTo=%2Fdaily%2Fproof' as never); return; }
     router.push('/daily/proof' as never);
+  };
+  // A chip of "The world says": its photos in the viewer (from the sheet when there, else fetched).
+  const openAnswer = (ids: string[]) => {
+    track('challenge_bubble_tapped', { photos: ids.length });
+    const have = new Map((sheet?.proofs ?? []).map(p => [p.id, p] as const));
+    const show = (proofs: DailyProof[]) => { if (proofs.length > 0) openPhotoFeed(proofs, proofs[0].id, 'challenge_bubble', { challenge }); };
+    if (ids.every(id => have.has(id))) { show(ids.map(id => have.get(id)!)); return; }
+    fetchDailyProofsByIds(ids.slice(0, 50), guestId).then(show).catch(() => {});
   };
   const seeAll = (country: string | null) => {
     track('challenge_bubble_tapped', { country });
@@ -267,7 +276,7 @@ function Challenge({ date, openProofId, source, pushType, shareProof, commentPar
           {/* 2. The world says. */}
           <View style={styles.block}>
             <Text style={styles.title}>{t('worldSays.title')}</Text>
-            <WorldBubbles items={items} seed={challenge.date} onOpen={seeAll} onFirst={canPlay && !myProof ? play : undefined} />
+            <WorldBubbles chips={answerChips(countries, myCityId != null ? Number(String(myCityId).replace(/^city_/, '')) : null, i18n.language)} seed={challenge.date} onOpen={openAnswer} onFirst={canPlay && !myProof ? play : undefined} />
           </View>
 
           {/* The Local Twist of my city (locals of a live city). */}

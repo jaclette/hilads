@@ -672,7 +672,8 @@
     "worldSays": {
       "title": "世界の答え",
       "first": "最初に参加しよう",
-      "more_other": "ほか{{count}}件"
+      "more_other": "ほか{{count}}件",
+      "you": "あなた"
     },
     "myCity": {
       "in_other": "{{city}} · 写真{{count}}枚",

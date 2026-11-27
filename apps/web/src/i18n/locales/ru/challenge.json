@@ -726,7 +726,8 @@
       "more_one": "и ещё {{count}}",
       "more_few": "и ещё {{count}}",
       "more_many": "и ещё {{count}}",
-      "more_other": "и ещё {{count}}"
+      "more_other": "и ещё {{count}}",
+      "you": "Ты"
     },
     "myCity": {
       "in_one": "{{city}} · {{count}} фото",

@@ -712,7 +712,8 @@
     "title": "दुनिया कहती है",
     "first": "सबसे पहले खेलें",
     "more_one": "+{{count}} और",
-    "more_other": "+{{count}} और"
+    "more_other": "+{{count}} और",
+    "you": "आप"
   },
   "myCity": {
     "in_one": "{{city}} में · {{count}} फ़ोटो",

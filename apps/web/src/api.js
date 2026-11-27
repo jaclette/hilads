@@ -2463,8 +2463,8 @@ export function unvoteDailyProof(id) { return daily('DELETE', `/daily/proofs/${i
 export async function fetchDailyVoters(id) { return (await daily('GET', `/daily/proofs/${id}/voters`)).items }
 
 /** A day's players' photos by country (Today's stories and mosaic, "See all", the challenge's bubbles); `date` a past day, default today. */
-export function fetchDailyTodayCountries({ date, cityId, locale } = {}) {
-  return daily('GET', '/daily/today/countries', { params: { date, cityId: cityNum(cityId), locale } })
+export function fetchDailyTodayCountries({ date, cityId, locale, answers } = {}) {
+  return daily('GET', '/daily/today/countries', { params: { date, cityId: cityNum(cityId), locale, answers: answers ? 1 : undefined } })
 }
 /** The photos I've just viewed (signed in): at most 100 ids per call. */
 export function markDailyProofsSeen(ids) { return daily('POST', '/daily/proofs/seen', { body: { ids } }) }

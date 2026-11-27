@@ -1,8 +1,8 @@
 import { FlagSticker, ACCENTS } from '../joy/Joy'
-import { answerText } from './compareShared'
+import { useState } from 'react'
 import { useDc } from './dailyShared'
 
-const MAX = 6
+const MAX = 8
 
 /** A stable number from a string (rotation and tint never change between renders). */
 function hash(s) {
@@ -18,39 +18,35 @@ function tint(hex, alpha) {
 }
 
 /**
- * Each bubble's tint: from its country and the day (the same all day, another
- * the next), moved to the next accent when it would match the bubble before
- * it, so two neighbours never share a color.
+ * Each city's tint: from the city and the day (the same all day, another the next), moved to the
+ * next accent when it would match the city before it. A city's chips share its tint.
  */
-function tints(countries, seed) {
+function cityTints(cityIds, seed) {
   const n = ACCENTS.length
-  const out = []
-  countries.forEach((c, i) => {
-    let k = hash(`${c}|${seed}`) % n
-    while (i > 0 && k === out[i - 1]) k = (k + 1) % n   // each bubble steps away from the one before
-    out.push(k)
-  })
-  return out.map(k => tint(ACCENTS[k], 0.22))
-}
-
-/** A photo's line in its bubble: its answer, else its caption, else its place. */
-function bubbleText(g, locale) {
-  const p = g.top
-  if (p.answer && !p.backHome) return answerText(p.answer, locale)
-  return p.caption ?? p.spot?.name ?? p.place?.name ?? ''
+  const out = new Map()
+  let prev = -1
+  for (const id of cityIds) {
+    if (out.has(id)) continue
+    let k = hash(`${id}|${seed}`) % n
+    if (k === prev) k = (k + 1) % n   // a city steps away from the one before
+    prev = k
+    out.set(id, tint(ACCENTS[k], 0.22))
+  }
+  return out
 }
 
 /**
- * "The world says" (the app's WorldBubbles): one speech bubble per country
- * (its flag and its top photo's answer), wrapping, slightly rotated (-2° to
- * +2°, fixed per country) on a joyful tint never shared with its neighbour,
- * the tail corner alternating; up to 6, then "+N more". They pop in one after
- * the other (none with "reduce motion", in CSS). Nobody yet: one dashed "Be
- * the first to answer". `items` in the shared country order.
+ * "The world says" (the app's WorldBubbles): one speech bubble per answer (a city's flag and the
+ * answer, identical answers of a city grouped "×3"), my city first with my answer marked "You", then
+ * the cities with the most answers; a city's chips side by side in its tint. Slightly rotated, the
+ * tail corner alternating; 8 shown, then "+N more" opens the rest in place. They pop in one after the
+ * other (none with "reduce motion", in CSS). Nobody yet: one dashed "Be the first to play".
+ * `onOpen(ids)`: a chip's photos (most liked first).
  */
-export default function WorldBubbles({ items, seed, onOpen, onFirst }) {
-  const { t, i18n } = useDc()
-  if (items.length === 0) {
+export default function WorldBubbles({ chips, seed, onOpen, onFirst }) {
+  const { t } = useDc()
+  const [open, setOpen] = useState(false)
+  if (chips.length === 0) {
     return (
       <div className="wb">
         <button type="button" className="wb-bubble wb-bubble--empty" style={{ '--r': '-1deg' }} onClick={onFirst} disabled={!onFirst}>
@@ -59,24 +55,27 @@ export default function WorldBubbles({ items, seed, onOpen, onFirst }) {
       </div>
     )
   }
-  const shown = items.slice(0, MAX)
-  const more = items.length - shown.length
-  const colors = tints(shown.map(g => g.country), seed)
+  const shown = open ? chips : chips.slice(0, MAX)
+  const more = chips.length - shown.length
+  const colors = cityTints(chips.map(c => c.city.id), seed)
   return (
     <div className="wb">
-      {shown.map((g, i) => {
-        const text = bubbleText(g, i18n.language)
+      {shown.map((c, i) => {
+        const text = c.text || '📷'
         return (
-          <button key={g.country} type="button" className={`wb-bubble wb-bubble--${i % 2 === 0 ? 'left' : 'right'}`}
-                  style={{ background: colors[i], '--r': `${(hash(g.country) % 41) / 10 - 2}deg`, '--d': `${i * 40}ms` }}
-                  onClick={() => onOpen(g.country)} aria-label={`${g.city.name}: ${text}`}>
-            <FlagSticker country={g.country} size={18} />
+          <button key={c.key} type="button" className={`wb-bubble wb-bubble--${i % 2 === 0 ? 'left' : 'right'}${c.mine ? ' wb-bubble--mine' : ''}`}
+                  style={{ background: colors.get(c.city.id), '--r': `${(hash(c.key) % 41) / 10 - 2}deg`, '--d': `${(open && i >= MAX ? i - MAX : i) * 40}ms` }}
+                  onClick={() => onOpen(c.ids)}
+                  aria-label={`${c.city.name}: ${text}${c.ids.length > 1 ? `, ×${c.ids.length}` : ''}${c.mine ? `, ${t('worldSays.you')}` : ''}`}>
+            <FlagSticker country={c.city.country} size={18} />
             <span className="wb-text">{text}</span>
+            {c.ids.length > 1 && <span className="wb-count">×{c.ids.length}</span>}
+            {c.mine && <span className="wb-you">{t('worldSays.you')}</span>}
           </button>
         )
       })}
       {more > 0 && (
-        <button type="button" className="wb-bubble wb-bubble--more" style={{ '--r': '1deg', '--d': `${shown.length * 40}ms` }} onClick={() => onOpen(null)}>
+        <button type="button" className="wb-bubble wb-bubble--more" style={{ '--r': '1deg', '--d': `${shown.length * 40}ms` }} onClick={() => setOpen(true)}>
           {t('worldSays.more', { count: more })}
         </button>
       )}

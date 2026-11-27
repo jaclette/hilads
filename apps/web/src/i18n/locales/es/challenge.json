@@ -707,7 +707,8 @@
       "first": "Sé el primero en jugar",
       "more_one": "+{{count}} más",
       "more_many": "+{{count}} más",
-      "more_other": "+{{count}} más"
+      "more_other": "+{{count}} más",
+      "you": "Tú"
     },
     "myCity": {
       "in_one": "En {{city}} · {{count}} foto",

@@ -683,7 +683,8 @@
   "worldSays": {
     "title": "Thế giới nói gì",
     "first": "Làm người trả lời đầu tiên",
-    "more_other": "+{{count}} nữa"
+    "more_other": "+{{count}} nữa",
+    "you": "Bạn"
   },
   "myCity": {
     "in_other": "Ở {{city}} · {{count}} ảnh",

@@ -672,7 +672,8 @@
     "worldSays": {
       "title": "ทั่วโลกว่า",
       "first": "มาเป็นคนแรกที่เล่น",
-      "more_other": "+อีก {{count}}"
+      "more_other": "+อีก {{count}}",
+      "you": "คุณ"
     },
     "myCity": {
       "in_other": "ใน{{city}} · {{count}} รูป",

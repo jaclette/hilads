@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { cachedDailySheet, fetchDailyProof, fetchDailySheet, fetchDailyToday, fetchDailyTodayCountries } from '../../api'
+import { cachedDailySheet, fetchDailyProof, fetchDailyProofsByIds, fetchDailySheet, fetchDailyToday, fetchDailyTodayCountries } from '../../api'
 import { shortCityName } from '../../i18n/cityName'
 import { CityFlag } from '../CityName'
 import { track } from '../../lib/analytics'
@@ -13,6 +13,7 @@ import Icon from '../Icon'
 import { answerText } from './compareShared'
 import { compareCountryGroups, compareCountryProofs } from './countryOrder'
 import WorldBubbles from './WorldBubbles'
+import { answerChips } from './worldAnswers'
 import {
   useDaily, useDc, useCountdown, formatCountdown, isFinalHours, formatAmount, personName, seedProofs, seedVotesLeft,
   StatusChip, OriginalToggle, useOriginal, ProposedBy, useHere, getLastToday, SheetSkeleton, challengeCover,
@@ -103,7 +104,7 @@ function Challenge({ date, proofId = null, source = null, onBack }) {
   const [countries, setCountries] = useState(null)
   const [mine, setMine] = useState(null)
   useEffect(() => {
-    fetchDailyTodayCountries({ date: isToday ? null : date, cityId: myCityId, locale: i18n.language }).then(setCountries).catch(() => {})
+    fetchDailyTodayCountries({ date: isToday ? null : date, cityId: myCityId, locale: i18n.language, answers: true }).then(setCountries).catch(() => {})
   }, [date, isToday, myCityId, i18n.language])
   useEffect(() => {
     if (!myCityId) { setMine(null); return }
@@ -129,6 +130,14 @@ function Challenge({ date, proofId = null, source = null, onBack }) {
     fetchDailyProof(proofId, i18n.language).then(p => { seedProofs([p], !!sheet.challenge?.isActive); openProof(p, 'challenge_link') }).catch(() => {})
   }, [proofId, sheet]) // eslint-disable-line react-hooks/exhaustive-deps
 
+  // A chip of "The world says": its photos in the viewer (from the sheet when there, else fetched).
+  const openAnswer = (ids) => {
+    track('challenge_bubble_tapped', { photos: ids.length })
+    const have = new Map((sheet?.proofs ?? []).map(p => [p.id, p]))
+    const show = (list) => { if (list.length > 0) openDaily('photos', { list, proofId: list[0].id, source: 'challenge_bubble' }) }
+    if (ids.every(id => have.has(id))) { show(ids.map(id => have.get(id))); return }
+    fetchDailyProofsByIds(ids.slice(0, 50), i18n.language).then(show).catch(() => {})
+  }
   const seeAll = (country) => {
     track('challenge_bubble_tapped', { country, platform_surface: 'web' })
     openDaily('countries', { ...(isToday ? {} : { date }), ...(country ? { country } : {}), source: 'challenge' })
@@ -201,7 +210,7 @@ function Challenge({ date, proofId = null, source = null, onBack }) {
           {/* 2. The world says. */}
           <section className="dch-block">
             <h2 className="dch-title">{t('worldSays.title')}</h2>
-            <WorldBubbles items={items} seed={challenge.date} onOpen={seeAll} onFirst={canPlay && !myProof ? play : undefined} />
+            <WorldBubbles chips={answerChips(countries, myCityId != null ? Number(String(myCityId).replace(/^city_/, '')) : null, i18n.language)} seed={challenge.date} onOpen={openAnswer} onFirst={canPlay && !myProof ? play : undefined} />
           </section>
 
           {/* The Local Twist of my city (locals of a live city). */}

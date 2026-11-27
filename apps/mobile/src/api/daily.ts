@@ -79,10 +79,11 @@ export async function remindMeLater(): Promise<{ queued: boolean }> {
 
 /** Today's stories row and mosaic in one call: a day's players' photos grouped by country (`date`: a past day, default today). */
 export async function fetchDailyTodayCountries(
-  opts: { cityId?: string | number | null; guestId?: string | null; date?: string | null } = {},
+  opts: { cityId?: string | number | null; guestId?: string | null; date?: string | null; answers?: boolean } = {},
 ): Promise<DailyTodayCountries> {
   return api.get<DailyTodayCountries>('/daily/today/countries', {
-    params: { date: opts.date ?? undefined, cityId: cityParam(opts.cityId), guestId: opts.guestId ?? undefined, locale: locale() },
+    params: { date: opts.date ?? undefined, cityId: cityParam(opts.cityId), guestId: opts.guestId ?? undefined, locale: locale(),
+              answers: opts.answers ? 1 : undefined },
   });
 }
 

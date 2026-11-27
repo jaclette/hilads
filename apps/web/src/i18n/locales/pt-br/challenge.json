@@ -707,7 +707,8 @@
       "first": "Saia na frente e jogue",
       "more_one": "+{{count}} a mais",
       "more_many": "+{{count}} a mais",
-      "more_other": "+{{count}} a mais"
+      "more_other": "+{{count}} a mais",
+      "you": "Você"
     },
     "myCity": {
       "in_one": "Em {{city}} · {{count}} foto",

@@ -712,7 +712,8 @@
     "title": "The world says",
     "first": "Be the first to play",
     "more_one": "+{{count}} more",
-    "more_other": "+{{count}} more"
+    "more_other": "+{{count}} more",
+    "you": "You"
   },
   "myCity": {
     "in_one": "In {{city}} · {{count}} photo",

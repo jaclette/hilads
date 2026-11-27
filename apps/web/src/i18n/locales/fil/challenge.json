@@ -690,7 +690,8 @@
       "title": "Ang sabi ng mundo",
       "first": "Ikaw na ang unang maglaro",
       "more_one": "+{{count}} pa",
-      "more_other": "+{{count}} pa"
+      "more_other": "+{{count}} pa",
+      "you": "Ikaw"
     },
     "myCity": {
       "in_one": "Sa {{city}} · {{count}} photo",

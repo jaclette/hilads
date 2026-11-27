@@ -683,7 +683,8 @@
   "worldSays": {
     "title": "全世界怎么说",
     "first": "来当第一个出战的人",
-    "more_other": "+{{count}}"
+    "more_other": "+{{count}}",
+    "you": "你"
   },
   "myCity": {
     "in_other": "{{city}} · {{count}} 张照片",

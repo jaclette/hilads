@@ -712,7 +712,8 @@
     "title": "De wereld zegt",
     "first": "Speel als eerste",
     "more_one": "+{{count}} meer",
-    "more_other": "+{{count}} meer"
+    "more_other": "+{{count}} meer",
+    "you": "Jij"
   },
   "myCity": {
     "in_one": "In {{city}} · {{count}} foto",

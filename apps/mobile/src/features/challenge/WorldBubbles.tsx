@@ -1,18 +1,17 @@
 import { localizeCityName } from '@/i18n/cityName';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Pressable, Text, View, StyleSheet } from 'react-native';
 import Animated, { useAnimatedStyle, useReducedMotion, useSharedValue, withDelay, withSpring } from 'react-native-reanimated';
 import { useTranslation } from 'react-i18next';
 import { Space, FontSizes, type ThemeColors } from '@/constants';
 import { useThemedStyles } from '@/context/ThemeContext';
-import { answerText } from '@/features/compare/format';
 import { ACCENTS, FlagSticker, tint } from '@/ui/joy';
-import type { DailyCountryGroup } from '@/types';
+import type { AnswerChip } from './worldAnswers';
 
-const MAX = 6;
+const MAX = 8;
 const STAGGER_MS = 40;
 
-/** A stable number from a country code (rotation and tint never change between renders). */
+/** A stable number from a string (rotation and tint never change between renders). */
 function hash(s: string): number {
   let h = 0;
   for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0;
@@ -20,49 +19,43 @@ function hash(s: string): number {
 }
 
 /**
- * Each bubble's tint: from its country and the day (the same all day, another
- * the next), moved to the next accent when it would match the bubble before
- * it, so two neighbours never share a color.
+ * Each city's tint: from the city and the day (the same all day, another the next), moved to the
+ * next accent when it would match the city before it. A city's chips share its tint.
  */
-function tints(countries: string[], seed: string): string[] {
+function cityTints(cityIds: number[], seed: string): Map<number, string> {
   const n = ACCENTS.length;
-  const base = countries.map(c => hash(`${c}|${seed}`) % n);
-  const out: number[] = [];
-  base.forEach((b, i) => {
-    let k = b;
-    while (i > 0 && k === out[i - 1]) k = (k + 1) % n;   // each bubble steps away from the one before
-    out.push(k);
-  });
-  return out.map(i => tint(ACCENTS[i], 0.22));
-}
-
-/** A photo's line in its bubble: its answer, else its caption, else its place. */
-function bubbleText(g: DailyCountryGroup, locale: string): string {
-  const p = g.top;
-  if (p.answer && !p.backHome) return answerText(p.answer, locale);
-  return p.caption ?? p.spot?.name ?? p.place?.name ?? '';
+  const out = new Map<number, string>();
+  let prev = -1;
+  for (const id of cityIds) {
+    if (out.has(id)) continue;
+    let k = hash(`${id}|${seed}`) % n;
+    if (k === prev) k = (k + 1) % n;   // a city steps away from the one before
+    prev = k;
+    out.set(id, tint(ACCENTS[k], 0.22));
+  }
+  return out;
 }
 
 /**
- * "The world says" on the challenge screen: one speech bubble per country
- * that played (its flag and its top photo's answer), wrapping, each slightly
- * rotated (-2° to +2°, fixed per country) on a tint of the joyful accents
- * (never the same as its neighbour), the tail corner alternating; up to 6, then "+N more". They pop in one
- * after the other (none with "reduce motion"). Nobody yet: one dashed "Be
- * the first to answer". `onOpen(country)`: a bubble; `onOpen(null)`: "+N".
+ * "The world says" on the challenge screen: one speech bubble per answer (a city's flag and the
+ * answer, identical answers of a city grouped "×3"), my city first with my answer marked "You", then
+ * the cities with the most answers; a city's chips side by side in its tint. Each slightly rotated,
+ * the tail corner alternating; 8 shown, then "+N more" opens the rest in place. They pop in one after
+ * the other (none with "reduce motion"). Nobody yet: one dashed "Be the first to play".
+ * `onOpen(ids)`: a chip's photos (most liked first).
  */
-export function WorldBubbles({ items, seed, onOpen, onFirst }: {
-  /** In the shared country order (compareCountryGroups). */
-  items: DailyCountryGroup[];
+export function WorldBubbles({ chips, seed, onOpen, onFirst }: {
+  chips: AnswerChip[];
   /** The challenge's date: the tints' day. */
   seed: string;
-  onOpen: (country: string | null) => void;
+  onOpen: (ids: string[]) => void;
   /** The empty bubble's tap (play), when playing is possible. */
   onFirst?: () => void;
 }) {
   const styles = useThemedStyles(makeStyles);
-  const { t, i18n } = useTranslation('daily');
-  if (items.length === 0) {
+  const { t } = useTranslation('daily');
+  const [open, setOpen] = useState(false);
+  if (chips.length === 0) {
     return (
       <View style={styles.wrap}>
         <Bubble index={0} rotate={-1} tail="left" style={styles.empty} onPress={onFirst} label={t('worldSays.first')}>
@@ -71,25 +64,28 @@ export function WorldBubbles({ items, seed, onOpen, onFirst }: {
       </View>
     );
   }
-  const shown = items.slice(0, MAX);
-  const more = items.length - shown.length;
-  const colors = tints(shown.map(g => g.country), seed);
+  const shown = open ? chips : chips.slice(0, MAX);
+  const more = chips.length - shown.length;
+  const colors = cityTints(chips.map(c => c.city.id), seed);
   return (
     <View style={styles.wrap}>
-      {shown.map((g, i) => {
-        const h = hash(g.country);
-        const text = bubbleText(g, i18n.language);
+      {shown.map((c, i) => {
+        const h = hash(c.key);
+        const city = localizeCityName(c.city.name);
         return (
-          <Bubble key={g.country} index={i} rotate={(h % 41) / 10 - 2} tail={i % 2 === 0 ? 'left' : 'right'}
-                  style={{ backgroundColor: colors[i] }}
-                  onPress={() => onOpen(g.country)} label={`${localizeCityName(g.city.name)}: ${text}`} testID="world-bubble">
-            <FlagSticker country={g.country} size={18} />
-            <Text style={styles.text} numberOfLines={2}>{text}</Text>
+          <Bubble key={c.key} index={open && i >= MAX ? i - MAX : i} rotate={(h % 41) / 10 - 2} tail={i % 2 === 0 ? 'left' : 'right'}
+                  style={[{ backgroundColor: colors.get(c.city.id) }, c.mine && styles.mine]}
+                  onPress={() => onOpen(c.ids)}
+                  label={`${city}: ${c.text || '📷'}${c.ids.length > 1 ? `, ×${c.ids.length}` : ''}${c.mine ? `, ${t('worldSays.you')}` : ''}`} testID="world-bubble">
+            <FlagSticker country={c.city.country} size={18} />
+            <Text style={styles.text} numberOfLines={2}>{c.text || '📷'}</Text>
+            {c.ids.length > 1 && <Text style={styles.count}>×{c.ids.length}</Text>}
+            {c.mine && <Text style={styles.you}>{t('worldSays.you')}</Text>}
           </Bubble>
         );
       })}
       {more > 0 && (
-        <Bubble index={shown.length} rotate={1} tail="right" style={styles.more} onPress={() => onOpen(null)} label={t('worldSays.more', { count: more })}>
+        <Bubble index={shown.length} rotate={1} tail="right" style={styles.more} onPress={() => setOpen(true)} label={t('worldSays.more', { count: more })} testID="world-bubble-more">
           <Text style={styles.moreText}>{t('worldSays.more', { count: more })}</Text>
         </Bubble>
       )}
@@ -98,7 +94,7 @@ export function WorldBubbles({ items, seed, onOpen, onFirst }: {
 }
 
 function Bubble({ index, rotate, tail, style, onPress, label, testID, children }: {
-  index: number; rotate: number; tail: 'left' | 'right'; style?: object; onPress?: () => void; label: string; testID?: string; children: React.ReactNode;
+  index: number; rotate: number; tail: 'left' | 'right'; style?: object | (object | false)[]; onPress?: () => void; label: string; testID?: string; children: React.ReactNode;
 }) {
   const styles = useThemedStyles(makeStyles);
   const reduced = useReducedMotion();
@@ -126,6 +122,9 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   pressed:   { opacity: 0.75 },
   text:      { flexShrink: 1, fontSize: FontSizes.sm, lineHeight: 19, fontWeight: '800', color: c.text },
   more:      { backgroundColor: c.bg2, borderWidth: 1.5, borderColor: c.line },
+  mine:      { borderWidth: 2, borderColor: c.text },
+  count:     { fontSize: FontSizes.sm, fontWeight: '900', color: c.text },
+  you:       { fontSize: 11, lineHeight: 14, fontWeight: '800', color: c.bg, backgroundColor: c.text, borderRadius: 8, paddingHorizontal: 6, paddingVertical: 1, overflow: 'hidden' },
   moreText:  { fontSize: FontSizes.sm, fontWeight: '800', color: c.primaryText },
   empty:     { borderWidth: 2, borderStyle: 'dashed', borderColor: c.primaryText, backgroundColor: c.primaryTint },
   emptyText: { fontSize: FontSizes.sm, fontWeight: '800', color: c.primaryOnTint },

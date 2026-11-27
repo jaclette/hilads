@@ -712,7 +712,8 @@
     "title": "Die Welt sagt",
     "first": "Mach den Anfang",
     "more_one": "+{{count}} weitere",
-    "more_other": "+{{count}} weitere"
+    "more_other": "+{{count}} weitere",
+    "you": "Du"
   },
   "myCity": {
     "in_one": "In {{city}} · {{count}} Foto",

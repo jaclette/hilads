@@ -672,7 +672,8 @@
     "worldSays": {
       "title": "세계의 대답",
       "first": "가장 먼저 참여해 보세요",
-      "more_other": "+{{count}}개 더"
+      "more_other": "+{{count}}개 더",
+      "you": "나"
     },
     "myCity": {
       "in_other": "{{city}} · 사진 {{count}}장",

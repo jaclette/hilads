@@ -844,7 +844,8 @@
     "more_two": "+ اثنتان أخريان",
     "more_few": "+{{count}} أخرى",
     "more_many": "+{{count}} أخرى",
-    "more_other": "+{{count}} أخرى"
+    "more_other": "+{{count}} أخرى",
+    "you": "أنت"
   },
   "myCity": {
     "in_zero": "في {{city}} · لا صور",

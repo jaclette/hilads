@@ -744,7 +744,8 @@
     "first": "Gioca prima di tutti",
     "more_one": "+{{count}} altro",
     "more_many": "+{{count}} altri",
-    "more_other": "+{{count}} altri"
+    "more_other": "+{{count}} altri",
+    "you": "Tu"
   },
   "myCity": {
     "in_one": "A {{city}} · {{count}} foto",

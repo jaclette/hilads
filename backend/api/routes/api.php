@@ -13118,6 +13118,7 @@ $router->add('GET', '/api/v1/daily/today/proofs', function () {
 // city) first, then the countries with unseen photos, then the most recent.
 // date (YYYY-MM-DD, a past published challenge: the challenge screen of that
 // day) defaults to today. {date, total, countries, items}; no challenge = empty.
+// ?answers=1 adds `answers`: one compact entry per photo (the challenge screen).
 $router->add('GET', '/api/v1/daily/today/countries', function () {
     $user      = AuthService::currentUser();
     $date      = DailyClock::currentDate();
@@ -13180,8 +13181,26 @@ $router->add('GET', '/api/v1/daily/today/countries', function () {
             'top'         => DailyProofRepository::format($tops[$g['topId']], $viewerId),
         ];
     }
-    Response::json(['date' => $date, 'total' => count($rows), 'countries' => count($items), 'items' => $items,
-                    'cityCount' => count($cities), 'cities' => $cities]);
+    $out = ['date' => $date, 'total' => count($rows), 'countries' => count($items), 'items' => $items,
+            'cityCount' => count($cities), 'cities' => $cities];
+    // ?answers=1 (the challenge screen's "The world says"): every photo's answer, compact, newest first (300 at
+    // most): {id, city, caption, answer, spot, place, mine, votes}. The app groups them by city and answer.
+    if (($_GET['answers'] ?? '') === '1') {
+        $byId = DailyProofRepository::rowsByIds(array_slice(array_column($rows, 'id'), 0, 300));
+        $byId = array_column(array_values($byId), null, 'id');
+        $out['answers'] = [];
+        foreach (array_slice(array_column($rows, 'id'), 0, 300) as $id) {
+            if (!isset($byId[$id])) continue;
+            $p = DailyProofRepository::format($byId[$id], $viewerId);
+            if ($p['city'] === null) continue;
+            $out['answers'][] = [
+                'id' => $p['id'], 'city' => $p['city'], 'caption' => $p['caption'], 'answer' => $p['answer'] ?? null,
+                'backHome' => ($p['backHome'] ?? null) !== null, 'spot' => $p['spot']['name'] ?? null, 'place' => $p['place']['name'] ?? null,
+                'mine' => $p['isMine'], 'votes' => $p['voteCount'],
+            ];
+        }
+    }
+    Response::json($out);
 });
 
 // POST /api/v1/daily/proofs/seen {ids: [...]} - the photos I've just viewed
