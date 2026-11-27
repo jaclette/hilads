@@ -311,9 +311,11 @@ export async function setCurrentCity(channelId) {
   }
 }
 
-export async function joinChannel(channelId, sessionId, guestId, nickname, previousChannelId = null) {
+// how: how the visitor's city was chosen (ip / link / gps / picked / saved), shown in Admin › Arrivals.
+export async function joinChannel(channelId, sessionId, guestId, nickname, previousChannelId = null, how = null) {
   const body = { sessionId, guestId, nickname }
   if (previousChannelId) body.previousChannelId = previousChannelId
+  if (how) body.how = how
   const res = await fetch(`${BASE}/channels/${channelId}/join`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'X-Platform': 'web' },

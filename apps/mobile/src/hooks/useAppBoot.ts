@@ -74,7 +74,7 @@ export function useAppBoot(): Result {
         const updated = { ...identity, channelId: city.channelId };
         saveIdentity(updated).catch(() => {});
         setIdentity(updated);
-        bootstrapChannel(city.channelId, sessionId, identity.guestId, nickname)
+        bootstrapChannel(city.channelId, sessionId, identity.guestId, nickname, undefined, 'ip')
           .then(boot => {
             if (cancelled) return;
             setBootstrapData({
@@ -195,7 +195,7 @@ export function useAppBoot(): Result {
                   setIdentity(moved);
                 }
                 setCity(saved);
-                bootstrapChannel(saved.channelId, sessionId, identity.guestId, displayName)
+                bootstrapChannel(saved.channelId, sessionId, identity.guestId, displayName, undefined, 'saved')
                   .then(boot => {
                     if (!cancelled) {
                       setBootstrapData({

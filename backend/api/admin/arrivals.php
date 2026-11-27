@@ -79,7 +79,7 @@ admin_nav('/admin/arrivals');
     $pages = (int) ceil($total / $perPage);
 
     $aStmt = $pdo->prepare("
-        SELECT id, nickname, user_id, guest_id, country, platform, ip_address,
+        SELECT id, nickname, user_id, guest_id, country, platform, ip_address, payload->>'how' AS how,
                EXTRACT(EPOCH FROM created_at)::INTEGER AS created_ts
         FROM messages
         WHERE channel_id = :cid AND type = 'system' AND event = 'join'
@@ -109,10 +109,10 @@ admin_nav('/admin/arrivals');
 
     <div class="table-wrapper">
         <table>
-            <thead><tr><th style="width:160px">When</th><th>Who arrived</th><th style="width:130px">From (IP)</th><th style="width:110px">Platform</th><th style="width:90px">Actions</th></tr></thead>
+            <thead><tr><th style="width:160px">When</th><th>Who arrived</th><th style="width:130px">From (IP)</th><th style="width:150px" title="How this city was chosen. Recorded since 2026-11-27 (older arrivals and older apps: —).">How</th><th style="width:110px">Platform</th><th style="width:90px">Actions</th></tr></thead>
             <tbody>
             <?php if (empty($arrivals)): ?>
-                <tr><td colspan="5" class="no-results">No arrivals in this range.</td></tr>
+                <tr><td colspan="6" class="no-results">No arrivals in this range.</td></tr>
             <?php else:
                 // Platform → label + emoji. Unknown/legacy rows (pre-capture) show "—".
                 $platformBadge = static function (?string $p): string {
@@ -123,6 +123,19 @@ admin_nav('/admin/arrivals');
                         default   => '<span style="color:var(--faint)">—</span>',
                     };
                 };
+                // How the city was chosen (the join's payload), in plain words.
+                $howLabel = static function (?string $h): string {
+                    [$label, $tip] = match ($h) {
+                        'ip'     => ['📍 By IP', 'Placed in the city of their connection (home page, no GPS)'],
+                        'gps'    => ['🛰 GPS', 'Their phone or browser location'],
+                        'link'   => ['🔗 City link', 'Opened a link to this city: its page, an event, a challenge or a plan'],
+                        'picked' => ['👆 Picked', 'Chose the city themselves (city picker or switch)'],
+                        'saved'  => ['↩ Returning', 'Came back to the city of their last visit'],
+                        default  => ['—', 'Not recorded (before 2026-11-27, or an older app)'],
+                    };
+                    return '<span title="' . htmlspecialchars($tip, ENT_QUOTES) . '" style="font-size:12px;color:' . ($h === null ? 'var(--faint)' : 'var(--text)') . '">' . $label . '</span>';
+                };
+                $cityCc = strtoupper((string) ($ch['country'] ?? ''));
                 foreach ($arrivals as $a):
                 $who = $a['nickname'] ?: '(no name)';
                 if ($a['user_id'] !== null) {
@@ -152,6 +165,12 @@ admin_nav('/admin/arrivals');
                         <?php endif; ?>
                         <?php if (!empty($a['ip_address'])): ?>
                             <div class="td-mono" style="color:var(--muted);font-size:11px;margin-top:2px"><?= htmlspecialchars($a['ip_address'], ENT_QUOTES) ?></div>
+                        <?php endif; ?>
+                    </td>
+                    <td style="white-space:nowrap">
+                        <?= $howLabel($a['how'] ?? null) ?>
+                        <?php if ($cityCc !== '' && !empty($a['country']) && strtoupper($a['country']) !== $cityCc): ?>
+                            <div><span class="badge" style="background:var(--surface-2);color:var(--muted);font-size:11px" title="Connected from another country than the city's (<?= htmlspecialchars(strtoupper($a['country']), ENT_QUOTES) ?> ≠ <?= htmlspecialchars($cityCc, ENT_QUOTES) ?>): browsing from abroad, travelling, or a VPN">Remote</span></div>
                         <?php endif; ?>
                     </td>
                     <td style="white-space:nowrap"><?= $platformBadge($a['platform'] ?? null) ?></td>

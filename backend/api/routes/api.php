@@ -3248,6 +3248,13 @@ $router->add('GET', '/api/v1/channels', function () {
     Response::json(['channels' => $channels]);
 });
 
+/** How the visitor's city was chosen (a join's optional `how`): ip | link | gps | picked | saved, else null. */
+function cityHowParam(?array $body): ?string
+{
+    $how = $body['how'] ?? null;
+    return is_string($how) && in_array($how, ['ip', 'link', 'gps', 'picked', 'saved'], true) ? $how : null;
+}
+
 $router->add('POST', '/api/v1/channels/{channelId}/join', function (array $params) {
     $startedAt = microtime(true);
     $channelId = filter_var($params['channelId'], FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
@@ -3508,6 +3515,7 @@ $router->add('POST', '/api/v1/channels/{channelId}/join', function (array $param
                 $guestId,
                 $nickname,
                 $cityInfo['name'] ?? null,
+                cityHowParam($body ?? null),
             );
         } catch (\Throwable $e) {
             error_log('[channel_join] arrival emit failed: ' . $e->getMessage());
@@ -3682,8 +3690,9 @@ $router->add('POST', '/api/v1/channels/{channelId}/bootstrap', function (array $
             $deferJoinGuestId   = $guestId;
             $deferJoinNickname  = $nickname;
             $deferJoinUserId    = $deferAuthUserId;
+            $deferJoinHow       = cityHowParam($body ?? null);
             register_shutdown_function(
-                static function () use ($deferJoinChannelId, $deferJoinGuestId, $deferJoinNickname, $deferJoinUserId): void {
+                static function () use ($deferJoinChannelId, $deferJoinGuestId, $deferJoinNickname, $deferJoinUserId, $deferJoinHow): void {
                     if (function_exists('fastcgi_finish_request')) fastcgi_finish_request();
                     // Arrival: ONE genuine-arrival gate drives BOTH the feed "X just
                     // landed" system message AND the city push. emitCityArrival resolves
@@ -3699,6 +3708,7 @@ $router->add('POST', '/api/v1/channels/{channelId}/bootstrap', function (array $
                             $deferJoinGuestId,
                             $deferJoinNickname,
                             $cityInfo['name'] ?? null,
+                            $deferJoinHow,
                         );
                     } catch (\Throwable $e) {
                         error_log('[bootstrap] arrival emit failed: ' . $e->getMessage());

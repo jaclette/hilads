@@ -2124,7 +2124,7 @@ export default function App() {
         setCity(data.city)
         setCityCountry(data.country)
         setCityTimezone(data.timezone)
-        return { channelId: data.channelId, city: data.city, timezone: data.timezone, country: data.country }
+        return { channelId: data.channelId, city: data.city, timezone: data.timezone, country: data.country, how: 'link' }
       })
     }
 
@@ -2137,7 +2137,7 @@ export default function App() {
         setCity(data.city)
         setCityCountry(data.country)
         setCityTimezone(data.timezone)
-        return { channelId: data.channelId, city: data.city, timezone: data.timezone, country: data.country }
+        return { channelId: data.channelId, city: data.city, timezone: data.timezone, country: data.country, how: 'link' }
       })
     }
 
@@ -2150,7 +2150,7 @@ export default function App() {
         setCityTimezone(timezone)
         // After join the city, open the event - defer until handleJoin completes
         setTimeout(() => handleSelectEvent(event), 800)
-        return { channelId: event.channel_id, city: cityName, timezone, country }
+        return { channelId: event.channel_id, city: cityName, timezone, country, how: 'link' }
       })
     }
 
@@ -2162,7 +2162,7 @@ export default function App() {
         setCityCountry(country)
         setCityTimezone(timezone)
         setTimeout(() => setActiveTopic(topic), 800)
-        return { channelId, city: cityName, timezone, country }
+        return { channelId, city: cityName, timezone, country, how: 'link' }
       })
     }
 
@@ -2178,7 +2178,7 @@ export default function App() {
         if (!data) return null
         const { challenge, channelId, cityName, country, timezone } = data
         pendingChallengeRef.current = challenge.id
-        const origin = { channelId, city: cityName, timezone, country }
+        const origin = { channelId, city: cityName, timezone, country, how: 'link' }
         // IP geo raced against a short budget (/api/geo answers in ~30ms; the
         // budget only covers a cold lambda boot). Failure/timeout → origin.
         const geo = await fetchGeo('challenge')
@@ -2212,7 +2212,7 @@ export default function App() {
           const n = Number(ch?.activeUsers ?? 0)
           if (n > 0) setPreviewLiveCount(n)
         }).catch(() => {})
-        return { channelId, city: cityName, timezone, country }
+        return { channelId, city: cityName, timezone, country, how: 'link' }
       })
     }
 
@@ -2611,6 +2611,7 @@ export default function App() {
       setGeoTimezone(location.timezone ?? null)
       // Persist so "Back to my location" survives page refreshes
       saveGeoCity({ channelId: location.channelId, city: location.city, country: location.country, timezone: location.timezone })
+      if (location && !location.how) location.how = 'gps'
       setGeoState('resolved')
       return location
     } catch (err) {
@@ -3086,7 +3087,8 @@ export default function App() {
       // Parallel fetch: join (presence CTE + join event) and messages (read-only, lean)
       // run concurrently - critical path = max(join, messages) instead of their sum.
       const [joinData, messagesData] = await Promise.all([
-        joinChannel(location.channelId, sessionIdRef.current, session.guestId, name),
+        // How this city was chosen (Admin › Arrivals): ip / link / gps / picked, saved for a returning visit.
+        joinChannel(location.channelId, sessionIdRef.current, session.guestId, name, null, rejoinData || location.saved ? 'saved' : (location.how ?? 'picked')),
         fetchLeanMessages(location.channelId, { limit: 50 }),
       ])
       const boot = {
@@ -4513,7 +4515,7 @@ export default function App() {
 
       // Parallel fetch: join + lean messages fire concurrently
       const [switchJoinData, switchMsgsData] = await Promise.all([
-        joinChannel(newChannelId, sessionIdRef.current, guest.guestId, activeNickname, channelId),
+        joinChannel(newChannelId, sessionIdRef.current, guest.guestId, activeNickname, channelId, 'picked'),
         fetchLeanMessages(newChannelId, { limit: 50 }),
       ])
       const boot = {

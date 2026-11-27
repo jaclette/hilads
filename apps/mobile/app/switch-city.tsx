@@ -254,7 +254,7 @@ export default function SwitchCityScreen() {
       setIdentity(updated);
     }
     if (identity && sessionId) {
-      joinChannel(item.channelId, sessionId, identity.guestId, nickname).catch(() => {});
+      joinChannel(item.channelId, sessionId, identity.guestId, nickname, undefined, 'picked').catch(() => {});
       // joinCity now self-leaves the previous city + queues replay if WS is
       // not yet connected. No more on('connected', joinCity) subscription -
       // those leaked because they were never unsubscribed.

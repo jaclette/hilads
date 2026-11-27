@@ -941,7 +941,8 @@ class NotificationRepository
         ?string $arriverUserId,
         string  $arriverGuestId,
         string  $arriverNickname,
-        ?string $cityName
+        ?string $cityName,
+        ?string $how = null
     ): void {
         $cityChannelId = 'city_' . $channelId;
 
@@ -1002,7 +1003,7 @@ class NotificationRepository
             // Origin country from Cloudflare's CF-IPCountry header (free) so the
             // BO can show where an arriving guest is connecting from.
             $country = Request::country();
-            $joinMsg = MessageRepository::addJoinEvent($channelId, $arriverGuestId, $arriverNickname, $arriverUserId, $country, Request::ip(), Request::platform());
+            $joinMsg = MessageRepository::addJoinEvent($channelId, $arriverGuestId, $arriverNickname, $arriverUserId, $country, Request::ip(), Request::platform(), $how);
             // Arrival avatar for the live row, same as the fetched ones carry -
             // without it a real-time arrival showed a letter avatar in the
             // arrivals sheet until the feed was refetched.

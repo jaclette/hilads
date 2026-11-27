@@ -55,7 +55,7 @@ export function useGpsCityCorrection(): {
       saveIdentity(updated).catch(() => {});
       setIdentity(updated);
       if (s.sessionId) {
-        joinChannel(to.channelId, s.sessionId, s.identity.guestId, nickname).catch(() => {});
+        joinChannel(to.channelId, s.sessionId, s.identity.guestId, nickname, undefined, 'gps').catch(() => {});
         socket.joinCity(to.channelId, s.sessionId, nickname, s.account?.id, s.identity.guestId);
       }
     }

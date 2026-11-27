@@ -160,6 +160,9 @@ export async function fetchCityBySlug(slug: string): Promise<City | null> {
   }
 }
 
+/** How a visitor's city was chosen: by IP, a city link, GPS, the picker, or remembered (a returning visit). */
+export type CityHow = 'ip' | 'link' | 'gps' | 'picked' | 'saved';
+
 // ── Presence ──────────────────────────────────────────────────────────────────
 
 export async function joinChannel(
@@ -168,12 +171,15 @@ export async function joinChannel(
   guestId: string,
   nickname: string,
   previousChannelId?: string,
+  /** How the city was chosen (Admin › Arrivals). */
+  how?: CityHow,
 ): Promise<void> {
   await api.post(`/channels/${channelId}/join`, {
     sessionId,
     guestId,
     nickname,
     previousChannelId,
+    ...(how ? { how } : {}),
   });
 }
 
@@ -205,6 +211,7 @@ export async function bootstrapChannel(
   guestId: string,
   nickname: string,
   previousChannelId?: string,
+  how?: CityHow,
 ): Promise<BootstrapResult> {
   // chat=1: the Hi chat's rows only (no challenge cards or arrival lines) and today's question.
   const data = await api.post<BootstrapResult>(`/channels/${channelId}/bootstrap?chat=1`, {
@@ -212,6 +219,7 @@ export async function bootstrapChannel(
     guestId,
     nickname,
     ...(previousChannelId ? { previousChannelId } : {}),
+    ...(how ? { how } : {}),
   });
   return {
     joinMessage:          data.joinMessage          ?? null,

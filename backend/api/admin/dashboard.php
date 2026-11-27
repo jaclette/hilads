@@ -92,9 +92,9 @@ admin_nav('/admin');
         <?php endif; ?>
         <?php if (isset($arr['error'])): ?><div class="card kpi"><div class="label">Arrivals today</div><div class="tile-note"><?= $e($arr['error']) ?></div></div>
         <?php else: ?>
-        <a class="card kpi" href="/admin/arrivals" title="Arrivals: different people (an account, else a guest) who opened Hilads in a city today, the Arrivals page's &quot;join&quot; lines. Saigon day (midnight to midnight, UTC+7). Test, seed and review accounts and the @hilads account left out (your own messages as a player count).">
+        <a class="card kpi" href="/admin/arrivals" title="Arrivals: different people (an account, else a guest) who opened Hilads in a city today, the Arrivals page's &quot;join&quot; lines. Saigon day (midnight to midnight, UTC+7). Test, seed and review accounts and the @hilads account left out (staff count). &quot;From abroad&quot;: connected from another country than the city's (browsing from elsewhere, travelling, or a VPN).">
             <div class="label">Arrivals today</div><div class="value num"><?= $n($arr['today']['people']) ?></div><?= $delta($arr['today']['people'], $arr['yesterday']) ?>
-            <div class="tile-note"><?= $n($arr['today']['members']) ?> member<?= $arr['today']['members'] === 1 ? '' : 's' ?> · <?= $n($arr['today']['guests']) ?> guest<?= $arr['today']['guests'] === 1 ? '' : 's' ?></div></a>
+            <div class="tile-note"><?= $n($arr['today']['members']) ?> member<?= $arr['today']['members'] === 1 ? '' : 's' ?> · <?= $n($arr['today']['guests']) ?> guest<?= $arr['today']['guests'] === 1 ? '' : 's' ?><?php if (($arr['today']['remote'] ?? 0) > 0): ?> · <?= $n($arr['today']['remote']) ?> from abroad<?php endif; ?></div></a>
         <?php endif; ?>
         <?php if (isset($conv['error'])): ?><div class="card kpi"><div class="label">Messages today</div><div class="tile-note"><?= $e($conv['error']) ?></div></div>
         <?php else: ?>

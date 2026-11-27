@@ -57,7 +57,8 @@ class MessageRepository
                 // (cross-city challenge / new-city user / challenge won). Null for
                 // legacy city join/system rows, which clients render from event alone.
                 'content'   => $row['content'] ?? null,
-                'payload'   => isset($row['payload']) && $row['payload'] !== null
+                // A join line's payload (how the city was chosen) is the back office's only.
+                'payload'   => ($row['event'] ?? null) !== 'join' && isset($row['payload']) && $row['payload'] !== null
                     ? (is_array($row['payload']) ? $row['payload'] : json_decode($row['payload'], true))
                     : null,
                 'createdAt' => $createdAt,
@@ -535,16 +536,18 @@ class MessageRepository
         ];
     }
 
-    public static function addJoinEvent(int $channelId, string $guestId, string $nickname, ?string $userId = null, ?string $country = null, ?string $ip = null, string $platform = 'unknown'): array
+    public static function addJoinEvent(int $channelId, string $guestId, string $nickname, ?string $userId = null, ?string $country = null, ?string $ip = null, string $platform = 'unknown', ?string $how = null): array
     {
         $id = bin2hex(random_bytes(8));
         // Stamp the arriver's IP too (alongside country) so a guest ban can
         // also block the IP a guest arrived from, even if they never posted.
         $ip = ($ip !== null && $ip !== '' && $ip !== 'unknown') ? $ip : null;
         Database::pdo()->prepare("
-            INSERT INTO messages (id, channel_id, type, event, guest_id, user_id, nickname, country, ip_address, platform)
-            VALUES (?, ?, 'system', 'join', ?, ?, ?, ?, ?, ?)
-        ")->execute([$id, self::dbKey($channelId), $guestId, $userId, $nickname, $country, $ip, $platform]);
+            INSERT INTO messages (id, channel_id, type, event, guest_id, user_id, nickname, country, ip_address, platform, payload)
+            VALUES (?, ?, 'system', 'join', ?, ?, ?, ?, ?, ?, ?::jsonb)
+        ")->execute([$id, self::dbKey($channelId), $guestId, $userId, $nickname, $country, $ip, $platform,
+                     // How the city was chosen (Admin › Arrivals only: never sent to the apps).
+                     $how !== null ? json_encode(['how' => $how]) : null]);
 
         // Return the id so the live WS broadcast carries it too - matches the
         // fetched (format()) shape so reverse-scroll pagination + dedup line up.

@@ -32,7 +32,7 @@ export function useAppLifecycle(onForeground?: () => void): void {
     // whose real identity is already known.
     if (city && identity && sessionId) {
       const displayName = account?.display_name ?? identity.nickname;
-      joinChannel(city.channelId, sessionId, identity.guestId, displayName)
+      joinChannel(city.channelId, sessionId, identity.guestId, displayName, undefined, 'saved')
         .catch(() => {});
       // City WS join happens automatically on 'connected' event via useAppBoot
       // but if already connected we need to rejoin manually

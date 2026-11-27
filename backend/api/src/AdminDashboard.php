@@ -113,8 +113,11 @@ final class AdminDashboard
                 SELECT (m.created_at AT TIME ZONE '" . self::TZ . "')::date::text AS d,
                        count(DISTINCT coalesce(m.user_id, 'g:' || m.guest_id)) AS people,
                        count(DISTINCT m.user_id) AS members,
-                       count(DISTINCT m.guest_id) FILTER (WHERE m.user_id IS NULL) AS guests
-                FROM messages m
+                       count(DISTINCT m.guest_id) FILTER (WHERE m.user_id IS NULL) AS guests,
+                       -- Connected from another country than the city's (browsing from abroad, travelling, a VPN).
+                       count(DISTINCT coalesce(m.user_id, 'g:' || m.guest_id)) FILTER (
+                           WHERE m.country IS NOT NULL AND ci.country IS NOT NULL AND upper(m.country) <> upper(ci.country)) AS remote
+                FROM messages m LEFT JOIN cities ci ON ci.channel_id = m.channel_id
                 WHERE m.type = 'system' AND m.event = 'join' AND m.created_at >= ?::timestamptz AND " . self::REAL_PERSON . "
                 GROUP BY 1
             ");
@@ -173,7 +176,8 @@ final class AdminDashboard
                 return ['arrivals' => (int) ($r['arrivals'] ?? 0), 'signups' => (int) ($r['signups'] ?? 0), 'played' => (int) ($r['played'] ?? 0)];
             };
             return [
-                'today' => ['people' => (int) ($by[$today]['people'] ?? 0), 'members' => (int) ($by[$today]['members'] ?? 0), 'guests' => (int) ($by[$today]['guests'] ?? 0)],
+                'today' => ['people' => (int) ($by[$today]['people'] ?? 0), 'members' => (int) ($by[$today]['members'] ?? 0), 'guests' => (int) ($by[$today]['guests'] ?? 0),
+                            'remote' => (int) ($by[$today]['remote'] ?? 0)],
                 'yesterday' => (int) ($by[$yest]['people'] ?? 0),
                 'days' => $days,
                 'top' => array_map(fn ($r) => ['id' => $r['id'], 'name' => self::cityName($r['name']), 'country' => $r['country'], 'people' => (int) $r['people']], $top->fetchAll(PDO::FETCH_ASSOC)),
