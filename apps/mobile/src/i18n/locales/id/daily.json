@@ -860,7 +860,12 @@
     "empty": {
       "photos": "Belum ada foto yang disukai. Yuk vote favoritmu ❤️",
       "players": "Belum ada yang dapat poin. Main dan rebut peringkat pertama 🙋",
-      "cities": "Belum ada kota di papan. Taruh kotamu di depan 🌍"
+      "cities": "Belum ada kota di papan. Taruh kotamu di depan 🌍",
+      "todayNone": "Belum ada foto hari ini. Jadilah yang pertama main 📸",
+      "play": "Mainkan tantangan hari ini",
+      "firstVote": "Jadilah yang pertama memilih ❤️",
+      "firstVoteText": "Belum ada yang menyukai foto hari ini. Ketuk foto yang kamu suka.",
+      "yesterday": "Podium kemarin"
     },
     "race": {
       "title": "🏁 Balapan hari ini",

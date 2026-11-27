@@ -266,6 +266,28 @@ final class Ranks
     }
 
     /**
+     * Today's photos nobody has liked yet (the ranking only holds liked ones), newest first: the World tab shows
+     * them under "Be the first to vote" while the ranking is empty. Same filters as photoRows.
+     */
+    public static function unlikedToday(?string $cityId, string $today, int $limit = 30): array
+    {
+        $args = [$today];
+        $where = '';
+        if ($cityId !== null) { $where = ' AND p.city_id = ?'; $args[] = $cityId; }
+        $args[] = $limit;
+        $stmt = Database::pdo()->prepare("
+            SELECT p.id FROM daily_proofs p
+            JOIN daily_challenges dc ON dc.id = p.challenge_id
+            JOIN users u             ON u.id = p.user_id
+            WHERE p.moderation_status = 'approved' AND NOT p.is_demo AND NOT p.is_seed AND NOT p.is_suggestion AND NOT u.is_demo
+              AND NOT u.hidden_from_rankings AND p.vote_count = 0 AND dc.challenge_date = ?::date {$where}
+            ORDER BY p.created_at DESC, p.id LIMIT ?
+        ");
+        $stmt->execute($args);
+        return array_map('strval', $stmt->fetchAll(PDO::FETCH_COLUMN));
+    }
+
+    /**
      * Each photo's rank in yesterday's standing (week): the same order (likes, earliest
      * posted) on the likes it had before today; [id => rank], a photo with no like
      * then left out (new). Empty when the rows carry no previous counts.

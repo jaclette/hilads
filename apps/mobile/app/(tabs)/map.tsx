@@ -35,6 +35,7 @@ import { spotShare, type ShareContent } from '@/features/share/content';
 import { EmptyCity } from '@/features/map/EmptyCity';
 import { MAP_FLAGS } from '@/features/map/mapFlags';
 import { MapSheet, SHEET_PEEK, type MapSheetHandle } from '@/features/map/MapSheet';
+import { HeaderInbox } from '@/features/shell/HeaderInbox';
 import { ScopeSelector } from '@/features/shell/ScopeSelector';
 import { shortCityName } from '@/i18n/cityName';
 import type { DailyThemeKey } from '@/types';
@@ -696,6 +697,8 @@ export default function MapScreen() {
               clearLabel={t('map.clearSearch')}
             />
           </View>
+          {/* Unread notifications and messages, from every tab. */}
+          <HeaderInbox />
         </View>
         {results !== null && (
           <View style={styles.results}>

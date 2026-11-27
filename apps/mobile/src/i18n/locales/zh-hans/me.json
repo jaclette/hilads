@@ -560,6 +560,10 @@
       "remindOn": "🔔 我们会提醒你",
       "a11yGuest": "登机牌 {{route}}，座位 {{seat}}，登机日期 {{date}}。点按抢座。",
       "a11yMember": "你的登机牌 {{route}}，座位 {{seat}}，登机日期 {{date}}，{{value}}"
+    },
+    "away": {
+      "up": "你在比赛中升到{{rank, ordinal}} ✈️",
+      "down": "你在比赛中降到{{rank, ordinal}} ✈️"
     }
   }
 }

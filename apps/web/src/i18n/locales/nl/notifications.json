@@ -44,7 +44,11 @@
     "other": "🔔 Er is nieuws voor je",
     "dismiss": "Sluiten",
     "more_one": "{{count}} meer",
-    "more_other": "{{count}} meer"
+    "more_other": "{{count}} meer",
+    "likesLine_one": "❤️ {{count}} nieuwe like op je foto",
+    "likesLine_other": "❤️ {{count}} nieuwe likes op je foto",
+    "likesLinePhotos_one": "❤️ {{count}} nieuwe like op je foto’s",
+    "likesLinePhotos_other": "❤️ {{count}} nieuwe likes op je foto’s"
   },
   "inbox": {
     "settings": "Meldingen",

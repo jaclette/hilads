@@ -795,7 +795,12 @@
       "empty": {
         "photos": "還沒有被按讚的照片。去幫喜歡的照片投票吧 ❤️",
         "players": "還沒人得分。出戰搶下第一名 🙋",
-        "cities": "還沒有城市上榜。讓你的城市第一個上 🌍"
+        "cities": "還沒有城市上榜。讓你的城市第一個上 🌍",
+        "todayNone": "今天還沒有照片。來做第一個玩的人 📸",
+        "play": "玩今天的挑戰",
+        "firstVote": "來做第一個投票的人 ❤️",
+        "firstVoteText": "今天還沒有人給照片按讚。點一張你喜歡的。",
+        "yesterday": "昨天的頒獎台"
       },
       "results": {
         "dismiss": "關閉",
@@ -818,7 +823,11 @@
       "seasonEnds_one": "賽季還剩 {{count}} 天結束",
       "seasonEnds_other": "賽季還剩 {{count}} 天結束",
       "seasonEndsAt": "賽季結束於 {{date}}",
-      "preSeason": "季前賽 · 首個賽季 {{date}}"
+      "preSeason": "季前賽 · 首個賽季 {{date}}",
+      "scope": {
+        "city": "我的城市",
+        "world": "全球"
+      }
     },
     "rivals": {
       "title": "你 vs {{city}}",

@@ -146,12 +146,21 @@ function fragment(i, items, t) {
 }
 
 /** Unseen items as one line, most important first, each kind once ("💬 Lan also commented on Maxime's photo · ❤️ +12"). */
-export function awayLine(items, t, max = 3) {
+// The first fragment is always a readable sentence (likes alone: "❤️ 3 new likes on your photo", not
+// "❤️ +3"); `race` (my rank changed in the campaign's race) comes right after yesterday's results.
+export function awayLine(items, t, max = 3, race = null) {
   const parts = []
   for (const i of byImportance(items)) {
-    const f = fragment(i, items, t)
+    if (race && i.type !== 'daily_result' && !parts.includes(race)) parts.push(race)
+    let f = fragment(i, items, t)
+    if (f && i.type === 'daily_vote' && parts.length === 0) {
+      const likes = items.filter(x => x.type === 'daily_vote')
+      const n = likes.reduce((sum, x) => sum + (x.count ?? 1), 0)
+      f = sameObject(likes) !== null || likes.length === 1 ? t('away.likesLine', { count: n }) : t('away.likesLinePhotos', { count: n })
+    }
     if (f && !parts.includes(f)) parts.push(f)
   }
+  if (race && !parts.includes(race)) parts.push(race)
   if (!parts.length) parts.push(t('away.other'))
   return parts.slice(0, max).join(' · ')
 }

@@ -76,8 +76,8 @@ function TodayContent() {
         <View onLayout={e => { ticketBottom.current = e.nativeEvent.layout.y + e.nativeEvent.layout.height; }}>
           <TodayTicket data={daily.data} countries={countries} loading={daily.loading} error={daily.error} secondsLeft={daily.secondsLeft} visible={ticketVisible} onReload={daily.reload} />
         </View>
-        {/* The campaign, while one runs: here until the Trip tab was opened 3 times, then below the feed. */}
-        <LaunchSeasonCard placement="top" />
+        {/* The campaign, while one runs: always here, the full postcard or the slim strip (LaunchSeasonCard). */}
+        <LaunchSeasonCard />
         {/* A seasonal event's countdown (teaser days). */}
         <SeasonalTeaser />
         {/* Around the world today: one card per city (the mosaic), "See all"; yesterday's best on an empty day. */}
@@ -86,7 +86,6 @@ function TodayContent() {
         <CityChatRow />
         {/* Your week: the streak, tomorrow's theme, the week strip and every past challenge. */}
         <TodayWeek today={daily.data} />
-        <LaunchSeasonCard placement="bottom" />
       </ScrollView>
       <StampCelebration progress={daily.data?.localPass} userId={account?.id ?? null} />
     </SafeAreaView>

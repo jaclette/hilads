@@ -941,7 +941,12 @@
     "empty": {
       "photos": "Aún no hay fotos con me gusta. Ve a votar tus favoritas ❤️",
       "players": "Nadie ha sumado puntos aún. Juega y quédate con el primer puesto 🙋",
-      "cities": "Aún no hay ciudades en el ranking. Pon la tuya primero 🌍"
+      "cities": "Aún no hay ciudades en el ranking. Pon la tuya primero 🌍",
+      "todayNone": "Aún no hay fotos hoy. Sé el primero en jugar 📸",
+      "play": "Juega el reto de hoy",
+      "firstVote": "Sé el primero en votar ❤️",
+      "firstVoteText": "Nadie ha dado like a una foto hoy. Toca la que te guste.",
+      "yesterday": "El podio de ayer"
     },
     "race": {
       "title": "🏁 La carrera de hoy",

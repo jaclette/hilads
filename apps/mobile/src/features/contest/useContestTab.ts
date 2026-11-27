@@ -3,7 +3,8 @@ import { AppState } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import i18n from '@/i18n';
 import { useApp } from '@/context/AppContext';
-import { fetchContest, type ContestOverview } from './contest';
+import { fetchContest, type ContestMeJoined, type ContestOverview } from './contest';
+import { ackRankTab, syncRaceRank, useRaceSignals } from './raceSignals';
 
 /**
  * The Launch Season overview (GET /contest), shared by the tab bar's temporary tab and the
@@ -46,6 +47,7 @@ function load(force = false) {
   fetchContest(i18n.language).then(d => {
     if (ctx !== forCtx) return;
     data = d; emit();
+    noteRank(d);
     AsyncStorage.setItem(KEY_PREFIX + forCtx, JSON.stringify(d)).catch(() => {});
   }).catch(() => { loadedAt = 0; });
 }
@@ -56,7 +58,17 @@ export function refreshContestTab() { load(true); }
 /** Replace the overview with a fresh answer (e.g. the one POST /contest/notify returns). */
 export function setContestOverview(d: ContestOverview) {
   data = d; loadedAt = Date.now(); emit();
+  noteRank(d);
   AsyncStorage.setItem(KEY_PREFIX + ctx, JSON.stringify(d)).catch(() => {});
+}
+
+/** My race rank as the server says it now (ranked players only): a change lights the Trip tab and "While you were away". */
+function noteRank(d: ContestOverview) {
+  const s = d.season;
+  if (!s) return;
+  const me = d.me?.joined ? (d.me as ContestMeJoined) : null;
+  const race = me?.race;
+  syncRaceRank(s.id, race && race.rank && race.points > 0 ? race.rank : null);
 }
 
 /** The overview for my account and language (null until known), refreshed on mount / foreground. */
@@ -90,15 +102,19 @@ const LIVE = new Set(['upcoming', 'season', 'final', 'over', 'ended']);
 export function useContestTab(): ContestTab {
   const d = useContestOverview();
   const s = d?.season;
+  const signals = useRaceSignals(s?.id ?? null);
   if (!s || !LIVE.has(s.phase)) return null;
   const stamp = `${s.id}:${s.phase}${s.winner ? ':w' : ''}`;
+  // A new phase (the stamp) or my rank changed since I last opened the tab: the dot.
+  const rankNew = !!signals.change && !signals.change.tabAck;
   return {
     label: s.tab?.label || null,
     icon: s.tab?.icon || 'airplane',
     isTest: !!s.isTest,
-    isNew: seen !== stamp,
+    isNew: seen !== stamp || rankNew,
     markSeen: () => {
-      if (seen === stamp) return;
+      ackRankTab();
+      if (seen === stamp) { emit(); return; }
       seen = stamp;
       AsyncStorage.setItem(SEEN_KEY, stamp).catch(() => {});
       emit();

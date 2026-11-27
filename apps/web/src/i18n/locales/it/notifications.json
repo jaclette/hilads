@@ -44,7 +44,11 @@
     "other": "🔔 Novità per te",
     "dismiss": "Chiudi",
     "more_one": "Altri {{count}}",
-    "more_other": "Altri {{count}}"
+    "more_other": "Altri {{count}}",
+    "likesLine_one": "❤️ {{count}} nuovo like sulla tua foto",
+    "likesLine_other": "❤️ {{count}} nuovi like sulla tua foto",
+    "likesLinePhotos_one": "❤️ {{count}} nuovo like sulle tue foto",
+    "likesLinePhotos_other": "❤️ {{count}} nuovi like sulle tue foto"
   },
   "inbox": {
     "settings": "Impostazioni notifiche",

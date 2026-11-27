@@ -302,7 +302,7 @@ function EmptyCard({ today, t }) {
  * its city), the current city's spots and Hi plans, theme chips, search, and a
  * spot page. Locate-me goes back to my position and my city. Full screen.
  */
-export default function MapScreen({ channelId, cityName, onOpenPlan, initialSpotId = null, initialTheme = null, scope = 'city', scopePill = null, onScopeCity }) {
+export default function MapScreen({ channelId, cityName, onOpenPlan, initialSpotId = null, initialTheme = null, scope = 'city', scopePill = null, onScopeCity, inbox = null }) {
   const { t, i18n } = useTranslation('challenge')
   const [center, setCenter]   = useState(null)
   const [spots, setSpots]     = useState([])
@@ -549,6 +549,7 @@ export default function MapScreen({ channelId, cityName, onOpenPlan, initialSpot
             />
             {query && <button type="button" className="wm-search-clear" onClick={() => setQuery('')} aria-label={t('map.clearSearch')}><Icon name="close" size={18} /></button>}
           </div>
+          {inbox}
           </div>
           {results === null ? (
             <div className="wm-chips" role="toolbar">

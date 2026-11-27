@@ -52,7 +52,7 @@ admin_head('Two-step verification');
 ?>
 <div class="login-page">
     <div class="login-box">
-        <div class="brand"><span class="brand-mark">Hi</span> Hilads back office</div>
+        <div class="brand"><?= admin_logo() ?> Hilads back office</div>
         <h1>Two-step verification</h1>
         <p class="subtitle">
             <?= $useRecovery ? 'Enter one of the recovery codes you saved when you set up 2FA. Each one works once.'

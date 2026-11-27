@@ -573,6 +573,10 @@
       "remindOn": "🔔 We herinneren je",
       "a11yGuest": "Instapkaart {{route}}, stoel {{seat}}, boarding op {{date}}. Tik om je plek te pakken.",
       "a11yMember": "Jouw instapkaart {{route}}, stoel {{seat}}, boarding op {{date}}, {{value}}"
+    },
+    "away": {
+      "up": "Je bent gestegen naar de {{rank, ordinal}} plek in de race ✈️",
+      "down": "Je bent gezakt naar de {{rank, ordinal}} plek in de race ✈️"
     }
   }
 }

@@ -610,6 +610,10 @@
         "remindOn": "🔔 알려 드릴게요",
         "a11yGuest": "탑승권 {{route}}, 좌석 {{seat}}, 탑승 {{date}}. 탭해서 자리를 잡으세요.",
         "a11yMember": "내 탑승권 {{route}}, 좌석 {{seat}}, 탑승 {{date}}, {{value}}"
+      },
+      "away": {
+        "up": "레이스에서 {{rank, ordinal}}로 올라갔어요 ✈️",
+        "down": "레이스에서 {{rank, ordinal}}로 내려갔어요 ✈️"
       }
     }
   },

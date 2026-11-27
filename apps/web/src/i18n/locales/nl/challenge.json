@@ -821,7 +821,12 @@
       "empty": {
         "photos": "Nog geen gelikete foto's. Ga stemmen op je favorieten ❤️",
         "players": "Nog niemand heeft punten. Speel en pak de eerste plek 🙋",
-        "cities": "Nog geen stad op de ranglijst. Zet de jouwe bovenaan 🌍"
+        "cities": "Nog geen stad op de ranglijst. Zet de jouwe bovenaan 🌍",
+        "todayNone": "Nog geen foto’s vandaag. Speel als eerste 📸",
+        "play": "Speel de challenge van vandaag",
+        "firstVote": "Stem als eerste ❤️",
+        "firstVoteText": "Niemand heeft vandaag nog een foto geliket. Tik op een die je mooi vindt.",
+        "yesterday": "Het podium van gisteren"
       },
       "results": {
         "dismiss": "Sluiten",
@@ -847,7 +852,11 @@
       "seasonEnds_one": "Het seizoen eindigt over {{count}} dag",
       "seasonEnds_other": "Het seizoen eindigt over {{count}} dagen",
       "seasonEndsAt": "Het seizoen eindigt {{date}}",
-      "preSeason": "Voorseizoen · eerste seizoen {{date}}"
+      "preSeason": "Voorseizoen · eerste seizoen {{date}}",
+      "scope": {
+        "city": "Mijn stad",
+        "world": "Wereld"
+      }
     },
     "rivals": {
       "title": "Jij vs {{city}}",

@@ -13,7 +13,7 @@ import { getLastToday, RankMedal } from '../daily/dailyShared'
 import { ordinal } from '../../lib/ordinal'
 import { contestGoal, countdownTarget, shortLeft, useLiveNow, SouvenirLine, Podium, JoinForm, ContestPrize } from './ContestScreen'
 import { pendingInvite } from '../../lib/invite'
-import { countTripOpen } from './LaunchSeasonCard'
+import { ackRankTab } from './raceSignals'
 import { storeLink } from '../../lib/storeLinks.mjs'
 
 /**
@@ -29,7 +29,7 @@ const shortDate = (date, locale) => new Date(`${date}T12:00:00Z`).toLocaleDateSt
 const shift = (date, days) => { const d = new Date(`${date}T12:00:00Z`); d.setUTCDate(d.getUTCDate() + days); return d.toISOString().slice(0, 10) }
 const isOver = s => s.phase === 'over' || s.phase === 'ended'
 
-export default function TripScreen({ account, cityName = null, initialSection = 'overview', onOpenToday, onOpenProfile, onSignUp }) {
+export default function TripScreen({ account, inbox = null, cityName = null, initialSection = 'overview', onOpenToday, onOpenProfile, onSignUp }) {
   const { t, i18n } = useT()
   const [data, setData] = useState(null)
   const [failed, setFailed] = useState(false)
@@ -55,7 +55,7 @@ export default function TripScreen({ account, cityName = null, initialSection = 
   }, [s?.id, part, account?.id]) // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (!s) return
-    countTripOpen(s.id)   // the Today banner moves below the feed after the 3rd open
+    ackRankTab()   // opened: the tab's "rank changed" dot is seen
     track('trip_viewed', { section, phase: s.phase, test: !!s.isTest, platform_surface: 'web' })
   }, [s?.id]) // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => { if (SECTIONS.includes(initialSection)) setSection(initialSection) }, [initialSection])
@@ -134,6 +134,7 @@ export default function TripScreen({ account, cityName = null, initialSection = 
           <span className="tr-hero-top">
             <span className="tr-tag">{s.name.toUpperCase()}</span>
             {s.isTest && <span className="ls-test">{t('contest.test')}</span>}
+            {inbox && <span className="tr-hero-inbox" onClick={e => e.stopPropagation()}>{inbox}</span>}
           </span>
           <span className="tr-hero-bottom">
             <span className="tr-hero-text">

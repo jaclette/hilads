@@ -560,6 +560,10 @@
       "remindOn": "🔔 Chúng tôi sẽ nhắc bạn",
       "a11yGuest": "Thẻ lên máy bay {{route}}, ghế {{seat}}, lên máy bay {{date}}. Chạm để giữ chỗ.",
       "a11yMember": "Thẻ lên máy bay của bạn {{route}}, ghế {{seat}}, lên máy bay {{date}}, {{value}}"
+    },
+    "away": {
+      "up": "Bạn đã lên hạng {{rank, ordinal}} trong cuộc đua ✈️",
+      "down": "Bạn đã tụt xuống hạng {{rank, ordinal}} trong cuộc đua ✈️"
     }
   }
 }

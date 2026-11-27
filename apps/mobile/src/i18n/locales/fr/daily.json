@@ -941,7 +941,12 @@
     "empty": {
       "photos": "Pas encore de photo aimée. Va voter pour tes préférées ❤️",
       "players": "Personne n'a encore marqué. Joue et prends la première place 🙋",
-      "cities": "Aucune ville au classement. Mets la tienne en premier 🌍"
+      "cities": "Aucune ville au classement. Mets la tienne en premier 🌍",
+      "todayNone": "Pas encore de photo aujourd’hui. Sois le premier à jouer 📸",
+      "play": "Joue le défi du jour",
+      "firstVote": "Sois le premier à voter ❤️",
+      "firstVoteText": "Personne n’a encore liké de photo aujourd’hui. Touche celle que tu aimes.",
+      "yesterday": "Le podium d’hier"
     },
     "race": {
       "title": "🏁 La course du jour",

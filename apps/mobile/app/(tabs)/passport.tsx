@@ -6,6 +6,7 @@ import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { Space, Radius, Spacing, Type, IconSize, type ThemeColors, type ThemeName } from '@/constants';
+import { HeaderInbox } from '@/features/shell/HeaderInbox';
 import { Avatar, AvatarSize, Button, Card, CityFlag, IconButton, ListRow, ModeLabel, RowGroup, ScreenHeader, Tappable } from '@/ui';
 import { themeColor, tint } from '@/ui/joy';
 import { RankMedal } from '@/features/daily/RankMedal';
@@ -14,8 +15,6 @@ import type { ShareContent } from '@/features/share/content';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { LogoHat } from '@/features/event/SeasonalArt';
 import { useApp } from '@/context/AppContext';
-import { useNotifCounts } from '@/features/notifications/counts';
-import { useUnreadMessages } from '@/features/messages/unread';
 import { shortCityName } from '@/i18n/cityName';
 import { thumbUrl } from '@/lib/imageThumb';
 import { useDailyToday } from '@/hooks/useDaily';
@@ -66,9 +65,6 @@ export default function PassportScreen() {
   const scroller = useRef<ScrollViewInstance>(null);
   const focused = useRef(false);
   const { account, identity, city } = useApp();
-  const unreadMessages = useUnreadMessages();   // the same count as the tab badge and the header button
-  // The inbox (UX audit option B): notifications and private messages live here, Hi being no longer a tab.
-  const { total: unreadNotifs } = useNotifCounts();
   const today = useDailyToday(city?.channelId);
   const cacheKey = account ? `${account.id}|${city?.channelId ?? ''}` : '';
   // Shown at once from the last visit (stale-while-revalidate), refreshed below.
@@ -125,7 +121,10 @@ export default function PassportScreen() {
 
   const header = (
     <ScreenHeader variant="tab" title={t('passport.title')} subtitle={t('subtitles.passport', { ns: 'common' })} art="passport"
-                  right={<IconButton icon="settings-outline" iconSize={21} label={t('settings')} onPress={() => router.push('/settings' as never)} testID="passport-settings" />} />
+                  right={<View style={{ flexDirection: 'row', alignItems: 'center', gap: Space.sm }}>
+                    <HeaderInbox />
+                    <IconButton icon="settings-outline" iconSize={21} label={t('settings')} onPress={() => router.push('/settings' as never)} testID="passport-settings" />
+                  </View>} />
   );
 
   if (!account) {
@@ -248,11 +247,7 @@ export default function PassportScreen() {
         {(stats?.pioneerOf?.length ?? 0) > 0 && <PioneerBadges pioneers={stats!.pioneerOf!} />}
         {(stats?.specialStamps?.length ?? 0) > 0 && <SpecialStamps stamps={stats!.specialStamps!} />}
 
-        <RowGroup>
-          <ListRow icon="notifications-outline" tone={toneOf('get_around', mode)} title={t('notifications', { ns: 'common' })} badge={unreadNotifs} onPress={() => router.push('/notifications' as never)} />
-          <ListRow divider icon="chatbubbles-outline" tone={toneOf('hidden_gem', mode)} title={t('messages', { ns: 'common' })} badge={unreadMessages} onPress={() => router.push('/messages' as never)} />
-        </RowGroup>
-
+        {/* Notifications and Messages: in the header (the bell, the messages button), on every tab. */}
         <RowGroup>
           <ListRow icon="images-outline" tone={toneOf('taste', mode)} title={t('passport.myPhotos')} value={stats?.photos !== undefined ? String(stats.photos) : ''} onPress={() => router.push('/my-photos' as never)} />
           <ListRow divider icon="location-outline" tone={toneOf('local_find', mode)} title={t('passport.mySpots')} value={counts.spots !== null ? String(counts.spots) : ''} onPress={() => router.push('/my-spots' as never)} />

@@ -628,14 +628,16 @@ class NotificationRepository
             $unread[$c] += (int) $r['unread'];
             $unseen[$c] += (int) $r['unseen'];
         }
-        // Tab badges (V6): Hi = unread chat mentions, Passport = a new Local Pass,
-        // Ranks = results not opened yet.
+        // Tab badges (V6): Hi = unread chat mentions, Passport = Passport news (a new Local Pass, a season
+        // medal: a dot, the tab's own; unread notifications are the bell), Ranks = results not opened yet.
         $stmt = Database::pdo()->prepare("
             SELECT count(*) FILTER (WHERE type IN ('mention', 'city_here')) AS chat,
-                   count(*) FILTER (WHERE type = 'daily_local_pass')        AS passport,
+                   count(*) FILTER (WHERE type = 'daily_local_pass'
+                                       OR (type = 'daily_season_result' AND data->>'variant' = 'medal')) AS passport,
                    count(*) FILTER (WHERE type IN ('daily_result', 'daily_rank')) AS ranks
             FROM notifications
-            WHERE user_id = ? AND is_read = FALSE AND type IN ('mention', 'city_here', 'daily_local_pass', 'daily_result', 'daily_rank')
+            WHERE user_id = ? AND is_read = FALSE
+              AND type IN ('mention', 'city_here', 'daily_local_pass', 'daily_season_result', 'daily_result', 'daily_rank')
         ");
         $stmt->execute([$userId]);
         $b = $stmt->fetch(\PDO::FETCH_ASSOC) ?: [];

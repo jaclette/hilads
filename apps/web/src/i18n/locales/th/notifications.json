@@ -43,7 +43,11 @@
     "view": "👀 {{name}} ดูโปรไฟล์ของคุณ",
     "other": "🔔 มีอะไรใหม่สำหรับคุณ",
     "dismiss": "ปิด",
-    "more_other": "อีก {{count}}"
+    "more_other": "อีก {{count}}",
+    "likesLine_one": "❤️ รูปของคุณได้ไลก์ใหม่ {{count}} ครั้ง",
+    "likesLine_other": "❤️ รูปของคุณได้ไลก์ใหม่ {{count}} ครั้ง",
+    "likesLinePhotos_one": "❤️ รูปของคุณได้ไลก์ใหม่ {{count}} ครั้ง",
+    "likesLinePhotos_other": "❤️ รูปของคุณได้ไลก์ใหม่ {{count}} ครั้ง"
   },
   "inbox": {
     "settings": "ตั้งค่าการแจ้งเตือน",

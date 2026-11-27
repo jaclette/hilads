@@ -197,7 +197,8 @@ function parseDeepLink() {
     period: params.get('period') ?? 'month',
   }
   // The app's own screens (UX audit: a URL per screen, kept as the top screen changes).
-  if (path === '/world')         return { type: 'leaderboard', scope: params.get('scope') ?? 'city', period: params.get('period') ?? 'week' }
+  // A bare /world is the World tab's own address (Photos · Today · World); an older link carries ?scope / ?period.
+  if (path === '/world')         return { type: 'leaderboard', scope: params.get('scope'), period: params.get('period') }
   if (path === '/passport')      return { type: 'passport' }
   // The campaign's Trip tab (and the older Launch Season addresses).
   if (path === '/trip' || path === '/launch-season' || path === '/contest') return { type: 'trip', section: params.get('section') ?? 'overview' }
@@ -1431,8 +1432,7 @@ export default function App() {
   // unified public challenge channel. State + setter kept off the tree
   // to avoid a dead handle lingering elsewhere.
   const [showLeaderboard,       setShowLeaderboard]       = useState(false) // the Ranks tab (V6; was LeaderboardPage)
-  const [leaderboardScope,      setLeaderboardScope]      = useState('city') // PR38 - initial scope when opened
-  const [leaderboardPeriod,     setLeaderboardPeriod]     = useState('month') // initial period (for share deeplink)
+  const leaderboardLinkRef = useRef({ scope: null, period: null }) // an old /leaderboard or /world link's ?scope / ?period
   const [celebrationRefetchKey, setCelebrationRefetchKey] = useState(0)     // bumps on WS score pings (join, own create)
   const [challengeResultRefetchKey, setChallengeResultRefetchKey] = useState(0) // bumps on WS challenge_validated → group result reveal
   const [myCityRank,            setMyCityRank]            = useState(null)  // caller's monthly city rank - drives the 🏆 chip in renderCityHero
@@ -1959,7 +1959,7 @@ export default function App() {
     && !showPeopleDrawer && !showConversations && !showNotifications && !showLeaderboard && !showTrip
   const badgeTab = chatTabActive ? 'chat' : showProfileDrawer ? 'passport' : showLeaderboard ? 'ranks' : null
   useEffect(() => {
-    const types = { chat: ['mention', 'city_here'], passport: ['daily_local_pass'], ranks: ['daily_result', 'daily_rank'] }[badgeTab]
+    const types = { chat: ['mention', 'city_here'], passport: ['daily_local_pass', 'daily_season_result'], ranks: ['daily_result', 'daily_rank'] }[badgeTab]
     if (!types || !notifCounts.badges[badgeTab]) return
     patchNotifCounts(c => ({ ...c, badges: { ...c.badges, [badgeTab]: 0 } }))
     markNotificationTypesRead(types).then(refreshNotifCounts)
@@ -2217,8 +2217,8 @@ export default function App() {
     }
 
     if (link.type === 'leaderboard') {
-      setLeaderboardScope(link.scope === 'world' ? 'world' : link.scope === 'cities' ? 'cities' : 'city')
-      setLeaderboardPeriod(link.period === 'alltime' ? 'alltime' : 'month')
+      // Read when the screen opens (a ref: the state would still be the first render's there).
+      leaderboardLinkRef.current = { scope: link.scope ?? null, period: link.period ?? null }
       openScreenOnJoinRef.current = 'leaderboard'
     }
     if (link.type === 'challenges')      openScreenOnJoinRef.current = 'challenges'
@@ -3230,7 +3230,7 @@ export default function App() {
       if (openScreenOnJoinRef.current === 'passport')      { goToMeTab(); openScreenOnJoinRef.current = null }
       if (String(openScreenOnJoinRef.current).startsWith('trip:')) { goToTripTab(openScreenOnJoinRef.current.slice(5)); openScreenOnJoinRef.current = null }
       if (openScreenOnJoinRef.current === 'settings')      { goToMeTab(); setShowSettings(true); openScreenOnJoinRef.current = null }
-      if (openScreenOnJoinRef.current === 'leaderboard')   { openRanks(ranksFromLeaderboard(leaderboardScope, leaderboardPeriod));  openScreenOnJoinRef.current = null }
+      if (openScreenOnJoinRef.current === 'leaderboard')   { openRanks(ranksFromLeaderboard(leaderboardLinkRef.current.scope, leaderboardLinkRef.current.period));  openScreenOnJoinRef.current = null }
 
       activeRef.current = true
       // Hi is a pure chat since 2026-11-23: no local prompts or ambient lines.
@@ -4201,7 +4201,7 @@ export default function App() {
     setShowTrip(true)
   }
   // An old leaderboard link (scope city / cities / world, period month / alltime) → its Ranks segment.
-  const ranksFromLeaderboard = (scope, period) => ({
+  const ranksFromLeaderboard = (scope, period) => scope == null ? {} : ({
     tab: scope === 'cities' ? 'cities' : 'players', period: period === 'alltime' ? 'alltime' : scope === 'cities' ? 'week' : 'season', scope: scope === 'world' ? 'world' : 'city',
   })
 
@@ -4242,6 +4242,23 @@ export default function App() {
         </svg>
         {otherUnread && <span className="v3-dot" aria-hidden="true" />}
       </button>
+    )
+  }
+
+  // The messages button and the bell (members), for the tabs whose header isn't the app header (Map, Trip,
+  // Passport): unread notifications and DMs stay visible from every tab.
+  function renderInboxButtons() {
+    if (!account) return null
+    return (
+      <span className="v3-inbox">
+        <button type="button" className="v3-round" aria-label={t('header.messages')} onClick={() => setShowConversations(true)}>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M22 2 11 13" /><path d="M22 2 15 22l-4-9-9-4 20-7z" />
+          </svg>
+          {hasAnyUnread && <span className="v3-dot" />}
+        </button>
+        <BellButton onClick={() => setShowNotifications(true)} label={t('header.notifications')} />
+      </span>
     )
   }
 
@@ -5412,6 +5429,8 @@ export default function App() {
     hereVersion, locateHere,
     // The current city's country: prices are shown in its currency (SPEC 10.5).
     cityCountry,
+    // The header's city name: World's scope toggle names it ("🇻🇳 Saigon").
+    cityName: city,
     openDaily,
     openProfile: (id, name) => openProfile(id, name ?? ''),
     // A spot (or the map) from Today / a proof: the Map tab, on that spot.
@@ -6209,7 +6228,7 @@ export default function App() {
               { key: 'map',      label: 'tabs.map',      active: showMap,                              onClick: goToMapTab,      Icon: NavIconMap },
               { key: 'passport', label: 'tabs.passport', active: onPassport,                           onClick: goToMeTab,       Icon: NavIconPassport },
             ]
-            // V6 tab badges (dots): Passport = a new Local Pass, World = results out. Hi's mentions: the bell, the inbox.
+            // V6 tab badges (dots): Passport = its own news (a Local Pass, a season medal), World = results out. Hi's mentions: the bell, the inbox.
             const badge = { passport: notifCounts.badges.passport, ranks: notifCounts.badges.ranks }
             // The campaign's temporary Trip tab (in the middle, a raised gold pill), only while a campaign
             // is on; label and icon from the server (Admin › Launch Season), else "Trip" and a plane.
@@ -6246,7 +6265,7 @@ export default function App() {
 
       <>
         {showTrip && !showMap && !showProfileDrawer && (
-          <TripScreen account={account} cityName={city || null} initialSection={tripSection} onOpenToday={goToTodayTab}
+          <TripScreen account={account} inbox={renderInboxButtons()} cityName={city || null} initialSection={tripSection} onOpenToday={goToTodayTab}
             onSignUp={() => setGateAuth({ tab: 'signup', action: 'passport' })}
             onOpenProfile={(uid, name) => openProfile(uid, name)} />
         )}
@@ -6270,6 +6289,7 @@ export default function App() {
           cityName={city ? shortCityName(city) : null}
           scope={channelScope}
           scopePill={renderScopePill('v3-scope--map')}
+          inbox={renderInboxButtons()}
           onScopeCity={() => { if (city) switchScope('city') }}
           onOpenPlan={(id) => {
             setShowMap(false)
@@ -7114,6 +7134,7 @@ export default function App() {
 
       {showProfileDrawer && !showAuthScreen && !showSettings && (
         <PassportScreen
+          inbox={renderInboxButtons()}
           account={account}
           guestName={activeNickname}
           guestMode={loadIdentity()?.mode ?? null}
@@ -7627,8 +7648,7 @@ export default function App() {
         refetchKey={challengeResultRefetchKey}
         onOpenLeaderboard={(scope) => {
           // Rank-row tap on the result reveal → leaderboard, scoped to that lens.
-          setLeaderboardScope(scope === 'world' ? 'world' : 'city')
-          setShowLeaderboard(true)
+          openRanks({ tab: 'players', period: 'season', scope: scope === 'world' ? 'world' : 'city' })
         }}
       />
       {/* The points reward's victory screen: a medal or "See the ranking" opens that Ranks segment and period. */}

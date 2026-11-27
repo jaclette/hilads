@@ -560,6 +560,10 @@
       "remindOn": "🔔 お知らせします",
       "a11yGuest": "搭乗券 {{route}}、座席 {{seat}}、搭乗日 {{date}}。タップして席を確保。",
       "a11yMember": "あなたの搭乗券 {{route}}、座席 {{seat}}、搭乗日 {{date}}、{{value}}"
+    },
+    "away": {
+      "up": "レースで{{rank, ordinal}}に上がりました ✈️",
+      "down": "レースで{{rank, ordinal}}に下がりました ✈️"
     }
   }
 }

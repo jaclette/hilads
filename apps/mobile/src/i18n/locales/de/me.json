@@ -573,6 +573,10 @@
       "remindOn": "🔔 Wir erinnern dich",
       "a11yGuest": "Bordkarte {{route}}, Sitz {{seat}}, Boarding am {{date}}. Tippen, um deinen Platz zu sichern.",
       "a11yMember": "Deine Bordkarte {{route}}, Sitz {{seat}}, Boarding am {{date}}, {{value}}"
+    },
+    "away": {
+      "up": "Du bist im Rennen auf Platz {{rank, ordinal}} geklettert ✈️",
+      "down": "Du bist im Rennen auf Platz {{rank, ordinal}} gefallen ✈️"
     }
   }
 }

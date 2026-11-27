@@ -795,7 +795,12 @@
       "empty": {
         "photos": "Chưa có ảnh nào được thả tim. Đi bình chọn ảnh bạn thích nha ❤️",
         "players": "Chưa ai có điểm. Chơi ngay để giành hạng nhất 🙋",
-        "cities": "Chưa có thành phố nào trên bảng. Đưa thành phố bạn lên đầu nha 🌍"
+        "cities": "Chưa có thành phố nào trên bảng. Đưa thành phố bạn lên đầu nha 🌍",
+        "todayNone": "Hôm nay chưa có ảnh nào. Hãy là người chơi đầu tiên 📸",
+        "play": "Chơi thử thách hôm nay",
+        "firstVote": "Hãy là người bình chọn đầu tiên ❤️",
+        "firstVoteText": "Hôm nay chưa ai thích ảnh nào. Chạm vào ảnh bạn thích.",
+        "yesterday": "Bục vinh quang hôm qua"
       },
       "results": {
         "dismiss": "Đóng",
@@ -818,7 +823,11 @@
       "seasonEnds_one": "Mùa giải kết thúc sau {{count}} ngày",
       "seasonEnds_other": "Mùa giải kết thúc sau {{count}} ngày",
       "seasonEndsAt": "Mùa giải kết thúc {{date}}",
-      "preSeason": "Tiền mùa giải · mùa đầu tiên {{date}}"
+      "preSeason": "Tiền mùa giải · mùa đầu tiên {{date}}",
+      "scope": {
+        "city": "Thành phố của tôi",
+        "world": "Thế giới"
+      }
     },
     "rivals": {
       "title": "Bạn vs {{city}}",

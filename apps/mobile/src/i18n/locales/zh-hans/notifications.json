@@ -64,7 +64,11 @@
     "dismiss": "关闭",
     "open": "查看新动态",
     "more_one": "还有 {{count}} 条",
-    "more_other": "还有 {{count}} 条"
+    "more_other": "还有 {{count}} 条",
+    "likesLine_one": "❤️ 你的照片收到 {{count}} 个新赞",
+    "likesLine_other": "❤️ 你的照片收到 {{count}} 个新赞",
+    "likesLinePhotos_one": "❤️ 你的照片收到 {{count}} 个新赞",
+    "likesLinePhotos_other": "❤️ 你的照片收到 {{count}} 个新赞"
   },
   "inbox": {
     "settings": "通知设置",

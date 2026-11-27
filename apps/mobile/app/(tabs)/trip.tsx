@@ -20,7 +20,8 @@ import { fetchCrew, type Crew } from '@/features/invites/invite';
 import { useContestShare } from '@/features/contest/useContestShare';
 import { TripOverview, TripRanking, TripFriends, TripRules, SECTIONS, type TripSection } from '@/features/contest/TripSections';
 import { track } from '@/services/analytics';
-import { countTripOpen } from '@/features/contest/tripOpens';
+import { HeaderInbox } from '@/features/shell/HeaderInbox';
+import { ackRankTab } from '@/features/contest/raceSignals';
 
 /**
  * The campaign's destination (the temporary "Trip" tab, docs/mockups/hilads_season_mockup.html):
@@ -79,7 +80,7 @@ export default function TripScreen() {
   // Analytics: the screen once per focus, then each section shown.
   const viewed = useRef<string | null>(null);
   useFocusEffect(useCallback(() => {
-    if (s) countTripOpen(s.id);   // the Today banner moves below the feed after the 3rd open
+    if (s) ackRankTab();   // opened: the tab's "rank changed" dot is seen
     if (s) track('trip_viewed', { section, phase: s.phase, test: s.isTest });
     viewed.current = section;
   }, [s?.id]));   // eslint-disable-line react-hooks/exhaustive-deps
@@ -171,6 +172,7 @@ export default function TripScreen() {
           </View>
           <CountdownChip season={s} small />
         </Pressable>
+        <View style={styles.slimInbox}><HeaderInbox /></View>
       </Animated.View>
 
       {/* The sub-menu: under the photo, then stuck under the slim header. */}
@@ -205,8 +207,12 @@ function Hero({ season: s, height, topInset, onPress }: { season: ContestSeason;
       <LinearGradient pointerEvents="none" colors={['rgba(12,8,5,0.45)', 'rgba(12,8,5,0)', 'rgba(12,8,5,0.25)', 'rgba(12,8,5,0.85)']}
                       locations={[0, 0.28, 0.55, 1]} style={StyleSheet.absoluteFill} />
       <View style={[styles.heroTop, { top: topInset + Space.sm }]}>
-        <Text style={styles.tag} numberOfLines={1}>{s.name.toUpperCase()}</Text>
-        {s.isTest && <Text style={styles.test}>{t('contest.test')}</Text>}
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: Space.sm, flexShrink: 1 }}>
+          <Text style={styles.tag} numberOfLines={1}>{s.name.toUpperCase()}</Text>
+          {s.isTest && <Text style={styles.test}>{t('contest.test')}</Text>}
+        </View>
+        {/* Unread notifications and messages, from every tab. */}
+        <HeaderInbox />
       </View>
       <View style={styles.heroBottom}>
         <View style={{ flex: 1, gap: 2 }}>
@@ -301,8 +307,9 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   chipValue:  { fontSize: 16, lineHeight: 20, fontWeight: '900', color: '#FFFFFF', fontVariant: ['tabular-nums'] },
   chipLabel:  { fontSize: 11, lineHeight: 14, fontWeight: '700', color: 'rgba(255,255,255,0.82)' },
   liveDot:    { width: 8, height: 8, borderRadius: 4, backgroundColor: LS.lantern },
-  slim:       { position: 'absolute', top: 0, left: 0, right: 0, backgroundColor: c.bg, borderBottomWidth: 0 },
-  slimRow:    { height: SLIM_BAR, flexDirection: 'row', alignItems: 'center', gap: Space.sm, paddingHorizontal: Gutter },
+  slim:       { position: 'absolute', top: 0, left: 0, right: 0, backgroundColor: c.bg, borderBottomWidth: 0, flexDirection: 'row', alignItems: 'center' },
+  slimRow:    { flex: 1, height: SLIM_BAR, flexDirection: 'row', alignItems: 'center', gap: Space.sm, paddingLeft: Gutter },
+  slimInbox:  { justifyContent: 'center', paddingLeft: Space.sm, paddingRight: Gutter },
   slimThumb:  { width: 36, height: 36, borderRadius: 10, overflow: 'hidden' },
   slimTitle:  { ...Type.label, fontSize: 16, color: c.text },
   slimLink:   { ...Type.caption, fontSize: 12, lineHeight: 15, fontWeight: '800', color: c.primaryText },

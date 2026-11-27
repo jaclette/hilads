@@ -94,11 +94,11 @@ export default function TodayScreen({ header, onOpenContest }) {
       <div className="page-body today-body">
         {/* Since you were away (one card at a time): unseen comments, likes and results, else
             yesterday's unread results on their own (never over the hero). */}
-        <WhileAwayCard account={account} />
+        <WhileAwayCard account={account} openTrip={onOpenContest} />
         <ResultsCard account={account} />
         <Ticket data={data} countries={countries} loading={loading} />
-        {/* The campaign, while one runs: here until the Trip tab was opened 3 times, then below the feed. */}
-        <LaunchSeasonCard onOpen={onOpenContest} account={account} placement="top" />
+        {/* The campaign, while one runs: always here, the full postcard or the slim strip. */}
+        <LaunchSeasonCard onOpen={onOpenContest} account={account} />
         {/* A seasonal event's countdown (teaser days). */}
         <SeasonalTeaser />
         {/* Around the world today: one card per city (the mosaic), "See all"; yesterday's best on an empty day. */}
@@ -107,7 +107,6 @@ export default function TodayScreen({ header, onOpenContest }) {
         <CityChatRow />
         {/* Your week: the streak, tomorrow's theme, the week strip and every past challenge. */}
         <Week today={data} />
-        <LaunchSeasonCard onOpen={onOpenContest} account={account} placement="bottom" />
       </div>
     </div>
   )

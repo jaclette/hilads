@@ -613,7 +613,7 @@ daily_styles();
                 </div>
                 <div class="daily-muted" style="margin-bottom:6px">Morning push</div>
                 <div class="daily-preview-push">
-                    <div class="icon">Hi</div>
+                    <?= admin_logo('icon') ?>
                     <div><div class="title">Daily Challenge</div><div class="body" id="pv-push"></div></div>
                 </div>
                 <p class="daily-muted" style="margin-top:8px">Content and order match what the app shows; the final card design lands with the app update.</p>

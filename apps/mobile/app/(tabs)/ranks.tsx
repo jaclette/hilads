@@ -1,5 +1,5 @@
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { ActivityIndicator, FlatList, Pressable, RefreshControl, ScrollView, Text, View, StyleSheet } from 'react-native';
+import { ActivityIndicator, FlatList, Pressable, RefreshControl, ScrollView, Text, View, StyleSheet, useWindowDimensions } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Image } from 'expo-image';
 import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
@@ -11,7 +11,9 @@ import { useApp } from '@/context/AppContext';
 import { AppHeader } from '@/features/shell/AppHeader';
 import { SeasonalScope } from '@/features/event/SeasonalArt';
 import { Ionicons } from '@expo/vector-icons';
-import { Avatar, Segmented, Tappable, ThemeIcon } from '@/ui';
+import { Avatar, Button, Segmented, Tappable, ThemeIcon } from '@/ui';
+import { RankMedal } from '@/features/daily/RankMedal';
+import { ScopeToggle } from '@/ui/ScopeToggle';
 import { useDailyToday } from '@/hooks/useDaily';
 import { ShareSheet } from '@/features/share/ShareSheet';
 import { proofShare, todayShare, type ShareContent } from '@/features/share/content';
@@ -27,13 +29,14 @@ import {
 } from '@/api/ranks';
 import type { DailyProof } from '@/types';
 import { medalColor, Movement, Podium, RaceBar, RankRow, YouBar, type PodiumGhost, type PodiumItem } from '@/features/ranks/parts';
-import { useScope } from '@/context/ScopeContext';
 import { IndexCarousel } from '@/features/index/IndexCarousel';
 import { RivalsBlock } from '@/features/ranks/RivalsBlock';
 import { seasonEnd, seasonStart } from '@/features/scoring/points';
 import i18n from '@/i18n';
 import { ordinal } from '@/lib/ordinal';
 
+// The ranking's scope for this app session (World at launch).
+let sessionScope: RanksScope = 'world';
 // The last answer of each view (segment, period, scope, city), in memory.
 const ranksCache = new Map<string, PlayersRanks | CitiesRanks | PhotosRanks>();
 
@@ -70,9 +73,10 @@ function RanksContent() {
   useEffect(() => { if (params.focus === 'me') setFocusMe(true); }, [params.focus]);
   const [tab, setTab] = useState<RanksTab>('photos');
   const [period, setPeriod] = useState<RanksPeriod>('today');
-  // One scope control: the header's pill (my city or World), app-wide; a link's scope (a push, Passport) sets it too,
-  // so the pill always says what the ranking shows.
-  const { scope, setScope } = useScope();
+  // The ranking's own scope (World / my city), on this screen: World at every launch, the last choice kept for the
+  // session; the header's city pill only names the toggle's second option. A link's scope (a push, Passport) sets it.
+  const [scope, setScopeState] = useState<RanksScope>(sessionScope);
+  const setScope = useCallback((v: RanksScope) => { sessionScope = v; setScopeState(v); }, []);
   // Each response is kept with what it was asked for: a view only ever gets its own shape (switching
   // tabs, or a slow answer for the previous tab, used to hand Cities rows to the Players view).
   const [resp, setResp] = useState<{ key: string; data: PlayersRanks | CitiesRanks | PhotosRanks } | null>(null);
@@ -82,7 +86,8 @@ function RanksContent() {
   // A rank-up notification names its city (cityId); else my city.
   const myCityId = city?.channelId ? Number(String(city.channelId).replace('city_', '')) || null : null;
   const cityId = Number(params.cityId) || myCityId;
-  const scopeNow: RanksScope = cityId ? scope : 'world';
+  // Cities rank the cities of the world: no city scope there.
+  const scopeNow: RanksScope = cityId && tab !== 'cities' ? scope : 'world';
   const key = `${tab}|${period}|${scopeNow}|${cityId}`;
   // A view seen before shows its last answer at once (stale-while-revalidate), refreshed below.
   const data = resp?.key === key ? resp.data : ranksCache.get(key) ?? null;
@@ -176,20 +181,24 @@ function RanksContent() {
           <Chip key={p} on={period === p} label={t(`ranks.period.${p}`)} onPress={() => pick(setPeriod, p)} />
         ))}
       </View>
+      {/* The scope toggle (World | my city) on the left, "How it works" as a "?" on the right; the time left under them. */}
       <View style={styles.infoBar}>
-        {!!info && (
-          <View style={styles.infoRow}>
-            <Ionicons name="hourglass-outline" size={IconSize.sm} color={colors.muted} accessibilityElementsHidden importantForAccessibility="no" />
-            <Text style={styles.info} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.75}>{info}</Text>
-          </View>
-        )}
-        {/* The rules: a real screen (points, stamps, the daily race). */}
+        {tab !== 'cities' && city && myCityId ? (
+          <ScopeToggle<RanksScope> testID="ranks-scope" value={scope} onChange={v => { setScope(v); track('ranks_scope', { scope: v, tab }); }}
+                                   options={[{ key: 'world', label: t('ranks.scope.world'), emoji: '🌍' },
+                                             { key: 'city', label: shortCityName(city.name), flag: city.country }]} />
+        ) : <View />}
         <Tappable onPress={() => { track('how_it_works_opened', { tab }); router.push('/how-it-works' as never); }}
                   style={styles.howBtn} accessibilityRole="button" accessibilityLabel={t('rules.open')} testID="ranks-how-it-works">
-          <Ionicons name="help-circle-outline" size={IconSize.md} color={colors.primaryText} accessibilityElementsHidden importantForAccessibility="no" />
-          <Text style={styles.howText} numberOfLines={1} maxFontSizeMultiplier={1.4}>{t('rules.open')}</Text>
+          <Ionicons name="help-circle-outline" size={22} color={colors.primaryText} accessibilityElementsHidden importantForAccessibility="no" />
         </Tappable>
       </View>
+      {!!info && (
+        <View style={styles.infoRow}>
+          <Ionicons name="hourglass-outline" size={IconSize.sm} color={colors.muted} accessibilityElementsHidden importantForAccessibility="no" />
+          <Text style={styles.info} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.75}>{info}</Text>
+        </View>
+      )}
     </View>
   );
 
@@ -215,6 +224,67 @@ function Chip({ on, label, onPress }: { on: boolean; label: string; onPress: () 
     <Tappable onPress={onPress} hitSlop={{ top: 4, bottom: 4 }} style={[styles.chip, on && styles.chipOn]} accessibilityRole="tab" accessibilityState={{ selected: on }} accessibilityLabel={label}>
       <Text style={[styles.chipText, on && styles.chipTextOn]} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7} maxFontSizeMultiplier={1.4}>{label}</Text>
     </Tappable>
+  );
+}
+
+/**
+ * Today's photos ranking while nobody has a like yet, as it really is: nobody played → "No photos yet
+ * today. Be the first to play 📸" with the play button and yesterday's podium under it; photos but no
+ * likes → those photos, "Be the first to vote".
+ */
+function TodayEmpty({ data, open }: { data: PhotosRanks; open: (proofs: DailyProof[], p: DailyProof) => void }) {
+  const styles = useThemedStyles(makeStyles);
+  const { colors } = useTheme();
+  const { t } = useTranslation('daily');
+  const router = useRouter();
+  const { account } = useApp();
+  const unliked = data.unliked ?? [];
+  const { width } = useWindowDimensions();
+  const cell = Math.floor((width - Gutter * 2 - 12) / 3);
+  if (unliked.length > 0) {
+    return (
+      <View style={styles.firstVote}>
+        <Text style={styles.sectionTitle}>{t('ranks.empty.firstVote')}</Text>
+        <Text style={styles.firstVoteText}>{t('ranks.empty.firstVoteText')}</Text>
+        <View style={styles.grid}>
+          {unliked.map(p => (
+            <Pressable key={p.id} onPress={() => open(unliked, p)} style={[styles.gridCell, { width: cell, height: Math.round(cell * 1.25) }]} accessibilityRole="button"
+                       accessibilityLabel={[p.user.username ? '@' + p.user.username : p.user.displayName, p.city?.name ? shortCityName(p.city.name) : null].filter(Boolean).join(', ')}>
+              <Image source={{ uri: thumbUrl(p.thumbUrl ?? p.photoUrl) ?? undefined }} style={StyleSheet.absoluteFill} contentFit="cover" />
+              {!!p.city && <View style={styles.gridFlag}><FlagSticker country={p.city.country} size={16} /></View>}
+            </Pressable>
+          ))}
+        </View>
+      </View>
+    );
+  }
+  const top = data.yesterdayTop ?? [];
+  const play = () => router.push((account ? '/daily/proof' : '/auth-gate?reason=daily_proof&returnTo=%2Fdaily%2Fproof') as never);
+  return (
+    <View>
+      <View style={[styles.empty, styles.emptyToday]}>
+        <View style={[styles.emptyDisc, { backgroundColor: tint(colors.medalGold, 0.28) }]}>
+          <Ionicons name="camera-outline" size={34} color={colors.text} />
+        </View>
+        <Text style={styles.emptyText}>{t('ranks.empty.todayNone')}</Text>
+        {!data.played && <Button icon="camera-outline" label={t('ranks.empty.play')} onPress={play} testID="ranks-empty-play" />}
+      </View>
+      {top.length > 0 && (
+        <View style={styles.firstVote}>
+          <Text style={styles.sectionTitle}>{t('ranks.empty.yesterday')}</Text>
+          <View style={styles.yRow}>
+            {top.map(({ rank, proof }) => (
+              <Pressable key={proof.id} style={styles.yCell} onPress={() => open(top.map(x => x.proof), proof)} accessibilityRole="button"
+                         accessibilityLabel={`${rank}. ${proof.user.username ? '@' + proof.user.username : proof.user.displayName ?? ''}`}>
+                <Image source={{ uri: thumbUrl(proof.thumbUrl ?? proof.photoUrl) ?? undefined }} style={[styles.yPhoto, { borderColor: medalColor(colors, rank) }]} contentFit="cover" />
+                <RankMedal rank={rank} podium size={24} />
+                <Text style={styles.yName} numberOfLines={1}>{proof.user.username ? '@' + proof.user.username : proof.user.displayName ?? ''}</Text>
+              </Pressable>
+            ))}
+          </View>
+        </View>
+      )}
+    </View>
   );
 }
 
@@ -253,7 +323,6 @@ function PhotosView({ data, header, failed, refreshing, onRefresh, period, ghost
   const styles = useThemedStyles(makeStyles);
   const { colors } = useTheme();
   const { t } = useTranslation('daily');
-  const { account } = useApp();
   const open = useOpenPhoto();
   // Later pages, appended as the list scrolls (each photo keeps the rank the server gave it).
   const [more, setMore] = useState<{ base: PhotosRanks; items: PhotosRanks['items']; next: number | null } | null>(null);
@@ -283,11 +352,12 @@ function PhotosView({ data, header, failed, refreshing, onRefresh, period, ghost
   // The "You" bar: my best photo of the period and the likes it needs to pass the one above.
   const me = data?.me ?? null;
   // One clear line: on top, one step from the crown, or how far to the next place.
+  // Without a rank: "Play today to get on the board" while I haven't played today; otherwise no bar until I have a rank.
   const youText = me
     ? me.rank === 1 ? t('ranks.you.lead')
       : me.rank === 2 ? t('ranks.you.photoCrown', { count: me.gap ?? 1 })
       : t('ranks.you.photoClimb', { rank: me.rank, count: me.gap ?? 1, next: me.rank - 1 })
-    : !account || (period === 'today' && !data?.played) ? t('ranks.you.none') : t('ranks.you.photoNone');
+    : period === 'today' && !data?.played ? t('ranks.you.none') : null;
   const onYou = () => {
     if (!me) return;
     const i = rest.findIndex(x => x.proof.id === me.proofId);
@@ -342,7 +412,9 @@ function PhotosView({ data, header, failed, refreshing, onRefresh, period, ghost
         ListHeaderComponent={headerBlock}
         contentContainerStyle={[styles.listPad, { paddingBottom: 96 }]}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.primary} colors={[colors.primary]} />}
-        ListEmptyComponent={items.length === 0 && (data || failed) ? <Empty text={t('ranks.empty.photos')} failed={failed} /> : undefined}
+        ListEmptyComponent={items.length === 0 && (data || failed)
+          ? period === 'today' && data && !failed ? <TodayEmpty data={data} open={open} />
+          : <Empty text={t('ranks.empty.photos')} failed={failed} /> : undefined}
         ListFooterComponent={loading ? <ActivityIndicator style={{ marginVertical: Space.lg }} color={colors.primary} /> : undefined}
         onEndReached={onEnd}
         onEndReachedThreshold={0.6}
@@ -352,7 +424,7 @@ function PhotosView({ data, header, failed, refreshing, onRefresh, period, ghost
         renderItem={({ item }) => <PhotoRankRow item={item} mine={me?.proofId === item.proof.id} week={period === 'week'}
                                                 single={period === 'today' || period === 'yesterday'} onPress={() => open(proofs, item.proof)} />}
       />
-      {data && <YouBar text={youText} onPress={me ? onYou : undefined} />}
+      {data && youText && <YouBar text={youText} onPress={me ? onYou : undefined} />}
       <View pointerEvents="none" style={StyleSheet.absoluteFill}><Confetti run={burst} count={36} /></View>
     </>
   );
@@ -463,7 +535,8 @@ function PlayersView({ data, header, failed, refreshing, onRefresh, period, list
       : me.rank === 1 ? t('ranks.you.lead')
       : me.rank === 2 ? t('ranks.you.playerCrown', { count: Math.max(1, me.gap ?? 1) })
       : t('ranks.you.playerClimb', { rank: me.rank, count: Math.max(1, me.gap ?? 1), next: me.rank - 1 })
-    : period === 'season' ? t('ranks.you.seasonNone') : t('ranks.you.none');
+    // No rank: the nudge while I haven't played today, else no bar until I have a rank.
+    : data?.played ? null : period === 'season' ? t('ranks.you.seasonNone') : t('ranks.you.none');
   const rest = entries.slice(3);
 
   return (
@@ -489,7 +562,7 @@ function PlayersView({ data, header, failed, refreshing, onRefresh, period, list
           </View>
         )}
       />
-      {data && <YouBar text={youText} onPress={me && me.rank > 3 && me.rank - 4 < rest.length
+      {data && youText && <YouBar text={youText} onPress={me && me.rank > 3 && me.rank - 4 < rest.length
         ? () => list.current?.scrollToIndex({ index: me.rank - 4, viewPosition: 0.5 }) : undefined} />}
     </>
   );
@@ -579,9 +652,9 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   controls:     { paddingHorizontal: Gutter, paddingTop: Space.sm, gap: Space.md },
   periods:      { flexDirection: 'row', gap: Space.sm },
   infoBar:      { flexDirection: 'row', alignItems: 'center', gap: Space.sm },
-  infoRow:      { flex: 1, flexDirection: 'row', alignItems: 'center', gap: Space.xs, minHeight: 28 },
+  infoRow:      { flexDirection: 'row', alignItems: 'center', gap: Space.xs, minHeight: 22, marginTop: -Space.xs },
   // The rules button: a 44 pt tap target on the right of the info line.
-  howBtn:       { marginLeft: 'auto', flexDirection: 'row', alignItems: 'center', gap: Space.xs, minHeight: 44, paddingHorizontal: Space.md,
+  howBtn:       { marginLeft: 'auto', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: Space.xs, minHeight: 44, minWidth: 44,
                   borderRadius: Radius.control, backgroundColor: c.primaryTint },
   howText:      { ...Type.caption, fontWeight: '800', color: c.primaryOnTint },
   info:         { flex: 1, minWidth: 0, ...Type.caption, color: c.muted },
@@ -625,4 +698,14 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   empty:        { alignItems: 'center', paddingVertical: Space.xxl * 1.5, paddingHorizontal: Space.xxl, gap: Space.lg },
   emptyDisc:    { width: 76, height: 76, borderRadius: 38, alignItems: 'center', justifyContent: 'center' },
   emptyText:    { ...Type.label, color: c.text, textAlign: 'center' },
+  firstVote:    { gap: Space.sm, paddingTop: Space.md, paddingHorizontal: Gutter },
+  emptyToday:   { paddingVertical: Space.xl },
+  firstVoteText:{ ...Type.caption, color: c.muted },
+  grid:         { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
+  gridCell:     { borderRadius: 14, overflow: 'hidden', backgroundColor: c.bg3 },
+  gridFlag:     { position: 'absolute', left: 6, bottom: 6 },
+  yRow:         { flexDirection: 'row', gap: Space.md, justifyContent: 'center' },
+  yCell:        { alignItems: 'center', gap: 4, width: 96 },
+  yPhoto:       { width: 88, height: 110, borderRadius: 16, borderWidth: 3 },
+  yName:        { ...Type.caption, fontWeight: '700', color: c.text, maxWidth: 96 },
 });

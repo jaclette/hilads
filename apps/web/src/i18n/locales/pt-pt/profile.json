@@ -635,6 +635,10 @@
         "remindOn": "🔔 Nós lembramos-te",
         "a11yGuest": "Cartão de embarque {{route}}, lugar {{seat}}, embarque a {{date}}. Toca para garantir o teu lugar.",
         "a11yMember": "O teu cartão de embarque {{route}}, lugar {{seat}}, embarque a {{date}}, {{value}}"
+      },
+      "away": {
+        "up": "Subiste para {{rank, ordinal}} na corrida ✈️",
+        "down": "Desceste para {{rank, ordinal}} na corrida ✈️"
       }
     }
   },

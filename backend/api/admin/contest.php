@@ -176,8 +176,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 if (mb_strlen($t) > 16) throw new InvalidArgumentException("Destination ({$l}): 16 characters max (the boarding pass's route).");
                 $dests[$l] = $t;
             }
+            $banner = ['full_visits' => $intField('banner_full_visits', 0), 'moment_hours' => $intField('banner_moment_hours', 1)];
+            if ($banner['full_visits'] > 20 || $banner['moment_hours'] > 72) throw new InvalidArgumentException('Banner: 20 visits and 72 hours at most.');
             $pdo->prepare("UPDATE contest_seasons SET tab = ?::jsonb, updated_at = now() WHERE id = ?")
-                ->execute([json_encode(['icon' => $icon, 'label' => (object) $labels, 'prize_cta' => (object) $ctas, 'destination' => (object) $dests], JSON_UNESCAPED_UNICODE), $season['id']]);
+                ->execute([json_encode(['icon' => $icon, 'label' => (object) $labels, 'prize_cta' => (object) $ctas, 'destination' => (object) $dests,
+                                        'banner' => $banner], JSON_UNESCAPED_UNICODE), $season['id']]);
             Contest::log($season['id'], 'tab', null, ['icon' => $icon, 'en' => $labels['en'] ?? null]);
             flash_set('success', 'Tab saved: the apps show it at their next refresh.');
         } elseif ($season !== null && $do === 'copy_content') {
@@ -595,6 +598,12 @@ admin_nav('/admin/launch-season');
             <td><input type="text" name="destination[<?= $esc($l) ?>]" value="<?= $esc($season['tab']['destination'][$l] ?? '') ?>" maxlength="16" placeholder="<?= $esc(Contest::DEFAULT_DESTINATION[$l] ?? '') ?>" style="width:100%;background:var(--surface);border:1px solid var(--line);color:var(--text);padding:5px 8px;border-radius:4px"<?= $l === 'ar' ? ' dir="rtl"' : '' ?>></td></tr>
         <?php endforeach; ?>
       </tbody></table></div>
+      <?php $bn = Contest::tab($season, 'en')['banner']; ?>
+      <div class="ls-grid" style="margin-top:12px">
+        <label>Today banner: full postcard for the first … Today visits<input type="number" name="banner_full_visits" min="0" max="20" value="<?= (int) $bn['fullVisits'] ?>" required></label>
+        <label>… and for … hours at each key moment (race start, final week, last hours, rank change)<input type="number" name="banner_moment_hours" min="1" max="72" value="<?= (int) $bn['momentHours'] ?>" required></label>
+      </div>
+      <p class="ls-muted">Otherwise Today shows the slim strip, always in the same place under the challenge card.</p>
       <div class="form-actions"><button class="btn btn-primary">Save tab</button></div>
     </form>
 

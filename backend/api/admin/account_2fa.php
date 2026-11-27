@@ -73,7 +73,7 @@ $secret = (string) ($_SESSION['admin_enroll_secret'] ?? '');
 // ── Rendering ────────────────────────────────────────────────────────────
 admin_head('Two-step verification');
 if ($preAuth) {
-    echo '<div class="login-page"><div class="login-box wide"><div class="brand"><span class="brand-mark">Hi</span> Hilads back office</div>';
+    echo '<div class="login-page"><div class="login-box wide"><div class="brand">' . admin_logo() . ' Hilads back office</div>';
 } else {
     admin_nav('/admin/account');
     echo '<div class="admin-main" style="max-width:760px"><div class="crumbs"><a href="/admin/account">My account</a> ›</div>';

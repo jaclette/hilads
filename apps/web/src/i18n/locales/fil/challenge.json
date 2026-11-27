@@ -821,7 +821,12 @@
       "empty": {
         "photos": "Wala pang naka-like na photo. Mag-vote sa mga paborito mo ❤️",
         "players": "Wala pang may points. Maglaro at kunin ang unang puwesto 🙋",
-        "cities": "Wala pang city sa board. Unahin mo ang city mo 🌍"
+        "cities": "Wala pang city sa board. Unahin mo ang city mo 🌍",
+        "todayNone": "Wala pang photo ngayong araw. Maging una sa paglalaro 📸",
+        "play": "Laruin ang challenge ngayon",
+        "firstVote": "Maging unang bumoto ❤️",
+        "firstVoteText": "Wala pang nag-like ng photo ngayong araw. I-tap ang gusto mo.",
+        "yesterday": "Ang podium kahapon"
       },
       "results": {
         "dismiss": "Isara",
@@ -847,7 +852,11 @@
       "seasonEnds_one": "Matatapos ang season sa loob ng {{count}} araw",
       "seasonEnds_other": "Matatapos ang season sa loob ng {{count}} araw",
       "seasonEndsAt": "Matatapos ang season sa {{date}}",
-      "preSeason": "Pre-season · unang season {{date}}"
+      "preSeason": "Pre-season · unang season {{date}}",
+      "scope": {
+        "city": "City ko",
+        "world": "Mundo"
+      }
     },
     "rivals": {
       "title": "Ikaw vs {{city}}",

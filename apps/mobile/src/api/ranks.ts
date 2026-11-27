@@ -28,6 +28,10 @@ export type PhotosRanks  = Base & {
   /** prevRank (week): the rank in yesterday's standing, null = new on the board. */
   items: { rank: number; prevRank?: number | null; proof: DailyProof }[]; total?: number; nextOffset?: number | null; me?: MyBestPhoto | null;
   cityBest?: { proof: DailyProof }[]; endsAt?: number | null; played?: boolean;
+  /** Today, no liked photo yet: today's photos, newest first ("Be the first to vote"). */
+  unliked?: DailyProof[];
+  /** Today, no photo at all: yesterday's podium, so the screen is never empty. */
+  yesterdayTop?: { rank: number; proof: DailyProof }[];
 };
 
 export function fetchRanks(tab: 'players', o: { period: RanksPeriod; scope: RanksScope; cityId?: number | null }): Promise<PlayersRanks>;

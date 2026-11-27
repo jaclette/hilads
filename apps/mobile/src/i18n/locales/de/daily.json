@@ -899,7 +899,12 @@
     "empty": {
       "photos": "Noch keine gelikten Fotos. Stimm für deine Favoriten ab ❤️",
       "players": "Noch hat niemand Punkte. Spiel und hol dir den ersten Platz 🙋",
-      "cities": "Noch keine Stadt im Ranking. Bring deine nach vorn 🌍"
+      "cities": "Noch keine Stadt im Ranking. Bring deine nach vorn 🌍",
+      "todayNone": "Heute noch keine Fotos. Spiel als Erster 📸",
+      "play": "Spiel die heutige Challenge",
+      "firstVote": "Stimm als Erster ab ❤️",
+      "firstVoteText": "Heute hat noch niemand ein Foto geliked. Tipp auf eins, das dir gefällt.",
+      "yesterday": "Das Podium von gestern"
     },
     "race": {
       "title": "🏁 Das Rennen von heute",

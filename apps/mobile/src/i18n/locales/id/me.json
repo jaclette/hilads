@@ -560,6 +560,10 @@
       "remindOn": "🔔 Kami ingatkan",
       "a11yGuest": "Boarding pass {{route}}, kursi {{seat}}, boarding {{date}}. Ketuk untuk ambil kursimu.",
       "a11yMember": "Boarding pass-mu {{route}}, kursi {{seat}}, boarding {{date}}, {{value}}"
+    },
+    "away": {
+      "up": "Kamu naik ke peringkat {{rank, ordinal}} di balapan ✈️",
+      "down": "Kamu turun ke peringkat {{rank, ordinal}} di balapan ✈️"
     }
   }
 }

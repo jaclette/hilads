@@ -46,7 +46,15 @@
     "more_one": "Ещё {{count}}",
     "more_few": "Ещё {{count}}",
     "more_many": "Ещё {{count}}",
-    "more_other": "Ещё {{count}}"
+    "more_other": "Ещё {{count}}",
+    "likesLine_one": "❤️ {{count}} новый лайк на твоём фото",
+    "likesLine_few": "❤️ {{count}} новых лайка на твоём фото",
+    "likesLine_many": "❤️ {{count}} новых лайков на твоём фото",
+    "likesLine_other": "❤️ {{count}} новых лайка на твоём фото",
+    "likesLinePhotos_one": "❤️ {{count}} новый лайк на твоих фото",
+    "likesLinePhotos_few": "❤️ {{count}} новых лайка на твоих фото",
+    "likesLinePhotos_many": "❤️ {{count}} новых лайков на твоих фото",
+    "likesLinePhotos_other": "❤️ {{count}} новых лайка на твоих фото"
   },
   "inbox": {
     "settings": "Настройки уведомлений",

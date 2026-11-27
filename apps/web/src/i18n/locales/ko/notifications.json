@@ -43,7 +43,11 @@
     "view": "👀 {{name}} 님이 프로필을 봤어요",
     "other": "🔔 새 소식이 있어요",
     "dismiss": "닫기",
-    "more_other": "{{count}}개 더"
+    "more_other": "{{count}}개 더",
+    "likesLine_one": "❤️ 내 사진에 새 좋아요 {{count}}개",
+    "likesLine_other": "❤️ 내 사진에 새 좋아요 {{count}}개",
+    "likesLinePhotos_one": "❤️ 내 사진들에 새 좋아요 {{count}}개",
+    "likesLinePhotos_other": "❤️ 내 사진들에 새 좋아요 {{count}}개"
   },
   "inbox": {
     "settings": "알림 설정",

@@ -64,7 +64,11 @@
     "dismiss": "Isara",
     "open": "Tingnan ang bago",
     "more_one": "{{count}} pa",
-    "more_other": "{{count}} pa"
+    "more_other": "{{count}} pa",
+    "likesLine_one": "❤️ {{count}} bagong like sa photo mo",
+    "likesLine_other": "❤️ {{count}} bagong like sa photo mo",
+    "likesLinePhotos_one": "❤️ {{count}} bagong like sa mga photo mo",
+    "likesLinePhotos_other": "❤️ {{count}} bagong like sa mga photo mo"
   },
   "inbox": {
     "settings": "Notification settings",

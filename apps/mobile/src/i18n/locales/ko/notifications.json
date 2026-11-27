@@ -64,7 +64,11 @@
     "dismiss": "닫기",
     "open": "새 소식 보기",
     "more_one": "{{count}}개 더",
-    "more_other": "{{count}}개 더"
+    "more_other": "{{count}}개 더",
+    "likesLine_one": "❤️ 내 사진에 새 좋아요 {{count}}개",
+    "likesLine_other": "❤️ 내 사진에 새 좋아요 {{count}}개",
+    "likesLinePhotos_one": "❤️ 내 사진들에 새 좋아요 {{count}}개",
+    "likesLinePhotos_other": "❤️ 내 사진들에 새 좋아요 {{count}}개"
   },
   "inbox": {
     "settings": "알림 설정",

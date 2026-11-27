@@ -79,6 +79,203 @@ final class AdminDashboard
         }) ?? []);
     }
 
+    // ── Arrivals: people who opened Hilads in a city (the Arrivals page's data) ──
+
+    /** An author / visitor who is a real person: a guest, or an account that isn't test, review or staff. */
+    private const REAL_PERSON = "(m.user_id IS NULL OR EXISTS (SELECT 1 FROM users u WHERE u.id = m.user_id AND NOT coalesce(u.is_fake, false)
+        AND NOT coalesce(u.is_demo, false) AND NOT coalesce(u.is_review, false) AND NOT coalesce(u.is_admin, false)))";
+
+    /** Saigon midnight, $daysAgo days ago, as a timestamptz literal for SQL. */
+    private static function dayStart(int $daysAgo = 0): string
+    {
+        return (new DateTimeImmutable('today', new DateTimeZone(self::TZ)))->modify("-{$daysAgo} days")->format('Y-m-d H:i:sP');
+    }
+
+    /**
+     * Arrivals (the Arrivals page's rows: a city chat's "join" line, written when someone opens Hilads
+     * in a city), counted as different people (an account, else a guest) per Saigon day; test, review and
+     * staff accounts left out. Today / yesterday with the members / guests split, 7 days, the top 5 cities
+     * today, the cities whose first arrival ever is this week, and the funnel arrivals → sign-ups → played.
+     */
+    public static function arrivals(): array
+    {
+        return self::safe('arrivals', fn () => Cache::remember('admin_dash_arrivals', 120, function (): array {
+            $pdo = self::pdo();
+            $from = self::dayStart(7);
+            $st = $pdo->prepare("
+                SELECT (m.created_at AT TIME ZONE '" . self::TZ . "')::date::text AS d,
+                       count(DISTINCT coalesce(m.user_id, 'g:' || m.guest_id)) AS people,
+                       count(DISTINCT m.user_id) AS members,
+                       count(DISTINCT m.guest_id) FILTER (WHERE m.user_id IS NULL) AS guests
+                FROM messages m
+                WHERE m.type = 'system' AND m.event = 'join' AND m.created_at >= ?::timestamptz AND " . self::REAL_PERSON . "
+                GROUP BY 1
+            ");
+            $st->execute([$from]);
+            $by = [];
+            foreach ($st->fetchAll(PDO::FETCH_ASSOC) as $r) $by[$r['d']] = $r;
+            $days = [];
+            for ($i = 6; $i >= 0; $i--) {
+                $d = (new DateTimeImmutable('today', new DateTimeZone(self::TZ)))->modify("-{$i} days")->format('Y-m-d');
+                $days[] = ['date' => $d, 'people' => (int) ($by[$d]['people'] ?? 0)];
+            }
+            $today = (new DateTimeImmutable('today', new DateTimeZone(self::TZ)))->format('Y-m-d');
+            $yest  = (new DateTimeImmutable('yesterday', new DateTimeZone(self::TZ)))->format('Y-m-d');
+
+            $top = $pdo->prepare("
+                SELECT m.channel_id AS id, ch.name, ci.country, count(DISTINCT coalesce(m.user_id, 'g:' || m.guest_id)) AS people
+                FROM messages m JOIN channels ch ON ch.id = m.channel_id LEFT JOIN cities ci ON ci.channel_id = ch.id
+                WHERE m.type = 'system' AND m.event = 'join' AND m.created_at >= ?::timestamptz AND ch.type = 'city' AND " . self::REAL_PERSON . "
+                GROUP BY 1, 2, 3 ORDER BY people DESC, ch.name LIMIT 5
+            ");
+            $top->execute([self::dayStart(0)]);
+            // Cities whose very first arrival is in the last 7 days.
+            $new = $pdo->prepare("
+                SELECT count(*) FROM (
+                    SELECT m.channel_id FROM messages m JOIN channels ch ON ch.id = m.channel_id AND ch.type = 'city'
+                    WHERE m.type = 'system' AND m.event = 'join'
+                    GROUP BY m.channel_id HAVING min(m.created_at) >= ?::timestamptz
+                ) x
+            ");
+            $new->execute([$from]);
+
+            // The funnel, as a cohort: the people who arrived in the period → those of them with an account created
+            // in the period (a guest's account found by its guest id) → those of them who posted a real photo on a
+            // challenge of the period.
+            $funnel = function (int $daysAgo) use ($pdo): array {
+                $start = self::dayStart($daysAgo);
+                $date  = (new DateTimeImmutable('today', new DateTimeZone(self::TZ)))->modify("-{$daysAgo} days")->format('Y-m-d');
+                $st = $pdo->prepare("
+                    WITH a AS (
+                        SELECT DISTINCT m.user_id, m.guest_id FROM messages m
+                        WHERE m.type = 'system' AND m.event = 'join' AND m.created_at >= ?::timestamptz AND " . self::REAL_PERSON . "
+                    ), people AS (
+                        SELECT coalesce(a.user_id, 'g:' || a.guest_id) AS pid, coalesce(a.user_id, u.id) AS uid
+                        FROM a LEFT JOIN users u ON a.user_id IS NULL AND u.guest_id = a.guest_id
+                    )
+                    SELECT count(DISTINCT p.pid) AS arrivals,
+                           count(DISTINCT p.uid) FILTER (WHERE EXISTS (SELECT 1 FROM users u WHERE u.id = p.uid AND u.created_at >= extract(epoch FROM ?::timestamptz))) AS signups,
+                           count(DISTINCT p.uid) FILTER (WHERE EXISTS (SELECT 1 FROM daily_proofs dp JOIN daily_challenges dc ON dc.id = dp.challenge_id
+                                                                       WHERE dp.user_id = p.uid AND dc.challenge_date >= ?::date
+                                                                         AND NOT dp.is_seed AND NOT dp.is_demo AND NOT dp.is_suggestion
+                                                                         AND dp.moderation_status NOT IN ('rejected', 'removed'))) AS played
+                    FROM people p
+                ");
+                $st->execute([$start, $start, $date]);
+                $r = $st->fetch(PDO::FETCH_ASSOC) ?: [];
+                return ['arrivals' => (int) ($r['arrivals'] ?? 0), 'signups' => (int) ($r['signups'] ?? 0), 'played' => (int) ($r['played'] ?? 0)];
+            };
+            return [
+                'today' => ['people' => (int) ($by[$today]['people'] ?? 0), 'members' => (int) ($by[$today]['members'] ?? 0), 'guests' => (int) ($by[$today]['guests'] ?? 0)],
+                'yesterday' => (int) ($by[$yest]['people'] ?? 0),
+                'days' => $days,
+                'top' => array_map(fn ($r) => ['id' => $r['id'], 'name' => $r['name'], 'country' => $r['country'], 'people' => (int) $r['people']], $top->fetchAll(PDO::FETCH_ASSOC)),
+                'newCities' => (int) $new->fetchColumn(),
+                'funnel' => ['today' => $funnel(0), 'week' => $funnel(6)],
+            ];
+        }) ?? []);
+    }
+
+    // ── Conversations: messages written by real people ──────────────────────
+
+    /**
+     * Messages written by real people per Saigon day: city chats, the World chat, plan chats, private
+     * messages (counts only: never their text or who writes to whom) and photo comments. System lines and
+     * the question of the day are not messages; test, review and staff accounts are left out.
+     */
+    public static function conversations(): array
+    {
+        return self::safe('conversations', fn () => Cache::remember('admin_dash_conversations', 120, function (): array {
+            $pdo = self::pdo();
+            $tz = self::TZ;
+            $from = self::dayStart(7);
+            $realU = "(%s IS NULL OR EXISTS (SELECT 1 FROM users u WHERE u.id = %s AND NOT coalesce(u.is_fake, false) AND NOT coalesce(u.is_demo, false)
+                      AND NOT coalesce(u.is_review, false) AND NOT coalesce(u.is_admin, false)))";
+            // Chats: city / world / event channels.
+            $st = $pdo->prepare("
+                SELECT (m.created_at AT TIME ZONE '{$tz}')::date::text AS d, ch.type AS kind, count(*) AS n,
+                       array_agg(DISTINCT coalesce(m.user_id, 'g:' || m.guest_id)) AS who
+                FROM messages m JOIN channels ch ON ch.id = m.channel_id
+                WHERE m.type IN ('text', 'image') AND m.deleted_at IS NULL AND m.created_at >= ?::timestamptz AND " . self::REAL_PERSON . "
+                GROUP BY 1, 2
+            ");
+            $st->execute([$from]);
+            $rows = $st->fetchAll(PDO::FETCH_ASSOC);
+            $dm = $pdo->prepare("SELECT (cm.created_at AT TIME ZONE '{$tz}')::date::text AS d, count(*) AS n, array_agg(DISTINCT cm.sender_id) AS who
+                                 FROM conversation_messages cm
+                                 WHERE cm.deleted_at IS NULL AND cm.created_at >= ?::timestamptz AND " . sprintf($realU, 'cm.sender_id', 'cm.sender_id') . "
+                                 GROUP BY 1");
+            $dm->execute([$from]);
+            $pc = $pdo->prepare("SELECT (c.created_at AT TIME ZONE '{$tz}')::date::text AS d, count(*) AS n, array_agg(DISTINCT c.user_id) AS who
+                                 FROM photo_comments c
+                                 WHERE c.deleted_at IS NULL AND c.hidden_at IS NULL AND c.created_at >= ?::timestamptz AND " . sprintf($realU, 'c.user_id', 'c.user_id') . "
+                                 GROUP BY 1");
+            $pc->execute([$from]);
+            $parse = fn (?string $arr): array => $arr ? array_filter(str_getcsv(trim($arr, '{}'))) : [];
+            $kinds = ['city' => 'city', 'world' => 'world', 'event' => 'plans'];
+            $acc = [];   // date => [kind => n, who => set]
+            foreach ($rows as $r) {
+                $k = $kinds[$r['kind']] ?? 'plans';
+                $acc[$r['d']][$k] = ($acc[$r['d']][$k] ?? 0) + (int) $r['n'];
+                foreach ($parse($r['who']) as $w) $acc[$r['d']]['who'][$w] = true;
+            }
+            foreach ([['private', $dm], ['comments', $pc]] as [$k, $q]) {
+                foreach ($q->fetchAll(PDO::FETCH_ASSOC) as $r) {
+                    $acc[$r['d']][$k] = (int) $r['n'];
+                    foreach ($parse($r['who']) as $w) $acc[$r['d']]['who'][$w] = true;
+                }
+            }
+            $sum = fn (?array $a): int => array_sum(array_intersect_key($a ?? [], array_flip(['city', 'world', 'plans', 'private', 'comments'])));
+            $today = (new DateTimeImmutable('today', new DateTimeZone($tz)))->format('Y-m-d');
+            $yest  = (new DateTimeImmutable('yesterday', new DateTimeZone($tz)))->format('Y-m-d');
+            $days = [];
+            for ($i = 6; $i >= 0; $i--) {
+                $d = (new DateTimeImmutable('today', new DateTimeZone($tz)))->modify("-{$i} days")->format('Y-m-d');
+                $days[] = ['date' => $d, 'messages' => $sum($acc[$d] ?? null)];
+            }
+            $t = $acc[$today] ?? [];
+
+            $top = $pdo->prepare("
+                SELECT ch.id, ch.name, ci.country, count(*) AS n
+                FROM messages m JOIN channels ch ON ch.id = m.channel_id AND ch.type = 'city' LEFT JOIN cities ci ON ci.channel_id = ch.id
+                WHERE m.type IN ('text', 'image') AND m.deleted_at IS NULL AND m.created_at >= ?::timestamptz AND " . self::REAL_PERSON . "
+                GROUP BY 1, 2, 3 ORDER BY n DESC, ch.name LIMIT 5
+            ");
+            $top->execute([self::dayStart(0)]);
+
+            // The question of the day: today's question lines, and the messages replying to them.
+            $q = $pdo->prepare("
+                SELECT count(*) AS asked,
+                       count(*) FILTER (WHERE EXISTS (SELECT 1 FROM messages a WHERE a.reply_to_id = qm.id AND a.type = 'text' AND a.deleted_at IS NULL)) AS answered,
+                       (SELECT count(*) FROM messages m WHERE m.reply_to_id IN (SELECT id FROM messages WHERE type = 'system' AND event = 'hi_question' AND created_at >= ?::timestamptz)
+                          AND m.type = 'text' AND m.deleted_at IS NULL AND " . self::REAL_PERSON . ") AS answers
+                FROM messages qm WHERE qm.type = 'system' AND qm.event = 'hi_question' AND qm.created_at >= ?::timestamptz
+            ");
+            $q->execute([self::dayStart(0), self::dayStart(0)]);
+            $qa = $q->fetch(PDO::FETCH_ASSOC) ?: [];
+
+            // Of today's public chat messages (city chats + World), the share that got a reply or a reaction.
+            $eng = $pdo->prepare("
+                SELECT count(*) AS n,
+                       count(*) FILTER (WHERE EXISTS (SELECT 1 FROM messages r WHERE r.reply_to_id = m.id AND r.deleted_at IS NULL)
+                                           OR EXISTS (SELECT 1 FROM message_reactions x WHERE x.message_id = m.id)) AS engaged
+                FROM messages m JOIN channels ch ON ch.id = m.channel_id AND ch.type IN ('city', 'world')
+                WHERE m.type IN ('text', 'image') AND m.deleted_at IS NULL AND m.created_at >= ?::timestamptz AND " . self::REAL_PERSON . "
+            ");
+            $eng->execute([self::dayStart(0)]);
+            $e = $eng->fetch(PDO::FETCH_ASSOC) ?: [];
+            return [
+                'today' => $sum($t), 'yesterday' => $sum($acc[$yest] ?? null), 'writers' => count($t['who'] ?? []),
+                'split' => ['city' => (int) ($t['city'] ?? 0), 'world' => (int) ($t['world'] ?? 0), 'plans' => (int) ($t['plans'] ?? 0),
+                            'private' => (int) ($t['private'] ?? 0), 'comments' => (int) ($t['comments'] ?? 0)],
+                'days' => $days,
+                'top' => array_map(fn ($r) => ['id' => $r['id'], 'name' => $r['name'], 'country' => $r['country'], 'messages' => (int) $r['n']], $top->fetchAll(PDO::FETCH_ASSOC)),
+                'question' => ['asked' => (int) ($qa['asked'] ?? 0), 'answered' => (int) ($qa['answered'] ?? 0), 'answers' => (int) ($qa['answers'] ?? 0)],
+                'engaged' => ['messages' => (int) ($e['n'] ?? 0), 'engaged' => (int) ($e['engaged'] ?? 0)],
+            ];
+        }) ?? []);
+    }
+
     /** Photos per challenge day, the last $days days (today last). */
     public static function photosByDay(int $days = 14): array
     {

@@ -11728,6 +11728,17 @@ $router->add('GET', '/api/v1/ranks', function () {
         $challenge = DailyChallengeRepository::findPublishedByDate($today);
         $out['endsAt'] = $challenge !== null ? DailyClock::window($today)[1]->getTimestamp() : null;
         $out['played'] = $user !== null && $challenge !== null && DailyProofRepository::findMine((string) $challenge['id'], $user['id']) !== null;
+        // No liked photo yet: today's photos (newest first, "Be the first to vote"), and when there's none at all,
+        // yesterday's podium so the screen is never empty.
+        if ($rows === [] && $offset === 0) {
+            $out['unliked'] = $format(Ranks::unlikedToday($cityId, $today));
+            if ($out['unliked'] === []) {
+                $out['yesterdayTop'] = [];
+                foreach ($format(array_column(array_slice(Ranks::photoRows('yesterday', $cityId, $today), 0, 3), 'id')) as $i => $p) {
+                    $out['yesterdayTop'][] = ['rank' => $i + 1, 'proof' => $p];
+                }
+            }
+        }
     }
     Response::json($out);
 });

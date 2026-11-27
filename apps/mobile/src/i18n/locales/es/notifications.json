@@ -64,7 +64,11 @@
     "dismiss": "Cerrar",
     "open": "Ver novedades",
     "more_one": "{{count}} más",
-    "more_other": "{{count}} más"
+    "more_other": "{{count}} más",
+    "likesLine_one": "❤️ {{count}} like nuevo en tu foto",
+    "likesLine_other": "❤️ {{count}} likes nuevos en tu foto",
+    "likesLinePhotos_one": "❤️ {{count}} like nuevo en tus fotos",
+    "likesLinePhotos_other": "❤️ {{count}} likes nuevos en tus fotos"
   },
   "inbox": {
     "settings": "Ajustes de notificaciones",

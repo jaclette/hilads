@@ -35,7 +35,7 @@ const usePp = () => useTranslation('profile', { keyPrefix: 'pp' })
  * "Share my passport". Settings behind the gear; "How points work" as a
  * sheet. Guests get an invitation to start theirs.
  */
-export default function PassportScreen({ account, guestName, guestMode, cityId, cityName, cityCountry, onSettings, onSignUp, onSignIn, onOpen }) {
+export default function PassportScreen({ inbox = null, account, guestName, guestMode, cityId, cityName, cityCountry, onSettings, onSignUp, onSignIn, onOpen }) {
   const { t, i18n } = usePp()
   const { t: tc } = useTranslation('challenge')
   const { t: tn } = useTranslation('notifications')
@@ -76,6 +76,7 @@ export default function PassportScreen({ account, guestName, guestMode, cityId, 
         <h1 className="pp-title">{t('passport.title')}</h1>
         <p className="tab-subtitle">{i18n.t('subtitles.passport', { ns: 'common' })}</p>
       </div>
+      {inbox}
       <button type="button" className="v3-round" onClick={onSettings} aria-label={t('settings')}>
         <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
           <circle cx="12" cy="12" r="3" />
@@ -177,11 +178,7 @@ export default function PassportScreen({ account, guestName, guestMode, cityId, 
         {(stats?.pioneerOf?.length ?? 0) > 0 && <PioneerBadges pioneers={stats.pioneerOf} />}
         {(stats?.specialStamps?.length ?? 0) > 0 && <SpecialStamps stamps={stats.specialStamps} />}
 
-        {/* The inbox (UX audit option B): notifications and private messages live here, Hi being no longer a tab. */}
-        <div className="pp-rows">
-          <Row icon="notifications-outline" tone="get_around" label={tn('title')} value={unreadNotifs > 0 ? String(unreadNotifs) : ''} onClick={() => onOpen('notifications')} />
-          <Row icon="chatbubbles-outline" tone="hidden_gem" label={tdm('title')} onClick={() => onOpen('messages')} />
-        </div>
+        {/* Notifications and Messages: in the header (the bell, the messages button), on every tab. */}
 
         <div className="pp-rows">
           <Row icon="camera-outline" tone="taste" label={t('passport.myPhotos')} value={stats?.photos !== undefined ? String(stats.photos) : ''} onClick={() => onOpen('photos')} />

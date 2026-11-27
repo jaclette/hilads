@@ -845,7 +845,12 @@
       "empty": {
         "photos": "Nenhuma foto curtida ainda. Vai votar nas suas favoritas ❤️",
         "players": "Ninguém pontuou ainda. Jogue e pegue o primeiro lugar 🙋",
-        "cities": "Nenhuma cidade no ranking ainda. Coloque a sua em primeiro 🌍"
+        "cities": "Nenhuma cidade no ranking ainda. Coloque a sua em primeiro 🌍",
+        "todayNone": "Nenhuma foto ainda hoje. Seja o primeiro a jogar 📸",
+        "play": "Jogue o desafio de hoje",
+        "firstVote": "Seja o primeiro a votar ❤️",
+        "firstVoteText": "Ninguém curtiu uma foto hoje ainda. Toque na que você gostar.",
+        "yesterday": "O pódio de ontem"
       },
       "results": {
         "dismiss": "Fechar",
@@ -873,7 +878,11 @@
       "seasonEnds_one": "A temporada termina em {{count}} dia",
       "seasonEnds_other": "A temporada termina em {{count}} dias",
       "seasonEndsAt": "A temporada termina {{date}}",
-      "preSeason": "Pré-temporada · primeira temporada {{date}}"
+      "preSeason": "Pré-temporada · primeira temporada {{date}}",
+      "scope": {
+        "city": "Minha cidade",
+        "world": "Mundo"
+      }
     },
     "rivals": {
       "title": "Você vs {{city}}",

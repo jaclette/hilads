@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-// Today › Dashboard: how today is going (photos, players, cities, sign-ups, who comes back),
+// Today › Dashboard: how today is going (photos, players, cities, sign-ups, arrivals, messages, who comes back),
 // what needs a person (photos to check, reports, proposals, new cities), today's challenge and
 // the week ahead (gaps in red), the season's top 5, photos over 14 days, recent errors.
 // Every tile links to the page where it is handled. Numbers: AdminDashboard (cached briefly).
@@ -22,6 +22,8 @@ $week    = AdminDashboard::week(7);
 $top     = AdminDashboard::seasonTop(5);
 $bars    = AdminDashboard::photosByDay(14);
 $errors  = AdminDashboard::errors(5);
+$arr     = AdminDashboard::arrivals();
+$conv    = AdminDashboard::conversations();
 $posthogError = isset($back['error']) && AdminDashboard::posthogConfigured() ? $back['error'] : null;
 if ($posthogError !== null) $back = AdminDashboard::cameBack();   // fall back to our own number
 
@@ -30,6 +32,23 @@ $delta = function (int $now, int $before, string $what = 'yesterday') use ($n): 
     $d = $now - $before;
     $cls = $d > 0 ? 'up' : ($d < 0 ? 'down' : '');
     return '<div class="delta ' . $cls . '">' . ($d === 0 ? 'same as ' . $what : ($d > 0 ? '+' : '−') . $n(abs($d)) . ' vs ' . $what) . '</div>';
+};
+/** A 7-day sparkline (inline SVG, today last), for the Arrivals and Conversations cards. */
+$spark = function (array $values, string $label) use ($e): string {
+    $max = max(1, ...$values);
+    $w = 160; $h = 36; $step = $w / max(1, count($values) - 1);
+    $pts = [];
+    foreach ($values as $i => $v) $pts[] = round($i * $step, 1) . ',' . round($h - 3 - ($h - 6) * $v / $max, 1);
+    $last = explode(',', end($pts));
+    return '<svg class="spark" viewBox="0 0 ' . $w . ' ' . $h . '" width="' . $w . '" height="' . $h . '" role="img" aria-label="' . $e($label) . '">'
+         . '<polyline points="' . implode(' ', $pts) . '" fill="none" stroke="var(--brand)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>'
+         . '<circle cx="' . $last[0] . '" cy="' . $last[1] . '" r="3" fill="var(--brand)"/></svg>';
+};
+$pct = fn (int $part, int $whole): string => $whole > 0 ? round(100 * $part / $whole) . ' %' : '–';
+$flag = static function (?string $cc): string {
+    if (!$cc || !preg_match('/^[A-Za-z]{2}$/', $cc)) return '';
+    $cc = strtoupper($cc);
+    return mb_chr(127397 + ord($cc[0])) . mb_chr(127397 + ord($cc[1])) . ' ';
 };
 $ago = function (?string $ts): string {
     if (!$ts) return '';
@@ -71,6 +90,18 @@ admin_nav('/admin');
             <div class="label">New sign-ups</div><div class="value num"><?= $n($k['signups']['today']) ?></div><?= $delta($k['signups']['today'], $k['signups']['yesterday']) ?>
             <div class="tile-note"><?= $n($k['signups']['week']) ?> in 7 days</div></a>
         <?php endif; ?>
+        <?php if (isset($arr['error'])): ?><div class="card kpi"><div class="label">Arrivals today</div><div class="tile-note"><?= $e($arr['error']) ?></div></div>
+        <?php else: ?>
+        <a class="card kpi" href="/admin/arrivals" title="Arrivals: different people (an account, else a guest) who opened Hilads in a city today, the Arrivals page's &quot;join&quot; lines. Saigon day (midnight to midnight, UTC+7). Test, review and staff accounts left out.">
+            <div class="label">Arrivals today</div><div class="value num"><?= $n($arr['today']['people']) ?></div><?= $delta($arr['today']['people'], $arr['yesterday']) ?>
+            <div class="tile-note"><?= $n($arr['today']['members']) ?> member<?= $arr['today']['members'] === 1 ? '' : 's' ?> · <?= $n($arr['today']['guests']) ?> guest<?= $arr['today']['guests'] === 1 ? '' : 's' ?></div></a>
+        <?php endif; ?>
+        <?php if (isset($conv['error'])): ?><div class="card kpi"><div class="label">Messages today</div><div class="tile-note"><?= $e($conv['error']) ?></div></div>
+        <?php else: ?>
+        <a class="card kpi" href="/admin/messages" title="Messages written by real people today: city chats, the World chat, plan chats, private messages and photo comments. System lines (arrivals, photos, weather) and the question of the day aren't messages. Saigon day (UTC+7). Test, review and staff accounts left out.">
+            <div class="label">Messages today</div><div class="value num"><?= $n($conv['today']) ?></div><?= $delta($conv['today'], $conv['yesterday']) ?>
+            <div class="tile-note"><?= $n($conv['writers']) ?> <?= $conv['writers'] === 1 ? 'person' : 'people' ?> wrote</div></a>
+        <?php endif; ?>
         <?php foreach (['d1' => ['next day', 'D1'], 'd7' => ['7 days later', 'D7']] as $key => [$when, $short]): ?>
             <div class="card kpi" title="<?= $own
                 ? 'Of the accounts created on a day, the share that did something (photo, like, comment, chat message) ' . $when . '. Average of the last 7 complete sign-up days. Our own data: it cannot see people who only opened the app.'
@@ -106,6 +137,72 @@ admin_nav('/admin');
         </div>
         <?php endif; ?>
     </section>
+
+    <div class="grid cols-1-1" style="margin-bottom:16px">
+        <!-- Arrivals -->
+        <section class="card">
+            <div class="card-head"><h2>Arrivals</h2><span class="hint" title="Saigon day (UTC+7)">people who opened Hilads in a city</span><a class="link" href="/admin/arrivals">Open</a></div>
+            <div class="card-body">
+            <?php if (isset($arr['error'])): ?><p class="muted"><?= $e($arr['error']) ?></p><?php else: ?>
+                <div class="spark-row" title="Arrivals per day, the last 7 Saigon days (today last)">
+                    <?= $spark(array_column($arr['days'], 'people'), 'Arrivals per day over 7 days') ?>
+                    <span class="hint"><span title="The 7 days added up: a person who arrived on 3 days counts 3 times (the funnel below counts each person once)"><?= $n(array_sum(array_column($arr['days'], 'people'))) ?> in 7 days</span> · <span title="Cities whose very first arrival ever was in the last 7 days"><?= $n($arr['newCities']) ?> new <?= $arr['newCities'] === 1 ? 'city' : 'cities' ?> this week</span></span>
+                </div>
+                <h3 class="mini-title" title="Different people who arrived in each city today (Saigon day)">Top cities today</h3>
+                <?php if ($arr['top'] === []): ?><p class="muted">No arrivals yet today.</p><?php else: ?>
+                <table class="mini"><tbody>
+                <?php foreach ($arr['top'] as $c): ?>
+                    <tr><td><a href="/admin/arrivals?channel=<?= $e(rawurlencode($c['id'])) ?>" style="color:var(--text)"><?= $e($flag($c['country']) . $c['name']) ?></a></td><td class="r num"><?= $n($c['people']) ?></td></tr>
+                <?php endforeach; ?>
+                </tbody></table>
+                <?php endif; ?>
+                <h3 class="mini-title" title="A cohort: the people who arrived in the period → those of them with an account created in the period (a guest's later account counts) → those of them who posted a photo on a challenge of the period. Saigon days; test, review and staff accounts left out.">Visitors who become players</h3>
+                <table class="mini funnel"><thead><tr><th></th><th class="r">Arrived</th><th class="r">Signed up</th><th class="r">Played</th></tr></thead><tbody>
+                <?php foreach (['today' => 'Today', 'week' => 'Last 7 days'] as $key => $label): $f = $arr['funnel'][$key]; ?>
+                    <tr><td><?= $e($label) ?></td><td class="r num"><?= $n($f['arrivals']) ?></td>
+                        <td class="r num"><?= $n($f['signups']) ?> <span class="faint" title="Signed up ÷ arrived"><?= $pct($f['signups'], $f['arrivals']) ?></span></td>
+                        <td class="r num"><b><?= $n($f['played']) ?></b> <span class="faint" title="Played ÷ arrived: visitors who became players"><?= $pct($f['played'], $f['arrivals']) ?></span></td></tr>
+                <?php endforeach; ?>
+                </tbody></table>
+            <?php endif; ?>
+            </div>
+        </section>
+
+        <!-- Conversations -->
+        <section class="card">
+            <div class="card-head"><h2>Conversations</h2><span class="hint" title="Saigon day (UTC+7)">messages written by real people today</span><a class="link" href="/admin/messages">Open</a></div>
+            <div class="card-body">
+            <?php if (isset($conv['error'])): ?><p class="muted"><?= $e($conv['error']) ?></p><?php else: $sp = $conv['split']; ?>
+                <div class="spark-row" title="Messages per day, the last 7 Saigon days (today last), every kind">
+                    <?= $spark(array_column($conv['days'], 'messages'), 'Messages per day over 7 days') ?>
+                    <span class="hint"><?= $n(array_sum(array_column($conv['days'], 'messages'))) ?> in 7 days</span>
+                </div>
+                <table class="mini"><tbody>
+                    <tr title="Messages in the city chats"><td>City chats</td><td class="r num"><?= $n($sp['city']) ?></td></tr>
+                    <tr title="Messages in the World chat"><td>World chat</td><td class="r num"><?= $n($sp['world']) ?></td></tr>
+                    <?php if ($sp['plans'] > 0): ?><tr title="Messages in the chats of Hi plans"><td>Plan chats</td><td class="r num"><?= $n($sp['plans']) ?></td></tr><?php endif; ?>
+                    <tr title="Private messages: a count only, never their text or who writes to whom"><td>Private messages</td><td class="r num"><?= $n($sp['private']) ?></td></tr>
+                    <tr title="Comments on Daily photos (hidden or deleted ones left out)"><td>Photo comments</td><td class="r num"><?= $n($sp['comments']) ?></td></tr>
+                </tbody></table>
+                <h3 class="mini-title" title="Messages in each city chat today (Saigon day)">Most active city chats today</h3>
+                <?php if ($conv['top'] === []): ?><p class="muted">No city chat messages yet today.</p><?php else: ?>
+                <table class="mini"><tbody>
+                <?php foreach ($conv['top'] as $c): ?>
+                    <tr><td><?= $e($flag($c['country']) . $c['name']) ?></td><td class="r num"><?= $n($c['messages']) ?></td></tr>
+                <?php endforeach; ?>
+                </tbody></table>
+                <?php endif; ?>
+                <?php $q = $conv['question']; $g = $conv['engaged']; ?>
+                <ul class="checks" style="margin-top:10px">
+                    <li title="Replies to today's question of the day (Admin › Hi questions), and the share of the chats that got the question where someone answered"><span class="st st-ok">?</span>
+                        Question of the day <span class="meta"><?= $n($q['answers']) ?> answers · <?= $pct($q['answered'], $q['asked']) ?> of <?= $n($q['asked']) ?> chats answered</span></li>
+                    <li title="Of today's messages in the city chats and the World chat, the share that got at least one reply or one reaction"><span class="st st-ok">↩</span>
+                        Got a reply or a reaction <span class="meta"><?= $pct($g['engaged'], $g['messages']) ?> of <?= $n($g['messages']) ?> chat messages</span></li>
+                </ul>
+            <?php endif; ?>
+            </div>
+        </section>
+    </div>
 
     <div class="grid cols-2-1" style="margin-bottom:16px">
         <!-- Today's challenge -->

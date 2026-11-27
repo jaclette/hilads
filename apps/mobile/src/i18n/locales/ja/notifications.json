@@ -64,7 +64,11 @@
     "dismiss": "閉じる",
     "open": "新着を見る",
     "more_one": "ほか{{count}}件",
-    "more_other": "ほか{{count}}件"
+    "more_other": "ほか{{count}}件",
+    "likesLine_one": "❤️ あなたの写真に新しいいいねが{{count}}件",
+    "likesLine_other": "❤️ あなたの写真に新しいいいねが{{count}}件",
+    "likesLinePhotos_one": "❤️ あなたの写真に新しいいいねが{{count}}件",
+    "likesLinePhotos_other": "❤️ あなたの写真に新しいいいねが{{count}}件"
   },
   "inbox": {
     "settings": "通知設定",

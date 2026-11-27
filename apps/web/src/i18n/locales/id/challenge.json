@@ -795,7 +795,12 @@
       "empty": {
         "photos": "Belum ada foto yang disukai. Yuk vote favoritmu ❤️",
         "players": "Belum ada yang dapat poin. Main dan rebut peringkat pertama 🙋",
-        "cities": "Belum ada kota di papan. Taruh kotamu di depan 🌍"
+        "cities": "Belum ada kota di papan. Taruh kotamu di depan 🌍",
+        "todayNone": "Belum ada foto hari ini. Jadilah yang pertama main 📸",
+        "play": "Mainkan tantangan hari ini",
+        "firstVote": "Jadilah yang pertama memilih ❤️",
+        "firstVoteText": "Belum ada yang menyukai foto hari ini. Ketuk foto yang kamu suka.",
+        "yesterday": "Podium kemarin"
       },
       "results": {
         "dismiss": "Tutup",
@@ -818,7 +823,11 @@
       "seasonEnds_one": "Musim berakhir dalam {{count}} hari",
       "seasonEnds_other": "Musim berakhir dalam {{count}} hari",
       "seasonEndsAt": "Musim berakhir {{date}}",
-      "preSeason": "Pra-musim · musim pertama {{date}}"
+      "preSeason": "Pra-musim · musim pertama {{date}}",
+      "scope": {
+        "city": "Kotaku",
+        "world": "Dunia"
+      }
     },
     "rivals": {
       "title": "Kamu vs {{city}}",

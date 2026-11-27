@@ -18,6 +18,8 @@ import { patchNotifCounts, refreshNotifCounts, useNotifCounts } from './counts';
 import { setAwayCardShowing } from './awayResults';
 import { holdScreen } from '@/lib/celebrationQueue';
 import { commentLine } from './commentLine';
+import { useContestOverview } from '@/features/contest/useContestTab';
+import { ackRankAway, useRaceSignals } from '@/features/contest/raceSignals';
 
 type TFn = (key: string, opts?: Record<string, unknown>) => string;
 
@@ -56,13 +58,25 @@ function fragment(i: InboxItem, items: InboxItem[], t: TFn): string | null {
   }
 }
 
-/** The one-liner: the fragments, most important first, each kind once ("💬 Lan also commented on Maxime's photo · ❤️ +3"). */
-export function awayLine(items: InboxItem[], t: TFn, max = 3): string {
+/**
+ * The one-liner: the fragments, most important first, each kind once ("💬 Lan also commented on Maxime's
+ * photo · ❤️ +3"). The first one is always a readable sentence: likes alone say "❤️ 3 new likes on your
+ * photo", not "❤️ +3". `race` (my rank changed in the campaign's race) comes right after yesterday's results.
+ */
+export function awayLine(items: InboxItem[], t: TFn, max = 3, race: string | null = null): string {
   const parts: string[] = [];
-  for (const i of byImportance(items)) {
-    const f = fragment(i, items, t);
+  const sorted = byImportance(items);
+  for (const i of sorted) {
+    if (race && i.type !== 'daily_result' && !parts.includes(race)) parts.push(race);
+    let f = fragment(i, items, t);
+    if (f && i.type === 'daily_vote' && parts.length === 0) {
+      const likes = items.filter(x => x.type === 'daily_vote');
+      const n = likes.reduce((sum, x) => sum + x.count, 0);
+      f = sameObject(likes) !== null || likes.length === 1 ? t('away.likesLine', { count: n }) : t('away.likesLinePhotos', { count: n });
+    }
     if (f && !parts.includes(f)) parts.push(f);
   }
+  if (race && !parts.includes(race)) parts.push(race);
   if (!parts.length) parts.push(t('away.other'));
   return parts.slice(0, max).join(' · ');
 }
@@ -94,6 +108,12 @@ export function WhileAwayCard() {
   const reduced = useReducedMotion();
   const pending = (unseen.social ?? 0) + (unseen.game ?? 0);
   const [items, setItems] = useState<InboxItem[] | null>(null);
+  // My rank changed in the campaign's race (raceSignals): a line here until it's seen.
+  const contest = useContestOverview();
+  const { change } = useRaceSignals(contest?.season?.id ?? null);
+  const tMe = useTranslation('me').t;
+  const raceChange = account && change && !change.awayAck ? change : null;
+  const race = raceChange ? tMe(raceChange.to < raceChange.from ? 'trip.away.up' : 'trip.away.down', { rank: raceChange.to }) : null;
 
   useEffect(() => {
     if (!account || pending === 0) { setItems(null); return; }
@@ -106,6 +126,8 @@ export function WhileAwayCard() {
 
   const ids = useMemo(() => (items ?? []).flatMap(i => i.ids), [items]);
   const seen = useCallback(() => {
+    ackRankAway();
+    if (!ids.length) return;
     markNotificationsSeen({ ids });
     patchNotifCounts(c => ({ ...c, unseen: { ...c.unseen, social: 0, game: 0 } }));
     setItems(null);
@@ -116,7 +138,7 @@ export function WhileAwayCard() {
   }, [seen]);
 
   // No celebration pops over the card while it arrives (a moment to read it) or while it's being swiped.
-  const showing = !!items?.length;
+  const showing = !!items?.length || !!race;
   useEffect(() => {
     if (!showing) return;
     const release = holdScreen('away-intro');
@@ -147,22 +169,26 @@ export function WhileAwayCard() {
   // One card at a time above the hero: while this one shows, the results card waits (it can
   // carry the results itself; once it's dismissed, unread results get their own card).
   useEffect(() => {
-    setAwayCardShowing(!!items?.length);
+    setAwayCardShowing(!!items?.length || !!race);
     return () => setAwayCardShowing(false);
-  }, [items]);
+  }, [items, race]);
   // New items: the card comes back in place (a swipe left it off-screen).
   useEffect(() => { tx.value = 0; }, [items]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  if (!items?.length) return null;
-  const sorted = byImportance(items);
-  const main = sorted[0];
-  const single = items.length === 1 || sameObject(items) !== null;
-  const more = single ? 0 : items.length - 1;
+  if (!items?.length && !race) return null;
+  const list = items ?? [];
+  const sorted = byImportance(list);
+  // Only the race news (no notification): the card opens the Trip tab.
+  const main: InboxItem | null = sorted[0] ?? null;
+  const single = list.length <= 1 || sameObject(list) !== null;
+  // The race line leads (no results): a tap goes to the Trip tab, every notification is in "+N".
+  const raceFirst = !!race && sorted[0]?.type !== 'daily_result';
+  const more = raceFirst ? list.length : single ? 0 : list.length - 1;
   const actors: InboxActor[] = [];
   for (const i of sorted) for (const a of i.actors) {
     if (actors.length < 3 && !actors.some(x => (x.id ?? x.name) === (a.id ?? a.name))) actors.push(a);
   }
-  const line = awayLine(items, t);
+  const line = awayLine(list, t, 3, race);
 
   // The card slides out, then the item opens (its notifications read: the related ones, or all on the same object).
   const leave = (then: () => void, readIds: number[] | null) => {
@@ -173,6 +199,11 @@ export function WhileAwayCard() {
     tx.value = withTiming(-500, { duration: 200 }, () => runOnJS(go)());
   };
   const openMain = () => {
+    if (!main || raceFirst) {
+      track('away_card_opened', { type: 'trip_rank', single, more });
+      leave(() => router.navigate('/(tabs)/trip' as never), null);
+      return;
+    }
     const link = main.deep_link;
     const readIds = single ? ids : sorted.filter(i => i.type === main.type && sameKey(i, main)).flatMap(i => i.ids);
     track('away_card_opened', { type: main.type, single, more });
@@ -185,7 +216,7 @@ export function WhileAwayCard() {
   const openMore = () => {
     track('away_card_more', { count: more });
     // The notifications, on just the items the card stands for (the screen can show them all again).
-    leave(() => router.push(`/notifications?only=${items.map(i => i.id).join(',')}` as never), null);
+    leave(() => router.push(`/notifications?only=${list.map(i => i.id).join(',')}` as never), null);
   };
 
   return (

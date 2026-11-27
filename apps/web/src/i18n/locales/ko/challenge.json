@@ -795,7 +795,12 @@
       "empty": {
         "photos": "아직 좋아요 받은 사진이 없어요. 좋아하는 사진에 투표해 보세요 ❤️",
         "players": "아직 점수를 얻은 사람이 없어요. 참여해서 1위를 차지하세요 🙋",
-        "cities": "아직 순위에 오른 도시가 없어요. 우리 도시를 1등으로 🌍"
+        "cities": "아직 순위에 오른 도시가 없어요. 우리 도시를 1등으로 🌍",
+        "todayNone": "오늘은 아직 사진이 없어요. 처음으로 플레이해 보세요 📸",
+        "play": "오늘의 챌린지 플레이",
+        "firstVote": "처음으로 투표해 보세요 ❤️",
+        "firstVoteText": "오늘은 아직 아무도 좋아요를 누르지 않았어요. 마음에 드는 사진을 탭하세요.",
+        "yesterday": "어제의 시상대"
       },
       "results": {
         "dismiss": "닫기",
@@ -818,7 +823,11 @@
       "seasonEnds_one": "시즌 종료까지 {{count}}일",
       "seasonEnds_other": "시즌 종료까지 {{count}}일",
       "seasonEndsAt": "시즌은 {{date}}에 끝나요",
-      "preSeason": "프리시즌 · 첫 시즌 {{date}}"
+      "preSeason": "프리시즌 · 첫 시즌 {{date}}",
+      "scope": {
+        "city": "우리 도시",
+        "world": "전 세계"
+      }
     },
     "rivals": {
       "title": "나 vs {{city}}",

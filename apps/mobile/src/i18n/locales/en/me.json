@@ -573,6 +573,10 @@
       "remindOn": "🔔 We'll remind you",
       "a11yGuest": "Boarding pass {{route}}, seat {{seat}}, boarding {{date}}. Tap to grab your seat.",
       "a11yMember": "Your boarding pass {{route}}, seat {{seat}}, boarding {{date}}, {{value}}"
+    },
+    "away": {
+      "up": "You climbed to {{rank, ordinal}} in the race ✈️",
+      "down": "You dropped to {{rank, ordinal}} in the race ✈️"
     }
   }
 }

@@ -12990,6 +12990,17 @@ html[data-event="halloween"] { --header-art: #FFA552; --header-art-opacity: 0.28
 .pc-btn:focus-visible { outline: 3px solid var(--primary); outline-offset: 2px; }
 .pc-notes { list-style: none; margin: 4px 0 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
 .pc-notes li { display: flex; gap: 8px; font-size: 13px; font-weight: 700; color: var(--muted); }
+/* The campaign's slim strip on Today (56 px, the postcard's yellow), and the fade between the two sizes. */
+.ls-slim { display: flex; align-items: center; gap: 10px; width: 100%; height: 56px; padding: 0 12px 0 8px; border: 0; border-radius: 18px; cursor: pointer;
+  background: linear-gradient(135deg, #FFE48A, #FFC93C); color: #2B1A12; font: inherit; text-align: start; box-shadow: 0 4px 0 #D9A10F, 0 8px 14px rgba(120,60,0,.15); }
+.ls-slim:active { transform: scale(.985); }
+.ls-slim:focus-visible { outline: 3px solid var(--primary); outline-offset: 3px; }
+.ls-slim-thumb { width: 40px; height: 40px; flex-shrink: 0; border-radius: 12px; overflow: hidden; }
+.ls-slim-thumb img, .ls-slim-thumb svg { width: 100%; height: 100%; object-fit: cover; display: block; }
+.ls-slim-text { flex: 1; min-width: 0; font-size: 14px; line-height: 18px; font-weight: 900; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ls-card2, .ls-slim { animation: ls-in .32s ease-out backwards; }
+@keyframes ls-in { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .ls-card2, .ls-slim { animation: none; } }
 /* The Trip header's "See the prize" pill, the slim header's link, the prize photos full screen. */
 .tr-prize-btn { align-self: flex-start; display: inline-flex; align-items: center; gap: 4px; min-height: 36px; margin-top: 8px; padding: 0 14px; border-radius: 999px;
   background: rgba(255,255,255,.24); border: 1px solid rgba(255,255,255,.55); color: #fff; font: inherit; font-size: 14px; font-weight: 800; cursor: pointer;
@@ -13006,3 +13017,29 @@ html[data-event="halloween"] { --header-art: #FFA552; --header-art-opacity: 0.28
 .ls-full-close, .ls-full-nav { position: absolute; width: 44px; height: 44px; border-radius: 50%; border: 0; background: rgba(255,255,255,.18); color: #fff; display: grid; place-items: center; cursor: pointer; }
 .ls-full-close { top: calc(12px + env(safe-area-inset-top, 0px)); right: 16px; }
 .ls-full-nav { top: 50%; margin-top: -22px; } .ls-full-nav.prev { left: 12px; } .ls-full-nav.next { right: 12px; }
+
+/* The messages button and the bell on Map, Trip and Passport (members): unread counts from every tab. */
+.v3-inbox { display: inline-flex; align-items: center; gap: 8px; flex-shrink: 0; }
+.tr-hero-inbox { margin-left: auto; pointer-events: auto; }
+
+/* World: the ranking's scope toggle (World | my city, a sliding thumb), and today's empty states. */
+.r6-scope { position: relative; display: inline-grid; grid-template-columns: 1fr 1fr; align-self: flex-start; padding: 3px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); }
+.r6-scope button { position: relative; z-index: 1; display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 34px; padding: 0 14px; border: 0; background: none;
+  font: inherit; font-size: 14px; font-weight: 600; color: var(--muted); cursor: pointer; white-space: nowrap; }
+.r6-scope button[aria-selected="true"] { font-weight: 800; color: var(--on-selected, var(--text)); }
+.r6-scope-thumb { position: absolute; top: 3px; bottom: 3px; left: 3px; width: calc(50% - 3px); border-radius: 999px; background: var(--selected, var(--primary-tint)); transition: transform .22s ease-out; }
+.r6-scope[data-on="city"] .r6-scope-thumb { transform: translateX(100%); }
+@media (prefers-reduced-motion: reduce) { .r6-scope-thumb { transition: none; } }
+.r6-empty.r6-empty-today { padding-top: 24px; padding-bottom: 24px; }
+.r6-firstvote { display: flex; flex-direction: column; gap: 8px; padding: 12px 16px 0; }
+.r6-firstvote h3 { margin: 0; font-size: 17px; font-weight: 800; color: var(--text); }
+.r6-muted { margin: 0; font-size: 13px; color: var(--muted); }
+.r6-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.r6-grid button { position: relative; aspect-ratio: .8; border: 0; padding: 0; border-radius: 14px; overflow: hidden; background: var(--bg3, var(--surface)); cursor: pointer; }
+.r6-grid img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.r6-grid-flag { position: absolute; left: 6px; bottom: 6px; }
+.r6-play { margin-top: 8px; }
+.r6-yrow { display: flex; justify-content: center; gap: 12px; }
+.r6-yrow button { display: flex; flex-direction: column; align-items: center; gap: 4px; width: 96px; border: 0; background: none; padding: 0; font: inherit; cursor: pointer; }
+.r6-yrow img { width: 88px; height: 110px; border-radius: 16px; border: 3px solid; object-fit: cover; }
+.r6-yrow span { font-size: 13px; font-weight: 700; color: var(--text); max-width: 96px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }

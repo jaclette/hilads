@@ -64,7 +64,11 @@
     "dismiss": "Đóng",
     "open": "Xem tin mới",
     "more_one": "Thêm {{count}}",
-    "more_other": "Thêm {{count}}"
+    "more_other": "Thêm {{count}}",
+    "likesLine_one": "❤️ {{count}} lượt thích mới cho ảnh của bạn",
+    "likesLine_other": "❤️ {{count}} lượt thích mới cho ảnh của bạn",
+    "likesLinePhotos_one": "❤️ {{count}} lượt thích mới cho các ảnh của bạn",
+    "likesLinePhotos_other": "❤️ {{count}} lượt thích mới cho các ảnh của bạn"
   },
   "inbox": {
     "settings": "Cài đặt thông báo",

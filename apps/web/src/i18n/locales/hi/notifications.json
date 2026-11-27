@@ -44,7 +44,11 @@
     "other": "🔔 आपके लिए कुछ नया है",
     "dismiss": "बंद करें",
     "more_one": "{{count}} और",
-    "more_other": "{{count}} और"
+    "more_other": "{{count}} और",
+    "likesLine_one": "❤️ आपकी फ़ोटो पर {{count}} नया लाइक",
+    "likesLine_other": "❤️ आपकी फ़ोटो पर {{count}} नए लाइक",
+    "likesLinePhotos_one": "❤️ आपकी फ़ोटो पर {{count}} नया लाइक",
+    "likesLinePhotos_other": "❤️ आपकी फ़ोटो पर {{count}} नए लाइक"
   },
   "inbox": {
     "settings": "नोटिफ़िकेशन सेटिंग्स",

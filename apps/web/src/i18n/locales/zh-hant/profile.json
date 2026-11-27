@@ -610,6 +610,10 @@
         "remindOn": "🔔 我們會提醒你",
         "a11yGuest": "登機證 {{route}}，座位 {{seat}}，登機日期 {{date}}。點按搶座。",
         "a11yMember": "你的登機證 {{route}}，座位 {{seat}}，登機日期 {{date}}，{{value}}"
+      },
+      "away": {
+        "up": "你在比賽中升到{{rank, ordinal}} ✈️",
+        "down": "你在比賽中降到{{rank, ordinal}} ✈️"
       }
     }
   },

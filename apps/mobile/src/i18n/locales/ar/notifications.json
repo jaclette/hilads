@@ -68,7 +68,19 @@
     "more_two": "{{count}} أخرى",
     "more_few": "{{count}} أخرى",
     "more_many": "{{count}} أخرى",
-    "more_other": "{{count}} أخرى"
+    "more_other": "{{count}} أخرى",
+    "likesLine_one": "❤️ إعجاب جديد على صورتك",
+    "likesLine_two": "❤️ {{count}} إعجابات جديدة على صورتك",
+    "likesLine_few": "❤️ {{count}} إعجابات جديدة على صورتك",
+    "likesLine_many": "❤️ {{count}} إعجابًا جديدًا على صورتك",
+    "likesLine_other": "❤️ {{count}} إعجابًا جديدًا على صورتك",
+    "likesLine_zero": "❤️ {{count}} إعجابًا جديدًا على صورتك",
+    "likesLinePhotos_one": "❤️ إعجاب جديد على صورك",
+    "likesLinePhotos_two": "❤️ {{count}} إعجابات جديدة على صورك",
+    "likesLinePhotos_few": "❤️ {{count}} إعجابات جديدة على صورك",
+    "likesLinePhotos_many": "❤️ {{count}} إعجابًا جديدًا على صورك",
+    "likesLinePhotos_other": "❤️ {{count}} إعجابًا جديدًا على صورك",
+    "likesLinePhotos_zero": "❤️ {{count}} إعجابًا جديدًا على صورك"
   },
   "inbox": {
     "settings": "إعدادات الإشعارات",

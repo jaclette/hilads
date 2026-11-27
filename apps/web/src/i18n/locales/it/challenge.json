@@ -845,7 +845,12 @@
       "empty": {
         "photos": "Ancora nessuna foto con mi piace. Vai a votare le tue preferite ❤️",
         "players": "Nessuno ha ancora fatto punti. Gioca e prenditi il primo posto 🙋",
-        "cities": "Ancora nessuna città in classifica. Metti la tua per prima 🌍"
+        "cities": "Ancora nessuna città in classifica. Metti la tua per prima 🌍",
+        "todayNone": "Ancora nessuna foto oggi. Gioca per primo 📸",
+        "play": "Gioca la sfida di oggi",
+        "firstVote": "Vota per primo ❤️",
+        "firstVoteText": "Nessuno ha ancora messo like a una foto oggi. Tocca quella che ti piace.",
+        "yesterday": "Il podio di ieri"
       },
       "results": {
         "dismiss": "Chiudi",
@@ -873,7 +878,11 @@
       "seasonEnds_one": "La stagione finisce tra {{count}} giorno",
       "seasonEnds_other": "La stagione finisce tra {{count}} giorni",
       "seasonEndsAt": "La stagione finisce {{date}}",
-      "preSeason": "Pre-stagione · prima stagione {{date}}"
+      "preSeason": "Pre-stagione · prima stagione {{date}}",
+      "scope": {
+        "city": "La mia città",
+        "world": "Mondo"
+      }
     },
     "rivals": {
       "title": "Tu vs {{city}}",

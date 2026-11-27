@@ -49,7 +49,7 @@ admin_head('Create your account');
 ?>
 <div class="login-page">
     <div class="login-box wide">
-        <div class="brand"><span class="brand-mark">Hi</span> Hilads back office</div>
+        <div class="brand"><?= admin_logo() ?> Hilads back office</div>
         <h1>Create your admin account</h1>
         <p class="subtitle">You'll be the first super admin. After this the shared setup login stops working, and you'll set up
             two-step verification (an authenticator app on your phone).</p>

@@ -622,6 +622,10 @@
         "remindOn": "🔔 Paaalalahanan ka namin",
         "a11yGuest": "Boarding pass {{route}}, upuan {{seat}}, boarding sa {{date}}. I-tap para kunin ang upuan mo.",
         "a11yMember": "Ang boarding pass mo {{route}}, upuan {{seat}}, boarding sa {{date}}, {{value}}"
+      },
+      "away": {
+        "up": "Umakyat ka sa {{rank, ordinal}} sa race ✈️",
+        "down": "Bumaba ka sa {{rank, ordinal}} sa race ✈️"
       }
     }
   },

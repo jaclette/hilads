@@ -34,20 +34,23 @@ const GOLD = themeColor('sip')
  * none on Cities); a podium short of 3 shows dashed ghost places leading to Today.
  */
 const SEG_ICON = { photos: 'camera-outline', players: 'person-outline', cities: 'flag-outline' }
+// The ranking's scope for this page load (World at launch).
+let sessionScope = 'world'
 
 export default function RanksScreen({ header, initial }) {
   const { t } = useDc()
-  const { cityId: browsedCity, openToday, scope: appScope } = useDaily()
+  const { cityId: browsedCity, openToday, cityName, cityCountry } = useDaily()
   const [tab, setTab] = useState(initial?.tab ?? 'photos')
   const [period, setPeriod] = useState(initial?.period ?? 'today')
-  // One scope control (UX audit): the header's pill (my city or World), World without a city. A
-  // deep link's scope applies here only, until the pill changes.
-  const [scope, setScope] = useState(initial?.scope ?? appScope ?? 'city')
-  useEffect(() => { if (appScope) setScope(appScope) }, [appScope])
+  // The ranking's own scope (World / my city), on this screen: World at every page load, the last choice kept for the
+  // session; the header's city only names the toggle's second option. A deep link's scope sets it.
+  const [scope, setScopeState] = useState(initial?.scope ?? sessionScope)
+  const setScope = v => { sessionScope = v; setScopeState(v) }
   const [resp, setResp] = useState(null)
   const [failed, setFailed] = useState(false)
   const cityId = Number(initial?.cityId) || Number(browsedCity) || null
-  const scopeNow = cityId ? scope : 'world'
+  // Cities rank the cities of the world: no city scope there.
+  const scopeNow = cityId && tab !== 'cities' ? scope : 'world'
   const key = `${tab}|${period}|${scopeNow}|${cityId}`
   // Each answer is kept with what it was asked for: a view only gets its own shape.
   const data = resp?.key === key ? resp.data : null
@@ -113,6 +116,16 @@ export default function RanksScreen({ header, initial }) {
           <div className="r6-chips" role="tablist">
             {PERIODS[tab].map(p => <Chip key={p} on={period === p} onClick={() => setPeriod(p)}><FitText>{t(`ranks.period.${p}`)}</FitText></Chip>)}
           </div>
+          {/* The scope toggle: World | my city (the header's), World by default. */}
+          {tab !== 'cities' && cityId && cityName && (
+            <div className="r6-scope" role="tablist" data-on={scope}>
+              <span className="r6-scope-thumb" aria-hidden="true" />
+              <button type="button" role="tab" aria-selected={scope === 'world'} onClick={() => { if (scope !== 'world') { setScope('world'); navigator.vibrate?.(8); track('ranks_scope', { scope: 'world', tab, platform_surface: 'web' }) } }}>
+                <span aria-hidden="true">🌍</span>{t('ranks.scope.world')}</button>
+              <button type="button" role="tab" aria-selected={scope === 'city'} onClick={() => { if (scope !== 'city') { setScope('city'); navigator.vibrate?.(8); track('ranks_scope', { scope: 'city', tab, platform_surface: 'web' }) } }}>
+                {cityCountry && <FlagSticker country={cityCountry} size={16} />}{shortCityName(cityName)}</button>
+            </div>
+          )}
           {info && (
             <div className="r6-info-row">
               <Icon name="hourglass-outline" size={16} className="r6-info-icon" />
@@ -193,9 +206,10 @@ function Photos({ data, failed, period, ghost, loadMore, focusAt = null }) {
   }))
   // The "You" bar: my best photo of the period and the likes it needs to pass the one above.
   const me = data.me ?? null
+  // Without a rank: "Play today to get on the board" while I haven't played today; otherwise no bar until I have a rank.
   const you = me
     ? me.rank === 1 ? t('ranks.you.photoTop') : t('ranks.you.photo', { rank: me.rank, count: me.gap ?? 1, next: me.rank - 1 })
-    : !account || (period === 'today' && !data.played) ? t('ranks.you.none') : t('ranks.you.photoNone')
+    : period === 'today' && !data.played ? t('ranks.you.none') : null
   const onYou = () => {
     if (!me) return
     const el = rows.current[me.proofId]
@@ -204,7 +218,7 @@ function Photos({ data, failed, period, ghost, loadMore, focusAt = null }) {
   }
   return (
     <>
-      {!items.length && <Empty text={t('ranks.empty.photos')} />}
+      {!items.length && (period === 'today' ? <TodayEmpty data={data} open={open} account={account} /> : <Empty text={t('ranks.empty.photos')} />)}
       {items.length > 0 && <Podium items={podium} ghost={ghost} />}
       {period === 'yesterday' && data.cityBest?.length > 0 && (
         <div className="r6-best">
@@ -223,8 +237,57 @@ function Photos({ data, failed, period, ghost, loadMore, focusAt = null }) {
         {rest.map(i => <PhotoRow key={i.proof.id} item={i} week={period === 'week'} single={period === 'today' || period === 'yesterday'} mine={me?.proofId === i.proof.id} rowRef={el => { rows.current[i.proof.id] = el }} onClick={() => open(proofs, i.proof)} />)}
         <div ref={end} className="r6-more">{loading && <span className="r6-spinner" />}</div>
       </div>
-      <YouBar text={you} onClick={onYou} />
+      {you && <YouBar text={you} onClick={onYou} />}
       {burst && <div className="r6-burst"><Confetti run /></div>}
+    </>
+  )
+}
+
+/**
+ * Today's photos ranking while nobody has a like yet (as the app): nobody played → "No photos yet today.
+ * Be the first to play 📸", play, and yesterday's podium; photos but no likes → those photos, "Be the first to vote".
+ */
+function TodayEmpty({ data, open }) {
+  const { t } = useDc()
+  const { openToday } = useDaily()
+  const unliked = data.unliked ?? []
+  if (unliked.length > 0) {
+    return (
+      <div className="r6-firstvote">
+        <h3>{t('ranks.empty.firstVote')}</h3>
+        <p className="r6-muted">{t('ranks.empty.firstVoteText')}</p>
+        <div className="r6-grid">
+          {unliked.map(p => (
+            <button key={p.id} type="button" onClick={() => open(unliked, p)} aria-label={[handle(p.user), p.city?.name ? shortCityName(p.city.name) : null].filter(Boolean).join(', ')}>
+              <img src={thumbUrl(p.thumbUrl || p.photoUrl)} alt="" loading="lazy" />
+              {p.city && <span className="r6-grid-flag"><FlagSticker country={p.city.country} size={16} /></span>}
+            </button>
+          ))}
+        </div>
+      </div>
+    )
+  }
+  const top = data.yesterdayTop ?? []
+  return (
+    <>
+      <div className="r6-empty r6-empty-today">
+        <span className="r6-empty-disc" aria-hidden="true"><Icon name="camera-outline" size={34} /></span>
+        <b>{t('ranks.empty.todayNone')}</b>
+        {!data.played && <button type="button" className="today-cta btn-primary r6-play" onClick={openToday}><Icon name="camera-outline" size={18} />{t('ranks.empty.play')}</button>}
+      </div>
+      {top.length > 0 && (
+        <div className="r6-firstvote">
+          <h3>{t('ranks.empty.yesterday')}</h3>
+          <div className="r6-yrow">
+            {top.map(({ rank, proof }) => (
+              <button key={proof.id} type="button" onClick={() => open(top.map(x => x.proof), proof)} aria-label={`${rank}. ${handle(proof.user)}`}>
+                <img src={thumbUrl(proof.thumbUrl || proof.photoUrl)} alt="" loading="lazy" style={{ borderColor: MEDAL[rank - 1] }} />
+                <span>{handle(proof.user)}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
     </>
   )
 }
@@ -290,7 +353,8 @@ function Players({ data, failed, period, ghost }) {
   }))
   // This season: "You're #2 this season, 15 pts behind @kitty_3".
   const behind = Math.max(0, (me?.gap ?? 1) - 1)
-  const you = !me ? t(period === 'season' ? 'ranks.you.seasonNone' : 'ranks.you.none')
+  // No rank: the nudge while I haven't played today, else no bar until I have a rank.
+  const you = !me ? (data.played ? null : t(period === 'season' ? 'ranks.you.seasonNone' : 'ranks.you.none'))
     : period === 'season'
       ? me.rank === 1 ? t('ranks.you.seasonLead')
         : behind > 0 ? t('ranks.you.seasonBehind', { rank: me.rank, count: behind, name: me.next ? handle(me.next) : ordinal(me.rank - 1, i18n.language) })
@@ -309,7 +373,7 @@ function Players({ data, failed, period, ghost }) {
                    sub={<>{e.city && <FlagSticker country={e.city.country} size={14} />}<span className={`r6-badge ${e.user.isLocal ? 'r6-badge--local' : ''}`}>{e.user.isLocal ? t('local') : t('traveler')}</span></>} />
         ))}
       </div>
-      <YouBar text={you} onClick={() => me && rows.current[me.user.id]?.scrollIntoView({ block: 'center', behavior: 'smooth' })} />
+      {you && <YouBar text={you} onClick={() => me && rows.current[me.user.id]?.scrollIntoView({ block: 'center', behavior: 'smooth' })} />}
     </>
   )
 }

@@ -5,31 +5,21 @@ import HalongArt from './HalongArt'
 import AvatarWithFlag from '../AvatarWithFlag'
 import { mediumUrl } from '../../lib/imageThumb'
 import { contestGoal, countdownTarget, shortLeft, useNow } from './ContestScreen'
+import Icon from '../Icon'
+import { bannerSize, countTodayVisit, noteRank, useRaceSignals } from './raceSignals'
 
 /**
- * The campaign on Today, a postcard (the app's LaunchSeasonCard; docs/mockups/hilads_campaign_banner_mockup.html,
- * variant A): the prize photo full-bleed under a left-to-right shade, the campaign's name on a tilted yellow sticker,
- * the countdown by phase, the prize big, the latest players + "13 on board" (hidden under the campaign's threshold)
- * and a white pill (a guest "Grab my seat →", a member not in the race "Enter the race →", in it "You're 12th · See
- * the race →") that pulses until the first tap. The whole card opens the Trip tab. Never dismissed; after the 3rd
- * Trip tab open it shows below the feed (placement). Fixed colors: it sits on a photo in every theme.
+ * The campaign on Today (the app's LaunchSeasonCard), always in the same slot under the challenge card,
+ * in two sizes: the full postcard (docs/mockups/hilads_campaign_banner_mockup.html, variant A) for the
+ * first N Today visits of the campaign and for H hours at each key moment (race start, final week, the
+ * last H hours, my rank changed; N and H from Admin › Launch Season › Prize), else the slim strip (56 px,
+ * the same yellow: the prize thumbnail, one line, a chevron). The change of size animates (CSS, none with
+ * reduced motion). The whole banner opens the Trip tab. Fixed colors in every theme.
  */
-const OPENS = 'hilads_trip_opens'          // `${seasonId}:${count}`, counted by the Trip screen
 const TAPPED = 'hilads_trip_banner_tapped'  // seasonId
 const read = k => { try { return localStorage.getItem(k) } catch { return null } }
 
-/** The Trip screen counts its opens (the banner moves below the feed after the 3rd). */
-export function countTripOpen(seasonId) {
-  const m = /^(\d+):(\d+)$/.exec(read(OPENS) ?? '')
-  const n = (m && Number(m[1]) === seasonId ? Number(m[2]) : 0) + 1
-  try { localStorage.setItem(OPENS, `${seasonId}:${n}`) } catch { /* storage off */ }
-}
-function opensFor(seasonId) {
-  const m = /^(\d+):(\d+)$/.exec(read(OPENS) ?? '')
-  return m && Number(m[1]) === seasonId ? Number(m[2]) : 0
-}
-
-// One GET /contest for both Today slots (top / below the feed), kept 30 s.
+// One GET /contest shared by the Today slot's remounts, kept 30 s.
 let cache = null
 function loadContest(locale) {
   if (cache && cache.locale === locale && Date.now() - cache.at < 30000) return cache.promise
@@ -46,15 +36,19 @@ function boarding(counter) {
   return { showCount: counter.players > 0 && (counter.players >= (counter.showFrom ?? 0) || (goal !== null && reached)) }
 }
 
-export default function LaunchSeasonCard({ onOpen, account, placement }) {
+export default function LaunchSeasonCard({ onOpen, account }) {
   const { t, i18n } = useTranslation('profile', { keyPrefix: 'pp' })
   const [data, setData] = useState(null)
   const [tapped, setTapped] = useState(false)
-  useEffect(() => { loadContest(i18n.language).then(setData).catch(() => {}) }, [i18n.language])
+  const [visit, setVisit] = useState(0)
+  useEffect(() => { loadContest(i18n.language).then(d => { setData(d); noteRank(d) }).catch(() => {}) }, [i18n.language])
   const now = useNow(60000)
   const s = data?.season
+  const { change } = useRaceSignals(s?.id ?? null)
+  // One Today visit per mount of Today, once the campaign is known.
+  useEffect(() => { if (s?.id && !visit) setVisit(countTodayVisit(s.id)) }, [s?.id]) // eslint-disable-line react-hooks/exhaustive-deps
   if (!s || !['upcoming', 'season', 'final', 'over', 'ended'].includes(s.phase)) return null
-  if (placement && placement !== (opensFor(s.id) >= 3 ? 'bottom' : 'top')) return null
+  const size = visit > 0 ? bannerSize(s, visit, change?.at ?? null, now) : 'full'
 
   const prize = s.prize?.title || s.name
   const target = countdownTarget(s)
@@ -79,8 +73,22 @@ export default function LaunchSeasonCard({ onOpen, account, placement }) {
     setTapped(true)
     onOpen()
   }
-  const label = [s.name, prize, when, board.showCount ? t('trip.banner.onBoard', { count: data.counter.players }) : null, cta, s.isTest ? t('contest.test') : null]
-    .filter(Boolean).join('. ')
+  const ranked = !!race?.rank && race.points > 0
+  const slimLine = ranked ? `${t('trip.me.rank', { rank: race.rank })}${when ? ` · ${when}` : ''}`
+    : `${prize} · ${data.me?.joined && s.phase === 'upcoming' && when ? when : cta.replace(/\s*[→←]\s*$/u, '')}`
+  const label = size === 'slim' ? [s.name, slimLine, s.isTest ? t('contest.test') : null].filter(Boolean).join('. ')
+    : [s.name, prize, when, board.showCount ? t('trip.banner.onBoard', { count: data.counter.players }) : null, cta, s.isTest ? t('contest.test') : null]
+      .filter(Boolean).join('. ')
+  if (size === 'slim') {
+    return (
+      <button type="button" className="ls-slim" onClick={open} aria-label={label}>
+        <span className="ls-slim-thumb" aria-hidden="true">{cover ? <img src={mediumUrl(cover.url) ?? cover.url} alt="" /> : <HalongArt />}</span>
+        <b className="ls-slim-text">{slimLine}</b>
+        {s.isTest && <span className="ls-test">{t('contest.test')}</span>}
+        <Icon name="chevron-forward" size={18} />
+      </button>
+    )
+  }
   return (
     <button type="button" className="ls-card2" onClick={open} aria-label={label}>
       <span className="ls-card2-art" aria-hidden="true">{cover ? <img src={mediumUrl(cover.url) ?? cover.url} alt="" /> : <HalongArt />}</span>

@@ -795,7 +795,12 @@
       "empty": {
         "photos": "いいねされた写真はまだないよ。お気に入りに投票しよう ❤️",
         "players": "まだ誰も得点してないよ。参加して1位を取ろう 🙋",
-        "cities": "まだランクインした街はないよ。あなたの街を一番に 🌍"
+        "cities": "まだランクインした街はないよ。あなたの街を一番に 🌍",
+        "todayNone": "今日はまだ写真がありません。最初にプレイしよう 📸",
+        "play": "今日のチャレンジをプレイ",
+        "firstVote": "最初に投票しよう ❤️",
+        "firstVoteText": "今日はまだ誰もいいねしていません。気に入った写真をタップしよう。",
+        "yesterday": "昨日の表彰台"
       },
       "results": {
         "dismiss": "閉じる",
@@ -818,7 +823,11 @@
       "seasonEnds_one": "シーズン終了まであと{{count}}日",
       "seasonEnds_other": "シーズン終了まであと{{count}}日",
       "seasonEndsAt": "シーズンは{{date}}に終了",
-      "preSeason": "プレシーズン · 最初のシーズン {{date}}"
+      "preSeason": "プレシーズン · 最初のシーズン {{date}}",
+      "scope": {
+        "city": "自分の街",
+        "world": "世界"
+      }
     },
     "rivals": {
       "title": "あなた vs {{city}}",

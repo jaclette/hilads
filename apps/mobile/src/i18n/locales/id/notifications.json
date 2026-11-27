@@ -64,7 +64,11 @@
     "dismiss": "Tutup",
     "open": "Lihat yang baru",
     "more_one": "{{count}} lagi",
-    "more_other": "{{count}} lagi"
+    "more_other": "{{count}} lagi",
+    "likesLine_one": "❤️ {{count}} like baru di fotomu",
+    "likesLine_other": "❤️ {{count}} like baru di fotomu",
+    "likesLinePhotos_one": "❤️ {{count}} like baru di foto-fotomu",
+    "likesLinePhotos_other": "❤️ {{count}} like baru di foto-fotomu"
   },
   "inbox": {
     "settings": "Pengaturan notifikasi",

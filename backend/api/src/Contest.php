@@ -531,7 +531,13 @@ final class Contest
         $dests  = is_array($tab['destination'] ?? null) ? array_filter($tab['destination'], static fn($v): bool => is_string($v) && trim($v) !== '') : [];
         $dest   = ($locale !== null ? ($dests[$locale] ?? null) : null) ?? ($dests['en'] ?? null)
             ?? (self::DEFAULT_DESTINATION[$locale ?? 'en'] ?? self::DEFAULT_DESTINATION['en']);
-        return ['label' => trim((string) $label), 'icon' => $icon, 'prizeCta' => trim((string) $cta), 'destination' => trim((string) $dest)];
+        // The Today banner: the full postcard for the first N Today visits and for H hours at each key moment
+        // (race start, final week, last H hours, my rank changed), else the slim strip.
+        $banner = is_array($tab['banner'] ?? null) ? $tab['banner'] : [];
+        $visits = max(0, min(20, (int) ($banner['full_visits'] ?? 3)));
+        $hours  = max(1, min(72, (int) ($banner['moment_hours'] ?? 24)));
+        return ['label' => trim((string) $label), 'icon' => $icon, 'prizeCta' => trim((string) $cta), 'destination' => trim((string) $dest),
+                'banner' => ['fullVisits' => $visits, 'momentHours' => $hours]];
     }
 
     /**

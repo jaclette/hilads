@@ -27,8 +27,8 @@ function admin_head(string $title): void
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
-<title>' . htmlspecialchars($title, ENT_QUOTES) . ' · Hilads Admin</title>
-<script>try{var t=localStorage.getItem("admin_theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
+<title>' . htmlspecialchars(admin_tab_title($title), ENT_QUOTES) . '</title>
+' . admin_icon_links() . '<script>try{var t=localStorage.getItem("admin_theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&display=swap">
 <link rel="stylesheet" href="' . admin_asset('admin.css') . '">
@@ -97,6 +97,54 @@ function initCityPickers(cities) {
 function admin_pending_proposals(): int
 {
     return admin_badges()['proposals'] ?? 0;
+}
+
+/** Production or not (the sidebar's PROD / LOCAL tag, the favicons' tint). */
+function admin_is_prod(): bool
+{
+    return (getenv('APP_ENV') ?: '') === 'production';
+}
+
+/**
+ * The favicons on every page (sign-in, code and 2FA included): .ico (16/32/48), PNG 32, the 180 px Apple
+ * touch icon, the 192 px Android icon and the SVG. Off production, a teal-tinted set (-dev).
+ */
+function admin_icon_links(): string
+{
+    $d = admin_is_prod() ? '' : '-dev';
+    return '<link rel="icon" href="' . admin_asset("favicon{$d}.ico") . '" sizes="48x48">' . "\n"
+         . '<link rel="icon" type="image/svg+xml" href="' . admin_asset("logo{$d}.svg") . '">' . "\n"
+         . '<link rel="icon" type="image/png" sizes="32x32" href="' . admin_asset("favicon{$d}-32.png") . '">' . "\n"
+         . '<link rel="icon" type="image/png" sizes="192x192" href="' . admin_asset("icon{$d}-192.png") . '">' . "\n"
+         . '<link rel="apple-touch-icon" sizes="180x180" href="' . admin_asset("apple-touch-icon{$d}.png") . '">' . "\n";
+}
+
+/**
+ * The tab's title: the page, its sidebar count when it has one ("Photos (43)"), then "Hilads Admin"
+ * (off production "Hilads Admin LOCAL", so the tabs can't be confused).
+ */
+function admin_tab_title(string $title): string
+{
+    global $uri;
+    $count = 0;
+    if (function_exists('admin_is_logged_in') && admin_is_logged_in()) {
+        $path = (string) parse_url((string) ($uri ?? ($_SERVER['REQUEST_URI'] ?? '')), PHP_URL_PATH);
+        foreach (admin_menu() as [, , $items]) {
+            foreach ($items as [, , , $re, $badge]) {
+                if ($badge !== null && preg_match($re, $path)) $count = (int) (admin_badges()[$badge] ?? 0);
+            }
+        }
+    }
+    return $title . ($count > 0 ? " ({$count})" : '') . ' · Hilads Admin' . (admin_is_prod() ? '' : ' LOCAL');
+}
+
+/**
+ * The Hilads logo (the same drawing as the apps' header mark, admin/assets/logo.svg, crisp at any size):
+ * the sidebar (alone when the sidebar is collapsed), the sign-in / code / 2FA screens, the favicon.
+ */
+function admin_logo(string $class = 'brand-mark'): string
+{
+    return '<img class="' . $class . '" src="' . admin_asset('logo.svg') . '" alt="" width="28" height="28">';   // the real colors everywhere (the tint is the favicon's only)
 }
 
 /** The sidebar counts, one cached read (30 s) for every page. */
@@ -182,7 +230,6 @@ function admin_menu(): array
             ['/admin/reports', 'Reports', 'flag', '#^/admin/reports#', 'reports'],
             ['/admin/messages', 'Messages', 'message', '#^/admin/messages#', null],
             ['/admin/bans', 'Bans', 'ban', '#^/admin/bans#', null],
-            ['/admin/arrivals', 'Arrivals', 'door', '#^/admin/arrivals#', null],
         ]],
         ['community', 'Community', [
             ['/admin/users', 'Users', 'users', '#^/admin/users#', null],
@@ -196,6 +243,7 @@ function admin_menu(): array
             ['/admin/scoring#fair-play', 'Fair play', 'shield', '#^$#', null],
         ]],
         ['growth', 'Growth', [
+            ['/admin/arrivals', 'Arrivals', 'door', '#^/admin/arrivals#', null],
             ['/admin/push', 'Push', 'bell', '#^/admin/push#', null],
             ['/admin/email', 'Email', 'mail', '#^/admin/email#', null],
             ['/admin/worlds', 'Worlds studio', 'film', '#^/admin/worlds#', null],
@@ -225,7 +273,7 @@ function admin_nav(string $current = ''): void
     $e = fn ($s) => htmlspecialchars((string) $s, ENT_QUOTES);
 
     echo '<div class="shell"><aside class="sidebar" aria-label="Back office">';
-    echo '<a class="brand" href="/admin"><span class="brand-mark">Hi</span><span>Hilads<small>Back office</small></span></a>';
+    echo '<a class="brand" href="/admin">' . admin_logo() . '<span>Hilads<small>Back office</small></span></a>';
     foreach (admin_menu() as [$key, $label, $items]) {
         $html = '';
         $groupCount = 0;
@@ -251,7 +299,7 @@ function admin_nav(string $current = ''): void
 
     $u = AdminAuth::user();
     $initials = mb_strtoupper(mb_substr((string) $u['name'], 0, 1));
-    $isProd = (getenv('APP_ENV') ?: '') === 'production';
+    $isProd = admin_is_prod();
     echo '<header class="topbar">'
        . '<button type="button" class="icon-btn menu-btn" data-menu aria-label="Menu">' . admin_icon('menu') . '</button>'
        . '<form class="search" method="GET" action="/admin/search" role="search">' . admin_icon('search')

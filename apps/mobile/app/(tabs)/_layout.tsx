@@ -15,14 +15,12 @@ import { patchNotifCounts, refreshNotifCounts, useNotifCounts } from '@/features
 import { markNotificationTypesRead } from '@/api/notifications';
 import { markTabFocus, markTabPress } from '@/lib/perfProbe';
 import { track } from '@/services/analytics';
-import { useApp } from '@/context/AppContext';
-import { badgeCount, useUnreadMessages } from '@/features/messages/unread';
 import { useContestTab } from '@/features/contest/useContestTab';
 
 // V6 tab badges: what each tab's badge counts, and the notification types its visit marks read.
 // (Hi is no longer a tab: its mentions reach the bell and the inbox.)
 const TAB_BADGE: Record<string, { key: 'passport' | 'ranks'; types: string[]; count: boolean }> = {
-  passport: { key: 'passport', types: ['daily_local_pass'],                count: false },
+  passport: { key: 'passport', types: ['daily_local_pass', 'daily_season_result'], count: false },
   ranks:    { key: 'ranks',    types: ['daily_result', 'daily_rank'],      count: false },
 };
 
@@ -78,11 +76,7 @@ function CustomTabBar({ state, emitter, navigateToTab }: BottomTabBarProps) {
     : current;
 
   // Opening a tab clears its badge (the notifications behind it are read).
-  const { badges, total: unreadNotifs } = useNotifCounts();
-  const { account } = useApp();
-  const unreadMessages = useUnreadMessages();
-  // The Passport tab: everything unread behind its rows (Messages, Notifications), the same numbers as those rows.
-  const passportCount = account ? unreadMessages + unreadNotifs : 0;
+  const { badges } = useNotifCounts();
   useEffect(() => {
     const b = activeTab ? TAB_BADGE[activeTab] : undefined;
     if (!b || !badges[b.key]) return;
@@ -167,10 +161,9 @@ function CustomTabBar({ state, emitter, navigateToTab }: BottomTabBarProps) {
             <View>
               {halloween && tab.name === 'today' ? <PumpkinIcon size={24} color={color} />
                 : <Ionicons name={tab.icon} size={IconSize.lg} color={color} />}
-              {tab.name === 'passport' && passportCount > 0
-                // Passport: what's unread inside it (messages + notifications), a red count from every screen.
-                ? <CountBadge n={passportCount} />
-                : <TabBadge n={TAB_BADGE[tab.name] && !focused ? badges[TAB_BADGE[tab.name].key] : 0} count={!!TAB_BADGE[tab.name]?.count} />}
+              {/* A dot for the tab's own news (Passport: a new stamp, a Local Pass, a season medal), cleared when it's opened.
+                  Unread notifications and messages are the header's bell and messages button, on every tab. */}
+              <TabBadge n={TAB_BADGE[tab.name] && !focused ? badges[TAB_BADGE[tab.name].key] : 0} count={!!TAB_BADGE[tab.name]?.count} />
             </View>
             <Text style={[styles.label, { color }, focused && styles.labelActive]} numberOfLines={1} maxFontSizeMultiplier={1.4} adjustsFontSizeToFit minimumFontScale={0.8}>{label}</Text>
           </Pressable>
@@ -231,16 +224,6 @@ function SeasonPlane({ icon, color }: { icon: TabDef['icon']; color: string }) {
     <Animated.View style={style}>
       <Ionicons name={icon} size={IconSize.lg} color={color} />
     </Animated.View>
-  );
-}
-
-/** The Passport tab's red count ("3", "9+"): unread messages and notifications, the same red as the messages button. */
-function CountBadge({ n }: { n: number }) {
-  const { colors } = useTheme();
-  return (
-    <View style={[styles.badge, { backgroundColor: colors.red, borderColor: colors.bg2 }]} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
-      <Text style={[styles.badgeText, { color: colors.bg }]} maxFontSizeMultiplier={1.3}>{badgeCount(n)}</Text>
-    </View>
   );
 }
 

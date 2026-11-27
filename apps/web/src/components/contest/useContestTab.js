@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import i18n from 'i18next'
 import { fetchContest } from '../../api'
+import { ackRankTab, noteRank, useRaceSignals } from './raceSignals'
 
 /**
  * The campaign's temporary Trip tab (the app's useContestTab): shown only while a campaign I can
@@ -22,7 +23,7 @@ export function useContestTab() {
   const [opened, setOpened] = useState(readOpened)
   useEffect(() => {
     let alive = true
-    const load = () => fetchContest(i18n.language).then(d => { if (alive) setData(d) }).catch(() => {})
+    const load = () => fetchContest(i18n.language).then(d => { if (alive) { setData(d); noteRank(d) } }).catch(() => {})
     load()
     const id = setInterval(load, 5 * 60 * 1000)
     const onVis = () => { if (document.visibilityState === 'visible') load() }
@@ -30,15 +31,18 @@ export function useContestTab() {
     return () => { alive = false; clearInterval(id); document.removeEventListener('visibilitychange', onVis) }
   }, [])
   const s = data?.season
+  const signals = useRaceSignals(s?.id ?? null)
   if (!s || !LIVE.has(s.phase)) return null
   const stamp = `${s.id}:${s.phase}${s.winner ? ':w' : ''}`
   return {
     label: s.tab?.label || null,
     icon: s.tab?.icon || 'airplane',
     isTest: !!s.isTest,
-    isNew: seen !== stamp,
+    // A new phase (the stamp) or my rank changed since I last opened the tab.
+    isNew: seen !== stamp || (!!signals.change && !signals.change.tabAck),
     glide: !opened,
     markSeen: () => {
+      ackRankTab()
       try { localStorage.setItem(SEEN_KEY, stamp); localStorage.setItem(OPENED_KEY, '1') } catch { /* private mode */ }
       setSeen(stamp); setOpened(true)
     },

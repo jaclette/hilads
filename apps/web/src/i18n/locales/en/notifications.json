@@ -44,7 +44,11 @@
     "other": "🔔 Something new for you",
     "dismiss": "Dismiss",
     "more_one": "{{count}} more",
-    "more_other": "{{count}} more"
+    "more_other": "{{count}} more",
+    "likesLine_one": "❤️ {{count}} new like on your photo",
+    "likesLine_other": "❤️ {{count}} new likes on your photo",
+    "likesLinePhotos_one": "❤️ {{count}} new like on your photos",
+    "likesLinePhotos_other": "❤️ {{count}} new likes on your photos"
   },
   "inbox": {
     "settings": "Notification settings",

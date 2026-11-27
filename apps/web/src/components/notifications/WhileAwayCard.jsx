@@ -9,6 +9,7 @@ import { useDaily } from '../daily/dailyShared'
 import { setAwayCardShowing } from '../../lib/awayResults'
 import { holdScreen } from '../../lib/celebrationQueue'
 import { awayLine, byImportance, sameObject } from './inboxText'
+import { ackRankAway, useRaceSeasonId, useRaceSignals } from '../contest/raceSignals'
 
 /**
  * "While you were away" (V6, as the app), at the top of Today: unseen Social or
@@ -20,13 +21,19 @@ import { awayLine, byImportance, sameObject } from './inboxText'
  * just those. Opening marks the related notifications read and the card slides
  * away; ✕ dismisses it (seen, not read). No swipe on the web.
  */
-export default function WhileAwayCard({ account }) {
+export default function WhileAwayCard({ account, openTrip }) {
   const { t } = useTranslation('notifications')
   const { openNotification, openNotifications } = useDaily()
   const { unseen } = useNotifCounts()
   const pending = (unseen.social ?? 0) + (unseen.game ?? 0)
   const [items, setItems] = useState(null)
   const [leaving, setLeaving] = useState(false)
+  // My rank changed in the campaign's race (raceSignals): a line here until it's seen.
+  const seasonId = useRaceSeasonId()
+  const { change } = useRaceSignals(seasonId)
+  const tPp = useTranslation('profile', { keyPrefix: 'pp' }).t
+  const raceChange = account && change && !change.awayAck ? change : null
+  const race = raceChange ? tPp(raceChange.to < raceChange.from ? 'trip.away.up' : 'trip.away.down', { rank: raceChange.to }) : null
 
   useEffect(() => {
     if (!account || pending === 0) { setItems(null); return undefined }
@@ -36,12 +43,12 @@ export default function WhileAwayCard({ account }) {
   }, [account, pending])
 
   useEffect(() => {
-    setAwayCardShowing(!!items?.length)   // one card at a time above the hero: the results card waits
+    setAwayCardShowing(!!items?.length || !!race)   // one card at a time above the hero: the results card waits
     return () => setAwayCardShowing(false)
-  }, [items])
+  }, [items, race])
 
   // No celebration pops over the card while it arrives (a moment to read it).
-  const showing = !!items?.length
+  const showing = !!items?.length || !!race
   useEffect(() => {
     if (!showing) return undefined
     const release = holdScreen('away-intro')
@@ -51,20 +58,25 @@ export default function WhileAwayCard({ account }) {
 
   const ids = useMemo(() => (items ?? []).flatMap(i => i.ids), [items])
   const seen = () => {
+    ackRankAway()
+    if (!ids.length) { setItems(null); return }
     markNotificationsSeen({ ids })
     patchNotifCounts(c => ({ ...c, unseen: { ...c.unseen, social: 0, game: 0 } }))
     setItems(null)
   }
-  if (!items?.length) return null
-  const sorted = byImportance(items)
-  const main = sorted[0]
-  const single = items.length === 1 || sameObject(items) !== null
-  const more = single ? 0 : items.length - 1
+  if (!items?.length && !race) return null
+  const list = items ?? []
+  const sorted = byImportance(list)
+  const main = sorted[0] ?? null
+  const single = list.length <= 1 || sameObject(list) !== null
+  // The race line leads (no results): a click goes to the Trip tab, every notification is in "+N".
+  const raceFirst = !!race && main?.type !== 'daily_result'
+  const more = raceFirst ? list.length : single ? 0 : list.length - 1
   const actors = []
   for (const i of sorted) for (const a of i.actors ?? []) {
     if (actors.length < 3 && !actors.some(x => (x.id ?? x.name) === (a.id ?? a.name))) actors.push(a)
   }
-  const line = awayLine(items, t)
+  const line = awayLine(list, t, 3, race)
   const key = (i) => (i.object?.id ? `${i.object.kind}:${i.object.id}` : i.type)
 
   // The card slides out, then the item opens (its notifications read: the related ones, or all on the same object).
@@ -75,12 +87,17 @@ export default function WhileAwayCard({ account }) {
     setTimeout(() => { seen(); then() }, reduced ? 0 : 200)
   }
   const openMain = () => {
+    if (!main || raceFirst) {
+      track('away_card_opened', { type: 'trip_rank', single, more, platform_surface: 'web' })
+      leave(() => openTrip?.(), null)
+      return
+    }
     track('away_card_opened', { type: main.type, single, more, platform_surface: 'web' })
     leave(() => openNotification(main), single ? ids : sorted.filter(i => key(i) === key(main)).flatMap(i => i.ids))
   }
   const openMore = () => {
     track('away_card_more', { count: more, platform_surface: 'web' })
-    leave(() => openNotifications(items.map(i => i.id)), null)
+    leave(() => openNotifications(list.map(i => i.id)), null)
   }
 
   return (
