@@ -81,9 +81,16 @@ final class AdminDashboard
 
     // ── Arrivals: people who opened Hilads in a city (the Arrivals page's data) ──
 
-    /** An author / visitor who is a real person: a guest, or an account that isn't test, review or staff. */
+    /** An author / visitor who is a real person: a guest, or an account that isn't test, seed, review or the house
+     *  @hilads account. Staff (is_admin) count: their messages as players are real activity. */
     private const REAL_PERSON = "(m.user_id IS NULL OR EXISTS (SELECT 1 FROM users u WHERE u.id = m.user_id AND NOT coalesce(u.is_fake, false)
-        AND NOT coalesce(u.is_demo, false) AND NOT coalesce(u.is_review, false) AND NOT coalesce(u.is_admin, false)))";
+        AND NOT coalesce(u.is_demo, false) AND NOT coalesce(u.is_review, false) AND u.username IS DISTINCT FROM 'hilads'))";
+
+    /** The city's Hilads name ("Saigon", not "Ho Chi Minh City"), as the apps show it. */
+    private static function cityName(?string $name): string
+    {
+        return class_exists('CityNames') ? CityNames::short($name) : (string) $name;
+    }
 
     /** Saigon midnight, $daysAgo days ago, as a timestamptz literal for SQL. */
     private static function dayStart(int $daysAgo = 0): string
@@ -169,7 +176,7 @@ final class AdminDashboard
                 'today' => ['people' => (int) ($by[$today]['people'] ?? 0), 'members' => (int) ($by[$today]['members'] ?? 0), 'guests' => (int) ($by[$today]['guests'] ?? 0)],
                 'yesterday' => (int) ($by[$yest]['people'] ?? 0),
                 'days' => $days,
-                'top' => array_map(fn ($r) => ['id' => $r['id'], 'name' => $r['name'], 'country' => $r['country'], 'people' => (int) $r['people']], $top->fetchAll(PDO::FETCH_ASSOC)),
+                'top' => array_map(fn ($r) => ['id' => $r['id'], 'name' => self::cityName($r['name']), 'country' => $r['country'], 'people' => (int) $r['people']], $top->fetchAll(PDO::FETCH_ASSOC)),
                 'newCities' => (int) $new->fetchColumn(),
                 'funnel' => ['today' => $funnel(0), 'week' => $funnel(6)],
             ];
@@ -190,7 +197,7 @@ final class AdminDashboard
             $tz = self::TZ;
             $from = self::dayStart(7);
             $realU = "(%s IS NULL OR EXISTS (SELECT 1 FROM users u WHERE u.id = %s AND NOT coalesce(u.is_fake, false) AND NOT coalesce(u.is_demo, false)
-                      AND NOT coalesce(u.is_review, false) AND NOT coalesce(u.is_admin, false)))";
+                      AND NOT coalesce(u.is_review, false) AND u.username IS DISTINCT FROM 'hilads'))";
             // Chats: city / world / event channels.
             $st = $pdo->prepare("
                 SELECT (m.created_at AT TIME ZONE '{$tz}')::date::text AS d, ch.type AS kind, count(*) AS n,
@@ -268,8 +275,11 @@ final class AdminDashboard
                 'today' => $sum($t), 'yesterday' => $sum($acc[$yest] ?? null), 'writers' => count($t['who'] ?? []),
                 'split' => ['city' => (int) ($t['city'] ?? 0), 'world' => (int) ($t['world'] ?? 0), 'plans' => (int) ($t['plans'] ?? 0),
                             'private' => (int) ($t['private'] ?? 0), 'comments' => (int) ($t['comments'] ?? 0)],
+                // The same split over the 7 days (today included), so a quiet day reads as one.
+                'split7' => array_combine(['city', 'world', 'plans', 'private', 'comments'], array_map(
+                    fn (string $k): int => array_sum(array_map(fn (array $d): int => (int) ($d[$k] ?? 0), $acc)), ['city', 'world', 'plans', 'private', 'comments'])),
                 'days' => $days,
-                'top' => array_map(fn ($r) => ['id' => $r['id'], 'name' => $r['name'], 'country' => $r['country'], 'messages' => (int) $r['n']], $top->fetchAll(PDO::FETCH_ASSOC)),
+                'top' => array_map(fn ($r) => ['id' => $r['id'], 'name' => self::cityName($r['name']), 'country' => $r['country'], 'messages' => (int) $r['n']], $top->fetchAll(PDO::FETCH_ASSOC)),
                 'question' => ['asked' => (int) ($qa['asked'] ?? 0), 'answered' => (int) ($qa['answered'] ?? 0), 'answers' => (int) ($qa['answers'] ?? 0)],
                 'engaged' => ['messages' => (int) ($e['n'] ?? 0), 'engaged' => (int) ($e['engaged'] ?? 0)],
             ];
