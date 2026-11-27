@@ -50,6 +50,29 @@ console.log('[push-mobile] PROJECT_ID =', PROJECT_ID);
 /** Android channel of the Daily Challenge morning push (permanent id, see setupNotificationChannel). */
 export const DAILY_CHANNEL_ID = 'daily_challenge_v1';
 
+/**
+ * Android channel of the admin's moderation alerts ("[Admin] New photo to check"), made only on
+ * the admin's phone (the server says so when the token registers): mutable in the phone's
+ * settings without muting anything else. Same id as PhotoWatch::ADMIN_CHANNEL.
+ */
+export const ADMIN_CHANNEL_ID = 'admin_alerts_v1';
+
+async function setupAdminChannel(): Promise<boolean> {
+  if (Platform.OS !== 'android') return false;
+  try {
+    await Notifications.setNotificationChannelAsync(ADMIN_CHANNEL_ID, {
+      name:        'Admin alerts',
+      description: 'New photos to check (moderation). Only on the admin account.',
+      importance:  Notifications.AndroidImportance.DEFAULT,
+      showBadge:   false,
+    });
+    return true;
+  } catch (e) {
+    console.warn('[push-mobile] admin channel failed:', String(e));
+    return false;
+  }
+}
+
 export async function setupNotificationChannel(): Promise<void> {
   if (Platform.OS !== 'android') return;
   console.log('[push-mobile] setupNotificationChannel');
@@ -367,7 +390,7 @@ export async function unregisterPushToken(): Promise<void> {
 // Uses raw fetch (not api.post) so every step is logged explicitly.
 // This bypasses the api wrapper to make network failures impossible to miss.
 
-async function registerTokenWithBackend(token: string, guestId?: string | null): Promise<void> {
+async function registerTokenWithBackend(token: string, guestId?: string | null, adminChannel?: string): Promise<void> {
   const authToken = getAuthToken();
   const fullUrl   = `${API_URL}/push/mobile-token`;
   // guestId lets the backend store the token for an unregistered device (and is
@@ -379,6 +402,7 @@ async function registerTokenWithBackend(token: string, guestId?: string | null):
   const payload   = JSON.stringify({
     token, platform: Platform.OS, locale: i18n.language, guestId: guestId ?? undefined, timezone: deviceTimezone() ?? undefined,
     dailyChannel: Platform.OS === 'android' ? DAILY_CHANNEL_ID : undefined,
+    adminChannel,
   });
 
   const headers: Record<string, string> = {
@@ -428,4 +452,10 @@ async function registerTokenWithBackend(token: string, guestId?: string | null):
   }
 
   console.log('[push-mobile] POST SUCCESS ✓ - token registered');
+
+  // The admin's phone: make the moderation alerts' channel, then tell the server it exists.
+  const wanted = (body as { adminChannel?: unknown } | null)?.adminChannel;
+  if (!adminChannel && wanted === ADMIN_CHANNEL_ID && await setupAdminChannel()) {
+    await registerTokenWithBackend(token, guestId, ADMIN_CHANNEL_ID).catch(() => {});
+  }
 }

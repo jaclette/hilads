@@ -5231,6 +5231,20 @@ run($pdo, "
 run($pdo, "CREATE UNIQUE INDEX IF NOT EXISTS uq_contest_interest_guest_gid ON contest_interest_guest (season_id, guest_id) WHERE guest_id IS NOT NULL", 'uq_contest_interest_guest_gid');
 run($pdo, "CREATE UNIQUE INDEX IF NOT EXISTS uq_contest_interest_guest_email ON contest_interest_guest (season_id, lower(email)) WHERE email IS NOT NULL", 'uq_contest_interest_guest_email');
 
+// 2026-11-27: one push per (recipient, event) - PushOnce::claim. Purged after 30 days by
+// /internal/cleanup. The admin's Android channel for moderation alerts (PhotoWatch::alert).
+// Reversal: DROP TABLE push_once; ALTER TABLE mobile_push_tokens DROP COLUMN admin_channel;
+run($pdo, "
+    CREATE TABLE IF NOT EXISTS push_once (
+        event_key     TEXT NOT NULL,
+        recipient_key TEXT NOT NULL,
+        created_at    TIMESTAMPTZ NOT NULL DEFAULT now(),
+        PRIMARY KEY (event_key, recipient_key)
+    )
+", 'push_once');
+run($pdo, "CREATE INDEX IF NOT EXISTS idx_push_once_created ON push_once (created_at)", 'idx_push_once_created');
+run($pdo, "ALTER TABLE mobile_push_tokens ADD COLUMN IF NOT EXISTS admin_channel TEXT", 'mobile_push_tokens.admin_channel');
+
 // ── Self-heal monthly rank columns ────────────────────────────────────────
 // The denormalised users.monthly_rank_* columns are kept fresh by
 // route-level recalc hooks fired after each scoring action. If any

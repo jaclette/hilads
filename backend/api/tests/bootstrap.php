@@ -83,6 +83,8 @@ require_once __DIR__ . '/../src/DailyTwistProposals.php';
 require_once __DIR__ . '/../src/DailyI18n.php';
 require_once __DIR__ . '/../src/DailyPushText.php';
 require_once __DIR__ . '/../src/DailyPushes.php';
+require_once __DIR__ . '/../src/PushOnce.php';
+require_once __DIR__ . '/../src/PhotoWatch.php';
 require_once __DIR__ . '/../src/DailyVotes.php';
 require_once __DIR__ . '/../src/DailyResults.php';
 require_once __DIR__ . '/../src/DailyPoints.php';

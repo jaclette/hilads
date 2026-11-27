@@ -853,22 +853,26 @@ final class DailyPushes
                 $locales['u:' . $u['id']] = $u['locale'];
             }
         }
-        $tokens = [];
+        $devices = [];   // recipient key => [locale, tokens]
         foreach ($pdo->query("
             SELECT user_id, guest_id, token, locale FROM mobile_push_tokens t
             WHERE t.user_id IS NOT NULL
                OR (t.guest_id IS NOT NULL AND NOT EXISTS (SELECT 1 FROM users u WHERE u.guest_id = t.guest_id))
         ")->fetchAll(PDO::FETCH_ASSOC) as $t) {
             if ($t['user_id'] !== null) {
-                $loc = $locales['u:' . $t['user_id']] ?? null;
+                $key = 'u:' . $t['user_id'];
+                $loc = $locales[$key] ?? null;
             } else {
-                $skip = $t['guest_id'] === $authorGuestId || isset($blockedBy['g:' . $t['guest_id']]);
+                $key  = 'g:' . $t['guest_id'];
+                $skip = $t['guest_id'] === $authorGuestId || isset($blockedBy[$key]);
                 $loc  = $skip ? null : DailyI18n::normalize($t['locale']);
             }
             if ($loc !== null) {
-                $tokens[$loc][] = $t['token'];
+                $devices[$key] ??= [$loc, []];
+                $devices[$key][1][] = $t['token'];
             }
         }
+        $tokens = self::newPhotoTokens((string) $proof['id'], $devices);
 
         $sent = 0;
         foreach ($tokens as $locale => $list) {
@@ -878,6 +882,20 @@ final class DailyPushes
         MobilePushService::flush();
         error_log('[daily-push] new photo ' . $proof['id'] . ': ' . $sent . ' device(s)');
         return $sent;
+    }
+
+    /**
+     * The devices of the recipients not yet told about this photo (PushOnce), by locale:
+     * one push per person and photo, whatever calls this twice. $devices: key => [locale, tokens].
+     */
+    public static function newPhotoTokens(string $proofId, array $devices): array
+    {
+        $tokens = [];
+        foreach (PushOnce::claim('new_photo:' . $proofId, array_map('strval', array_keys($devices))) as $key) {
+            [$loc, $list] = $devices[$key];
+            $tokens[$loc] = array_merge($tokens[$loc] ?? [], $list);
+        }
+        return $tokens;
     }
 
     /**

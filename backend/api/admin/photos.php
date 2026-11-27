@@ -67,6 +67,13 @@ if ($method === 'POST') {
         $ids = [(int) $m[2]];
     }
     try {
+        if ($do === 'alerts_on' || $do === 'alerts_off') {   // my "[Admin] New photo to check" pushes
+            $on = $do === 'alerts_on';
+            AppConfig::saveSetting('admin_photo_alerts', $on ? '1' : '0', admin_actor());
+            AdminAuth::log('photo.alerts', 'app_settings', 'admin_photo_alerts', null, ['on' => $on]);
+            flash_set('success', $on ? 'New photo pushes are on.' : 'New photo pushes are off. Photos still land here.');
+            admin_redirect($url());
+        }
         if ($do === 'seen_all') {
             $n = PhotoWatch::markSeen(null, (int) ($_POST['up_to'] ?? 0));
             AdminAuth::log('photo.seen_all', 'photo', null, null, ['marked' => $n]);
@@ -120,7 +127,21 @@ echo '<div class="admin-main">';
 echo ui_page_head('Moderation', 'Photos', 'Everything people publish, live at once. Check new photos, remove what breaks the rules, keep what was reported for nothing.',
     ui_help('How moderation works', $help));
 echo flash_html();
+$alertsOn = AppConfig::adminPhotoAlerts();
 ?>
+<div class="card" style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:14px 20px">
+    <div style="flex:1;min-width:220px">
+        <strong>Push me new photos to check</strong>
+        <div class="muted" style="font-size:13px">"[Admin] New photo to check · Berlin" on the admin account's phone, at most one every <?= (int) (PhotoWatch::ALERT_EVERY / 60) ?> minutes. Players never get it: they get "just played".</div>
+    </div>
+    <span class="badge <?= $alertsOn ? 'b-ok' : 'b-mute' ?>"><?= $alertsOn ? 'On' : 'Off' ?></span>
+    <?php if ($canEdit): ?>
+    <form method="POST" action="<?= ui_e($url()) ?>">
+        <?= csrf_input() ?>
+        <button class="btn btn-sm" type="submit" name="do" value="<?= $alertsOn ? 'alerts_off' : 'alerts_on' ?>"><?= $alertsOn ? 'Turn off' : 'Turn on' ?></button>
+    </form>
+    <?php endif; ?>
+</div>
 <div class="card">
     <form class="toolbar" method="GET" action="<?= $self ?>">
         <input type="hidden" name="tab" value="<?= ui_e($tab) ?>">

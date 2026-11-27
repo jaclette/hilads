@@ -39,25 +39,67 @@ final class PhotoWatch
         }
     }
 
-    /** The admin push, at most one every ALERT_EVERY seconds, counting the photos not yet seen. */
+    /** Android channel of the admin's moderation alerts (created by the app for the admin only, see push.ts). */
+    public const ADMIN_CHANNEL = 'admin_alerts_v1';
+
+    /**
+     * The admin's moderation alert: "[Admin] New photo to check · Berlin", at most one every
+     * ALERT_EVERY seconds (the body counts the photos not yet seen), and once per photo
+     * (PushOnce). A push only, to the admin's devices, on its own Android channel (mutable in
+     * the phone's settings) - never a row in the app's notifications, never to players.
+     * Tapping it opens the photo in Back office › Photos. Off: Back office › Photos switch.
+     */
     private static function alert(string $source, string $who, ?string $where, ?string $authorId, ?string $refId = null): void
     {
         $adminId = trim((string) getenv('ADMIN_TEST_USER_ID'));
         // Never about my own photos.
-        if ($adminId === '' || $adminId === $authorId || !DbRateLimiter::allow('photo_watch_alert', 1, self::ALERT_EVERY)) {
+        if ($adminId === '' || $adminId === $authorId || !AppConfig::adminPhotoAlerts()
+            || !DbRateLimiter::allow('photo_watch_alert', 1, self::ALERT_EVERY)) {
+            return;
+        }
+        if (PushOnce::claim("admin_photo:{$source}:{$refId}", ['u:' . $adminId]) === []) {
             return;
         }
         $n = self::unseenCount();
+        [$title, $body] = self::alertText($source, $who, $where, $n);
+        $data = ['adminUrl' => self::queueUrl($refId)];
+        if ($source === 'daily' && $refId !== null && $refId !== '') {
+            $data['proofId'] = $refId;
+        }
+        self::pushAdmin($adminId, $title, $body, $data);
+    }
+
+    /** [title, body]: "[Admin] New photo to check · Berlin", "@clemskramz · Daily photo · 3 new". */
+    public static function alertText(string $source, string $who, ?string $where, int $unseen): array
+    {
         $what = match ($source) {
             'daily'  => 'Daily photo',
-            'avatar' => 'profile photo',
-            default  => 'chat photo',
+            'avatar' => 'Profile photo',
+            default  => 'Chat photo',
         };
-        $body = $who . ($where !== null && $where !== '' ? " in {$where}" : '') . " · {$what}"
-              . ($n > 1 ? " · {$n} new" : '');
-        // A Daily photo carries its id: the app opens that photo (NotificationCategory::deepLink).
-        $data = ['url' => '/admin/photos'] + ($source === 'daily' && $refId !== null && $refId !== '' ? ['proofId' => $refId] : []);
-        NotificationRepository::createUnchecked($adminId, 'daily_admin', 'New photo published', $body, $data, 'en');
+        $where = $where !== null && trim($where) !== '' ? CityNames::short(trim($where)) : null;
+        return ['[Admin] New photo to check' . ($where !== null ? " · {$where}" : ''),
+                $who . " · {$what}" . ($unseen > 1 ? " · {$unseen} new" : '')];
+    }
+
+    /** The photo in the moderation queue (Back office › Photos, every tab, searched by its id). */
+    public static function queueUrl(?string $refId): string
+    {
+        $base = rtrim(getenv('API_PUBLIC_URL') ?: 'https://api.hilads.live', '/');
+        return $base . '/admin/photos' . ($refId !== null && $refId !== '' ? '?' . http_build_query(['tab' => 'all', 'q' => $refId]) : '');
+    }
+
+    /** To the admin's devices: Android on the admin channel when the app made it, else the default one. */
+    private static function pushAdmin(string $adminId, string $title, string $body, array $data): void
+    {
+        $stmt = Database::pdo()->prepare('SELECT token, platform, admin_channel FROM mobile_push_tokens WHERE user_id = ?');
+        $stmt->execute([$adminId]);
+        $own = $plain = [];
+        foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $t) {
+            if ($t['platform'] === 'android' && $t['admin_channel'] === self::ADMIN_CHANNEL) { $own[] = $t['token']; } else { $plain[] = $t['token']; }
+        }
+        MobilePushService::sendToTokens($own, $title, $body, $data, 'admin_photo', 'default', self::ADMIN_CHANNEL);
+        MobilePushService::sendToTokens($plain, $title, $body, $data, 'admin_photo');
     }
 
     /** Reports from different people that hide a chat photo until the admin decides (as Daily photos). */

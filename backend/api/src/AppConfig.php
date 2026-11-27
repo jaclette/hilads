@@ -159,6 +159,22 @@ final class AppConfig
         return (self::settings()['dual_photo'] ?? '0') === '1';
     }
 
+    /** The admin's "[Admin] New photo to check" pushes (Back office › Photos switch); on by default. */
+    public static function adminPhotoAlerts(): bool
+    {
+        return (self::settings()['admin_photo_alerts'] ?? '1') === '1';
+    }
+
+    /** One setting (a back office switch), then the next read goes to the database. */
+    public static function saveSetting(string $key, string $value, string $by): void
+    {
+        Database::pdo()->prepare("
+            INSERT INTO app_settings (key, value, updated_at, updated_by) VALUES (?, ?, now(), ?)
+            ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value, updated_at = now(), updated_by = EXCLUDED.updated_by
+        ")->execute([$key, $value, $by]);
+        self::forgetSettings();
+    }
+
     /** Dual photo for this user: the switch, or the testers' allowlist (user ids). */
     public static function dualPhotoFor(?string $userId): bool
     {

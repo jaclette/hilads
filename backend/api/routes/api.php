@@ -6001,6 +6001,13 @@ $router->add('POST', '/internal/cleanup', function () {
     ");
     $rateBucketsDeleted = $stmt->rowCount();
 
+    // 5. One-push-per-event guard (PushOnce) - an event older than a month never pushes again anyway
+    try {
+        $pdo->query("DELETE FROM push_once WHERE created_at < now() - INTERVAL '30 days'");
+    } catch (\Throwable $e) {
+        error_log('[cleanup] push_once: ' . $e->getMessage());
+    }
+
     error_log("[cleanup] city_messages={$cityDeleted} event_channels={$eventChannelsDeleted} dm_messages={$dmDeleted} rate_buckets={$rateBucketsDeleted}");
 
     Response::json([
@@ -7562,6 +7569,9 @@ $router->add('POST', '/api/v1/push/mobile-token', function () {
     // Android channel the app created for Daily pushes (signature sound); absent = unchanged.
     $dailyChannel = is_string($body['dailyChannel'] ?? null) && preg_match('/^[a-z0-9_]{1,40}$/', trim($body['dailyChannel']))
         ? trim($body['dailyChannel']) : null;
+    // The admin's Android channel for moderation alerts, once the app made it (PhotoWatch::alert).
+    $isAdmin      = $userId !== null && $userId === trim((string) getenv('ADMIN_TEST_USER_ID'));
+    $adminChannel = $isAdmin && ($body['adminChannel'] ?? null) === PhotoWatch::ADMIN_CHANNEL ? PhotoWatch::ADMIN_CHANNEL : null;
 
     try {
         $stmt = Database::pdo()->prepare("
@@ -7584,8 +7594,16 @@ $router->add('POST', '/api/v1/push/mobile-token', function () {
         error_log("[push-subscribe] DB ERROR for " . ($userId ?? 'guest:' . $guestId) . ": " . $e->getMessage());
         Response::json(['error' => 'Failed to store push token: ' . $e->getMessage()], 500);
     }
+    if ($adminChannel !== null) {
+        try {
+            Database::pdo()->prepare("UPDATE mobile_push_tokens SET admin_channel = ? WHERE token = ?")->execute([$adminChannel, $token]);
+        } catch (\Throwable $e) {
+            error_log("[push-subscribe] admin channel: " . $e->getMessage());
+        }
+    }
 
-    Response::json(['ok' => true]);
+    // The admin's app makes the moderation alerts' Android channel, then registers again with it.
+    Response::json(['ok' => true] + ($isAdmin ? ['adminChannel' => PhotoWatch::ADMIN_CHANNEL] : []));
 });
 
 // DELETE /api/v1/push/mobile-token

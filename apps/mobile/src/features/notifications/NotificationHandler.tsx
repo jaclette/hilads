@@ -13,6 +13,7 @@
 import { useEffect, useRef } from 'react';
 import * as Notifications from 'expo-notifications';
 import { router } from 'expo-router';
+import { Linking } from 'react-native';
 import { useApp } from '@/context/AppContext';
 import { setupNotificationChannel, setupNotificationCategories } from '@/services/push';
 import { acceptFriendRequest, declineFriendRequest } from '@/api/friendRequests';
@@ -51,6 +52,7 @@ async function consumeColdStart(): Promise<string | null> {
   if (actionId === 'accept' || actionId === 'decline' || actionId === 'join' || actionId === 'ignore') {
     return handleNotificationAction(data, actionId);
   }
+  if (openAdminAlert(data)) return null;
   const route = resolveRoute(data);
   if (route) trackOpened(data, true);
   return route;
@@ -82,6 +84,8 @@ const activeScreen = {
 
 type NotifData = {
   type?:            string;
+  /** The admin's moderation alert ('admin_photo'): the photo in Back office › Photos. */
+  adminUrl?:        string;
   conversationId?:  string;
   eventId?:         string;
   topicId?:         string;
@@ -213,6 +217,18 @@ function trackOpened(data: NotifData, coldStart: boolean) {
   if (typeof data.type === 'string' && data.type.startsWith('daily_')) {
     track('daily_notification_opened', { type: data.type, challenge_date: (data as { date?: string }).date ?? null, cold_start: coldStart });
   }
+}
+
+/**
+ * The admin's "[Admin] New photo to check" opens the photo in the moderation queue (the back
+ * office, in the browser), not in the app's feed. True when it was one.
+ */
+function openAdminAlert(data: NotifData): boolean {
+  if (data.type !== 'admin_photo') return false;
+  if (typeof data.adminUrl === 'string' && /^https:\/\//.test(data.adminUrl)) {
+    Linking.openURL(data.adminUrl).catch(() => {});
+  }
+  return true;
 }
 
 /** The route a push opens; Today and a Daily sheet also get the push type, for analytics. */
@@ -517,6 +533,7 @@ export function NotificationHandler() {
       console.log('[push-nav] notification tapped | type:', data.type ?? '(none)',
         '| conversationId:', data.conversationId ?? '-',
         '| eventId:', data.eventId ?? '-');
+      if (openAdminAlert(data)) return;
       const route = resolveRoute(data);
       console.log('[push-nav] resolved route:', route ?? 'none - ignoring');
       if (!route) return;
