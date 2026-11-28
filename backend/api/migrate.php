@@ -5323,8 +5323,17 @@ try {
     $hashed = 0;
     foreach (['messages', 'bans'] as $table) {
         $ips = $pdo->query("SELECT DISTINCT ip_address FROM {$table} WHERE ip_address IS NOT NULL AND ip_address NOT IN ('', 'unknown') AND ip_hash IS NULL")->fetchAll(PDO::FETCH_COLUMN);
-        $upd = $pdo->prepare("UPDATE {$table} SET ip_hash = ? WHERE ip_address = ? AND ip_hash IS NULL");
-        foreach ($ips as $ip) { $upd->execute([Invites::ipHash((string) $ip), $ip]); $hashed += $upd->rowCount(); }
+        // In batches, each statement prepared and run at once: production goes through a connection pooler,
+        // where a statement prepared once and executed many times can land on another connection
+        // ("prepared statement ... does not exist", 2026-11-28).
+        foreach (array_chunk($ips, 200) as $chunk) {
+            $args = [];
+            foreach ($chunk as $ip) { array_push($args, (string) $ip, Invites::ipHash((string) $ip)); }
+            $upd = $pdo->prepare("UPDATE {$table} t SET ip_hash = v.h FROM (VALUES " . implode(',', array_fill(0, count($chunk), '(?, ?)')) . ") v(ip, h)
+                                  WHERE t.ip_address = v.ip AND t.ip_hash IS NULL");
+            $upd->execute($args);
+            $hashed += $upd->rowCount();
+        }
     }
     echo "  ip hashes: {$hashed} rows\n";
 } catch (\Throwable $e) {
