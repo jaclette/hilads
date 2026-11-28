@@ -247,6 +247,8 @@ admin_nav('/admin/users');
         </div>
     <?php endif; ?>
 
+    <?php $pdo = Database::pdo(); require __DIR__ . '/_user_trail.php'; ?>
+
     <!-- Profile info summary -->
     <div class="info-section" style="margin-bottom:24px">
         <div class="info-grid">

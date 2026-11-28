@@ -111,11 +111,11 @@ final class AdminDashboard
             $from = self::dayStart(7);
             $st = $pdo->prepare("
                 SELECT (m.created_at AT TIME ZONE '" . self::TZ . "')::date::text AS d,
-                       count(DISTINCT coalesce(m.user_id, 'g:' || m.guest_id)) AS people,
+                       count(DISTINCT " . GuestLinks::personSql() . ") AS people,
                        count(DISTINCT m.user_id) AS members,
                        count(DISTINCT m.guest_id) FILTER (WHERE m.user_id IS NULL) AS guests,
                        -- Connected from another country than the city's (browsing from abroad, travelling, a VPN).
-                       count(DISTINCT coalesce(m.user_id, 'g:' || m.guest_id)) FILTER (
+                       count(DISTINCT " . GuestLinks::personSql() . ") FILTER (
                            WHERE m.country IS NOT NULL AND ci.country IS NOT NULL AND upper(m.country) <> upper(ci.country)) AS remote
                 FROM messages m LEFT JOIN cities ci ON ci.channel_id = m.channel_id
                 WHERE m.type = 'system' AND m.event = 'join' AND m.created_at >= ?::timestamptz AND " . self::REAL_PERSON . "
@@ -133,7 +133,7 @@ final class AdminDashboard
             $yest  = (new DateTimeImmutable('yesterday', new DateTimeZone(self::TZ)))->format('Y-m-d');
 
             $top = $pdo->prepare("
-                SELECT m.channel_id AS id, ch.name, ci.country, count(DISTINCT coalesce(m.user_id, 'g:' || m.guest_id)) AS people
+                SELECT m.channel_id AS id, ch.name, ci.country, count(DISTINCT " . GuestLinks::personSql() . ") AS people
                 FROM messages m JOIN channels ch ON ch.id = m.channel_id LEFT JOIN cities ci ON ci.channel_id = ch.id
                 WHERE m.type = 'system' AND m.event = 'join' AND m.created_at >= ?::timestamptz AND ch.type = 'city' AND " . self::REAL_PERSON . "
                 GROUP BY 1, 2, 3 ORDER BY people DESC, ch.name LIMIT 5
@@ -160,7 +160,10 @@ final class AdminDashboard
                         SELECT DISTINCT m.user_id, m.guest_id FROM messages m
                         WHERE m.type = 'system' AND m.event = 'join' AND m.created_at >= ?::timestamptz AND " . self::REAL_PERSON . "
                     ), people AS (
-                        SELECT coalesce(a.user_id, 'g:' || a.guest_id) AS pid, coalesce(a.user_id, u.id) AS uid
+                        -- One person per account: a guest who signed up (GuestLinks, else the guest id stored at
+                        -- sign-up) is the same person as the account's own later arrivals, never two.
+                        SELECT coalesce(" . GuestLinks::accountSql('a.user_id', 'a.guest_id') . ", u.id, 'g:' || a.guest_id) AS pid,
+                               coalesce(" . GuestLinks::accountSql('a.user_id', 'a.guest_id') . ", u.id) AS uid
                         FROM a LEFT JOIN users u ON a.user_id IS NULL AND u.guest_id = a.guest_id
                     )
                     SELECT count(DISTINCT p.pid) AS arrivals,

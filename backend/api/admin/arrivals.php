@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 admin_require_login();
+require_once __DIR__ . '/_people.php';
 
 $pdo = Database::pdo();
 
@@ -79,7 +80,7 @@ admin_nav('/admin/arrivals');
     $pages = (int) ceil($total / $perPage);
 
     $aStmt = $pdo->prepare("
-        SELECT id, nickname, user_id, guest_id, country, platform, ip_address, payload->>'how' AS how,
+        SELECT id, nickname, user_id, guest_id, country, platform, ip_address IS NOT NULL AS has_ip, ip_hash, geo_city, payload->>'how' AS how,
                EXTRACT(EPOCH FROM created_at)::INTEGER AS created_ts
         FROM messages
         WHERE channel_id = :cid AND type = 'system' AND event = 'join'
@@ -95,21 +96,44 @@ admin_nav('/admin/arrivals');
     $aStmt->execute();
     $arrivals = $aStmt->fetchAll();
 
+    // Guests who later signed up (GuestLinks): their account, and the first arrival of each account
+    // (the guest's first visit, where the "New sign-up" badge goes when the account came after it).
+    $links = GuestLinks::accountsFor(array_column(array_filter($arrivals, fn ($a) => $a['user_id'] === null), 'guest_id'));
+    $accIds = array_values(array_unique(array_filter(array_merge(array_column($arrivals, 'user_id'), array_column($links, 'user_id')))));
+    $firstArrival = [];
+    $accounts = [];
+    if ($accIds !== []) {
+        $in = implode(',', array_fill(0, count($accIds), '?'));
+        $st = $pdo->prepare("
+            SELECT x.uid, min(x.at) AS first FROM (
+                SELECT m.user_id AS uid, m.created_at AS at FROM messages m WHERE m.type = 'system' AND m.event = 'join' AND m.user_id IN ($in)
+                UNION ALL
+                SELECT gl.user_id, m.created_at FROM user_guest_links gl JOIN messages m ON m.guest_id = gl.guest_id AND m.type = 'system' AND m.event = 'join'
+                WHERE gl.user_id IN ($in)
+            ) x GROUP BY x.uid
+        ");
+        $st->execute(array_merge($accIds, $accIds));
+        foreach ($st->fetchAll(PDO::FETCH_ASSOC) as $r) $firstArrival[$r['uid']] = strtotime((string) $r['first']);
+        $st = $pdo->prepare("SELECT id, username, display_name, created_at FROM users WHERE id IN ($in)");
+        $st->execute($accIds);
+        foreach ($st->fetchAll(PDO::FETCH_ASSOC) as $r) $accounts[$r['id']] = $r;
+    }
+
     $backHref = '/admin/arrivals?from=' . urlencode($from) . '&to=' . urlencode($to) . '&view=' . urlencode($view);
     ?>
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
         <h1 class="page-title" style="margin-bottom:0">
             <span class="badge" style="background:#3b82f622;color:var(--info);border:1px solid #3b82f655">City</span>
-            <?php $chFlag = $isoFlag($ch['country'] ?? ''); if ($chFlag) echo '<span style="margin-right:2px">' . $chFlag . '</span> '; ?><?= htmlspecialchars($ch['name'] ?? '(untitled)', ENT_QUOTES) ?>
+            <?php $chFlag = $isoFlag($ch['country'] ?? ''); if ($chFlag) echo '<span style="margin-right:2px">' . $chFlag . '</span> '; ?><?= htmlspecialchars(people_city($ch['name'] ?? '') ?: '(untitled)', ENT_QUOTES) ?>
             <span style="color:var(--faint);font-size:14px;font-weight:400"><?= number_format($total) ?> arrivals · <?= htmlspecialchars($rangeLabel, ENT_QUOTES) ?></span>
         </h1>
         <a href="<?= $backHref ?>" class="btn btn-secondary btn-sm">← Back</a>
     </div>
-    <div class="td-mono" style="color:var(--faint);margin-bottom:16px;font-size:11px"><?= htmlspecialchars($ch['id'], ENT_QUOTES) ?></div>
+    <div style="margin-bottom:16px"></div>
 
     <div class="table-wrapper">
         <table>
-            <thead><tr><th style="width:160px">When</th><th>Who arrived</th><th style="width:130px">From (IP)</th><th style="width:150px" title="How this city was chosen. Recorded since 2026-11-27 (older arrivals and older apps: —).">How</th><th style="width:110px">Platform</th><th style="width:90px">Actions</th></tr></thead>
+            <thead><tr><th style="width:160px">When</th><th>Who arrived</th><th style="width:150px" title="Country and approximate city of the connection, and a network id (the same id on two rows = the same connection). Full IPs: super admins only, kept 30 days.">From</th><th style="width:150px" title="How this city was chosen. Recorded since 2026-11-27 (older arrivals and older apps: —).">How</th><th style="width:110px">Platform</th><th style="width:90px">Actions</th></tr></thead>
             <tbody>
             <?php if (empty($arrivals)): ?>
                 <tr><td colspan="6" class="no-results">No arrivals in this range.</td></tr>
@@ -138,9 +162,20 @@ admin_nav('/admin/arrivals');
                 $cityCc = strtoupper((string) ($ch['country'] ?? ''));
                 foreach ($arrivals as $a):
                 $who = $a['nickname'] ?: '(no name)';
-                if ($a['user_id'] !== null) {
-                    $idBadge = '<span class="badge badge-registered" title="' . htmlspecialchars($a['user_id'], ENT_QUOTES) . '">Reg.</span>';
-                    $profile = '/admin/users?q=' . urlencode($a['user_id']);
+                $wasGuest = null;
+                $accId = $a['user_id'] ?? ($links[$a['guest_id'] ?? '']['user_id'] ?? null);
+                $newSignup = false;
+                if ($a['user_id'] === null && $accId !== null) {
+                    // A guest who later signed up: their handle, "was guest ElectricWolf".
+                    $acc = $accounts[$accId] ?? null;
+                    $wasGuest = $who;
+                    $who = $acc ? ($acc['username'] ? '@' . $acc['username'] : $acc['display_name']) : $who;
+                    $newSignup = isset($firstArrival[$accId]) && $firstArrival[$accId] === (int) $a['created_ts']
+                        && $acc !== null && (int) $acc['created_at'] >= (int) $a['created_ts'] - 60;
+                }
+                if ($accId !== null) {
+                    $idBadge = '<span class="badge badge-registered" title="An account">Reg.</span>';
+                    $profile = '/admin/users/' . urlencode($accId) . '/edit';
                 } elseif ($a['guest_id'] !== null) {
                     $idBadge = '<span class="badge badge-guest" title="' . htmlspecialchars($a['guest_id'], ENT_QUOTES) . '">Guest</span>';
                     $profile = null;
@@ -155,18 +190,11 @@ admin_nav('/admin/arrivals');
                         <?php else: ?>
                             <span style="color:var(--muted);margin-left:4px"><?= htmlspecialchars($who, ENT_QUOTES) ?></span>
                         <?php endif; ?>
+                        <?php if ($newSignup): ?><span class="badge b-ok" style="margin-left:4px" title="This guest's first visit; they created an account afterwards">New sign-up</span><?php endif; ?>
+                        <?php if ($wasGuest !== null): ?><div style="color:var(--faint);font-size:11px;margin-top:2px">was guest <?= htmlspecialchars($wasGuest, ENT_QUOTES) ?></div><?php endif; ?>
                     </td>
-                    <td style="white-space:nowrap">
-                        <?php if (!empty($a['country'])): ?>
-                            <span style="font-size:15px"><?= $isoFlag($a['country']) ?></span>
-                            <span style="color:var(--faint);font-size:12px"><?= htmlspecialchars(strtoupper($a['country']), ENT_QUOTES) ?></span>
-                        <?php elseif (empty($a['ip_address'])): ?>
-                            <span style="color:var(--faint)">-</span>
-                        <?php endif; ?>
-                        <?php if (!empty($a['ip_address'])): ?>
-                            <div class="td-mono" style="color:var(--muted);font-size:11px;margin-top:2px"><?= htmlspecialchars($a['ip_address'], ENT_QUOTES) ?></div>
-                        <?php endif; ?>
-                    </td>
+                    <td style="white-space:nowrap"><?= people_where($a['country'] ?? null, $a['geo_city'] ?? null, $a['ip_hash'] ?? null,
+                        DailyProofRepository::bool($a['has_ip']) ? ['message', $a['id']] : null) ?></td>
                     <td style="white-space:nowrap">
                         <?= $howLabel($a['how'] ?? null) ?>
                         <?php if ($cityCc !== '' && !empty($a['country']) && strtoupper($a['country']) !== $cityCc): ?>
@@ -261,7 +289,7 @@ admin_nav('/admin/arrivals');
             $daily[$day][$cid] = $cnt;
             $dayTotals[$day]   = ($dayTotals[$day] ?? 0) + $cnt;
             $cityTotals[$cid]  = ($cityTotals[$cid] ?? 0) + $cnt;
-            $cityName[$cid]    = $r['name'];
+            $cityName[$cid]    = people_city($r['name']);
             $cityFlag[$cid]    = $isoFlag($r['country'] ?? '');
         }
         arsort($cityTotals);
@@ -300,6 +328,7 @@ admin_nav('/admin/arrivals');
         ");
         $cityStmt->execute([':ds' => $ds, ':de' => $de]);
         $cities = $cityStmt->fetchAll();
+        foreach ($cities as &$cr) { $cr['name'] = people_city($cr['name']); } unset($cr);   // Hilads names ("Saigon")
         $totalArr = 0;
         foreach ($cities as $r) { $totalArr += (int) $r['cnt']; }
         // One colour per city (by rank).
@@ -330,7 +359,7 @@ admin_nav('/admin/arrivals');
                         <td>
                             <span style="width:10px;height:10px;border-radius:3px;background:<?= $barColors[$c['id']] ?>;display:inline-block;margin-right:6px"></span>
                             <?php $cFlag = $isoFlag($c['country'] ?? ''); if ($cFlag) echo '<span style="margin-right:4px">' . $cFlag . '</span>'; ?>
-                            <strong><?= htmlspecialchars($c['name'] ?? '(untitled)', ENT_QUOTES) ?></strong>
+                            <strong><?= htmlspecialchars(people_city($c['name'] ?? '') ?: '(untitled)', ENT_QUOTES) ?></strong>
                         </td>
                         <td><strong style="color:var(--text);font-size:15px"><?= number_format((int) $c['cnt']) ?></strong></td>
                         <td style="color:var(--faint);white-space:nowrap"><?= $lastTs ? date('M d, H:i', $lastTs) : '-' ?></td>

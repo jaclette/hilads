@@ -198,6 +198,9 @@ if ($uri === '/admin' || $uri === '/admin/') {
 } elseif ($uri === '/admin/arrivals') {
     require __DIR__ . '/arrivals.php';
 
+} elseif ($uri === '/admin/ip') {
+    require __DIR__ . '/ip.php';
+
 } elseif ($uri === '/admin/bans') {
     require __DIR__ . '/bans.php';
 

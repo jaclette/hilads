@@ -43,6 +43,18 @@ class Request
     }
 
     /**
+     * Approximate city from Cloudflare's CF-IPCity header ("Add visitor location headers"
+     * managed transform). URL-encoded UTF-8 on the wire; null when absent.
+     */
+    public static function city(): ?string
+    {
+        $c = $_SERVER['HTTP_CF_IPCITY'] ?? null;
+        if (!is_string($c) || trim($c) === '') return null;
+        $c = trim(rawurldecode($c));
+        return mb_check_encoding($c, 'UTF-8') && mb_strlen($c) <= 80 ? $c : null;
+    }
+
+    /**
      * Client platform from the X-Platform header that the web + mobile apps
      * send on each request: 'web' | 'ios' | 'android'. Anything else (or a
      * missing header, e.g. an old client / crawler) → 'unknown'. Used to stamp

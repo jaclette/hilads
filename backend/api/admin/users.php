@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 admin_require_login();
+require_once __DIR__ . '/_people.php';
 
 $pdo     = Database::pdo();
 $perPage = 50;
@@ -11,6 +12,11 @@ $offset  = ($page - 1) * $perPage;
 $search  = trim($_GET['q'] ?? '');
 $filter  = in_array($_GET['filter'] ?? '', ['all', 'active', 'fake', 'deleted'], true) ? (string) $_GET['filter'] : 'active';
 $city    = trim($_GET['city'] ?? '');
+// Filters and sort (2026-11-28): platform (sign-up or last seen), sign-up country; sort by joined / last seen / country.
+$platformF = in_array($_GET['platform'] ?? '', ['ios', 'android', 'web'], true) ? (string) $_GET['platform'] : '';
+$countryF  = preg_match('/^[A-Za-z]{2}$/', (string) ($_GET['country'] ?? '')) ? strtoupper((string) $_GET['country']) : '';
+$sort      = in_array($_GET['sort'] ?? '', ['joined', 'seen', 'country', 'points'], true) ? (string) $_GET['sort'] : 'joined';
+$dir       = ($_GET['dir'] ?? '') === 'asc' ? 'ASC' : 'DESC';
 
 // Per-city "new users" diagram + city drill-in range. users.created_at is an
 // INTEGER epoch (not timestamptz), so bounds are epoch ints.
@@ -61,8 +67,23 @@ switch ($filter) {
     // 'all' - no extra filter
 }
 
+if ($platformF !== '') {
+    $where[] = '(s.platform = :pf OR u.last_seen_platform = :pf2)';
+    $params[':pf'] = $platformF; $params[':pf2'] = $platformF;
+}
+if ($countryF !== '') {
+    $where[] = 's.country = :cc';
+    $params[':cc'] = $countryF;
+}
+
 $whereClause = $where ? ('WHERE ' . implode(' AND ', $where)) : '';
-$baseQuery   = "FROM users u $whereClause";
+$baseQuery   = "FROM users u LEFT JOIN user_signups s ON s.user_id = u.id $whereClause";
+$orderBy = match ($sort) {
+    'seen'    => "u.last_seen_at $dir NULLS LAST, u.created_at DESC",
+    'country' => "s.country $dir NULLS LAST, u.created_at DESC",
+    'points'  => "u.score_alltime $dir, u.created_at DESC",
+    default   => "u.created_at $dir",
+};
 
 // ── Count ─────────────────────────────────────────────────────────────────────
 
@@ -78,9 +99,11 @@ $params[':off'] = $offset;
 
 $stmt = $pdo->prepare("
     SELECT u.id, u.display_name, u.username, u.email, u.google_id, u.profile_photo_url, u.profile_thumb_photo_url,
-           u.home_city, u.guest_id, u.created_at, u.is_fake, u.is_demo, u.is_review, u.deleted_at, u.vibe, u.score_alltime
+           u.home_city, u.guest_id, u.created_at, u.is_fake, u.is_demo, u.is_review, u.deleted_at, u.vibe, u.score_alltime,
+           s.country AS su_country, s.city AS su_city, s.platform AS su_platform, s.app_version AS su_version,
+           u.last_seen_at, u.last_seen_platform, u.last_seen_app_version, u.last_seen_city_id, u.current_city_id
     $baseQuery
-    ORDER BY u.created_at DESC
+    ORDER BY $orderBy
     LIMIT :lim OFFSET :off
 ");
 $stmt->execute($params);
@@ -112,7 +135,11 @@ admin_nav('/admin/users');
 ?>
 <div class="admin-main">
     <?php
-    $uq = fn (array $over) => '/admin/users?' . http_build_query(array_filter($over + ['q' => $search, 'filter' => $filter, 'city' => $city], fn ($v) => $v !== '' && $v !== 'active'));
+    $uq = fn (array $over) => '/admin/users?' . http_build_query(array_filter($over + ['q' => $search, 'filter' => $filter, 'city' => $city,
+        'platform' => $platformF, 'country' => $countryF, 'sort' => $sort === 'joined' ? '' : $sort, 'dir' => $dir === 'DESC' ? '' : 'asc'], fn ($v) => $v !== '' && $v !== 'active'));
+    // A sortable header: a link that sorts the whole list on the server (clicking again flips the order).
+    $sortTh = fn (string $key, string $label) => '<th><a href="' . ui_e($uq(['sort' => $key, 'dir' => ($sort === $key && $dir === 'DESC') ? 'asc' : '', 'page' => ''])) . '" style="color:inherit">'
+        . $label . ($sort === $key ? ($dir === 'DESC' ? ' ↓' : ' ↑') : '') . '</a></th>';
     echo ui_page_head('Community', 'Users', number_format($total) . ' ' . (['active' => 'active accounts', 'all' => 'accounts', 'fake' => 'seeded accounts', 'deleted' => 'deleted accounts'][$filter] ?? 'accounts'),
         admin_can_edit('community') ? '<a href="/admin/users/create" class="btn btn-primary">Create an account</a>' : '');
     echo flash_html();
@@ -126,8 +153,14 @@ admin_nav('/admin/users');
         ], 'Accounts') ?>
         <input type="hidden" name="filter" value="<?= ui_e($filter) ?>">
         <input type="search" name="q" value="<?= ui_e($search) ?>" placeholder="Name, @username, email or id">
+        <select name="platform" onchange="this.form.submit()" aria-label="Platform">
+            <option value="">All platforms</option>
+            <?php foreach (['ios' => 'iOS', 'android' => 'Android', 'web' => 'Web'] as $pk => $pl): ?><option value="<?= $pk ?>"<?= $platformF === $pk ? ' selected' : '' ?>><?= $pl ?></option><?php endforeach; ?>
+        </select>
+        <input type="text" name="country" value="<?= ui_e($countryF) ?>" placeholder="Country (VN)" maxlength="2" style="width:110px" aria-label="Sign-up country">
+        <input type="hidden" name="sort" value="<?= ui_e($sort) ?>"><input type="hidden" name="dir" value="<?= ui_e(strtolower($dir)) ?>">
         <button type="submit" class="btn btn-sm">Search</button>
-        <?php if ($search !== '' || $filter !== 'active' || $city !== ''): ?>
+        <?php if ($search !== '' || $filter !== 'active' || $city !== '' || $platformF !== '' || $countryF !== ''): ?>
             <a href="/admin/users" class="btn btn-sm btn-ghost">Clear</a>
         <?php endif; ?>
     </form>
@@ -166,10 +199,10 @@ admin_nav('/admin/users');
     <div class="card">
     <div class="table-wrapper">
         <table class="data" data-sortable>
-            <thead><tr><th data-sort>Player</th><th data-sort>Email</th><th>Signs in with</th><th data-sort>Home city</th><th>Roles</th><th data-sort="num">Points</th><th data-sort="num">Joined</th><th>Status</th><th></th></tr></thead>
+            <thead><tr><th>Player</th><th>Email</th><th>Signs in with</th><?= $sortTh('country', 'Signed up from') ?><th>Platform</th><?= $sortTh('seen', 'Last seen') ?><th>Home city</th><th>Roles</th><?= $sortTh('points', 'Points') ?><?= $sortTh('joined', 'Joined') ?><th>Status</th><th></th></tr></thead>
             <tbody>
             <?php if (empty($users)): ?>
-                <tr><td colspan="9"><?= ui_empty('No player found', $search !== '' ? 'Nothing matches this search.' : '') ?></td></tr>
+                <tr><td colspan="12"><?= ui_empty('No player found', $search !== '' ? 'Nothing matches this search.' : '') ?></td></tr>
             <?php else: foreach ($users as $u):
                 $isDeleted = $u['deleted_at'] !== null;
                 $thumb = $u['profile_thumb_photo_url'] ?: $u['profile_photo_url'];
@@ -181,7 +214,12 @@ admin_nav('/admin/users');
                         <span class="who"><b><?= ui_e($u['display_name'] ?? '–') ?></b><span><?= $u['username'] ? '@' . ui_e($u['username']) : '<span class="mono">' . ui_e($u['id']) . '</span>' ?></span></span></a></td>
                     <td class="td-clip"><?= ui_e($u['email'] ?? '') ?: '<span class="faint">–</span>' ?></td>
                     <td><?= $u['google_id'] !== null ? '<span class="badge b-info">Google</span>' : ($u['email'] !== null ? '<span class="badge b-info">Email</span>' : '<span class="badge b-warn">Guest</span>') ?></td>
-                    <td><?= ui_e($u['home_city'] ?? '') ?: '<span class="faint">–</span>' ?></td>
+                    <td style="white-space:nowrap"><?= $u['su_country'] || $u['su_city'] ? people_flag($u['su_country']) . ' ' . ui_e($u['su_city'] ?: strtoupper((string) $u['su_country'])) : '<span class="faint">–</span>' ?></td>
+                    <td style="white-space:nowrap"><?= people_platform($u['su_platform'] ?: $u['last_seen_platform'], $u['last_seen_app_version'] ?: $u['su_version']) ?></td>
+                    <td style="white-space:nowrap"><?php if ($u['last_seen_at']): $seen = strtotime((string) $u['last_seen_at']); [$lsCity] = people_city_by_id($u['last_seen_city_id'] ?: $u['current_city_id']); ?>
+                        <span title="<?= ui_e(ui_when($seen)) ?>"><?= ui_e(ui_ago($seen)) ?></span><?= $lsCity ? '<div class="faint" style="font-size:12px">' . ui_e($lsCity) . '</div>' : '' ?>
+                    <?php else: ?><span class="faint">–</span><?php endif; ?></td>
+                    <td><?= ui_e($u['home_city'] ?? '') ?: '<span class="faint" title="Home city is an optional profile field: this player never set it">not set</span>' ?></td>
                     <td><?php if ($userRoles === []): ?><span class="faint">–</span><?php else: foreach ($userRoles as $r): ?>
                         <span class="badge b-brand" title="<?= ui_e($r['role']) ?>">Host · <?= ui_e($r['city_name']) ?></span>
                     <?php endforeach; endif; ?></td>

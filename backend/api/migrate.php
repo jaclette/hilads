@@ -5266,6 +5266,84 @@ run($pdo, "ALTER TABLE users ADD COLUMN IF NOT EXISTS allow_waves BOOLEAN NOT NU
 run($pdo, "ALTER TABLE users ADD COLUMN IF NOT EXISTS show_in_members BOOLEAN NOT NULL DEFAULT true", 'users.show_in_members');
 run($pdo, "CREATE INDEX IF NOT EXISTS idx_users_current_city ON users (current_city_id) WHERE deleted_at IS NULL", 'idx_users_current_city');
 
+// 2026-11-28: guest sessions ↔ accounts (GuestLinks), where an account came from (UserSignups),
+// last seen, and IPs: a salted hash + approximate city on messages and bans; the full IP is kept
+// 30 days (POST /internal/cleanup) for abuse cases, shown to super admins only, each view audited.
+// Reversal: DROP TABLE user_guest_links, user_signups; ALTER TABLE users DROP COLUMN last_seen_at,
+//           last_seen_platform, last_seen_app_version, last_seen_country, last_seen_city_id;
+//           ALTER TABLE messages DROP COLUMN ip_hash, DROP COLUMN geo_city; ALTER TABLE bans DROP COLUMN ip_hash;
+run($pdo, "
+    CREATE TABLE IF NOT EXISTS user_guest_links (
+        guest_id   TEXT        PRIMARY KEY,
+        user_id    TEXT        NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        method     TEXT        NOT NULL,
+        linked_at  TIMESTAMPTZ NOT NULL DEFAULT now()
+    )
+", 'user_guest_links');
+run($pdo, "CREATE INDEX IF NOT EXISTS idx_user_guest_links_user ON user_guest_links (user_id)", 'idx_user_guest_links_user');
+run($pdo, "
+    CREATE TABLE IF NOT EXISTS user_signups (
+        user_id         TEXT        PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
+        signed_up_at    TIMESTAMPTZ NOT NULL DEFAULT now(),
+        method          TEXT,
+        platform        TEXT,
+        app_version     TEXT,
+        locale          TEXT,
+        country         CHAR(2),
+        city            TEXT,
+        city_channel_id TEXT,
+        city_source     TEXT,
+        ip_hash         TEXT,
+        guest_id        TEXT,
+        invite_code     TEXT,
+        inviter_user_id TEXT REFERENCES users(id) ON DELETE SET NULL,
+        share_link      TEXT,
+        utm             JSONB,
+        store           TEXT,
+        store_referrer  TEXT,
+        source          TEXT NOT NULL DEFAULT 'signup'
+    )
+", 'user_signups');
+run($pdo, "CREATE INDEX IF NOT EXISTS idx_user_signups_country ON user_signups (country)", 'idx_user_signups_country');
+foreach ([
+    ['last_seen_at', 'TIMESTAMPTZ'], ['last_seen_platform', 'TEXT'], ['last_seen_app_version', 'TEXT'],
+    ['last_seen_country', 'CHAR(2)'], ['last_seen_city_id', 'TEXT'],
+] as [$col, $type]) {
+    run($pdo, "ALTER TABLE users ADD COLUMN IF NOT EXISTS {$col} {$type}", "users.{$col}");
+}
+run($pdo, "ALTER TABLE messages ADD COLUMN IF NOT EXISTS ip_hash TEXT", 'messages.ip_hash');
+run($pdo, "ALTER TABLE messages ADD COLUMN IF NOT EXISTS geo_city TEXT", 'messages.geo_city');
+run($pdo, "CREATE INDEX IF NOT EXISTS idx_messages_join_guest ON messages (guest_id, created_at) WHERE type = 'system' AND event = 'join'", 'idx_messages_join_guest');
+run($pdo, "ALTER TABLE bans ADD COLUMN IF NOT EXISTS ip_hash TEXT", 'bans.ip_hash');
+run($pdo, "CREATE INDEX IF NOT EXISTS idx_bans_ip_hash ON bans (ip_hash) WHERE ip_hash IS NOT NULL", 'idx_bans_ip_hash');
+// The hash of every IP still stored (messages, IP bans), in PHP: the salt is a server secret.
+require_once __DIR__ . '/src/Request.php';
+require_once __DIR__ . '/src/Invites.php';
+try {
+    $hashed = 0;
+    foreach (['messages', 'bans'] as $table) {
+        $ips = $pdo->query("SELECT DISTINCT ip_address FROM {$table} WHERE ip_address IS NOT NULL AND ip_address NOT IN ('', 'unknown') AND ip_hash IS NULL")->fetchAll(PDO::FETCH_COLUMN);
+        $upd = $pdo->prepare("UPDATE {$table} SET ip_hash = ? WHERE ip_address = ? AND ip_hash IS NULL");
+        foreach ($ips as $ip) { $upd->execute([Invites::ipHash((string) $ip), $ip]); $hashed += $upd->rowCount(); }
+    }
+    echo "  ip hashes: {$hashed} rows\n";
+} catch (\Throwable $e) {
+    echo "  ip hashes: SKIPPED (" . $e->getMessage() . ")\n";
+}
+// Backfill: link past sign-ups to their guest sessions where reliable, then a sign-up row per account.
+require_once __DIR__ . '/src/GuestLinks.php';
+require_once __DIR__ . '/src/UserSignups.php';
+try {
+    $b = GuestLinks::backfill(30);
+    echo "  guest links: {$b['by_signup']} by the sign-up guest id, {$b['by_device']} by a shared device;"
+       . " {$b['recent_with_guest_history']} of the {$b['recent_signups']} sign-ups of the last 30 days now have their guest arrivals\n";
+    $pdo->prepare("INSERT INTO app_settings (key, value) VALUES ('guest_links_backfill', ?) ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value")
+        ->execute([json_encode($b + ['at' => gmdate('c')])]);
+    echo "  sign-up rows: " . UserSignups::backfill() . " backfilled\n";
+} catch (\Throwable $e) {
+    echo "  guest links / sign-ups backfill: SKIPPED (" . $e->getMessage() . ")\n";
+}
+
 // ── Self-heal monthly rank columns ────────────────────────────────────────
 // The denormalised users.monthly_rank_* columns are kept fresh by
 // route-level recalc hooks fired after each scoring action. If any

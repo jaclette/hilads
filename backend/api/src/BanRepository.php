@@ -38,8 +38,10 @@ class BanRepository
             $params[] = $guestId;
         }
         if ($ip !== null && $ip !== '' && $ip !== 'unknown') {
-            $conds[]  = 'ip_address = ?';
+            // A network ban is matched by the IP's salted hash (fan-out bans store only the hash).
+            $conds[]  = '(ip_address = ? OR ip_hash = ?)';
             $params[] = $ip;
+            $params[] = Invites::ipHash($ip);
         }
         if (empty($conds)) {
             return false;
@@ -79,24 +81,26 @@ class BanRepository
             "INSERT INTO bans (guest_id, reason, created_by, expires_at) VALUES (?, ?, ?, ?)"
         )->execute([$guestId, $reason, $createdBy, $expires]);
 
-        // Ban the IPs this guest recently posted from (city messages carry it).
+        // Ban the networks this guest recently arrived or posted from, by the IP's salted hash
+        // (the full IP is only kept 30 days; the hash is enough to match a returning network).
         $ipStmt = $pdo->prepare(
-            "SELECT DISTINCT ip_address
+            "SELECT DISTINCT coalesce(ip_hash, ip_address) AS h, ip_hash IS NULL AS raw
                FROM messages
               WHERE guest_id = ?
-                AND ip_address IS NOT NULL
+                AND coalesce(ip_hash, ip_address) IS NOT NULL
                 AND created_at > now() - interval '7 days'"
         );
         $ipStmt->execute([$guestId]);
-        $ips = array_column($ipStmt->fetchAll(), 'ip_address');
+        $ips = $ipStmt->fetchAll(\PDO::FETCH_ASSOC);
 
         if (!empty($ips)) {
             $ins = $pdo->prepare(
-                "INSERT INTO bans (ip_address, reason, created_by, expires_at) VALUES (?, ?, ?, ?)"
+                "INSERT INTO bans (ip_hash, reason, created_by, expires_at) VALUES (?, ?, ?, ?)"
             );
-            foreach ($ips as $ip) {
-                if ($ip === '' || $ip === 'unknown') continue;
-                $ins->execute([$ip, $reason, $createdBy, $expires]);
+            foreach ($ips as $r) {
+                if ($r['h'] === '' || $r['h'] === 'unknown') continue;
+                $hash = DailyProofRepository::bool($r['raw']) ? Invites::ipHash((string) $r['h']) : $r['h'];
+                $ins->execute([$hash, $reason, $createdBy, $expires]);
             }
         }
 
@@ -115,8 +119,8 @@ class BanRepository
         }
         $expires = $days > 0 ? gmdate('c', time() + $days * 86400) : null;
         Database::pdo()->prepare(
-            "INSERT INTO bans (ip_address, reason, created_by, expires_at) VALUES (?, ?, ?, ?)"
-        )->execute([$ip, $reason, $createdBy, $expires]);
+            "INSERT INTO bans (ip_address, ip_hash, reason, created_by, expires_at) VALUES (?, ?, ?, ?, ?)"
+        )->execute([$ip, Invites::ipHash($ip), $reason, $createdBy, $expires]);
     }
 
     /** Ban a guest_id directly (without the message-IP fan-out). */

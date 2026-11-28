@@ -42,6 +42,12 @@ export function captureInvite(url: string | null | undefined): void {
  * a code already kept (the app was opened by the link) wins. Never throws.
  */
 const REFERRER_DONE = 'hilads_install_referrer_done';
+const RAW_REFERRER = 'hilads_install_referrer';
+
+/** The Play install referrer kept at first launch (Android), for the sign-up's source. */
+export async function installReferrer(): Promise<string | null> {
+  try { return await AsyncStorage.getItem(RAW_REFERRER); } catch { return null; }
+}
 export async function captureInstallReferrer(): Promise<void> {
   if (Platform.OS !== 'android') return;
   try {
@@ -52,6 +58,8 @@ export async function captureInstallReferrer(): Promise<void> {
       Application.getInstallReferrerAsync(),
       new Promise<string>(resolve => setTimeout(() => resolve(''), 5000)),
     ]);
+    // The raw referrer goes with the sign-up too (Back office › a user's Sign-up: store, campaign).
+    if (referrer) await AsyncStorage.setItem(RAW_REFERRER, String(referrer).slice(0, 300));
     const m = /(?:^|&)ref=([A-Za-z0-9]{5,12})(?:&|$)/.exec(decodeURIComponent(referrer ?? ''));
     if (m) await AsyncStorage.setItem(KEY, m[1].toUpperCase());
   } catch {

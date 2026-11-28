@@ -542,12 +542,20 @@ class MessageRepository
         // Stamp the arriver's IP too (alongside country) so a guest ban can
         // also block the IP a guest arrived from, even if they never posted.
         $ip = ($ip !== null && $ip !== '' && $ip !== 'unknown') ? $ip : null;
+        // + the IP's salted hash and approximate city (the full IP is cleared after 30 days).
+        $ipHash  = $ip !== null && class_exists('Invites') ? Invites::ipHash($ip) : null;
+        $geoCity = class_exists('Request') ? Request::city() : null;
         Database::pdo()->prepare("
-            INSERT INTO messages (id, channel_id, type, event, guest_id, user_id, nickname, country, ip_address, platform, payload)
-            VALUES (?, ?, 'system', 'join', ?, ?, ?, ?, ?, ?, ?::jsonb)
-        ")->execute([$id, self::dbKey($channelId), $guestId, $userId, $nickname, $country, $ip, $platform,
+            INSERT INTO messages (id, channel_id, type, event, guest_id, user_id, nickname, country, ip_address, ip_hash, geo_city, platform, payload)
+            VALUES (?, ?, 'system', 'join', ?, ?, ?, ?, ?, ?, ?, ?, ?::jsonb)
+        ")->execute([$id, self::dbKey($channelId), $guestId, $userId, $nickname, $country, $ip, $ipHash, $geoCity, $platform,
                      // How the city was chosen (Admin › Arrivals only: never sent to the apps).
                      $how !== null ? json_encode(['how' => $how]) : null]);
+        // A signed-in arrival ties this device's guest id to the account, and is its latest activity.
+        if ($userId !== null && class_exists('GuestLinks')) {
+            GuestLinks::link($userId, $guestId, 'device');
+            UserSignups::touch($userId, self::dbKey($channelId));
+        }
 
         // Return the id so the live WS broadcast carries it too - matches the
         // fetched (format()) shape so reverse-scroll pagination + dedup line up.

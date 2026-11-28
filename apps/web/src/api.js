@@ -1,3 +1,4 @@
+import { signupSource } from './lib/utm'
 import i18n from './i18n'
 import { registerCityNames } from './i18n/cityName'
 
@@ -1439,7 +1440,9 @@ export async function authSignup(email, password, displayName, username, guestId
     credentials: 'include',
     // Scoring v2: the invite link's code (lib/invite), credited once the first photo is approved.
     body: JSON.stringify({ email, password, display_name: displayName, username, guest_id: guestId, mode, eula_accepted: eulaAccepted,
-                           ...(inviteCode ? { invite_code: inviteCode } : {}) }),
+                           ...(inviteCode ? { invite_code: inviteCode } : {}),
+                           // Where the account came from (Back office): the language, the campaign and share link of the entry.
+                           locale: i18n.language, source: signupSource() }),
   })
   const data = await res.json()
   if (!res.ok) throw new Error(data.error || 'Signup failed')

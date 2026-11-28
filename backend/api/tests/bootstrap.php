@@ -86,6 +86,8 @@ require_once __DIR__ . '/../src/DailyPushes.php';
 require_once __DIR__ . '/../src/PushOnce.php';
 require_once __DIR__ . '/../src/Members.php';
 require_once __DIR__ . '/../src/Waves.php';
+require_once __DIR__ . '/../src/GuestLinks.php';
+require_once __DIR__ . '/../src/UserSignups.php';
 require_once __DIR__ . '/../src/NotificationI18n.php';
 require_once __DIR__ . '/../src/PhotoWatch.php';
 require_once __DIR__ . '/../src/DailyVotes.php';

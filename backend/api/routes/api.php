@@ -1365,6 +1365,11 @@ $router->add('POST', '/api/v1/auth/signup', function () {
     // and the device it signed up on.
     Invites::recordDevice($user['id']);
     Invites::attribute($user['id'], isset($body['invite_code']) && is_string($body['invite_code']) ? $body['invite_code'] : null);
+    // The guest session becomes this account's history (Back office › Arrivals, Users), and where it came from.
+    $signupGuest = isset($body['guest_id']) && is_string($body['guest_id']) ? $body['guest_id'] : null;
+    GuestLinks::link($user['id'], $signupGuest, 'signup');
+    UserSignups::record($user, $body, $signupGuest);
+    UserSignups::touch($user['id']);
 
     AnalyticsService::capture('user_registered', $user['id'], [
         'guest_id' => isset($body['guest_id']) ? $body['guest_id'] : null,
@@ -1395,6 +1400,7 @@ $router->add('POST', '/api/v1/auth/login', function () {
         'is_guest' => false,
     ]);
     Invites::recordDevice($user['id']);
+    UserSignups::touch($user['id']);
 
     // _token is included so mobile clients can persist it directly (set-cookie
     // headers are not reliably accessible from React Native fetch on Android).
@@ -1431,6 +1437,7 @@ $router->add('POST', '/api/v1/auth/logout', function () {
 $router->add('GET', '/api/v1/auth/me', function () {
     $user = AuthService::requireAuth();
     Invites::recordDevice($user['id']);
+    UserSignups::touch($user['id']);
     $fields = AuthService::ownFields($user);
 
     // current_city: live source of truth for membership + notifications.
@@ -6001,6 +6008,14 @@ $router->add('POST', '/internal/cleanup', function () {
     ");
     $rateBucketsDeleted = $stmt->rowCount();
 
+    // 4b. Full IPs are kept 30 days for abuse cases; then only the salted hash and approximate city stay.
+    try {
+        $pdo->query("UPDATE messages SET ip_hash = coalesce(ip_hash, encode(sha256(ip_address::bytea), 'hex')), ip_address = NULL
+                     WHERE ip_address IS NOT NULL AND created_at < now() - INTERVAL '30 days' AND ip_hash IS NOT NULL");
+    } catch (\Throwable $e) {
+        error_log('[cleanup] ip retention: ' . $e->getMessage());
+    }
+
     // 5. One-push-per-event guard (PushOnce) - an event older than a month never pushes again anyway
     try {
         $pdo->query("DELETE FROM push_once WHERE created_at < now() - INTERVAL '30 days'");
@@ -6739,8 +6754,9 @@ $router->add('POST', '/api/v1/channels/{channelId}/messages', function (array $p
         try {
             // Also stamp the Cloudflare origin country (free header) so the BO
             // can show where a guest is connecting from.
-            Database::pdo()->prepare("UPDATE messages SET ip_address = ?, country = ? WHERE id = ?")
-                ->execute([$clientIp, Request::country(), $message['id']]);
+            // + its salted hash and approximate city: the full IP is cleared after 30 days (/internal/cleanup).
+            Database::pdo()->prepare("UPDATE messages SET ip_address = ?, ip_hash = ?, geo_city = ?, country = ? WHERE id = ?")
+                ->execute([$clientIp, Invites::ipHash($clientIp), Request::city(), Request::country(), $message['id']]);
         } catch (\Throwable $e) {
             error_log('[bans] ip stamp skipped: ' . $e->getMessage());
         }

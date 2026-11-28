@@ -72,4 +72,25 @@ final class MembersWavesTest extends TestCase
         $this->assertSame(['kitty_3 te souhaite la bienvenue sur Hilads 👋', null], NotificationI18n::render('welcome', 'fr', ['actorName' => 'kitty_3']));
         $this->assertContains('welcome', Waves::SOURCES);
     }
+
+    public function testGuestLinkSqlCountsAGuestWhoSignedUpAsOnePerson(): void
+    {
+        $sql = GuestLinks::personSql('m.user_id', 'm.guest_id');
+        $this->assertStringContainsString('user_guest_links', $sql);
+        $this->assertStringStartsWith('coalesce(coalesce(m.user_id,', $sql);
+    }
+
+    public function testSignupHelpers(): void
+    {
+        $this->assertSame('fr-FR', UserSignups::language('fr-FR,fr;q=0.9,en;q=0.8'));
+        $this->assertNull(UserSignups::language('*'));
+        $this->assertSame(['utm_source' => 'instagram', 'utm_campaign' => 'launch'],
+            UserSignups::cleanUtm(['utm_source' => 'instagram', 'utm_campaign' => 'launch', 'evil' => 'x', 'utm_term' => '']));
+        $this->assertNull(UserSignups::cleanUtm('nope'));
+        $this->assertSame('App Store', UserSignups::store('ios', null));
+        $this->assertSame('Google Play (referred)', UserSignups::store('android', 'utm_source=invite&ref=ABC'));
+        $this->assertSame('Google Play', UserSignups::store('android', 'utm_source=google-play&utm_medium=organic'));
+        $this->assertNull(UserSignups::store('web', null));
+        $this->assertSame('a1b2c3d4', UserSignups::networkId('a1b2c3d4e5f6'));
+    }
 }

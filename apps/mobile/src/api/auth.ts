@@ -1,3 +1,5 @@
+import { installReferrer } from '@/features/invites/invite';
+import i18n from '@/i18n';
 import { api, setAuthToken, getAuthToken, isAuthFailure } from './client';
 import { persistToken } from '@/services/session';
 import type { User } from '@/types';
@@ -63,6 +65,9 @@ export async function authSignup(
     mode,
     eula_accepted: eulaAccepted,
     ...(inviteCode ? { invite_code: inviteCode } : {}),
+    // Where the account came from (Back office): the app language and the store's install referrer.
+    locale:        i18n.language,
+    source:        { store_referrer: await installReferrer() },
   });
   if (res.token) {
     setAuthToken(res.token);
