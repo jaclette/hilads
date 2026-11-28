@@ -98,6 +98,8 @@ const MEDIA_H = 960;                      // the clip: the top half
 const SAFE_BOTTOM = 1600;                 // the apps' caption: the bottom 320 px
 const MARK_H = 44;                        // the series mark under the source line
 const MAX_ROWS = 10;                      // the podium + #4 to #10
+const SUB_PX = 30;                        // subtitle: an optional short line under the headline (the unit, e.g. "Tourists per year")
+const SUB_LH = 38;
 const S = (sec) => Math.round(sec * 30);  // seconds → frames
 const MEDALS = { 1: '🥇', 2: '🥈', 3: '🥉' };
 
@@ -187,7 +189,7 @@ function Confetti({ x, y, at }) {
 /** "3700" → "3,700", "120600.5" → "120,600.5": values as the source writes them (thousands grouped, decimals kept). */
 const grouped = (v) => { const [i, d] = String(v).split('.'); return i.replace(/\B(?=(\d{3})+(?!\d))/g, ',') + (d !== undefined ? '.' + d : ''); };
 
-function StaticTableScreen({ headline, detail, rows: allRows, source, highlight = [], clip, valueFormat = null, cardBg = null, accent = null,
+function StaticTableScreen({ headline, subtitle = null, detail, rows: allRows, source, highlight = [], clip, valueFormat = null, cardBg = null, accent = null,
                              extraRow = null }) {
   const bg = cardColor(cardBg);
   const hot = new Set(highlight.map((h) => h.trim().toLowerCase()));
@@ -212,7 +214,8 @@ function StaticTableScreen({ headline, detail, rows: allRows, source, highlight 
   titleLines ??= [words];
   const titleTop = MEDIA_H - 28;
   const titleLH = Math.round(titlePx * 1.04);
-  const titleEnd = titleTop + titleLines.length * titleLH;
+  const subH = String(subtitle ?? '').trim() ? SUB_LH + 2 : 0;
+  const titleEnd = titleTop + titleLines.length * titleLH + subH;
 
   const srcPx = 24;
   const srcLines = Math.min(3, Math.ceil((measure(sourceLine, srcPx, 600) * 1.06) / W));
@@ -262,6 +265,7 @@ function StaticTableScreen({ headline, detail, rows: allRows, source, highlight 
             {l.map((w, j) => <span key={j} style={{ color: w.hot ? TERRA : INK }}>{j ? ' ' : ''}{w.word}</span>)}
           </div>
         ))}
+        {subH > 0 && <div style={{ fontSize: SUB_PX, lineHeight: `${SUB_LH}px`, fontWeight: 700, color: MUTED, marginTop: 2, whiteSpace: 'nowrap' }}>{subtitle}</div>}
       </div>
 
       {rows.map((r, i) => {
@@ -302,7 +306,7 @@ function StaticTableScreen({ headline, detail, rows: allRows, source, highlight 
   );
 }
 
-function TableScreen({ headline, detail, rows: allRows, source, highlight = [], clip, valueFormat = null, cardBg = null, accent = null,
+function TableScreen({ headline, subtitle = null, detail, rows: allRows, source, highlight = [], clip, valueFormat = null, cardBg = null, accent = null,
                        mode = 'classic', quiz = null, quizAccent = null, guessStill = false, extraRow = null, top: topIn = null, extraRows = null }) {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
@@ -359,7 +363,8 @@ function TableScreen({ headline, detail, rows: allRows, source, highlight = [], 
   let { px: titlePx, lines: titleLines } = headerAt(72);
   const titleTop = MEDIA_H - 28;                               // just under the wave
   let titleLH = Math.round(titlePx * 1.04);
-  let titleEnd = titleTop + titleLines.length * titleLH;
+  const subH = String(subtitle ?? '').trim() ? SUB_LH + 2 : 0;
+  let titleEnd = titleTop + titleLines.length * titleLH + subH;
   // The hook (0–1.5 s): the same headline as big as fits in the empty area under the clip (up to 2.5× the header, 2 or 3
   // lines), centered; at 1.5 s it shrinks and moves up into the header (0.4 s, eased), crossfading with it.
   const hookArea = { top: MEDIA_H + 20, h: SAFE_BOTTOM - MEDIA_H - 40 };
@@ -405,7 +410,7 @@ function TableScreen({ headline, detail, rows: allRows, source, highlight = [], 
   for (let maxTwo = 68; maxTwo >= 56 && pod.stride < 38 && titleLines.length > 1; maxTwo -= 4) {
     ({ px: titlePx, lines: titleLines } = headerAt(maxTwo));
     titleLH = Math.round(titlePx * 1.04);
-    titleEnd = titleTop + titleLines.length * titleLH;
+    titleEnd = titleTop + titleLines.length * titleLH + subH;
     pod = podiumAt(1);
     for (let ps = 0.95; ps >= 0.5 && pod.stride < 38; ps -= 0.05) pod = podiumAt(ps);
   }
@@ -502,6 +507,7 @@ function TableScreen({ headline, detail, rows: allRows, source, highlight = [], 
             {l.map((w, j) => <span key={j} style={{ color: w.hot ? TERRA : INK }}>{j ? ' ' : ''}{w.word}</span>)}
           </div>
         ))}
+        {subH > 0 && <div style={{ fontSize: SUB_PX, lineHeight: `${SUB_LH}px`, fontWeight: 700, color: MUTED, marginTop: 2, whiteSpace: 'nowrap' }}>{subtitle}</div>}
       </div>
 
       {/* The podium: #2 left, #1 middle, #3 right; revealed #3, #2, #1. */}

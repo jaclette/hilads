@@ -165,7 +165,7 @@ async function screenFromContent(c) {
     const pick = files.find((v) => v.width >= 1080 && v.height >= 640) ?? files[files.length - 1];
     clip = { url: pick.url, credit: `Video: ${hit.user} / Pixabay` };
   }
-  return { headline: c.headline ?? '', detail: c.detail ?? '', rows: c.rows ?? [], highlight: ['Vietnam'], valueFormat: c.value_format ?? null,
+  return { headline: c.headline ?? '', subtitle: c.subtitle ?? null, detail: c.detail ?? '', rows: c.rows ?? [], highlight: ['Vietnam'], valueFormat: c.value_format ?? null,
            question: c.outro_question ?? null, cta: c.cta_line ?? null, extraRow: c.extra_row ?? null, top: c.top ?? null, extraRows: c.extra_rows ?? null, mode: c.mode ?? 'classic', quiz: c.quiz_question ?? null, quizAccent: c.quiz_accent ?? null, topic: c.topic ?? null, cardBg: c.card_bg ?? null, accent: c.headline_accent ?? null,
            source: `${label ? `${label} · ` : ''}Source${(c.source ?? '').includes(', ') ? 's' : ''}: ${c.source ?? ''}`, clip, seconds: 8 };
 }
@@ -368,7 +368,7 @@ async function renderReaction(data, { work, pub, out }) {
   const rows = (s.rows ?? []).map((r) => ({ ...r, value: Number(r.value), emoji: r.flag ?? null, flag: r.flag ? flagFile(r.flag) : null }));
   // The on-screen question: the package's outro question (also read from its content, before the API sends it).
   const question = questionArg ?? s.question ?? data.content?.outro_question ?? null;
-  const inputProps = { headline: s.headline, detail: detailArg ?? s.detail, rows, source: s.source, highlight: s.highlight ?? [], clip, valueFormat: s.valueFormat ?? null, question,
+  const inputProps = { headline: s.headline, subtitle: s.subtitle ?? data.content?.subtitle ?? null, detail: detailArg ?? s.detail, rows, source: s.source, highlight: s.highlight ?? [], clip, valueFormat: s.valueFormat ?? null, question,
                        topic: s.topic ?? data.content?.topic ?? data.title ?? null,
                        cta: ctaArg ?? s.cta ?? data.content?.cta_line ?? null,
                        extraRow: extraArg ?? s.extraRow ?? data.content?.extra_row ?? null,
