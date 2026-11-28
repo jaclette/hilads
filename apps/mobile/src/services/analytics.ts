@@ -182,7 +182,14 @@ export type AnalyticsEvent =
   | 'here_set'                  // { cityId, how: 'pick' | 'gps' }: "I'm here" set from Switch city
   | 'city_switch_proposed'      // { from, to }: GPS says the user is in another city
   | 'city_switch_accepted'
-  | 'city_switch_declined';
+  | 'city_switch_declined'
+  // Members screen + Wave 👋 (2026-11-28)
+  | 'members_viewed'            // { scope: city | world }
+  | 'members_search'            // { scope, length }
+  | 'members_filter'            // { filter, scope }
+  | 'members_city_filter'       // { cityId }: the World narrowed to one city
+  | 'wave_sent'                 // { source, back }
+  | 'wave_returned';            // { source }: a wave that answered theirs (mutual)
 
 type Payload = Record<string, string | number | boolean | undefined | null>;
 

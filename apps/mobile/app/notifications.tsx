@@ -11,6 +11,8 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Pressable, RefreshControl, ScrollView, SectionList, Text, View, StyleSheet, useWindowDimensions } from 'react-native';
 import Animated, { FadeInDown, useAnimatedStyle, useReducedMotion, useSharedValue, withSequence, withTiming, Easing } from 'react-native-reanimated';
 import { useLocalSearchParams, useRouter } from 'expo-router';
+import { fetchWaveStates } from '@/api/members';
+import { setWaveStates } from '@/features/members/wave';
 import { useTranslation } from 'react-i18next';
 import * as Haptics from 'expo-haptics';
 import { useApp } from '@/context/AppContext';
@@ -72,6 +74,9 @@ export default function NotificationsScreen() {
       if (mode !== 'first') page.items.forEach(i => { if (!known.current.has(i.id)) fresh.current.add(i.id); });
       page.items.forEach(i => known.current.add(i.id));
       setItems(prev => (mode === 'more' && prev ? [...prev, ...page.items.filter(i => !prev.some(p => p.id === i.id))] : page.items));
+      // Wave rows: the real state with each waver (answered already? expired?), so "Wave back" is right.
+      const wavers = [...new Set(page.items.filter(i => i.type === 'wave' || i.type === 'wave_back').map(i => i.actors[0]?.id).filter((x): x is string => !!x))];
+      if (wavers.length && account) fetchWaveStates(wavers).then(setWaveStates).catch(() => {});
       setCursor(page.nextCursor);
     } catch {
       if (current.current === asked) setItems(prev => prev ?? []);

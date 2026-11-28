@@ -99,7 +99,9 @@
       "perfectWeek": "🔥 Perfect week! +{{points}}",
       "friendJoined": "ay nag-post ng unang photo 🤝 +{{points}} ({{count}}/{{max}})",
       "crewBonus": "🎉 Kumpleto na ang crew mo! +{{points}}",
-      "friendSignedUp": "ay sumali sa Hilads gamit ang link mo 🎉 Unang photo niya = +{{points}} para sa'yo"
+      "friendSignedUp": "ay sumali sa Hilads gamit ang link mo 🎉 Unang photo niya = +{{points}} para sa'yo",
+      "wave": "Kumaway sa'yo si {{names}} 👋",
+      "waveBack": "Kumaway pabalik si {{names}} 🎉"
     },
     "empty": {
       "all": "Walang drama dito. Mag-snap ka na 📸",

@@ -121,6 +121,7 @@ const VenueScreen = lazyScreen(() => import('./components/VenueScreen'))
 const ConversationsScreen = lazyScreen(() => import('./components/ConversationsScreen'))
 const DirectMessageScreen = lazyScreen(() => import('./components/DirectMessageScreen'))
 const FriendRequestsScreen = lazyScreen(() => import('./components/FriendRequestsScreen'))
+const MembersScreen = lazyScreen(() => import('./components/MembersScreen'))
 const CreateEventPage = lazyScreen(() => import('./components/CreateEventModal'))
 const CreateTopicPage = lazyScreen(() => import('./components/CreateTopicPage'))
 const TopicChatPage = lazyScreen(() => import('./components/TopicChatPage'))
@@ -1345,6 +1346,8 @@ export default function App() {
   // V6: what the Ranks tab opens on (a deep link, a notification, Passport).
   const [ranksParams, setRanksParams] = useState({ tab: 'photos', period: 'today', scope: null, at: 0 })
   const [showFriendRequests, setShowFriendRequests] = useState(false)
+  // The Members screen (2026-11-28): { scope: 'city', cityId, name, country } | { scope: 'world' } | null
+  const [membersScope, setMembersScope] = useState(null)
   const [notifUnreadCount, setNotifUnreadCount] = useState(0)
   const [liveNotif, setLiveNotif] = useState(null)  // the last notification pushed live (WS newNotification)
   const [friendReqCount, setFriendReqCount] = useState(0)
@@ -1546,6 +1549,7 @@ export default function App() {
   useBackLayer(showAuthScreen, () => setShowAuthScreen(false))
   useBackLayer(showNotifications, () => setShowNotifications(false))
   useBackLayer(showFriendRequests, () => setShowFriendRequests(false))
+  useBackLayer(membersScope !== null, () => setMembersScope(null))
   useBackLayer(showEventLimitReached, () => setShowEventLimitReached(false))
   useBackLayer(showEditEvent, () => setShowEditEvent(false))
   useBackLayer(showCreateTopic, () => { setShowCreateTopic(false); setEditTopic(null) })
@@ -1589,6 +1593,7 @@ export default function App() {
     : showNotifSettings ? 'notification-settings'
     : showNotifications ? 'notifications'
     : showFriendRequests ? 'friend-requests'
+    : membersScope ? 'members'
     : showForgotPassword ? 'forgot-password'
     : showProfileDrawer && showAuthScreen ? 'sign-up'
     : showProfileDrawer && showSettings ? 'settings'
@@ -5583,10 +5588,25 @@ export default function App() {
                     <h1 className="chat-title">{channelScope === 'world' ? t('hi.titleWorld', { ns: 'chat' }) : t('hi.title', { ns: 'chat', city: city ? shortCityName(city.name) : '' })}</h1>
                     <p className="tab-subtitle">{(() => {
                       const h = hiCounts[channelScope === 'world' ? 'world' : 'city'] || {}
-                      return [
+                      const line = [
                         h.here > 0 ? t('hi.here', { ns: 'chat', count: h.here }) : null,
                         channelScope === 'world' ? (h.cities > 0 ? t('hi.cities', { ns: 'chat', count: h.cities }) : null) : (h.members > 0 ? t('hi.members', { ns: 'chat', count: h.members }) : null),
-                      ].filter(Boolean).join(' · ') || t('subtitles.hi', { ns: 'common' })
+                      ].filter(Boolean).join(' · ')
+                      if (!line) return t('subtitles.hi', { ns: 'common' })
+                      // The members line opens Members (a full screen): faces + chevron make it visibly tappable.
+                      return (
+                        <button type="button" className="hi-members-line" aria-label={t('hi.openMembers', { ns: 'members' })}
+                                onClick={() => setMembersScope(channelScope === 'world' ? { scope: 'world' }
+                                  : { scope: 'city', cityId: city?.channelId, name: city?.name, country: city?.country })}>
+                          {!!h.avatars?.length && (
+                            <span className="hi-faces" aria-hidden="true">{h.avatars.slice(0, 3).map((f, i) => f.photo
+                              ? <img key={i} className="mb-avatar" src={thumbUrl(f.photo) ?? f.photo} alt="" width={20} height={20} style={{ width: 20, height: 20 }} />
+                              : <span key={i} className="mb-avatar mb-avatar--initial" style={{ width: 20, height: 20, fontSize: 9, background: 'var(--primary)' }}>{(f.name || '?').charAt(0).toUpperCase()}</span>)}</span>
+                          )}
+                          <span>{line}</span>
+                          <Icon name="chevron-forward" size={14} />
+                        </button>
+                      )
                     })()}</p>
                   </div>
                   {city && (
@@ -7039,6 +7059,22 @@ export default function App() {
             // Navigate to the venue's city page - full page nav, lets the
             // normal city deep-link flow handle join + render.
             window.location.assign(`/city/${cityInfo.slug}`)
+          }}
+        />
+      )}
+
+      {membersScope && (
+        <MembersScreen
+          scope={membersScope}
+          account={account}
+          onBack={() => setMembersScope(null)}
+          onOpenProfile={(uid, name) => openProfile(uid, name)}
+          onNeedAccount={() => setGuestGate({ reason: 'wave' })}
+          onOpenChat={async (u) => {
+            try {
+              const { conversation, otherUser } = await createOrGetDirectConversation(u.id)
+              setMembersScope(null); setShowConversations(true); setActiveDm({ conversation, otherUser })
+            } catch { /* silent */ }
           }}
         />
       )}

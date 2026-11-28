@@ -97,7 +97,9 @@
       "perfectWeek": "🔥 完美一周！+{{points}}",
       "friendJoined": "发了第一张照片 🤝 +{{points}}（{{count}}/{{max}}）",
       "crewBonus": "🎉 你的小队集齐了！+{{points}}",
-      "friendSignedUp": "通过你的链接加入了 Hilads 🎉 对方的第一张照片 = 你 +{{points}}"
+      "friendSignedUp": "通过你的链接加入了 Hilads 🎉 对方的第一张照片 = 你 +{{points}}",
+      "wave": "{{names}} 向你挥手 👋",
+      "waveBack": "{{names}} 也向你挥手了 🎉"
     },
     "empty": {
       "all": "这里很安静。去拍张照片吧 📸",

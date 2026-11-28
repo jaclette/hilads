@@ -16,6 +16,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { Ionicons } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
 import { saveIdentity } from '@/lib/identity';
+import { savePrivacy } from '@/api/members';
 import { updateProfile, deleteAccount, checkUsernameAvailability, answerPromo } from '@/api/auth';
 import { uploadFile } from '@/api/uploads';
 import { setCurrentCity } from '@/api/channels';
@@ -61,6 +62,14 @@ export default function SettingsScreen() {
     if (account?.id) updateProfile({ theme: next }).catch(() => {});
   };
   // Off → 'no' (no photo); On → 'yes' (every photo, earlier ones too: an explicit choice).
+  // Members screen privacy: both on unless turned off; saved at once, reverted if the save fails.
+  const onTogglePrivacy = (key: 'allowWaves' | 'showInMembers') => {
+    if (!account) return;
+    const next = account[key] === false;
+    setAccount({ ...account, [key]: next });
+    savePrivacy({ [key]: next }).catch(() => setAccount(account));
+  };
+
   const onTogglePromo = () => {
     if (!account) return;
     const next = account.promoConsent === 'no' ? 'yes' : 'no';
@@ -499,6 +508,16 @@ export default function SettingsScreen() {
           )}
           {!isGuest && (
             <ListRow icon="ban-outline" title={t('blockedUsers')} divider onPress={() => router.push('/blocked-users' as never)} />
+          )}
+          {!isGuest && (
+            <ListRow icon="hand-left-outline" title={t('settings.allowWaves', { ns: 'members' })}
+                     value={account?.allowWaves === false ? t('settings.off', { ns: 'members' }) : t('settings.on', { ns: 'members' })}
+                     chevron={false} divider onPress={() => onTogglePrivacy('allowWaves')} />
+          )}
+          {!isGuest && (
+            <ListRow icon="people-outline" title={t('settings.showInMembers', { ns: 'members' })}
+                     value={account?.showInMembers === false ? t('settings.off', { ns: 'members' }) : t('settings.on', { ns: 'members' })}
+                     chevron={false} divider onPress={() => onTogglePrivacy('showInMembers')} />
           )}
           {/* Daily promo (SPEC 10.13): Hilads may feature this member's photos, always credited. */}
           {!isGuest && (

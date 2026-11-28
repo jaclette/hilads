@@ -147,7 +147,9 @@
       "perfectWeek": "🔥 أسبوع مثالي! +{{points}}",
       "friendJoined": "نشر صورته الأولى 🤝 +{{points}} ({{count}}/{{max}})",
       "crewBonus": "🎉 اكتمل فريقك! +{{points}}",
-      "friendSignedUp": "انضم إلى Hilads عبر رابطك 🎉 صورته الأولى = +{{points}} لك"
+      "friendSignedUp": "انضم إلى Hilads عبر رابطك 🎉 صورته الأولى = +{{points}} لك",
+      "wave": "{{names}} لوّح لك 👋",
+      "waveBack": "{{names}} لوّح لك بالمقابل 🎉"
     },
     "empty": {
       "all": "لا شيء هنا. التقط صورة 📸",

@@ -2672,3 +2672,52 @@ export async function joinContest(seasonId, country) {
   if (!res.ok) throw new Error(body.code || 'contest_join')
   return body
 }
+
+// ── Members & Wave 👋 (2026-11-28, mirrors apps/mobile/src/api/members.ts) ──────────────────────
+function membersScopeQuery(scope) {
+  const id = scope.cityId != null && scope.cityId !== '' ? `&cityId=${String(scope.cityId).replace(/^city_/, '')}` : ''
+  return `scope=${scope.scope}${id}`
+}
+
+export async function fetchMembersSummary(scope) {
+  const res = await fetch(`${BASE}/members/summary?${membersScopeQuery(scope)}`, { credentials: 'include' })
+  if (!res.ok) throw new Error('members summary failed')
+  return res.json()
+}
+
+export async function fetchMembers(scope, { filter = 'all', q = '', offset = 0 } = {}) {
+  const p = new URLSearchParams()
+  if (filter && filter !== 'all') p.set('filter', filter)
+  if (q) p.set('q', q)
+  if (offset) p.set('offset', String(offset))
+  const extra = p.toString()
+  const res = await fetch(`${BASE}/members?${membersScopeQuery(scope)}${extra ? `&${extra}` : ''}`, { credentials: 'include' })
+  if (!res.ok) throw new Error('members failed')
+  return res.json()
+}
+
+/** Wave at someone → { state, back }. Throws an Error whose .code is not_found | self | waves_off | already | limit. */
+export async function sendWave(userId, source = 'members') {
+  const res = await fetch(`${BASE}/waves`, {
+    method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ userId, source }),
+  })
+  const data = await res.json().catch(() => ({}))
+  if (!res.ok) { const e = new Error(data.error || 'wave failed'); e.code = data.error; throw e }
+  return data
+}
+
+export async function fetchWaveStates(ids) {
+  if (!ids.length) return {}
+  const res = await fetch(`${BASE}/waves/state?ids=${ids.map(encodeURIComponent).join(',')}`, { credentials: 'include' })
+  if (!res.ok) return {}
+  return (await res.json()).states ?? {}
+}
+
+export async function savePrivacy(prefs) {
+  const res = await fetch(`${BASE}/me/privacy`, {
+    method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(prefs),
+  })
+  if (!res.ok) throw new Error('privacy save failed')
+  return res.json()
+}

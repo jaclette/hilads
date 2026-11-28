@@ -113,7 +113,9 @@
       "perfectWeek": "🔥 Идеальная неделя! +{{points}}",
       "friendJoined": "выложил первое фото 🤝 +{{points}} ({{count}}/{{max}})",
       "crewBonus": "🎉 Твоя команда в сборе! +{{points}}",
-      "friendSignedUp": "пришёл в Hilads по твоей ссылке 🎉 Его первое фото = +{{points}} тебе"
+      "friendSignedUp": "пришёл в Hilads по твоей ссылке 🎉 Его первое фото = +{{points}} тебе",
+      "wave": "{{names}} машет тебе 👋",
+      "waveBack": "{{names}} машет в ответ 🎉"
     },
     "empty": {
       "all": "Тут тихо. Сходи сфотографируй что-нибудь 📸",

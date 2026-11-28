@@ -97,7 +97,9 @@
       "perfectWeek": "🔥 Tuần hoàn hảo! +{{points}}",
       "friendJoined": "đã đăng ảnh đầu tiên 🤝 +{{points}} ({{count}}/{{max}})",
       "crewBonus": "🎉 Hội của bạn đã đủ người! +{{points}}",
-      "friendSignedUp": "đã tham gia Hilads qua link của bạn 🎉 Ảnh đầu tiên của họ = +{{points}} cho bạn"
+      "friendSignedUp": "đã tham gia Hilads qua link của bạn 🎉 Ảnh đầu tiên của họ = +{{points}} cho bạn",
+      "wave": "{{names}} vẫy tay chào bạn 👋",
+      "waveBack": "{{names}} đã vẫy tay lại 🎉"
     },
     "empty": {
       "all": "Chưa có gì cả. Đi chụp ảnh nào 📸",

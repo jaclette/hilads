@@ -5245,6 +5245,27 @@ run($pdo, "
 run($pdo, "CREATE INDEX IF NOT EXISTS idx_push_once_created ON push_once (created_at)", 'idx_push_once_created');
 run($pdo, "ALTER TABLE mobile_push_tokens ADD COLUMN IF NOT EXISTS admin_channel TEXT", 'mobile_push_tokens.admin_channel');
 
+// 2026-11-28: the Members screen and Wave 👋 (Members, Waves). One wave per pair and direction a day;
+// "Allow waves" and "Show me in member lists" (both on by default).
+// Reversal: DROP TABLE waves; ALTER TABLE users DROP COLUMN allow_waves, DROP COLUMN show_in_members;
+run($pdo, "
+    CREATE TABLE IF NOT EXISTS waves (
+        id           BIGSERIAL   PRIMARY KEY,
+        from_user_id TEXT        NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        to_user_id   TEXT        NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        wave_day     DATE        NOT NULL,
+        is_back      BOOLEAN     NOT NULL DEFAULT false,
+        source       TEXT,
+        created_at   TIMESTAMPTZ NOT NULL DEFAULT now(),
+        UNIQUE (from_user_id, to_user_id, wave_day)
+    )
+", 'waves');
+run($pdo, "CREATE INDEX IF NOT EXISTS idx_waves_to ON waves (to_user_id, created_at DESC)", 'idx_waves_to');
+run($pdo, "CREATE INDEX IF NOT EXISTS idx_waves_from_day ON waves (from_user_id, wave_day)", 'idx_waves_from_day');
+run($pdo, "ALTER TABLE users ADD COLUMN IF NOT EXISTS allow_waves BOOLEAN NOT NULL DEFAULT true", 'users.allow_waves');
+run($pdo, "ALTER TABLE users ADD COLUMN IF NOT EXISTS show_in_members BOOLEAN NOT NULL DEFAULT true", 'users.show_in_members');
+run($pdo, "CREATE INDEX IF NOT EXISTS idx_users_current_city ON users (current_city_id) WHERE deleted_at IS NULL", 'idx_users_current_city');
+
 // ── Self-heal monthly rank columns ────────────────────────────────────────
 // The denormalised users.monthly_rank_* columns are kept fresh by
 // route-level recalc hooks fired after each scoring action. If any

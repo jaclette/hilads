@@ -30,6 +30,8 @@ function keyOf(item: InboxItem): string | null {
     case 'friend_added':            return 'friendAccepted';
     case 'profile_view':            return 'profileView';
     case 'vibe_received':           return 'vibe';
+    case 'wave':                    return 'wave';
+    case 'wave_back':               return 'waveBack';
     case 'event_join':              return item.data.eventTitle ? 'planJoin' : null;
     case 'join_request':            return item.data.topicTitle ? 'joinRequest' : null;
     case 'join_request_accepted':   return item.data.topicTitle ? 'joinAccepted' : null;

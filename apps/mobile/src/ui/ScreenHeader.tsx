@@ -2,7 +2,9 @@ import type { ReactNode } from 'react';
 import { Keyboard, Pressable, Text, View, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Space, FontSizes, Spacing, type ThemeColors } from '@/constants';
-import { useThemedStyles } from '@/context/ThemeContext';
+import { useThemedStyles, useTheme } from '@/context/ThemeContext';
+import { Ionicons } from '@expo/vector-icons';
+import { Tappable } from './Tappable';
 import { IconButton } from './IconButton';
 import { HeaderArt, type HeaderArtKind } from './HeaderArt';
 import { goBack } from '@/lib/nav';
@@ -16,9 +18,13 @@ import { SeasonalHeaderDecor } from '@/features/event/SeasonalArt';
  * most on small screens (SPEC 9.1). `art` (tab only): the screen's line
  * drawing on the header's right, left of its buttons (decorative).
  */
-export function ScreenHeader({ title, subtitle, art, variant = 'back', right, onBack, compact = false, testID }: {
+export function ScreenHeader({ title, subtitle, subtitleLead, onSubtitlePress, subtitleA11y, art, variant = 'back', right, onBack, compact = false, testID }: {
   title: string;
   subtitle?: string;
+  /** Before the subtitle (the Hi header's stacked faces); with onSubtitlePress the line becomes a button with a chevron. */
+  subtitleLead?: ReactNode;
+  onSubtitlePress?: () => void;
+  subtitleA11y?: string;
   art?: HeaderArtKind;
   variant?: 'back' | 'tab';
   right?: ReactNode;
@@ -28,6 +34,7 @@ export function ScreenHeader({ title, subtitle, art, variant = 'back', right, on
   testID?: string;
 }) {
   const styles = useThemedStyles(makeStyles);
+  const { colors } = useTheme();
   const { t } = useTranslation('common');
   if (variant === 'tab') {
     return (
@@ -50,7 +57,14 @@ export function ScreenHeader({ title, subtitle, art, variant = 'back', right, on
         // A live line under the title (the Hi chat: "12 here now · 348 members").
         <View style={styles.titleBox}>
           <Text style={[styles.title, compact && styles.titleCompact]} numberOfLines={1} maxFontSizeMultiplier={1.5} accessibilityRole="header" testID="header-title">{title}</Text>
-          <Text style={styles.subtitle} numberOfLines={1} maxFontSizeMultiplier={1.4}>{subtitle}</Text>
+          {onSubtitlePress ? (
+            <Tappable onPress={onSubtitlePress} style={styles.subtitleBtn} hitSlop={{ top: 6, bottom: 10 }} accessibilityRole="button"
+                      accessibilityLabel={subtitleA11y ?? subtitle} testID="header-subtitle">
+              {subtitleLead}
+              <Text style={[styles.subtitle, styles.subtitleLink]} numberOfLines={1} maxFontSizeMultiplier={1.4}>{subtitle}</Text>
+              <Ionicons name="chevron-forward" size={14} color={colors.primaryText} />
+            </Tappable>
+          ) : <Text style={styles.subtitle} numberOfLines={1} maxFontSizeMultiplier={1.4}>{subtitle}</Text>}
         </View>
       ) : title ? <Text style={[styles.title, compact && styles.titleCompact]} numberOfLines={2} maxFontSizeMultiplier={1.5} accessibilityRole="header" testID="header-title">{title}</Text>
              : <Text style={styles.spacer} testID="header-title"> </Text>}
@@ -70,4 +84,6 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   artSlot:      { alignSelf: 'stretch', flexGrow: 1, flexShrink: 0, minWidth: 0, marginVertical: -10 },
   tabTitle:     { fontSize: FontSizes.title, fontWeight: '800', color: c.text, letterSpacing: -0.3 },
   subtitle:     { fontSize: FontSizes.sm, lineHeight: 19, fontWeight: '500', color: c.muted },
+  subtitleBtn:  { flexDirection: 'row', alignItems: 'center', gap: Space.xs, alignSelf: 'flex-start', maxWidth: '100%' },
+  subtitleLink: { flexShrink: 1, fontWeight: '700', color: c.text },
 });

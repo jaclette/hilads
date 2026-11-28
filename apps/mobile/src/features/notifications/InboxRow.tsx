@@ -14,6 +14,7 @@ import type { InboxItem } from '@/api/notifications';
 import { relativeTime } from './NotifRow';
 import { rowText } from './inboxText';
 import { CATEGORY_EMOJI, categoryColor } from './categories';
+import { WaveButton } from '@/features/members/WaveButton';
 
 /** Game rows get a big emoji instead of an avatar. */
 const GAME_ICON: Record<string, string> = { daily_result: '🏆', daily_local_pass: '🎟️', daily_rank: '📈', daily_twist_completed: '🌀', daily_twist_picked: '🌀',
@@ -99,6 +100,10 @@ export const InboxRow = memo(function InboxRow({ item, onPress, onToggleRead, on
           <Text style={[styles.time, unread && { color: cat.text }]}>{relativeTime(item.created_at)}</Text>
         </View>
         {thumb ? <Image source={{ uri: thumbUrl(thumb) ?? thumb }} style={styles.thumb} contentFit="cover" cachePolicy="memory-disk" /> : null}
+        {/* Wave 👋: "Wave back" right in the row (a wave back: the suggestion to chat). */}
+        {(item.type === 'wave' || item.type === 'wave_back') && item.actors[0]?.id ? (
+          <WaveButton user={{ id: item.actors[0].id, displayName: item.actors[0].name }} initial={item.type === 'wave' ? 'received' : 'mutual'} source="notification" />
+        ) : null}
         {unread && <View style={[styles.dot, { backgroundColor: cat.fill }]} />}
       </Pressable>
     </ReanimatedSwipeable>

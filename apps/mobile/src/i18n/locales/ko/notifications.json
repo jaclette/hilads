@@ -118,7 +118,9 @@
       "perfectWeek": "🔥 퍼펙트 위크! +{{points}}",
       "friendJoined": "님이 첫 사진을 올렸어요 🤝 +{{points}} ({{count}}/{{max}})",
       "crewBonus": "🎉 크루 완성! +{{points}}",
-      "friendSignedUp": "님이 내 링크로 Hilads에 가입했어요 🎉 첫 사진 = 나에게 +{{points}}"
+      "friendSignedUp": "님이 내 링크로 Hilads에 가입했어요 🎉 첫 사진 = 나에게 +{{points}}",
+      "wave": "{{names}} 님이 손을 흔들었어요 👋",
+      "waveBack": "{{names}} 님도 손을 흔들었어요 🎉"
     },
     "empty": {
       "all": "조용하네요. 사진 찍으러 가 볼까요 📸",

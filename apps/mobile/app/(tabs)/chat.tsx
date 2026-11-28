@@ -53,6 +53,7 @@ import { useEventFeature } from '@/features/event/seasonal';
 import { NextPlanRow, PlanLine, QuestionCard, ScrollToLatest, UnreadMarker } from '@/features/chat/HiRows';
 import { MessagesButton } from '@/features/messages/MessagesButton';
 import type { HiHeader } from '@/api/channels';
+import { StackedFaces } from '@/features/members/StackedFaces';
 
 // ── EventBannerStrip - ephemeral overlay above the input ─────────────────────
 // Appears when a new event is broadcast via WS. Auto-dismissed after 10 s.
@@ -841,6 +842,11 @@ export default function ChatTab() {
             channelScope === 'world' ? ((hiCounts.cities ?? 0) > 0 ? t('hi.cities', { count: hiCounts.cities }) : null)
               : ((hiCounts.members ?? 0) > 0 ? t('hi.members', { count: hiCounts.members }) : null),
           ].filter(Boolean).join(' · ') || undefined : undefined}
+          // The members line opens Members (a real screen): stacked faces + chevron make it visibly tappable.
+          subtitleLead={hiCounts?.avatars?.length ? <StackedFaces faces={hiCounts.avatars} /> : undefined}
+          onSubtitlePress={hiCounts ? () => router.push({ pathname: '/members', params: channelScope === 'world'
+            ? { scope: 'world' } : { scope: 'city', cityId: String(city.channelId), name: city.name, country: city.country ?? '' } } as never) : undefined}
+          subtitleA11y={t('hi.openMembers', { ns: 'members' })}
           right={
             <View style={styles.headerButtons} testID="hi-messages">
               <MessagesButton onPress={() => {

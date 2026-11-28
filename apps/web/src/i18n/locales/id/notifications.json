@@ -97,7 +97,9 @@
       "perfectWeek": "🔥 Minggu sempurna! +{{points}}",
       "friendJoined": "memposting foto pertamanya 🤝 +{{points}} ({{count}}/{{max}})",
       "crewBonus": "🎉 Krumu lengkap! +{{points}}",
-      "friendSignedUp": "gabung ke Hilads lewat link-mu 🎉 Foto pertamanya = +{{points}} untukmu"
+      "friendSignedUp": "gabung ke Hilads lewat link-mu 🎉 Foto pertamanya = +{{points}} untukmu",
+      "wave": "{{names}} melambai ke kamu 👋",
+      "waveBack": "{{names}} balas melambai 🎉"
     },
     "empty": {
       "all": "Belum ada apa-apa. Yuk foto sesuatu 📸",

@@ -139,6 +139,10 @@ export async function setupNotificationCategories(): Promise<void> {
     await Notifications.setNotificationCategoryAsync('challenge_offer', [
       { identifier: 'accept', buttonTitle: i18n.t('invitation.acceptChallenge', { ns: 'challenge', defaultValue: 'Accept the challenge' }), options: { opensAppToForeground: true } },
     ]);
+    // Wave 👋: "Wave back" from the push, in the background (no app open).
+    await Notifications.setNotificationCategoryAsync('wave', [
+      { identifier: 'wave_back', buttonTitle: i18n.t('wave.waveBack', { ns: 'members', defaultValue: '👋 Wave back' }), options: { opensAppToForeground: false } },
+    ]);
     console.log('[push-mobile] notification categories registered');
   } catch (e) {
     console.warn('[push-mobile] setNotificationCategoryAsync failed:', String(e));

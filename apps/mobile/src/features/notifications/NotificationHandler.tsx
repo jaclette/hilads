@@ -19,6 +19,7 @@ import { setupNotificationChannel, setupNotificationCategories } from '@/service
 import { acceptFriendRequest, declineFriendRequest } from '@/api/friendRequests';
 import { resolveHangoutJoinRequest } from '@/api/topics';
 import { acceptInvitation, ignoreInvitation, acceptChallenge } from '@/api/challenges';
+import { sendWave } from '@/api/members';
 import { track } from '@/services/analytics';
 import { requestWorldScopeOpen } from '@/lib/worldScopeOpen';
 import { parseSharedHiladsLink, sharedLinkRoute } from '@/lib/sharedLink';
@@ -167,6 +168,14 @@ function handleNotificationAction(data: NotifData, action: string): string | nul
   // screen owns the join logic, so the button just deep-links with autojoin=1).
   if (action === 'join') {
     return data.type === 'new_event' && data.eventId ? `/event/${data.eventId}?autojoin=1` : null;
+  }
+
+  // Wave 👋 → "Wave back" from the push: wave in the background, stay put.
+  if (action === 'wave_back' && data.type === 'wave' && data.actorId) {
+    sendWave(data.actorId, 'push')
+      .then(r => { track('wave_sent', { source: 'push', back: r.back }); if (r.back) track('wave_returned', { source: 'push' }); })
+      .catch(err => console.warn('[push-action] wave back failed:', String(err)));
+    return null;
   }
 
   if (data.type === 'friend_request_received' && data.requestId) {

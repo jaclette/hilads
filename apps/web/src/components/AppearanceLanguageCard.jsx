@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { setLocale } from '../i18n'
 import { setTheme } from '../lib/theme'
-import { answerPromo, updateProfile } from '../api'
+import { savePrivacy, answerPromo, updateProfile } from '../api'
 import Icon from './Icon'
 import { MAPS_APP_NAMES, getMapsApp, mapsApps, setMapsApp } from '../lib/directions'
 
@@ -56,6 +56,13 @@ export default function AppearanceLanguageCard({ account = null, onSave = null }
     const next = on ? 'yes' : 'no'
     onSave?.({ ...account, promoConsent: next, promoAsk: false })
     answerPromo(next).catch(() => onSave?.(account))
+  }
+
+  // Members screen privacy (members): "Allow waves" and "Show me in member lists", both on unless turned off.
+  const pickPrivacy = (key, on) => {
+    if (!account || (account[key] !== false) === on) return
+    onSave?.({ ...account, [key]: on })
+    savePrivacy({ [key]: on }).catch(() => onSave?.(account))
   }
 
   const cur = LANGS.find(l => l.code === i18n.language) || LANGS[0]
@@ -116,6 +123,20 @@ export default function AppearanceLanguageCard({ account = null, onSave = null }
           </div>
         </div>
       )}
+
+      {account && onSave && ['allowWaves', 'showInMembers'].map(key => (
+        <div key={key} className="profile-mode-section">
+          <span className="profile-mode-label">{t(`members:settings.${key}`)}</span>
+          <div className="profile-mode-btns" role="group" aria-label={t(`members:settings.${key}`)}>
+            {[true, false].map(on => (
+              <button key={String(on)} type="button" className={`profile-mode-btn${(account[key] !== false) === on ? ' profile-mode-btn--on' : ''}`}
+                      aria-pressed={(account[key] !== false) === on} onClick={() => pickPrivacy(key, on)}>
+                <span className="profile-mode-btn-name">{t(on ? 'members:settings.on' : 'members:settings.off')}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      ))}
 
       {/* Language — collapsed to the current language; tap to pick from the list. */}
       <div className="profile-mode-section">

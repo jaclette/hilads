@@ -20,7 +20,7 @@ import { useSwipeDown } from '@/ui/useSwipeDown';
 
 const REASONS = [
   'view_profile', 'create_event', 'send_dm', 'join_hangout', 'create_hangout',
-  'create_challenge', 'accept_challenge', 'join_challenge', 'daily_proof', 'daily_vote', 'daily_comment', 'first_spot', 'invite', 'contest',
+  'create_challenge', 'accept_challenge', 'join_challenge', 'daily_proof', 'daily_vote', 'daily_comment', 'first_spot', 'invite', 'contest', 'wave',
 ] as const;
 type GateReason = typeof REASONS[number];
 

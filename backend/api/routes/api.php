@@ -14797,3 +14797,71 @@ $router->add('POST', '/api/v1/me/promo', function () {
     $fresh = UserRepository::findById($user['id']) ?? $user;
     Response::json(['ok' => true, 'promoConsent' => $fresh['promo_consent'] ?? null, 'promoAsk' => false]);
 });
+
+// ── Members & Wave 👋 (2026-11-28, docs/mockups/hilads_members_mockup.html) ─────────────────────
+// GET  /api/v1/members/summary?scope=city|world&cityId=N  counts, here now, spotlight, (World) cities
+// GET  /api/v1/members?scope=&cityId=&filter=&q=&offset=   a page of members (here, friends, active first)
+// POST /api/v1/waves {userId, source}                      wave at someone → {state, back}
+// GET  /api/v1/waves/state?ids=a,b                         the wave state with each (profiles, attendees, likes)
+// POST /api/v1/me/privacy {allowWaves?, showInMembers?}    the two settings
+
+function membersScope(): ?string
+{
+    if (($_GET['scope'] ?? 'city') === 'world') {
+        $city = (int) ($_GET['cityId'] ?? 0);   // the World filtered to one city (its strip)
+        return $city > 0 ? 'city_' . $city : null;
+    }
+    $city = (int) ($_GET['cityId'] ?? 0);
+    if ($city <= 0) Response::json(['error' => 'cityId required'], 422);
+    return 'city_' . $city;
+}
+
+$router->add('GET', '/api/v1/members/summary', function () {
+    $viewer  = AuthService::currentUser();
+    $guestId = $_SERVER['HTTP_X_GUEST_ID'] ?? ($_COOKIE['guestId'] ?? null);
+    $world   = ($_GET['scope'] ?? 'city') === 'world';
+    $city    = $world ? null : membersScope();
+    Response::json(Members::summary($city, $viewer['id'] ?? null, $guestId));
+});
+
+$router->add('GET', '/api/v1/members', function () {
+    $viewer  = AuthService::currentUser();
+    $guestId = $_SERVER['HTTP_X_GUEST_ID'] ?? ($_COOKIE['guestId'] ?? null);
+    Response::json(Members::page(membersScope(), $viewer['id'] ?? null, $guestId,
+        (string) ($_GET['filter'] ?? 'all'), (string) ($_GET['q'] ?? ''),
+        (int) ($_GET['offset'] ?? 0), (int) ($_GET['limit'] ?? Members::PAGE)));
+});
+
+$router->add('POST', '/api/v1/waves', function () {
+    $viewer = AuthService::requireAuth();
+    enforceRateLimit('wave', 60, 3600);
+    $body = Request::json() ?? [];
+    $to   = is_string($body['userId'] ?? null) ? $body['userId'] : '';
+    if ($to === '') Response::json(['error' => 'userId required'], 422);
+    try {
+        Response::json(Waves::send($viewer, $to, (string) ($body['source'] ?? 'members')));
+    } catch (InvalidArgumentException $e) {
+        $code = $e->getMessage();
+        Response::json(['error' => $code], match ($code) { 'not_found' => 404, 'limit' => 429, 'already' => 409, default => 422 });
+    }
+});
+
+$router->add('GET', '/api/v1/waves/state', function () {
+    $viewer = AuthService::requireAuth();
+    $ids = array_slice(array_filter(explode(',', (string) ($_GET['ids'] ?? ''))), 0, 100);
+    Response::json(['states' => (object) Waves::states($viewer['id'], $ids)]);
+});
+
+$router->add('POST', '/api/v1/me/privacy', function () {
+    $user = AuthService::requireAuth();
+    $body = Request::json() ?? [];
+    foreach (['allowWaves' => 'allow_waves', 'showInMembers' => 'show_in_members'] as $key => $col) {
+        if (array_key_exists($key, $body)) {
+            Database::pdo()->prepare("UPDATE users SET {$col} = ? WHERE id = ?")->execute([$body[$key] ? 1 : 0, $user['id']]);
+        }
+    }
+    Cache::forget('members_line_world');
+    $fresh = UserRepository::findById($user['id']) ?? $user;
+    Response::json(['allowWaves' => DailyProofRepository::bool($fresh['allow_waves'] ?? true),
+                    'showInMembers' => DailyProofRepository::bool($fresh['show_in_members'] ?? true)]);
+});

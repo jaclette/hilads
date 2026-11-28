@@ -19,6 +19,8 @@ function keyOf(item) {
     case 'friend_request_accepted': case 'friend_added': return 'friendAccepted'
     case 'profile_view': return 'profileView'
     case 'vibe_received': return 'vibe'
+    case 'wave': return 'wave'
+    case 'wave_back': return 'waveBack'
     case 'event_join': return d.eventTitle ? 'planJoin' : null
     case 'join_request': return d.topicTitle ? 'joinRequest' : null
     case 'join_request_accepted': return d.topicTitle ? 'joinAccepted' : null

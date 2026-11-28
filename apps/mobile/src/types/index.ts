@@ -617,6 +617,9 @@ export interface User {
   has_seen_public_optin?: boolean;
   /** Daily promo (SPEC 10.13): 'yes' (every photo), 'no' (none), null (photos from the terms' clause). */
   promoConsent?: 'yes' | 'no' | null;
+  /** Members screen privacy (absent = on). */
+  allowWaves?: boolean;
+  showInMembers?: boolean;
   /** Show the one-time "Allow Hilads to feature your photos?" ask (photos posted before the clause). */
   promoAsk?: boolean;
   /**

@@ -118,7 +118,9 @@
       "perfectWeek": "🔥 パーフェクトウィーク！+{{points}}",
       "friendJoined": "さんが最初の写真を投稿 🤝 +{{points}}（{{count}}/{{max}}）",
       "crewBonus": "🎉 クルーがそろった！+{{points}}",
-      "friendSignedUp": "さんがあなたのリンクからHiladsに参加 🎉 最初の写真であなたに +{{points}}"
+      "friendSignedUp": "さんがあなたのリンクからHiladsに参加 🎉 最初の写真であなたに +{{points}}",
+      "wave": "{{names}}さんが手を振っています 👋",
+      "waveBack": "{{names}}さんが手を振り返しました 🎉"
     },
     "empty": {
       "all": "静かだね。写真を撮りに行こう 📸",

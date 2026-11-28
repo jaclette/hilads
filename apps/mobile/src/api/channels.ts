@@ -311,7 +311,8 @@ export async function fetchCityAmbassadors(channelId: string): Promise<CityAmbas
 }
 
 /** The Hi header's live counts: a city {here, members}, the World {here, cities}. */
-export type HiHeader = { here?: number; members?: number; cities?: number };
+/** avatars: up to 3 faces for the tappable members line (absent from an older server). */
+export type HiHeader = { here?: number; members?: number; cities?: number; avatars?: { photo: string | null; name: string }[] };
 
 export async function fetchMessages(
   channelId: string,

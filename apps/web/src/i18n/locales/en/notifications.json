@@ -99,7 +99,9 @@
       "perfectWeek": "🔥 Perfect week! +{{points}}",
       "friendJoined": "posted their first photo 🤝 +{{points}} ({{count}}/{{max}})",
       "crewBonus": "🎉 Your crew is complete! +{{points}}",
-      "friendSignedUp": "joined Hilads with your link 🎉 Their first photo = +{{points}} for you"
+      "friendSignedUp": "joined Hilads with your link 🎉 Their first photo = +{{points}} for you",
+      "wave": "{{names}} waved at you 👋",
+      "waveBack": "{{names}} waved back 🎉"
     },
     "empty": {
       "all": "No drama here. Go snap something 📸",

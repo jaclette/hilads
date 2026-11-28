@@ -119,7 +119,9 @@
       "perfectWeek": "🔥 परफ़ेक्ट वीक! +{{points}}",
       "friendJoined": "ने पहली फ़ोटो पोस्ट की 🤝 +{{points}} ({{count}}/{{max}})",
       "crewBonus": "🎉 आपका क्रू पूरा हो गया! +{{points}}",
-      "friendSignedUp": "आपके लिंक से Hilads से जुड़े 🎉 उनकी पहली फ़ोटो = आपको +{{points}}"
+      "friendSignedUp": "आपके लिंक से Hilads से जुड़े 🎉 उनकी पहली फ़ोटो = आपको +{{points}}",
+      "wave": "{{names}} ने आपको हाथ हिलाया 👋",
+      "waveBack": "{{names}} ने भी हाथ हिलाया 🎉"
     },
     "empty": {
       "all": "यहां सब शांत है। चलिए एक फ़ोटो लेते हैं 📸",

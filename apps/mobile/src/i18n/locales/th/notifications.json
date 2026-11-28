@@ -118,7 +118,9 @@
       "perfectWeek": "🔥 สัปดาห์สมบูรณ์แบบ! +{{points}}",
       "friendJoined": "โพสต์รูปแรกแล้ว 🤝 +{{points}} ({{count}}/{{max}})",
       "crewBonus": "🎉 แก๊งของคุณครบแล้ว! +{{points}}",
-      "friendSignedUp": "เข้าร่วม Hilads ผ่านลิงก์ของคุณ 🎉 รูปแรกของเพื่อน = +{{points}} สำหรับคุณ"
+      "friendSignedUp": "เข้าร่วม Hilads ผ่านลิงก์ของคุณ 🎉 รูปแรกของเพื่อน = +{{points}} สำหรับคุณ",
+      "wave": "{{names}} โบกมือทักคุณ 👋",
+      "waveBack": "{{names}} โบกมือตอบแล้ว 🎉"
     },
     "empty": {
       "all": "ยังเงียบอยู่ ไปถ่ายรูปกันเลย 📸",

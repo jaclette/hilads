@@ -154,13 +154,15 @@ final class HiQuestions
     public static function header(int|string $channelId): array
     {
         try {
+            // avatars: up to 3 faces for the tappable members line (opens the Members screen, 2026-11-28).
             if ($channelId === 'world') {
-                $a = WorldRepository::activity();
-                return ['here' => (int) ($a['online'] ?? 0), 'cities' => (int) ($a['cities'] ?? 0)];
+                $a    = WorldRepository::activity();
+                $line = Members::worldHeaderLine();
+                return ['here' => (int) ($a['online'] ?? 0), 'cities' => (int) ($a['cities'] ?? 0),
+                        'members' => $line['members'], 'avatars' => $line['avatars']];
             }
-            $stmt = Database::pdo()->prepare("SELECT count(*) FROM users WHERE deleted_at IS NULL AND current_city_id = ?");
-            $stmt->execute(['city_' . (int) $channelId]);
-            return ['here' => PresenceRepository::getCount((int) $channelId), 'members' => (int) $stmt->fetchColumn()];
+            $line = Members::headerLine((int) $channelId);
+            return ['here' => PresenceRepository::getCount((int) $channelId), 'members' => $line['members'], 'avatars' => $line['avatars']];
         } catch (\Throwable) {
             return [];
         }

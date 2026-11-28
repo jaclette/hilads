@@ -13046,3 +13046,83 @@ html[data-event="halloween"] { --header-art: #FFA552; --header-art-opacity: 0.28
 .r6-yrow button { display: flex; flex-direction: column; align-items: center; gap: 4px; width: 96px; border: 0; background: none; padding: 0; font: inherit; cursor: pointer; }
 .r6-yrow img { width: 88px; height: 110px; border-radius: 16px; border: 3px solid; object-fit: cover; }
 .r6-yrow span { font-size: 13px; font-weight: 700; color: var(--text); max-width: 96px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* ── Members screen (2026-11-28, docs/mockups/hilads_members_mockup.html) ──────────────────── */
+.mb-screen { display: flex; flex-direction: column; }
+.mb-head { display: flex; flex-direction: column; min-width: 0; }
+.mb-live { display: flex; align-items: center; gap: 5px; font-size: 13px; font-weight: 600; color: var(--muted); }
+.mb-live-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); display: inline-block; }
+.mb-body { padding: 4px 16px 40px; display: flex; flex-direction: column; overflow-y: auto; flex: 1; }
+.mb-search { display: flex; align-items: center; gap: 8px; height: 44px; padding: 0 12px; border-radius: 999px; border: 1.5px solid var(--line); background: var(--surface); color: var(--muted); }
+.mb-search input { flex: 1; min-width: 0; border: 0; background: transparent; font: inherit; font-size: 15px; color: var(--text); outline: none; }
+.mb-search:focus-within { border-color: var(--primary); }
+.mb-clear { border: 0; background: none; color: var(--muted); padding: 4px; cursor: pointer; display: flex; }
+.mb-sec { display: flex; justify-content: space-between; align-items: baseline; margin: 18px 2px 8px; font-size: 13px; font-weight: 800; color: var(--muted); }
+.mb-sec em { font-style: normal; font-weight: 600; color: var(--primary-text); }
+.mb-sec button { border: 0; background: none; font: inherit; font-weight: 800; color: var(--primary-text); cursor: pointer; padding: 4px 0; }
+.mb-strip { display: flex; gap: 10px; overflow-x: auto; scrollbar-width: none; padding-bottom: 2px; }
+.mb-strip::-webkit-scrollbar { display: none; }
+.mb-here { position: relative; width: 60px; flex: none; display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 12px; font-weight: 600; color: var(--text); }
+.mb-here > span { max-width: 60px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mb-ring { padding: 2px; border-radius: 50%; border: 2.5px solid var(--green); background: none; cursor: pointer; display: flex; }
+.mb-ring.is-me { border-style: dashed; border-color: var(--primary); }
+.mb-wave-badge { position: absolute; right: -2px; top: 34px; width: 24px; height: 24px; border-radius: 50%; border: 1.5px solid var(--line); background: var(--surface); font-size: 13px; cursor: pointer; display: grid; place-items: center; padding: 0; }
+.mb-wave-badge.is-done { background: var(--local-bg); border-color: var(--local-bg); color: var(--local-text); }
+.mb-avatar { border-radius: 50%; object-fit: cover; display: block; background: var(--surface2); flex: none; }
+.mb-avatar--initial { display: grid; place-items: center; color: #fff; font-weight: 800; }
+.mb-spot { display: flex; gap: 8px; }
+.mb-card { position: relative; flex: 1; min-width: 0; max-width: calc((100% - 16px) / 3); min-height: 112px; border: 0; border-radius: 20px; padding: 12px; text-align: left; cursor: pointer; display: flex; flex-direction: column; gap: 2px; color: #241A12; overflow: hidden; font: inherit; }
+.mb-card small { font-size: 11px; font-weight: 800; opacity: .85; }
+.mb-card b { font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mb-card-mid { height: 28px; margin: 4px 0 2px; display: flex; align-items: center; }
+.mb-card-emoji { font-size: 22px; }
+.mb-card-value { font-size: 12px; font-weight: 700; display: flex; align-items: center; gap: 4px; white-space: nowrap; overflow: hidden; }
+.mb-card-corner { position: absolute; right: 8px; top: 8px; font-size: 18px; }
+.mb-card--sip { background: #FFC93C; }
+.mb-card--taste { background: #FFD2C2; color: #8A3418; }
+.mb-card--gem { background: #1FB5A8; }
+.mb-card--around { background: #3D9BF0; }
+.mb-card.is-tilt { transform: rotate(1.5deg); }
+.mb-city { flex: none; min-width: 64px; display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 8px 12px; border-radius: 20px; border: 1.5px solid var(--line); background: var(--surface); cursor: pointer; font: inherit; color: var(--text); }
+.mb-city b { font-size: 13px; max-width: 96px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mb-city small { font-size: 12px; color: var(--muted); }
+.mb-city.is-on { background: var(--selected); border-color: var(--selected); }
+.mb-city.is-on b, .mb-city.is-on small { color: var(--on-selected); }
+.mb-globe { font-size: 17px; line-height: 22px; }
+.mb-chips { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; padding-bottom: 12px; }
+.mb-chips::-webkit-scrollbar { display: none; }
+.mb-chip { flex: none; min-height: 36px; padding: 0 14px; border-radius: 999px; border: 1.5px solid var(--line); background: var(--surface); font: inherit; font-size: 13px; font-weight: 700; color: var(--text); cursor: pointer; }
+.mb-chip.is-on { background: var(--selected); border-color: var(--selected); color: var(--on-selected); }
+.mb-list { display: flex; flex-direction: column; gap: 8px; }
+.mb-row { display: flex; align-items: center; gap: 12px; min-height: 64px; padding: 8px 12px; border-radius: 20px; background: var(--surface); box-shadow: 0 2px 0 rgba(150, 90, 40, .08); cursor: pointer; }
+.mb-row:focus-visible, .mb-city:focus-visible, .mb-chip:focus-visible, .mb-card:focus-visible, .mb-wave:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+.mb-row-face { position: relative; flex: none; }
+.mb-online { position: absolute; right: 0; bottom: 0; width: 13px; height: 13px; border-radius: 50%; background: var(--green); border: 2.5px solid var(--surface); }
+.mb-row-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.mb-row-name { display: flex; align-items: center; gap: 5px; min-width: 0; }
+.mb-row-name b { font-size: 15px; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mb-row-body small { font-size: 13px; font-weight: 600; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mb-tag { flex: none; font-size: 11px; font-weight: 700; border-radius: 999px; padding: 1px 7px; }
+.mb-tag--local { background: var(--primary-tint); color: var(--primary-on-tint); }
+.mb-tag--traveler { background: var(--traveler-bg); color: var(--traveler-text); }
+.mb-wave-wrap { position: relative; flex: none; }
+.mb-wave { min-height: 34px; min-width: 76px; padding: 0 12px; border-radius: 999px; border: 0; font: inherit; font-size: 13px; font-weight: 800; cursor: pointer; background: var(--primary-tint); color: var(--primary-on-tint); }
+.mb-wave--received { background: var(--primary); color: #fff; }
+.mb-wave--sent, .mb-wave--mutual { background: var(--local-bg); color: var(--local-text); }
+.mb-wave:disabled { cursor: default; }
+.mb-wave-note { position: absolute; right: 0; top: calc(100% + 6px); z-index: 2; width: max-content; max-width: 220px; padding: 8px 10px; border-radius: 12px; background: var(--text); color: var(--bg); font-size: 12px; font-weight: 600; }
+.mb-city-row { display: flex; align-items: center; gap: 12px; min-height: 52px; padding: 0 12px; border-radius: 20px; border: 0; background: var(--surface); font: inherit; color: var(--text); cursor: pointer; text-align: left; }
+.mb-city-row b { flex: 1; font-size: 15px; }
+.mb-city-row small { font-size: 13px; color: var(--muted); }
+.mb-skeleton { height: 64px; border-radius: 20px; background: var(--surface2); }
+.mb-empty { padding: 24px 8px; text-align: center; color: var(--muted); font-size: 15px; display: flex; flex-direction: column; gap: 8px; align-items: center; }
+.mb-empty b { color: var(--text); }
+.mb-more { height: 32px; }
+/* The Hi header's members line: a button with faces + chevron. */
+.hi-members-line { display: inline-flex; align-items: center; gap: 6px; border: 0; background: none; padding: 2px 0; font: inherit; cursor: pointer; color: var(--text); font-weight: 700; max-width: 100%; }
+.hi-members-line span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.hi-faces { display: inline-flex; }
+.hi-faces .mb-avatar { border: 1.5px solid var(--bg); }
+.hi-faces .mb-avatar + .mb-avatar { margin-left: -7px; }
+@media (prefers-reduced-motion: reduce) { .mb-card.is-tilt { transform: none; } }
+.n6-wave { display: flex; align-items: center; padding-right: 12px; }

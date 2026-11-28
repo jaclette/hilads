@@ -716,6 +716,9 @@ class AuthService
             // Daily promo (SPEC 10.13): 'yes' | 'no' | null (photos from the terms' clause), and the one-time ask.
             'promoConsent'      => $user['promo_consent'] ?? null,
             'promoAsk'          => DailyPromo::asks($user),
+            // Members screen privacy (2026-11-28): both on unless turned off.
+            'allowWaves'        => !isset($user['allow_waves']) || DailyProofRepository::bool($user['allow_waves']),
+            'showInMembers'     => !isset($user['show_in_members']) || DailyProofRepository::bool($user['show_in_members']),
         ]);
     }
 

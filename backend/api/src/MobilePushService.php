@@ -194,6 +194,8 @@ class MobilePushService
                 // ("Accept the challenge"). Cross-city target + your-city new.
                 'challenge_international_target',
                 'new_challenge'           => 'challenge_offer',
+                // Wave 👋: "Wave back" right from the push (app push.ts registers the category).
+                'wave'                    => 'wave',
                 default                   => null,
             };
 
