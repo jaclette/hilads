@@ -14,7 +14,8 @@ declare(strict_types=1);
  * year differs by country, e.g. "2010s"), value_format? ("ratio": 4.0, 8.9, 45; "one_decimal": 52.0; "two_decimals": 4.60, scores out of 5), value_label?,
  * clip_query, clip?, caption, hashtags, outro_question, cta_line (the closing slide's invitation to Hilads, with hilads.live), card_bg? (the ranking card's color: a CARD_THEMES name or a
  * light #rrggbb, cream by default), headline_accent? (words of the headline drawn in terracotta), mode? (classic | quiz),
- * quiz_question? (quiz: a question whose answer is the #1), clip_speed? (the clip faster or slower than filmed, 0.5 to 3,
+ * quiz_question? (quiz: a question whose answer is the #1), quiz_accent? (words of the quiz question emphasized in its bubble:
+ * own line, about 1.4× bigger, brand yellow), clip_speed? (the clip faster or slower than filmed, 0.5 to 3,
  * e.g. 1.5 for slow-motion footage), extra_row? (one country of the rows below the top 10, e.g. "Vietnam", shown after the top
  * 10 under a "• • •" separator, highlighted), warnings?}. clip, once
  * chosen: {pixabay_id, url (our R2 copy), source_url, author, license, license_url,
@@ -150,6 +151,11 @@ final class DwReaction
             } else {
                 if (($w = DwStudio::screenWords($quiz)) > self::QUESTION_WORDS) {
                     $warn[] = "The quiz question is {$w} words (max about " . self::QUESTION_WORDS . ').';
+                }
+                // quiz_accent: words of the question to emphasize (own line, bigger, brand yellow), like headline_accent.
+                $qa = trim((string) ($c['quiz_accent'] ?? ''));
+                if ($qa !== '' && mb_stripos($quiz, $qa) === false) {
+                    $errors[] = '"quiz_accent" must be words of the quiz question (' . json_encode($qa, JSON_UNESCAPED_UNICODE) . ' is not in it).';
                 }
                 if (!preg_match('/\p{Extended_Pictographic}\x{FE0F}?\s*$/u', $quiz)) {
                     $warn[] = 'The quiz question should end with an emoji.';
@@ -325,7 +331,7 @@ final class DwReaction
         ] + (!empty($r['gap_before']) ? ['gap_before' => true] : []) + (!empty($r['highlight']) ? ['highlight' => true] : []),
             array_values($c['rows'] ?? []));
         $c['data_year'] = (int) ($c['data_year'] ?? 0);
-        foreach (['headline', 'detail', 'source', 'source_url', 'value_label', 'data_years', 'value_format', 'clip_query', 'outro_question', 'cta_line', 'card_bg', 'headline_accent', 'mode', 'layout', 'quiz_question', 'extra_row'] as $f) {
+        foreach (['headline', 'detail', 'source', 'source_url', 'value_label', 'data_years', 'value_format', 'clip_query', 'outro_question', 'cta_line', 'card_bg', 'headline_accent', 'mode', 'layout', 'quiz_question', 'quiz_accent', 'extra_row'] as $f) {
             if (isset($c[$f])) {
                 $c[$f] = trim((string) $c[$f]);
             }

@@ -166,7 +166,7 @@ async function screenFromContent(c) {
     clip = { url: pick.url, credit: `Video: ${hit.user} / Pixabay` };
   }
   return { headline: c.headline ?? '', detail: c.detail ?? '', rows: c.rows ?? [], highlight: ['Vietnam'], valueFormat: c.value_format ?? null,
-           question: c.outro_question ?? null, cta: c.cta_line ?? null, extraRow: c.extra_row ?? null, top: c.top ?? null, extraRows: c.extra_rows ?? null, mode: c.mode ?? 'classic', quiz: c.quiz_question ?? null, topic: c.topic ?? null, cardBg: c.card_bg ?? null, accent: c.headline_accent ?? null,
+           question: c.outro_question ?? null, cta: c.cta_line ?? null, extraRow: c.extra_row ?? null, top: c.top ?? null, extraRows: c.extra_rows ?? null, mode: c.mode ?? 'classic', quiz: c.quiz_question ?? null, quizAccent: c.quiz_accent ?? null, topic: c.topic ?? null, cardBg: c.card_bg ?? null, accent: c.headline_accent ?? null,
            source: `${label ? `${label} · ` : ''}Source${(c.source ?? '').includes(', ') ? 's' : ''}: ${c.source ?? ''}`, clip, seconds: 8 };
 }
 
@@ -376,6 +376,7 @@ async function renderReaction(data, { work, pub, out }) {
                        extraRows: extraRowsArg ?? s.extraRows ?? data.content?.extra_rows ?? null,
                        layout: layoutArg ?? s.layout ?? data.content?.layout ?? 'animated',
                        mode: modeArg ?? s.mode ?? data.content?.mode ?? 'classic', quiz: quizArg ?? s.quiz ?? data.content?.quiz_question ?? null,
+                       quizAccent: quizArg ? null : (s.quizAccent ?? data.content?.quiz_accent ?? null),
                        // The card's color and the headline's accent words (also read from the content, before the API sends them);
                        // --card-bg / --accent try one before it is saved in the package.
                        cardBg: cardBgArg ?? s.cardBg ?? data.content?.card_bg ?? null, accent: accentArg ?? s.accent ?? data.content?.headline_accent ?? null };

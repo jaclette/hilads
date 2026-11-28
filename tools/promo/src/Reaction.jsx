@@ -303,7 +303,7 @@ function StaticTableScreen({ headline, detail, rows: allRows, source, highlight 
 }
 
 function TableScreen({ headline, detail, rows: allRows, source, highlight = [], clip, valueFormat = null, cardBg = null, accent = null,
-                       mode = 'classic', quiz = null, guessStill = false, extraRow = null, top: topIn = null, extraRows = null }) {
+                       mode = 'classic', quiz = null, quizAccent = null, guessStill = false, extraRow = null, top: topIn = null, extraRows = null }) {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
   const bg = cardColor(cardBg);
@@ -491,7 +491,7 @@ function TableScreen({ headline, detail, rows: allRows, source, highlight = [], 
           ))}
         </div>
       )}
-      {isQuiz && frame < reveal + 6 && <QuizHook quiz={quiz} frame={frame} fps={fps} reveal={reveal} guessStill={guessStill} />}
+      {isQuiz && frame < reveal + 6 && <QuizHook quiz={quiz} accent={quizAccent} frame={frame} fps={fps} reveal={reveal} guessStill={guessStill} />}
       {/* The header: it takes over once the big headline has faded (never both at once). */}
       <div style={{ position: 'absolute', left: C_LEFT, top: titleTop, width: W, transformOrigin: 'left top',
                     opacity: isQuiz ? clamp01((frame - reveal) / 5) : clamp01((move - 0.6) / 0.25),
@@ -672,17 +672,42 @@ function EndCard({ headline, question, cta, cardBg, from, still = false }) {
  * very big in a speech bubble (accent, white text, Baloo 2, tilted, a tail), from the first frame, alone for 1 s
  * (to read it); then a countdown 3, 2, 1 under it (1 s each, a punchy pop on each number); at 4 s the bubble pops away.
  */
-function QuizHook({ quiz, frame, fps, reveal, guessStill }) {
+function QuizHook({ quiz, accent = null, frame, fps, reveal, guessStill }) {
   const W = C_RIGHT - C_LEFT;
   const BALOO = `"${Q_FONT}", "${FONT}"`;
-  const words = String(quiz).trim().split(/\s+/).map((word) => ({ word }));
+  // quiz accent (optional): the marked words on their own line, ACCENT_SCALE× bigger, in the brand yellow (3.1:1 on the
+  // bubble's terracotta: fine for text this large); the words before and after stay white, wrapped around it.
+  const ACCENT_SCALE = 1.4;
+  const text = String(quiz).trim();
+  const a = String(accent ?? '').trim();
+  const at = a ? text.toLowerCase().indexOf(a.toLowerCase()) : -1;
+  const toWords = (s) => s.trim().split(/\s+/).filter(Boolean).map((word) => ({ word }));
+  // Only an emoji after the marked words (no letters or digits): it stays on their line, not alone on the next.
+  const after = at >= 0 ? text.slice(at + a.length) : '';
+  const tailOnly = after.trim() !== '' && !/[\p{L}\p{N}]/u.test(after);
+  const parts = at >= 0
+    ? [{ words: toWords(text.slice(0, at)) }, { words: toWords(text.slice(at, at + a.length) + (tailOnly ? after : '')), hot: true },
+       { words: tailOnly ? [] : toWords(after) }].filter((x) => x.words.length)
+    : [{ words: toWords(text) }];
   const textW = W - 2 * 44;
   let px = 60;
-  let lines = null;
-  for (let p = 112; p >= 60 && !lines; p -= 2) { lines = wrapWords(words, p, textW, 3, 800, Q_FONT); px = p; }
-  lines ??= [words];
+  let blocks = null;
+  for (let p = 112; p >= 48 && !blocks; p -= 2) {
+    const out = [];
+    let total = 0;
+    for (const part of parts) {
+      const size = part.hot ? Math.round(p * ACCENT_SCALE) : p;
+      const ls = wrapWords(part.words, size, textW, part.hot ? 1 : 3, 800, Q_FONT);
+      if (!ls) { out.length = 0; break; }
+      ls.forEach((l) => out.push({ words: l, px: size, hot: !!part.hot }));
+      total += ls.length;
+    }
+    if (out.length && total <= (at >= 0 ? 4 : 3)) { blocks = out; px = p; }
+  }
+  blocks ??= [{ words: toWords(text), px, hot: false }];
+  const lines = blocks;
   const lineH = Math.round(px * 1.06);
-  const bubbleH = lines.length * lineH + 2 * 28;
+  const bubbleH = blocks.reduce((h, b) => h + Math.round(b.px * 1.06), 0) + 2 * 28;
   const tail = 44;
   const countH = 200;
   const area = { top: MEDIA_H + 20, h: SAFE_BOTTOM - MEDIA_H - 40 };
@@ -700,8 +725,9 @@ function QuizHook({ quiz, frame, fps, reveal, guessStill }) {
         <div style={{ background: TERRA, color: '#fff', borderRadius: 44, padding: '28px 44px', boxShadow: '0 12px 30px rgba(120,50,15,0.28)',
                       textAlign: 'center', maxWidth: W, boxSizing: 'border-box' }}>
           {lines.map((l, i) => (
-            <div key={i} style={{ fontFamily: BALOO, fontWeight: 800, fontSize: px, lineHeight: `${lineH}px`, whiteSpace: 'nowrap', paddingTop: px * 0.08 }}>
-              {l.map((w) => w.word).join(' ')}
+            <div key={i} style={{ fontFamily: BALOO, fontWeight: 800, fontSize: l.px, lineHeight: `${Math.round(l.px * 1.06)}px`, whiteSpace: 'nowrap',
+                                  paddingTop: l.px * 0.08, color: l.hot ? STICKER : '#fff' }}>
+              {l.words.map((w) => w.word).join(' ')}
             </div>
           ))}
         </div>

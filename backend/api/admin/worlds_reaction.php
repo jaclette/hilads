@@ -122,6 +122,7 @@ $highlight = DwStudio::settings()['countries_always_included'];
             <span class="worlds-muted" id="rx-layout-state">Static: everything still from the first frame, only the clip moves.</span>
         </div>
         <?php $qz = (string) ($c['quiz_question'] ?? ''); worlds_field('quiz_question', 'Quiz question (quiz mode: its answer is the #1, 0 to 4 s)', $qz, false, DwStudio::screenWords($qz) . ' / ' . DwReaction::QUESTION_WORDS . ' words'); ?>
+        <?php worlds_field('quiz_accent', 'Quiz emphasis (words of the question on their own line, bigger, in yellow; empty = none)', (string) ($c['quiz_accent'] ?? ''), false); ?>
         <?php $h = (string) ($c['headline'] ?? ''); $d = (string) ($c['detail'] ?? ''); ?>
         <?php worlds_field('headline', 'Headline (the promise)', $h, false, DwStudio::screenWords($h) . ' / ' . DwReaction::HEADLINE_WORDS . ' words'); ?>
         <?php worlds_field('detail', 'Detail (optional)', $d, false, DwStudio::screenWords($d) . ' / ' . DwReaction::DETAIL_WORDS . ' words'); ?>
