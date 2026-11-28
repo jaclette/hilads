@@ -48,6 +48,41 @@ export function HereNowRow({ people, meId, onOpen }: { people: Member[]; meId?: 
   );
 }
 
+/**
+ * Just landed: members who joined in the last 7 days, newest first. Each: the face with a NEW badge,
+ * @handle (World: the city's flag), "joined 2 days ago", a Welcome button and how many welcomed them.
+ */
+export function JustLandedRow({ people, world, meId, onOpen }: { people: Member[]; world: boolean; meId?: string | null; onOpen: (m: Member) => void }) {
+  const styles = useThemedStyles(makeStyles);
+  const { t } = useTranslation('members');
+  return (
+    <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.landedRow}>
+      {people.map(p => {
+        const me = p.id === meId;
+        const joined = p.joinedDays === 0 ? t('landed.today') : p.joinedDays === 1 ? t('landed.yesterday') : t('landed.days', { count: p.joinedDays ?? 0 });
+        return (
+          <View key={p.id} style={styles.landed}>
+            <Tappable onPress={() => onOpen(p)} accessibilityRole="button" style={styles.landedTap}
+                      accessibilityLabel={[p.displayName, joined, p.welcomes ? t('landed.welcomed', { count: p.welcomes }) : null].filter(Boolean).join(', ')}>
+              <View>
+                <Avatar uri={p.photo} name={p.displayName} size={52} />
+                <Text style={styles.newBadge}>{t('newTag')}</Text>
+              </View>
+              <View style={styles.landedName}>
+                {world && p.city?.country ? <CityFlag country={p.city.country} size={12} /> : null}
+                <Text style={styles.landedHandle} numberOfLines={1}>{me ? t('you') : p.displayName}</Text>
+              </View>
+              <Text style={styles.landedWhen} numberOfLines={1}>{joined}</Text>
+            </Tappable>
+            {!me && p.canWave && <WaveButton user={p} initial={p.wave} source="welcome" welcome />}
+            {!!p.welcomes && <Text style={styles.landedWelcomes} numberOfLines={2}>{t('landed.welcomed', { count: p.welcomes })}</Text>}
+          </View>
+        );
+      })}
+    </ScrollView>
+  );
+}
+
 const CARD_COLOR = {
   top_local: THEME_COLORS.sip, top_player: THEME_COLORS.sip,
   streak: THEME_COLORS.taste,
@@ -142,6 +177,16 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   ringMe:       { borderStyle: 'dashed', borderColor: c.primary },
   hereName:     { ...Type.caption, fontSize: 12, color: c.text, maxWidth: 60 },
   spot:         { flexDirection: 'row', gap: Space.sm },
+  landedRow:    { gap: Space.sm, paddingRight: Space.lg },
+  landed:       { width: 116, alignItems: 'center', gap: Space.xs, paddingVertical: Space.md, paddingHorizontal: Space.sm,
+                  borderRadius: Radius.card, backgroundColor: c.bg2 },
+  landedTap:    { alignItems: 'center', gap: Space.xxs },
+  newBadge:     { position: 'absolute', bottom: -4, alignSelf: 'center', fontSize: 10, lineHeight: 14, fontWeight: '800', color: c.onGold,
+                  backgroundColor: c.gold, borderRadius: Radius.control, paddingHorizontal: 6, overflow: 'hidden' },
+  landedName:   { flexDirection: 'row', alignItems: 'center', gap: Space.xs, marginTop: Space.xs, maxWidth: 100 },
+  landedHandle: { ...Type.caption, fontWeight: '800', color: c.text, flexShrink: 1 },
+  landedWhen:   { ...Type.caption, fontSize: 12, color: c.muted },
+  landedWelcomes: { fontSize: 11, lineHeight: 14, fontWeight: '600', color: c.muted, textAlign: 'center' },
   card:         { flex: 1, minWidth: 0, maxWidth: '32%', minHeight: 112, borderRadius: Radius.card, padding: Space.md, gap: Space.xxs, overflow: 'hidden' },
   cardTilt:     { transform: [{ rotate: '1.5deg' }] },
   cardKind:     { fontSize: 11, lineHeight: 14, fontWeight: '800', opacity: 0.85 },

@@ -21,6 +21,7 @@ function keyOf(item) {
     case 'vibe_received': return 'vibe'
     case 'wave': return 'wave'
     case 'wave_back': return 'waveBack'
+    case 'welcome': return 'welcome'
     case 'event_join': return d.eventTitle ? 'planJoin' : null
     case 'join_request': return d.topicTitle ? 'joinRequest' : null
     case 'join_request_accepted': return d.topicTitle ? 'joinAccepted' : null

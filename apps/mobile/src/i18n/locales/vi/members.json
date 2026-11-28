@@ -44,7 +44,9 @@
     "duels_other": "{{count}} trận đấu với bạn",
     "friend": "bạn bè",
     "photos_one": "{{count}} ảnh",
-    "photos_other": "{{count}} ảnh"
+    "photos_other": "{{count}} ảnh",
+    "lastIn": "gần nhất ở {{city}}",
+    "noCity": "Chưa có thành phố"
   },
   "spot": {
     "top_local": "Top địa phương",
@@ -110,5 +112,22 @@
     "showInMembers": "Hiện tôi trong danh sách thành viên",
     "on": "Bật",
     "off": "Tắt"
-  }
+  },
+  "newTag": "MỚI",
+  "landed": {
+    "title": "Vừa đến 🆕",
+    "today": "tham gia hôm nay",
+    "yesterday": "tham gia hôm qua",
+    "days_one": "tham gia {{count}} ngày trước",
+    "days_other": "tham gia {{count}} ngày trước",
+    "welcomed_one": "{{count}} người đã chào mừng",
+    "welcomed_other": "{{count}} người đã chào mừng"
+  },
+  "welcome": {
+    "cta": "👋 Chào mừng",
+    "done": "👋 Đã chào mừng",
+    "a11y": "Chào mừng {{name}} đến với Hilads"
+  },
+  "newcomer": "Bạn mới đến: chào thành phố của bạn nhé 👋",
+  "pickCity": "Chọn thành phố để xuất hiện trong hội"
 }

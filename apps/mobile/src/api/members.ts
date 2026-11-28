@@ -4,9 +4,9 @@ import { api } from './client';
 
 export type WaveState = 'none' | 'sent' | 'received' | 'mutual';
 export type MemberFilter = 'all' | 'here' | 'locals' | 'travelers' | 'friends' | 'new';
-export type WaveSource = 'members' | 'here_now' | 'profile' | 'plan' | 'likes' | 'notification' | 'push';
+export type WaveSource = 'members' | 'here_now' | 'welcome' | 'profile' | 'plan' | 'likes' | 'notification' | 'push';
 
-export interface MemberCity { id: number; name: string; country: string | null }
+export interface MemberCity { id: number; name: string; country: string | null; /** World rows: no current city, the city they last opened. */ last?: boolean }
 
 export interface Member {
   id:          string;
@@ -19,10 +19,16 @@ export interface Member {
   streak:      number;
   photos:      number;
   duels:       number;
-  /** Days since they arrived in the city (World: joined Hilads); 0 = today. */
+  /** Days since they joined Hilads; 0 = today. */
   joinedDays:  number | null;
+  /** Joined Hilads in the last 7 days (the NEW tag). */
+  isNew?:      boolean;
   /** World rows only. */
   city:        MemberCity | null;
+  /** World rows: no city at all ("No city yet"). */
+  noCity?:     boolean;
+  /** Just landed only: how many people welcomed them. */
+  welcomes?:   number;
   canWave:     boolean;
   wave:        WaveState;
 }
@@ -35,6 +41,10 @@ export type SpotlightCard =
 export interface MembersSummary {
   counts:    { here: number; members: number; cities?: number };
   hereNow:   Member[];
+  /** Joined Hilads in the last 7 days, newest first (absent from an older server). */
+  justLanded?: Member[];
+  /** The viewer (an account): a newcomer gets a friendly line; no current city → pick one. */
+  me?:       { isNew: boolean; hasCity: boolean } | null;
   spotlight: SpotlightCard[];
   /** World only: members per city, most first. */
   cities?:   (MemberCity & { members: number })[];

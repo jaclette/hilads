@@ -122,7 +122,8 @@
       "crewBonus": "🎉 ¡Tu crew está completo! +{{points}}",
       "friendSignedUp": "se unió a Hilads con tu enlace 🎉 Su primera foto = +{{points}} para ti",
       "wave": "{{names}} te saludó 👋",
-      "waveBack": "{{names}} te devolvió el saludo 🎉"
+      "waveBack": "{{names}} te devolvió el saludo 🎉",
+      "welcome": "{{names}} te dio la bienvenida a Hilads 👋"
     },
     "empty": {
       "all": "Nada por aquí. Ve a sacar una foto 📸",

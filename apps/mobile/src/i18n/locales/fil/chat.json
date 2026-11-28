@@ -146,6 +146,12 @@
       "happy": "🎃 Happy Halloween, {{city}}!",
       "happyNoCity": "🎃 Happy Halloween!",
       "tonight": "Sino'ng lalabas ngayong gabi para sa Halloween?"
+    },
+    "world": {
+      "hiFrom": "👋 Hi mula sa {{city}}!",
+      "hi": "👋 Hi, mundo!",
+      "like": "Kumusta ang lungsod mo ngayon?",
+      "from": "Taga-saan kayong lahat?"
     }
   },
   "hi": {

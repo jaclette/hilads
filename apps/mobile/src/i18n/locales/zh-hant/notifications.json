@@ -120,7 +120,8 @@
       "crewBonus": "🎉 你的小隊集齊了！+{{points}}",
       "friendSignedUp": "透過你的連結加入了 Hilads 🎉 對方的第一張照片 = 你 +{{points}}",
       "wave": "{{names}} 向你揮手 👋",
-      "waveBack": "{{names}} 也向你揮手了 🎉"
+      "waveBack": "{{names}} 也向你揮手了 🎉",
+      "welcome": "{{names}} 歡迎你來到 Hilads 👋"
     },
     "empty": {
       "all": "這裡很安靜。去拍張照片吧 📸",

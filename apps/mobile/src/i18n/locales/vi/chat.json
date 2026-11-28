@@ -138,6 +138,12 @@
       "happy": "🎃 Halloween vui vẻ nha {{city}}!",
       "happyNoCity": "🎃 Halloween vui vẻ!",
       "tonight": "Tối nay ai đi chơi Halloween?"
+    },
+    "world": {
+      "hiFrom": "👋 Chào từ {{city}}!",
+      "hi": "👋 Chào thế giới!",
+      "like": "Hôm nay thành phố của bạn thế nào?",
+      "from": "Mọi người đến từ đâu?"
     }
   },
   "hi": {

@@ -32,6 +32,7 @@ function keyOf(item: InboxItem): string | null {
     case 'vibe_received':           return 'vibe';
     case 'wave':                    return 'wave';
     case 'wave_back':               return 'waveBack';
+    case 'welcome':                 return 'welcome';
     case 'event_join':              return item.data.eventTitle ? 'planJoin' : null;
     case 'join_request':            return item.data.topicTitle ? 'joinRequest' : null;
     case 'join_request_accepted':   return item.data.topicTitle ? 'joinAccepted' : null;

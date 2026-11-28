@@ -736,10 +736,15 @@ export default function ChatTab() {
   // visible list + re-ran linkify/mention regex per row). Deps exclude anything
   // that changes on a presence tick - only message-list / highlight / handler
   // changes recompute it.
+  // The newest Question of the day in the feed (newest first): the only one shown as a card.
+  const newestQuestionId = useMemo(
+    () => allMessages.find(m => m.type === 'system' && m.event === 'hi_question')?.id ?? null, [allMessages]);
   const renderMessage = useCallback(({ item, index }: { item: Message; index: number }) => {
     // The Hi chat's own rows: the question of the day, a plan created, the unread marker.
     if ((item.type as string) === 'unread_marker') return <UnreadMarker count={Number(item.content ?? 0)} />;
     if (item.type === 'system' && item.event === 'hi_question') {
+      // Only today's (the newest) question is a card; earlier days' questions are not shown.
+      if (item.id !== newestQuestionId) return null;
       return <QuestionCard message={item} world={channelScope === 'world'}
                            onAnswer={() => { handleReply(item); track('hi_question_answer', { scope: channelScope }); }} />;
     }
@@ -809,7 +814,7 @@ export default function ChatTab() {
         reduceMotion={reduceMotion}
       />
     );
-  }, [allMessages, identity?.guestId, channelScope, dailyLive, highlightedMsgId, handlePromptCta,
+  }, [allMessages, newestQuestionId, identity?.guestId, channelScope, dailyLive, highlightedMsgId, handlePromptCta,
       handleMessageLongPress, scrollToMessage, handleReact, handleAutoDismiss, reduceMotion]);
 
   // No city yet - prompt to pick one
@@ -839,8 +844,9 @@ export default function ChatTab() {
           title={channelScope === 'world' ? t('hi.titleWorld') : t('hi.title', { city: shortCityName(city.name) })}
           subtitle={hiCounts ? [
             (hiCounts.here ?? 0) > 0 ? t('hi.here', { count: hiCounts.here }) : null,
-            channelScope === 'world' ? ((hiCounts.cities ?? 0) > 0 ? t('hi.cities', { count: hiCounts.cities }) : null)
-              : ((hiCounts.members ?? 0) > 0 ? t('hi.members', { count: hiCounts.members }) : null),
+            (hiCounts.members ?? 0) > 0 ? t('hi.members', { count: hiCounts.members }) : null,
+            // The World adds its cities ("1 here now · 412 members · 14 cities").
+            channelScope === 'world' && (hiCounts.cities ?? 0) > 0 ? t('hi.cities', { count: hiCounts.cities }) : null,
           ].filter(Boolean).join(' · ') || undefined : undefined}
           // The members line opens Members (a real screen): stacked faces + chevron make it visibly tappable.
           subtitleLead={hiCounts?.avatars?.length ? <StackedFaces faces={hiCounts.avatars} /> : undefined}
@@ -975,7 +981,8 @@ export default function ChatTab() {
             (its chat chips on) shows its own, in any city chat. */}
         {!keyboardUp && !loading && (quietToday || (channelScope === 'city' && !!chatEvent)) && (
           <QuickStart city={city?.name ? shortCityName(city.name) : null} themeKey={daily.data?.challenge?.theme?.key ?? null}
-                      eventKey={chatEvent?.key ?? null} onPick={text => setPrefill({ text, key: Date.now() })} />
+                      eventKey={channelScope === 'world' ? null : chatEvent?.key ?? null} world={channelScope === 'world'}
+                      onPick={text => setPrefill({ text, key: Date.now() })} />
         )}
 
         {/* ── Input - web: .input-bar ── */}
@@ -1072,12 +1079,17 @@ const TOP_FADE = [0.9, 0.55, 0.25, 0.08];
  * composer, "👋 Hi Saigon!", "Who's around tonight?" and one on today's theme;
  * a tap fills the composer (never sends).
  */
-function QuickStart({ city, themeKey, eventKey, onPick }: {
-  city: string | null; themeKey: string | null; eventKey: string | null; onPick: (text: string) => void;
+function QuickStart({ city, themeKey, eventKey, world = false, onPick }: {
+  city: string | null; themeKey: string | null; eventKey: string | null; world?: boolean; onPick: (text: string) => void;
 }) {
   const styles = useThemedStyles(makeStyles);
   const { t } = useTranslation('chat');
-  const chips = eventKey === 'halloween' ? [
+  // The World has its own: a hello from my city, and two questions for every city.
+  const chips = world ? [
+    city ? t('quick.world.hiFrom', { city }) : t('quick.world.hi'),
+    t('quick.world.like'),
+    t('quick.world.from'),
+  ] : eventKey === 'halloween' ? [
     t('quick.halloween.boo'),
     city ? t('quick.halloween.happy', { city }) : t('quick.halloween.happyNoCity'),
     t('quick.halloween.tonight'),

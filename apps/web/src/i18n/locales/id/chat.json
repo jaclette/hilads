@@ -43,6 +43,12 @@
       "happy": "🎃 Selamat Halloween, {{city}}!",
       "happyNoCity": "🎃 Selamat Halloween!",
       "tonight": "Siapa yang mau keluar malam ini buat Halloween?"
+    },
+    "world": {
+      "hiFrom": "👋 Halo dari {{city}}!",
+      "hi": "👋 Halo dunia!",
+      "like": "Kotamu hari ini kayak gimana?",
+      "from": "Kalian semua dari mana?"
     }
   },
   "hi": {

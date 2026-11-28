@@ -5590,7 +5590,8 @@ export default function App() {
                       const h = hiCounts[channelScope === 'world' ? 'world' : 'city'] || {}
                       const line = [
                         h.here > 0 ? t('hi.here', { ns: 'chat', count: h.here }) : null,
-                        channelScope === 'world' ? (h.cities > 0 ? t('hi.cities', { ns: 'chat', count: h.cities }) : null) : (h.members > 0 ? t('hi.members', { ns: 'chat', count: h.members }) : null),
+                        h.members > 0 ? t('hi.members', { ns: 'chat', count: h.members }) : null,
+                        channelScope === 'world' && h.cities > 0 ? t('hi.cities', { ns: 'chat', count: h.cities }) : null,
                       ].filter(Boolean).join(' · ')
                       if (!line) return t('subtitles.hi', { ns: 'common' })
                       // The members line opens Members (a full screen): faces + chevron make it visibly tappable.
@@ -5704,6 +5705,8 @@ export default function App() {
             // placeholder; private conversations keep it).
             if (item.deletedAt && !activeEvent) return null
             if (item.type === 'hi_question') {
+              // Only today's (the newest) question is a card; earlier days' are not shown.
+              if (item.id !== feed.findLast(f => f.type === 'hi_question')?.id) return null
               return <QuestionCard key={item.id} item={item} world={channelScope === 'world'}
                                    onAnswer={() => setReplyingTo({ id: item.id, nickname: item.nickname || 'Hilads', content: item.content ?? '', type: 'text' })} />
             }
@@ -7070,6 +7073,7 @@ export default function App() {
           onBack={() => setMembersScope(null)}
           onOpenProfile={(uid, name) => openProfile(uid, name)}
           onNeedAccount={() => setGuestGate({ reason: 'wave' })}
+          onPickCity={() => { setMembersScope(null); setShowCityPicker(true) }}
           onOpenChat={async (u) => {
             try {
               const { conversation, otherUser } = await createOrGetDirectConversation(u.id)

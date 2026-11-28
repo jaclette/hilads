@@ -31,7 +31,7 @@ function useWaveState(id, initial) {
 const WAVE_LABEL = { none: 'wave.wave', sent: 'wave.waved', received: 'wave.waveBack', mutual: 'wave.wavedBack' }
 
 /** The shared Wave button: `pill` in a row, `badge` on a Here now face. */
-export function WaveButton({ user, initial = 'none', source, variant = 'pill', account, onNeedAccount, onOpenChat }) {
+export function WaveButton({ user, initial = 'none', source, variant = 'pill', welcome = false, account, onNeedAccount, onOpenChat }) {
   const { t } = useTranslation('members')
   const state = useWaveState(user.id, initial)
   const [busy, setBusy] = useState(false)
@@ -58,7 +58,8 @@ export function WaveButton({ user, initial = 'none', source, variant = 'pill', a
   }
 
   const done = state === 'sent' || state === 'mutual'
-  const a11y = t(`wave.a11y.${state}`, { name: user.displayName })
+  const a11y = welcome && state === 'none' ? t('welcome.a11y', { name: user.displayName }) : t(`wave.a11y.${state}`, { name: user.displayName })
+  const label = welcome && (state === 'none' || state === 'sent') ? t(state === 'none' ? 'welcome.cta' : 'welcome.done') : t(WAVE_LABEL[state])
   if (variant === 'badge') {
     return (
       <button type="button" className={`mb-wave-badge${done ? ' is-done' : ''}`} onClick={press} disabled={state === 'sent'} aria-label={a11y}>
@@ -69,7 +70,7 @@ export function WaveButton({ user, initial = 'none', source, variant = 'pill', a
   return (
     <span className="mb-wave-wrap">
       <button type="button" className={`mb-wave mb-wave--${state}`} onClick={press} disabled={state === 'sent' || busy} aria-label={a11y} aria-busy={busy}>
-        {t(WAVE_LABEL[state])}
+        {label}
       </button>
       {note && <span className="mb-wave-note" role="status" onClick={(e) => { e.stopPropagation(); setNote(null) }}>{note}</span>}
     </span>
@@ -88,7 +89,8 @@ export function MemberAvatar({ photo, name, size = 44 }) {
 /** The one contextual line (same rule as the app's memberLine). */
 function memberLine(m, t, world) {
   const parts = []
-  if (world && m.city) parts.push(m.city.name)
+  if (world && m.city) parts.push(m.city.last ? t('line.lastIn', { city: m.city.name }) : m.city.name)
+  else if (world && m.noCity) parts.push(t('line.noCity'))
   if (m.joinedDays !== null && m.joinedDays <= 7) {
     parts.push(m.joinedDays === 0 ? t('line.joinedToday') : m.joinedDays === 1 ? t('line.joinedYesterday') : t('line.joinedDays', { count: m.joinedDays }))
   } else if (m.streak >= 2) parts.push(t('line.streak', { count: m.streak }))
@@ -110,6 +112,7 @@ export function MemberRow({ member, world, account, onOpen, onNeedAccount, onOpe
         <span className="mb-row-name">
           {world && member.city?.country ? <CityFlag country={member.city.country} size={14} /> : null}
           <b>{member.displayName}</b>
+          {member.isNew && <span className="mb-new">{t('newTag')}</span>}
           {tagLabel && <span className={`mb-tag mb-tag--${member.mode}`}>{tagLabel}</span>}
         </span>
         {line && <small>{line}</small>}
@@ -121,12 +124,12 @@ export function MemberRow({ member, world, account, onOpen, onNeedAccount, onOpe
   )
 }
 
-const FILTERS = ['all', 'here', 'locals', 'travelers', 'friends', 'new']
+const FILTERS = ['all', 'new', 'here', 'locals', 'travelers', 'friends']   // New second: visible without scrolling
 const CARD = { top_local: ['sip', '👑'], top_player: ['sip', '👑'], streak: ['taste', '🔥'], newest: ['gem', '🆕'], new_city: ['gem', '🆕'], city_week: ['around', '🏙️'] }
 const HELLO = { ES: 'hola', MX: 'hola', AR: 'hola', CO: 'hola', CL: 'hola', PE: 'hola', FR: 'bonjour', BE: 'bonjour', VN: 'xin chào', DE: 'hallo', AT: 'servus',
   NL: 'hoi', IT: 'ciao', PT: 'olá', BR: 'oi', JP: 'こんにちは', KR: '안녕하세요', TH: 'สวัสดี', ID: 'halo', PH: 'kumusta', IN: 'namaste', RU: 'привет', CN: '你好', TW: '你好', TR: 'merhaba', GR: 'yassou' }
 
-export default function MembersScreen({ scope: initialScope, account, onBack, onOpenProfile, onNeedAccount, onOpenChat }) {
+export default function MembersScreen({ scope: initialScope, account, onBack, onOpenProfile, onNeedAccount, onOpenChat, onPickCity }) {
   const { t } = useTranslation('members')
   const world = initialScope.scope === 'world'
   const cityId = world ? null : String(initialScope.cityId ?? '')
@@ -146,6 +149,12 @@ export default function MembersScreen({ scope: initialScope, account, onBack, on
   const sentinel = useRef(null)
 
   useEffect(() => { track('members_viewed', { scope: world ? 'world' : 'city', platform: 'web' }) }, [world])
+  // "You're new here: say hi to your city 👋": a newcomer's first visit only.
+  const [newcomer, setNewcomer] = useState(false)
+  useEffect(() => {
+    if (!summary?.me?.isNew) return
+    try { if (!localStorage.getItem('hilads_members_newcomer_seen')) { setNewcomer(true); localStorage.setItem('hilads_members_newcomer_seen', '1') } } catch { /* private mode */ }
+  }, [summary?.me?.isNew])
   const loadSummary = useCallback(() => fetchMembersSummary(world ? { scope: 'world' } : { scope: 'city', cityId })
     .then(s => { setSummary(s); setWaveStates(Object.fromEntries((s.hereNow || []).map(m => [m.id, m.wave]))) }).catch(() => {}), [world, cityId])
   useEffect(() => { loadSummary() }, [loadSummary])
@@ -223,6 +232,11 @@ export default function MembersScreen({ scope: initialScope, account, onBack, on
           {query && <button type="button" className="mb-clear" onClick={() => setQuery('')} aria-label={t('clearSearch')}><Icon name="close-circle" size={18} /></button>}
         </label>
 
+        {!searching && newcomer && <p className="mb-note">{t('newcomer')}</p>}
+        {!searching && summary?.me && !summary.me.hasCity && onPickCity && (
+          <button type="button" className="mb-note mb-note--action" onClick={onPickCity}>{t('pickCity')} <Icon name="chevron-forward" size={16} /></button>
+        )}
+
         {!searching && world && !!summary?.cities?.length && (<>
           <div className="mb-sec"><span>{t('cities')}</span><button type="button" onClick={() => setAllCities(true)}>{t('seeAll', { count: summary.cities.length })}</button></div>
           <div className="mb-strip">
@@ -273,6 +287,28 @@ export default function MembersScreen({ scope: initialScope, account, onBack, on
                   <span className="mb-card-value">{flag ? <CityFlag country={flag} size={12} /> : null}{value}</span>
                   {c.user && <span className="mb-card-corner" aria-hidden="true">{emoji}</span>}
                 </button>
+              )
+            })}
+          </div>
+        </>)}
+
+        {!searching && worldCity === null && !!summary?.justLanded?.length && (<>
+          <div className="mb-sec"><span>{t('landed.title')}</span></div>
+          <div className="mb-strip">
+            {summary.justLanded.map(p => {
+              const me = p.id === account?.id
+              const joined = p.joinedDays === 0 ? t('landed.today') : p.joinedDays === 1 ? t('landed.yesterday') : t('landed.days', { count: p.joinedDays ?? 0 })
+              return (
+                <div key={p.id} className="mb-landed">
+                  <button type="button" className="mb-landed-open" onClick={() => open(p)}
+                          aria-label={[p.displayName, joined, p.welcomes ? t('landed.welcomed', { count: p.welcomes }) : null].filter(Boolean).join(', ')}>
+                    <span className="mb-landed-face"><MemberAvatar photo={p.photo} name={p.displayName} size={52} /><span className="mb-new mb-new--badge">{t('newTag')}</span></span>
+                    <b>{world && p.city?.country ? <CityFlag country={p.city.country} size={12} /> : null}{me ? t('you') : p.displayName}</b>
+                    <small>{joined}</small>
+                  </button>
+                  {!me && p.canWave && <WaveButton user={p} initial={p.wave} source="welcome" welcome account={account} onNeedAccount={onNeedAccount} onOpenChat={onOpenChat} />}
+                  {!!p.welcomes && <small className="mb-landed-count">{t('landed.welcomed', { count: p.welcomes })}</small>}
+                </div>
               )
             })}
           </div>

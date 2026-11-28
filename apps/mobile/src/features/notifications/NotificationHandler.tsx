@@ -171,7 +171,7 @@ function handleNotificationAction(data: NotifData, action: string): string | nul
   }
 
   // Wave 👋 → "Wave back" from the push: wave in the background, stay put.
-  if (action === 'wave_back' && data.type === 'wave' && data.actorId) {
+  if (action === 'wave_back' && (data.type === 'wave' || data.type === 'welcome') && data.actorId) {
     sendWave(data.actorId, 'push')
       .then(r => { track('wave_sent', { source: 'push', back: r.back }); if (r.back) track('wave_returned', { source: 'push' }); })
       .catch(err => console.warn('[push-action] wave back failed:', String(err)));

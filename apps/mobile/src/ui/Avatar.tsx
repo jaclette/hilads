@@ -42,7 +42,8 @@ export function Avatar({ uri, name, size, ring = false }: {
   return (
     <View style={[styles.round, styles.center, box, { backgroundColor: tint(pair.fill, theme === 'dark' ? 0.22 : 0.26) }, ring && styles.ring]}>
       {/* Sized from the box (both inline, so scaling.ts leaves the pair proportional); weight kept with it. */}
-      <Text style={[styles.initial, { fontSize: Math.round(size * 0.44), color: ink }]}>{clean[0].toUpperCase()}</Text>
+      {/* The circle has a fixed size, so its letter does too: system font scaling would clip it (Android 200%). */}
+      <Text style={[styles.initial, { fontSize: Math.round(size * 0.44), color: ink }]} allowFontScaling={false}>{clean[0].toUpperCase()}</Text>
     </View>
   );
 }

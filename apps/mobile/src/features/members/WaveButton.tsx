@@ -11,11 +11,13 @@ import { useWave, waveLabelKey } from './wave';
  * `badge` the small round 👋 on a Here now avatar. A pill that is done stays visible but
  * quiet; a mutual wave opens the "say hi in a chat" suggestion.
  */
-export function WaveButton({ user, initial, source, variant = 'pill', testID }: {
+export function WaveButton({ user, initial, source, variant = 'pill', welcome = false, testID }: {
   user: { id: string; displayName: string };
   initial: WaveState;
   source: WaveSource;
   variant?: 'pill' | 'badge';
+  /** "👋 Welcome" for a newcomer (Just landed): a wave in its own words. */
+  welcome?: boolean;
   testID?: string;
 }) {
   const styles = useThemedStyles(makeStyles);
@@ -23,8 +25,8 @@ export function WaveButton({ user, initial, source, variant = 'pill', testID }: 
   const { t } = useTranslation('members');
   const { state, busy, wave } = useWave(user, initial, source);
   const done = state === 'sent' || state === 'mutual';
-  const label = t(waveLabelKey(state));
-  const a11y = t(`wave.a11y.${state}`, { name: user.displayName });
+  const label = welcome && (state === 'none' || state === 'sent') ? t(state === 'none' ? 'welcome.cta' : 'welcome.done') : t(waveLabelKey(state));
+  const a11y = welcome && state === 'none' ? t('welcome.a11y', { name: user.displayName }) : t(`wave.a11y.${state}`, { name: user.displayName });
 
   if (variant === 'badge') {
     return (

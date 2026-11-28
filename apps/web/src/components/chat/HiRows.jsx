@@ -73,7 +73,7 @@ export function NextPlanRow({ channelId, guestId, sessionId, onOpen, onAll }) {
       <button type="button" className="hi-plan-main" onClick={() => onOpen?.(first.id)}>
         <Icon name="calendar-outline" size={20} />
         <span className="hi-plan-body"><b>{first.title}</b>
-          <small>{when}{going?.count > 0 ? ` · ${t('hi.going', { count: going.count })}` : ''}{more > 0 ? ` · ${t('hi.morePlans', { count: more })}` : ''}</small></span>
+          <small>{when}{going?.count > 0 ? ` · ${t('hi.going', { count: going.count })}` : ''}</small></span>
       </button>
       {more > 0 && <button type="button" className="hi-plan-more" onClick={onAll}>+{more}</button>}
       <button type="button" className={`hi-join${going?.isIn ? ' on' : ''}`} onClick={join} aria-pressed={!!going?.isIn}>{going?.isIn ? '✓' : t('hi.join')}</button>

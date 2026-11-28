@@ -68,7 +68,7 @@ export default function NotificationsScreen({ onBack, onNavigate, onOpenSettings
       const page = await fetchInbox({ categories: filter === 'all' ? [] : [filter], cursor: mode === 'more' ? cursor : null })
       if (current.current !== asked) return
       // Wave rows: the real state with each waver, so "Wave back" is right.
-      const wavers = [...new Set((page.items || []).filter(i => i.type === 'wave' || i.type === 'wave_back').map(i => i.actors?.[0]?.id).filter(Boolean))]
+      const wavers = [...new Set((page.items || []).filter(i => i.type === 'wave' || i.type === 'wave_back' || i.type === 'welcome').map(i => i.actors?.[0]?.id).filter(Boolean))]
       if (wavers.length) fetchWaveStates(wavers).then(setWaveStates).catch(() => {})
       setItems(prev => {
         if (mode === 'refresh' && prev) page.items.forEach(i => { if (!prev.some(p => p.id === i.id)) fresh.current.add(i.id) })
@@ -258,9 +258,9 @@ function Row({ item, fresh, onOpen, onToggleRead, onDelete }) {
           {!item.read && <span className="n6-dot" style={{ background: c.fill }} />}
         </button>
         {/* Wave 👋: "Wave back" in the row; a mutual wave opens the waver's profile (Message is there). */}
-        {(item.type === 'wave' || item.type === 'wave_back') && item.actors?.[0]?.id && (
+        {(item.type === 'wave' || item.type === 'wave_back' || item.type === 'welcome') && item.actors?.[0]?.id && (
           <span className="n6-wave">
-            <WaveButton user={{ id: item.actors[0].id, displayName: item.actors[0].name }} initial={item.type === 'wave' ? 'received' : 'mutual'}
+            <WaveButton user={{ id: item.actors[0].id, displayName: item.actors[0].name }} initial={item.type === 'wave_back' ? 'mutual' : 'received'}
                         source="notification" account onOpenChat={() => onOpen(item)} />
           </span>
         )}

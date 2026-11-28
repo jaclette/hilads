@@ -44,7 +44,9 @@
     "duels_other": "{{count}} duelos contigo",
     "friend": "amigo",
     "photos_one": "{{count}} foto",
-    "photos_other": "{{count}} fotos"
+    "photos_other": "{{count}} fotos",
+    "lastIn": "última vez em {{city}}",
+    "noCity": "Ainda sem cidade"
   },
   "spot": {
     "top_local": "Top local",
@@ -110,5 +112,22 @@
     "showInMembers": "Aparecer nas listas de membros",
     "on": "Sim",
     "off": "Não"
-  }
+  },
+  "newTag": "NOVO",
+  "landed": {
+    "title": "Acabaram de chegar 🆕",
+    "today": "chegou hoje",
+    "yesterday": "chegou ontem",
+    "days_one": "chegou há {{count}} dia",
+    "days_other": "chegou há {{count}} dias",
+    "welcomed_one": "{{count}} pessoa deu as boas-vindas",
+    "welcomed_other": "{{count}} pessoas deram as boas-vindas"
+  },
+  "welcome": {
+    "cta": "👋 Boas-vindas",
+    "done": "👋 Recebido",
+    "a11y": "Dar as boas-vindas a {{name}}"
+  },
+  "newcomer": "És novo aqui: diz olá à tua cidade 👋",
+  "pickCity": "Escolhe a tua cidade para apareceres na malta dela"
 }

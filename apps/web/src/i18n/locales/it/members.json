@@ -44,7 +44,9 @@
     "duels_other": "{{count}} sfide con te",
     "friend": "amico",
     "photos_one": "{{count}} foto",
-    "photos_other": "{{count}} foto"
+    "photos_other": "{{count}} foto",
+    "lastIn": "ultima volta a {{city}}",
+    "noCity": "Ancora nessuna città"
   },
   "spot": {
     "top_local": "Top del posto",
@@ -110,5 +112,22 @@
     "showInMembers": "Mostrami negli elenchi dei membri",
     "on": "Sì",
     "off": "No"
-  }
+  },
+  "newTag": "NUOVO",
+  "landed": {
+    "title": "Appena arrivati 🆕",
+    "today": "arrivato oggi",
+    "yesterday": "arrivato ieri",
+    "days_one": "arrivato {{count}} giorno fa",
+    "days_other": "arrivato {{count}} giorni fa",
+    "welcomed_one": "{{count}} persona gli ha dato il benvenuto",
+    "welcomed_other": "{{count}} persone gli hanno dato il benvenuto"
+  },
+  "welcome": {
+    "cta": "👋 Benvenuto",
+    "done": "👋 Accolto",
+    "a11y": "Dai il benvenuto a {{name}}"
+  },
+  "newcomer": "Sei nuovo qui: saluta la tua città 👋",
+  "pickCity": "Scegli la tua città per comparire nella sua crew"
 }

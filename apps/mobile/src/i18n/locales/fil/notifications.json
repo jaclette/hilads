@@ -121,7 +121,8 @@
       "crewBonus": "🎉 Kumpleto na ang crew mo! +{{points}}",
       "friendSignedUp": "ay sumali sa Hilads gamit ang link mo 🎉 Unang photo niya = +{{points}} para sa'yo",
       "wave": "Kumaway sa'yo si {{names}} 👋",
-      "waveBack": "Kumaway pabalik si {{names}} 🎉"
+      "waveBack": "Kumaway pabalik si {{names}} 🎉",
+      "welcome": "Binati ka ni {{names}} sa Hilads 👋"
     },
     "empty": {
       "all": "Walang drama dito. Mag-snap ka na 📸",

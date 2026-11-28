@@ -72,7 +72,9 @@
     "photos_two": "الصور: {{count}}",
     "photos_few": "الصور: {{count}}",
     "photos_many": "الصور: {{count}}",
-    "photos_other": "الصور: {{count}}"
+    "photos_other": "الصور: {{count}}",
+    "lastIn": "آخر مرة في {{city}}",
+    "noCity": "لا مدينة بعد"
   },
   "spot": {
     "top_local": "أفضل محلي",
@@ -150,5 +152,30 @@
     "showInMembers": "أظهرني في قوائم الأعضاء",
     "on": "تشغيل",
     "off": "إيقاف"
-  }
+  },
+  "newTag": "جديد",
+  "landed": {
+    "title": "وصلوا للتو 🆕",
+    "today": "انضم اليوم",
+    "yesterday": "انضم أمس",
+    "days_zero": "انضم منذ أيام: {{count}}",
+    "days_one": "انضم منذ أيام: {{count}}",
+    "days_two": "انضم منذ أيام: {{count}}",
+    "days_few": "انضم منذ أيام: {{count}}",
+    "days_many": "انضم منذ أيام: {{count}}",
+    "days_other": "انضم منذ أيام: {{count}}",
+    "welcomed_zero": "رحّب به: {{count}}",
+    "welcomed_one": "رحّب به: {{count}}",
+    "welcomed_two": "رحّب به: {{count}}",
+    "welcomed_few": "رحّب به: {{count}}",
+    "welcomed_many": "رحّب به: {{count}}",
+    "welcomed_other": "رحّب به: {{count}}"
+  },
+  "welcome": {
+    "cta": "👋 رحّب",
+    "done": "👋 تم الترحيب",
+    "a11y": "رحّب بـ {{name}} في Hilads"
+  },
+  "newcomer": "أنت جديد هنا: قل مرحبًا لمدينتك 👋",
+  "pickCity": "اختر مدينتك لتظهر في طاقمها"
 }

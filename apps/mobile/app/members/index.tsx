@@ -14,12 +14,14 @@ import { countryToFlag } from '@/lib/countryFlag';
 import { shortCityName } from '@/i18n/cityName';
 import { track } from '@/services/analytics';
 import { MemberRow } from '@/features/members/MemberRow';
-import { CityStrip, HereNowRow, MembersSection, Spotlight } from '@/features/members/MembersSections';
+import { CityStrip, HereNowRow, JustLandedRow, MembersSection, Spotlight } from '@/features/members/MembersSections';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useSeedWaves } from '@/features/members/wave';
 import { ProfileActionSheet } from '@/features/profile/ProfileActionSheet';
 import { ReportModal } from '@/features/profile/ReportModal';
 
-const CITY_FILTERS: MemberFilter[] = ['all', 'here', 'locals', 'travelers', 'friends', 'new'];
+// New second: visible without scrolling the chips.
+const CITY_FILTERS: MemberFilter[] = ['all', 'new', 'here', 'locals', 'travelers', 'friends'];
 
 /**
  * Members (docs/mockups/hilads_members_mockup.html), opened from the members line of the Hi
@@ -60,6 +62,17 @@ export default function MembersScreen() {
   useSeedWaves(summary?.hereNow);
 
   useEffect(() => { track('members_viewed', { scope: world ? 'world' : 'city' }); }, [world]);
+
+  // "You're new here: say hi to your city 👋": a newcomer's first visit only.
+  const [newcomerLine, setNewcomerLine] = useState(false);
+  useEffect(() => {
+    if (!summary?.me?.isNew) return;
+    AsyncStorage.getItem('hilads_members_newcomer_seen').then(v => {
+      if (v) return;
+      setNewcomerLine(true);
+      AsyncStorage.setItem('hilads_members_newcomer_seen', '1').catch(() => {});
+    }).catch(() => {});
+  }, [summary?.me?.isNew]);
 
   // The summary: the whole scope (the World's strip stays on "All" counts).
   const loadSummary = useCallback(() => {
@@ -127,6 +140,16 @@ export default function MembersScreen() {
 
   const header = (
     <View>
+      {/* A newcomer's first visit to this screen, and an account with no city yet (they pick one). */}
+      {!searching && newcomerLine && (
+        <View style={styles.note}><Text style={styles.noteText}>{t('newcomer')}</Text></View>
+      )}
+      {!searching && summary?.me && !summary.me.hasCity && (
+        <Tappable style={[styles.note, styles.noteAction]} onPress={() => router.push('/switch-city' as never)} accessibilityRole="button">
+          <Text style={styles.noteText}>{t('pickCity')}</Text>
+          <Ionicons name="chevron-forward" size={16} color={colors.primaryOnTint} />
+        </Tappable>
+      )}
       {!searching && world && !!summary?.cities?.length && (
         <>
           <MembersSection title={t('cities')} aside={t('seeAll', { count: summary.cities.length })}
@@ -144,6 +167,12 @@ export default function MembersScreen() {
         <>
           <MembersSection title={t('spotlight')} aside={t('thisWeek')} />
           <Spotlight cards={summary.spotlight} onUser={openProfile} onCity={openCity} />
+        </>
+      )}
+      {!searching && worldCity === null && !!summary?.justLanded?.length && (
+        <>
+          <MembersSection title={t('landed.title')} />
+          <JustLandedRow people={summary.justLanded} world={world} meId={account?.id} onOpen={openProfile} />
         </>
       )}
       {!!cityMatches.length && (
@@ -257,6 +286,10 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
                  borderRadius: Radius.card, backgroundColor: c.bg2 },
   cityResultName:  { ...Type.label, fontSize: 15, color: c.text, flex: 1 },
   cityResultCount: { ...Type.caption, color: c.muted },
+  note:        { flexDirection: 'row', alignItems: 'center', gap: Space.sm, marginTop: Space.md, padding: Space.md,
+                 borderRadius: Radius.card, backgroundColor: c.primaryTint },
+  noteAction:  { justifyContent: 'space-between' },
+  noteText:    { ...Type.body, fontWeight: '700', color: c.primaryOnTint, flexShrink: 1 },
   skeletons:   { gap: Space.sm },
   skeleton:    { height: 64, borderRadius: Radius.card, backgroundColor: c.bg3 },
   more:        { height: Space.xxl, marginTop: Space.md },

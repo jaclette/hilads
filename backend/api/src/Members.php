@@ -23,11 +23,15 @@ final class Members
     private const HERE_MAX = 30;
 
     /** Who can be listed at all (u = users). */
-    public const VISIBLE = "u.deleted_at IS NULL AND u.current_city_id IS NOT NULL
+    public const VISIBLE = "u.deleted_at IS NULL
         AND coalesce(u.show_in_members, true)
         AND NOT coalesce(u.is_fake, false) AND NOT coalesce(u.is_demo, false) AND NOT coalesce(u.is_review, false)
         AND u.username IS DISTINCT FROM 'hilads'
         AND NOT EXISTS (SELECT 1 FROM bans b WHERE b.guest_id = u.guest_id AND (b.expires_at IS NULL OR b.expires_at > now()))";
+
+    /** The city a member last opened when they have no current city (World rows: "last in", else "No city yet"). */
+    private const LAST_CITY = "(SELECT m.channel_id FROM messages m WHERE m.user_id = u.id AND m.type = 'system' AND m.event = 'join'
+                                ORDER BY m.created_at DESC LIMIT 1) AS last_city_id";
 
     /** Local: says local, and the city is home (or no home set), the Daily rule without the name match. */
     private const LOCAL = "(u.mode = 'local' AND (u.home_city_id IS NULL OR u.home_city_id = u.current_city_id))";
@@ -114,8 +118,8 @@ final class Members
             case 'travelers': $where .= ' AND u.mode IS NOT NULL AND NOT ' . self::LOCAL; break;
             case 'friends':   $where .= " AND {$friendSql}"; if ($viewerId !== null) $args[] = $viewerId; break;
             case 'new':
-                $where .= ' AND ' . ($cityId !== null ? 'coalesce(u.current_city_set_at, to_timestamp(u.created_at))' : 'to_timestamp(u.created_at)')
-                        . " > now() - interval '" . self::NEW_DAYS . " days'";
+                // New = joined Hilads in the last NEW_DAYS days (the NEW tag and "Joined yesterday" say the same).
+                $where .= " AND to_timestamp(u.created_at) > now() - interval '" . self::NEW_DAYS . " days'";
                 break;
         }
         $q = trim(mb_substr($q, 0, 60));
@@ -132,7 +136,7 @@ final class Members
         $offset = max(0, $offset);
         $sql = "
             SELECT u.id, u.username, u.display_name, coalesce(u.profile_thumb_photo_url, u.profile_photo_url) AS photo,
-                   u.mode, u.home_city_id, u.current_city_id, ch.name AS city_name,
+                   u.mode, u.home_city_id, u.current_city_id, ch.name AS city_name, " . self::LAST_CITY . ",
                    to_timestamp(u.created_at) AS created_at, coalesce(u.current_city_set_at, to_timestamp(u.created_at)) AS arrived_at,
                    coalesce(u.allow_waves, true) AS allow_waves,
                    ({$hereSql}) AS here, ({$friendSql}) AS friend
@@ -181,7 +185,10 @@ final class Members
         $out = [];
         foreach ($rows as $r) {
             $id = (string) $r['id'];
-            $cityNum = preg_match('/^city_(\d+)$/', (string) $r['current_city_id'], $m) ? (int) $m[1] : null;
+            // No current city: the city they last opened (World rows say "last in"), else none ("No city yet").
+            $shown   = $r['current_city_id'] ?: ($r['last_city_id'] ?? null);
+            $cityNum = preg_match('/^city_(\d+)$/', (string) $shown, $m) ? (int) $m[1] : null;
+            $cityRow = $cityNum !== null && !$r['current_city_id'] ? CityRepository::findById($cityNum) : null;
             $out[] = [
                 'id'          => $id,
                 'username'    => $r['username'],
@@ -193,12 +200,15 @@ final class Members
                 'streak'      => $streaks[$id] ?? 0,
                 'photos'      => $photos[$id] ?? 0,
                 'duels'       => $duels[$id] ?? 0,
-                'joinedDays'  => self::daysAgo($world ? $r['created_at'] : $r['arrived_at']),
+                'joinedDays'  => self::daysAgo($r['created_at']),
+                'isNew'       => self::daysAgo($r['created_at']) !== null && self::daysAgo($r['created_at']) < self::NEW_DAYS,
                 'city'        => $world && $cityNum !== null ? [
                     'id'      => $cityNum,
-                    'name'    => CityNames::short($r['city_name'], DailyI18n::current()),
+                    'name'    => CityNames::short($r['current_city_id'] ? $r['city_name'] : ($cityRow['name'] ?? null), DailyI18n::current()),
                     'country' => CityRepository::countryOf($cityNum),
+                    'last'    => !$r['current_city_id'],
                 ] : null,
+                'noCity'      => $world && $cityNum === null,
                 'canWave'     => $r['id'] !== $viewerId && DailyProofRepository::bool($r['allow_waves']),
                 'wave'        => $waves[$id] ?? 'none',
             ];
@@ -286,7 +296,7 @@ final class Members
         if ($online !== []) {
             $stmt = $pdo->prepare("
                 SELECT u.id, u.username, u.display_name, coalesce(u.profile_thumb_photo_url, u.profile_photo_url) AS photo,
-                       u.mode, u.home_city_id, u.current_city_id, ch.name AS city_name, to_timestamp(u.created_at) AS created_at,
+                       u.mode, u.home_city_id, u.current_city_id, ch.name AS city_name, " . self::LAST_CITY . ", to_timestamp(u.created_at) AS created_at,
                        coalesce(u.current_city_set_at, to_timestamp(u.created_at)) AS arrived_at, coalesce(u.allow_waves, true) AS allow_waves,
                        true AS here, false AS friend
                 FROM users u LEFT JOIN channels ch ON ch.id = u.current_city_id
@@ -297,15 +307,57 @@ final class Members
             $here = self::decorate($stmt->fetchAll(PDO::FETCH_ASSOC), $viewerId, $cityId === null);
         }
 
+        // Just landed: members who joined Hilads in the last NEW_DAYS days, newest first, with how many welcomed them.
+        $stmt = $pdo->prepare("
+            SELECT u.id, u.username, u.display_name, coalesce(u.profile_thumb_photo_url, u.profile_photo_url) AS photo,
+                   u.mode, u.home_city_id, u.current_city_id, ch.name AS city_name, " . self::LAST_CITY . ",
+                   to_timestamp(u.created_at) AS created_at, coalesce(u.current_city_set_at, to_timestamp(u.created_at)) AS arrived_at,
+                   coalesce(u.allow_waves, true) AS allow_waves, false AS here, false AS friend
+            FROM users u LEFT JOIN channels ch ON ch.id = u.current_city_id
+            WHERE {$where} AND to_timestamp(u.created_at) > now() - interval '" . self::NEW_DAYS . " days'
+            ORDER BY u.created_at DESC, u.id LIMIT 20");
+        $stmt->execute($args);
+        $landed = self::decorate($stmt->fetchAll(PDO::FETCH_ASSOC), $viewerId, $cityId === null);
+        $welcomes = self::welcomeCounts(array_column($landed, 'id'));
+        foreach ($landed as &$l) $l['welcomes'] = $welcomes[$l['id']] ?? 0;
+        unset($l);
+
+        // The viewer: a newcomer (first NEW_DAYS days) gets a friendly line; no current city → pick one.
+        $me = null;
+        if ($viewerId !== null) {
+            $stmt = $pdo->prepare("SELECT to_timestamp(created_at) AS created_at, current_city_id FROM users WHERE id = ?");
+            $stmt->execute([$viewerId]);
+            if ($u = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                $me = ['isNew' => (self::daysAgo($u['created_at']) ?? 99) < self::NEW_DAYS, 'hasCity' => $u['current_city_id'] !== null];
+            }
+        }
+
         $out = [
             'counts'    => ['here' => count($here), 'members' => (int) $members] + ($cityId === null ? ['cities' => (int) $cities] : []),
             'hereNow'   => $here,
+            'justLanded' => $landed,
+            'me'        => $me,
             'spotlight' => $cityId !== null ? self::citySpotlight($cityId, $where, $args, $viewerId) : self::worldSpotlight($where, $args),
         ];
         if ($cityId === null) {
             $out['cities'] = self::cities($where, $args);
         }
         return $out;
+    }
+
+    /** How many different people welcomed each of these members (waves with source 'welcome'). */
+    private static function welcomeCounts(array $ids): array
+    {
+        if ($ids === []) return [];
+        try {
+            $stmt = Database::pdo()->prepare("SELECT to_user_id, count(DISTINCT from_user_id) FROM waves
+                                              WHERE source = 'welcome' AND to_user_id IN (" . implode(',', array_fill(0, count($ids), '?')) . ")
+                                              GROUP BY to_user_id");
+            $stmt->execute($ids);
+            return array_map('intval', $stmt->fetchAll(PDO::FETCH_KEY_PAIR));
+        } catch (\Throwable) {
+            return [];
+        }
     }
 
     /** Members per city, most first. */

@@ -146,6 +146,12 @@
       "happy": "🎃 Fijne Halloween {{city}}!",
       "happyNoCity": "🎃 Fijne Halloween!",
       "tonight": "Wie gaat er vanavond uit voor Halloween?"
+    },
+    "world": {
+      "hiFrom": "👋 Hoi vanuit {{city}}!",
+      "hi": "👋 Hoi wereld!",
+      "like": "Hoe is jouw stad vandaag?",
+      "from": "Waar komen jullie allemaal vandaan?"
     }
   },
   "hi": {

@@ -27,7 +27,7 @@ final class NotificationCategory
             in_array($type, [
                 'mention', 'city_here', 'photo_comment', 'photo_mention', 'daily_vote',
                 'friend_request_received', 'friend_request_accepted', 'friend_added',
-                'vibe_received', 'profile_view', 'rating_received', 'wave', 'wave_back',
+                'vibe_received', 'profile_view', 'rating_received', 'wave', 'wave_back', 'welcome',
             ], true) => self::SOCIAL,
             in_array($type, ['new_event', 'event_join', 'event_message', 'join_request', 'join_request_accepted',
                              'topic_message', 'new_topic'], true) => self::PLANS,
@@ -44,7 +44,7 @@ final class NotificationCategory
     {
         $types = [
             'mention', 'city_here', 'photo_comment', 'photo_mention', 'daily_vote', 'friend_request_received',
-            'friend_request_accepted', 'friend_added', 'vibe_received', 'profile_view', 'rating_received', 'wave', 'wave_back',
+            'friend_request_accepted', 'friend_added', 'vibe_received', 'profile_view', 'rating_received', 'wave', 'wave_back', 'welcome',
             'new_event', 'event_join', 'event_message', 'join_request', 'join_request_accepted', 'topic_message',
             'new_topic', 'city_join', 'world_arrival', 'channel_message', 'admin_announcement', 'daily_admin',
             'new_challenge',
@@ -73,7 +73,7 @@ final class NotificationCategory
             'photo_comment', 'photo_mention' => isset($data['commentId']) ? "comment:{$data['commentId']}" : null,
             'profile_view'  => isset($data['viewerId']) ? "view:{$data['viewerId']}:{$day}" : null,
             // One wave (or wave back) per person and day: the waves table has the same rule.
-            'wave', 'wave_back' => isset($data['actorId']) ? "{$type}:{$data['actorId']}:{$day}" : null,
+            'wave', 'wave_back', 'welcome' => isset($data['actorId']) ? "{$type}:{$data['actorId']}:{$day}" : null,
             'friend_request_received' => isset($data['requestId']) ? "freq:{$data['requestId']}" : null,
             'friend_request_accepted' => isset($data['accepterUserId']) ? "facc:{$data['accepterUserId']}" : null,
             'event_join'    => isset($data['eventId'], $data['senderUserId']) ? "join:{$data['eventId']}:{$data['senderUserId']}" : null,
@@ -157,7 +157,7 @@ final class NotificationCategory
                 => !empty($data['accepterUserId'] ?? $data['viewerId'] ?? $data['senderUserId'] ?? null)
                     ? '/user/' . ($data['accepterUserId'] ?? $data['viewerId'] ?? $data['senderUserId']) : null,
             $type === 'vibe_received'                             => '/(tabs)/me',
-            in_array($type, ['wave', 'wave_back'], true) && !empty($data['actorId']) => '/user/' . $data['actorId'],
+            in_array($type, ['wave', 'wave_back', 'welcome'], true) && !empty($data['actorId']) => '/user/' . $data['actorId'],
             $type === 'world_arrival'                             => '/(tabs)/chat',
             default                                               => null,
         };

@@ -75,7 +75,7 @@ export default function NotificationsScreen() {
       page.items.forEach(i => known.current.add(i.id));
       setItems(prev => (mode === 'more' && prev ? [...prev, ...page.items.filter(i => !prev.some(p => p.id === i.id))] : page.items));
       // Wave rows: the real state with each waver (answered already? expired?), so "Wave back" is right.
-      const wavers = [...new Set(page.items.filter(i => i.type === 'wave' || i.type === 'wave_back').map(i => i.actors[0]?.id).filter((x): x is string => !!x))];
+      const wavers = [...new Set(page.items.filter(i => i.type === 'wave' || i.type === 'wave_back' || i.type === 'welcome').map(i => i.actors[0]?.id).filter((x): x is string => !!x))];
       if (wavers.length && account) fetchWaveStates(wavers).then(setWaveStates).catch(() => {});
       setCursor(page.nextCursor);
     } catch {

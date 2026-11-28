@@ -120,7 +120,8 @@
       "crewBonus": "🎉 Hội của bạn đã đủ người! +{{points}}",
       "friendSignedUp": "đã tham gia Hilads qua link của bạn 🎉 Ảnh đầu tiên của họ = +{{points}} cho bạn",
       "wave": "{{names}} vẫy tay chào bạn 👋",
-      "waveBack": "{{names}} đã vẫy tay lại 🎉"
+      "waveBack": "{{names}} đã vẫy tay lại 🎉",
+      "welcome": "{{names}} chào mừng bạn đến với Hilads 👋"
     },
     "empty": {
       "all": "Chưa có gì cả. Đi chụp ảnh nào 📸",

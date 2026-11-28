@@ -129,7 +129,6 @@ export function NextPlanRow({ channelId, guestId, nickname }: { channelId: strin
           <Text style={styles.planTitle} numberOfLines={1}>{first.title}</Text>
           <Text style={styles.planMeta} numberOfLines={1}>
             {when}{going && going.count > 0 ? ` · ${t('hi.going', { count: going.count })}` : ''}
-            {more > 0 ? ` · ${t('hi.morePlans', { count: more })}` : ''}
           </Text>
         </View>
       </Pressable>

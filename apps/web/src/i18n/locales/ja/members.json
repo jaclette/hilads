@@ -44,7 +44,9 @@
     "duels_other": "あなたと{{count}}回対決",
     "friend": "友だち",
     "photos_one": "写真{{count}}枚",
-    "photos_other": "写真{{count}}枚"
+    "photos_other": "写真{{count}}枚",
+    "lastIn": "最近は{{city}}",
+    "noCity": "まだ都市がありません"
   },
   "spot": {
     "top_local": "トップ地元",
@@ -110,5 +112,22 @@
     "showInMembers": "メンバー一覧に表示する",
     "on": "オン",
     "off": "オフ"
-  }
+  },
+  "newTag": "NEW",
+  "landed": {
+    "title": "到着したて 🆕",
+    "today": "今日参加",
+    "yesterday": "昨日参加",
+    "days_one": "{{count}}日前に参加",
+    "days_other": "{{count}}日前に参加",
+    "welcomed_one": "{{count}}人が歓迎しました",
+    "welcomed_other": "{{count}}人が歓迎しました"
+  },
+  "welcome": {
+    "cta": "👋 ようこそ",
+    "done": "👋 歓迎済み",
+    "a11y": "{{name}}さんをHiladsに歓迎する"
+  },
+  "newcomer": "はじめまして：あなたの街にあいさつしよう 👋",
+  "pickCity": "都市を選ぶとクルーに表示されます"
 }

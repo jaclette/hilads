@@ -56,12 +56,14 @@ export function ScreenHeader({ title, subtitle, subtitleLead, onSubtitlePress, s
       {title && subtitle ? (
         // A live line under the title (the Hi chat: "12 here now · 348 members").
         <View style={styles.titleBox}>
-          <Text style={[styles.title, compact && styles.titleCompact]} numberOfLines={1} maxFontSizeMultiplier={1.5} accessibilityRole="header" testID="header-title">{title}</Text>
+          {/* A plain vertical stack: the title at its natural height (never flex: 1 here, which collapses it to
+              zero in a column and let the line below draw over it), then the line 2 px below. Grows with the font. */}
+          <Text style={[styles.titleStacked, compact && styles.titleCompact]} numberOfLines={1} maxFontSizeMultiplier={1.5} accessibilityRole="header" testID="header-title">{title}</Text>
           {onSubtitlePress ? (
-            <Tappable onPress={onSubtitlePress} style={styles.subtitleBtn} hitSlop={{ top: 6, bottom: 10 }} accessibilityRole="button"
+            <Tappable onPress={onSubtitlePress} style={styles.subtitleBtn} hitSlop={{ top: 0, bottom: 10, left: 4, right: 8 }} accessibilityRole="button"
                       accessibilityLabel={subtitleA11y ?? subtitle} testID="header-subtitle">
               {subtitleLead}
-              <Text style={[styles.subtitle, styles.subtitleLink]} numberOfLines={1} maxFontSizeMultiplier={1.4}>{subtitle}</Text>
+              <Text style={[styles.subtitle, styles.subtitleLink]} numberOfLines={2} maxFontSizeMultiplier={1.4}>{subtitle}</Text>
               <Ionicons name="chevron-forward" size={14} color={colors.primaryText} />
             </Tappable>
           ) : <Text style={styles.subtitle} numberOfLines={1} maxFontSizeMultiplier={1.4}>{subtitle}</Text>}
@@ -75,7 +77,8 @@ export function ScreenHeader({ title, subtitle, subtitleLead, onSubtitlePress, s
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
   back:         { flexDirection: 'row', alignItems: 'center', gap: Space.md, paddingHorizontal: Spacing.md, paddingVertical: Space.sm },
-  titleBox:     { flex: 1 },
+  titleBox:     { flex: 1, minWidth: 0, justifyContent: 'center', gap: Space.xxs },
+  titleStacked: { fontSize: FontSizes.lg, lineHeight: 27, fontWeight: '800', color: c.text },
   title:        { flex: 1, fontSize: FontSizes.lg, fontWeight: '800', color: c.text },
   titleCompact: { fontSize: FontSizes.md, fontWeight: '800' },
   spacer:       { flex: 1 },
@@ -84,6 +87,6 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   artSlot:      { alignSelf: 'stretch', flexGrow: 1, flexShrink: 0, minWidth: 0, marginVertical: -10 },
   tabTitle:     { fontSize: FontSizes.title, fontWeight: '800', color: c.text, letterSpacing: -0.3 },
   subtitle:     { fontSize: FontSizes.sm, lineHeight: 19, fontWeight: '500', color: c.muted },
-  subtitleBtn:  { flexDirection: 'row', alignItems: 'center', gap: Space.xs, alignSelf: 'flex-start', maxWidth: '100%' },
+  subtitleBtn:  { flexDirection: 'row', alignItems: 'center', gap: Space.xs, alignSelf: 'flex-start', maxWidth: '100%', minHeight: 24 },
   subtitleLink: { flexShrink: 1, fontWeight: '700', color: c.text },
 });

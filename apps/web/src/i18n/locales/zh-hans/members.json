@@ -44,7 +44,9 @@
     "duels_other": "与你对决 {{count}} 次",
     "friend": "好友",
     "photos_one": "{{count}} 张照片",
-    "photos_other": "{{count}} 张照片"
+    "photos_other": "{{count}} 张照片",
+    "lastIn": "最近在{{city}}",
+    "noCity": "还没有城市"
   },
   "spot": {
     "top_local": "本地第一",
@@ -110,5 +112,22 @@
     "showInMembers": "在成员列表中显示我",
     "on": "开",
     "off": "关"
-  }
+  },
+  "newTag": "新人",
+  "landed": {
+    "title": "刚刚到来 🆕",
+    "today": "今天加入",
+    "yesterday": "昨天加入",
+    "days_one": "{{count}} 天前加入",
+    "days_other": "{{count}} 天前加入",
+    "welcomed_one": "已有 {{count}} 人欢迎",
+    "welcomed_other": "已有 {{count}} 人欢迎"
+  },
+  "welcome": {
+    "cta": "👋 欢迎",
+    "done": "👋 已欢迎",
+    "a11y": "欢迎 {{name}} 来到 Hilads"
+  },
+  "newcomer": "你是新来的：和你的城市打个招呼吧 👋",
+  "pickCity": "选择你的城市，加入它的伙伴圈"
 }

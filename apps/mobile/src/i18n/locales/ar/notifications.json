@@ -149,7 +149,8 @@
       "crewBonus": "🎉 اكتمل فريقك! +{{points}}",
       "friendSignedUp": "انضم إلى Hilads عبر رابطك 🎉 صورته الأولى = +{{points}} لك",
       "wave": "{{names}} لوّح لك 👋",
-      "waveBack": "{{names}} لوّح لك بالمقابل 🎉"
+      "waveBack": "{{names}} لوّح لك بالمقابل 🎉",
+      "welcome": "{{names}} يرحّب بك في Hilads 👋"
     },
     "empty": {
       "all": "لا شيء هنا. التقط صورة 📸",

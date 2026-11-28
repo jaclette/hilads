@@ -44,7 +44,9 @@
     "duels_other": "{{count}} duel denganmu",
     "friend": "teman",
     "photos_one": "{{count}} foto",
-    "photos_other": "{{count}} foto"
+    "photos_other": "{{count}} foto",
+    "lastIn": "terakhir di {{city}}",
+    "noCity": "Belum ada kota"
   },
   "spot": {
     "top_local": "Lokal teratas",
@@ -110,5 +112,22 @@
     "showInMembers": "Tampilkan aku di daftar anggota",
     "on": "Aktif",
     "off": "Nonaktif"
-  }
+  },
+  "newTag": "BARU",
+  "landed": {
+    "title": "Baru tiba 🆕",
+    "today": "bergabung hari ini",
+    "yesterday": "bergabung kemarin",
+    "days_one": "bergabung {{count}} hari lalu",
+    "days_other": "bergabung {{count}} hari lalu",
+    "welcomed_one": "{{count}} orang menyambutnya",
+    "welcomed_other": "{{count}} orang menyambutnya"
+  },
+  "welcome": {
+    "cta": "👋 Sambut",
+    "done": "👋 Disambut",
+    "a11y": "Sambut {{name}} di Hilads"
+  },
+  "newcomer": "Kamu baru di sini: sapa kotamu 👋",
+  "pickCity": "Pilih kotamu agar muncul di crew-nya"
 }

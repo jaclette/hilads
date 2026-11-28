@@ -44,7 +44,9 @@
     "duels_other": "{{count}} duelos contigo",
     "friend": "amigo",
     "photos_one": "{{count}} foto",
-    "photos_other": "{{count}} fotos"
+    "photos_other": "{{count}} fotos",
+    "lastIn": "última vez en {{city}}",
+    "noCity": "Aún sin ciudad"
   },
   "spot": {
     "top_local": "Top local",
@@ -110,5 +112,22 @@
     "showInMembers": "Aparecer en las listas de miembros",
     "on": "Sí",
     "off": "No"
-  }
+  },
+  "newTag": "NUEVO",
+  "landed": {
+    "title": "Recién llegados 🆕",
+    "today": "llegó hoy",
+    "yesterday": "llegó ayer",
+    "days_one": "llegó hace {{count}} día",
+    "days_other": "llegó hace {{count}} días",
+    "welcomed_one": "{{count}} persona le dio la bienvenida",
+    "welcomed_other": "{{count}} personas le dieron la bienvenida"
+  },
+  "welcome": {
+    "cta": "👋 Bienvenida",
+    "done": "👋 Recibido",
+    "a11y": "Dar la bienvenida a {{name}}"
+  },
+  "newcomer": "Eres nuevo aquí: saluda a tu ciudad 👋",
+  "pickCity": "Elige tu ciudad para aparecer en su crew"
 }

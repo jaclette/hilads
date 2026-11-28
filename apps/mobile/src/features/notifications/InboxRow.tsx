@@ -101,8 +101,8 @@ export const InboxRow = memo(function InboxRow({ item, onPress, onToggleRead, on
         </View>
         {thumb ? <Image source={{ uri: thumbUrl(thumb) ?? thumb }} style={styles.thumb} contentFit="cover" cachePolicy="memory-disk" /> : null}
         {/* Wave 👋: "Wave back" right in the row (a wave back: the suggestion to chat). */}
-        {(item.type === 'wave' || item.type === 'wave_back') && item.actors[0]?.id ? (
-          <WaveButton user={{ id: item.actors[0].id, displayName: item.actors[0].name }} initial={item.type === 'wave' ? 'received' : 'mutual'} source="notification" />
+        {(item.type === 'wave' || item.type === 'wave_back' || item.type === 'welcome') && item.actors[0]?.id ? (
+          <WaveButton user={{ id: item.actors[0].id, displayName: item.actors[0].name }} initial={item.type === 'wave_back' ? 'mutual' : 'received'} source="notification" />
         ) : null}
         {unread && <View style={[styles.dot, { backgroundColor: cat.fill }]} />}
       </Pressable>

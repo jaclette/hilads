@@ -51,6 +51,12 @@
       "happy": "🎃 Buon Halloween {{city}}!",
       "happyNoCity": "🎃 Buon Halloween!",
       "tonight": "Chi esce stasera per Halloween?"
+    },
+    "world": {
+      "hiFrom": "👋 Ciao da {{city}}!",
+      "hi": "👋 Ciao mondo!",
+      "like": "Com'è la tua città oggi?",
+      "from": "Da dove venite?"
     }
   },
   "hi": {

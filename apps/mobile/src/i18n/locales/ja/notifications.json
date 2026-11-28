@@ -120,7 +120,8 @@
       "crewBonus": "🎉 クルーがそろった！+{{points}}",
       "friendSignedUp": "さんがあなたのリンクからHiladsに参加 🎉 最初の写真であなたに +{{points}}",
       "wave": "{{names}}さんが手を振っています 👋",
-      "waveBack": "{{names}}さんが手を振り返しました 🎉"
+      "waveBack": "{{names}}さんが手を振り返しました 🎉",
+      "welcome": "{{names}}さんがHiladsへようこそと言っています 👋"
     },
     "empty": {
       "all": "静かだね。写真を撮りに行こう 📸",

@@ -44,7 +44,9 @@
     "duels_other": "आपके साथ {{count}} मुकाबले",
     "friend": "दोस्त",
     "photos_one": "{{count}} फ़ोटो",
-    "photos_other": "{{count}} फ़ोटो"
+    "photos_other": "{{count}} फ़ोटो",
+    "lastIn": "पिछली बार {{city}} में",
+    "noCity": "अभी कोई शहर नहीं"
   },
   "spot": {
     "top_local": "टॉप लोकल",
@@ -110,5 +112,22 @@
     "showInMembers": "मुझे सदस्य सूचियों में दिखाएँ",
     "on": "चालू",
     "off": "बंद"
-  }
+  },
+  "newTag": "नया",
+  "landed": {
+    "title": "अभी पहुँचे 🆕",
+    "today": "आज जुड़े",
+    "yesterday": "कल जुड़े",
+    "days_one": "{{count}} दिन पहले जुड़े",
+    "days_other": "{{count}} दिन पहले जुड़े",
+    "welcomed_one": "{{count}} लोगों ने स्वागत किया",
+    "welcomed_other": "{{count}} लोगों ने स्वागत किया"
+  },
+  "welcome": {
+    "cta": "👋 स्वागत",
+    "done": "👋 स्वागत किया",
+    "a11y": "{{name}} का Hilads पर स्वागत करें"
+  },
+  "newcomer": "आप यहाँ नए हैं: अपने शहर को हाय कहें 👋",
+  "pickCity": "अपना शहर चुनें ताकि उसकी क्रू में दिखें"
 }

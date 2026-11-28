@@ -62,4 +62,14 @@ final class MembersWavesTest extends TestCase
         $this->assertSame('minh đã vẫy tay lại 🎉', $title);
         $this->assertNotNull($body);
     }
+
+    public function testWelcomeIsAWaveInItsOwnWords(): void
+    {
+        $this->assertSame('social', NotificationCategory::of('welcome'));
+        $now = new DateTimeImmutable('2026-11-28', new DateTimeZone('UTC'));
+        $this->assertSame('welcome:u1:2026-11-28', NotificationCategory::dedupeKey('welcome', ['actorId' => 'u1'], $now));
+        $this->assertSame('/user/u1', NotificationCategory::deepLink('welcome', ['actorId' => 'u1']));
+        $this->assertSame(['kitty_3 te souhaite la bienvenue sur Hilads 👋', null], NotificationI18n::render('welcome', 'fr', ['actorName' => 'kitty_3']));
+        $this->assertContains('welcome', Waves::SOURCES);
+    }
 }

@@ -44,7 +44,9 @@
     "duels_other": "{{count}} duels met jou",
     "friend": "vriend",
     "photos_one": "{{count}} foto",
-    "photos_other": "{{count}} foto's"
+    "photos_other": "{{count}} foto's",
+    "lastIn": "laatst in {{city}}",
+    "noCity": "Nog geen stad"
   },
   "spot": {
     "top_local": "Top-local",
@@ -110,5 +112,22 @@
     "showInMembers": "Toon me in ledenlijsten",
     "on": "Aan",
     "off": "Uit"
-  }
+  },
+  "newTag": "NIEUW",
+  "landed": {
+    "title": "Net geland 🆕",
+    "today": "vandaag erbij",
+    "yesterday": "gisteren erbij",
+    "days_one": "{{count}} dag geleden erbij",
+    "days_other": "{{count}} dagen geleden erbij",
+    "welcomed_one": "{{count}} persoon heette ze welkom",
+    "welcomed_other": "{{count}} mensen heetten ze welkom"
+  },
+  "welcome": {
+    "cta": "👋 Welkom",
+    "done": "👋 Verwelkomd",
+    "a11y": "Heet {{name}} welkom op Hilads"
+  },
+  "newcomer": "Je bent nieuw hier: zeg hoi tegen je stad 👋",
+  "pickCity": "Kies je stad om in de crew te verschijnen"
 }

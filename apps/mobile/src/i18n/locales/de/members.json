@@ -44,7 +44,9 @@
     "duels_other": "{{count}} Duelle mit dir",
     "friend": "befreundet",
     "photos_one": "{{count}} Foto",
-    "photos_other": "{{count}} Fotos"
+    "photos_other": "{{count}} Fotos",
+    "lastIn": "zuletzt in {{city}}",
+    "noCity": "Noch keine Stadt"
   },
   "spot": {
     "top_local": "Top-Local",
@@ -110,5 +112,22 @@
     "showInMembers": "In Mitgliederlisten zeigen",
     "on": "An",
     "off": "Aus"
-  }
+  },
+  "newTag": "NEU",
+  "landed": {
+    "title": "Gerade gelandet 🆕",
+    "today": "heute dazugekommen",
+    "yesterday": "gestern dazugekommen",
+    "days_one": "vor {{count}} Tag dazugekommen",
+    "days_other": "vor {{count}} Tagen dazugekommen",
+    "welcomed_one": "{{count}} Person hat sie begrüßt",
+    "welcomed_other": "{{count}} Personen haben sie begrüßt"
+  },
+  "welcome": {
+    "cta": "👋 Willkommen",
+    "done": "👋 Begrüßt",
+    "a11y": "{{name}} bei Hilads willkommen heißen"
+  },
+  "newcomer": "Du bist neu hier: Sag deiner Stadt Hallo 👋",
+  "pickCity": "Wähle deine Stadt, um in ihrer Crew zu erscheinen"
 }

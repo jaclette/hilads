@@ -44,7 +44,9 @@
     "duels_other": "{{count}} duel kasama ka",
     "friend": "kaibigan",
     "photos_one": "{{count}} photo",
-    "photos_other": "{{count}} photo"
+    "photos_other": "{{count}} photo",
+    "lastIn": "huling nasa {{city}}",
+    "noCity": "Wala pang lungsod"
   },
   "spot": {
     "top_local": "Top local",
@@ -110,5 +112,22 @@
     "showInMembers": "Ipakita ako sa member lists",
     "on": "On",
     "off": "Off"
-  }
+  },
+  "newTag": "BAGO",
+  "landed": {
+    "title": "Kararating lang 🆕",
+    "today": "sumali ngayon",
+    "yesterday": "sumali kahapon",
+    "days_one": "sumali {{count}} araw na ang nakalipas",
+    "days_other": "sumali {{count}} araw na ang nakalipas",
+    "welcomed_one": "{{count}} ang bumati sa kanya",
+    "welcomed_other": "{{count}} ang bumati sa kanya"
+  },
+  "welcome": {
+    "cta": "👋 Welcome",
+    "done": "👋 Nabati na",
+    "a11y": "Batiin si {{name}} sa Hilads"
+  },
+  "newcomer": "Bago ka rito: mag-hi sa lungsod mo 👋",
+  "pickCity": "Pumili ng lungsod para lumabas sa crew nito"
 }

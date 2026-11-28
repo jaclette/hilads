@@ -44,7 +44,9 @@
     "duels_other": "나와 대결 {{count}}번",
     "friend": "친구",
     "photos_one": "사진 {{count}}장",
-    "photos_other": "사진 {{count}}장"
+    "photos_other": "사진 {{count}}장",
+    "lastIn": "최근 {{city}}",
+    "noCity": "아직 도시가 없어요"
   },
   "spot": {
     "top_local": "최고의 현지인",
@@ -110,5 +112,22 @@
     "showInMembers": "멤버 목록에 나 표시하기",
     "on": "켜짐",
     "off": "꺼짐"
-  }
+  },
+  "newTag": "NEW",
+  "landed": {
+    "title": "방금 도착 🆕",
+    "today": "오늘 가입",
+    "yesterday": "어제 가입",
+    "days_one": "{{count}}일 전 가입",
+    "days_other": "{{count}}일 전 가입",
+    "welcomed_one": "{{count}}명이 환영했어요",
+    "welcomed_other": "{{count}}명이 환영했어요"
+  },
+  "welcome": {
+    "cta": "👋 환영해요",
+    "done": "👋 환영함",
+    "a11y": "{{name}} 님을 Hilads에 환영하기"
+  },
+  "newcomer": "새로 오셨군요: 도시에 인사해 보세요 👋",
+  "pickCity": "도시를 선택하면 크루에 표시돼요"
 }

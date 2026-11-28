@@ -16,7 +16,8 @@ type TFn = (key: string, opts?: Record<string, unknown>) => string;
  */
 export function memberLine(m: Member, t: TFn, world: boolean): string {
   const parts: string[] = [];
-  if (world && m.city) parts.push(m.city.name);
+  if (world && m.city) parts.push(m.city.last ? t('line.lastIn', { city: m.city.name }) : m.city.name);
+  else if (world && m.noCity) parts.push(t('line.noCity'));
   if (m.joinedDays !== null && m.joinedDays <= 7) {
     parts.push(m.joinedDays === 0 ? t('line.joinedToday') : m.joinedDays === 1 ? t('line.joinedYesterday') : t('line.joinedDays', { count: m.joinedDays }));
   } else if (m.streak >= 2) {
@@ -59,6 +60,7 @@ export const MemberRow = memo(function MemberRow({ member, world = false, source
         <View style={styles.nameLine}>
           {world && member.city?.country ? <CityFlag country={member.city.country} size={14} /> : null}
           <Text style={styles.name} numberOfLines={1}>{member.displayName}</Text>
+          {member.isNew && <Text style={styles.newTag}>{t('newTag')}</Text>}
           {member.mode && tag && <ModeLabel small mode={member.mode} label={tag} />}
         </View>
         {!!line && <Text style={styles.line} numberOfLines={1}>{line}</Text>}
@@ -78,4 +80,6 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   nameLine: { flexDirection: 'row', alignItems: 'center', gap: Space.xs },
   name:     { ...Type.label, fontSize: 15, flexShrink: 1, color: c.text },
   line:     { ...Type.caption, color: c.muted },
+  newTag:   { fontSize: 11, lineHeight: 16, fontWeight: '800', color: c.onGold, backgroundColor: c.gold, borderRadius: Radius.control,
+              paddingHorizontal: Space.sm, overflow: 'hidden' },
 });

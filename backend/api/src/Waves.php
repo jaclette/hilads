@@ -21,7 +21,7 @@ final class Waves
 {
     public const MAX_PER_DAY = 30;
     public const WINDOW_DAYS = 7;
-    public const SOURCES     = ['members', 'here_now', 'profile', 'plan', 'likes', 'notification', 'push'];
+    public const SOURCES     = ['members', 'here_now', 'welcome', 'profile', 'plan', 'likes', 'notification', 'push'];
 
     /** The state from the latest wave each way (unix times or null) and today's start (pure, unit-tested). */
     public static function state(?int $lastOut, ?int $lastIn, int $todayStart): string
@@ -109,6 +109,9 @@ final class Waves
         $data = ['actorId' => $fromId, 'actorName' => $name, 'waveId' => (string) $id];
         if ($back) {
             NotificationRepository::create($toId, 'wave_back', "{$name} waved back 🎉", 'Say hi in a chat', $data);
+        } elseif ($source === 'welcome') {
+            // A Welcome (Members › Just landed): a wave to a newcomer, in its own words.
+            NotificationRepository::create($toId, 'welcome', "{$name} welcomed you to Hilads 👋", null, $data);
         } else {
             NotificationRepository::create($toId, 'wave', "{$name} waved at you 👋", null, $data);
         }
