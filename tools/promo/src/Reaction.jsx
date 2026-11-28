@@ -184,6 +184,9 @@ function Confetti({ x, y, at }) {
  * "• • •" separator, the source line and the series mark: all still from the first frame. No hook, no podium, no
  * counting values.
  */
+/** "3700" → "3,700", "120600.5" → "120,600.5": values as the source writes them (thousands grouped, decimals kept). */
+const grouped = (v) => { const [i, d] = String(v).split('.'); return i.replace(/\B(?=(\d{3})+(?!\d))/g, ',') + (d !== undefined ? '.' + d : ''); };
+
 function StaticTableScreen({ headline, detail, rows: allRows, source, highlight = [], clip, valueFormat = null, cardBg = null, accent = null,
                              extraRow = null }) {
   const bg = cardColor(cardBg);
@@ -197,7 +200,7 @@ function StaticTableScreen({ headline, detail, rows: allRows, source, highlight 
   const decimals = (r) => r.unit === '$' ? 2 : valueFormat === 'ratio' ? (Number(r.value) < 10 ? 1 : 0) : valueFormat === 'one_decimal' ? 1 : valueFormat === 'two_decimals' ? 2
     : r.unit === '%' ? (pctDecimals ? 1 : 0) : (Number.isInteger(Number(r.value)) ? 0 : 1);
   const label = (r) => {
-    const v = Number(r.value).toFixed(decimals(r));
+    const v = grouped(Number(r.value).toFixed(decimals(r)));
     return r.unit === '$' ? `$${v}` : `${v}${r.unit === '%' ? '%' : r.unit.length <= 3 ? ` ${r.unit}` : ''}`;
   };
 
@@ -324,7 +327,7 @@ function TableScreen({ headline, detail, rows: allRows, source, highlight = [], 
   const decimals = (r) => r.unit === '$' ? 2 : valueFormat === 'ratio' ? (Number(r.value) < 10 ? 1 : 0) : valueFormat === 'one_decimal' ? 1 : valueFormat === 'two_decimals' ? 2
     : r.unit === '%' ? (pctDecimals ? 1 : 0) : (Number.isInteger(Number(r.value)) ? 0 : 1);
   const label = (r, p = 1) => {
-    const v = (Number(r.value) * clamp01(p)).toFixed(decimals(r));
+    const v = grouped((Number(r.value) * clamp01(p)).toFixed(decimals(r)));
     return r.unit === '$' ? `$${v}` : `${v}${r.unit === '%' ? '%' : r.unit.length <= 3 ? ` ${r.unit}` : ''}`;
   };
 

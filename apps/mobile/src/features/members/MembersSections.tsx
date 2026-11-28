@@ -117,7 +117,7 @@ export function Spotlight({ cards, onUser, onCity }: {
           : c.kind === 'streak' ? t('spot.days', { count: c.value })
           : c.kind === 'newest' ? t('spot.sayWelcome')
           : c.kind === 'city_week' ? t('spot.photos', { count: c.value })
-          : t('spot.sayHello', { hello: HELLO[c.city.country ?? ''] ?? t('spot.hi') });
+          : t('spot.sayHello', { hello: HELLO[('city' in c && c.city ? c.city.country : null) ?? ''] ?? t('spot.hi') });
         const flag = 'city' in c && c.city ? c.city.country : null;
         return (
           <Tappable key={c.kind} style={[styles.card, { backgroundColor: color.fill }, i === cards.length - 1 && cards.length === 3 && styles.cardTilt]}
